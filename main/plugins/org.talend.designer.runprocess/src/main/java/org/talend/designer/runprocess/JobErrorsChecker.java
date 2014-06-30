@@ -22,7 +22,9 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Shell;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -104,6 +106,7 @@ public class JobErrorsChecker {
             ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
             Set<String> jobIds = new HashSet<String>();
 
+            @SuppressWarnings("unchecked")
             List<RepositoryNode> nodes = selection.toList();
             if (nodes.size() > 1) {
                 // in case it's a multiple export, only check the status of the latest job to export
@@ -164,6 +167,11 @@ public class JobErrorsChecker {
                 try {
                     checkLastGenerationHasCompilationError(true);
                 } catch (Exception e) {
+                	if(CommonsPlugin.isHeadless()) {
+                		CommonExceptionHandler.process(e);
+                		//[TESB-8953] avoid SWT invoked and also throw Exception let Command Executor to have detailed trace in command status.
+                		throw new RuntimeException(e);
+                	}
                     MessageBoxExceptionHandler.process(e);
                     return true;
                 }
@@ -202,6 +210,9 @@ public class JobErrorsChecker {
     }
 
     public static void checkLastGenerationHasCompilationError(boolean updateProblemsView) throws ProcessorException {
+    	if(updateProblemsView && CommonsPlugin.isHeadless()){
+    		updateProblemsView = false;
+    	}
         boolean ret = false;
         boolean isJob = true;
         Item item = null;
