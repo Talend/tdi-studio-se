@@ -40,7 +40,7 @@ imports="
 			<%}%>
 <%  	
 		}%>
-            if(("").equals(stringStderr_<%=cid%>)||stringStderr_<%=cid%> == null){
+            if(("").equals(stringStderr_<%=cid%>.toString())||stringStderr_<%=cid%> == null){
             	globalMap.put("<%=cid %>_STATUS",stringStdout_<%=cid%>.toString());
             }else{
             	globalMap.put("<%=cid %>_STATUS",stringStderr_<%=cid%>.toString());
