@@ -57,6 +57,8 @@ public class NodesTree {
                 buildCamelSubTrees(true);
             } else if (typeGen == ETypeGen.MR) {
                 buildMRSubTrees();
+            } else if (typeGen == ETypeGen.STORM) {
+                buildStormSubTrees();
             }
         }
     }
@@ -104,6 +106,16 @@ public class NodesTree {
             if (((node.isSubProcessStart()) && (node.isActivate()) && !((AbstractNode) node).isRefNode())
                     || (rootNodes.contains(node))) {
                 subTrees.add(new NodesSubTree(node, nodes, ETypeGen.MR));
+            }
+        }
+    }
+
+    private void buildStormSubTrees() {
+        subTrees = new ArrayList<NodesSubTree>();
+        for (INode node : nodes) {
+            if (((node.isSubProcessStart()) && (node.isActivate()) && !((AbstractNode) node).isRefNode())
+                    || (rootNodes.contains(node))) {
+                subTrees.add(new NodesSubTree(node, nodes, ETypeGen.STORM));
             }
         }
     }
