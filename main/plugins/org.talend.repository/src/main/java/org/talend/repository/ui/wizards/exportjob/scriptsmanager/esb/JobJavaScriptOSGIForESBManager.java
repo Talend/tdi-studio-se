@@ -458,7 +458,13 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         String className = getPackageName(processItem) + PACKAGE_SEPARATOR + name;
 
         // job name and class name
-        jobInfo.put("name", EmfModelUtils.getComponentsByName(processItem, "tRouteInput").isEmpty() ? name : className); //$NON-NLS-1$
+        String jobName = name;
+        if (!EmfModelUtils.getComponentsByName(processItem, "tRouteInput").isEmpty()) { //$NON-NLS-1$
+            jobName = className;
+        } else if (!EmfModelUtils.getComponentsByName(processItem, "tiPaaSInput", "tiPaaSOutput").isEmpty()) { //$NON-NLS-1$ //$NON-NLS-2$
+            jobName = "${artifactID}"; //$NON-NLS-1$
+        }
+        jobInfo.put("name", jobName);
         jobInfo.put("version", processItem.getProperty().getVersion()); //$NON-NLS-1$
         jobInfo.put("className", className); //$NON-NLS-1$
 
