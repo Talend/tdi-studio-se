@@ -416,27 +416,14 @@ public final class CodeGeneratorEmittersPoolFactory {
             }
             jetBeans.add(jetBean);
         }
+        // When building the main part of the component, also attempt to build the other parts.
         if (codePart.compareTo(ECodePart.MAIN) == 0) {
-            if (component.getAvailableCodeParts().contains(ECodePart.BEGIN)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.BEGIN, component);
-            }
-            if (component.getAvailableCodeParts().contains(ECodePart.END)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.END, component);
-            }
-            if (component.getAvailableCodeParts().contains(ECodePart.FINALLY)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.FINALLY, component);
-            }
-            if (component.getAvailableCodeParts().contains(ECodePart.MRCODE)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.MRCODE, component);
-            }
-            if (component.getAvailableCodeParts().contains(ECodePart.MRJOBFOOTER)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.MRJOBFOOTER, component);
-            }
-            if (component.getAvailableCodeParts().contains(ECodePart.MRCONFIG)) {
-                initComponent(codeLanguage, jetBeans, ECodePart.MRCONFIG, component);
+            for (ECodePart otherPart : ECodePart.values()) {
+                if (otherPart != ECodePart.MAIN && component.getAvailableCodeParts().contains(otherPart)) {
+                    initComponent(codeLanguage, jetBeans, otherPart, component);
+                }
             }
         }
-
     }
 
     /**

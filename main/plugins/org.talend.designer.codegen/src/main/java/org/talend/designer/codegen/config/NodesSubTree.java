@@ -124,7 +124,7 @@ public class NodesSubTree {
             allMainSubTreeConnections = new ArrayList<IConnection>();
 
             buildCamelSubTree(node, false);
-        } else if (typeGen == ETypeGen.MR || typeGen == ETypeGen.STORM) {
+        } else if (typeGen == ETypeGen.MR) {
             this.rootNode = node;
             this.name = node.getUniqueName();
             this.nodes = new ArrayList<INode>();
@@ -134,23 +134,16 @@ public class NodesSubTree {
             allMainSubTreeConnections = new ArrayList<IConnection>();
 
             buildMRSubTree(node);
+        } else if (typeGen == ETypeGen.STORM) {
+            this.rootNode = node;
+            this.name = node.getUniqueName();
+            this.nodes = new ArrayList<INode>();
+            afterSubProcesses = new ArrayList<String>();
+            beforeSubProcesses = new ArrayList<String>();
 
-            // if (refNodes != null) {
-            // for (INode refNode : refNodes) {
-            // this.nodes.add(refNode);
-            // for (IConnection connection : refNode.getOutgoingSortedConnections()) {
-            // if (connection.getTarget().isActivate()) {
-            //
-            // if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
-            // afterSubProcesses.add(connection.getTarget().getUniqueName());
-            // }
-            // if (connection.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)) {
-            // beforeSubProcesses.add(connection.getTarget().getUniqueName());
-            // }
-            // }
-            // }
-            // }
-            // }
+            allMainSubTreeConnections = new ArrayList<IConnection>();
+
+            buildStormSubTree(node);
         }
     }
 
@@ -217,6 +210,38 @@ public class NodesSubTree {
                         allMainSubTreeConnections.add(connection);
                     }
                     buildMRSubTree(connection.getTarget());
+                }
+                if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
+                    afterSubProcesses.add(connection.getTarget().getUniqueName());
+                }
+                if (connection.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)) {
+                    beforeSubProcesses.add(connection.getTarget().getUniqueName());
+                }
+            }
+        }
+
+        nodes.add(node);
+    }
+
+    private void buildStormSubTree(INode node) {
+        // Use a copy of buildMRSubTree for now.  This will soon evolve.
+        if (((AbstractNode) node).isThereLinkWithRef()) {
+            this.isRefSubTree = true;
+            this.refNodes = ((AbstractNode) node).getRefNodes();
+            if (refNodes != null) {
+                for (INode refNode : refNodes) {
+                    buildStormSubTree(refNode);
+                }
+            }
+        }
+        for (IConnection connection : node.getOutgoingSortedConnections()) {
+            if (connection.getTarget().isActivate()) {
+
+                if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.MAIN)) {
+                    if (!connection.getLineStyle().hasConnectionCategory(IConnectionCategory.USE_ITERATE)) {
+                        allMainSubTreeConnections.add(connection);
+                    }
+                    buildStormSubTree(connection.getTarget());
                 }
                 if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
                     afterSubProcesses.add(connection.getTarget().getUniqueName());
