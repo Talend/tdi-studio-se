@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 
@@ -29,11 +27,11 @@ import org.talend.core.model.process.IElementParameter;
  * created by ycbai on 2014-6-10 Detailled comment
  * 
  */
-@RunWith(PowerMockRunner.class)
+
 public class ExpressionTest {
 
     @Test
-    public void testIsShowFunction() throws Exception {
+    public void testIsShowFunction() {
         List<IElementParameter> parameters = spy(new ArrayList<IElementParameter>());
 
         /*
@@ -62,6 +60,37 @@ public class ExpressionTest {
         param3 = createParameter("PARA3", false, "isShow[PARA2]");
         updateParameters(parameters, param1, param2, param3);
         assertFalse(Expression.evaluate("isShow[PARA2]", parameters, param3));
+    }
+
+    @Test
+    public void testIsShowFunctionBooleanItem() {
+        List<IElementParameter> parameters = spy(new ArrayList<IElementParameter>());
+
+        ElementParameter param1 = createParameter("PARA1.VALUE1", true, null);
+        ElementParameter param2 = createParameter("PARA1.VALUE2", false, null);
+        ElementParameter param3 = createParameter("PARA2", false, "(isShow[PARA1.VALUE1]) AND (isShow[PARA1.VALUE2])");
+
+        /*
+         * TODO The commented test should work and should be fixed.
+         */
+        // ElementParameter param4 = createParameter("PARA2", false, "isShow[PARA1.VALUE1] AND isShow[PARA1.VALUE2]");
+
+        updateParameters(parameters, param1, param2, param3/* , param4 */);
+        assertFalse(Expression.evaluate("(isShow[PARA1.VALUE1]) AND (isShow[PARA1.VALUE2])", parameters, param3));
+        // assertFalse(Expression.evaluate("isShow[PARA1.VALUE1] AND isShow[PARA1.VALUE2]", parameters, param4));
+    }
+
+    @Test
+    public void testIsShowFunctionClosedListItem() {
+        List<IElementParameter> parameters = spy(new ArrayList<IElementParameter>());
+
+        ElementParameter param1 = createParameter("PARA1.VALUE1", true, null);
+        ElementParameter param2 = createParameter("PARA1.VALUE2", false, null);
+        ElementParameter param3 = createParameter("PARA2", false, "isShow[PARA1.VALUE1]");
+        ElementParameter param4 = createParameter("PARA3", false, "isShow[PARA1.VALUE2]");
+        updateParameters(parameters, param1, param2, param3, param4);
+        assertTrue(Expression.evaluate("isShow[PARA1.VALUE1]", parameters, param3));
+        assertFalse(Expression.evaluate("isShow[PARA1.VALUE2]", parameters, param4));
     }
 
     private ElementParameter createParameter(String paraName, boolean isShow, String showIf) {

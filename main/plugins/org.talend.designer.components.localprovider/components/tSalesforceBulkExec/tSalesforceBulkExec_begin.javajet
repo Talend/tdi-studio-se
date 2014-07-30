@@ -67,69 +67,96 @@ imports="
 	
 	String loginType = ElementParameterParser.getValue(node,"__LOGIN_TYPE__");
 	boolean useOAuth = "OAUTH".equals(loginType);
-	if(!useExistingConn && useOAuth){
-	%>
-		<%@ include file="../tSalesforceConnection/tSalesforceOAuth.javajet"%>
-	<%
-	}
 	%>
 	int nb_line_<%=cid %> = 0;
     int nb_success_<%=cid%> = 0;
     int nb_reject_<%=cid%> = 0;
 	System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-	org.talend.salesforceBulk.SalesforceBulkAPI sforceBulk_<%=cid%> = new org.talend.salesforceBulk.SalesforceBulkAPI();
-	sforceBulk_<%=cid%>.setConcurrencyMode("<%=concurrencyMode%>");
-	sforceBulk_<%=cid%>.setAwaitTime(<%=awaitTime%>);
+	
+	org.talend.salesforceBulk.SforceBulkConnection sforceConn_<%=cid%> = null;
 	<%
 	if(useExistingConn){
 	%>
-		if(globalMap.get("conn_<%=connection %>")==null){
+		if(globalMap.get("conn_<%=connection%>")==null){
 			throw new RuntimeException("Get null connection from <%=connection %>");
 		}
-		sforceBulk_<%=cid%>.login((com.sforce.async.BulkConnection)globalMap.get("conn_<%=connection %>"));
+		sforceConn_<%=cid%> = (org.talend.salesforceBulk.SforceBulkConnection)globalMap.get("conn_<%=connection %>");
 		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Login successful with exsit connection : <%=connection%>");
-		<%}%>	
+			log.info("<%=cid%> - use exsit connection : <%=connection%>");
+		<%}%>
 	<%
 	}else{
 		if(useOAuth){
-		%>
-			sforceBulk_<%=cid%>.login(accessToken_<%=cid%>, endpointURL_<%=cid%>);
+    		String oauthKey = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_ID__");
+    		String oauthSecret = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_SECRET__");
+        	passwordFieldName = "__OAUTH_CLIENT_SECRET__";
+        	if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+        	%>
+        		String decryptedQauthClientPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+        	<%
+        	} else {
+        	%>
+        		String decryptedQauthClientPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+        	<%
+        	}
+        	String tokenFile = ElementParameterParser.getValue(node,"__OAUTH_TOKEN_FILE__");
+    		String callbackHost = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_HOST__");
+    		String callbackPort = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_PORT__");
+    		%>
+    		sforceConn_<%=cid%> 
+        		= new org.talend.salesforceBulk.SforceOAuthBulkConnection.Builder(<%=endpoint%>, <%=oauthKey%>, decryptedQauthClientPwd_<%=cid%>, <%=apiVersion%>, <%=callbackHost%>, <%=callbackPort%>)
+        			<%
+        			if(!"".equals(tokenFile) && !"\"\"".equals(tokenFile)){
+        			%>
+        				.setTokenFilePath(<%=tokenFile%>)
+        			<%
+        			}
+        			%>
+        			.build();
 		<%
 		}else{
-			if(useProxy){
-				passwordFieldName = "__PROXY_PASSWORD__";
-				
-				if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
-        		%>
-        		String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-        		<%
-        		} else {
-        		%>
-        		String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
-        		<%
-        		}
-			%>
-				sforceBulk_<%=cid%>.setProxy(true,<%=proxyHost%>,<%=TalendTextUtils.removeQuotes(proxyPort)%>,<%=proxyUsername%>,decryptedPwd_<%=cid%>);
-			<%
-			}
-			%>
-			
-			<%
 			passwordFieldName = "__PASS__";
 			%>
 
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-			
-			sforceBulk_<%=cid%>.login(<%=endpoint%>,<%=username%>,decryptedPassword_<%=cid%>,<%=apiVersion%>);
+			<%
+			if(useProxy){
+    			passwordFieldName = "__PROXY_PASSWORD__";
+    			
+    			if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+        		%>
+        			String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+        		<%
+        		} else {
+        		%>
+        			String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+        		<%
+        		}
+    			%>
+    		<%
+    		}	
+			%>
+			sforceConn_<%=cid%> 
+    			= new org.talend.salesforceBulk.SforceBasicBulkConnection.Builder(<%=endpoint%>,<%=username%>,decryptedPassword_<%=cid%>,<%=apiVersion%>)
+    				<%
+    				if(useProxy){
+            		%>
+            			.setProxy(true,<%=proxyHost%>,<%=TalendTextUtils.removeQuotes(proxyPort)%>,<%=proxyUsername%>,decryptedPwd_<%=cid%>)
+            		<%
+            		}	
+    				%>
+    				.build();
 		<%
 		}
 		if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Login successful");
-		<%}	
+		<%}
 	}
 	%>
-
+	org.talend.salesforceBulk.SalesforceBulkAPI	sforceBulk_<%=cid%> = new org.talend.salesforceBulk.SalesforceBulkAPI(sforceConn_<%=cid%>);
+	sforceBulk_<%=cid%>.setConcurrencyMode("<%=concurrencyMode%>");
+	sforceBulk_<%=cid%>.setAwaitTime(<%=awaitTime%>);
+	
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Start to <%=action%> records in bulk.");
 	<%}%>

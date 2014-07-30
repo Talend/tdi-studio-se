@@ -1,31 +1,36 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
+    java.util.List
+    java.util.Map
+    java.util.Map.Entry
+    java.util.Set
+    java.sql.Statement
+"
 %>
 <%@ include file="../templates/DB/HelpClass/HelpClass.javajet"%>
 <%
 	class ConnectionUtil extends DefaultConnectionUtil{
-	
+
 		public void createURL(INode node) {
 			super.createURL(node);
 %>
 		String dbProperties_<%=cid%> = <%=dbproperties%>;
 		String url_<%=cid%> = null;
 		if(dbProperties_<%=cid%> == null || dbProperties_<%=cid%>.trim().length() == 0) {
-			url_<%=cid %> = "jdbc:teradata://" + <%=dbhost%> + "/DATABASE=" + <%=dbname%>;     
+			url_<%=cid %> = "jdbc:teradata://" + <%=dbhost%> + "/DATABASE=" + <%=dbname%>;
 		} else {
 		    url_<%=cid%> = "jdbc:teradata://" + <%=dbhost%> + "/DATABASE=" + <%=dbname%> + "," + <%=dbproperties%>;
-		}       
-<%	
 		}
-	
+<%
+		}
+
 		public String getDirverClassName(INode node){
 			return "com.teradata.jdbc.TeraDriver";
 		}
-		
+
 	}//end class
 	connUtil = new ConnectionUtil();
 %>
@@ -38,3 +43,5 @@ imports="
 	globalMap.put("dbname_<%=cid%>", <%=dbname%>);
 	globalMap.put("username_<%=cid%>", dbUser_<%=cid%>);
 	globalMap.put("password_<%=cid%>", dbPwd_<%=cid%>);
+
+<%@ include file="../tTeradataInput/TeradataQueryBandBegin.javajet"%>

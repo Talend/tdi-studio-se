@@ -1,0 +1,25 @@
+<%
+   		Boolean queryBand = "true".equals(ElementParameterParser.getValue(node, "__QUERY_BAND__"));   		
+      List<Map<String, String>> queryBandList = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__QUERY_BAND_PARAMETERS__");
+
+      if(queryBand){%>
+             //add query band begin
+             boolean currentAutoCommitMode<%= cid %> =  conn_<%=cid%>.getAutoCommit();          
+             conn_<%=cid%>.setAutoCommit(true);           
+             try{             
+                 conn_<%=cid%>.createStatement().execute("BEGIN QUERY LOGGING WITH SQL,OBJECTS ON ALL");
+                 conn_<%=cid%>.createStatement().execute(
+              "SET QUERY_BAND='" + 
+<%
+            for(Map<String, String> map : queryBandList) {
+%>
+               <%= map.get("KEY") %> + "=" + <%= map.get("VALUE") %> + ";" +
+<% 
+			}
+%> "' FOR SESSION"
+           );           
+              }catch(Exception e){
+               System.err.println(e.getMessage());              
+      }
+      conn_<%= cid %>.setAutoCommit(currentAutoCommitMode<%= cid %>);
+   <%}%>

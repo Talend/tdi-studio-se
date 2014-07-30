@@ -8,11 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.Authenticator;
-import java.net.InetSocketAddress;
-import java.net.PasswordAuthentication;
-import java.net.Proxy;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +19,6 @@ import java.util.Set;
 import com.sforce.async.AsyncApiException;
 import com.sforce.async.BatchInfo;
 import com.sforce.async.BatchStateEnum;
-import com.sforce.async.BulkConnection;
 import com.sforce.async.CSVReader;
 import com.sforce.async.ConcurrencyMode;
 import com.sforce.async.ContentType;
@@ -32,17 +26,11 @@ import com.sforce.async.JobInfo;
 import com.sforce.async.JobStateEnum;
 import com.sforce.async.OperationEnum;
 import com.sforce.async.QueryResultList;
-import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
-import com.sforce.ws.ConnectorConfig;
 
 public class SalesforceBulkAPI {
 
     private final String FILE_ENCODING = "UTF-8";
-
-    private String username;
-
-    private String password;
 
     private String sObjectType;
 
@@ -88,23 +76,10 @@ public class SalesforceBulkAPI {
         maxRowsPerBatch = (maxRows > sforceMaxRows) ? sforceMaxRows : maxRows;
     }
 
-    private BulkConnection connection;
+    private SforceBulkConnection connection;
 
-    public BulkConnection getConnection() {
-        return connection;
-    }
-
-    public void login(BulkConnection connection) {
+    public SalesforceBulkAPI(SforceBulkConnection connection) {
         this.connection = connection;
-    }
-
-    public void login(String endpoint, String username, String password, String apiVersion) throws ConnectionException,
-            AsyncApiException {
-        this.connection = getBulkConnection(endpoint, username, password, apiVersion);
-    }
-
-    public void login(String sessionID, String endpointURL) throws ConnectionException, AsyncApiException {
-        this.connection = getBulkConnection(sessionID, endpointURL);
     }
 
     private JobInfo job;
@@ -134,135 +109,13 @@ public class SalesforceBulkAPI {
         baseFileHeaderSize = baseFileHeader.size();
     }
 
-    private boolean useProxy = false;
-
-    private String proxyHost;
-
-    private int proxyPort;
-
-    private String proxyUsername;
-
-    private String proxyPassword;
-
-    public void setProxy(boolean useProxy, String host, int port, String username, String password) {
-        this.proxyHost = host;
-        this.proxyPort = port;
-        this.proxyUsername = username;
-        this.proxyPassword = password;
-        this.useProxy = useProxy;
-    }
-
-    private void setProxyToConnection(ConnectorConfig conn) {
-        Proxy socketProxy = null;
-        if (!useProxy) {
-            proxyHost = System.getProperty("https.proxyHost");
-            if (proxyHost != null && System.getProperty("https.proxyPort") != null) {
-                proxyPort = Integer.parseInt(System.getProperty("https.proxyPort"));
-                proxyUsername = System.getProperty("https.proxyUser");
-                proxyPassword = System.getProperty("https.proxyPassword");
-                useProxy = true;
-            } else {
-                proxyHost = System.getProperty("http.proxyHost");
-                if (proxyHost != null && System.getProperty("http.proxyPort") != null) {
-                    proxyPort = Integer.parseInt(System.getProperty("http.proxyPort"));
-                    proxyUsername = System.getProperty("http.proxyUser");
-                    proxyPassword = System.getProperty("http.proxyPassword");
-                    useProxy = true;
-                } else {
-                    proxyHost = System.getProperty("socksProxyHost");
-                    if (proxyHost != null && System.getProperty("socksProxyPort") != null) {
-                        proxyPort = Integer.parseInt(System.getProperty("socksProxyPort"));
-                        proxyUsername = System.getProperty("java.net.socks.username");
-                        proxyPassword = System.getProperty("java.net.socks.password");
-                        useProxy = true;
-
-                        SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
-                        socketProxy = new Proxy(Proxy.Type.SOCKS, addr);
-                    }
-                }
-            }
-        }
-        if (useProxy) {
-            if (socketProxy != null) {
-                conn.setProxy(socketProxy);
-            } else {
-                conn.setProxy(proxyHost, proxyPort);
-            }
-            if (proxyUsername != null && !"".equals(proxyUsername)) {
-                conn.setProxyUsername(proxyUsername);
-                if (proxyPassword != null && !"".equals(proxyPassword)) {
-                    conn.setProxyPassword(proxyPassword);
-
-                    Authenticator.setDefault(new Authenticator() {
-
-                        @Override
-                        public PasswordAuthentication getPasswordAuthentication() {
-                            if (getRequestorType() == Authenticator.RequestorType.PROXY) {
-                                return new PasswordAuthentication(proxyUsername, proxyPassword.toCharArray());
-                            } else {
-                                return super.getPasswordAuthentication();
-                            }
-                        }
-                    });
-
-                }
-            }
-        }
-    }
-
-    private BulkConnection getBulkConnection(String endpoint, String username, String password, String apiVersion)
-            throws ConnectionException, AsyncApiException {
-        ConnectorConfig partnerConfig = new ConnectorConfig();
-        partnerConfig.setUsername(username);
-        partnerConfig.setPassword(password);
-        partnerConfig.setAuthEndpoint(endpoint);
-        setProxyToConnection(partnerConfig);
-        // Creating the connection automatically handles login and stores
-        // the session in partnerConfig
-        new PartnerConnection(partnerConfig);
-        // The endpoint for the Bulk API service is the same as for the normal
-        // SOAP uri until the /Soap/ part. From here it's '/async/versionNumber'
-        String soapEndpoint = partnerConfig.getServiceEndpoint();
-        String restEndpoint = soapEndpoint.substring(0, soapEndpoint.indexOf("Soap/")) + "async/" + apiVersion;
-        // When PartnerConnection is instantiated, a login is implicitly
-        // executed and, if successful,
-        // a valid session is stored in the ConnectorConfig instance.
-        // Use this key to initialize a BulkConnection:
-        return getBulkConnection(partnerConfig.getSessionId(), restEndpoint);
-    }
-
-    private BulkConnection getBulkConnection(String sessionID, String endpointURL) throws ConnectionException, AsyncApiException {
-        ConnectorConfig config = new ConnectorConfig();
-        config.setSessionId(sessionID);
-        config.setRestEndpoint(endpointURL);
-        setProxyToConnection(config);
-        // This should only be false when doing debugging.
-        config.setCompression(needCompression);
-        // Set this to true to see HTTP requests and responses on stdout
-        config.setTraceMessage(needTraceMessage);
-        BulkConnection connection = new BulkConnection(config);
-        return connection;
-    }
-
     private ConcurrencyMode concurrencyMode = null;
 
     public void setConcurrencyMode(String mode) {
         concurrencyMode = ConcurrencyMode.valueOf(mode);
     }
 
-    private boolean needCompression = true;
-
-    public void setNeedCompression(boolean needCompression) {
-        this.needCompression = needCompression;
-    }
-
-    private boolean needTraceMessage = false;
-
-    public void setNeedTraceMessage(boolean needTraceMessage) {
-        this.needTraceMessage = needTraceMessage;
-    }
-
-    private JobInfo createJob() throws AsyncApiException {
+    private JobInfo createJob() throws AsyncApiException, ConnectionException {
         JobInfo job = new JobInfo();
         if (concurrencyMode != null) {
             job.setConcurrencyMode(concurrencyMode);
@@ -294,7 +147,7 @@ public class SalesforceBulkAPI {
         }
     }
 
-    private List<BatchInfo> createBatchesFromCSVFile() throws IOException, AsyncApiException {
+    private List<BatchInfo> createBatchesFromCSVFile() throws IOException, AsyncApiException, ConnectionException {
         List<BatchInfo> batchInfos = new ArrayList<BatchInfo>();
         BufferedReader rdr = new BufferedReader(new InputStreamReader(new FileInputStream(bulkFileName), FILE_ENCODING));
         // read the CSV header row
@@ -361,7 +214,7 @@ public class SalesforceBulkAPI {
     }
 
     private void createBatch(FileOutputStream tmpOut, File tmpFile, List<BatchInfo> batchInfos) throws IOException,
-            AsyncApiException {
+            AsyncApiException, ConnectionException {
         tmpOut.flush();
         tmpOut.close();
         FileInputStream tmpInputStream = new FileInputStream(tmpFile);
@@ -374,7 +227,7 @@ public class SalesforceBulkAPI {
         }
     }
 
-    private void closeJob() throws AsyncApiException {
+    private void closeJob() throws AsyncApiException, ConnectionException {
         JobInfo closeJob = new JobInfo();
         closeJob.setId(job.getId());
         closeJob.setState(JobStateEnum.Closed);
@@ -387,7 +240,7 @@ public class SalesforceBulkAPI {
         this.awaitTime = awaitTime;
     }
 
-    private void awaitCompletion() throws AsyncApiException {
+    private void awaitCompletion() throws AsyncApiException, ConnectionException {
         long sleepTime = 0L;
         Set<String> incomplete = new HashSet<String>();
         for (BatchInfo bi : batchInfoList) {
@@ -420,7 +273,7 @@ public class SalesforceBulkAPI {
         return dataInfo;
     }
 
-    public List<Map<String, String>> getBatchLog(int batchNum) throws AsyncApiException, IOException {
+    public List<Map<String, String>> getBatchLog(int batchNum) throws AsyncApiException, IOException, ConnectionException {
         // batchInfoList was populated when batches were created and submitted
         List<Map<String, String>> resultInfoList = new ArrayList<Map<String, String>>();
         Map<String, String> resultInfo;
@@ -458,7 +311,7 @@ public class SalesforceBulkAPI {
     private String[] queryResultIDs = null;
 
     public void doBulkQuery(String moduleName, String queryStatement, int secToWait) throws AsyncApiException,
-            InterruptedException {
+            InterruptedException, ConnectionException {
         job = new JobInfo();
         job.setObject(moduleName);
         job.setOperation(OperationEnum.query);
@@ -497,11 +350,11 @@ public class SalesforceBulkAPI {
         return queryResultIDs;
     }
 
-    public InputStream getQueryResultStream(String resultId) throws AsyncApiException, IOException {
+    public InputStream getQueryResultStream(String resultId) throws AsyncApiException, IOException, ConnectionException {
         return connection.getQueryResultStream(job.getId(), batchInfoList.get(0).getId(), resultId);
     }
 
-    public List<Map<String, String>> getQueryResult(String resultId) throws AsyncApiException, IOException {
+    public List<Map<String, String>> getQueryResult(String resultId) throws AsyncApiException, IOException, ConnectionException {
         // batchInfoList was populated when batches were created and submitted
         List<Map<String, String>> resultInfoList = new ArrayList<Map<String, String>>();
         Map<String, String> resultInfo;

@@ -69,7 +69,7 @@ public final class Expression {
 
     private static final String LESS_THAN = "<"; //$NON-NLS-1$
 
-    private static final Pattern isShowFuncPattern = Pattern.compile("isShow\\[(\\w+)\\]"); //$NON-NLS-1$
+    private static final Pattern isShowFuncPattern = Pattern.compile("isShow\\[(\\w+)(\\.\\w+)*\\]"); //$NON-NLS-1$
 
     private Expression(String expressionString) {
         this.expressionString = expressionString;
@@ -126,6 +126,7 @@ public final class Expression {
         if (Boolean.TRUE.toString().equals(string)) {
             return true;
         }
+
         if (string.contains("(") //$NON-NLS-1$
                 && (isThereCondition(string, AND) || isThereCondition(string, OR))) {
             return evaluateExpression(new Expression(string), listParam, curParam).isValid();
@@ -331,10 +332,21 @@ public final class Expression {
         // wyang: only for bug:9055, to search the related Node, for example tFTPGet wants to check tFTPConnection info
         // variableName like: #LINK@NODE.CONNECTION.SFTP ----->it is a checkbox in tFTPConnection
         // #LINK@NODE, #PREVIOUS@NODE, #NEXT@NODE ----->implement them later
+
         if ((variableName != null) && (variableValue != null)) {
             if (varNames[0].equals("#LINK@NODE")) { //$NON-NLS-1$
+                INode node = null;
                 if (currentParam != null && currentParam.getElement() instanceof INode) {
-                    INode node = (INode) currentParam.getElement();
+                    node = (INode) currentParam.getElement();
+                } else if (currentParam == null) {
+                    if (listParam != null && listParam.size() > 0) {
+                        IElement element = listParam.get(0).getElement();
+                        if (element instanceof INode) {
+                            node = (INode) element;
+                        }
+                    }
+                }
+                if (node != null) {
                     String relatedNodeName = ElementParameterParser.getValue(node, "__" + varNames[1] + "__"); //$NON-NLS-1$ //$NON-NLS-2$
                     List<? extends INode> generatingNodes = node.getProcess().getGeneratingNodes();
                     for (INode aNode : generatingNodes) {
@@ -347,7 +359,6 @@ public final class Expression {
 
                         }
                     }
-
                 }
             }
             /*
@@ -624,7 +635,7 @@ public final class Expression {
         }
         Matcher matcher = isShowFuncPattern.matcher(expr);
         while (matcher.find()) {
-            String paraName = matcher.group(1);
+            String paraName = matcher.group(1) + (matcher.group(2) == null ? "" : matcher.group(2));
             if (!paraNames.contains(paraName)) {
                 paraNames.add(paraName);
             }
@@ -639,14 +650,23 @@ public final class Expression {
         if (paraNames == null) {
             paraNames = new ArrayList<String>();
         }
-        String currentParaName = currentParam.getName();
-        if (!paraNames.contains(currentParaName)) {
-            paraNames.add(currentParaName);
+        String currentParaName = null;
+        if (currentParam != null) {
+            currentParaName = currentParam.getName();
+            if (!paraNames.contains(currentParaName)) {
+                paraNames.add(currentParaName);
+            }
         }
+
         if (paraNames.contains(testParamName)) {
-            throw new Exception("Expression \"" + expression + "\" of parameter \"" + currentParam.getName()
-                    + "\" bring an endless loop by parameter \"" + testParamName + "\" in the element \""
-                    + currentParam.getElement().getElementName() + "\". Please check and amend it!");
+            if (currentParam != null) {
+                throw new Exception("Expression \"" + expression + "\" of parameter \"" + currentParam.getName()
+                        + "\" bring an endless loop by parameter \"" + testParamName + "\" in the element \""
+                        + currentParam.getElement().getElementName() + "\". Please check and amend it!");
+            } else {
+                throw new Exception("Expression \"" + expression + "\" bring an endless loop by parameter \"" + testParamName
+                        + "\". Please check and amend it!");
+            }
         } else {
             paraNames.add(testParamName);
             for (IElementParameter param : listParam) {

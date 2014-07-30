@@ -1,9 +1,9 @@
-<%@ jet 
+<%@ jet
 imports="
-		org.talend.core.model.process.INode 
+		org.talend.core.model.process.INode
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.ElementParameterParser
-" 
+"
 %>
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
 <%
@@ -17,10 +17,11 @@ imports="
 }finally{
 	stmt_<%=cid %>.close();
 
-<%	
+<%
 	if(!useExistingConn){
 %>
 	if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
+	    <%@ include file="TeradataQueryBandEnd.javajet"%>
 		<%log4jCodeGenerateUtil.close(node);%>
 	}
 <%
@@ -33,4 +34,3 @@ globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid%>);
 log4jCodeGenerateUtil.retrieveRecordsCount(node);
 log4jCodeGenerateUtil.infoComponentEnd(node);
 %>
-

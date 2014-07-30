@@ -119,8 +119,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT NAME="json_simple" MODULE="json_simple-1.1.jar" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/json_simple-1.1.jar"
-				REQUIRED_IF="(READBYXPATH == 'false')" />
-			<IMPORT NAME="jsonpath" MODULE="jsonpath.jar" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jsonpath.jar" REQUIRED_IF="(READBYXPATH == 'false')" />
+				REQUIRED_IF="(READBYXPATH == 'false')" />			
 			<IMPORT NAME="Java_DOM4J1.6" MODULE="dom4j-1.6.1.jar" UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/dom4j-1.6.1.jar"
 				REQUIRED_IF="(READBYXPATH == 'true')" />
 			<IMPORT NAME="Java_JAXEN1.1" MODULE="jaxen-1.1.1.jar" UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/jaxen-1.1.1.jar"
@@ -138,6 +137,15 @@
 			<IMPORT NAME="commons_collections" MODULE="commons-collections-3.2.1.jar" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.1.jar"
 				REQUIRED_IF="(READBYXPATH == 'true')" />
 			<IMPORT NAME="staxon" MODULE="staxon-1.2.jar" REQUIRED_IF="(READBYXPATH == 'true')" />
+			<!-- 	libs for JsonPath  -->
+			<IMPORT NAME="json-path-0.9.0" MODULE="json-path-0.9.0.jar" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/json-path-0.9.0.jar"
+					REQUIRED_IF="(READBYXPATH == 'false')" />
+			<IMPORT NAME="json-smart-1.2" MODULE="json-smart-1.2.jar" UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/json-smart-1.2.jar"
+					REQUIRED_IF="(READBYXPATH == 'false')" />
+			<IMPORT NAME="slf4j-api-1.7.5" MODULE="slf4j-api-1.7.5.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.5.jar"
+					REQUIRED_IF="(READBYXPATH == 'false')" />
+			<IMPORT NAME="slf4j-simple-1.7.7" MODULE="slf4j-simple-1.7.7.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-simple-1.7.7.jar"
+					REQUIRED_IF="(READBYXPATH == 'false')" />				
 		</IMPORTS>
 	</CODEGENERATION>
 

@@ -144,7 +144,9 @@ imports="
 	<%
 	}
 
-	if(!useExistingConn){
+	if(!useExistingConn){ %>
+	<%@ include file="../tTeradataInput/TeradataQueryBandEnd.javajet"%>
+	<%
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
 			%>
 			if (commitCounter_<%=cid%> > 0){

@@ -35,6 +35,7 @@ import org.talend.core.model.repository.DragAndDropManager;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
+import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.TaggedValueHelper;
 import org.talend.designer.core.model.components.EParameterName;
@@ -43,8 +44,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 import org.talend.repository.UpdateRepositoryUtils;
-import org.talend.repository.model.RepositoryNode;
-import org.talend.repository.model.RepositoryNodeUtilities;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.ui.utils.ConnectionContextHelper;
 
 /**
@@ -101,7 +101,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                     && connection.isContextMode()
                     && ContextParameterUtils.isContainContextParam(schemaParam.getValue().toString())) {
                 ConnectionItem connectionItem = MetadataToolHelper.getConnectionItemFromRepository(newPropValue.toString());
-                ConnectionContextHelper.addContextForNodeParameter((Node) node, connectionItem, false);
+                ConnectionContextHelper.addContextForNodeParameter(node, connectionItem, false);
             }
         }
         // IElementParameter schemaTypeParameter =
@@ -130,8 +130,9 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 setDBTableFieldValue(node, newOutputMetadata.getTableName(), oldOutputMetadata.getTableName());
             }
             IElementParameter parameter = node.getElementParameter("SAP_FUNCTION");
-            if (parameter != null)
+            if (parameter != null) {
                 setSAPFunctionName(node, parameter.getValue() == null ? null : (String) parameter.getValue());
+            }
             setTableRelevantParameterValues();
         }
         super.execute();
@@ -200,7 +201,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 String schemaId = (String) newPropValue;
                 String[] values = schemaId.split(" - "); //$NON-NLS-1$
                 String repositoryID = values[0];
-                RepositoryNode repositoryNode = RepositoryNodeUtilities.getRepositoryNode(repositoryID);
+                IRepositoryNode repositoryNode = RepositorySeekerManager.getInstance().searchRepoViewNode(repositoryID);
                 if (repositoryNode != null && repositoryNode.getObject() != null) {
                     Item item = repositoryNode.getObject().getProperty().getItem();
                     if (item instanceof ConnectionItem) {
@@ -213,7 +214,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
         }
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             if (handler.canHandle(conn)) {
-                handler.handleTableRelevantParameters(node, newOutputMetadata);
+                handler.handleTableRelevantParameters(conn, node, newOutputMetadata);
             }
         }
     }
@@ -233,7 +234,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
     @Override
     protected void updateColumnList(IMetadataTable oldTable, IMetadataTable newTable) {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        ComponentSettingsView viewer = (ComponentSettingsView) page.findView(ComponentSettingsView.ID); //$NON-NLS-1$
+        ComponentSettingsView viewer = (ComponentSettingsView) page.findView(ComponentSettingsView.ID);
         if (viewer == null) {
             return;
         }

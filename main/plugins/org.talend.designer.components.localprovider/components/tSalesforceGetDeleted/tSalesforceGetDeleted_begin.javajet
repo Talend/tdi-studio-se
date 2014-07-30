@@ -66,13 +66,6 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String apiVersion = ElementParameterParser.getValue(node,"__API_VERSION__");
 			String loginType = ElementParameterParser.getValue(node,"__LOGIN_TYPE__");
 			boolean useOAuth = "OAUTH".equals(loginType);
-			if(!useExistingConn){
-				if(useOAuth){
-				%>
-					<%@ include file="../tSalesforceConnection/tSalesforceOAuth.javajet"%>
-				<%	
-				}
-			}
 			%>
         	System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
 			java.text.SimpleDateFormat startdf_<%=cid%> = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -85,72 +78,119 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
             java.util.Calendar endCal_<%=cid%> = enddf_<%=cid%>.getCalendar();
 			
 	        
-	        org.talend.salesforce.SforceManagement sfMgr_<%=cid%> = new org.talend.salesforce.SforceManagementImpl();
+			org.talend.salesforce.SforceConnection sforceConn_<%=cid%> = null;
 			<%if(useExistingConn){%>
-				if(globalMap.get("stub_<%=connection %>")==null || globalMap.get("sessionHeader_<%=connection%>")==null){
-					throw new RuntimeException("Get null connection from <%=connection %>");
+				if(globalMap.get("conn_<%=connection%>") == null){
+					throw new RuntimeException("Get null connection from <%=connection%>");
 				}
-				if(globalMap.get("callOptions_<%=connection %>")!=null ){
-					sfMgr_<%=cid%>.setCallOptions((com.salesforce.soap.partner.CallOptions)globalMap.get("callOptions_<%=connection %>"));
-				}
-				sfMgr_<%=cid%>.login((com.salesforce.soap.partner.SforceServiceStub)globalMap.get("stub_<%=connection %>"),(com.salesforce.soap.partner.SessionHeader)globalMap.get("sessionHeader_<%=connection%>"));
 				<%if(isLog4jEnabled){%>
-					log.info("<%=cid%> - Login successful with exsit connection : <%=connection%>");
+					log.info("<%=cid%> - use exsit connection : <%=connection%>");
 				<%}%>
-			<%}else{%>
-				<%if(clientID!=null && !"".equals(clientID) && !"\"\"".equals(clientID)){%>
-					sfMgr_<%=cid%>.setClientID(<%=clientID%>);
-				<%}
+				sforceConn_<%=cid%> = (org.talend.salesforce.SforceConnection)globalMap.get("conn_<%=connection%>"); 
+			<%}else{
 				if(useOAuth){
+					String oauthKey = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_ID__");
+            		String oauthSecret = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_SECRET__");
+            		%>
+            		<%
+                	passwordFieldName = "__OAUTH_CLIENT_SECRET__";
+                	if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+                	%>
+                		String decryptedQauthClientPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+                	<%
+                	} else {
+                	%>
+                		String decryptedQauthClientPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+                	<%
+                	}
+                	String tokenFile = ElementParameterParser.getValue(node,"__OAUTH_TOKEN_FILE__");
+            		
+            		String callbackHost = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_HOST__");
+            		String callbackPort = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_PORT__");
 					%>
-						boolean result_<%=cid%> = sfMgr_<%=cid%>.login(accessToken_<%=cid%>, endpointURL_<%=cid%>,<%=timeout%>,<%=needCompression%>);
-						if(!result_<%=cid%>){
-							throw new RuntimeException("Login failed!");
-						}
+					try{
+						sforceConn_<%=cid%> = 
+    						new org.talend.salesforce.SforceOAuthConnection.Builder(<%=endpoint%>, <%=oauthKey%>, decryptedQauthClientPwd_<%=cid%>, <%=apiVersion%>, <%=callbackHost%>, <%=callbackPort%>)
+                				<%
+                				if(!"".equals(tokenFile) && !"\"\"".equals(tokenFile)){
+                				%>
+                    				.setTokenFilePath(<%=tokenFile%>)
+                				<%
+                				}
+                				%>
+                				.setTimeout(<%=timeout%>).needCompression(<%=needCompression%>)
+                            	<%
+                            	if(clientID != null && !"".equals(clientID) && !"\"\"".equals(clientID)){
+                            	%>
+                            		.setClientID(<%=clientID%>);
+                            	<%
+                            	}
+                            	%>
+                            	.build();
+					}catch(Exception e){
+						<%if(isLog4jEnabled){%>
+							log.warn("<%=cid%> - Login failed, error message: " + e.getMessage());
+						<%}%>	
+						throw e;
+					}
+				<%
+				}else{
+					if(useProxy){
+						passwordFieldName = "__PROXY_PASSWORD__";
+        				if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+                		%>
+                		String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+                		<%
+                		} else {
+                		%>
+                		String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+                		<%
+                		}
+					%>
+					    java.util.Properties props_<%=cid%> = System.getProperties();
+					    props_<%=cid%>.put("socksProxyHost",<%=proxyHost %>);  
+					    props_<%=cid%>.put("socksProxyPort",<%=proxyPort %>);
+					    props_<%=cid%>.put("java.net.socks.username", <%=proxyUsername %>);
+					    props_<%=cid%>.put("java.net.socks.password", decryptedPwd_<%=cid%>); 
+					    
 					<%
-					}else{
-						if(useProxy){
-							passwordFieldName = "__PROXY_PASSWORD__";
-            				if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
-                    		%>
-                    		String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-                    		<%
-                    		} else {
-                    		%>
-                    		String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
-                    		<%
-                    		}
-						%>
-						    java.util.Properties props_<%=cid%> = System.getProperties();
-						    props_<%=cid%>.put("socksProxyHost",<%=proxyHost %>);  
-						    props_<%=cid%>.put("socksProxyPort",<%=proxyPort %>);
-						    props_<%=cid%>.put("java.net.socks.username", <%=proxyUsername %>);
-						    props_<%=cid%>.put("java.net.socks.password", decryptedPwd_<%=cid%>); 
-						    
-						<%
-						}
-						%>
-						
-						<%
-            			passwordFieldName = "__PASS__";
-            			%>
-            
-            			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-            			
-						boolean result_<%=cid%> = sfMgr_<%=cid%>.login(<%=endpoint%>,<%=username%>,decryptedPassword_<%=cid%>,<%=timeout%>,<%=needCompression%>);
-						if(!result_<%=cid%>){
-							throw new RuntimeException("Login failed! Please check the username,password and endpoint");
-						}
-		        	<%
-		        	}
-		        	%>
-		        	<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - Login successful");
-					<%}%>
-		        <%
-		        }
-		        %>
-        	
+					}
+					%>
+					
+					<%
+        			passwordFieldName = "__PASS__";
+        			%>
+        
+        			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+        			
+					try{
+						sforceConn_<%=cid%> = 
+                			new org.talend.salesforce.SforceBasicConnection.Builder(<%=endpoint%>, <%=username%>, decryptedPassword_<%=cid%>)
+                				.setTimeout(<%=timeout%>).needCompression(<%=needCompression%>)
+                            	<%
+                            	if(clientID!=null && !"".equals(clientID) && !"\"\"".equals(clientID)){
+                            	%>
+                            		.setClientID(<%=clientID%>);
+                            	<%
+                            	}
+                            	%>
+                            	.build();
+					}catch(Exception e){
+						<%if(isLog4jEnabled){%>
+							log.warn("<%=cid%> - Login failed, error message: " + e.getMessage());
+						<%}%>	
+						throw e;
+					}
+	        	<%
+	        	}
+	        	%>
+	        	<%if(isLog4jEnabled){%>
+					log.info("<%=cid%> - Login successful");
+				<%}%>
+	        <%
+	        }
+	        %>
+    		org.talend.salesforce.SforceManagement sfMgr_<%=cid%> = new org.talend.salesforce.SforceManagementImpl(sforceConn_<%=cid%>);
 			<%
 			java.lang.StringBuilder sb = new java.lang.StringBuilder();
 			for (IMetadataColumn column: columnList){

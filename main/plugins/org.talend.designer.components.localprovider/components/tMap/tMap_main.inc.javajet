@@ -1652,7 +1652,7 @@ if(!isVirtualOut) { // T_TM_M_320
 	
 	                        sb.append(cr).append(expression);
 							if(isLog4jEnabled && needAppendColumnLog){
-								sb.append(cr + "log4jSb_" + outputTableName + "_" + componentNameForKeyProblem + ".append(" + outputExpression + ");" + cr);
+								sb.append(cr + "log4jSb_" + outputTableName + "_" + componentNameForKeyProblem + ".append(" + assignationVar + ");" + cr);
 							}
 	
 	                        if (checkingSyntax) {

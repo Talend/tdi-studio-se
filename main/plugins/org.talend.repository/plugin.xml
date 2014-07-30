@@ -2390,7 +2390,10 @@
             ExtraBuildChecker="org.talend.repository.ui.wizards.exportjob.extrachecker.BanSoapServiceJobChecker">
       </ExtraBuildChecker>
       <ExtraBuildChecker
-            ExtraBuildChecker="org.talend.repository.ui.wizards.exportjob.extrachecker.LimitESBJobChecker">
+            ExtraBuildChecker="org.talend.repository.ui.wizards.exportjob.extrachecker.LimitRESTRequestJobChecker">
+      </ExtraBuildChecker>
+      <ExtraBuildChecker
+            ExtraBuildChecker="org.talend.repository.ui.wizards.exportjob.extrachecker.LimitESBConsumerJobChecker">
       </ExtraBuildChecker>
    </extension>
 

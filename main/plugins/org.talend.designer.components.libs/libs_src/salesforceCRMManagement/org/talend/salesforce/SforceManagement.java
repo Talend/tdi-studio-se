@@ -17,15 +17,14 @@ import java.util.Map;
 
 import org.apache.axiom.om.OMElement;
 
-import com.salesforce.soap.partner.CallOptions;
 import com.salesforce.soap.partner.DeleteResult;
+import com.salesforce.soap.partner.DescribeGlobalResult;
+import com.salesforce.soap.partner.DescribeSObjectResult;
 import com.salesforce.soap.partner.GetDeletedResult;
 import com.salesforce.soap.partner.ID;
 import com.salesforce.soap.partner.QueryLocator;
 import com.salesforce.soap.partner.QueryResult;
 import com.salesforce.soap.partner.SaveResult;
-import com.salesforce.soap.partner.SessionHeader;
-import com.salesforce.soap.partner.SforceServiceStub;
 import com.salesforce.soap.partner.UpsertResult;
 import com.salesforce.soap.partner.sobject.SObject;
 
@@ -34,43 +33,10 @@ import com.salesforce.soap.partner.sobject.SObject;
  */
 public interface SforceManagement {
 
-    public SforceServiceStub getStub();
-
-    public SessionHeader getSessionHeader();
-
-    public CallOptions getCallOptions();
-
-    public void setCallOptions(CallOptions co);
-
-    public void setClientID(String clientID);
-
-    public boolean login(String sessionID, String endpoint, int timeout, boolean needCompression) throws Exception;
-
-    public boolean login(String endpoint, String username, String password, int timeout, boolean needCompression)
-            throws Exception;
-
-    public boolean login(String endpoint, String username, String password, String timeout, boolean needCompression)
-            throws Exception;
-
-    public void login(SforceServiceStub stub, SessionHeader sh) throws Exception;
-
-    public boolean login(String sessionID, String endpoint, int timeout, boolean needCompression, int commitLevel,
-            boolean exceptionForErrors, String errorLogFile) throws Exception;
-
-    public boolean login(String endpoint, String username, String password, int timeout, boolean needCompression,
-            int commitLevel, boolean exceptionForErrors, String errorLogFile) throws Exception;
-
-    public boolean login(String endpoint, String username, String password, String timeout, boolean needCompression,
-            int commitLevel, boolean exceptionForErrors, String errorLogFile) throws Exception;
-
-    public void login(SforceServiceStub stub, SessionHeader sh, int commitLevel, boolean exceptionForErrors, String errorLogFile)
-            throws Exception;
-
+    // todo: rename to end/finish?
     public void logout() throws Exception;
 
     public DeleteResult[] delete(String id) throws Exception;
-
-    public OMElement newOMElement(String name, String value) throws Exception;
 
     public SaveResult[] insert(String tablename, OMElement[] nameValues) throws Exception;
 
@@ -94,4 +60,10 @@ public interface SforceManagement {
     public SObject[] retrieve(ID[] ids, String objectType, String fieldsList) throws Exception;
 
     public ID[] getUpdated(String objectType, Calendar startDate, Calendar endDate) throws Exception;
+
+    public DescribeSObjectResult describeSObject(String tablename) throws Exception;
+
+    public DescribeSObjectResult[] describeSObjects(String[] tablenames) throws Exception;
+
+    public DescribeGlobalResult describeGlobal() throws Exception;
 }

@@ -6,8 +6,8 @@ imports="
     	org.talend.core.model.process.IProcess
 		"
 %>
-<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
-<%
+	<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%>
+	<%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();    	
@@ -42,69 +42,107 @@ imports="
 	String apiVersion = ElementParameterParser.getValue(node,"__API_VERSION__");
 	String loginType = ElementParameterParser.getValue(node,"__LOGIN_TYPE__");
 	boolean useOAuth = "OAUTH".equals(loginType);
-	if(!useExistingConn){
-		if(useOAuth){
-		%>
-			<%@ include file="../tSalesforceConnection/tSalesforceOAuth.javajet"%>
-		<%	
+	%>       
+    int nb_line_<%=cid %> = 0;
+    int nb_success_<%=cid%> = 0;
+    int nb_reject_<%=cid%> = 0;
+	System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+	org.talend.salesforce.SforceConnection sforceConn_<%=cid%> = null;
+    <%
+    if(useExistingConn){
+    %>
+        if(globalMap.get("conn_<%=connection%>") == null){
+			throw new RuntimeException("Get null connection from <%=connection%>");
 		}
-	}
-%>       
-        int nb_line_<%=cid %> = 0;
-        int nb_success_<%=cid%> = 0;
-        int nb_reject_<%=cid%> = 0;
-    	System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
-        org.talend.salesforce.SforceManagement sforceManagement_<%=cid %> = new org.talend.salesforce.SforceManagementImpl();
-        <%
-        if(useExistingConn){
-        %>
-	        if(globalMap.get("stub_<%=connection %>")==null || globalMap.get("sessionHeader_<%=connection%>")==null){
-				throw new RuntimeException("Get null connection from <%=connection %>");
-			}
-			if(globalMap.get("callOptions_<%=connection %>")!=null ){
-				sforceManagement_<%=cid%>.setCallOptions((com.salesforce.soap.partner.CallOptions)globalMap.get("callOptions_<%=connection %>"));
-			}
-			sforceManagement_<%=cid%>.login((com.salesforce.soap.partner.SforceServiceStub)globalMap.get("stub_<%=connection %>"),(com.salesforce.soap.partner.SessionHeader)globalMap.get("sessionHeader_<%=connection%>"), <%=commitLevel%>, <%=ceaseForError %>, <%=logFile %>);
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Login successful with exsit connection : <%=connection%>");
-			<%}%>	
-		<%
-		}else{
-			if(clientID!=null && !"".equals(clientID) && !"\"\"".equals(clientID)){
-			%>
-				sforceManagement_<%=cid%>.setClientID(<%=clientID%>);
-			<%
-			}
-			if(useOAuth){
-			%>
-				boolean result_<%=cid%> = sforceManagement_<%=cid%>.login(accessToken_<%=cid%>, endpointURL_<%=cid%>,<%=timeout%>,<%=needCompression%>);
-				if(!result_<%=cid%>){
-					throw new RuntimeException("Login failed!");
-				}
-			<%
-			}else{
-			%>
-			
-    			<%
-    			passwordFieldName = "__PASS__";
-    			%>
-    
-    			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-			
-		        boolean result_<%=cid%> = sforceManagement_<%=cid%>.login(<%=endpoint %>,<%=username %>,decryptedPassword_<%=cid%>,<%=timeout%>,<%=needCompression%>, <%=commitLevel%>, <%=ceaseForError %>, <%=logFile %>);
-		        if(!result_<%=cid%>){
-					throw new RuntimeException("Login failed! Please check the username,password and endpoint");
-				}
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - use exsit connection : <%=connection%>");
+		<%}%>
+		sforceConn_<%=cid%> = (org.talend.salesforce.SforceConnection)globalMap.get("conn_<%=connection%>"); 	
+	<%
+	}else{
+		if(useOAuth){
+			String oauthKey = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_ID__");
+    		String oauthSecret = ElementParameterParser.getValue(node,"__OAUTH_CLIENT_SECRET__");
+    		%>
+    		<%
+        	passwordFieldName = "__OAUTH_CLIENT_SECRET__";
+        	if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+        	%>
+        		String decryptedQauthClientPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+        	<%
+        	} else {
+        	%>
+        		String decryptedQauthClientPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
         	<%
         	}
-        	%>
-        	<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Login successful");
-			<%}%>	
-        <%
-        }
-        %>
-        
-        <%if("upsert".equals(action)){%>
- 			org.apache.axiom.om.OMFactory fac_<%=cid%> = org.apache.axiom.om.OMAbstractFactory.getOMFactory();       
-        <%}%>
+        	String tokenFile = ElementParameterParser.getValue(node,"__OAUTH_TOKEN_FILE__");
+    		
+    		String callbackHost = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_HOST__");
+    		String callbackPort = ElementParameterParser.getValue(node,"__OAUTH_CALLBACK_PORT__");
+			%>
+			try{
+				sforceConn_<%=cid%> = 
+        			new org.talend.salesforce.SforceOAuthConnection.Builder(<%=endpoint%>, <%=oauthKey%>, decryptedQauthClientPwd_<%=cid%>, <%=apiVersion%>, <%=callbackHost%>, <%=callbackPort%>)
+        				<%
+        				if(!"".equals(tokenFile) && !"\"\"".equals(tokenFile)){
+        				%>
+            				.setTokenFilePath(<%=tokenFile%>)
+        				<%
+        				}
+        				%>
+        				.setTimeout(<%=timeout%>).needCompression(<%=needCompression%>)
+                    	<%
+                    	if(clientID != null && !"".equals(clientID) && !"\"\"".equals(clientID)){
+                    	%>
+                    		.setClientID(<%=clientID%>);
+                    	<%
+                    	}
+                    	%>
+                    	.build();
+    		}catch(Exception e){
+    			<%if(isLog4jEnabled){%>
+    				log.warn("<%=cid%> - Login failed, error message: " + e.getMessage());
+    			<%}%>	
+    			throw e;
+    		}
+		<%
+		}else{
+		%>
+		
+			<%
+			passwordFieldName = "__PASS__";
+			%>
+
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+		
+	        try{
+				sforceConn_<%=cid%> = 
+        			new org.talend.salesforce.SforceBasicConnection.Builder(<%=endpoint%>, <%=username%>, decryptedPassword_<%=cid%>)
+        				.setTimeout(<%=timeout%>).needCompression(<%=needCompression%>)
+                    	<%
+                    	if(clientID!=null && !"".equals(clientID) && !"\"\"".equals(clientID)){
+                    	%>
+                    		.setClientID(<%=clientID%>);
+                    	<%
+                    	}
+                    	%>
+                    	.build();
+			}catch(Exception e){
+				<%if(isLog4jEnabled){%>
+					log.warn("<%=cid%> - Login failed, error message: " + e.getMessage());
+				<%}%>	
+				throw e;
+			}
+    	<%
+    	}
+    	%>
+    	<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Login successful");
+		<%}%>	
+    <%
+    }
+    %>
+    org.talend.salesforce.SforceManagement sforceManagement_<%=cid%> = new org.talend.salesforce.SforceManagementImpl(sforceConn_<%=cid%>);
+    <%if("upsert".equals(action)){%>
+		org.apache.axiom.om.OMFactory fac_<%=cid%> = org.apache.axiom.om.OMAbstractFactory.getOMFactory();       
+    <%}%>

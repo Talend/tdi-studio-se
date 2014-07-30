@@ -10,6 +10,7 @@ imports="
 		org.talend.commons.utils.generation.CodeGenerationUtils
 		java.util.List
 		java.util.LinkedList
+		java.util.Map;
 "
 %>
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -51,11 +52,15 @@ imports="
         String dbname = null;
         String dbuser = null;
         boolean useExistingConn = false;
+        boolean queryBanding = false;
+        List<Map<String, String>> queryBandList = null;
         if(previousNode != null) {
 	        dbhost = ElementParameterParser.getValue(previousNode, "__HOST__");
 	        dbname = ElementParameterParser.getValue(previousNode, "__DBNAME__");
 	        dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
 	        useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
+	        queryBanding = "true".equals(ElementParameterParser.getValue(previousNode, "__QUERY_BAND__"));
+	        queryBandList = (List<Map<String,String>>)ElementParameterParser.getObjectValue(previousNode, "__QUERY_BAND_PARAMETERS__");
         }
 
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
@@ -100,8 +105,30 @@ if(useExistingConn) {
 <%
    	log4jCodeGenerateUtil.debugConnectionParams(node);
    	log4jCodeGenerateUtil.connect(node);
-}
+   	if(queryBanding){%>
+		     //add query band begin
+             boolean currentAutoCommitMode<%= cid %> =  conn_<%=cid%>.getAutoCommit();          
+             conn_<%=cid%>.setAutoCommit(true);           
+             try{             
+                 conn_<%=cid%>.createStatement().execute("BEGIN QUERY LOGGING WITH SQL,OBJECTS ON ALL");
+                 conn_<%=cid%>.createStatement().execute(
+              "SET QUERY_BAND='" + 
+<%
+            for(Map<String, String> map : queryBandList) {
 %>
+               <%= map.get("KEY") %> + "=" + <%= map.get("VALUE") %> + ";" +
+<% 
+			}
+%> "' FOR SESSION"
+           );           
+              }catch(Exception e){
+               e.printStackTrace();              
+      }
+      conn_<%= cid %>.setAutoCommit(currentAutoCommitMode<%= cid %>);
+   	<%}
+%>
+	
+<%}%>
 
 java.sql.PreparedStatement pstmt_<%=cid %> =null;
 	
@@ -279,6 +306,15 @@ pstmt_<%=cid %>.close();
 if(!useExistingConn) {
     %>
     if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
+    	<%if(queryBanding){%>
+		    conn_<%=cid%>.setAutoCommit(true);    
+		    try{
+		         conn_<%=cid%>.createStatement().execute("SET QUERY_BAND = NONE FOR SESSION");       
+		         conn_<%=cid%>.createStatement().execute("END QUERY LOGGING ON ALL");        
+		     }catch(Exception e){
+		         e.printStackTrace();
+		     }
+	<%}%>
 		<%log4jCodeGenerateUtil.close(node);%>
     }
     <%

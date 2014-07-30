@@ -1,0 +1,22 @@
+<%@ jet
+imports="
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
+"
+%>
+<%
+    CodeGeneratorArgument codeGenArgument4End = (CodeGeneratorArgument) argument;
+    INode node4End = (INode)codeGenArgument4End.getArgument();
+    Boolean queryBand4End = "true".equals(ElementParameterParser.getValue(node4End, "__QUERY_BAND__"));
+%>
+
+<%if(queryBand4End){%>
+    conn_<%=cid%>.setAutoCommit(true);    
+    try{
+         conn_<%=cid%>.createStatement().execute("SET QUERY_BAND = NONE FOR SESSION");       
+         conn_<%=cid%>.createStatement().execute("END QUERY LOGGING ON ALL");        
+     }catch(Exception e){
+         System.err.println(e.getMessage());
+     }
+<%}%>

@@ -142,18 +142,18 @@ Object[] resultMessageObj_<%=cid%> = null;
 								generateFinished = true;
 %>
 								org.apache.axiom.om.OMElement reference_<%=cid%>_<%=i%>_<%=j%> = fac_<%=cid%>.createOMElement(<%=loookupFieldName%>, null);
-								reference_<%=cid%>_<%=i%>_<%=j%>.addChild(sforceManagement_<%=cid %>.newOMElement("type",<%=moduleNameOfLookupField%>));
+								reference_<%=cid%>_<%=i%>_<%=j%>.addChild(org.talend.salesforce.SforceManagementUtil.newOMElement("type",<%=moduleNameOfLookupField%>));
 <%
 								if (javaType == JavaTypesManager.DATE && pattern != null && pattern.trim().length() != 0) {
 %>
 									if(<%=conn.getName() %>.<%=column.getLabel() %> != null){
-										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(sforceManagement_<%=cid %>.newOMElement(<%=externalIdFromLookupField %>,FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= pattern %>) ));
+										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(org.talend.salesforce.SforceManagementUtil.newOMElement(<%=externalIdFromLookupField %>,FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= pattern %>) ));
 									}
 <%
 								} else if (javaType == JavaTypesManager.BYTE_ARRAY) {
 %>
 									if(<%=conn.getName() %>.<%=column.getLabel() %> != null){
-										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(sforceManagement_<%=cid %>.newOMElement(<%=externalIdFromLookupField %>,java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString() ));
+										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(org.talend.salesforce.SforceManagementUtil.newOMElement(<%=externalIdFromLookupField %>,java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString() ));
 									}
 <%
 								} else {//TD1024
@@ -163,7 +163,7 @@ Object[] resultMessageObj_<%=cid%> = null;
 					    			<%}else{%>
 					    			if(!"".equals(String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>))) { 
 					    			<%}%>
-										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(sforceManagement_<%=cid %>.newOMElement(<%=externalIdFromLookupField %>,String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>) ));
+										reference_<%=cid%>_<%=i%>_<%=j%>.addChild(org.talend.salesforce.SforceManagementUtil.newOMElement(<%=externalIdFromLookupField %>,String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>) ));
 									}
 <%
 								}////TD1024
@@ -181,13 +181,13 @@ Object[] resultMessageObj_<%=cid%> = null;
     				if (javaType == JavaTypesManager.DATE && pattern != null && pattern.trim().length() != 0) {//Date
 %>
 						if(<%=conn.getName() %>.<%=column.getLabel() %> != null){
-							list_<%=cid %>.add(sforceManagement_<%=cid %>.newOMElement("<%=column.getLabel() %>",FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= pattern %>) ));
+							list_<%=cid %>.add(org.talend.salesforce.SforceManagementUtil.newOMElement("<%=column.getLabel() %>",FormatterUtils.format_Date(<%=conn.getName() %>.<%=column.getLabel() %>, <%= pattern %>) ));
 						}
 <%				
 					} else if (javaType == JavaTypesManager.BYTE_ARRAY) {//byte[]
 %>
 						if(<%=conn.getName() %>.<%=column.getLabel() %> != null){
-							list_<%=cid %>.add(sforceManagement_<%=cid %>.newOMElement("<%=column.getLabel() %>",java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString() ));
+							list_<%=cid %>.add(org.talend.salesforce.SforceManagementUtil.newOMElement("<%=column.getLabel() %>",java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(<%=conn.getName() %>.<%=column.getLabel() %>)).toString() ));
 						}
 <%				
 					} else {//others
@@ -198,7 +198,7 @@ Object[] resultMessageObj_<%=cid%> = null;
 		    			<%}else{%>
 		    			if(!"".equals(String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>))) { 
 		    			<%}%>
-							list_<%=cid %>.add(sforceManagement_<%=cid %>.newOMElement("<%=column.getLabel() %>",String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>) ));
+							list_<%=cid %>.add(org.talend.salesforce.SforceManagementUtil.newOMElement("<%=column.getLabel() %>",String.valueOf(<%=conn.getName() %>.<%=column.getLabel() %>) ));
 						}
 <%				
 					}

@@ -1,15 +1,15 @@
-<%@ jet 
+<%@ jet
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
+    	org.talend.core.model.process.INode
+    	org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
 		org.talend.core.model.metadata.IMetadataColumn
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		org.talend.core.model.process.IConnection
 		org.talend.core.model.process.IConnectionCategory
 		org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils
 		org.talend.core.model.metadata.types.JavaTypesManager
-		org.talend.core.model.metadata.types.JavaType		
+		org.talend.core.model.metadata.types.JavaType
 		java.util.List
 		java.util.Map
 		"
@@ -18,7 +18,7 @@ imports="
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-	        
+
 	String type = ElementParameterParser.getValue(node, "__TYPE__");
 	String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
@@ -30,10 +30,10 @@ imports="
 	String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
 	String dbms=ElementParameterParser.getValue(node, "__MAPPING__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-	
+
     boolean whetherTrimAllCol = ("true").equals(ElementParameterParser.getValue(node, "__TRIM_ALL_COLUMN__"));
     List<Map<String, String>> trimColumnList = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__TRIM_COLUMN__");
-    
+
     dbInputBeginUtil.beforeComponentProcess(node);
     log4jCodeGenerateUtil.infoComponentStart(node);
     int dynamic_index=-1;
@@ -74,14 +74,18 @@ imports="
 				<%log4jCodeGenerateUtil.useExistConnection(node);%>
 <%
 				dbInputBeginUtil.afterUseExistConnection(node);
-		
+
 		    } else {
 				dbInputBeginUtil.createConnection(node);
+				if ("teradata_id".equalsIgnoreCase(dbms)) {
+%>
+<%@ include file="../../../tTeradataInput/TeradataQueryBandBegin.javajet"%>
+<%
+				}
 		    }
 %>
-
 		    <%dbInputBeginUtil.createStatement(node);%>
-		    
+
 		    String dbquery_<%=cid%> = <%=dbInputBeginUtil.getQueryString(node)%>;
 			<%if(isLog4jEnabled){%>
                 log.info("<%=cid%> - Executing the query: '"+dbquery_<%=cid%>+"'.");
@@ -110,7 +114,7 @@ imports="
 		    dcg_<%=cid%>.setDbmsId("<%=dbms %>");
 		    List<String> listSchema_<%=cid%>=new java.util.ArrayList<String>();
 		    <%
-		    
+
 		    for(int i=0; i< columnList.size(); i++) {
 		        if(columnList.get(i).getTalendType().equals("id_Dynamic")){
 		            dynamic_index = i+1;
@@ -126,9 +130,9 @@ imports="
 		    	}
 			}
 		    %>
-			
+
 			int fixedColumnCount_<%=cid%> = <%=dynamic_index-1%>;
-			
+
             for (int i = <%=dynamic_index%>; i <= rsmd_<%=cid%>.getColumnCount()-<%=columnList.size()-dynamic_index%>; i++) {
                 if (!(listSchema_<%=cid%>.contains(rsmd_<%=cid%>.getColumnName(i).toUpperCase()) )) {
                 	routines.system.DynamicMetadata dcm_<%=cid%>=new routines.system.DynamicMetadata();
@@ -202,14 +206,14 @@ imports="
 		                    trimMethod = ".trim()";
 		                }
 		                String columnType = column.getType();
-		                 
+
 		                String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
-		                String defVal = JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate); 	
+		                String defVal = JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate);
 		                if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 							if(isDynamic){
 								if(!("Dynamic").equals(typeToGenerate) && dynamic_index < currentColNo) {
 								%>
-									column_index_<%=cid%> = <%=currentColNo-1%> + dcg_<%=cid%>.getColumnCount(); 
+									column_index_<%=cid%> = <%=currentColNo-1%> + dcg_<%=cid%>.getColumnCount();
 								<%}else{%>
 									column_index_<%=cid%> = <%=currentColNo%>;
 								<%}%>
@@ -224,7 +228,7 @@ imports="
 
 								if(("Char").equals(typeToGenerate) || ("Character").equals(typeToGenerate)) {
 %>
-									<%dbInputBeginUtil.generateStringCharAndCharacterSet(firstConnName, column,currentColNo, trimMethod, typeToGenerate, whetherTrimAllCol, whetherTrimCol);%>			
+									<%dbInputBeginUtil.generateStringCharAndCharacterSet(firstConnName, column,currentColNo, trimMethod, typeToGenerate, whetherTrimAllCol, whetherTrimCol);%>
 <%
 								} else if(("Timestamp").equals(typeToGenerate)) {
 									if("vertica_id".equalsIgnoreCase(dbms) && "DATE".equalsIgnoreCase(column.getType())){
@@ -309,10 +313,10 @@ imports="
 							<%if(isLog4jEnabled){%>
 								log4jSb_<%=cid%>.append(<%=firstConnName%>.<%=column.getLabel()%>);
 								<%if(columnList.size() > currentColNo){%>
-									log4jSb_<%=cid%>.append("|");								
+									log4jSb_<%=cid%>.append("|");
 								<%}
 							}%>
-<%  
+<%
 		                    currentColNo++;
 		                }
 		            }
@@ -330,7 +334,7 @@ imports="
 		                        for(IMetadataColumn column:columnList){
 		                            %>
 		                            <%=conn2.getName()%>.<%=column.getLabel()%> = <%=firstConnName%>.<%=column.getLabel()%>;
-		                            <% 
+		                            <%
 		                        }
 		                    }
 		                }

@@ -47,29 +47,25 @@ String firstConnName = "";
 List<IMetadataTable> metadatas = node.getMetadataList();
 %>
   class JSONUtil_<%=cid%>{
-      public int getData(String query,javax.script.Invocable invocableEngine,java.util.List<org.json.simple.JSONArray> jsonResultList,int recordMaxSize){
+      public int getData(String query,java.util.List<net.minidev.json.JSONArray> jsonResultList,int recordMaxSize,String jsonStr){
           try{
-              //only 2 types: String/Boolean
-              String resultObj = invocableEngine.invokeFunction("jsonPath",query).toString();
-              if(!"false".equals(resultObj)){
-	              org.json.simple.JSONArray resultArray= (org.json.simple.JSONArray)org.json.simple.JSONValue.parse(resultObj);
-	              jsonResultList.add(resultArray);
-	              if(recordMaxSize != -1 && recordMaxSize != resultArray.size()){
-		             //just give an error, don't stop
-					<%if(isLog4jEnabled){%>
-						log.warn("<%=cid%> - The Json resource datas maybe have some problems, please make sure the data structure with the same fields.");
-					<%}%>
-		              System.err.println("The Json resource datas maybe have some problems, please make sure the data structure with the same fields.");
-	               }
-	               recordMaxSize = Math.max(recordMaxSize, resultArray.size());
-               }else{
-					<%if(isLog4jEnabled){%>
-						log.warn("<%=cid%> - Can't find any data with JSONPath " + query);
-					<%}%>
-	               System.err.println("Can't find any data with JSONPath " + query);
-	               //add null to take a place in List(buffer)
-	               jsonResultList.add(null); 
+              net.minidev.json.JSONArray jsonArr = new net.minidev.json.JSONArray();
+              Object result = com.jayway.jsonpath.JsonPath.read(jsonStr,query);
+              if(result instanceof net.minidev.json.JSONArray){
+					jsonArr = (net.minidev.json.JSONArray)result;
+	          }else{
+	          	   jsonArr.add(result);
+	          }               
+              jsonResultList.add(jsonArr);
+              
+              if(recordMaxSize != -1 && recordMaxSize != jsonArr.size()){
+	             //just give an error, don't stop
+				<%if(isLog4jEnabled){%>
+					log.warn("<%=cid%> - The Json resource datas maybe have some problems, please make sure the data structure with the same fields.");
+				<%}%>
+	              System.err.println("The Json resource datas maybe have some problems, please make sure the data structure with the same fields.");
                }
+               recordMaxSize = Math.max(recordMaxSize, jsonArr.size());
           }catch(java.lang.Exception e){
 				<%if(isLog4jEnabled){%>
 					log.error("<%=cid%> - " + e.getMessage());
@@ -91,7 +87,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				for (int i=0;i<mapping.size();i++) {
     				if(i % 100 == 0){
 %>
-	                   void setRowValue_<%=(i/100) %>(<%=firstConnName %>Struct <%=firstConnName %>, java.util.List<org.json.simple.JSONArray> JSONResultList_<%=cid%>, int nbResultArray_<%=cid%>) throws java.io.UnsupportedEncodingException{
+	                   void setRowValue_<%=(i/100) %>(<%=firstConnName %>Struct <%=firstConnName %>, java.util.List<net.minidev.json.JSONArray> JSONResultList_<%=cid%>, int nbResultArray_<%=cid%>) throws java.io.UnsupportedEncodingException{
 <%
     				}
 %>
@@ -176,84 +172,63 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 int nb_line_<%=cid%> = 0;
 java.lang.Object jsonText_<%=cid%> = null;
 JSONUtil_<%=cid%> jsonUtil_<%=cid%>=new JSONUtil_<%=cid%>();
-java.util.List<org.json.simple.JSONArray> JSONResultList_<%=cid%> = new java.util.ArrayList<org.json.simple.JSONArray>();
+java.util.List<net.minidev.json.JSONArray> JSONResultList_<%=cid%> = new java.util.ArrayList<net.minidev.json.JSONArray>();
 int recordMaxSize_<%=cid%> = -1;
-
-//init js json engine
-javax.script.ScriptEngineManager scriptEngineMgr_<%=cid%> = new javax.script.ScriptEngineManager();
-javax.script.ScriptEngine jsEngine_<%=cid%> = scriptEngineMgr_<%=cid%>.getEngineByName("JavaScript");
-if (jsEngine_<%=cid%> == null) {
-	<%if(isLog4jEnabled){%>
-		log.warn("<%=cid%> - No script engine found for JavaScript");
-	<%}%>
-    System.err.println("No script engine found for JavaScript");
-} else {
-    java.net.URL jsonjsUrl_<%=cid%> = com.jsonpath.test.ReadJar.class.getResource("json.js");
-    if(jsonjsUrl_<%=cid%>!=null) {
-    	jsEngine_<%=cid%>.eval(new java.io.BufferedReader(new java.io.InputStreamReader(jsonjsUrl_<%=cid%>.openStream())));
-    }
-    
-    java.net.URL jsonpathjsUrl_<%=cid%> = com.jsonpath.test.ReadJar.class.getResource("jsonpath.js");
-    if(jsonpathjsUrl_<%=cid%>!=null) {
-		jsEngine_<%=cid%>.eval(new java.io.BufferedReader(new java.io.InputStreamReader(jsonpathjsUrl_<%=cid%>.openStream())));
-	}
-
-<%if(!isUseUrl){//read from a file%>
-	java.io.BufferedReader fr_<%=cid%> = null;
-<%}else{ //read from internet%>
-	java.io.InputStreamReader fr_<%=cid %> = null;
-<%}%>
-	try{
-	<%if(!isUseUrl){//read from a file%>
-		fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(<%=filename %>),<%=encoding %>));
-	<%}else{ //read from internet%>
-		java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
-		java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
-		fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
-	<%}%>
-		jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
-		if(jsonText_<%=cid%> == null) {
-			<%if(isLog4jEnabled){%>
-				log.fatal("<%=cid%> - Fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
+	
+			<%if(!isUseUrl){//read from a file%>
+				java.io.BufferedReader fr_<%=cid%> = null;
+			<%}else{ //read from internet%>
+				java.io.InputStreamReader fr_<%=cid %> = null;
 			<%}%>
-			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
-		}
-	} catch(java.lang.Exception e_<%=cid%>) {
-	<%if (dieOnError) {%>
-		<%if(isLog4jEnabled){%>
-			log.fatal("<%=cid%> - " + e_<%=cid%>.getMessage());
-		<%}%>
-		throw e_<%=cid%>;
-	<%} else {%>
-		<%if(isLog4jEnabled){%>
-			log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-		<%}%>
- 		System.err.println(e_<%=cid%>.getMessage());
-	<%}%>
-	} finally {
-		if(fr_<%=cid%> != null ) {
-			fr_<%=cid%>.close();
-		}
-    }
 
-	if(jsonText_<%=cid%>!=null) {
-		jsEngine_<%=cid%>.eval("var obj="+jsonText_<%=cid%>.toString());
+			try{
+			<%if(!isUseUrl){//read from a file%>
+				fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(<%=filename %>),<%=encoding %>));
+			<%}else{ //read from internet%>
+				java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
+				java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();				
+				fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
+			<%}%>		
+				jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
+				if(jsonText_<%=cid%> == null) {
+					<%if(isLog4jEnabled){%>
+						log.fatal("<%=cid%> - Fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
+					<%}%>
+					throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
+				}
+			} catch(java.lang.Exception e_<%=cid%>) {
+			<%if (dieOnError) {%>
+				<%if(isLog4jEnabled){%>
+					log.fatal("<%=cid%> - " + e_<%=cid%>.getMessage());
+				<%}%>
+				throw e_<%=cid%>;
+			<%} else {%>
+				<%if(isLog4jEnabled){%>
+					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+				<%}%>
+		 		System.err.println(e_<%=cid%>.getMessage());
+			<%}%>
+			} finally {
+				if(fr_<%=cid%> != null ) {
+					fr_<%=cid%>.close();
+				}
+		    }
 
-		javax.script.Invocable invocableEngine_<%=cid%> = (javax.script.Invocable)jsEngine_<%=cid%>;
+			if(jsonText_<%=cid%>!=null) {
+			   String jsonSrc_<%= cid %> = 	jsonText_<%=cid%>.toString();
+		<%
+			for(Map<String,String> path:mapping){
+				String column = path.get("SCHEMA_COLUMN");
+				String query = path.get("QUERY");
+		%>
 
-<%
-	for(Map<String,String> path:mapping){
-		String column = path.get("SCHEMA_COLUMN");
-		String query = path.get("QUERY");
-%>
+		recordMaxSize_<%=cid%>=jsonUtil_<%=cid%>.getData(<%=query%>,JSONResultList_<%=cid%>,recordMaxSize_<%=cid%>,jsonSrc_<%= cid %>);
 
-recordMaxSize_<%=cid%>=jsonUtil_<%=cid%>.getData(<%=query%>,invocableEngine_<%=cid%>,JSONResultList_<%=cid%>,recordMaxSize_<%=cid%>);
+		<%
+			}
+		%>
+			}
 
-<%
-	}
-%>
-	}
-}
     <%if(isLog4jEnabled){%>
     	log.info("<%=cid%> - Retrieving records from data.");
     <%}%>
@@ -554,29 +529,8 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
 %>        
         
         org.dom4j.io.SAXReader reader_<%=cid%> = new org.dom4j.io.SAXReader();
-        Object filename_<%=cid %> = null;
-        try {
-            filename_<%=cid %> = <%=filename %>;
-        } catch(java.lang.Exception e_<%=cid%>) {
-<%
-			if (dieOnError) {
-%>
-				<%if(isLog4jEnabled){%>
-					log.fatal("<%=cid%> - " + e_<%=cid%>.getMessage());
-				<%}%>
-            	throw(e_<%=cid%>);
-<%			
-			}else{
-%>
-				<%if(isLog4jEnabled){%>
-					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
-				<%}%>
-	            System.err.println(e_<%=cid%>.getMessage());
-<%
-			}
-%>
-        }
-                
+        Object filename_<%=cid %> = <%=filename %>; 
+                       
         boolean isValidFile_<%=cid %> = true;
         org.dom4j.Document doc_<%=cid%> = null;
         java.io.BufferedReader br_<%=cid %> = null;

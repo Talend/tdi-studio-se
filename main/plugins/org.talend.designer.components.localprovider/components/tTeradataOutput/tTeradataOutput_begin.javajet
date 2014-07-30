@@ -66,3 +66,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	dbOutputBeginUtil = new DBOutputBeginUtil();
 %>
 <%@ include file="../templates/DB/Output/AbstractDBOutputBegin.javajet"%>
+
+<%if(!("true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__")))){%>
+	<%@ include file="../tTeradataInput/TeradataQueryBandBegin.javajet"%>
+<%}%>
