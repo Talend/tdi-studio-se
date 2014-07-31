@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Publish Upload
+Bundle-SymbolicName: org.talend.designer.publish.core;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Export-Package: org.talend.designer.publish.core.actions,
+ org.talend.designer.publish.core.filters,
+ org.talend.designer.publish.core.filters.impl,
+ org.talend.designer.publish.core.models,
+ org.talend.designer.publish.core.utils
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.jface,
+ org.talend.repository,
+ org.talend.core.runtime

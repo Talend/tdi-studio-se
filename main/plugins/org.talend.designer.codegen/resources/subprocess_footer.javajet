@@ -245,7 +245,6 @@
 								log.error("<%=cid%>[" + Thread.currentThread().getName() + "] - " + e.getMessage());
 							<%}%>
 							globalMap.put("THREADS_HAVE_ERROR", e);
-							return;
 						}
 					}
 				<%
@@ -269,7 +268,6 @@
 								log.error("<%=cid%>[" + Thread.currentThread().getName() + "] - " + error.getMessage());
 							<%}%>
 							globalMap.put("THREADS_HAVE_ERROR",error);
-							return;
 						}
 					}
 				<%

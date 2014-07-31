@@ -457,15 +457,18 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         String name = processItem.getProperty().getLabel();
         String className = getPackageName(processItem) + PACKAGE_SEPARATOR + name;
 
+        boolean iPaaS = !EmfModelUtils.getComponentsByName(processItem, "tiPaaSInput", "tiPaaSOutput").isEmpty(); //$NON-NLS-1$ //$NON-NLS-2$
         // job name and class name
         String jobName = name;
         if (!EmfModelUtils.getComponentsByName(processItem, "tRouteInput").isEmpty()) { //$NON-NLS-1$
             jobName = className;
-        } else if (!EmfModelUtils.getComponentsByName(processItem, "tiPaaSInput", "tiPaaSOutput").isEmpty()) { //$NON-NLS-1$ //$NON-NLS-2$
+        } else if (iPaaS) {
             jobName = "${artifactID}"; //$NON-NLS-1$
         }
         jobInfo.put("name", jobName);
-        jobInfo.put("version", processItem.getProperty().getVersion()); //$NON-NLS-1$
+        if (!iPaaS) {
+            jobInfo.put("version", processItem.getProperty().getVersion()); //$NON-NLS-1$
+        }
         jobInfo.put("className", className); //$NON-NLS-1$
 
         // additional Talend job interfaces (ESB related)
