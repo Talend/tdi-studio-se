@@ -36,6 +36,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.RepositoryWorkUnit;
@@ -46,9 +47,9 @@ import org.talend.repository.model.RepositoryNode;
 
 /**
  * Wizard for the creation of a new project. <br/>
- * 
+ *
  * $Id: NewProcessWizard.java 46332 2010-08-05 06:48:56Z cli $
- * 
+ *
  */
 public class SaveAsProcessWizard extends Wizard {
 
@@ -91,7 +92,7 @@ public class SaveAsProcessWizard extends Wizard {
 
         this.property = PropertiesFactory.eINSTANCE.createProperty();
 
-        assginVlaues(this.property, oldProperty);
+        assginValues(this.property, oldProperty);
 
         processItem = PropertiesFactory.eINSTANCE.createProcessItem();
 
@@ -127,23 +128,14 @@ public class SaveAsProcessWizard extends Wizard {
             isUpdate = isUpdate();
 
             if (isUpdate) {
-                // oldProcessItem.setProcess(processType);
-                //
-                // assginVlaues(oldProperty, property);
-                //
-                // repositoryFactory.save(oldProcessItem);
-                //
-                // // assign value
-                // processItem = oldProcessItem;
-
                 update(processType);
             } else {
                 processItem.setProcess(processType);
-
                 property.setId(repositoryFactory.getNextId());
                 // don't need to add depended routines.
 
                 repositoryFactory.create(processItem, mainPage.getDestinationPath());
+                RelationshipItemBuilder.getInstance().addOrUpdateItem(processItem);
             }
             ok = true;
 
@@ -168,7 +160,8 @@ public class SaveAsProcessWizard extends Wizard {
 
                             oldProcessItem.setProcess(processType);
 
-                            assginVlaues(oldProperty, property);
+                            assginValues(oldProperty, property);
+                            RelationshipItemBuilder.getInstance().addOrUpdateItem(oldProcessItem);
 
                             repositoryFactory.save(oldProcessItem);
 
@@ -215,7 +208,7 @@ public class SaveAsProcessWizard extends Wizard {
     }
 
     // left = right
-    private void assginVlaues(Property leftProperty, Property rightProperty) {
+    private void assginValues(Property leftProperty, Property rightProperty) {
         // 6 fields, don't contains the "locker" and "path". and author , they are the same.
         leftProperty.setLabel(rightProperty.getLabel());
         leftProperty.setPurpose(rightProperty.getPurpose());
