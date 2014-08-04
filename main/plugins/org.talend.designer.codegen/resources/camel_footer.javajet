@@ -40,7 +40,6 @@
 		* 
 		*/
 		public Map<String, CamelContext> getCamelContextMap() {
-			Map<String,CamelContext> answer = new HashMap<String, CamelContext>();
 			DefaultCamelContext camelContext = null;
 			if(bundleContext != null){
 				org.apache.camel.spring.SpringCamelContext.setNoStart(true);
@@ -120,12 +119,14 @@
                 org.apache.cxf.jaxrs.AbstractJAXRSFactoryBean factory_<%=cid%>;
 <%
                 boolean isProvider = node.getIncomingConnections().isEmpty();
-				if (isProvider) {
+                if (isProvider) {
+                    String serviceClass = ("MANUAL".equals(ElementParameterParser.getValue(node, "__SERVICE_TYPE__")))
+                        ? ("Service_" + cid) : ElementParameterParser.getValue(node, "__RESOURCE_CLASS__");
 %>
                     org.apache.cxf.jaxrs.JAXRSServerFactoryBean sf_<%=cid%> = new org.apache.cxf.jaxrs.JAXRSServerFactoryBean();
                     factory_<%=cid%> = sf_<%=cid%>;
-					sf_<%=cid%>.setResourceClasses(Service_<%=cid%>.class);
-					sf_<%=cid%>.setResourceProvider(Service_<%=cid%>.class, new org.apache.camel.component.cxf.jaxrs.CamelResourceProvider(Service_<%=cid%>.class));
+					sf_<%=cid%>.setResourceClasses(<%=serviceClass%>.class);
+					sf_<%=cid%>.setResourceProvider(<%=serviceClass%>.class, new org.apache.camel.component.cxf.jaxrs.CamelResourceProvider(<%=serviceClass%>.class));
 					sf_<%=cid%>.setProvider(new CxfPayloadProvider());
 					// avoid JAXBException in runtime
 					sf_<%=cid%>.setProvider(new org.apache.cxf.jaxrs.provider.SourceProvider());
@@ -558,6 +559,5 @@
 			//http://jira.talendforge.org/browse/TESB-4087: Change CamelContext name
 %>
 			//using Route name as CamelContext ID
-			answer.put(camelContext.getName(), camelContext);
-			return answer;
+            return java.util.Collections.singletonMap(camelContext.getName(), (CamelContext) camelContext);
 		}

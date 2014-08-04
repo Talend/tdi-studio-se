@@ -194,6 +194,7 @@ public class <%=process.getName()%> extends SpringRouteBuilder implements Talend
             if (node.getIncomingConnections().isEmpty()) {
                 hasCXFRSProvider = true;
 
+                if ("MANUAL".equals(ElementParameterParser.getValue(node, "__SERVICE_TYPE__"))) {
 final Map<String, String> contentTypes = new java.util.HashMap<String, String>() {{
         put("XML", "{ \"application/xml\", \"text/xml\" }");
         put("JSON", "{ \"application/json\" }");
@@ -681,6 +682,7 @@ final Map<String, String> contentTypes = new java.util.HashMap<String, String>()
     }
 
 <%
+                } // "MANUAL"
             } // service
 
             if ("true".equals(ElementParameterParser.getValue(node, "__ENABLE_CORRELATION__"))) {
