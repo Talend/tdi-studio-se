@@ -86,7 +86,7 @@ import org.talend.repository.model.ProjectNodeHelper;
 
 /**
  * ggu class global comment. Detailled comment
- * 
+ *
  */
 public class UpdateNodeParameterCommand extends Command {
 
@@ -462,10 +462,23 @@ public class UpdateNodeParameterCommand extends Command {
                 }
             }
             if (!update) { // bult-in
-                node.setPropertyValue(EParameterName.PROPERTY_TYPE.getName(), EmfComponent.BUILTIN);
+                String propertyName = EParameterName.PROPERTY_TYPE.getName();
+                String parentParamName = "PROPERTY"; //$NON-NLS-1$
+                if (this.result.getParameter() instanceof IElementParameter) {
+                    IElementParameter parentParam = ((IElementParameter) this.result.getParameter()).getParentParameter();
+                    if (parentParam != null) {
+                        parentParamName = parentParam.getName();
+                        propertyName = parentParam.getName() + ":"
+                                + parentParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName()).getName();
+                    }
+                }
+                node.setPropertyValue(propertyName, EmfComponent.BUILTIN);
                 for (IElementParameter param : node.getElementParameters()) {
-                    String repositoryValue = param.getRepositoryValue();
-                    if (param.isShow(node.getElementParameters()) && (repositoryValue != null)) {
+                    if (param.getRepositoryValue() == null || param.getRepositoryProperty() != null
+                            && !param.getRepositoryProperty().equals(parentParamName)) {
+                        continue;
+                    }
+                    if (param.isShow(node.getElementParameters())) {
                         if (param.getName().equals(EParameterName.PROPERTY_TYPE.getName())
                                 || param.getFieldType() == EParameterFieldType.MEMO_SQL) {
                             continue;

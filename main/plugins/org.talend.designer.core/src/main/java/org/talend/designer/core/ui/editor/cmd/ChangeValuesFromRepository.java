@@ -40,7 +40,6 @@ import org.talend.core.model.metadata.builder.connection.WSDLSchemaConnection;
 import org.talend.core.model.metadata.builder.connection.XmlFileConnection;
 import org.talend.core.model.metadata.builder.connection.impl.XmlFileConnectionImpl;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
-import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnectionCategory;
@@ -72,9 +71,9 @@ import org.talend.repository.ui.utils.ConnectionContextHelper;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
@@ -123,19 +122,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
         this.propertyName = propertyName;
         oldValues = new HashMap<String, Object>();
         setLabel(Messages.getString("PropertyChangeCommand.Label")); //$NON-NLS-1$
-        // for job settings extra (feature 2710)
-        // if (JobSettingsConstants.isExtraParameter(propertyName)) {
-        // propertyTypeName = JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTY_TYPE.getName());
-        // repositoryPropertyTypeName =
-        // JobSettingsConstants.getExtraParameterName(EParameterName.REPOSITORY_PROPERTY_TYPE
-        // .getName());
-        // updataComponentParamName =
-        // JobSettingsConstants.getExtraParameterName(EParameterName.UPDATE_COMPONENTS.getName());
-        // } else {
         propertyTypeName = EParameterName.PROPERTY_TYPE.getName();
         EParameterName.REPOSITORY_PROPERTY_TYPE.getName();
         updataComponentParamName = EParameterName.UPDATE_COMPONENTS.getName();
-        // }
     }
 
     public ChangeValuesFromRepository(IElement elem, Connection connection, String propertyName, String value, int index,
@@ -191,17 +180,6 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
         // Force redraw of Commponents propoerties
         elem.setPropertyValue(updataComponentParamName, new Boolean(true));
 
-        // hywang add for excel2007
-        // Object obj = RepositoryToComponentProperty.getValue(connection, EParameterName.FILE_PATH.getName());
-        // String s = TalendTextUtils.removeQuotes(obj.toString());
-        // String versionCheckFor2007 = "false";
-        // if (s.endsWith(".xlsx")) {
-        // versionCheckFor2007 = "true";
-        // }
-        // if (elem.getElementParameter("VERSION_2007") != null) {
-        // elem.getElementParameter("VERSION_2007").setValue(versionCheckFor2007);
-        // }
-
         boolean allowAutoSwitch = true;
 
         IElementParameter elemParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
@@ -245,8 +223,19 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             }
         }
 
+        String propertyParamName = null;
+        if (elem.getElementParameter(propertyName).getParentParameter() != null) {
+            IElementParameter param = elem.getElementParameter(propertyName).getParentParameter();
+            if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
+                propertyParamName = param.getName();
+            }
+        }
+
         if (propertyName.split(":")[1].equals(propertyTypeName) && (EmfComponent.BUILTIN.equals(value))) { //$NON-NLS-1$
             for (IElementParameter param : elem.getElementParameters()) {
+                if (param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
+                    continue;
+                }
                 boolean paramFlag = JobSettingsConstants.isExtraParameter(param.getName());
                 boolean extraFlag = JobSettingsConstants.isExtraParameter(propertyName.split(":")[0]); //$NON-NLS-1$
                 if (paramFlag == extraFlag) {
@@ -258,7 +247,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             Map<String, IElementParameter> childParam = querystoreParam.getChildParameters();
                             if (childParam != null) {
                                 IElementParameter queryTypeParam = childParam.get(EParameterName.QUERYSTORE_TYPE.getName());
-                                if (queryTypeParam != null && EmfComponent.REPOSITORY.equals(queryTypeParam.getValue())) {// is
+                                if (queryTypeParam != null && EmfComponent.REPOSITORY.equals(queryTypeParam.getValue())) {
                                     continue;
                                 }
                             }
@@ -273,9 +262,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
         } else {
             oldValues.clear();
             IElementParameter propertyParam = elem.getElementParameter(propertyName);
-            EComponentCategory currentCategory = propertyParam.getCategory();
             for (IElementParameter param : elem.getElementParameters()) {
                 String repositoryValue = param.getRepositoryValue();
+                if (repositoryValue == null) {
+                    continue;
+                }
                 String componentName = elem instanceof INode ? (((INode) elem).getComponent().getName()) : null;
                 boolean b = elem instanceof INode
                         && (((INode) elem).getComponent().getName().equals("tHL7Input") //$NON-NLS-1$
@@ -286,13 +277,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 .getComponent().getName().equals("tWriteJSONField")); //$NON-NLS-1$
 
                 if (("TYPE".equals(repositoryValue) || (param.isShow(elem.getElementParameters())) || b) //$NON-NLS-1$
-                        && (repositoryValue != null) && (!param.getName().equals(propertyTypeName))) {
-                    IElementParameter relatedPropertyParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
-                            param.getCategory());
-                    if (relatedPropertyParam == null) {
-                        continue;
-                    }
-                    if (!relatedPropertyParam.getCategory().equals(currentCategory) && !repositoryValue.equals("ENCODING")) { //$NON-NLS-1$
+                        && (!param.getName().equals(propertyTypeName))) {
+                    if (param.getRepositoryProperty() != null && !param.getRepositoryProperty().equals(propertyParamName)) {
                         continue;
                     }
                     Object objectValue = null;
@@ -301,7 +287,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
                         objectValue = RepositoryToComponentProperty.getXmlAndXSDFileValue((XmlFileConnection) connection,
                                 repositoryValue);
-                    } else if (connection instanceof SalesforceSchemaConnection && "MODULENAME".equals(repositoryValue)) { //$NON-NLS-1$ 
+                    } else if (connection instanceof SalesforceSchemaConnection && "MODULENAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
                             objectValue = moduleUnit.getModuleName();
                         } else {
@@ -310,7 +296,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     }// for bug TDI-8662 . should be careful that connection.getModuleName() will always get the latest
                      // name of the
                      // module which was the last one be retrived
-                    else if (connection instanceof SalesforceSchemaConnection && "CUSTOM_MODULE_NAME".equals(repositoryValue)) { //$NON-NLS-1$ 
+                    else if (connection instanceof SalesforceSchemaConnection && "CUSTOM_MODULE_NAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
                             objectValue = moduleUnit.getModuleName();
                         } else {
@@ -920,7 +906,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * qzhang Comment method "getTake".
-     * 
+     *
      * @return
      */
     private Boolean take = null;
@@ -998,7 +984,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Sets a sets of maps.
-     * 
+     *
      * @param tablesmap
      * @param queriesmap
      * @param repositoryTableMap
@@ -1008,11 +994,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "isGuessQuery".
-     * 
+     *
      * for guess query
-     * 
+     *
      * @return
      */
     public boolean isGuessQuery() {
@@ -1025,7 +1011,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Getter for sapFunctionName.
-     * 
+     *
      * @return the sapFunctionName
      */
     public String getSapFunctionLabel() {
@@ -1049,7 +1035,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     /**
      * Sets the sapFunctionName.
-     * 
+     *
      * @param sapFunctionName the sapFunctionName to set
      */
     public void setSapFunctionLabel(String sapFunctionName) {

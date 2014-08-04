@@ -63,7 +63,7 @@ public class PostgresGenerationManagerTest {
         outputTable.setName("grade");
         List<ExternalDbMapEntry> conditions = new ArrayList<ExternalDbMapEntry>();
         conditions.add(new ExternalDbMapEntry(schema + "." + main_table + ".id =3"));
-        outputTable.setCustomConditionsEntries(conditions);
+        outputTable.setCustomWhereConditionsEntries(conditions);
         String[] names = new String[] { "id", "name", "classNum", "score" };
         String[] expressions = new String[] { schema + "." + main_table + ".id", schema + "." + main_table + ".name",
                 schema + "." + main_table + ".classNum", schema + "." + lookup_table + ".score" };

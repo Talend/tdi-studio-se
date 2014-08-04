@@ -1,0 +1,34 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		
+		String accessToken = ElementParameterParser.getValue(node, "__ACCESS_TOKEN__");
+		
+		String useProxy = ElementParameterParser.getValue(node, "__USE_PROXY__");
+		String proxyHost = ElementParameterParser.getValue(node, "__PROXY_HOST__");
+		String proxyPort = ElementParameterParser.getValue(node, "__PROXY_PORT__");
+		
+		String clientIdentifier = "\""+cid+"\"";
+		
+		String localeName = "\""+java.util.Locale.getDefault().toString()+"\"";
+		
+%>
+
+<%if("true".equals(useProxy)){%>
+	com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>,
+				new com.dropbox.core.http.StandardHttpRequestor(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>))));
+<%}else{%>
+	com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>);
+<%}%>
+	com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
+	
+	globalMap.put("conn_<%=cid%>",  <%=cid%>_client);

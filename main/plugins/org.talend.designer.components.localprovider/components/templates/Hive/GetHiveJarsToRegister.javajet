@@ -1,0 +1,29 @@
+<%@ jet 
+%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/GetJarsToRegister.javajet"%>
+				
+	class GetHiveJarsToRegister_<%=cid%> extends GetJarsToRegister_<%=cid%> {
+		
+		private String uploadJarToHDFS(String jar) throws Exception {
+			org.apache.hadoop.fs.FileSystem fs = null;
+			org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
+			conf.set("fs.default.name", <%=fsDefaultName%>);
+			String username = <%=dbuser%>;
+			if (username == null	|| "".equals(username)) {
+				fs = org.apache.hadoop.fs.FileSystem.get(conf);
+			} else {
+				fs = org.apache.hadoop.fs.FileSystem.get(new java.net.URI(conf.get("fs.default.name")), conf, username);
+			}
+			
+			fs.mkdirs(new org.apache.hadoop.fs.Path("/user/" + username + "/tmp"), new org.apache.hadoop.fs.permission.FsPermission(org.apache.hadoop.fs.permission.FsAction.ALL, org.apache.hadoop.fs.permission.FsAction.ALL, org.apache.hadoop.fs.permission.FsAction.ALL));
+			fs.copyFromLocalFile(false, true, new org.apache.hadoop.fs.Path(jar), new org.apache.hadoop.fs.Path("/user/" + username + "/tmp"));
+			
+			return <%=fsDefaultName%> + "/user/" + username + "/tmp/" + new java.io.File(jar).getName();
+		}
+		
+		public String replaceJarPaths(String originalClassPathLine) throws Exception {
+			String classPathLine = super.replaceJarPaths(originalClassPathLine);
+			String hdfsPath = uploadJarToHDFS(classPathLine);
+			return hdfsPath;
+		}
+	}

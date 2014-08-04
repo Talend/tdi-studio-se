@@ -42,6 +42,7 @@ public class DbMapComponentDocumentation implements IComponentDocumentation {
      * 
      * @see org.talend.core.model.process.IComponentDocumentation#getHTMLFile()
      */
+    @Override
     public URL getHTMLFile() {
 
         String xmlFilepath = this.tempFolderPath + File.separatorChar + this.componentName + IHTMLDocConstants.XML_FILE_SUFFIX;
@@ -83,6 +84,7 @@ public class DbMapComponentDocumentation implements IComponentDocumentation {
      * 
      * @see org.talend.core.model.process.IComponentDocumentation#setComponentLabel(java.lang.String)
      */
+    @Override
     public void setComponentName(String componentLabel) {
         this.componentName = componentLabel;
     }
@@ -92,6 +94,7 @@ public class DbMapComponentDocumentation implements IComponentDocumentation {
      * 
      * @see org.talend.core.model.process.IComponentDocumentation#setPath(java.lang.String)
      */
+    @Override
     public void setTempFolderPath(String tempFolderPath) {
         this.tempFolderPath = tempFolderPath;
     }
@@ -182,13 +185,28 @@ public class DbMapComponentDocumentation implements IComponentDocumentation {
                 generateTablesEntriesInfo(metadataTableEntriesElement, entry);
             }
 
-            List<ExternalDbMapEntry> customConditionsEntries = table.getCustomConditionsEntries();
-            if (!HTMLDocUtils.checkList(customConditionsEntries)) {
+            /**
+             * generate custom Where clauses conditions entries
+             */
+            List<ExternalDbMapEntry> customWhereConditionsEntries = table.getCustomWhereConditionsEntries();
+            if (!HTMLDocUtils.checkList(customWhereConditionsEntries)) {
                 continue;
             }
-            Element customConditionsEntriesElement = tableElement.addElement("customConditionsEntries"); //$NON-NLS-1$
-            for (ExternalDbMapEntry entry : customConditionsEntries) {
-                generateTablesEntriesInfo(customConditionsEntriesElement, entry);
+            Element customWhereConditionsEntriesElement = tableElement.addElement("customWhereConditionsEntries"); //$NON-NLS-1$
+            for (ExternalDbMapEntry entry : customWhereConditionsEntries) {
+                generateTablesEntriesInfo(customWhereConditionsEntriesElement, entry);
+            }
+
+            /**
+             * generate custom Other clauses conditions entries
+             */
+            List<ExternalDbMapEntry> customOtherConditionsEntries = table.getCustomOtherConditionsEntries();
+            if (!HTMLDocUtils.checkList(customOtherConditionsEntries)) {
+                continue;
+            }
+            Element customOtherConditionsEntriesElement = tableElement.addElement("customOtherConditionsEntries"); //$NON-NLS-1$
+            for (ExternalDbMapEntry entry : customOtherConditionsEntries) {
+                generateTablesEntriesInfo(customOtherConditionsEntriesElement, entry);
             }
         }
     }

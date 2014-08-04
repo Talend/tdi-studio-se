@@ -449,7 +449,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * propagate when add or remove a variable in a repository context to jobs/joblets.
-     * 
+     *
      * @param contextResults
      * @param contextManager
      * @param deleteParams
@@ -917,7 +917,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * DOC ycbai Comment method "checkNodeValidationRuleFromRepository".
-     * 
+     *
      * @param node
      * @param onlySimpleShow
      * @return
@@ -1075,9 +1075,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * DOC YeXiaowei Comment method "checkNodeSAPFunctionFromRepository".
-     * 
+     *
      * @param node
      * @return
      */
@@ -1156,9 +1156,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodeSchemaFromRepository".
-     * 
+     *
      * @param nc
      * @param metadataTable
      * @return true if the data have been modified
@@ -1362,7 +1362,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * DOC ycbai Comment method "checkNodeSchemaFromRepositoryForTMap".
-     * 
+     *
      * @param node
      * @param onlySimpleShow
      * @return
@@ -1444,9 +1444,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodeSchemaFromRepositoryForEBCDIC".
-     * 
+     *
      * @param node
      * @return
      */
@@ -1588,9 +1588,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * nrousseau Comment method "checkNodePropertiesFromRepository".
-     * 
+     *
      * @param node
      * @return true if the data have been modified
      */
@@ -1601,515 +1601,485 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         List<UpdateResult> propertiesResults = new ArrayList<UpdateResult>();
 
-        String propertyType = (String) node.getPropertyValue(EParameterName.PROPERTY_TYPE.getName());
-        if (propertyType != null) {
-            if (propertyType.equals(EmfComponent.REPOSITORY)) {
-                List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
+        for (IElementParameter curPropertyParam : node.getElementParametersFromField(EParameterFieldType.PROPERTY_TYPE)) {
+            String propertyType = (String) curPropertyParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
+                    .getValue();
+            if (propertyType != null) {
+                if (propertyType.equals(EmfComponent.REPOSITORY)) {
+                    List<IProcess2> openedProcesses = UpdateManagerUtils.getOpenedProcess();
+                    IElementParameter repositoryPropertyParam = curPropertyParam.getChildParameters().get(
+                            EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
 
-                String propertyValue = (String) node.getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                    String propertyValue = (String) repositoryPropertyParam.getValue();
 
-                if (node.getComponent().getName().startsWith("tESB")) {
-                    if (propertyValue.contains(" - ")) {
-                        propertyValue = propertyValue.split(" - ")[0];
-                    }
-                }
-
-                IRepositoryViewObject lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(propertyValue);
-                UpdateCheckResult result = null;
-
-                Connection repositoryConnection = null;
-                RulesItem repositoryRulesItem = null; // hywang add for 6484
-                LinkRulesItem repositoryLinkRulesItem = null;
-                String source = null;
-                Item item = null;
-                if (lastVersion != null) {
-                    item = lastVersion.getProperty().getItem();
-                    if (item != null && item instanceof ConnectionItem) {
-                        source = UpdateRepositoryUtils.getRepositorySourceName(item);
-                        repositoryConnection = ((ConnectionItem) item).getConnection();
-                    }
-                    if (item != null && item instanceof FileItem) {
-                        if (item instanceof RulesItem) {
-                            repositoryRulesItem = (RulesItem) item;
+                    if (node.getComponent().getName().startsWith("tESB")) {
+                        if (propertyValue.contains(" - ")) {
+                            propertyValue = propertyValue.split(" - ")[0];
                         }
                     }
-                    if (item != null && item instanceof LinkRulesItem) {
-                        repositoryLinkRulesItem = (LinkRulesItem) item;
-                    }
-                }
 
-                if (repositoryConnection != null) {
-                    boolean sameValues = true;
-                    // added by wzhang for 9302
-                    boolean isXsdPath = false;
-                    if (repositoryConnection instanceof XmlFileConnectionImpl) {
-                        String filePath = ((XmlFileConnectionImpl) repositoryConnection).getXmlFilePath();
-                        if (filePath != null) {
-                            if (XmlUtil.isXSDFile(filePath)) {
-                                isXsdPath = true;
+                    IRepositoryViewObject lastVersion = UpdateRepositoryUtils.getRepositoryObjectById(propertyValue);
+                    UpdateCheckResult result = null;
+
+                    Connection repositoryConnection = null;
+                    RulesItem repositoryRulesItem = null; // hywang add for 6484
+                    LinkRulesItem repositoryLinkRulesItem = null;
+                    String source = null;
+                    Item item = null;
+                    if (lastVersion != null) {
+                        item = lastVersion.getProperty().getItem();
+                        if (item != null && item instanceof ConnectionItem) {
+                            source = UpdateRepositoryUtils.getRepositorySourceName(item);
+                            repositoryConnection = ((ConnectionItem) item).getConnection();
+                        }
+                        if (item != null && item instanceof FileItem) {
+                            if (item instanceof RulesItem) {
+                                repositoryRulesItem = (RulesItem) item;
                             }
                         }
+                        if (item != null && item instanceof LinkRulesItem) {
+                            repositoryLinkRulesItem = (LinkRulesItem) item;
+                        }
                     }
 
-                    // if salesforce modul is deleted from repository , change to build-in , no need to check other
-                    // ElementParameters
-                    boolean needBuildIn = false;
-                    if (repositoryConnection instanceof SalesforceSchemaConnection
-                            && !((SalesforceSchemaConnection) repositoryConnection).isUseCustomModuleName()) {
-                        IElementParameter param = node.getElementParameter("MODULENAME");
-                        if (param != null) {
-                            boolean found = false;
-                            SalesforceSchemaConnection salesforceConnection = (SalesforceSchemaConnection) repositoryConnection;
-                            List<SalesforceModuleUnit> units = salesforceConnection.getModules();
-                            for (SalesforceModuleUnit unit : units) {
-                                if (unit.getLabel() != null && unit.getLabel().equals(param.getValue())) {
-                                    found = true;
-                                    break;
+                    if (repositoryConnection != null) {
+                        boolean sameValues = true;
+                        // added by wzhang for 9302
+                        boolean isXsdPath = false;
+                        if (repositoryConnection instanceof XmlFileConnectionImpl) {
+                            String filePath = ((XmlFileConnectionImpl) repositoryConnection).getXmlFilePath();
+                            if (filePath != null) {
+                                if (XmlUtil.isXSDFile(filePath)) {
+                                    isXsdPath = true;
                                 }
                             }
-                            if (!found) {
-                                result = new UpdateCheckResult(node);
-                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN);
-                                needBuildIn = true;
+                        }
+
+                        // if salesforce modul is deleted from repository , change to build-in , no need to check other
+                        // ElementParameters
+                        boolean needBuildIn = false;
+                        if (repositoryConnection instanceof SalesforceSchemaConnection
+                                && !((SalesforceSchemaConnection) repositoryConnection).isUseCustomModuleName()) {
+                            IElementParameter param = node.getElementParameter("MODULENAME");
+                            if (param != null) {
+                                boolean found = false;
+                                SalesforceSchemaConnection salesforceConnection = (SalesforceSchemaConnection) repositoryConnection;
+                                List<SalesforceModuleUnit> units = salesforceConnection.getModules();
+                                for (SalesforceModuleUnit unit : units) {
+                                    if (unit.getLabel() != null && unit.getLabel().equals(param.getValue())) {
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    result = new UpdateCheckResult(node);
+                                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN,
+                                            repositoryPropertyParam);
+                                    needBuildIn = true;
+                                }
                             }
                         }
-                    }
 
-                    // if the repository connection exists then test the values
-                    for (IElementParameter param : node.getElementParameters()) {
-                        if (needBuildIn) {
-                            break;
-                        }
-                        String repositoryValue = param.getRepositoryValue();
-                        String relatedComponent = node.getComponent().getName();
-                        if ((repositoryValue != null)
-                                && (param.isShow(node.getElementParameters())
-                                        || (node instanceof INode && ((INode) node).getComponent().getName()
-                                                .equals("tESBProviderRequest")) || (node instanceof INode && ((INode) node)
-                                        .getComponent().getName().equals("tAdvancedFileOutputXML")))) { //$NON-NLS-1$
-                            if ((param.getFieldType().equals(EParameterFieldType.FILE) && isXsdPath)
-                                    || (repositoryConnection instanceof SalesforceSchemaConnection
-                                            && "MODULENAME".equals(repositoryValue) && !((SalesforceSchemaConnection) repositoryConnection)
-                                                .isUseCustomModuleName())) {
+                        // if the repository connection exists then test the values
+                        for (IElementParameter param : node.getElementParameters()) {
+                            if (needBuildIn) {
+                                break;
+                            }
+                            if (param.getRepositoryValue() == null || param.getRepositoryProperty() != null
+                                    && !param.getRepositoryProperty().equals(curPropertyParam.getName())) {
                                 continue;
                             }
-                            IMetadataTable table = null;
-                            if (!node.getMetadataList().isEmpty()) {
-                                table = node.getMetadataList().get(0);
-                            }
-                            Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnection, repositoryValue,
-                                    table, relatedComponent);
-                            if (objectValue == null || "".equals(objectValue)) {
-                                if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                                    IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(
-                                            IESBService.class);
-                                    if (service != null) {
-                                        objectValue = service.getValue(item, repositoryValue, node);
-                                    }
+                            String repositoryValue = param.getRepositoryValue();
+                            String relatedComponent = node.getComponent().getName();
+                            if ((repositoryValue != null)
+                                    && (param.isShow(node.getElementParameters())
+                                            || (node instanceof INode && ((INode) node).getComponent().getName()
+                                                    .equals("tESBProviderRequest")) || (node instanceof INode && ((INode) node)
+                                            .getComponent().getName().equals("tAdvancedFileOutputXML")))) { //$NON-NLS-1$
+                                if ((param.getFieldType().equals(EParameterFieldType.FILE) && isXsdPath)
+                                        || (repositoryConnection instanceof SalesforceSchemaConnection
+                                                && "MODULENAME".equals(repositoryValue) && !((SalesforceSchemaConnection) repositoryConnection)
+                                                    .isUseCustomModuleName())) {
+                                    continue;
                                 }
-
-                            }
-                            if (param.getName().equals(EParameterName.CDC_TYPE_MODE.getName())
-                                    && item instanceof DatabaseConnectionItem) {
-                                if (PluginChecker.isCDCPluginLoaded()) {
-                                    ICDCProviderService service = (ICDCProviderService) GlobalServiceRegister.getDefault()
-                                            .getService(ICDCProviderService.class);
-                                    if (service != null) {
-                                        try {
-                                            List<IRepositoryViewObject> all;
-                                            all = CorePlugin.getDefault().getProxyRepositoryFactory()
-                                                    .getAll(ERepositoryObjectType.METADATA_CONNECTIONS);
-                                            for (IRepositoryViewObject obj : all) {
-                                                Item tempItem = obj.getProperty().getItem();
-                                                if (tempItem instanceof DatabaseConnectionItem) {
-                                                    String cdcLinkId = service
-                                                            .getCDCConnectionLinkId((DatabaseConnectionItem) tempItem);
-                                                    if (cdcLinkId != null && item.getProperty().getId().equals(cdcLinkId)) {
-                                                        objectValue = RepositoryToComponentProperty.getValue(
-                                                                ((DatabaseConnectionItem) tempItem).getConnection(),
-                                                                repositoryValue, node.getMetadataList().get(0));
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        } catch (PersistenceException e) {
-                                            ExceptionHandler.process(e);
+                                IMetadataTable table = null;
+                                if (!node.getMetadataList().isEmpty()) {
+                                    table = node.getMetadataList().get(0);
+                                }
+                                Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnection,
+                                        repositoryValue, table, relatedComponent);
+                                if (objectValue == null || "".equals(objectValue)) {
+                                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                                        IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(
+                                                IESBService.class);
+                                        if (service != null) {
+                                            objectValue = service.getValue(item, repositoryValue, node);
                                         }
                                     }
-                                }
-                            }
-                            Object value = param.getValue();
-                            if (objectValue != null) {
-                                if ((param.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && UpdatesConstants.TYPE
-                                        .equals(param.getRepositoryValue()))) {
-                                    boolean found = false;
-                                    String[] list = param.getListRepositoryItems();
-                                    for (int i = 0; (i < list.length) && (!found); i++) {
-                                        if (objectValue.equals(list[i])) {
-                                            found = true;
-                                        }
-                                    }
-                                    if (!found) {
-                                        sameValues = false;
-                                    }
 
-                                } else {
-                                    if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
-                                        List<Map<String, Object>> oldList = (List<Map<String, Object>>) value;
-                                        String name = param.getName();
-                                        // update for tAdvancedFileOutputXML wizard
-                                        if ("ROOT".equals(name) || "LOOP".equals(name) || "GROUP".equals(name) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                                && !oldList.isEmpty() && objectValue instanceof List) {
-                                            List objectList = (List) objectValue;
-                                            if (oldList.size() != objectList.size()) {
-                                                sameValues = false;
-                                            } else {
-                                                for (int i = 0; i < oldList.size(); i++) {
-                                                    Map<String, Object> oldMap = oldList.get(i);
-                                                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                                                    if (oldMap.get("PATH").equals(objectMap.get("PATH")) //$NON-NLS-1$ //$NON-NLS-2$
-                                                            && oldMap.get("ATTRIBUTE").equals(objectMap.get("ATTRIBUTE")) //$NON-NLS-1$ //$NON-NLS-2$
-                                                            && ((oldMap.get("VALUE") == null && objectMap.get("VALUE") == null) || (oldMap //$NON-NLS-1$ //$NON-NLS-2$
-                                                                    .get("VALUE") != null //$NON-NLS-1$
-                                                                    && objectMap.get("VALUE") != null && oldMap.get("VALUE") //$NON-NLS-1$ //$NON-NLS-2$
-                                                                    .equals(objectMap.get("VALUE")))) //$NON-NLS-1$
-                                                            && ((oldMap.get("COLUMN") == null && objectMap.get("COLUMN") == null) || (oldMap //$NON-NLS-1$ //$NON-NLS-2$
-                                                                    .get("COLUMN") != null //$NON-NLS-1$
-                                                                    && oldMap.get("COLUMN") != null && oldMap.get("COLUMN") //$NON-NLS-1$ //$NON-NLS-2$
-                                                                    .equals(objectMap.get("COLUMN"))))) { //$NON-NLS-1$
-                                                        sameValues = true;
-                                                    } else {
-                                                        sameValues = false;
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        } else if (param.getName().equals("SHEETLIST") && oldList != null //$NON-NLS-1$
-                                                && objectValue instanceof List) {
-                                            // hywang modified for bug
-                                            // 9537
-                                            List repList = (List) objectValue;
-                                            if (oldList.size() == repList.size()) {
-                                                for (Map<String, Object> line : oldList) {
-                                                    final String sheetName = "SHEETNAME"; //$NON-NLS-1$
-                                                    Object oldValue = line.get(sheetName);
-                                                    if (oldValue instanceof String && repList.get(0) instanceof Map) {
-                                                        boolean found = false;
-                                                        for (Map map : (List<Map>) repList) {
-                                                            Object repValue = map.get(sheetName);
-                                                            if (oldValue.equals(repValue)) {
-                                                                found = true;
-                                                                break;
-                                                            }
+                                }
+                                if (param.getName().equals(EParameterName.CDC_TYPE_MODE.getName())
+                                        && item instanceof DatabaseConnectionItem) {
+                                    if (PluginChecker.isCDCPluginLoaded()) {
+                                        ICDCProviderService service = (ICDCProviderService) GlobalServiceRegister.getDefault()
+                                                .getService(ICDCProviderService.class);
+                                        if (service != null) {
+                                            try {
+                                                List<IRepositoryViewObject> all;
+                                                all = CorePlugin.getDefault().getProxyRepositoryFactory()
+                                                        .getAll(ERepositoryObjectType.METADATA_CONNECTIONS);
+                                                for (IRepositoryViewObject obj : all) {
+                                                    Item tempItem = obj.getProperty().getItem();
+                                                    if (tempItem instanceof DatabaseConnectionItem) {
+                                                        String cdcLinkId = service
+                                                                .getCDCConnectionLinkId((DatabaseConnectionItem) tempItem);
+                                                        if (cdcLinkId != null && item.getProperty().getId().equals(cdcLinkId)) {
+                                                            objectValue = RepositoryToComponentProperty.getValue(
+                                                                    ((DatabaseConnectionItem) tempItem).getConnection(),
+                                                                    repositoryValue, node.getMetadataList().get(0));
+                                                            break;
                                                         }
-                                                        if (!found) {
+                                                    }
+                                                }
+                                            } catch (PersistenceException e) {
+                                                ExceptionHandler.process(e);
+                                            }
+                                        }
+                                    }
+                                }
+                                Object value = param.getValue();
+                                if (objectValue != null) {
+                                    if ((param.getFieldType().equals(EParameterFieldType.CLOSED_LIST) && UpdatesConstants.TYPE
+                                            .equals(param.getRepositoryValue()))) {
+                                        boolean found = false;
+                                        String[] list = param.getListRepositoryItems();
+                                        for (int i = 0; (i < list.length) && (!found); i++) {
+                                            if (objectValue.equals(list[i])) {
+                                                found = true;
+                                            }
+                                        }
+                                        if (!found) {
+                                            sameValues = false;
+                                        }
+
+                                    } else {
+                                        if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
+                                            List<Map<String, Object>> oldList = (List<Map<String, Object>>) value;
+                                            String name = param.getName();
+                                            // update for tAdvancedFileOutputXML wizard
+                                            if ("ROOT".equals(name) || "LOOP".equals(name) || "GROUP".equals(name) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                                    && !oldList.isEmpty() && objectValue instanceof List) {
+                                                List objectList = (List) objectValue;
+                                                if (oldList.size() != objectList.size()) {
+                                                    sameValues = false;
+                                                } else {
+                                                    for (int i = 0; i < oldList.size(); i++) {
+                                                        Map<String, Object> oldMap = oldList.get(i);
+                                                        Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                                                        if (oldMap.get("PATH").equals(objectMap.get("PATH")) //$NON-NLS-1$ //$NON-NLS-2$
+                                                                && oldMap.get("ATTRIBUTE").equals(objectMap.get("ATTRIBUTE")) //$NON-NLS-1$ //$NON-NLS-2$
+                                                                && ((oldMap.get("VALUE") == null && objectMap.get("VALUE") == null) || (oldMap //$NON-NLS-1$ //$NON-NLS-2$
+                                                                        .get("VALUE") != null //$NON-NLS-1$
+                                                                        && objectMap.get("VALUE") != null && oldMap.get("VALUE") //$NON-NLS-1$ //$NON-NLS-2$
+                                                                        .equals(objectMap.get("VALUE")))) //$NON-NLS-1$
+                                                                && ((oldMap.get("COLUMN") == null && objectMap.get("COLUMN") == null) || (oldMap //$NON-NLS-1$ //$NON-NLS-2$
+                                                                        .get("COLUMN") != null //$NON-NLS-1$
+                                                                        && oldMap.get("COLUMN") != null && oldMap.get("COLUMN") //$NON-NLS-1$ //$NON-NLS-2$
+                                                                        .equals(objectMap.get("COLUMN"))))) { //$NON-NLS-1$
+                                                            sameValues = true;
+                                                        } else {
                                                             sameValues = false;
                                                             break;
                                                         }
                                                     }
                                                 }
-                                            } else {
-                                                sameValues = false;
-                                            }
-                                        } else if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES") && oldList != null //$NON-NLS-1$
-                                                && objectValue instanceof List) {
-                                            List objectList = (List) objectValue;
-                                            // TUP-2028: for hadoop properties,since in the repository mode it can add
-                                            // property manually or drag from repository at the same list,so when check
-                                            // repositroy update,need to filter the build-in property
-                                            List<Map<String, Object>> filterBuildInList = collectHadoopPropertiesList(oldList);
-                                            if (filterBuildInList.size() != objectList.size()) {
-                                                sameValues = false;
-                                            } else {
-                                                for (int i = 0; i < filterBuildInList.size(); i++) {
-                                                    Map<String, Object> oldMap = filterBuildInList.get(i);
-                                                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                                                    if (oldMap.get("PROPERTY").equals(objectMap.get("PROPERTY"))
-                                                            && oldMap.get("VALUE").equals(objectMap.get("VALUE"))) { //$NON-NLS-1$
-                                                        sameValues = true;
-                                                    } else {
-                                                        sameValues = false;
-                                                        break;
+                                            } else if (param.getName().equals("SHEETLIST") && oldList != null //$NON-NLS-1$
+                                                    && objectValue instanceof List) {
+                                                // hywang modified for bug
+                                                // 9537
+                                                List repList = (List) objectValue;
+                                                if (oldList.size() == repList.size()) {
+                                                    for (Map<String, Object> line : oldList) {
+                                                        final String sheetName = "SHEETNAME"; //$NON-NLS-1$
+                                                        Object oldValue = line.get(sheetName);
+                                                        if (oldValue instanceof String && repList.get(0) instanceof Map) {
+                                                            boolean found = false;
+                                                            for (Map map : (List<Map>) repList) {
+                                                                Object repValue = map.get(sheetName);
+                                                                if (oldValue.equals(repValue)) {
+                                                                    found = true;
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if (!found) {
+                                                                sameValues = false;
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    sameValues = false;
+                                                }
+                                            } else if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES") && oldList != null //$NON-NLS-1$
+                                                    && objectValue instanceof List) {
+                                                List objectList = (List) objectValue;
+                                                // TUP-2028: for hadoop properties,since in the repository mode it can
+                                                // add
+                                                // property manually or drag from repository at the same list,so when
+                                                // check
+                                                // repositroy update,need to filter the build-in property
+                                                List<Map<String, Object>> filterBuildInList = collectHadoopPropertiesList(oldList);
+                                                if (filterBuildInList.size() != objectList.size()) {
+                                                    sameValues = false;
+                                                } else {
+                                                    for (int i = 0; i < filterBuildInList.size(); i++) {
+                                                        Map<String, Object> oldMap = filterBuildInList.get(i);
+                                                        Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                                                        if (oldMap.get("PROPERTY").equals(objectMap.get("PROPERTY"))
+                                                                && oldMap.get("VALUE").equals(objectMap.get("VALUE"))) { //$NON-NLS-1$
+                                                            sameValues = true;
+                                                        } else {
+                                                            sameValues = false;
+                                                            break;
+                                                        }
                                                     }
                                                 }
-                                            }
-                                        } else if (param.getName().equals("HBASE_PARAMETERS") && oldList != null //$NON-NLS-1$
-                                                && objectValue instanceof List) {
-                                            List objectList = (List) objectValue;
-                                            if (oldList.size() != objectList.size()) {
-                                                sameValues = false;
-                                            } else {
-                                                for (int i = 0; i < oldList.size(); i++) {
-                                                    Map<String, Object> oldMap = oldList.get(i);
-                                                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                                                    if (oldMap.get("PROPERTY").equals(objectMap.get("PROPERTY"))
-                                                            && oldMap.get("VALUE").equals(objectMap.get("VALUE"))) { //$NON-NLS-1$
-                                                        sameValues = true;
-                                                    } else {
-                                                        sameValues = false;
-                                                        break;
+                                            } else if (param.getName().equals("HBASE_PARAMETERS") && oldList != null //$NON-NLS-1$
+                                                    && objectValue instanceof List) {
+                                                List objectList = (List) objectValue;
+                                                if (oldList.size() != objectList.size()) {
+                                                    sameValues = false;
+                                                } else {
+                                                    for (int i = 0; i < oldList.size(); i++) {
+                                                        Map<String, Object> oldMap = oldList.get(i);
+                                                        Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                                                        if (oldMap.get("PROPERTY").equals(objectMap.get("PROPERTY"))
+                                                                && oldMap.get("VALUE").equals(objectMap.get("VALUE"))) { //$NON-NLS-1$
+                                                            sameValues = true;
+                                                        } else {
+                                                            sameValues = false;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            } else
+                                            // fix 18011 :after change the jars in wizard, the update manager can't
+                                            // detect
+                                            // it in jobs
+                                            if (param.getName().equals("DRIVER_JAR") && oldList != null) {
+                                                List objectList = (List) objectValue;
+                                                if (oldList.size() != objectList.size()) {
+                                                    sameValues = false;
+                                                } else {
+                                                    for (int i = 0; i < oldList.size(); i++) {
+                                                        Map<String, Object> oldMap = oldList.get(i);
+                                                        Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                                                        if (oldMap.get("JAR_NAME").equals(objectMap.get("JAR_NAME"))) { //$NON-NLS-1$
+                                                            sameValues = true;
+                                                        } else {
+                                                            sameValues = false;
+                                                            break;
+                                                        }
                                                     }
                                                 }
                                             }
                                         } else
-                                        // fix 18011 :after change the jars in wizard, the update manager can't detect
-                                        // it in jobs
-                                        if (param.getName().equals("DRIVER_JAR") && oldList != null) {
-                                            List objectList = (List) objectValue;
-                                            if (oldList.size() != objectList.size()) {
-                                                sameValues = false;
-                                            } else {
-                                                for (int i = 0; i < oldList.size(); i++) {
-                                                    Map<String, Object> oldMap = oldList.get(i);
-                                                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                                                    if (oldMap.get("JAR_NAME").equals(objectMap.get("JAR_NAME"))) { //$NON-NLS-1$
-                                                        sameValues = true;
+                                        // check the value
+                                        if (value instanceof String && objectValue instanceof String) {
+                                            if (!value.equals("CustomModule") && !value.equals(objectValue)) {//$NON-NLS-1$
+                                                if (repositoryConnection instanceof XmlFileConnection) {
+                                                    if ((((XmlFileConnection) repositoryConnection).getXmlFilePath().endsWith(
+                                                            "xsd") || ((XmlFileConnection) repositoryConnection) //$NON-NLS-1$
+                                                            .getXmlFilePath().endsWith("xsd\"")) //$NON-NLS-1$
+                                                            && repositoryValue.equals("FILE_PATH")) { //$NON-NLS-1$
                                                     } else {
                                                         sameValues = false;
-                                                        break;
                                                     }
-                                                }
-                                            }
-                                        }
-                                    } else
-                                    // check the value
-                                    if (value instanceof String && objectValue instanceof String) {
-                                        if (!value.equals("CustomModule") && !value.equals(objectValue)) {//$NON-NLS-1$
-                                            if (repositoryConnection instanceof XmlFileConnection) {
-                                                if ((((XmlFileConnection) repositoryConnection).getXmlFilePath().endsWith("xsd") || ((XmlFileConnection) repositoryConnection) //$NON-NLS-1$
-                                                        .getXmlFilePath().endsWith("xsd\"")) //$NON-NLS-1$
-                                                        && repositoryValue.equals("FILE_PATH")) { //$NON-NLS-1$
                                                 } else {
                                                     sameValues = false;
                                                 }
-                                            } else {
-                                                sameValues = false;
                                             }
-                                        }
 
-                                        if (repositoryValue.equals("ENCODING")) { //$NON-NLS-1$
-                                            IElementParameter paramEncoding = param.getChildParameters().get(
-                                                    EParameterName.ENCODING_TYPE.getName());
-                                            if (paramEncoding != null) {
-                                                if (repositoryConnection instanceof FTPConnection) {
-                                                    if (((FTPConnection) repositoryConnection).getEcoding() != null) {
-                                                        paramEncoding.setValue(((FTPConnection) repositoryConnection)
-                                                                .getEcoding());
-                                                    } else {
-                                                        paramEncoding.setValue(EmfComponent.ENCODING_TYPE_CUSTOM);
+                                            if (repositoryValue.equals("ENCODING")) { //$NON-NLS-1$
+                                                IElementParameter paramEncoding = param.getChildParameters().get(
+                                                        EParameterName.ENCODING_TYPE.getName());
+                                                if (paramEncoding != null) {
+                                                    if (repositoryConnection instanceof FTPConnection) {
+                                                        if (((FTPConnection) repositoryConnection).getEcoding() != null) {
+                                                            paramEncoding.setValue(((FTPConnection) repositoryConnection)
+                                                                    .getEcoding());
+                                                        } else {
+                                                            paramEncoding.setValue(EmfComponent.ENCODING_TYPE_CUSTOM);
+                                                        }
+
                                                     }
-
+                                                    // else {
+                                                    // paramEncoding.setValue(EmfComponent.ENCODING_TYPE_CUSTOM);
+                                                    // paramEncoding.setRepositoryValueUsed(true);
+                                                    // }
                                                 }
-                                                // else {
-                                                // paramEncoding.setValue(EmfComponent.ENCODING_TYPE_CUSTOM);
-                                                // paramEncoding.setRepositoryValueUsed(true);
-                                                // }
-                                            }
 
+                                            }
+                                        } else if (value instanceof Boolean && objectValue instanceof Boolean) {
+                                            sameValues = ((Boolean) value).equals(objectValue);
                                         }
-                                    } else if (value instanceof Boolean && objectValue instanceof Boolean) {
-                                        sameValues = ((Boolean) value).equals(objectValue);
                                     }
-                                }
-                            } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
-                                    && UpdatesConstants.XML_MAPPING.equals(repositoryValue)) {
-                                List<Map<String, Object>> newMaps = RepositoryToComponentProperty.getXMLMappingValue(
-                                        repositoryConnection, node.getMetadataList());
-                                if ((value instanceof List) && newMaps != null) {
-                                    List<Map<String, Object>> oldMaps = (List<Map<String, Object>>) value;
-                                    // sameValues = oldMaps.size() == newMaps.size();
-                                    if (oldMaps.size() != newMaps.size()) {
-                                        sameValues = false;
-                                        break;
-                                    }
-
-                                    for (int i = 0; i < newMaps.size() && sameValues; i++) {
-                                        Map<String, Object> newmap = newMaps.get(i);
-                                        Map<String, Object> oldmap = null; // oldMaps.get(i);
-                                        if (i < oldMaps.size()) {
-                                            oldmap = oldMaps.get(i);
-                                        }
-                                        if (oldmap != null && sameValues) {
-                                            Object o = newmap.get(UpdatesConstants.QUERY);
-                                            if (o != null) {
-                                                sameValues = newmap.get(UpdatesConstants.QUERY).equals(
-                                                        oldmap.get(UpdatesConstants.QUERY));
-                                            } else {
-                                                sameValues = oldmap.get(UpdatesConstants.QUERY) == null;
-                                            }
-                                        }
-                                        // for hl7
-                                        if (newmap.get(UpdatesConstants.SCHEMA) != null) {
-                                            if (!newmap.get(UpdatesConstants.SCHEMA).equals(newmap.get(UpdatesConstants.SCHEMA))) {
-                                                oldmap = null;
-                                                for (int j = 0; j < oldMaps.size(); j++) {
-                                                    Map<String, Object> m = oldMaps.get(j);
-                                                    if (newmap.get(UpdatesConstants.SCHEMA)
-                                                            .equals(m.get(UpdatesConstants.SCHEMA))) {
-                                                        oldmap = m;
-                                                    }
-                                                }
-                                            }
-                                            if (oldmap == null) {
-                                                sameValues = false;
-                                            } else {
-                                                Object o = newmap.get(UpdatesConstants.MAPPING);
-
-                                                if (o != null) {
-                                                    sameValues = o.equals(oldmap.get(UpdatesConstants.MAPPING));
-                                                } else {
-                                                    sameValues = oldmap.get(UpdatesConstants.MAPPING) == null;
-                                                }
-
-                                            }
-                                        }
-
-                                        if (!sameValues) {
+                                } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
+                                        && UpdatesConstants.XML_MAPPING.equals(repositoryValue)) {
+                                    List<Map<String, Object>> newMaps = RepositoryToComponentProperty.getXMLMappingValue(
+                                            repositoryConnection, node.getMetadataList());
+                                    if ((value instanceof List) && newMaps != null) {
+                                        List<Map<String, Object>> oldMaps = (List<Map<String, Object>>) value;
+                                        // sameValues = oldMaps.size() == newMaps.size();
+                                        if (oldMaps.size() != newMaps.size()) {
+                                            sameValues = false;
                                             break;
                                         }
-                                    }
-                                    // if (oldMaps.size() > newMaps.size()) {
-                                    // int size = newMaps.size();
-                                    // for (int i = size; i < oldMaps.size(); i++) {
-                                    // Map<String, Object> map = new HashMap<String, Object>();
-                                    // map.put(UpdatesConstants.QUERY, UpdatesConstants.EMPTY);
-                                    // newMaps.add(map);
-                                    // }
-                                    // sameValues = false;
-                                    // }
-                                }
-                            } else if (param.getFieldType().equals(EParameterFieldType.TABLE) && param.getName().equals("PARAMS")) { //$NON-NLS-1$
-                                objectValue = RepositoryToComponentProperty.getValue(repositoryConnection, param.getName(), node
-                                        .getMetadataList().get(0));
-                                if (value == null) {
-                                    sameValues = false;
-                                    break;
-                                }
-                                if (objectValue == null) {
-                                    sameValues = false;
-                                    break;
-                                }
-                                List<Map<String, Object>> oldMaps = (List<Map<String, Object>>) value;
 
-                                List repList = (List) objectValue;
-                                if (oldMaps.size() == repList.size()) {
-                                    for (Map<String, Object> line : oldMaps) {
-                                        final String sheetName = "VALUE"; //$NON-NLS-1$
-                                        Object oldValue = line.get(sheetName);
-                                        if (oldValue instanceof String && repList.get(0) instanceof String) {
-                                            boolean found = false;
-                                            for (String str : (List<String>) repList) {
-                                                Object repValue = TalendTextUtils.addQuotes(str);
-                                                if (oldValue.equals(repValue)) {
-                                                    found = true;
-                                                    break;
+                                        for (int i = 0; i < newMaps.size() && sameValues; i++) {
+                                            Map<String, Object> newmap = newMaps.get(i);
+                                            Map<String, Object> oldmap = null; // oldMaps.get(i);
+                                            if (i < oldMaps.size()) {
+                                                oldmap = oldMaps.get(i);
+                                            }
+                                            if (oldmap != null && sameValues) {
+                                                Object o = newmap.get(UpdatesConstants.QUERY);
+                                                if (o != null) {
+                                                    sameValues = newmap.get(UpdatesConstants.QUERY).equals(
+                                                            oldmap.get(UpdatesConstants.QUERY));
+                                                } else {
+                                                    sameValues = oldmap.get(UpdatesConstants.QUERY) == null;
                                                 }
                                             }
-                                            if (!found) {
-                                                sameValues = false;
+                                            // for hl7
+                                            if (newmap.get(UpdatesConstants.SCHEMA) != null) {
+                                                if (!newmap.get(UpdatesConstants.SCHEMA).equals(
+                                                        newmap.get(UpdatesConstants.SCHEMA))) {
+                                                    oldmap = null;
+                                                    for (int j = 0; j < oldMaps.size(); j++) {
+                                                        Map<String, Object> m = oldMaps.get(j);
+                                                        if (newmap.get(UpdatesConstants.SCHEMA).equals(
+                                                                m.get(UpdatesConstants.SCHEMA))) {
+                                                            oldmap = m;
+                                                        }
+                                                    }
+                                                }
+                                                if (oldmap == null) {
+                                                    sameValues = false;
+                                                } else {
+                                                    Object o = newmap.get(UpdatesConstants.MAPPING);
+
+                                                    if (o != null) {
+                                                        sameValues = o.equals(oldmap.get(UpdatesConstants.MAPPING));
+                                                    } else {
+                                                        sameValues = oldmap.get(UpdatesConstants.MAPPING) == null;
+                                                    }
+
+                                                }
+                                            }
+
+                                            if (!sameValues) {
                                                 break;
                                             }
                                         }
+                                        // if (oldMaps.size() > newMaps.size()) {
+                                        // int size = newMaps.size();
+                                        // for (int i = size; i < oldMaps.size(); i++) {
+                                        // Map<String, Object> map = new HashMap<String, Object>();
+                                        // map.put(UpdatesConstants.QUERY, UpdatesConstants.EMPTY);
+                                        // newMaps.add(map);
+                                        // }
+                                        // sameValues = false;
+                                        // }
                                     }
-                                } else {
-                                    sameValues = false;
+                                } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
+                                        && param.getName().equals("PARAMS")) { //$NON-NLS-1$
+                                    objectValue = RepositoryToComponentProperty.getValue(repositoryConnection, param.getName(),
+                                            node.getMetadataList().get(0));
+                                    if (value == null) {
+                                        sameValues = false;
+                                        break;
+                                    }
+                                    if (objectValue == null) {
+                                        sameValues = false;
+                                        break;
+                                    }
+                                    List<Map<String, Object>> oldMaps = (List<Map<String, Object>>) value;
+
+                                    List repList = (List) objectValue;
+                                    if (oldMaps.size() == repList.size()) {
+                                        for (Map<String, Object> line : oldMaps) {
+                                            final String sheetName = "VALUE"; //$NON-NLS-1$
+                                            Object oldValue = line.get(sheetName);
+                                            if (oldValue instanceof String && repList.get(0) instanceof String) {
+                                                boolean found = false;
+                                                for (String str : (List<String>) repList) {
+                                                    Object repValue = TalendTextUtils.addQuotes(str);
+                                                    if (oldValue.equals(repValue)) {
+                                                        found = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (!found) {
+                                                    sameValues = false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        sameValues = false;
+                                    }
                                 }
                             }
+                            if (!sameValues) {
+                                break;
+                            }
                         }
-                        if (!sameValues) {
-                            break;
+                        if (onlySimpleShow || !sameValues) {
+                            result = new UpdateCheckResult(node);
+                            result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, repositoryConnection, source);
+
                         }
-                    }
-                    if (onlySimpleShow || !sameValues) {
-                        result = new UpdateCheckResult(node);
-                        // for DBConnection
-                        // boolean builtIn = true;
-                        // if (repositoryConnection instanceof DatabaseConnection) {
-                        // IElementParameter typeParam = node.getElementParameter(UpdatesConstants.TYPE);
-                        // if (typeParam != null) {
-                        // String dbType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
-                        // Object type = typeParam.getValue();
-                        // if (dbType != null && type != null) {
-                        // if (dbType.equalsIgnoreCase((String) type)) {
-                        // result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,
-                        // repositoryConnection, source);
-                        // builtIn = false;
-                        // }
-                        // }
-                        // }
-                        // } else {
-                        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, repositoryConnection, source);
-                        // builtIn = false;
-                        // }
-                        // if (builtIn) { // only for DB
-                        // result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, null, source);
-                        // }
-
-                    }
-                    for (IElementParameter param : node.getElementParameters()) {
-                        String repositoryValue = param.getRepositoryValue();
-                        if (param.isShow(node.getElementParameters())
-                                && (repositoryValue != null)
-                                && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
-                                && param.getFieldType() != EParameterFieldType.MEMO_SQL
-                                && !("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals(param //$NON-NLS-1$ //$NON-NLS-2$
-                                        .getRepositoryValue()))
-                                && !("tSAPOutput".equals(node.getComponent().getName()) && param.getName().equals(
-                                        UpdatesConstants.MAPPING))
-                                && !("tFileInputEBCDIC".equals(node.getComponent().getName()) && "DATA_FILE"
-                                        .equals(repositoryValue))) {
-                            param.setRepositoryValueUsed(true);
-                            param.setReadOnly(true);
+                        for (IElementParameter param : node.getElementParameters()) {
+                            String repositoryValue = param.getRepositoryValue();
+                            if (param.getRepositoryProperty() != null
+                                    && !param.getRepositoryProperty().equals(curPropertyParam.getName())) {
+                                continue;
+                            }
+                            if (repositoryValue != null
+                                    && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
+                                    && param.getFieldType() != EParameterFieldType.MEMO_SQL
+                                    && !("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals(param //$NON-NLS-1$ //$NON-NLS-2$
+                                            .getRepositoryValue()))
+                                    && !("tSAPOutput".equals(node.getComponent().getName()) && param.getName().equals(
+                                            UpdatesConstants.MAPPING))
+                                    && !("tFileInputEBCDIC".equals(node.getComponent().getName()) && "DATA_FILE"
+                                            .equals(repositoryValue)) && param.isShow(node.getElementParameters())) {
+                                param.setRepositoryValueUsed(true);
+                                param.setReadOnly(true);
+                            }
                         }
-                    }
-                    // for context mode(bug 5198)
-                    List<UpdateResult> contextResults = checkParameterContextMode(node.getElementParameters(),
-                            (ConnectionItem) lastVersion.getProperty().getItem(), null);
-                    if (contextResults != null) {
-                        propertiesResults.addAll(contextResults);
+                        // for context mode(bug 5198)
+                        List<UpdateResult> contextResults = checkParameterContextMode(node.getElementParameters(),
+                                (ConnectionItem) lastVersion.getProperty().getItem(), null);
+                        if (contextResults != null) {
+                            propertiesResults.addAll(contextResults);
+                        }
+
+                    } else {
+                        result = new UpdateCheckResult(node);
+                        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
                     }
 
-                } else if (repositoryRulesItem != null) { // hywang add for 6484
-                    boolean isFindRules = false;
-                    IElementParameter param = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                    if (param != null) {
-                        isFindRules = true;
+                    // add the check result to resultList, hold the value.
+                    if (result != null) {
+                        if (!openedProcesses.contains(getProcess())) {
+                            result.setFromItem(true);
+                        }
+                        result.setJob(getProcess());
+                        setConfigrationForReadOnlyJob(result);
+                        propertiesResults.add(result);
                     }
-                    if (!isFindRules) {
-                        result = new UpdateCheckResult(node);
-                        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN);
-                    }
-                } else if (repositoryLinkRulesItem != null) {
-                    boolean isFindLinkRules = false;
-                    IElementParameter param = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                    if (param != null) {
-                        isFindLinkRules = true;
-                    }
-                    if (!isFindLinkRules) {
-                        result = new UpdateCheckResult(node);
-                        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN);
-                    }
-                } else if (item instanceof FileItem) {
-                    // only for
-                    IElementParameter param = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                    if (param == null || lastVersion == null) {
-                        result = new UpdateCheckResult(node);
-                        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN);
-                    }
-
-                } else {
-                    result = new UpdateCheckResult(node);
-                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN);
-                }
-
-                // add the check result to resultList, hold the value.
-                if (result != null) {
-                    if (!openedProcesses.contains(getProcess())) {
-                        result.setFromItem(true);
-                    }
-                    result.setJob(getProcess());
-                    setConfigrationForReadOnlyJob(result);
-                    propertiesResults.add(result);
                 }
             }
         }
@@ -2118,7 +2088,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
     /**
      * ggu Comment method "checkParameterContextMode".
-     * 
+     *
      * for bug 5198
      */
     private List<UpdateResult> checkParameterContextMode(final List<? extends IElementParameter> parameters,
@@ -2266,11 +2236,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "checkNodesPropertyChanger".
-     * 
+     *
      * If this is not relational joblet node to update. filter it.
-     * 
+     *
      * @deprecated seems have unused it.
      */
     @Deprecated
@@ -2442,7 +2412,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     /**
-     * 
+     *
      * DOC hcw ProcessUpdateManager class global comment. Detailled comment
      */
     static class ContextItemParamMap {

@@ -147,9 +147,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (鏄熸湡浜�, 29 涔濇湀 2006) yzhang $
- * 
+ *
  */
 
 public abstract class AbstractElementPropertySectionController implements PropertyChangeListener {
@@ -224,9 +224,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC yzhang Comment method "createControl".
-     * 
+     *
      * Create control within the tabbed property setcion.
-     * 
+     *
      * @param subComposite. The composite selected in the editor or view, transfered from super class of tabbed
      * properties framwork.
      * @param param. The paramenter from EMF.
@@ -250,7 +250,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Will return true of false depends if the control has dynamic size or not.
-     * 
+     *
      * @return
      */
     public boolean hasDynamicRowSize() {
@@ -259,7 +259,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Used only to force the rowSize if the size is dynamic.
-     * 
+     *
      * @param height
      */
     public void setAdditionalHeightSize(int height) {
@@ -268,7 +268,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Used only to force the rowSize if the size is dynamic.
-     * 
+     *
      * @return the height
      */
     public int getAdditionalHeightSize() {
@@ -376,7 +376,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC zli Comment method "getValueFromRepositoryName".
-     * 
+     *
      * @param elem2
      * @param repositoryName
      * @param parameterName
@@ -451,7 +451,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC yzhang Comment method "init".
-     * 
+     *
      * Configuration for necessay parameters from class DynamicTabbedPropertiesSection.
      */
     public void init(IDynamicProperty dp) {
@@ -473,7 +473,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Getter for dynamicTabbedPropertySection.
-     * 
+     *
      * @return the dynamicTabbedPropertySection
      */
     public IDynamicProperty getDynamicProperty() {
@@ -484,9 +484,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC yzhang Comment method "getWidgetFactory".
-     * 
+     *
      * Get the TabbedPropertySheetWidgetFactory for control creating.
-     * 
+     *
      * @return
      */
     protected WidgetFactory getWidgetFactory() {
@@ -497,12 +497,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     /**
-     * 
+     *
      * DOC amaumont DynamicTabbedPropertySection class global comment. Detailled comment <br/>
-     * 
+     *
      * @author amaumont $Id: DynamicTabbedPropertySection.java 344 2006-11-08 14:29:42 +0000 (mer., 08 nov. 2006)
      * smallet $
-     * 
+     *
      */
     public class EditionControlHelper {
 
@@ -523,7 +523,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "checkErrors".
-         * 
+         *
          * @param t
          * @param b
          */
@@ -533,7 +533,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "register".
-         * 
+         *
          * @param parameterName
          * @param control
          * @param checkSyntax
@@ -580,7 +580,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "register".
-         * 
+         *
          * @param control
          */
         public void unregister(Control control) {
@@ -593,12 +593,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
     private static Map<Control, ControlProperties> controlToProp = new HashMap<Control, ControlProperties>();
 
     /**
-     * 
+     *
      * DOC amaumont DynamicTabbedPropertySection class global comment. Detailled comment <br/>
-     * 
+     *
      * @author amaumont $Id: DynamicTabbedPropertySection.java 344 2006-11-08 14:29:42 +0000 (mer., 08 nov. 2006)
      * smallet $
-     * 
+     *
      */
     class CheckErrorsHelper {
 
@@ -699,7 +699,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "unregister".
-         * 
+         *
          * @param control
          */
         public void unregister(Control control) {
@@ -736,7 +736,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "checkSyntax".
-         * 
+         *
          * @param control
          * @param modifying
          */
@@ -972,7 +972,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "resetErrorState".
-         * 
+         *
          * @param control
          * @param previousProblem
          */
@@ -988,11 +988,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     /**
-     * 
+     *
      * Container of original properties of Control. <br/>
-     * 
+     *
      * $Id: DynamicTabbedPropertySection.java 865 2006-12-06 06:14:57 +0000 (鏄熸湡涓�, 06 鍗佷簩鏈� 2006) bqian $
-     * 
+     *
      */
     class ControlProperties {
 
@@ -1015,13 +1015,13 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     /**
-     * 
+     *
      * DOC amaumont DynamicTabbedPropertySection class global comment. Detailled comment <br/>
-     * 
+     *
      * @author amaumont
-     * 
+     *
      * $Id: DynamicTabbedPropertySection.java 865 2006-12-06 06:14:57 +0000 (鏄熸湡涓�, 06 鍗佷簩鏈� 2006) bqian $
-     * 
+     *
      */
     class UndoRedoHelper {
 
@@ -1029,7 +1029,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "unregister".
-         * 
+         *
          * @param control
          */
         public void unregister(Control control) {
@@ -1085,7 +1085,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         /**
          * DOC amaumont Comment method "register".
-         * 
+         *
          * @param control
          */
         public void register(Control control) {
@@ -1096,7 +1096,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC amaumont Comment method "getParameterName".
-     * 
+     *
      * @param control
      * @return
      */
@@ -1116,7 +1116,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Get the command stack of the Gef editor.
-     * 
+     *
      * @return
      */
     protected CommandStack getCommandStack() {
@@ -1157,7 +1157,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Accept Text and StyledText control.
-     * 
+     *
      * @param labelText
      */
     public void addDragAndDropTarget(final Control textControl) {
@@ -1224,7 +1224,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Sets the elem.
-     * 
+     *
      * @param elem the elem to set
      */
     protected void setElem(Element elem) {
@@ -1233,7 +1233,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Sets the hashCurControls.
-     * 
+     *
      * @param hashCurControls the hashCurControls to set
      */
     protected void setHashCurControls(BidiMap hashCurControls) {
@@ -1242,7 +1242,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Sets the part.
-     * 
+     *
      * @param part the part to set
      */
     protected void setPart(AbstractMultiPageTalendEditor part) {
@@ -1251,7 +1251,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * Sets the section.
-     * 
+     *
      * @param section the section to set
      */
     protected void setSection(EComponentCategory section) {
@@ -1260,7 +1260,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC amaumont Comment method "checkErrors".
-     * 
+     *
      * @param control must be or extends <code>Text</code> or <code>StyledText</code>
      */
     protected void checkErrorsForPropertiesOnly(Control control) {
@@ -1273,7 +1273,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * qzhang Comment method "fixedCursorPosition".
-     * 
+     *
      * @param param
      * @param labelText
      * @param value
@@ -1297,7 +1297,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * qzhang Comment method "getcursorPosition".
-     * 
+     *
      * @param previousText
      * @param currentText
      * @return
@@ -1313,7 +1313,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * qzhang Comment method "getLeftCharPosition".
-     * 
+     *
      * @param previousText
      * @param currentText
      * @return
@@ -1357,7 +1357,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
-                && getValueFromRepositoryName(element, "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$ 
+                && getValueFromRepositoryName(element, "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
             type = EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName();
         }
         // If the dbtype has been setted don't reset it again unless the dbtype of connParameters is null.
@@ -1615,7 +1615,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC yexiaowei Comment method "fetchElementParameterValude".
-     * 
+     *
      * @param elem
      * @param context
      * @param actualKey
@@ -1656,7 +1656,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC zli Comment method "getImplicitRepositoryId".
-     * 
+     *
      * @return
      */
     protected String getImplicitRepositoryId() {
@@ -1684,7 +1684,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC zli Comment method "getStatsLogRepositoryId".
-     * 
+     *
      * @return
      */
     protected String getStatsLogRepositoryId() {
@@ -1711,7 +1711,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
     /**
      * Sets the parameters, name node uri and job tracker uri, for connection parameters. Added by Marvin Wang on Jan 8,
      * 2013.
-     * 
+     *
      * @param element
      */
     private void setSpecialParamsForHiveEmbedded(IElement element) {
@@ -1753,12 +1753,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }
         // Get real hsqldb type
         if (type.equals(EDatabaseTypeName.HSQLDB.name())
-                && getValueFromRepositoryName(elem, "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$ 
+                && getValueFromRepositoryName(elem, "RUNNING_MODE").equals("HSQLDB_INPROGRESS_PERSISTENT")) {//$NON-NLS-1$
             type = EDatabaseTypeName.HSQLDB_IN_PROGRESS.getDisplayName();
         }
         connParameters.setDbType(type);
 
-        String driverName = getValueFromRepositoryName(elem, "DB_VERSION"); //$NON-NLS-1$ 
+        String driverName = getValueFromRepositoryName(elem, "DB_VERSION"); //$NON-NLS-1$
         String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(type, driverName);
         if (EDatabaseTypeName.HIVE.getProduct().equalsIgnoreCase(type)) {
             if (EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(
@@ -1909,9 +1909,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isExtra".
-     * 
+     *
      * for extra db setting.
      */
     private boolean sameExtraParameter(IElementParameter param) {
@@ -1935,7 +1935,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
     /**
      * DOC qzhang Comment method "openSQLBuilder".
-     * 
+     *
      * @param repositoryType
      * @param propertyName
      * @param query
@@ -2130,34 +2130,44 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     private Command refreshConnectionCommand(Control control) {
+        if (control.getData(PARAMETER_NAME) != null && control.getData(PARAMETER_NAME) instanceof String) {
+            String paramName = (String) control.getData(PARAMETER_NAME);
 
-        final IElementParameter propertyParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-        if (propertyParam != null) {
-            final IElementParameter repositoryParam = propertyParam.getChildParameters().get(
-                    EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-            if (repositoryParam != null) {
-                try {
-                    IRepositoryViewObject o = RepositoryPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory()
-                            .getLastVersion((String) repositoryParam.getValue());
-                    // for bug 14535
-                    if (o != null && elem instanceof INode) {
-                        INode node = (INode) elem;
-                        IMetadataService metadataService = CorePlugin.getDefault().getMetadataService();
-                        if (metadataService != null) {
-                            metadataService.openMetadataConnection(o, node);
+            IElementParameter param = elem.getElementParameter(paramName);
+            String propertyParamName = null;
+            if (param.getRepositoryProperty() != null) {
+                propertyParamName = param.getRepositoryProperty();
+            } else {
+                propertyParamName = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE).getName();
+            }
+            final IElementParameter propertyParam = elem.getElementParameter(propertyParamName);
+
+            if (propertyParam != null) {
+                final IElementParameter repositoryParam = propertyParam.getChildParameters().get(
+                        EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                if (repositoryParam != null) {
+                    try {
+                        IRepositoryViewObject o = RepositoryPlugin.getDefault().getRepositoryService()
+                                .getProxyRepositoryFactory().getLastVersion((String) repositoryParam.getValue());
+                        // for bug 14535
+                        if (o != null && elem instanceof INode) {
+                            INode node = (INode) elem;
+                            IMetadataService metadataService = CorePlugin.getDefault().getMetadataService();
+                            if (metadataService != null) {
+                                metadataService.openMetadataConnection(o, node);
+                            }
+                            // TDI-21143 : Studio repository view : remove all refresh call to repo view
+                            // IRepositoryView view = RepositoryManagerHelper.findRepositoryView();
+                            // if (view != null) {
+                            // view.refresh();
+                            // }
                         }
-                        // TDI-21143 : Studio repository view : remove all refresh call to repo view
-                        // IRepositoryView view = RepositoryManagerHelper.findRepositoryView();
-                        // if (view != null) {
-                        // view.refresh();
-                        // }
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
                     }
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
                 }
             }
         }
-
         return null;
     }
 
@@ -2175,9 +2185,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     /**
-     * 
+     *
      * cli Comment method "addResourceDisposeListener".
-     * 
+     *
      * When dispose the control, dispose resource at the same time. (bug 6916)
      */
     protected void addResourceDisposeListener(final Control parent, final Resource res) {

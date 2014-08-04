@@ -49,6 +49,42 @@
         exist_tMOM = true;
     }
 
+    String[] sqlDbComponents = new String[] {
+        "tAccessConnection",
+        "tAmazonMysqlConnection",
+        "tAmazonOracleConnection",
+        "tAS400Connection",
+        "tDB2Connection",
+        "tFirebirdConnection",
+        "tGreenplumConnection",
+        "tHiveConnection",
+        "tInformixConnection",
+        "tIngresConnection",
+        "tInterbaseConnection",
+        "tJDBCConnection",
+        "tMSSqlConnection",
+        "tMysqlConnection",
+        "tNetezzaConnection",
+        "tOracleConnection",
+        "tParAccelConnection",
+        "tPostgresPlusConnection",
+        "tPostgresqlConnection",
+        "tRedshiftConnection",
+        "tSQLiteConnection",
+        "tSybaseConnection",
+        "tTeradataConnection",
+        "tVectorWiseConnection",
+        "tVerticaConnection"
+    };
+    boolean exist_tSQLDB = false;
+    List<INode> sqlDbComponentsList =  new ArrayList<INode>();
+    for (String sqlDbComponent : sqlDbComponents) {
+        sqlDbComponentsList.addAll((List<INode>)process.getNodesOfType(sqlDbComponent));
+    }
+    if (sqlDbComponentsList.size() > 0) {
+        exist_tSQLDB = true;
+    }
+
     boolean exist_tSCP = false;
     List<INode> scpComponentsList = (List<INode>)process.getNodesOfType("tSCPConnection");
     if (scpComponentsList.size() > 0) {
@@ -615,6 +651,10 @@ this.globalResumeTicket = true;//to run tPostJob
     closeScpConnections();
 <% } %>
 
+<% if (exist_tSQLDB) { %>
+    closeSqlDbConnections();
+<% } %>
+
 <%
     if (hasSAM4RS || hasSAM4WS) {
 %>
@@ -661,9 +701,11 @@ if (execStat) {
 <% if(exist_tMOM) { %>
     closeJmsConnections();
 <% } %>
-
 <% if(exist_tSCP) { %>
     closeScpConnections();
+<% } %>
+<% if (exist_tSQLDB) { %>
+    closeSqlDbConnections();
 <% } %>
     }
 
@@ -713,6 +755,22 @@ if (execStat) {
     }
 %>
 
+<%  if(exist_tSQLDB) { %>
+    private void closeSqlDbConnections() {
+        try {
+            Object obj_conn;
+<%    for (INode sqlDbComponent : sqlDbComponentsList) { %>
+            obj_conn = globalMap.remove("conn_<%=sqlDbComponent.getUniqueName() %>");
+            if (null != obj_conn) {
+                ((java.sql.Connection) obj_conn).close();
+            }
+<%    } %>
+        } catch (java.lang.Exception e) {
+        }
+    }
+<%  } %>
+
+
     private java.util.Map<String, Object> getSharedConnections4REST() {
         java.util.Map<String, Object> connections = new java.util.HashMap<String, Object>();
 <%
@@ -727,6 +785,13 @@ if (execStat) {
         for (INode scpNode : scpComponentsList) {
 %>
             connections.put("conn_<%=scpNode.getUniqueName() %>", globalMap.get("conn_<%=scpNode.getUniqueName() %>"));
+<%
+        }
+%>
+<%
+        for (INode sqlDbNode : sqlDbComponentsList) {
+%>
+            connections.put("conn_<%=sqlDbNode.getUniqueName() %>", globalMap.get("conn_<%=sqlDbNode.getUniqueName() %>"));
 <%
         }
 %>

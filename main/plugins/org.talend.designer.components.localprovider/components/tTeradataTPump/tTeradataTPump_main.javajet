@@ -135,13 +135,19 @@ if(columnList!=null){
  		}
 	}
 }
-if(("Update").equals(action) || ("InsertOrUpdate").equals(action)){
+if(("Update").equals(action)){
 %>
 fw_<%=cid %>.write("UPDATE "+tableFullName_<%=cid%>+" SET "+"<%=updateSetSQL.toString()%>"
 	+" WHERE "+"<%=updateWhereSQL%>"+";"+"<%=lineSeparator%>");
 <%
-}
-if(("Insert").equals(action) || ("InsertOrUpdate").equals(action)){
+}%>
+  
+  <% if(("InsertOrUpdate").equals(action)){ %>
+		fw_<%= cid %>.write("UPDATE "+tableFullName_<%= cid %>+" SET <%=updateSetSQL.toString()%> WHERE (<%=updateWhereSQL%>) ELSE INSERT INTO "+tableFullName_<%=cid%>+" (<%=insertColSQL%>) VAlUES(<%=insertValueSQL.toString()%>);<%=lineSeparator%>");
+  <% } %>
+
+<%
+if(("Insert").equals(action)){
 %>
 fw_<%=cid %>.write("INSERT INTO "+tableFullName_<%=cid%>+"("
 	+"<%=insertColSQL%>"+") VAlUES("+"<%=insertValueSQL.toString()%>"+");"+"<%=lineSeparator%>");

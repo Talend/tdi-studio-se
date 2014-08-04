@@ -24,6 +24,7 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapFactory;
 import org.talend.designer.dbmap.model.emf.dbmap.FilterEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.InputTable;
 import org.talend.designer.dbmap.model.emf.dbmap.OutputTable;
+import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -72,14 +73,23 @@ public class DBMapHelper {
                     }
 
                     // filters
-                    if (table.getCustomConditionsEntries() != null && !table.getCustomConditionsEntries().isEmpty()) {
-                        for (ExternalDbMapEntry entity : table.getCustomConditionsEntries()) {
+                    if (table.getCustomWhereConditionsEntries() != null && !table.getCustomWhereConditionsEntries().isEmpty()) {
+                        for (ExternalDbMapEntry entity : table.getCustomWhereConditionsEntries()) {
                             final FilterEntry persistentEntry = DbmapFactory.eINSTANCE.createFilterEntry();
                             persistentEntry.setName(entity.getName());
                             persistentEntry.setExpression(entity.getExpression());
+                            persistentEntry.setFilterKind(FilterTableEntry.WHERE_FILTER);
                             persistentTable.getFilterEntries().add(persistentEntry);
                         }
-
+                    }
+                    if (table.getCustomOtherConditionsEntries() != null && !table.getCustomOtherConditionsEntries().isEmpty()) {
+                        for (ExternalDbMapEntry entity : table.getCustomOtherConditionsEntries()) {
+                            final FilterEntry persistentEntry = DbmapFactory.eINSTANCE.createFilterEntry();
+                            persistentEntry.setName(entity.getName());
+                            persistentEntry.setExpression(entity.getExpression());
+                            persistentEntry.setFilterKind(FilterTableEntry.OTHER_FILTER);
+                            persistentTable.getFilterEntries().add(persistentEntry);
+                        }
                     }
                 }
 

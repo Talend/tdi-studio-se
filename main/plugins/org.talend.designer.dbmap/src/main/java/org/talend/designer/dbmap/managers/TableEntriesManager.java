@@ -137,10 +137,18 @@ public class TableEntriesManager {
                 dataMapTable.addColumnEntry((IColumnEntry) dataMapTableEntry, index);
             }
         } else if (dataMapTableEntry instanceof FilterTableEntry) {
-            if (index == null) {
-                ((OutputTable) dataMapTable).addFilterEntry((FilterTableEntry) dataMapTableEntry);
-            } else {
-                ((OutputTable) dataMapTable).addFilterEntry((FilterTableEntry) dataMapTableEntry, index);
+            if (FilterTableEntry.WHERE_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
+                if (index == null) {
+                    ((OutputTable) dataMapTable).addWhereFilterEntry((FilterTableEntry) dataMapTableEntry);
+                } else {
+                    ((OutputTable) dataMapTable).addWhereFilterEntry((FilterTableEntry) dataMapTableEntry, index);
+                }
+            } else if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
+                if (index == null) {
+                    ((OutputTable) dataMapTable).addOtherFilterEntry((FilterTableEntry) dataMapTableEntry);
+                } else {
+                    ((OutputTable) dataMapTable).addOtherFilterEntry((FilterTableEntry) dataMapTableEntry, index);
+                }
             }
         } else {
             String exceptionMessage = Messages.getString("TableEntriesManager.exceptionMessage.typeIsNotValid", dataMapTableEntry //$NON-NLS-1$
@@ -232,7 +240,11 @@ public class TableEntriesManager {
                 }
             } else if (dataMapTableEntry instanceof FilterTableEntry) {
                 if (dataMapTable instanceof OutputTable) {
-                    ((OutputTable) dataMapTable).removeFilterEntry((FilterTableEntry) dataMapTableEntry);
+                    if (FilterTableEntry.WHERE_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
+                        ((OutputTable) dataMapTable).removeWhereFilterEntry((FilterTableEntry) dataMapTableEntry);
+                    } else if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
+                        ((OutputTable) dataMapTable).removeOtherFilterEntry((FilterTableEntry) dataMapTableEntry);
+                    }
                 }
             } else {
                 String exceptionMessage = Messages.getString("TableEntriesManager.exceptionMessage.typeIsNotValid", //$NON-NLS-1$
@@ -289,14 +301,18 @@ public class TableEntriesManager {
         if (dataMapTableEntry instanceof IColumnEntry) {
             tableItems = dataMapTableView.getTableViewerCreatorForColumns().getTable().getItems();
         } else if (dataMapTableEntry instanceof FilterTableEntry) {
-            tableItems = dataMapTableView.getTableViewerCreatorForFilters().getTable().getItems();
+            if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
+                tableItems = dataMapTableView.getTableViewerCreatorForOtherFilters().getTable().getItems();
+            } else {
+                tableItems = dataMapTableView.getTableViewerCreatorForWhereFilters().getTable().getItems();
+            }
         } else {
             throw new IllegalArgumentException(Messages.getString("TableEntriesManager.exceptionMessage.caseNotFound")); //$NON-NLS-1$
         }
         TableItem tableItem = null;
-        for (int i = 0; i < tableItems.length; i++) {
-            if (tableItems[i].getData() == dataMapTableEntry) {
-                tableItem = tableItems[i];
+        for (TableItem tableItem2 : tableItems) {
+            if (tableItem2.getData() == dataMapTableEntry) {
+                tableItem = tableItem2;
                 break;
             }
         }

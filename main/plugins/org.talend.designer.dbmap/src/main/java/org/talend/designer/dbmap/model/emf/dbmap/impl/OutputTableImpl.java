@@ -1,6 +1,5 @@
 /**
- * <copyright>
- * </copyright>
+ * <copyright> </copyright>
  *
  * $Id$
  */
@@ -9,37 +8,32 @@ package org.talend.designer.dbmap.model.emf.dbmap.impl;
 import java.util.Collection;
 
 import org.eclipse.emf.common.notify.NotificationChain;
-
 import org.eclipse.emf.common.util.EList;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
-
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
 import org.talend.designer.dbmap.model.emf.dbmap.FilterEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.OutputTable;
 
 /**
- * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Output Table</b></em>'.
- * <!-- end-user-doc -->
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Output Table</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * <ul>
- *   <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.OutputTableImpl#getFilterEntries <em>Filter Entries</em>}</li>
+ * <li>{@link org.talend.designer.dbmap.model.emf.dbmap.impl.OutputTableImpl#getFilterEntries <em>Filter Entries</em>}</li>
  * </ul>
  * </p>
  *
  * @generated
  */
 public class OutputTableImpl extends AbstaceDBInOutTableImpl implements OutputTable {
+
     /**
-     * The cached value of the '{@link #getFilterEntries() <em>Filter Entries</em>}' containment reference list.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * The cached value of the '{@link #getFilterEntries() <em>Filter Entries</em>}' containment reference list. <!--
+     * begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @see #getFilterEntries()
      * @generated
      * @ordered
@@ -47,8 +41,8 @@ public class OutputTableImpl extends AbstaceDBInOutTableImpl implements OutputTa
     protected EList<FilterEntry> filterEntries;
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     protected OutputTableImpl() {
@@ -56,8 +50,8 @@ public class OutputTableImpl extends AbstaceDBInOutTableImpl implements OutputTa
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
@@ -66,89 +60,91 @@ public class OutputTableImpl extends AbstaceDBInOutTableImpl implements OutputTa
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
+    @Override
     public EList<FilterEntry> getFilterEntries() {
         if (filterEntries == null) {
-            filterEntries = new EObjectContainmentEList<FilterEntry>(FilterEntry.class, this, DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES);
+            filterEntries = new EObjectContainmentEList<FilterEntry>(FilterEntry.class, this,
+                    DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES);
         }
         return filterEntries;
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
     public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
-            case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
-                return ((InternalEList<?>)getFilterEntries()).basicRemove(otherEnd, msgs);
+        case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
+            return ((InternalEList<?>) getFilterEntries()).basicRemove(otherEnd, msgs);
         }
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
     public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
-            case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
-                return getFilterEntries();
+        case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
+            return getFilterEntries();
         }
         return super.eGet(featureID, resolve, coreType);
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @SuppressWarnings("unchecked")
     @Override
     public void eSet(int featureID, Object newValue) {
         switch (featureID) {
-            case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
-                getFilterEntries().clear();
-                getFilterEntries().addAll((Collection<? extends FilterEntry>)newValue);
-                return;
+        case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
+            getFilterEntries().clear();
+            getFilterEntries().addAll((Collection<? extends FilterEntry>) newValue);
+            return;
         }
         super.eSet(featureID, newValue);
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
     public void eUnset(int featureID) {
         switch (featureID) {
-            case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
-                getFilterEntries().clear();
-                return;
+        case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
+            getFilterEntries().clear();
+            return;
         }
         super.eUnset(featureID);
     }
 
     /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
      * @generated
      */
     @Override
     public boolean eIsSet(int featureID) {
         switch (featureID) {
-            case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
-                return filterEntries != null && !filterEntries.isEmpty();
+        case DbmapPackage.OUTPUT_TABLE__FILTER_ENTRIES:
+            return filterEntries != null && !filterEntries.isEmpty();
         }
         return super.eIsSet(featureID);
     }
 
-} //OutputTableImpl
+} // OutputTableImpl

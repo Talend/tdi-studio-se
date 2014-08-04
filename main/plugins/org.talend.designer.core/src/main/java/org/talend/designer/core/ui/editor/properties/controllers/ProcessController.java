@@ -42,7 +42,6 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.PluginChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.process.EParameterFieldType;
@@ -485,9 +484,6 @@ public class ProcessController extends AbstractElementPropertySectionController 
         } else {
             List<ERepositoryObjectType> repObjectTypes = new ArrayList<ERepositoryObjectType>();
             repObjectTypes.add(ERepositoryObjectType.PROCESS);
-            if (PluginChecker.isMapReducePluginLoader()) {
-                repObjectTypes.add(ERepositoryObjectType.PROCESS_MR);
-            }
             RepositoryReviewDialog dialog = new RepositoryReviewDialog((button).getShell(), repObjectTypes, procssId);
 
             // see feature 0003664: tRunJob: When opening the tree dialog to select the job target, it could be useful

@@ -31,9 +31,9 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
 /**
  * Each parameter of the components are read and written in this class. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ElementParameter implements IElementParameter {
 
@@ -141,6 +141,8 @@ public class ElementParameter implements IElementParameter {
 
     private int maxlength;
 
+    private String repositoryProperty;
+
     public ElementParameter(final IElement element) {
         this.element = element;
     }
@@ -158,6 +160,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setName(java.lang.String)
      */
+    @Override
     public void setName(final String s) {
         name = s;
     }
@@ -167,10 +170,12 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getVariableName()
      */
+    @Override
     public String getVariableName() {
         return "__" + name + "__"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    @Override
     public void setCategory(final EComponentCategory cat) {
         category = cat;
     }
@@ -180,6 +185,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getCategory()
      */
+    @Override
     public EComponentCategory getCategory() {
         return this.category;
     }
@@ -189,6 +195,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setDisplayName(java.lang.String)
      */
+    @Override
     public void setDisplayName(final String s) {
         displayName = s;
     }
@@ -199,6 +206,7 @@ public class ElementParameter implements IElementParameter {
      * @seeorg.talend.designer.core.model.components.IDesignerElementParameter#setField(org.talend.core.model.designer.
      * EParameterFieldType)
      */
+    @Override
     public void setFieldType(final EParameterFieldType type) {
         field = type;
     }
@@ -208,10 +216,12 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setValue(java.lang.Object)
      */
+    @Override
     public void setValue(final Object o) {
         value = o;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -221,6 +231,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getDisplayName()
      */
+    @Override
     public String getDisplayName() {
         return displayName;
     }
@@ -230,6 +241,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getField()
      */
+    @Override
     public EParameterFieldType getFieldType() {
         return field;
     }
@@ -239,26 +251,32 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getValue()
      */
+    @Override
     public Object getValue() {
         return value;
     }
 
+    @Override
     public void setListItemsDisplayName(final String[] list) {
         itemsDisplayName = list;
     }
 
+    @Override
     public String[] getListItemsDisplayName() {
         return itemsDisplayName;
     }
 
+    @Override
     public void setListItemsDisplayCodeName(final String[] list) {
         itemsDisplayCodeName = list;
     }
 
+    @Override
     public String[] getListItemsDisplayCodeName() {
         return itemsDisplayCodeName;
     }
 
+    @Override
     public void setListItemsValue(final Object[] list) {
         if (this.getFieldType() == EParameterFieldType.TABLE) {
             EParameterFieldType.AS400_CHECK.getClass();
@@ -266,42 +284,52 @@ public class ElementParameter implements IElementParameter {
         itemsValue = list;
     }
 
+    @Override
     public Object[] getListItemsValue() {
         return itemsValue;
     }
 
+    @Override
     public void setDefaultClosedListValue(Object o) {
         defaultClosedListValue = o;
     }
 
+    @Override
     public Object getDefaultClosedListValue() {
         return defaultClosedListValue;
     }
 
+    @Override
     public void setListRepositoryItems(final String[] list) {
         itemsRepository = list;
     }
 
+    @Override
     public String[] getListRepositoryItems() {
         return itemsRepository;
     }
 
+    @Override
     public void setListItemsShowIf(String[] list) {
         itemsShowIf = list;
     }
 
+    @Override
     public String[] getListItemsShowIf() {
         return itemsShowIf;
     }
 
+    @Override
     public void setListItemsNotShowIf(String[] list) {
         itemsNotShowIf = list;
     }
 
+    @Override
     public String[] getListItemsNotShowIf() {
         return itemsNotShowIf;
     }
 
+    @Override
     public int getIndexOfItemFromList(String item) {
         int index = -1;
         boolean found = false;
@@ -324,22 +352,27 @@ public class ElementParameter implements IElementParameter {
         return index;
     }
 
+    @Override
     public int getNbLines() {
         return this.nbLines;
     }
 
+    @Override
     public void setNbLines(final int nbLines) {
         this.nbLines = nbLines;
     }
 
+    @Override
     public int getNumRow() {
         return this.numRow;
     }
 
+    @Override
     public void setNumRow(final int numRow) {
         this.numRow = numRow;
     }
 
+    @Override
     public boolean isReadOnly() {
         if (element != null) {
             return (this.readOnly || element.isReadOnly());
@@ -351,54 +384,67 @@ public class ElementParameter implements IElementParameter {
         return this.readOnly;
     }
 
+    @Override
     public void setReadOnly(final boolean readOnly) {
         this.readOnly = readOnly;
     }
 
+    @Override
     public boolean isRequired() {
         return this.required;
     }
 
+    @Override
     public void setRequired(final boolean required) {
         this.required = required;
     }
 
+    @Override
     public void setShow(final boolean show) {
         this.show = show;
     }
 
+    @Override
     public String getRepositoryValue() {
         return this.repositoryValue;
     }
 
+    @Override
     public void setRepositoryValue(String repositoryValue) {
         this.repositoryValue = repositoryValue;
     }
 
+    @Override
     public boolean isRepositoryValueUsed() {
         return this.repositoryValueUsed;
     }
 
+    @Override
     public void setRepositoryValueUsed(boolean repositoryUsed) {
         this.repositoryValueUsed = repositoryUsed;
     }
 
+    @Override
     public String getShowIf() {
         return showIf;
     }
 
+    @Override
     public void setShowIf(String showIf) {
         this.showIf = showIf;
     }
 
+    @Override
     public String getNotShowIf() {
         return notShowIf;
     }
 
+    @Override
     public void setNotShowIf(String notShowIf) {
         this.notShowIf = notShowIf;
     }
 
+    @Override
     public boolean isShow(List<? extends IElementParameter> listParam) {
         boolean showParameter = false;
 
@@ -415,6 +461,7 @@ public class ElementParameter implements IElementParameter {
     }
 
     // added by dlin for feature TDI-22421
+    @Override
     public boolean isRequired(List<? extends IElementParameter> listParam) {
         boolean requiredParameter = false;
         if (this.requiredIF != null && !required) {
@@ -425,6 +472,7 @@ public class ElementParameter implements IElementParameter {
         return requiredParameter;
     }
 
+    @Override
     public boolean isShow(String conditionShowIf, String conditionNotShowIf, List<? extends IElementParameter> listParam) {
         boolean showParameter = false;
 
@@ -454,14 +502,17 @@ public class ElementParameter implements IElementParameter {
         return showParameter;
     }
 
+    @Override
     public List<IElementParameterDefaultValue> getDefaultValues() {
         return this.defaultValues;
     }
 
+    @Override
     public void setDefaultValues(List<IElementParameterDefaultValue> defaultValues) {
         this.defaultValues = defaultValues;
     }
 
+    @Override
     public void setValueToDefault(List<? extends IElementParameter> listParam) {
         for (IElementParameterDefaultValue defaultValue : defaultValues) {
             boolean setDefaultValue = false;
@@ -485,18 +536,22 @@ public class ElementParameter implements IElementParameter {
         }
     }
 
+    @Override
     public IElement getElement() {
         return element;
     }
 
+    @Override
     public void setElement(IElement element) {
         this.element = element;
     }
 
+    @Override
     public boolean isBasedOnSchema() {
         return basedOnSchema;
     }
 
+    @Override
     public void setBasedOnSchema(boolean basedOnSchema) {
         this.basedOnSchema = basedOnSchema;
     }
@@ -509,19 +564,22 @@ public class ElementParameter implements IElementParameter {
         return name + ": " + value.toString(); //$NON-NLS-1$
     }
 
+    @Override
     public String getFilter() {
         return filter;
     }
 
+    @Override
     public void setFilter(String filter) {
         this.filter = filter;
     }
 
     /**
      * Getter for noCheck.
-     * 
+     *
      * @return the noCheck
      */
+    @Override
     public boolean isNoCheck() {
         IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
 
@@ -539,36 +597,40 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the noCheck.
-     * 
+     *
      * @param noCheck the noCheck to set
      */
+    @Override
     public void setNoCheck(boolean noCheck) {
         this.noCheck = noCheck;
     }
 
     /**
      * Getter for context.
-     * 
+     *
      * @return the context
      */
+    @Override
     public String getContext() {
         return context;
     }
 
     /**
      * Sets the context.
-     * 
+     *
      * @param context the context to set
      */
+    @Override
     public void setContext(String context) {
         this.context = context;
     }
 
     /**
      * Getter for childParameters.
-     * 
+     *
      * @return the childParameters
      */
+    @Override
     public Map<String, IElementParameter> getChildParameters() {
         if (childParameters == null) {
             childParameters = new HashMap<String, IElementParameter>();
@@ -576,10 +638,12 @@ public class ElementParameter implements IElementParameter {
         return childParameters;
     }
 
+    @Override
     public IElementParameter getParentParameter() {
         return parentParameter;
     }
 
+    @Override
     public void setParentParameter(IElementParameter parentParameter) {
         this.parentParameter = parentParameter;
         // keep the same category with parent.
@@ -593,7 +657,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for currentRow.
-     * 
+     *
      * @return the currentRow
      */
     public int getCurrentRow() {
@@ -602,7 +666,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the currentRow.
-     * 
+     *
      * @param currentRow the currentRow to set
      */
     public void setCurrentRow(int currentRow) {
@@ -614,6 +678,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getGroup()
      */
+    @Override
     public String getGroup() {
         return this.groupName;
     }
@@ -623,6 +688,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setGroup(java.lang.String)
      */
+    @Override
     public void setGroup(String groupName) {
         this.groupName = groupName;
     }
@@ -632,6 +698,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getGroupDisplayName()
      */
+    @Override
     public String getGroupDisplayName() {
         return this.groupDisplayName;
     }
@@ -641,6 +708,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setGroupDisplayName(java.lang.String)
      */
+    @Override
     public void setGroupDisplayName(String groupDisplayName) {
         this.groupDisplayName = groupDisplayName;
     }
@@ -650,6 +718,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getContextMode()
      */
+    @Override
     public boolean isContextMode() {
         return this.contextMode;
     }
@@ -659,6 +728,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setContextMode(java.lang.String)
      */
+    @Override
     public void setContextMode(boolean mode) {
         this.contextMode = mode;
     }
@@ -668,6 +738,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getLabelFromRepository()
      */
+    @Override
     public String getLabelFromRepository() {
         return this.labelFromRepository;
     }
@@ -677,6 +748,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setLabelFromRepository(java.lang.String)
      */
+    @Override
     public void setLabelFromRepository(String label) {
         this.labelFromRepository = label;
 
@@ -684,36 +756,40 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for color.
-     * 
+     *
      * @return the color
      */
+    @Override
     public RGB getColor() {
         return this.color;
     }
 
     /**
      * Sets the color.
-     * 
+     *
      * @param color the color to set
      */
+    @Override
     public void setColor(RGB color) {
         this.color = color;
     }
 
     /**
      * Getter for backgroundColor.
-     * 
+     *
      * @return the backgroundColor
      */
+    @Override
     public RGB getBackgroundColor() {
         return this.backgroundColor;
     }
 
     /**
      * Sets the backgroundColor.
-     * 
+     *
      * @param backgroundColor the backgroundColor to set
      */
+    @Override
     public void setBackgroundColor(RGB backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
@@ -723,6 +799,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#isBasedOnSubjobStarts()
      */
+    @Override
     public boolean isBasedOnSubjobStarts() {
         return basedOnSubjobStarts;
     }
@@ -732,6 +809,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setBasedOnSubjobStarts(boolean)
      */
+    @Override
     public void setBasedOnSubjobStarts(boolean basedOnSubjobStarts) {
         this.basedOnSubjobStarts = basedOnSubjobStarts;
     }
@@ -741,6 +819,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#isDynamicSettings()
      */
+    @Override
     public boolean isDynamicSettings() {
         return this.dynamicSettings;
     }
@@ -750,6 +829,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setDynamicSettings(java.lang.Boolean)
      */
+    @Override
     public void setDynamicSettings(boolean dynamicSettings) {
         this.dynamicSettings = dynamicSettings;
     }
@@ -759,6 +839,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getListItemsNotReadOnlyIf()
      */
+    @Override
     public String[] getListItemsNotReadOnlyIf() {
         return this.itemsNotReadOnlyIf;
     }
@@ -768,6 +849,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getListItemsReadOnlyIf()
      */
+    @Override
     public String[] getListItemsReadOnlyIf() {
         return this.itemsReadOnlyIf;
     }
@@ -777,6 +859,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getNotReadOnlyIf()
      */
+    @Override
     public String getNotReadOnlyIf() {
         // TODO Auto-generated method stub
         return this.notReadonlyIf;
@@ -787,6 +870,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#getReadOnlyIf()
      */
+    @Override
     public String getReadOnlyIf() {
         // TODO Auto-generated method stub
         return this.readonlyIf;
@@ -797,6 +881,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#isReadOnly(java.util.List)
      */
+    @Override
     public boolean isReadOnly(List<? extends IElementParameter> listParam) {
         boolean readonlyParameter = false;
 
@@ -818,6 +903,7 @@ public class ElementParameter implements IElementParameter {
      * @see org.talend.core.model.process.IElementParameter#isReadOnly(java.lang.String, java.lang.String,
      * java.util.Map)
      */
+    @Override
     public boolean isReadOnly(String conditionReadOnlyIf, String conditionNotReadOnlyIf,
             List<? extends IElementParameter> listParam) {
         boolean readonlyParameter = false;
@@ -839,6 +925,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setListItemsNotReadOnlyIf(java.lang.String[])
      */
+    @Override
     public void setListItemsNotReadOnlyIf(String[] list) {
         itemsNotReadOnlyIf = list;
 
@@ -849,6 +936,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setListItemsReadOnlyIf(java.lang.String[])
      */
+    @Override
     public void setListItemsReadOnlyIf(String[] list) {
         itemsReadOnlyIf = list;
 
@@ -859,6 +947,7 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setNotReadOnlyIf(java.lang.String)
      */
+    @Override
     public void setNotReadOnlyIf(String notReadOnly) {
         this.notReadonlyIf = notReadOnly;
     }
@@ -868,26 +957,32 @@ public class ElementParameter implements IElementParameter {
      * 
      * @see org.talend.core.model.process.IElementParameter#setReadOnlyIf(java.lang.String)
      */
+    @Override
     public void setReadOnlyIf(String readOnly) {
         this.readonlyIf = readOnly;
     }
 
+    @Override
     public boolean isColumnsBasedOnSchema() {
         return this.columnsBasedOnSchema;
     }
 
+    @Override
     public void setColumnsBasedOnSchema(boolean columnsBasedOnSchema) {
         this.columnsBasedOnSchema = columnsBasedOnSchema;
     }
 
+    @Override
     public boolean isNoContextAssist() {
         return this.noContextAssist;
     }
 
+    @Override
     public void setNoContextAssist(boolean enable) {
         this.noContextAssist = enable;
     }
 
+    @Override
     public IElementParameter getClone() {
         IElementParameter clone = new ElementParameter(this.element);
 
@@ -954,7 +1049,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for javaMethod.
-     * 
+     *
      * @return the javaMethod
      */
     public String getJavaClass() {
@@ -963,7 +1058,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the javaMethod.
-     * 
+     *
      * @param javaMethod the javaMethod to set
      */
     public void setJavaClass(String javaClass) {
@@ -972,7 +1067,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for jar.
-     * 
+     *
      * @return the jar
      */
     public String getJar() {
@@ -981,7 +1076,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the jar.
-     * 
+     *
      * @param jar the jar to set
      */
     public void setJar(String jar) {
@@ -990,7 +1085,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for args.
-     * 
+     *
      * @return the args
      */
     public String[] getArgs() {
@@ -999,7 +1094,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the args.
-     * 
+     *
      * @param args the args to set
      */
     public void setArgs(String[] args) {
@@ -1008,7 +1103,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for javaFunction.
-     * 
+     *
      * @return the javaFunction
      */
     public String getJavaFunction() {
@@ -1017,7 +1112,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the javaFunction.
-     * 
+     *
      * @param javaFunction the javaFunction to set
      */
     public void setJavaFunction(String javaFunction) {
@@ -1026,7 +1121,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * DOC Administrator Comment method "setMaxLength".
-     * 
+     *
      * @param maxlength
      */
     public void setMaxLength(int maxlength) {
@@ -1035,9 +1130,10 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for maxlength.
-     * 
+     *
      * @return the maxlength
      */
+    @Override
     public int getMaxlength() {
         return this.maxlength;
     }
@@ -1050,5 +1146,25 @@ public class ElementParameter implements IElementParameter {
     // added by dlin for feature TDI-22421
     public void setRequiredIF(String requiredIF) {
         this.requiredIF = requiredIF;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.process.IElementParameter#getRepositoryProperty()
+     */
+    @Override
+    public String getRepositoryProperty() {
+        return this.repositoryProperty;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.process.IElementParameter#setRepositoryProperty(java.lang.String)
+     */
+    @Override
+    public void setRepositoryProperty(String repositoryProperty) {
+        this.repositoryProperty = repositoryProperty;
     }
 }

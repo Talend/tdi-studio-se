@@ -22,8 +22,40 @@ import org.talend.designer.abstractmap.model.table.IDataMapTable;
  */
 public class FilterTableEntry extends TableEntry {
 
+    public static final String WHERE_FILTER = "WHERE_FILTER"; //$NON-NLS-1$
+
+    public static final String OTHER_FILTER = "OTHER_FILTER"; //$NON-NLS-1$
+
+    private String filterKind;
+
     public FilterTableEntry(IDataMapTable abstractDataMapTable, String name, String expression) {
         super(abstractDataMapTable, name, expression);
+        this.filterKind = WHERE_FILTER;
+    }
+
+    public FilterTableEntry(IDataMapTable abstractDataMapTable, String name, String expression, String _filterKind) {
+        super(abstractDataMapTable, name, expression);
+        this.filterKind = _filterKind;
+    }
+
+    /**
+     * Getter for filterKind.
+     * 
+     * @return the filterKind
+     */
+    public String getFilterKind() {
+        return this.filterKind;
+    }
+
+    /**
+     * Sets the filterKind.
+     * 
+     * @param filterKind the filterKind to set, can be :<br>
+     * FilterTableEntry.WHERE_FILTER<br>
+     * FilterTableEntry.OTHER_FILTER
+     */
+    public void setFilterKind(String filterKind) {
+        this.filterKind = filterKind;
     }
 
 }

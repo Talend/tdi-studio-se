@@ -33,9 +33,9 @@ String loadFile= ElementParameterParser.getValue(node, "__LOAD_FILE__");
 String separator= ElementParameterParser.getValue(node, "__FIELD_SEPARATOR__");
 String errorFile= ElementParameterParser.getValue(node, "__ERROR_FILE__");
 String beginLoad= ElementParameterParser.getValue(node, "__BEGINLOAD_ADVANCEDPARAM__");
-boolean returnCodeDie= ElementParameterParser.getValue(node, "__RETURN_CODE_DIE__").equals("true");
+boolean returnCodeDie= "true".equals(ElementParameterParser.getValue(node, "__RETURN_CODE_DIE__"));
 String returnCode= ElementParameterParser.getValue(node, "__RETURN_CODE__");
-boolean specifyLogTable= ElementParameterParser.getValue(node, "__SPECIFY_LOG_TABLE__").equals("true");
+boolean specifyLogTable= "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_LOG_TABLE__"));
 String logTable= ElementParameterParser.getValue(node, "__LOG_TABLE_TABLE__");
 String defineCharset = ElementParameterParser.getValue(node, "__DEFINE_CHARSET__");
 String charset = ElementParameterParser.getValue(node, "__CHARSET__");
@@ -81,6 +81,9 @@ if(columnList!=null){
 String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
 java.io.File file_<%=cid %> = new java.io.File(<%=scriptPath%>+<%=table%>+ <%if("Windows".equals(execution)){%>".script"<%}else{%>".scr"<%}%>);
 
+<% if(specifyLogTable){ %>
+	   String logTable_<%= cid %> = <%=dbname%> + "." +<%= logTable %>;
+<% } %>
 <%//build script---------------------------------------------------------%>
 try{
 				<% if(!checkedScriptParameter){%>
@@ -337,13 +340,18 @@ try{
 
                 <% if("Load".equals(operatorType)){%>
                 	    fw_<%=cid %>.write("            ,TargetTable = '" + tableFullName_<%=cid%> + "'<%=lineSeparator%>");
-                	    fw_<%=cid %>.write("            ,LogTable = '" + tableFullName_<%=cid%> + "_log'<%=lineSeparator%>");
+                	<% if(specifyLogTable){ %>                	    
+                	    fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");                	    
+                	<% } %>
                 <%} if("Update".equals(operatorType)){%>
-               		    fw_<%=cid %>.write("            ,LogTable = '" + tableFullName_<%=cid%> + "_log'<%=lineSeparator%>");
+                	<% if(specifyLogTable){ %>                	    
+                	    fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");                	    
+                	<% } %>
                 		fw_<%=cid %>.write("            ,TargetTable = ['" + tableFullName_<%=cid%> + "']<%=lineSeparator%>");
                 <%} if("Stream".equals(operatorType)){%>
-					    fw_<%=cid %>.write("            ,LogTable = '" + tableFullName_<%=cid%> + "_log'<%=lineSeparator%>");
-					    fw_<%=cid %>.write("            ,ErrorTable = '" + tableFullName_<%=cid%> + "_err'<%=lineSeparator%>");
+                	<% if(specifyLogTable){ %>                	    
+                	    fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");                	    
+                	<% } %>					    
 					    fw_<%=cid %>.write("            ,AppendErrorTable = 'Y'<%=lineSeparator%>");
 					    fw_<%=cid %>.write("            ,DropErrorTable = 'N'<%=lineSeparator%>");
             <%}%>
@@ -373,9 +381,9 @@ try{
                 <%if("true".equals(defineCharset)) {
                     if(!("".equals(charset))) {
                         if("Windows".equals(execution)){%>
-                            String[] sb_<%=cid%>= {"cmd","/c","tbuild -f "+<%=charset%>+" \""+<%=scriptPath%>+<%=table%>+".script\" > \""+<%=errorFile%>+"\" 2>&1"};
+                            String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".script\" -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
                         <%}else{%>
-                            String[] sb_<%=cid%>= {"sh","-c","tbuild -f "+<%=charset%>+" \""+<%=scriptPath%>+<%=table%>+".scr\" > \""+<%=errorFile%>+"\" 2>&1"};
+                            String[] sb_<%=cid%>= {"sh","-c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".scr\" -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
                         <%}
                     }
                 } else {

@@ -75,6 +75,13 @@ public class CodeGeneratorService implements ICodeGeneratorService {
             }
         }
 
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelCodeGeneratorService.class)) {
+			ICamelCodeGeneratorService service = (ICamelCodeGeneratorService) GlobalServiceRegister.getDefault()
+					.getService(ICamelCodeGeneratorService.class);
+            if (service.validProcess(process)) {
+                return service.createCodeGenerator(process, statistics, trace, options);
+            }
+        }
         return new CodeGenerator(process, statistics, trace, options);
     }
 

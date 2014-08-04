@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,10 @@ import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
+import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.DatabaseConnectionItem;
@@ -42,6 +45,9 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.PackageHelper;
+import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -52,9 +58,9 @@ import orgomg.cwm.resource.record.RecordFile;
 
 /**
  * DOC hwang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend.epf 55206 2011-02-15 17:32:14Z mhirt $
- * 
+ *
  */
 public class ChangeValuesFromRepositoryTest {
 
@@ -70,7 +76,7 @@ public class ChangeValuesFromRepositoryTest {
 
     /**
      * DOC Administrator Comment method "setUp".
-     * 
+     *
      * @throws java.lang.Exception
      */
     @BeforeClass
@@ -80,15 +86,17 @@ public class ChangeValuesFromRepositoryTest {
 
     /**
      * DOC Administrator Comment method "setUp".
-     * 
+     *
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
         Property property = PropertiesFactory.eINSTANCE.createProperty();
         IProcess2 process = new Process(property);
-        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
-        IComponent targetCom = ComponentsFactoryProvider.getInstance().get("tMysqlOutput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent targetCom = ComponentsFactoryProvider.getInstance().get("tMysqlOutput",
+                ComponentCategory.CATEGORY_4_DI.getName());
         elem = new Node(sourceCom, process);
         elem.setLabel("tMysqlInput_1");
         target = new Node(targetCom, process);
@@ -110,7 +118,7 @@ public class ChangeValuesFromRepositoryTest {
         ((DatabaseConnection) connection).setDatabaseType("MySQL");
         ((DatabaseConnection) connection).setUsername("root");
         ((DatabaseConnection) connection).setPassword("root");
-        ((DatabaseConnection) connection).setPort("3306");
+        ((DatabaseConnection) connection).setPort("4000");
         ((DatabaseConnection) connection).setDatasourceName("test");
         ((DatabaseConnection) connection).setServerName("localhost");
 
@@ -150,7 +158,7 @@ public class ChangeValuesFromRepositoryTest {
 
     /**
      * DOC Administrator Comment method "tearDown".
-     * 
+     *
      * @throws java.lang.Exception
      */
     @After
@@ -230,6 +238,101 @@ public class ChangeValuesFromRepositoryTest {
         table.getListColumns().add(column3);
 
         return table;
+    }
+
+    public static final String BUILTIN = "BUILT_IN"; //$NON-NLS-1$
+
+    public static final String REPOSITORY = "REPOSITORY"; //$NON-NLS-1$
+
+    public static final String TEXT_BUILTIN = Messages.getString("EmfComponent.builtIn"); //$NON-NLS-1$
+
+    public static final String TEXT_REPOSITORY = Messages.getString("EmfComponent.repository"); //$NON-NLS-1$
+
+    @Test
+    public void testChangeValuesMultipleProperty() {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        IProcess2 process = new Process(property);
+        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        Node node = new Node(sourceCom, process);
+        node.setLabel("tMysqlInput_1");
+        IMetadataTable table = createSimpleMetadata();
+        table.setAttachedConnector("FLOW");
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+        metadataList.add(table);
+        node.setMetadataList(metadataList);
+
+        ElementParameter parentParam = new ElementParameter(node);
+        parentParam.setCategory(EComponentCategory.BASIC);
+        parentParam.setName("PROPERTY2");
+        parentParam.setFieldType(EParameterFieldType.PROPERTY_TYPE);
+
+        ElementParameter newParam = new ElementParameter(node);
+        newParam.setCategory(EComponentCategory.BASIC);
+        newParam.setName(EParameterName.PROPERTY_TYPE.getName());
+        newParam.setDisplayName(EParameterName.PROPERTY_TYPE.getDisplayName());
+        newParam.setListItemsDisplayName(new String[] { TEXT_BUILTIN, TEXT_REPOSITORY });
+        newParam.setListItemsDisplayCodeName(new String[] { BUILTIN, REPOSITORY });
+        newParam.setListItemsValue(new String[] { BUILTIN, REPOSITORY });
+
+        newParam.setValue(BUILTIN);
+        newParam.setNumRow(1);
+        newParam.setFieldType(EParameterFieldType.TECHNICAL);
+        newParam.setRepositoryValue("TEST");
+        newParam.setShow(true);
+        newParam.setParentParameter(parentParam);
+        // listParam.add(newParam);
+
+        newParam = new ElementParameter(node);
+        newParam.setCategory(EComponentCategory.BASIC);
+        newParam.setName(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        newParam.setDisplayName(EParameterName.REPOSITORY_PROPERTY_TYPE.getDisplayName());
+        newParam.setListItemsDisplayName(new String[] {});
+        newParam.setListItemsValue(new String[] {});
+        newParam.setNumRow(1);
+        newParam.setFieldType(EParameterFieldType.TECHNICAL);
+        newParam.setValue(""); //$NON-NLS-1$
+        newParam.setShow(false);
+        newParam.setRequired(true);
+        newParam.setParentParameter(parentParam);
+
+        ((List<IElementParameter>) node.getElementParameters()).add(parentParam);
+
+        IElementParameter param = node.getElementParameter("USER");
+        param.setRepositoryProperty("PROPERTY");
+        param = node.getElementParameter("PASS");
+        param.setRepositoryProperty("PROPERTY");
+        param = node.getElementParameter("HOST");
+        param.setRepositoryProperty("PROPERTY");
+        param = node.getElementParameter("PORT");
+        param.setRepositoryProperty("PROPERTY2");
+        param = node.getElementParameter("DBNAME");
+        param.setRepositoryProperty("PROPERTY2");
+
+        ChangeValuesFromRepository changeValuesFromRepository = new ChangeValuesFromRepository(node, connection,
+                "PROPERTY:REPOSITORY_PROPERTY_TYPE", databaseConnItem.getProperty().getId());
+        changeValuesFromRepository.execute();
+
+        DatabaseConnection dbConn = (DatabaseConnection) connection;
+        assertEquals(databaseConnItem.getProperty().getId(), node.getPropertyValue("PROPERTY:REPOSITORY_PROPERTY_TYPE"));
+
+        assertEquals(TalendTextUtils.addQuotes(dbConn.getUsername()), node.getPropertyValue("USER"));
+        assertEquals(TalendTextUtils.addQuotes(dbConn.getPassword()), node.getPropertyValue("PASS"));
+        assertEquals(TalendTextUtils.addQuotes(dbConn.getServerName()), node.getPropertyValue("HOST"));
+        assertNotSame(TalendTextUtils.addQuotes(dbConn.getPort()), node.getPropertyValue("PORT"));
+        assertNotSame(TalendTextUtils.addQuotes(dbConn.getDatasourceName()), node.getPropertyValue("DBNAME"));
+
+        dbConn.setUsername("user2");
+        dbConn.setPort("5002");
+        dbConn.setDatasourceName("Test2");
+
+        changeValuesFromRepository = new ChangeValuesFromRepository(node, connection, "PROPERTY2:REPOSITORY_PROPERTY_TYPE",
+                databaseConnItem.getProperty().getId());
+        changeValuesFromRepository.execute();
+
+        assertNotSame(TalendTextUtils.addQuotes(dbConn.getUsername()), node.getPropertyValue("USER"));
+        assertEquals(TalendTextUtils.addQuotes(dbConn.getPort()), node.getPropertyValue("PORT"));
+        assertEquals(TalendTextUtils.addQuotes(dbConn.getDatasourceName()), node.getPropertyValue("DBNAME"));
     }
 
 }

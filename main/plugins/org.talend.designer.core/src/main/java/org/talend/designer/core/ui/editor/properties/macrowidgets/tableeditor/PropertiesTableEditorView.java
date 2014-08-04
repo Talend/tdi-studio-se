@@ -26,11 +26,14 @@ import org.eclipse.jface.viewers.ICellEditorListener;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
@@ -43,16 +46,19 @@ import org.talend.commons.ui.swt.tableviewer.behavior.CellEditorValueAdapter;
 import org.talend.commons.ui.swt.tableviewer.behavior.ColumnCellModifier;
 import org.talend.commons.ui.swt.tableviewer.behavior.IColumnColorProvider;
 import org.talend.commons.ui.swt.tableviewer.behavior.IColumnLabelProvider;
+import org.talend.commons.ui.swt.tableviewer.celleditor.EditableComboBoxCellEditor;
 import org.talend.commons.ui.swt.tableviewer.tableeditor.CheckboxTableEditorContent;
 import org.talend.commons.ui.utils.image.ColorUtils;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.IEbcdicConstant;
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.IRuleConstant;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -184,7 +190,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
             }
 
             if (toDisplay) {
-                TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreator);
+                final TableViewerCreatorColumn column = new TableViewerCreatorColumn(tableViewerCreator);
                 column.setTitle(titles[i]);
                 column.setModifiable(true);
                 column.setMinimumWidth(100);
@@ -279,6 +285,57 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                         }
                     });
+                    break;
+                case OPENED_LIST:
+                    final EditableComboBoxCellEditor editCellEditor = new EditableComboBoxCellEditor(table,
+                            currentParam.getListItemsDisplayName());
+                    table.addSelectionListener(new SelectionAdapter() {
+
+                        @Override
+                        public void widgetSelected(SelectionEvent e) {
+                            String oldValue = null;
+                            if (editCellEditor != null) {
+                                if (!(editCellEditor.getValue() instanceof String)) {
+                                    return;
+                                }
+                                oldValue = (String) editCellEditor.getValue();
+                            }
+                            String[] columnItems = null;
+                            if (table.getSelection() != null && table.getSelection().length > 0) {
+                                TableItem tableItem = table.getSelection()[0];
+                                if (tableItem.getData() instanceof Map) {
+                                    Map map = (Map) tableItem.getData();
+                                    if (currentParam.getFilter() != null && map.get(currentParam.getFilter()) instanceof String) {
+                                        String value = (String) map.get(currentParam.getFilter());
+                                        if (element instanceof Node) {
+                                            List<IConnection> listConnection = (List<IConnection>) ((Node) element).getInputs();
+                                            for (IConnection con : listConnection) {
+                                                if (con.getName().equals(value)) {
+                                                    List<IMetadataColumn> columns = con.getMetadataTable().getListColumns();
+                                                    columnItems = new String[columns.size()];
+                                                    for (int i = 0; i < columns.size(); i++) {
+                                                        columnItems[i] = columns.get(i).getLabel();
+                                                    }
+                                                    if (editCellEditor != null) {
+                                                        List<String> ret = new ArrayList<String>();
+                                                        for (String columnItem : columnItems) {
+                                                            ret.add(columnItem);
+                                                        }
+                                                        for (int i = 0; i < currentParam.getListItemsDisplayName().length; i++) {
+                                                            ret.add(currentParam.getListItemsDisplayName()[i]);
+                                                        }
+                                                        editCellEditor.setItems(ret.toArray(new String[0]));
+                                                        editCellEditor.setValue(oldValue);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    column.setCellEditor(editCellEditor);
                     break;
                 case MODULE_LIST:
                     column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())

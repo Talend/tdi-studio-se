@@ -104,6 +104,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     IControlCreator cbCtrl = new IControlCreator() {
 
+        @Override
         public Control createControl(final Composite parent, final int style) {
             CCombo cb = new CCombo(parent, style);
             return cb;
@@ -218,12 +219,14 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
      * 
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // do nothing here
     }
 
     SelectionListener listenerSelection = new SelectionAdapter() {
 
+        @Override
         public void widgetSelected(SelectionEvent event) {
             // updateRepositoryList();
             Command cmd = createCommand(event);
@@ -266,7 +269,7 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
 
     public static void renameConnection(String oldConnectionName, String newConnectionName, List<INode> nodesToUpdate) {
         for (INode curNode : nodesToUpdate) {
-            renameConnectionInElement(oldConnectionName, newConnectionName, (Node) curNode);
+            renameConnectionInElement(oldConnectionName, newConnectionName, curNode);
             for (Connection connection : (List<Connection>) curNode.getOutgoingConnections()) {
                 renameConnectionInElement(oldConnectionName, newConnectionName, connection);
             }
@@ -281,9 +284,9 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
                 }
             } else if (curParam.getFieldType().equals(EParameterFieldType.TABLE)) {
                 final Object[] itemsValue = curParam.getListItemsValue();
-                for (int i = 0; i < itemsValue.length; i++) {
-                    if (itemsValue[i] instanceof IElementParameter) {
-                        IElementParameter param = (IElementParameter) itemsValue[i];
+                for (Object element : itemsValue) {
+                    if (element instanceof IElementParameter) {
+                        IElementParameter param = (IElementParameter) element;
                         if (param.getFieldType().equals(EParameterFieldType.CONNECTION_LIST)) {
                             List<Map<String, Object>> tableValues = (List<Map<String, Object>>) curParam.getValue();
                             for (Map<String, Object> curLine : tableValues) {
@@ -324,6 +327,22 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
                         }
                     }
                 }
+            } else if (curParam.getFieldType().equals(EParameterFieldType.TABLE_BY_ROW)) {
+                List<Map<String, Object>> tableValues = (List<Map<String, Object>>) curParam.getValue();
+                for (Map<String, Object> curLine : tableValues) {
+                    String newValue = null;
+                    Iterator it = curLine.keySet().iterator();
+                    while (it.hasNext()) {
+                        String key = (String) it.next();
+                        if (key != null) {
+                            if (key.equals(oldConnectionName)) {
+                                newValue = (String) curLine.get(key);
+                                it.remove();
+                            }
+                        }
+                    }
+                    curLine.put(newConnectionName, newValue);
+                }
             }
         }
     }
@@ -356,8 +375,8 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
             conns.addAll(source.getIncomingConnections());
             String[] f = filter.substring("INPUT:".length()).split("\\|"); //$NON-NLS-1$ //$NON-NLS-2$
             List<String> filterArray = new ArrayList<String>(f.length);
-            for (int i = 0; i < f.length; i++) {
-                filterArray.add(f[i].trim());
+            for (String element : f) {
+                filterArray.add(element.trim());
             }
 
             for (Iterator<IConnection> iter = conns.iterator(); iter.hasNext();) {
@@ -372,8 +391,8 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
             conns.addAll(source.getOutgoingConnections());
             String[] f = filter.substring("OUTPUT:".length()).split("\\|"); //$NON-NLS-1$ //$NON-NLS-2$
             List<String> filterArray = new ArrayList<String>(f.length);
-            for (int i = 0; i < f.length; i++) {
-                filterArray.add(f[i].trim());
+            for (String element : f) {
+                filterArray.add(element.trim());
             }
 
             for (Iterator<IConnection> iter = conns.iterator(); iter.hasNext();) {

@@ -50,6 +50,7 @@ import org.talend.designer.dbmap.model.emf.dbmap.DbmapFactory;
 import org.talend.designer.dbmap.model.emf.dbmap.FilterEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.InputTable;
 import org.talend.designer.dbmap.model.emf.dbmap.OutputTable;
+import org.talend.designer.dbmap.model.tableentry.FilterTableEntry;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.utils.DBMapHelper;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
@@ -295,23 +296,29 @@ public class DbMapComponent extends AbstractMapComponent {
                     entities.add(entity);
                 }
                 externalTable.setMetadataTableEntries(entities);
-                externalTables.add(externalTable);
+
                 // filters
                 entities = new ArrayList<ExternalDbMapEntry>();
+                List<ExternalDbMapEntry> otherFilterEntities = new ArrayList<ExternalDbMapEntry>();
+
                 for (FilterEntry pFilter : pTable.getFilterEntries()) {
                     ExternalDbMapEntry entity = new ExternalDbMapEntry();
                     entity.setExpression(pFilter.getExpression());
                     entity.setName(pFilter.getName());
-                    entities.add(entity);
+                    if (FilterTableEntry.OTHER_FILTER.equals(pFilter.getFilterKind())) {
+                        otherFilterEntities.add(entity);
+                    } else {
+                        entities.add(entity);
+                    }
                 }
-                externalTable.setCustomConditionsEntries(entities);
+                externalTable.setCustomWhereConditionsEntries(entities);
+                externalTable.setCustomOtherConditionsEntries(otherFilterEntities);
 
+                externalTables.add(externalTable);
             }
             externalData.setOutputTables(externalTables);
-
         }
         this.setExternalData(externalData);
-
     }
 
     @Override
@@ -446,8 +453,13 @@ public class DbMapComponent extends AbstractMapComponent {
                     replaceLocation(oldLocation, newLocation, entry, dataMapExpressionParser, tableRenamed);
                 } // for (ExternalMapperTableEntry entry : metadataTableEntries) {
             }
-            if (table.getCustomConditionsEntries() != null) {
-                for (ExternalDbMapEntry entry : table.getCustomConditionsEntries()) {
+            if (table.getCustomWhereConditionsEntries() != null) {
+                for (ExternalDbMapEntry entry : table.getCustomWhereConditionsEntries()) {
+                    replaceLocation(oldLocation, newLocation, entry, dataMapExpressionParser, tableRenamed);
+                }
+            }
+            if (table.getCustomOtherConditionsEntries() != null) {
+                for (ExternalDbMapEntry entry : table.getCustomOtherConditionsEntries()) {
                     replaceLocation(oldLocation, newLocation, entry, dataMapExpressionParser, tableRenamed);
                 }
             }
@@ -586,8 +598,15 @@ public class DbMapComponent extends AbstractMapComponent {
                         }
                     } // for (ExternalMapperTableEntry entry : metadataTableEntries) {
                 }
-                if (table.getCustomConditionsEntries() != null) {
-                    for (ExternalDbMapEntry entry : table.getCustomConditionsEntries()) {
+                if (table.getCustomWhereConditionsEntries() != null) {
+                    for (ExternalDbMapEntry entry : table.getCustomWhereConditionsEntries()) {
+                        if (hasOrRenameEntry(entry, oldName, newName, renameAction)) {
+                            return true;
+                        }
+                    }
+                }
+                if (table.getCustomOtherConditionsEntries() != null) {
+                    for (ExternalDbMapEntry entry : table.getCustomOtherConditionsEntries()) {
                         if (hasOrRenameEntry(entry, oldName, newName, renameAction)) {
                             return true;
                         }

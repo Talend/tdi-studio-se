@@ -32,7 +32,9 @@ public class ExternalDbMapTable implements IExternalMapTable, Serializable, Clon
      */
     private static final long serialVersionUID = 8768004929161302382L;
 
-    private List<ExternalDbMapEntry> customConditionsEntries;
+    private List<ExternalDbMapEntry> customWhereConditionsEntries;
+
+    private List<ExternalDbMapEntry> customOtherConditionsEntries;
 
     private List<ExternalDbMapEntry> metadataTableEntries;
 
@@ -58,6 +60,7 @@ public class ExternalDbMapTable implements IExternalMapTable, Serializable, Clon
     /**
      * Used only for inputs.
      */
+    @Override
     public String getName() {
         return this.name;
     }
@@ -78,6 +81,7 @@ public class ExternalDbMapTable implements IExternalMapTable, Serializable, Clon
         return this.metadataTableEntries;
     }
 
+    @Override
     public List<? extends IExternalMapEntry> returnTableEntries() {
         return getMetadataTableEntries();
     }
@@ -86,12 +90,20 @@ public class ExternalDbMapTable implements IExternalMapTable, Serializable, Clon
         this.metadataTableEntries = tableEntries;
     }
 
-    public List<ExternalDbMapEntry> getCustomConditionsEntries() {
-        return this.customConditionsEntries;
+    public List<ExternalDbMapEntry> getCustomWhereConditionsEntries() {
+        return this.customWhereConditionsEntries;
     }
 
-    public void setCustomConditionsEntries(List<ExternalDbMapEntry> constraintTableEntries) {
-        this.customConditionsEntries = constraintTableEntries;
+    public void setCustomWhereConditionsEntries(List<ExternalDbMapEntry> constraintWhereTableEntries) {
+        this.customWhereConditionsEntries = constraintWhereTableEntries;
+    }
+
+    public List<ExternalDbMapEntry> getCustomOtherConditionsEntries() {
+        return this.customOtherConditionsEntries;
+    }
+
+    public void setCustomOtherConditionsEntries(List<ExternalDbMapEntry> constraintOtherTableEntries) {
+        this.customOtherConditionsEntries = constraintOtherTableEntries;
     }
 
     /**
@@ -157,11 +169,20 @@ public class ExternalDbMapTable implements IExternalMapTable, Serializable, Clon
     @Override
     public Object clone() throws CloneNotSupportedException {
         ExternalDbMapTable cloned = (ExternalDbMapTable) super.clone();
-        if (customConditionsEntries != null) {
-            cloned.customConditionsEntries = (List<ExternalDbMapEntry>) ((ArrayList) customConditionsEntries).clone();
-            int listSizecustomConditionsEntries = customConditionsEntries.size();
+        if (customWhereConditionsEntries != null) {
+            cloned.customWhereConditionsEntries = (List<ExternalDbMapEntry>) ((ArrayList) customWhereConditionsEntries).clone();
+            int listSizecustomConditionsEntries = customWhereConditionsEntries.size();
             for (int i = 0; i < listSizecustomConditionsEntries; i++) {
-                cloned.customConditionsEntries.set(i, (ExternalDbMapEntry) cloned.customConditionsEntries.get(i).clone());
+                cloned.customWhereConditionsEntries.set(i, (ExternalDbMapEntry) cloned.customWhereConditionsEntries.get(i)
+                        .clone());
+            }
+        }
+        if (customOtherConditionsEntries != null) {
+            cloned.customOtherConditionsEntries = (List<ExternalDbMapEntry>) ((ArrayList) customOtherConditionsEntries).clone();
+            int listSizecustomConditionsEntries = customOtherConditionsEntries.size();
+            for (int i = 0; i < listSizecustomConditionsEntries; i++) {
+                cloned.customOtherConditionsEntries.set(i, (ExternalDbMapEntry) cloned.customOtherConditionsEntries.get(i)
+                        .clone());
             }
         }
         if (metadataTableEntries != null) {

@@ -55,6 +55,7 @@ public class ChangeConnTextCommand extends Command {
         setLabel(Messages.getString("ChangeConnTextCommand.Label")); //$NON-NLS-1$
     }
 
+    @Override
     public void execute() {
         oldName = connection.getName();
         connection.setName(newName);
@@ -74,6 +75,7 @@ public class ChangeConnTextCommand extends Command {
             connection.getSource().getProcess().addUniqueConnectionName(newName);
         }
         ConnectionListController.renameConnectionInElement(oldName, newName, connection.getSource());
+        ConnectionListController.renameConnectionInElement(oldName, newName, connection.getTarget());
 
         IExternalNode externalNode = connection.getTarget().getExternalNode();
         if (externalNode != null) {
@@ -86,10 +88,12 @@ public class ChangeConnTextCommand extends Command {
         ((Process) connection.getSource().getProcess()).checkProcess();
     }
 
+    @Override
     public void redo() {
         execute();
     }
 
+    @Override
     public void undo() {
         connection.setName(oldName);
         IElementParameter elementParameter = connection.getElementParameter(EParameterName.UNIQUE_NAME.getName());

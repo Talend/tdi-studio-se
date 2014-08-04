@@ -230,6 +230,7 @@ public class UIManager extends AbstractUIManager {
                  * 
                  * @param event
                  */
+                @Override
                 public void handleEvent(ListenableListEvent event) {
 
                     DataMapTableView view = mapperManager.retrieveIDataMapTableView(abstractDataMapTable);
@@ -321,7 +322,8 @@ public class UIManager extends AbstractUIManager {
             metadataTableEditorView.getTableViewerCreator().getTable().selectAll();
             metadataTableEditorView.getToolBar().updateEnabledStateOfButtons();
             if (currentZone == Zone.OUTPUTS) {
-                dataMapTableView.getTableViewerCreatorForFilters().getTable().selectAll();
+                dataMapTableView.getTableViewerCreatorForWhereFilters().getTable().selectAll();
+                dataMapTableView.getTableViewerCreatorForOtherFilters().getTable().selectAll();
             }
         }
 
@@ -360,10 +362,11 @@ public class UIManager extends AbstractUIManager {
 
         IModifiedBeanListener<IMetadataColumn> modifiedBeanListener = new IModifiedBeanListener<IMetadataColumn>() {
 
+            @Override
             public void handleEvent(ModifiedBeanEvent<IMetadataColumn> event) {
                 if (AbstractMetadataTableEditorView.ID_COLUMN_NAME.equals(event.column.getId())
                         && !event.previousValue.equals(event.newValue)) {
-                    IMetadataColumn modifiedObject = (IMetadataColumn) event.bean;
+                    IMetadataColumn modifiedObject = event.bean;
                     if (modifiedObject != null) {
                         TableEntryLocation tableEntryLocation = new TableEntryLocation(dataMapTableView.getDataMapTable()
                                 .getName(), (String) event.previousValue);
@@ -388,6 +391,7 @@ public class UIManager extends AbstractUIManager {
 
         ILineSelectionListener metadataEditorViewerSelectionChangedListener = new ILineSelectionListener() {
 
+            @Override
             public void handle(LineSelectionEvent e) {
                 // System.out.println("LineSelectionEvent");
 
@@ -448,6 +452,7 @@ public class UIManager extends AbstractUIManager {
         if (this.commonMetadataDisposeListener == null) {
             this.commonMetadataDisposeListener = new DisposeListener() {
 
+                @Override
                 public void widgetDisposed(DisposeEvent e) {
                     if (inputsSelectionChangedListener != null) {
                         getMetadataEditorView(Zone.INPUTS).getTableViewerCreator().getSelectionHelper()
@@ -485,6 +490,7 @@ public class UIManager extends AbstractUIManager {
      * 
      * @param firstExecutionAfterTime
      */
+    @Override
     public void refreshBackground(boolean forceRecalculate, boolean firstExecutionAfterTime) {
         if (forceRecalculate) {
             mapperUI.getBackgroundRefreshLimiterForceRecalculate().startIfExecutable(firstExecutionAfterTime, null);
@@ -660,7 +666,7 @@ public class UIManager extends AbstractUIManager {
      * @param isFilterTableSelected TODO
      * @param forceResetHighlightLinksForOtherTables TODO
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void selectLinks(DataMapTableView dataMapTableView, List<ITableEntry> selectedMetadataTableEntries,
             boolean isFilterTableSelected, boolean forceResetHighlightLinksForOtherTables) {
 
@@ -668,9 +674,11 @@ public class UIManager extends AbstractUIManager {
 
         UIManager uiManager = mapperManager.getUiManager();
         TableViewerCreator<ITableEntry> currentTableViewer = null;
+        TableViewerCreator<ITableEntry> whereFilterCreator = null;
+        TableViewerCreator<ITableEntry> otherFilterCreator = null;
 
         if (isFilterTableSelected) {
-            currentTableViewer = dataMapTableView.getTableViewerCreatorForFilters();
+            currentTableViewer = dataMapTableView.getTableViewerCreatorForWhereFilters();
         } else {
             currentTableViewer = dataMapTableView.getTableViewerCreatorForColumns();
         }
@@ -684,7 +692,8 @@ public class UIManager extends AbstractUIManager {
         if (selectColumnAndFiltersLinks) {
             hashSelectedMetadataTableEntries.addAll(dataMapTableView.getTableViewerCreatorForColumns().getInputList());
             if (currentZone == Zone.OUTPUTS) {
-                hashSelectedMetadataTableEntries.addAll(dataMapTableView.getTableViewerCreatorForFilters().getInputList());
+                hashSelectedMetadataTableEntries.addAll(dataMapTableView.getTableViewerCreatorForWhereFilters().getInputList());
+                hashSelectedMetadataTableEntries.addAll(dataMapTableView.getTableViewerCreatorForOtherFilters().getInputList());
             }
         } else {
             hashSelectedMetadataTableEntries.addAll(selectedMetadataTableEntries);
@@ -739,7 +748,8 @@ public class UIManager extends AbstractUIManager {
         if (currentTableViewer != null) {
             allEntriesOfCurrentTableView.addAll(currentTableViewer.getInputList());
             if (selectColumnAndFiltersLinks && currentZone == Zone.OUTPUTS) {
-                allEntriesOfCurrentTableView.addAll(dataMapTableView.getTableViewerCreatorForFilters().getInputList());
+                allEntriesOfCurrentTableView.addAll(dataMapTableView.getTableViewerCreatorForWhereFilters().getInputList());
+                allEntriesOfCurrentTableView.addAll(dataMapTableView.getTableViewerCreatorForOtherFilters().getInputList());
             }
         }
         int lstSize = allEntriesOfCurrentTableView.size();
@@ -807,10 +817,10 @@ public class UIManager extends AbstractUIManager {
      * @param selection
      * @return
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public List<ITableEntry> extractSelectedTableEntries(ISelection selection) {
         StructuredSelection currentSelection = (StructuredSelection) selection;
-        return (List<ITableEntry>) currentSelection.toList();
+        return currentSelection.toList();
     }
 
     /**
@@ -894,7 +904,7 @@ public class UIManager extends AbstractUIManager {
     /**
      * DOC amaumont Comment method "processAllExpressions".
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void parseAllExpressionsForAllTables() {
         List<DataMapTableView> tablesView = tableManager.getInputsTablesView();
         tablesView.addAll(tableManager.getVarsTablesView());
@@ -909,12 +919,14 @@ public class UIManager extends AbstractUIManager {
      * 
      * @param newLinksMustHaveSelectedState TODO
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void parseAllExpressions(DataMapTableView dataMapTableView, boolean newLinksMustHaveSelectedState) {
         List<IColumnEntry> columnsEntriesList = dataMapTableView.getDataMapTable().getColumnEntries();
         parseAllExpressions(columnsEntriesList, newLinksMustHaveSelectedState);
         if (dataMapTableView.getZone() == Zone.OUTPUTS) {
-            List<ITableEntry> constraintEntriesList = dataMapTableView.getTableViewerCreatorForFilters().getInputList();
+            List<ITableEntry> constraintEntriesList = dataMapTableView.getTableViewerCreatorForWhereFilters().getInputList();
+            parseAllExpressions(constraintEntriesList, newLinksMustHaveSelectedState);
+            constraintEntriesList = dataMapTableView.getTableViewerCreatorForOtherFilters().getInputList();
             parseAllExpressions(constraintEntriesList, newLinksMustHaveSelectedState);
         }
     }
@@ -951,8 +963,8 @@ public class UIManager extends AbstractUIManager {
 
         boolean isInputEntry = currentModifiedITableEntry instanceof InputColumnTableEntry;
 
-        for (int i = 0; i < tableEntriesLocationsSources.length; i++) {
-            TableEntryLocation location = tableEntriesLocationsSources[i];
+        for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
+            TableEntryLocation location = tableEntriesLocationsSource;
 
             if (!alreadyProcessed.contains(location) && checkSourceLocationIsValid(location, currentModifiedITableEntry)) {
                 ITableEntry sourceTableEntry = mapperManager.retrieveTableEntry(location);
@@ -1043,8 +1055,14 @@ public class UIManager extends AbstractUIManager {
                 }
             }
             if (dataMapTable instanceof OutputTable) {
-                List<FilterTableEntry> constraintEntries = ((OutputTable) dataMapTable).getFilterEntries();
-                for (FilterTableEntry entry : constraintEntries) {
+                List<FilterTableEntry> constraintWhereEntries = ((OutputTable) dataMapTable).getWhereFilterEntries();
+                for (FilterTableEntry entry : constraintWhereEntries) {
+                    if (parseExpression(entry.getExpression(), entry, true, true, false).isAtLeastOneLinkRemoved()) {
+                        atLeastOneLinkHasBeenRemoved = true;
+                    }
+                }
+                List<FilterTableEntry> constraintOtherEntries = ((OutputTable) dataMapTable).getOtherFilterEntries();
+                for (FilterTableEntry entry : constraintOtherEntries) {
                     if (parseExpression(entry.getExpression(), entry, true, true, false).isAtLeastOneLinkRemoved()) {
                         atLeastOneLinkHasBeenRemoved = true;
                     }
@@ -1259,6 +1277,7 @@ public class UIManager extends AbstractUIManager {
         InputDialog id = new InputDialog(getMapperContainer().getShell(), Messages.getString("UIManager.addNewOutputTable"), //$NON-NLS-1$
                 Messages.getString("UIManager.typeTableName"), outputName, new IInputValidator() { //$NON-NLS-1$
 
+                    @Override
                     public String isValid(String newText) {
                         if (KeywordsValidator.isKeyword(newText) || KeywordsValidator.isSqlKeyword(newText)) {
                             return Messages.getString("UIManager.tableNameIsNotValid"); //$NON-NLS-1$
@@ -1297,6 +1316,7 @@ public class UIManager extends AbstractUIManager {
         return this.mapperUI.getDropTargetOperationListener();
     }
 
+    @Override
     public DraggingInfosPopup getDraggingInfosPopup() {
         return this.mapperUI.getDraggingInfosPopup();
     }

@@ -92,7 +92,7 @@ public class SearchZoneMapper {
         // for the OutputTables
         for (OutputTable outputTable : outputTables) {
             // OutputTable Filters
-            for (FilterTableEntry entry : outputTable.getFilterEntries()) {
+            for (FilterTableEntry entry : outputTable.getWhereFilterEntries()) {
                 if (entry.getExpression() != null && matcher.matches(entry.getExpression())) {
                     Map<Integer, ITableEntry> map = new HashMap<Integer, ITableEntry>();
                     map.put(0, entry);
@@ -100,6 +100,15 @@ public class SearchZoneMapper {
                     searchMaps.put(index, map);
                 }
             }
+            for (FilterTableEntry entry : outputTable.getOtherFilterEntries()) {
+                if (entry.getExpression() != null && matcher.matches(entry.getExpression())) {
+                    Map<Integer, ITableEntry> map = new HashMap<Integer, ITableEntry>();
+                    map.put(0, entry);
+                    index++;
+                    searchMaps.put(index, map);
+                }
+            }
+
             // OutputTable Columns
             for (IColumnEntry column : outputTable.getColumnEntries()) {
                 int i = -1;

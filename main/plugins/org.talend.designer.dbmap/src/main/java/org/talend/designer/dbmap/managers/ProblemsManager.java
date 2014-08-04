@@ -84,6 +84,7 @@ public class ProblemsManager {
         codeChecker = currentLanguage.getCodeChecker();
         this.nodeConfigurer = new IAloneProcessNodeConfigurer() {
 
+            @Override
             public void configure(INode processNode) {
 
                 IExternalNode mapperNode = mapperManager.getComponent();
@@ -94,12 +95,10 @@ public class ProblemsManager {
 
                     IODataComponentContainer dataComponents = mapperNode.getIODataComponents();
 
-                    List<IODataComponent> mapperInputsDataComponent = (List<IODataComponent>) dataComponents
-                            .getInputs();
+                    List<IODataComponent> mapperInputsDataComponent = dataComponents.getInputs();
                     HashMap<String, IMetadataTable> connectionNameToInputMetadataTable = new HashMap<String, IMetadataTable>();
                     for (IODataComponent dataComponent : mapperInputsDataComponent) {
-                        connectionNameToInputMetadataTable.put(dataComponent.getConnection().getName(), dataComponent
-                                .getTable());
+                        connectionNameToInputMetadataTable.put(dataComponent.getConnection().getName(), dataComponent.getTable());
                     }
                     List<IConnection> processIncomingConnections = (List<IConnection>) processExternalNode
                             .getIncomingConnections();
@@ -112,19 +111,17 @@ public class ProblemsManager {
 
                     List<IMetadataTable> metadataListOut = new ArrayList<IMetadataTable>();
 
-                    List<IODataComponent> mapperOutputsDataComponent = (List<IODataComponent>) dataComponents
-                            .getOuputs();
+                    List<IODataComponent> mapperOutputsDataComponent = dataComponents.getOuputs();
                     HashMap<String, IMetadataTable> connectionNameToOutputMetadataTable = new HashMap<String, IMetadataTable>();
                     for (IODataComponent dataComponent : mapperOutputsDataComponent) {
-                        connectionNameToOutputMetadataTable.put(dataComponent.getConnection().getName(), dataComponent
-                                .getTable());
+                        connectionNameToOutputMetadataTable
+                                .put(dataComponent.getConnection().getName(), dataComponent.getTable());
                     }
                     List<IConnection> processOutgoingConnections = (List<IConnection>) processExternalNode
                             .getOutgoingConnections();
                     for (IConnection connection : processOutgoingConnections) {
                         if (connection instanceof AbstractConnection) {
-                            IMetadataTable metadataTable = connectionNameToOutputMetadataTable
-                                    .get(connection.getName());
+                            IMetadataTable metadataTable = connectionNameToOutputMetadataTable.get(connection.getName());
                             ((AbstractConnection) connection).setMetadataTable(metadataTable);
                             metadataListOut.add(metadataTable);
                         }
@@ -183,7 +180,7 @@ public class ProblemsManager {
      * 
      * @param forceRefreshData TODO
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     public void checkProblemsForAllEntries(DataMapTableView dataMapTableView, boolean forceRefreshData) {
         if (forceRefreshData) {
             mapperManager.getComponent().restoreMapperModelFromInternalData();
@@ -194,9 +191,13 @@ public class ProblemsManager {
             dataMapTableView.getTableViewerCreatorForColumns().getTableViewer().refresh(true);
         }
         if (dataMapTableView.getZone() == Zone.OUTPUTS) {
-            List<ITableEntry> constraintEntriesList = dataMapTableView.getTableViewerCreatorForFilters().getInputList();
+            List<ITableEntry> constraintEntriesList = dataMapTableView.getTableViewerCreatorForWhereFilters().getInputList();
             if (checkProblemsForAllEntries(constraintEntriesList)) {
-                dataMapTableView.getTableViewerCreatorForFilters().getTableViewer().refresh(true);
+                dataMapTableView.getTableViewerCreatorForWhereFilters().getTableViewer().refresh(true);
+            }
+            constraintEntriesList = dataMapTableView.getTableViewerCreatorForOtherFilters().getInputList();
+            if (checkProblemsForAllEntries(constraintEntriesList)) {
+                dataMapTableView.getTableViewerCreatorForOtherFilters().getTableViewer().refresh(true);
             }
         }
     }

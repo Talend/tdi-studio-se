@@ -1,0 +1,106 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		
+		String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+		String accessToken = ElementParameterParser.getValue(node,"__ACCESS_TOKEN__");
+	    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	    String connectionKey = "\"conn_" + connection+"\"";
+		String dropboxPath = ElementParameterParser.getValue(node, "__PATH__");
+		String outputFolder = ElementParameterParser.getValue(node, "__OUTPUT__");
+		
+		String exposeOutput = ElementParameterParser.getValue(node, "__EXPOSE_OUTPUT_STREAM__");
+		String filePath = ElementParameterParser.getValue(node, "__FILE_PATH__");
+		
+        String dataInputConnection = null;	
+        String dataOutputConnection = null;	
+        
+        if("false".equals(exposeOutput)){
+	        List< ? extends IConnection> inputConnections = node.getIncomingConnections();
+		    for(IConnection conn : inputConnections) {
+		        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		        	dataInputConnection = conn.getName();
+		        	break;
+		        } // if(conn) end
+		    } // for(conns) end
+		    
+		    
+			List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+		    for(IConnection conn : outputConnections) {
+		        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		        	dataOutputConnection = conn.getName();
+		        	break;
+		        } // if(conn) end
+		    } // for(conns) end
+        }
+	    String mode = "com.dropbox.core.DbxWriteMode.add()";
+	    if("true".equals(ElementParameterParser.getValue(node,"__FORCE_MODE__"))){
+	    	mode = "com.dropbox.core.DbxWriteMode.force()";
+	    }else if("true".equals(ElementParameterParser.getValue(node,"__UPDATE_MODE__"))){
+	    	mode = "com.dropbox.core.DbxWriteMode.update("+ElementParameterParser.getValue(node,"__REVISION__")+")";
+	    }
+
+%>
+<%if("false".equals(exposeOutput)){%>
+	com.dropbox.core.DbxEntry.WithChildren <%=cid%>_entries = <%=cid%>_client.getMetadataWithChildren(<%=dropboxPath%>);
+	if (<%=cid%>_entries == null) {
+		throw new Exception("No File or Directory found at " + <%=dropboxPath%>);
+	}
+	if (<%=cid%>_entries.entry.isFile()) {
+		throw new Exception("The specified Path should be a Directory: " + <%=dropboxPath%>);
+	}
+
+<%if(dataInputConnection != null){%>
+	String <%=cid%>_fileName = <%=dataInputConnection%>.fileName;
+	Object <%=cid%>_content = <%=dataInputConnection%>.content;
+	
+	if(<%=cid%>_fileName == null || "".equals(<%=cid%>_fileName.trim())){
+		throw new Exception("The Uploaded Dropbox file name can't be null");
+	}
+	
+	if(<%=cid%>_content == null){
+		throw new Exception("The Uploaded Dropbox file Content can't be null");
+	}
+	
+	java.io.InputStream <%=cid%>_InputStream = null;
+	if(<%=cid%>_content instanceof byte[]){
+		<%=cid%>_InputStream = new java.io.ByteArrayInputStream((byte[])<%=cid%>_content);
+	}else if(<%=cid%>_content instanceof java.io.InputStream){
+		<%=cid%>_InputStream = (java.io.InputStream)<%=cid%>_content;
+	}else{
+		<%=cid%>_InputStream = new java.io.ByteArrayInputStream(<%=cid%>_content.toString().getBytes());
+	}
+	
+	try {
+		String path = <%=dropboxPath%>.endsWith("/")?<%=dropboxPath%>:<%=dropboxPath%>+"/";
+		com.dropbox.core.DbxEntry.File <%=cid%>_UploadedFile = <%=cid%>_client.uploadFile(path+<%=cid%>_fileName,
+				<%=mode%>, -1, <%=cid%>_InputStream);
+	} finally {
+		<%=cid%>_InputStream.close();
+	}
+	
+	<%if(dataOutputConnection != null){%>
+		<%=dataOutputConnection%>.fileName = <%=cid%>_fileName;
+		<%=dataOutputConnection%>.content = <%=cid%>_content;
+	<%}%>
+	
+	
+<%}
+}%>
+			

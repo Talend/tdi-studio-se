@@ -102,7 +102,8 @@ public class MapperManager extends AbstractMapperManager {
         tableManager.addTable(view, data);
         tableEntriesManager.addAll(data.getColumnEntries());
         if (data instanceof OutputTable) {
-            tableEntriesManager.addAll(((OutputTable) data).getFilterEntries());
+            tableEntriesManager.addAll(((OutputTable) data).getWhereFilterEntries());
+            tableEntriesManager.addAll(((OutputTable) data).getOtherFilterEntries());
         }
     }
 
@@ -367,6 +368,7 @@ public class MapperManager extends AbstractMapperManager {
         }
     }
 
+    @Override
     public UIManager getUiManager() {
         if (this.uiManager == null) {
             uiManager = new UIManager(this, tableManager);
@@ -423,8 +425,13 @@ public class MapperManager extends AbstractMapperManager {
     }
 
     public FilterTableEntry addNewFilterEntry(DataMapTableView dataMapTableView, String name, Integer index) {
+        return addNewFilterEntry(dataMapTableView, name, index, FilterTableEntry.WHERE_FILTER);
+    }
+
+    public FilterTableEntry addNewFilterEntry(DataMapTableView dataMapTableView, String name, Integer index, String filterKind) {
         IDataMapTable abstractDataMapTable = dataMapTableView.getDataMapTable();
         FilterTableEntry constraintEntry = new FilterTableEntry(abstractDataMapTable, name, null);
+        constraintEntry.setFilterKind(filterKind);
         tableEntriesManager.addTableEntry(constraintEntry, index);
         return constraintEntry;
     }
@@ -572,7 +579,11 @@ public class MapperManager extends AbstractMapperManager {
         if (currentEntry instanceof IColumnEntry) {
             tableViewer = dataMapTableView.getTableViewerCreatorForColumns().getTableViewer();
         } else if (currentEntry instanceof FilterTableEntry) {
-            tableViewer = dataMapTableView.getTableViewerCreatorForFilters().getTableViewer();
+            if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) currentEntry).getFilterKind())) {
+                tableViewer = dataMapTableView.getTableViewerCreatorForOtherFilters().getTableViewer();
+            } else {
+                tableViewer = dataMapTableView.getTableViewerCreatorForWhereFilters().getTableViewer();
+            }
         }
         if (currentEntry.getProblems() != null) {
             tableViewer.getTable().deselectAll();
@@ -611,8 +622,8 @@ public class MapperManager extends AbstractMapperManager {
     public void updateEmfParameters(String... parametersToUpdate) {
 
         HashSet<String> hParametersToUpdate = new HashSet<String>();
-        for (int i = 0; i < parametersToUpdate.length; i++) {
-            hParametersToUpdate.add(parametersToUpdate[i]);
+        for (String element : parametersToUpdate) {
+            hParametersToUpdate.add(element);
         }
 
         List<? extends IElementParameter> elementParameters = mapperComponent.getElementParameters();
@@ -627,6 +638,7 @@ public class MapperManager extends AbstractMapperManager {
         }
     }
 
+    @Override
     public Object getElementParameterValue(String parameterName) {
 
         List<? extends IElementParameter> elementParameters = mapperComponent.getElementParameters();
@@ -652,8 +664,12 @@ public class MapperManager extends AbstractMapperManager {
                 replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
             }
             if (table instanceof OutputTable) {
-                List<FilterTableEntry> constraintEntries = ((OutputTable) table).getFilterEntries();
-                for (FilterTableEntry entry : constraintEntries) {
+                List<FilterTableEntry> whereConstraintEntries = ((OutputTable) table).getWhereFilterEntries();
+                for (FilterTableEntry entry : whereConstraintEntries) {
+                    replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
+                }
+                List<FilterTableEntry> otherConstraintEntries = ((OutputTable) table).getOtherFilterEntries();
+                for (FilterTableEntry entry : otherConstraintEntries) {
                     replaceLocation(previousLocation, newLocation, dataMapExpressionParser, table, entry);
                 }
             }
@@ -688,8 +704,7 @@ public class MapperManager extends AbstractMapperManager {
         String currentExpression = entry.getExpression();
         TableEntryLocation[] tableEntryLocations = dataMapExpressionParser.parseTableEntryLocations(currentExpression);
         // loop on all locations of current expression
-        for (int i = 0; i < tableEntryLocations.length; i++) {
-            TableEntryLocation currentLocation = tableEntryLocations[i];
+        for (TableEntryLocation currentLocation : tableEntryLocations) {
             if (currentLocation.equals(previousLocation)) {
                 currentExpression = dataMapExpressionParser.replaceLocation(currentExpression, previousLocation, newLocation);
                 expressionHasChanged = true;
@@ -702,7 +717,11 @@ public class MapperManager extends AbstractMapperManager {
             if (entry instanceof IColumnEntry) {
                 tableViewerCreator = dataMapTableView.getTableViewerCreatorForColumns();
             } else if (entry instanceof FilterTableEntry) {
-                tableViewerCreator = dataMapTableView.getTableViewerCreatorForFilters();
+                if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) entry).getFilterKind())) {
+                    tableViewerCreator = dataMapTableView.getTableViewerCreatorForOtherFilters();
+                } else {
+                    tableViewerCreator = dataMapTableView.getTableViewerCreatorForWhereFilters();
+                }
             }
             tableViewerCreator.getTableViewer().refresh(entry);
             uiManager.parseExpression(currentExpression, entry, false, true, false);

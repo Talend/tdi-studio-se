@@ -67,7 +67,7 @@ public class TableManager {
      * @param view
      * @param tableData
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     void addTable(DataMapTableView view, IDataMapTable tableData) {
 
         if (tableData instanceof AbstractInOutTable) {
@@ -76,8 +76,11 @@ public class TableManager {
         }
         getMatchedList(tableData).add(tableData);
         swtTableToView.put(view.getTableViewerCreatorForColumns().getTable(), view);
-        if (view.getTableViewerCreatorForFilters() != null) {
-            swtTableToView.put(view.getTableViewerCreatorForFilters().getTable(), view);
+        if (view.getTableViewerCreatorForWhereFilters() != null) {
+            swtTableToView.put(view.getTableViewerCreatorForWhereFilters().getTable(), view);
+        }
+        if (view.getTableViewerCreatorForOtherFilters() != null) {
+            swtTableToView.put(view.getTableViewerCreatorForOtherFilters().getTable(), view);
         }
         abstractDataMapTableToView.put(tableData, view);
     }
@@ -125,14 +128,19 @@ public class TableManager {
 
         tableEntriesManager.removeAll(dataMapTableEntries, isPhysicalInputTable(dataTable.getName()));
         if (dataTable instanceof OutputTable) {
-            List<FilterTableEntry> constraintEntries = ((OutputTable) dataTable).getFilterEntries();
-            tableEntriesManager.removeAll(constraintEntries, false);
+            List<FilterTableEntry> whereConstraintEntries = ((OutputTable) dataTable).getWhereFilterEntries();
+            tableEntriesManager.removeAll(whereConstraintEntries, false);
+            List<FilterTableEntry> otherConstraintEntries = ((OutputTable) dataTable).getOtherFilterEntries();
+            tableEntriesManager.removeAll(otherConstraintEntries, false);
         }
         getMatchedList(dataTable).remove(dataTable);
         DataMapTableView view = abstractDataMapTableToView.remove(dataTable);
         swtTableToView.remove(view.getTableViewerCreatorForColumns().getTable());
-        if (view.getTableViewerCreatorForFilters() != null) {
-            swtTableToView.remove(view.getTableViewerCreatorForFilters().getTable());
+        if (view.getTableViewerCreatorForWhereFilters() != null) {
+            swtTableToView.remove(view.getTableViewerCreatorForWhereFilters().getTable());
+        }
+        if (view.getTableViewerCreatorForOtherFilters() != null) {
+            swtTableToView.remove(view.getTableViewerCreatorForOtherFilters().getTable());
         }
         return view;
     }
@@ -167,8 +175,7 @@ public class TableManager {
         return list;
     }
 
-    private List<DataMapTableView> getTablesView(List<? extends IDataMapTable> listIDataMapTables,
-            IMetadataTable metadataTable) {
+    private List<DataMapTableView> getTablesView(List<? extends IDataMapTable> listIDataMapTables, IMetadataTable metadataTable) {
         ArrayList<DataMapTableView> list = new ArrayList<DataMapTableView>();
         for (IDataMapTable data : listIDataMapTables) {
             if (metadataTable == null || metadataTable != null && data instanceof AbstractInOutTable

@@ -197,7 +197,7 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * create parameter for extra tab.
      */
     private static List<IElementParameter> getExtraParameters(IProcess process) {
@@ -289,7 +289,7 @@ public class JobSettingsManager {
         param = new ElementParameter(process);
         param.setName(EParameterName.IMPLICIT_TCONTEXTLOAD.getName());
         param.setValue(false);
-        param.setGroupDisplayName(EParameterName.IMPLICIT_TCONTEXTLOAD.getDisplayName()); //$NON-NLS-1$
+        param.setGroupDisplayName(EParameterName.IMPLICIT_TCONTEXTLOAD.getDisplayName());
         param.setDisplayName(EParameterName.IMPLICIT_TCONTEXTLOAD.getDisplayName());
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.EXTRA);
@@ -349,7 +349,7 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         param.setNumRow(31);
         String condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION)
-                + " and " //$NON-NLS-1$ 
+                + " and " //$NON-NLS-1$
                 + JobSettingsConstants.addBrackets(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG
                         .getName()) + " == 'true'"); //$NON-NLS-1$
 
@@ -369,7 +369,7 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         param.setNumRow(32);
         condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION)
-                + " and " //$NON-NLS-1$ 
+                + " and " //$NON-NLS-1$
                 + JobSettingsConstants.addBrackets(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG
                         .getName()) + " == 'true'"); //$NON-NLS-1$
 
@@ -478,7 +478,7 @@ public class JobSettingsManager {
             param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
             param.setRequired(true);
             param.setShowIf(dbCondition
-                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$   
+                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
             param.setGroup(IMPLICIT_GROUP);
             paramList.add(param);
         }
@@ -561,7 +561,7 @@ public class JobSettingsManager {
         param.setNumRow(46);
         param.setRepositoryValue("SERVER_NAME"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$ 
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -576,7 +576,7 @@ public class JobSettingsManager {
         param.setNumRow(46);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ 
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -591,7 +591,7 @@ public class JobSettingsManager {
         param.setNumRow(47);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$ 
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$//$NON-NLS-7$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -606,7 +606,7 @@ public class JobSettingsManager {
         param.setNumRow(47);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
         dbCon = dbTypeName + " =='OCLE_OCI' ";
-        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
@@ -625,7 +625,7 @@ public class JobSettingsManager {
                     + " == 'MSSQL'" + " or " + dbTypeName + " == 'MYSQL'" + " or " + dbTypeName //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     + " == 'INFORMIX'" + " or " + dbTypeName + " == 'OCLE'" + " or " + dbTypeName + " == 'OCLE_OCI'" + " or " + dbTypeName + " == 'SYBASE'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 
-            param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+            param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
             param.setGroup(IMPLICIT_GROUP);
             paramList.add(param);
         }
@@ -685,7 +685,7 @@ public class JobSettingsManager {
         param.setNumRow(49);
         param.setRepositoryValue("FILE"); //$NON-NLS-1$
         dbCon = dbTypeName + " == 'SQLITE'" + " or " + dbTypeName + " == 'ACCESS'" + " or " + dbTypeName + " == 'FIREBIRD'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
@@ -713,11 +713,20 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
+        for (IElementParameter currentParam : paramList) {
+            if (currentParam.getRepositoryValue() != null) {
+                // if any of the parameter of stat&logs is using repository, then force to link it to the name of the
+                // property for implicit
+                currentParam.setRepositoryProperty(parentPropertyType.getName());
+            }
+        }
+
         return paramList;
     }
 
     private final static class IgnoreCaseComparator implements Comparator<String> {
 
+        @Override
         public int compare(String o1, String o2) {
             return o1.compareToIgnoreCase(o2);
         }
@@ -818,9 +827,9 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isStatsAndLogsActivated".
-     * 
+     *
      * for stats & logs settings
      */
     public static boolean isStatsAndLogsActivated(IProcess process) {
@@ -832,9 +841,9 @@ public class JobSettingsManager {
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "isImplicittContextLoadActived".
-     * 
+     *
      * for implictit tContextLoad in extra settings
      */
     public static boolean isImplicittContextLoadActived(IProcess process) {
@@ -1035,8 +1044,8 @@ public class JobSettingsManager {
                 }
                 final String quoteByDBType = TalendTextUtils.getQuoteByDBType(dbType, false);
                 if (dbTypeName == EDatabaseTypeName.MSSQL) {
-                    query = query.replaceAll("(?i)\bkey\b", //$NON-NLS-1$ 
-                            "\\\\" + quoteByDBType + "key\\\\" + quoteByDBType); //$NON-NLS-1$  //$NON-NLS-2$ 
+                    query = query.replaceAll("(?i)\bkey\b", //$NON-NLS-1$
+                            "\\\\" + quoteByDBType + "key\\\\" + quoteByDBType); //$NON-NLS-1$  //$NON-NLS-2$
                 }
                 tContextLoadNode.getElementParameter(JobSettingsConstants.QUERY).setValue(query);
             }
@@ -1172,9 +1181,9 @@ public class JobSettingsManager {
             }
         }
 
-        if (driverJarValue != null && driverJarValue.startsWith("[") && driverJarValue.endsWith("]")) { //$NON-NLS-N$ //$NON-NLS-N$
+        if (driverJarValue != null && driverJarValue.startsWith("[") && driverJarValue.endsWith("]")) {
             driverJarValue = driverJarValue.substring(1, driverJarValue.length() - 1);
-            if (driverJarValue != null && driverJarValue.startsWith("{") && driverJarValue.endsWith("}")) { //$NON-NLS-N$ //$NON-NLS-N$
+            if (driverJarValue != null && driverJarValue.startsWith("{") && driverJarValue.endsWith("}")) {
                 driverJarValue = driverJarValue.substring(1, driverJarValue.length() - 1);
             }
         }

@@ -78,7 +78,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
     /**
      * DOC nrousseau AbstractRepositoryController constructor comment.
-     * 
+     *
      * @param dp
      */
     public AbstractRepositoryController(IDynamicProperty dp) {
@@ -262,9 +262,9 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
     };
 
     /**
-     * 
+     *
      * DOC wzhang Comment method "getConnection".
-     * 
+     *
      * @return
      */
     private Connection getConnection() {
@@ -326,16 +326,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
     private LinkRulesItem lastLinkItem;
 
-    private void fastRepositoryUpdateProperty() {
-        IElementParameter param = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
-                dynamicProperty.getSection());
-
-        if (param == null) {
-            return;
-        }
-
-        param = param.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-
+    private void fastRepositoryUpdateProperty(IElementParameter param) {
         if (param != null && param.getValue() != null) {
             IProxyRepositoryFactory factory = DesignerPlugin.getDefault().getProxyRepositoryFactory();
             String linkedRepository = (String) param.getValue();
@@ -384,8 +375,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
 
     }
 
-    private void fastRepositoryUpdateSchema(IElementParameter schemaParam) {
-        IElementParameter param = schemaParam.getChildParameters().get(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
+    private void fastRepositoryUpdateSchema(IElementParameter param) {
         if (param != null && param.getValue() != null) {
             String queryIdAndName = (String) param.getValue();
             String[] names = queryIdAndName.split(" - "); //$NON-NLS-1$
@@ -432,13 +422,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
         }
     }
 
-    private void fastRepositoryUpdateQuery() {
-        IElementParameter param = elem.getElementParameterFromField(EParameterFieldType.QUERYSTORE_TYPE,
-                dynamicProperty.getSection());
-        if (param == null) {
-            return;
-        }
-        param = param.getChildParameters().get(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName());
+    private void fastRepositoryUpdateQuery(IElementParameter param) {
         if (param != null && param.getValue() != null) {
             String queryIdAndName = (String) param.getValue();
             String[] names = queryIdAndName.split(" - "); //$NON-NLS-1$
@@ -491,22 +475,19 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
         }
     }
 
-    protected void fastInitializeRepositoryNames() {
+    protected void fastInitializeRepositoryNames(IElementParameter param) {
         lastItemUsed = null;
 
-        fastRepositoryUpdateProperty();
-        for (IElementParameter curParam : elem.getElementParameters()) {
-            if (curParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)) {
-                String value = (String) curParam.getChildParameters().get(EParameterName.SCHEMA_TYPE.getName()).getValue();
-                if (curParam.isShow(elem.getElementParameters())) {
-                    if (value.equals(EmfComponent.REPOSITORY)) {
-                        // load repository connections only if needed
-                        fastRepositoryUpdateSchema(curParam);
-                    }
-                }
-            }
+        if (param.getValue() == null || param.getValue().equals("")) {
+            return;
         }
-        fastRepositoryUpdateQuery();
+        if (param.getName().equals(EParameterName.REPOSITORY_PROPERTY_TYPE.getName())) {
+            fastRepositoryUpdateProperty(param);
+        } else if (param.getName().equals(EParameterName.REPOSITORY_SCHEMA_TYPE.getName())) {
+            fastRepositoryUpdateSchema(param);
+        } else if (param.getName().equals(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName())) {
+            fastRepositoryUpdateQuery(param);
+        }
     }
 
     protected String getDisplayNameFromValue(IElementParameter param, String value) {
@@ -515,7 +496,7 @@ public abstract class AbstractRepositoryController extends AbstractElementProper
         int index = param.getIndexOfItemFromList(value);
         if (index == -1) {
 
-            fastInitializeRepositoryNames();
+            fastInitializeRepositoryNames(param);
             // if even after the initialize there is nothing, just return an empty string
             if (param.getListItemsDisplayName().length == 0) {
                 return ""; //$NON-NLS-1$

@@ -148,9 +148,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     protected Layout parentLayout;
 
-    protected TableViewerCreator tableViewerCreatorForFilters;
+    protected String filterColumnLabel;
 
-    protected Table tableForConstraints;
+    // protected TableViewerCreator tableViewerCreatorForFilters;
+
+    // protected Table tableForConstraints;
 
     private boolean executeSelectionEvent = true;
 
@@ -166,7 +168,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     private Text columnExpressionTextEditor;
 
-    private Text constraintExpressionTextEditor;
+    protected Text whereConstraintExpressionTextEditor;
+
+    protected Text otherConstraintExpressionTextEditor;
 
     private Cursor currentCursor;
 
@@ -179,6 +183,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private AbstractExtendedTableViewer<IColumnEntry> extendedTableViewerForColumns;
 
     protected AbstractExtendedTableViewer<FilterTableEntry> extendedTableViewerForFilters;
+
+    protected AbstractExtendedTableViewer<FilterTableEntry> entendedTableViewerForOtherClauses;
 
     private static Image imageKey;
 
@@ -210,7 +216,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     public static final String COLUMN_NAME = "Column"; //$NON-NLS-1$
 
-    protected GridData tableForConstraintsGridData;
+    // protected GridData tableForConstraintsGridData;
 
     /**
      * 
@@ -396,6 +402,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 super.initTableListeners();
                 getTableViewerCreator().addCellValueModifiedListener(new ITableCellValueModifiedListener() {
 
+                    @Override
                     public void cellValueModified(TableCellValueModifiedEvent e) {
                         // System.out.println();
                         // System.out.println(getTable().hashCode());
@@ -473,8 +480,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                     private Image getColumnImageExecute(Object element, int columnIndex) {
                         if (getDataMapTable() instanceof AbstractInOutTable) {
                             AbstractInOutTableEntry entry = (AbstractInOutTableEntry) element;
-                            TableViewerCreatorColumnNotModifiable column = (TableViewerCreatorColumnNotModifiable) newTableViewerCreator
-                                    .getColumns().get(columnIndex);
+                            TableViewerCreatorColumnNotModifiable column = newTableViewerCreator.getColumns().get(columnIndex);
                             if (column.getId().equals(ID_NAME_COLUMN)) {
                                 if (entry.getMetadataColumn().isKey()) {
                                     return imageKey;
@@ -499,6 +505,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 super.initModelListeners();
                 getExtendedTableModel().addAfterOperationListListener(100, new IListenableListListener<IColumnEntry>() {
 
+                    @Override
                     public void handleEvent(ListenableListEvent<IColumnEntry> event) {
                         if (tableViewerCreator.getTable() != null && !tableViewerCreator.getTable().isDisposed()) {
                             if (event.type == TYPE.ADDED) {
@@ -536,6 +543,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void addTablesListeners() {
         tableViewerCreatorForColumns.addCellValueModifiedListener(new ITableCellValueModifiedListener() {
 
+            @Override
             public void cellValueModified(TableCellValueModifiedEvent e) {
                 unselectAllEntriesIfErrorDetected(e);
             }
@@ -544,6 +552,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         abstractDataMapTable.getTableColumnsEntriesModel().addAfterOperationListListener(
                 new IListenableListListener<FilterTableEntry>() {
 
+                    @Override
                     public void handleEvent(ListenableListEvent<FilterTableEntry> event) {
 
                         mapperManager.getUiManager().refreshSqlExpression();
@@ -556,6 +565,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         tableViewerForEntries.addSelectionChangedListener(new ISelectionChangedListener() {
 
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 int[] selectionIndices = tableViewerForEntries.getTable().getSelectionIndices();
                 if (selectionIndices.length > 0) {
@@ -578,6 +588,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         tableForEntries.addListener(SWT.DragDetect, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 onSelectedEntries(tableViewerForEntries.getSelection(), tableViewerForEntries.getTable().getSelectionIndices());
             }
@@ -586,6 +597,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         tableViewerCreatorForColumns.getSelectionHelper().addAfterSelectionListener(new ILineSelectionListener() {
 
+            @Override
             public void handle(LineSelectionEvent e) {
                 if (forceExecuteSelectionEvent) {
                     forceExecuteSelectionEvent = false;
@@ -597,6 +609,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         });
         tableForEntries.addListener(SWT.KeyDown, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 processEnterKeyDown(tableViewerCreatorForColumns, event);
             }
@@ -605,6 +618,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         abstractDataMapTable.getTableColumnsEntriesModel().addModifiedBeanListener(new IModifiedBeanListener<IColumnEntry>() {
 
+            @Override
             public void handleEvent(ModifiedBeanEvent<IColumnEntry> event) {
 
                 TableViewerCreator tableViewerCreator = tableViewerCreatorForColumns;
@@ -618,9 +632,10 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         if (abstractDataMapTable instanceof OutputTable) {
             OutputTable outputTable = (OutputTable) abstractDataMapTable;
-            outputTable.getTableFiltersEntriesModel().addAfterOperationListListener(
+            outputTable.getWhereTableFiltersEntriesModel().addAfterOperationListListener(
                     new IListenableListListener<FilterTableEntry>() {
 
+                        @Override
                         public void handleEvent(ListenableListEvent<FilterTableEntry> event) {
 
                             resizeAtExpandedSize();
@@ -629,20 +644,49 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                         }
 
                     });
-            outputTable.getTableFiltersEntriesModel().addModifiedBeanListener(new IModifiedBeanListener<FilterTableEntry>() {
+            outputTable.getWhereTableFiltersEntriesModel().addModifiedBeanListener(new IModifiedBeanListener<FilterTableEntry>() {
 
+                @Override
                 public void handleEvent(ModifiedBeanEvent<FilterTableEntry> event) {
 
-                    TableViewerCreator tableViewerCreator = tableViewerCreatorForFilters;
-                    ITableEntry tableEntry = event.bean;
-
-                    parseExpressionIfNeeded(event, tableViewerCreator, tableEntry);
+                    onOutputTableFiltersModified(event, extendedTableViewerForFilters);
                     mapperManager.getUiManager().refreshSqlExpression();
+                }
 
+            });
+
+            outputTable.getOtherTableFiltersEntriesModel().addAfterOperationListListener(
+                    new IListenableListListener<FilterTableEntry>() {
+
+                        @Override
+                        public void handleEvent(ListenableListEvent<FilterTableEntry> event) {
+
+                            resizeAtExpandedSize();
+                            mapperManager.getUiManager().refreshSqlExpression();
+
+                        }
+
+                    });
+            outputTable.getOtherTableFiltersEntriesModel().addModifiedBeanListener(new IModifiedBeanListener<FilterTableEntry>() {
+
+                @Override
+                public void handleEvent(ModifiedBeanEvent<FilterTableEntry> event) {
+
+                    onOutputTableFiltersModified(event, entendedTableViewerForOtherClauses);
+                    mapperManager.getUiManager().refreshSqlExpression();
                 }
 
             });
         }
+    }
+
+    protected void onOutputTableFiltersModified(ModifiedBeanEvent<FilterTableEntry> event,
+            AbstractExtendedTableViewer<FilterTableEntry> _extendedTableViewerForFilters) {
+        TableViewerCreator tableViewerCreator = _extendedTableViewerForFilters.getTableViewerCreator();
+        ITableEntry tableEntry = event.bean;
+
+        parseExpressionIfNeeded(event, tableViewerCreator, tableEntry);
+
     }
 
     /**
@@ -653,6 +697,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     protected void initShowMessageErrorListener(final Table table) {
         showErrorMessageListener = new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
 
                 switch (event.type) {
@@ -739,14 +784,17 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         MouseTrackListener mouseTracker = new MouseTrackListener() {
 
+            @Override
             public void mouseEnter(MouseEvent e) {
             }
 
+            @Override
             public void mouseExit(MouseEvent e) {
                 setDefaultCursor();
                 resizeHelper.stopDrag();
             }
 
+            @Override
             public void mouseHover(MouseEvent e) {
             }
 
@@ -755,6 +803,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         SelectionListener scrollListener = new SelectionAdapter() {
 
+            @Override
             public void widgetSelected(SelectionEvent event) {
                 uiManager.refreshBackground(true, false);
             }
@@ -770,6 +819,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         // /////////////////////////////////////////////////////////////////
         Listener onSelectDataMapTableViewListener = new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 switch (event.type) {
                 case SWT.MouseDown:
@@ -789,11 +839,13 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         // /////////////////////////////////////////////////////////////////
         minimizeButton.addSelectionListener(new SelectionListener() {
 
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 // TODO Auto-generated method stub
 
             }
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 minimizeTable(!abstractDataMapTable.isMinimized());
             }
@@ -814,6 +866,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     private void addManualTableResizeListeners(final UIManager uiManager) {
         this.addDisposeListener(new DisposeListener() {
 
+            @Override
             public void widgetDisposed(DisposeEvent e) {
                 if (currentCursor != null) {
                     currentCursor.dispose();
@@ -824,6 +877,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         Listener tableResizerListener = new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
 
                 MousePositionAnalyser mpa = new MousePositionAnalyser(DataMapTableView.this);
@@ -927,18 +981,25 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      */
     protected void showTableConstraints(boolean visible) {
 
+        showTableConstraints(visible, this.getTableViewerCreatorForWhereFilters());
+
+    }
+
+    protected void showTableConstraints(boolean visible, TableViewerCreator _tableViewerCreatorForFilters) {
+        Table _tableForConstraints = _tableViewerCreatorForFilters.getTable();
+        GridData _tableForConstraintsGridData = (GridData) _tableForConstraints.getLayoutData();
         if (visible) {
-            tableForConstraintsGridData.exclude = false;
-            tableForConstraints.setVisible(true);
+            _tableForConstraintsGridData.exclude = false;
+            _tableForConstraints.setVisible(true);
             if (WindowSystem.isGTK()) {
-                updateGridDataHeightForTableConstraints();
+                updateGridDataHeightForTableConstraints(_tableForConstraints);
             }
         } else {
-            tableForConstraintsGridData.exclude = true;
-            tableForConstraints.setVisible(false);
+            _tableForConstraintsGridData.exclude = true;
+            _tableForConstraints.setVisible(false);
         }
-        tableViewerCreatorForFilters.getTableViewer().refresh();
-        resizeAtExpandedSize();
+        _tableViewerCreatorForFilters.getTableViewer().refresh();
+        resizeAtExpandedSize(_tableViewerCreatorForFilters);
     }
 
     /**
@@ -957,8 +1018,20 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         return this.tableViewerCreatorForColumns;
     }
 
-    public TableViewerCreator getTableViewerCreatorForFilters() {
-        return this.tableViewerCreatorForFilters;
+    public TableViewerCreator getTableViewerCreatorForWhereFilters() {
+        if (this.extendedTableViewerForFilters != null) {
+            return this.extendedTableViewerForFilters.getTableViewerCreator();
+        } else {
+            return null;
+        }
+    }
+
+    public TableViewerCreator getTableViewerCreatorForOtherFilters() {
+        if (this.entendedTableViewerForOtherClauses != null) {
+            return this.entendedTableViewerForOtherClauses.getTableViewerCreator();
+        } else {
+            return null;
+        }
     }
 
     public Point convertToParentOrigin(Composite child, Point point) {
@@ -986,7 +1059,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * DOC amaumont Comment method "resizeWithPreferredSize".
      */
     public void resizeAtExpandedSize() {
-        changeSize(getPreferredSize(false, true, false), true, true);
+        resizeAtExpandedSize(this.getTableViewerCreatorForWhereFilters());
+    }
+
+    public void resizeAtExpandedSize(TableViewerCreator _tableViewerCreatorForFilters) {
+        changeSize(getPreferredSize(false, true, false, this.getTableViewerCreatorForWhereFilters()), true, true);
     }
 
     /**
@@ -1054,29 +1131,38 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             addFilterButton.addSelectionListener(new SelectionListener() {
 
+                @Override
                 public void widgetDefaultSelected(SelectionEvent e) {
                 }
 
+                @Override
                 public void widgetSelected(SelectionEvent e) {
 
-                    Table tableConstraints = tableViewerCreatorForFilters.getTable();
-                    int index = tableConstraints.getItemCount();
-                    int[] selection = tableViewerCreatorForFilters.getTable().getSelectionIndices();
-                    if (selection.length > 0) {
-                        index = selection[selection.length - 1] + 1;
-                    }
-                    mapperManager.addNewFilterEntry(DataMapTableView.this, "newFilter" + ++constraintCounter, index); //$NON-NLS-1$
-                    updateGridDataHeightForTableConstraints();
-                    DataMapTableView.this.changeSize(DataMapTableView.this.getPreferredSize(false, true, true), true, true);
-                    tableViewerCreatorForFilters.getTableViewer().refresh();
-                    mapperManager.getUiManager().refreshBackground(true, false);
-                    showTableConstraints(true);
-                    changeMinimizeState(false);
-                    tableViewerCreatorForFilters.layout();
+                    onFiltersToolItemsSelected(e, getTableViewerCreatorForWhereFilters(), FilterTableEntry.WHERE_FILTER);
                 }
 
             });
         }
+    }
+
+    synchronized protected void onFiltersToolItemsSelected(SelectionEvent e, TableViewerCreator _tableViewerCreatorForFilters,
+            String filterKind) {
+
+        Table tableConstraints = _tableViewerCreatorForFilters.getTable();
+        int index = tableConstraints.getItemCount();
+        int[] selection = _tableViewerCreatorForFilters.getTable().getSelectionIndices();
+        if (selection.length > 0) {
+            index = selection[selection.length - 1] + 1;
+        }
+        mapperManager.addNewFilterEntry(DataMapTableView.this, "newFilter" + ++constraintCounter, index, filterKind); //$NON-NLS-1$
+        updateGridDataHeightForTableConstraints();
+        changeSize(getPreferredSize(false, true, true), true, true);
+        _tableViewerCreatorForFilters.getTableViewer().refresh();
+        mapperManager.getUiManager().refreshBackground(true, false);
+        showTableConstraints(true, _tableViewerCreatorForFilters);
+        changeMinimizeState(false);
+        _tableViewerCreatorForFilters.layout();
+
     }
 
     protected void createToolItems() {
@@ -1135,10 +1221,16 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * @return
      */
     public Point getPreferredSize(boolean newTableEntryWillBeAdded, boolean expandedSize, boolean newConstraintEntryWillBeAdded) {
+        return getPreferredSize(newTableEntryWillBeAdded, expandedSize, newConstraintEntryWillBeAdded,
+                this.getTableViewerCreatorForWhereFilters());
+    }
+
+    public Point getPreferredSize(boolean newTableEntryWillBeAdded, boolean expandedSize, boolean newConstraintEntryWillBeAdded,
+            TableViewerCreator _tableViewerCreatorForFilters) {
         int heightOffset = 0;
         int tableEntryItemHeight = tableViewerCreatorForColumns.getTable().getItemHeight();
         // heightOffset += newTableEntryWillBeAdded ? tableEntryItemHeight : 0;
-        heightOffset += newConstraintEntryWillBeAdded ? tableViewerCreatorForFilters.getTable().getItemHeight() : 0;
+        heightOffset += newConstraintEntryWillBeAdded ? _tableViewerCreatorForFilters.getTable().getItemHeight() : 0;
 
         int newHeight = this.computeSize(SWT.DEFAULT, SWT.DEFAULT).y - tableEntryItemHeight + heightOffset;
         if (WindowSystem.isGTK()) {
@@ -1160,9 +1252,13 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         if (columnExpressionTextEditor != null) {
             attachCellExpressionToStyledTextEditor(tableViewerCreatorForColumns, columnExpressionTextEditor, styledTextHandler);
         }
-        if (constraintExpressionTextEditor != null) {
-            attachCellExpressionToStyledTextEditor(tableViewerCreatorForFilters, constraintExpressionTextEditor,
-                    styledTextHandler);
+        if (whereConstraintExpressionTextEditor != null) {
+            attachCellExpressionToStyledTextEditor(this.getTableViewerCreatorForWhereFilters(),
+                    whereConstraintExpressionTextEditor, styledTextHandler);
+        }
+        if (otherConstraintExpressionTextEditor != null) {
+            attachCellExpressionToStyledTextEditor(this.getTableViewerCreatorForOtherFilters(),
+                    otherConstraintExpressionTextEditor, styledTextHandler);
         }
     }
 
@@ -1177,6 +1273,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             final Text expressionTextEditor, final StyledTextHandler styledTextHandler) {
         expressionTextEditor.addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 ITableEntry currentModifiedEntry = (ITableEntry) tableViewerCreator.getModifiedObjectInfo()
                         .getCurrentModifiedBean();
@@ -1197,6 +1294,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
              * 
              * @see org.eclipse.swt.events.KeyListener#keyPressed(org.eclipse.swt.events.KeyEvent)
              */
+            @Override
             public void keyPressed(KeyEvent e) {
                 // System.out.println("e.character=" + e.character);
                 // System.out.println("keyCode=" + e.keyCode);
@@ -1259,6 +1357,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 }
             }
 
+            @Override
             public void keyReleased(KeyEvent e) {
                 // highlightLineOfCursorPosition();
             }
@@ -1267,14 +1366,17 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         expressionTextEditor.addMouseListener(new MouseListener() {
 
+            @Override
             public void mouseDoubleClick(MouseEvent e) {
                 highlightLineAndSetSelectionOfStyledText(expressionTextEditor);
             }
 
+            @Override
             public void mouseDown(MouseEvent e) {
                 highlightLineAndSetSelectionOfStyledText(expressionTextEditor);
             }
 
+            @Override
             public void mouseUp(MouseEvent e) {
 
             }
@@ -1288,6 +1390,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         Runnable runnable = new Runnable() {
 
+            @Override
             public void run() {
 
                 StyledText styledText = styledTextHandler.getStyledText();
@@ -1368,7 +1471,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         final Text expressionTextEditor = (Text) cellEditor.getControl();
 
         if (isConstraintExpressionCellEditor) {
-            constraintExpressionTextEditor = expressionTextEditor;
+            // moved to it's caller to execute
+            // constraintExpressionTextEditor = expressionTextEditor;
         } else {
             columnExpressionTextEditor = expressionTextEditor;
         }
@@ -1377,12 +1481,14 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             Text text = (Text) cellEditor.getControl();
 
+            @Override
             public void applyEditorValue() {
                 ModifiedObjectInfo modifiedObjectInfo = tableViewerCreator.getModifiedObjectInfo();
                 mapperManager.getUiManager().parseNewExpression(text.getText(),
                         (ITableEntry) modifiedObjectInfo.getCurrentModifiedBean(), true);
             }
 
+            @Override
             public void cancelEditor() {
                 ModifiedObjectInfo modifiedObjectInfo = tableViewerCreator.getModifiedObjectInfo();
                 text.setText((String) modifiedObjectInfo.getOriginalPropertyBeanValue());
@@ -1392,6 +1498,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 mapperManager.getUiManager().parseNewExpression(originalExpression, tableEntry, true);
             }
 
+            @Override
             public void editorValueChanged(boolean oldValidState, boolean newValidState) {
 
                 if (expressionTextEditor.isFocusControl() || lastExpressionEditorTextWhichLostFocus == expressionTextEditor) {
@@ -1408,9 +1515,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             ExecutionLimiter executionLimiter = null;
 
+            @Override
             public void controlMoved(ControlEvent e) {
             }
 
+            @Override
             public void controlResized(ControlEvent e) {
                 if (executionLimiter == null) {
                     executionLimiter = new ExecutionLimiter(50, true) {
@@ -1421,6 +1530,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                             if (isFinalExecution && !expressionTextEditor.isDisposed()) {
                                 expressionTextEditor.getDisplay().syncExec(new Runnable() {
 
+                                    @Override
                                     public void run() {
                                         if (expressionTextEditor.isDisposed()) {
                                             return;
@@ -1440,6 +1550,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         });
         expressionTextEditor.addFocusListener(new FocusListener() {
 
+            @Override
             public void focusGained(FocusEvent e) {
                 ITableEntry currentModifiedEntry = (ITableEntry) tableViewerCreator.getModifiedObjectInfo()
                         .getCurrentModifiedBean();
@@ -1450,6 +1561,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 styledTextHandler.setTextWithoutNotifyListeners(currentModifiedEntry.getExpression() == null ? "" : currentModifiedEntry.getExpression()); //$NON-NLS-1$
             }
 
+            @Override
             public void focusLost(FocusEvent e) {
                 expressionEditorTextSelectionBeforeFocusLost = expressionTextEditor.getSelection();
                 lastExpressionEditorTextWhichLostFocus = expressionTextEditor;
@@ -1502,9 +1614,16 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      */
     public void updateGridDataHeightForTableConstraints() {
 
-        int moreSpace = WindowSystem.isGTK() ? tableForConstraints.getItemHeight() : 0;
-        tableForConstraintsGridData.heightHint = ((OutputTable) abstractDataMapTable).getFilterEntries().size()
-                * tableForConstraints.getItemHeight() + tableForConstraints.getItemHeight() / 2 + moreSpace;
+        updateGridDataHeightForTableConstraints(getTableViewerCreatorForWhereFilters().getTable());
+
+    }
+
+    public void updateGridDataHeightForTableConstraints(Table _tableForConstraints) {
+        GridData _tableForConstraintsGridData = (GridData) _tableForConstraints.getLayoutData();
+
+        int moreSpace = WindowSystem.isGTK() ? _tableForConstraints.getItemHeight() : 0;
+        _tableForConstraintsGridData.heightHint = _tableForConstraints.getItemCount() * _tableForConstraints.getItemHeight()
+                + _tableForConstraints.getItemHeight() / 2 + moreSpace;
     }
 
     /**
@@ -1672,7 +1791,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (currentEntry instanceof IColumnEntry) {
                 tableViewer = DataMapTableView.this.getTableViewerCreatorForColumns().getTableViewer();
             } else if (currentEntry instanceof FilterTableEntry) {
-                tableViewer = DataMapTableView.this.getTableViewerCreatorForFilters().getTableViewer();
+                if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) currentEntry).getFilterKind())) {
+                    tableViewer = entendedTableViewerForOtherClauses.getTableViewerCreator().getTableViewer();
+                } else {
+                    tableViewer = extendedTableViewerForFilters.getTableViewerCreator().getTableViewer();
+                }
             }
             if (currentEntry.getProblems() != null) {
                 tableViewer.getTable().deselectAll();
@@ -1712,7 +1835,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * @param tableViewerCreator
      * @param tableEntry
      */
-    private void parseExpressionIfNeeded(ModifiedBeanEvent event, TableViewerCreator tableViewerCreator, ITableEntry tableEntry) {
+    protected void parseExpressionIfNeeded(ModifiedBeanEvent event, TableViewerCreator tableViewerCreator, ITableEntry tableEntry) {
         if (ID_EXPRESSION_COLUMN.equals(event.column.getId())) {
             mapperManager.getUiManager().parseExpression(tableEntry.getExpression(), tableEntry, false, false, false);
             mapperManager.getUiManager().refreshBackground(false, false);
@@ -1743,9 +1866,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * 
      * @return the extendedTableViewerForFilters
      */
-    public AbstractExtendedTableViewer<FilterTableEntry> getExtendedTableViewerForFilters() {
-        return this.extendedTableViewerForFilters;
-    }
+    // public AbstractExtendedTableViewer<FilterTableEntry> getExtendedTableViewerForFilters() {
+    // return this.extendedTableViewerForFilters;
+    // }
 
     public int getHeaderHeight() {
         if (WindowSystem.isGTK()) {
@@ -1779,4 +1902,21 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         super.setLayoutData(layoutData);
     }
 
+    /**
+     * Getter for extendedTableViewerForFilters.
+     * 
+     * @return the extendedTableViewerForFilters
+     */
+    public AbstractExtendedTableViewer<FilterTableEntry> getExtendedTableViewerForWhereFilters() {
+        return this.extendedTableViewerForFilters;
+    }
+
+    /**
+     * Getter for entendedTableViewerForOtherClauses.
+     * 
+     * @return the entendedTableViewerForOtherClauses
+     */
+    public AbstractExtendedTableViewer<FilterTableEntry> getEntendedTableViewerForOtherClauses() {
+        return this.entendedTableViewerForOtherClauses;
+    }
 }

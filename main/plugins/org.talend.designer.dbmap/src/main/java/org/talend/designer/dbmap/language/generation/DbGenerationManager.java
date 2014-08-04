@@ -149,18 +149,21 @@ public abstract class DbGenerationManager {
      * @return
      */
     public boolean checkFiltersAreEmpty(ExternalDbMapTable outputTable) {
-        List<ExternalDbMapEntry> constraints = outputTable.getCustomConditionsEntries();
-        int lstSize = constraints.size();
-        boolean oneConstraintIsNotEmpty = false;
-        for (int i = 0; i < lstSize; i++) {
-
-            String constraintExpression = (constraints.get(i)).getExpression();
+        List<ExternalDbMapEntry> constraints = outputTable.getCustomWhereConditionsEntries();
+        for (ExternalDbMapEntry whereEntry : constraints) {
+            String constraintExpression = whereEntry.getExpression();
             if (constraintExpression != null && constraintExpression.trim().length() > 0) {
-                oneConstraintIsNotEmpty = true;
-                break;
+                return false;
             }
         }
-        return !oneConstraintIsNotEmpty;
+        constraints = outputTable.getCustomOtherConditionsEntries();
+        for (ExternalDbMapEntry otherEntry : constraints) {
+            String constraintExpression = otherEntry.getExpression();
+            if (constraintExpression != null && constraintExpression.trim().length() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -395,30 +398,41 @@ public abstract class DbGenerationManager {
             // like as input.newcolumn1>100
             List<String> whereAddition = new ArrayList<String>();
             // olny pure start with group or order, like as order/group by input.newcolumn1
-            List<String> byAddition = new ArrayList<String>();
+            // List<String> byAddition = new ArrayList<String>();
             // like as input.newcolumn1>100 group/oder by input.newcolumn1
-            List<String> containWhereAddition = new ArrayList<String>();
+            // List<String> containWhereAddition = new ArrayList<String>();
             // like as "OR/AND input.newcolumn1", will keep original
             List<String> originalWhereAddition = new ArrayList<String>();
 
+            List<String> otherAddition = new ArrayList<String>();
+
             if (outputTable != null) {
-                List<ExternalDbMapEntry> customConditionsEntries = outputTable.getCustomConditionsEntries();
-                if (customConditionsEntries != null) {
-                    for (ExternalDbMapEntry entry : customConditionsEntries) {
+                List<ExternalDbMapEntry> customWhereConditionsEntries = outputTable.getCustomWhereConditionsEntries();
+                if (customWhereConditionsEntries != null) {
+                    for (ExternalDbMapEntry entry : customWhereConditionsEntries) {
                         String exp = initExpression(component, entry);
                         if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
-                            if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, true)
-                                    || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, true)) {
-                                byAddition.add(exp);
-                            } else if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, false)
-                                    || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, false)) {
-                                containWhereAddition.add(exp);
-                            } else if (containWith(exp, DbMapSqlConstants.OR, true)
-                                    || containWith(exp, DbMapSqlConstants.AND, true)) {
+                            // if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, true)
+                            // || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, true)) {
+                            // byAddition.add(exp);
+                            // } else if (containWith(exp, DbMapSqlConstants.GROUP_BY_PATTERN, false)
+                            // || containWith(exp, DbMapSqlConstants.ORDER_BY_PATTERN, false)) {
+                            // containWhereAddition.add(exp);
+                            // } else
+                            if (containWith(exp, DbMapSqlConstants.OR, true) || containWith(exp, DbMapSqlConstants.AND, true)) {
                                 originalWhereAddition.add(exp);
                             } else {
                                 whereAddition.add(exp);
                             }
+                        }
+                    }
+                }
+                List<ExternalDbMapEntry> customOtherConditionsEntries = outputTable.getCustomOtherConditionsEntries();
+                if (customOtherConditionsEntries != null) {
+                    for (ExternalDbMapEntry entry : customOtherConditionsEntries) {
+                        String exp = initExpression(component, entry);
+                        if (exp != null && !DbMapSqlConstants.EMPTY.equals(exp.trim())) {
+                            otherAddition.add(exp);
                         }
                     }
                 }
@@ -428,10 +442,9 @@ public abstract class DbGenerationManager {
 
             boolean whereFlag = whereClauses.trim().length() > 0;
             boolean whereAddFlag = !whereAddition.isEmpty();
-            boolean whereConntainFlag = !containWhereAddition.isEmpty();
 
             boolean whereOriginalFlag = !originalWhereAddition.isEmpty();
-            if (whereFlag || whereAddFlag || whereConntainFlag || whereOriginalFlag) {
+            if (whereFlag || whereAddFlag || whereOriginalFlag) {
                 sb.append(DbMapSqlConstants.NEW_LINE);
                 sb.append(DbMapSqlConstants.WHERE);
             }
@@ -456,21 +469,9 @@ public abstract class DbGenerationManager {
                     sb.append(s);
                 }
             }
-            if (whereConntainFlag) {
-                for (int i = 0; i < containWhereAddition.size(); i++) {
-                    if (i == 0 && (whereFlag || whereAddFlag) || i > 0) {
-                        sb.append(DbMapSqlConstants.NEW_LINE);
-                        sb.append(DbMapSqlConstants.SPACE);
-                        sb.append(DbMapSqlConstants.AND);
-                    }
-                    sb.append(DbMapSqlConstants.SPACE);
-                    sb.append(containWhereAddition.get(i));
-                }
-            }
-
-            if (!byAddition.isEmpty()) {
+            if (!otherAddition.isEmpty()) {
                 sb.append(DbMapSqlConstants.NEW_LINE);
-                for (String s : byAddition) {
+                for (String s : otherAddition) {
                     sb.append(s);
                     sb.append(DbMapSqlConstants.NEW_LINE);
                 }
@@ -521,7 +522,7 @@ public abstract class DbGenerationManager {
         return query;
     }
 
-    private boolean containWith(String expression, String pattern, boolean start) {
+    public static boolean containWith(String expression, String pattern, boolean start) {
         if (expression != null) {
             expression = expression.trim();
             try {

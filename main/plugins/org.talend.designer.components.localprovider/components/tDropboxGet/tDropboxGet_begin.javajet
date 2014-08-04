@@ -1,0 +1,86 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		
+		String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+		String accessToken = ElementParameterParser.getValue(node,"__ACCESS_TOKEN__");
+	    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	    String connectionKey = "\"conn_" + connection+"\"";
+		String dropboxPath = ElementParameterParser.getValue(node, "__PATH__");
+		String outputFolder = ElementParameterParser.getValue(node, "__OUTPUT__");
+		
+%>
+
+<%
+if(!"true".equals(useExistingConn)){
+	String clientIdentifier = "\""+cid+"\"";
+	String localeName = "\""+java.util.Locale.getDefault().toString()+"\"";
+	
+	String useProxy = ElementParameterParser.getValue(node,"__USE_PROXY__");
+	String proxyHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
+	String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
+	if("true".equals(useProxy)){
+%>
+		com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>
+			,new com.dropbox.core.http.StandardHttpRequestor(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>))));
+		com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
+<%
+	}else{
+%>
+	com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>);
+	com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
+<%
+	}
+}else{
+%>
+	com.dropbox.core.DbxClient <%=cid%>_client = (com.dropbox.core.DbxClient)globalMap.get(<%=connectionKey%>);
+<%}%>
+	com.dropbox.core.DbxEntry.WithChildren <%=cid%>_entries = <%=cid%>_client.getMetadataWithChildren(<%=dropboxPath%>);
+	if (<%=cid%>_entries == null) {
+		throw new Exception("No File or Directory found at " + <%=dropboxPath%>);
+	}
+	java.util.List<com.dropbox.core.DbxEntry> <%=cid%>_files = null;
+	if (<%=cid%>_entries.entry.isFile()) {
+		<%=cid%>_files = new java.util.ArrayList<com.dropbox.core.DbxEntry>();
+		<%=cid%>_files.add(<%=cid%>_entries.entry);
+	} else if (<%=cid%>_entries.children != null) {
+		<%=cid%>_files = <%=cid%>_entries.children;
+	}
+	if (<%=cid%>_files != null) {
+		String <%=cid%>_outputPath = new java.io.File(<%=outputFolder%>).getAbsolutePath()+java.io.File.separator;
+		for (com.dropbox.core.DbxEntry <%=cid%>_child : <%=cid%>_files) {
+			if (!<%=cid%>_child.isFile()) {
+				continue;
+			}
+			String savedFilePath = <%=cid%>_outputPath+<%=cid%>_child.name;
+			java.io.FileOutputStream outputStream = null;
+			try {
+				outputStream = new java.io.FileOutputStream(savedFilePath);
+				com.dropbox.core.DbxEntry.File downloadedFile = <%=cid%>_client.getFile(<%=cid%>_child.path,
+			            null, outputStream);
+			} finally {
+				if(outputStream != null){
+					outputStream.close();
+				}
+			}
+			globalMap.put("<%=cid %>_OUTPUT_PATH",savedFilePath);
+			globalMap.put("<%=cid %>_FILE_NAME",<%=cid%>_child.name);
+
+			
+			

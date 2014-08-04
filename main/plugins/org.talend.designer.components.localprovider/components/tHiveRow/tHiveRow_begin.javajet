@@ -3,6 +3,8 @@ imports="
 			org.talend.core.model.process.INode 
 			org.talend.core.model.process.ElementParameterParser 
 			org.talend.designer.codegen.config.CodeGeneratorArgument
+			org.talend.designer.runprocess.ProcessorException
+			org.talend.designer.runprocess.ProcessorUtilities
 			java.util.List
 			java.util.Map
 		" 
@@ -14,6 +16,7 @@ imports="
 	INode node = (INode)codeGenArgument.getArgument();
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	String cid = node.getUniqueName();
+	String processId = node.getProcess().getId();
 	
 	String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 	String dbport = ElementParameterParser.getValue(node, "__PORT__");
@@ -21,16 +24,106 @@ imports="
 	String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 	String dbuser= ElementParameterParser.getValue(node, "__USER__");
 
-    String commitEvery = "0";//ElementParameterParser.getValue(node, "__COMMIT_EVERY__");//hive jdbc not support setAutoCommit
-    String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
+	String commitEvery = "0";//ElementParameterParser.getValue(node, "__COMMIT_EVERY__");//hive jdbc not support setAutoCommit
+	String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 	boolean usePrepareStatement = "true".equals(ElementParameterParser.getValue(node,"__USE_PREPAREDSTATEMENT__"));
+	
+	boolean useParquet = "true".equals(ElementParameterParser.getValue(node,"__USE_PARQUET__"));
+	
 	log4jCodeGenerateUtil.infoComponentStart(node);
 %>
 
 <%@ include file="../templates/Hive/GetConnection.javajet"%>
-
 <%
+	String connectionMode = ElementParameterParser.getValue(node, "__CONNECTION_MODE__");
+	boolean setFsDefaultName = "true".equals(ElementParameterParser.getValue(node, "__SET_FS_DEFAULT_NAME__"));
+	String fsDefaultName = ElementParameterParser.getValue(node, "__FS_DEFAULT_NAME__");
+	
+	if("true".equals(useExistingConn)) {
+		connectionMode = "";
+		setFsDefaultName = false;
+		fsDefaultName = "";
+		String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+		for (INode pNode : node.getProcess().getNodesOfType("tHiveConnection")) {
+			if(connection!=null && connection.equals(pNode.getUniqueName())) {
+				connectionMode = ElementParameterParser.getValue(pNode, "__CONNECTION_MODE__");
+				setFsDefaultName = "true".equals(ElementParameterParser.getValue(pNode, "__SET_FS_DEFAULT_NAME__"));
+				fsDefaultName = ElementParameterParser.getValue(pNode, "__FS_DEFAULT_NAME__");
+				break;
+			}
+		}
+	}
+
+	// Register jars to handle the parquet format.
+
+	java.util.List<String> jarsToRegister = null;
+	java.util.List<String> jars = null;	
+	boolean generateAddJarCodeForAll = useParquet;
+	if(generateAddJarCodeForAll) {
+		String[] commandLine = new String[] {"<command>"};
+		try {
+			commandLine = ProcessorUtilities.getCommandLine("win32",true, processId, "",org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, new String[]{});
+		} catch (ProcessorException e) {
+			e.printStackTrace();
+		}
+
+		jarsToRegister = new java.util.ArrayList();
+		
+		jarsToRegister.add("snappy-java");
+		jarsToRegister.add("parquet-hive-bundle");
+
+		for (int j = 0; j < commandLine.length; j++) {
+			if(commandLine[j].contains("jar")) {
+				jars = java.util.Arrays.asList(commandLine[j].split(";"));
+				break;
+			}
+		}
+	}
+	
+	if(jarsToRegister!=null && jars!=null) {
+		if("EMBEDDED".equalsIgnoreCase(connectionMode)) {
+%>
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/GetJarsToRegister.javajet"%>	
+			GetJarsToRegister_<%=cid%> getJarsToRegister_<%=cid %> = new GetJarsToRegister_<%=cid%>();
+<%
+		} else {
+			generateAddJarCodeForAll = false;
+			if(setFsDefaultName) {
+				generateAddJarCodeForAll = true;
+%>
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetHiveJarsToRegister.javajet"%>
+				GetHiveJarsToRegister_<%=cid%> getJarsToRegister_<%=cid %> = new GetHiveJarsToRegister_<%=cid%>();
+<%		
+			}	
+		}
+
+		if(generateAddJarCodeForAll) {
+%>
+			java.sql.Statement addJar_<%=cid%> = null;
+<%
+			for(int i=0; i<jarsToRegister.size(); i++) {
+				String jarToRegister = jarsToRegister.get(i);
+				for(int j=0; j<jars.size(); j++) {
+					if(jars.get(j).contains(jarToRegister)) {
+%>
+						addJar_<%=cid%> = conn_<%=cid%>.createStatement();
+						try {
+							addJar_<%=cid%>.execute("add jar " + getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>"));
+						} catch (Exception e) {
+							e.printStackTrace();
+						} finally {
+							addJar_<%=cid%>.close();
+						}
+<%
+					}
+				}
+			}
+		}
+	}
+	
+	// End of parquet format handling.
+
 if(!("true").equals(useExistingConn)) {
     if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
         %>

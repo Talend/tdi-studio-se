@@ -49,7 +49,7 @@ import org.talend.repository.model.ComponentsFactoryProvider;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  */
 public class StatsAndLogsManager {
 
@@ -173,7 +173,7 @@ public class StatsAndLogsManager {
                         isNotInformixDB = false;
                     }
                     if (commitComponent != null) {
-                        connectionUID2 = CONNECTION_UID + "_Commit";//$NON-NLS-1$ 
+                        connectionUID2 = CONNECTION_UID + "_Commit";//$NON-NLS-1$
                         commitNode = new DataNode(commitComponent, connectionUID2);
                         commitNode.setSubProcessStart(true);
                         commitNode.setActivate(true);
@@ -447,7 +447,7 @@ public class StatsAndLogsManager {
 
     /**
      * DOC zli Comment method "getUrl".
-     * 
+     *
      * @param process
      */
     private static String getUrl(IProcess process) {
@@ -735,6 +735,13 @@ public class StatsAndLogsManager {
         paramList.addAll(statsAndLogsParametersDBPart(process));
         paramList.addAll(statsAndLogsParametersFinalPart(process));
 
+        for (IElementParameter param : paramList) {
+            if (param.getRepositoryValue() != null) {
+                // if any of the parameter of stat&logs is using repository, then force to link it to the name of the
+                // property for stat&logs
+                param.setRepositoryProperty(EParameterName.PROPERTY_TYPE.getName());
+            }
+        }
         return paramList;
     }
 
@@ -1284,7 +1291,7 @@ public class StatsAndLogsManager {
 
     /**
      * This function will add quotes only if necessary for the stats & logs.
-     * 
+     *
      * @param str
      * @return
      */

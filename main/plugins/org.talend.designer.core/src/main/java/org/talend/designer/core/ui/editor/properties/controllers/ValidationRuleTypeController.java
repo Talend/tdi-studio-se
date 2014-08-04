@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Button;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -49,6 +48,7 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
         super(dp);
     }
 
+    @Override
     protected Command createButtonCommand(Button button) {
         IElementParameter switchParam = elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
         String paramName = (String) button.getData(PARAMETER_NAME);
@@ -127,21 +127,16 @@ public class ValidationRuleTypeController extends AbstractRepositoryController {
 
     }
 
-    protected void fastInitializeRepositoryNames() {
-        super.fastInitializeRepositoryNames();
+    @Override
+    protected void fastInitializeRepositoryNames(IElementParameter param) {
+        super.fastInitializeRepositoryNames(param);
 
-        fastRepositoryUpdateValidationRule();
+        if (param.getName().equals(EParameterName.REPOSITORY_VALIDATION_RULE_TYPE.getName())) {
+            fastRepositoryUpdateValidationRule(param);
+        }
     }
 
-    private void fastRepositoryUpdateValidationRule() {
-        IElementParameter param = elem.getElementParameter(EParameterFieldType.VALIDATION_RULE_TYPE.getName());
-
-        if (param == null) {
-            return;
-        }
-
-        param = param.getChildParameters().get(EParameterName.REPOSITORY_VALIDATION_RULE_TYPE.getName());
-
+    private void fastRepositoryUpdateValidationRule(IElementParameter param) {
         if (param != null && param.getValue() != null) {
             IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             String linkedRepository = (String) param.getValue();

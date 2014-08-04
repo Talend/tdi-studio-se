@@ -1058,6 +1058,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     pType.getElementValue().add(elementValue);
                 }
             }
+        } else if (param.getFieldType().equals(EParameterFieldType.TABLE_BY_ROW) && value != null) {
+            List<Map<String, Object>> tableValues = (List<Map<String, Object>>) value;
+            for (Map<String, Object> currentLine : tableValues) {
+                Iterator it = currentLine.keySet().iterator();
+                while (it.hasNext()) {
+                    String key = (String) it.next();
+                    if (!(currentLine.get(key) instanceof String)) {
+                        continue;
+                    }
+                    String expression = (String) currentLine.get(key);
+
+                    ElementValueType elementValue = fileFact.createElementValueType();
+                    elementValue.setElementRef(key);
+                    elementValue.setValue(expression);
+                    pType.getElementValue().add(elementValue);
+                }
+            }
         } else if (param.getFieldType().equals(EParameterFieldType.PASSWORD) && value instanceof String) {
             try {
                 pType.setValue(PasswordEncryptUtil.encryptPassword((String) value) + PasswordEncryptUtil.ENCRYPT_KEY);
@@ -1209,6 +1226,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             }
                         }
 
+                        elemParam.setPropertyValue(pType.getName(), tableValues);
+                    } else if (param.getFieldType().equals(EParameterFieldType.TABLE_BY_ROW)) {
+                        List<Map<String, Object>> tableValues = new ArrayList<Map<String, Object>>();
+                        Map<String, Object> lineValues = null;
+                        for (ElementValueType elementValue : (List<ElementValueType>) pType.getElementValue()) {
+                            if ((lineValues == null) || (lineValues.get(elementValue.getElementRef()) != null)) {
+                                lineValues = new HashMap<String, Object>();
+                                tableValues.add(lineValues);
+                            }
+                            lineValues.put(elementValue.getElementRef(), elementValue.getValue());
+                        }
                         elemParam.setPropertyValue(pType.getName(), tableValues);
                     } else if (param.getFieldType().equals(EParameterFieldType.ENCODING_TYPE)) {
                         // fix for bug 2193

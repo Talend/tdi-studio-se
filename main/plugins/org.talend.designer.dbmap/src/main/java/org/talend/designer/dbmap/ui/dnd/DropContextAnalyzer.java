@@ -197,7 +197,7 @@ public class DropContextAnalyzer {
     /**
      * .
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private void analyzeCursorOverExpressionCell() {
         DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(currentTableTarget);
         TableViewerCreator tableViewerCreatorForColumns = dataMapTableView.getTableViewerCreatorForColumns();
@@ -300,11 +300,26 @@ public class DropContextAnalyzer {
         if (target.getZone() != Zone.OUTPUTS) {
             return false;
         }
-        return currentTableTarget == target.getTableViewerCreatorForFilters().getTable();
+        return (currentTableTarget == target.getTableViewerCreatorForWhereFilters().getTable() || currentTableTarget == target
+                .getTableViewerCreatorForOtherFilters().getTable());
     }
 
     public boolean targetTableIsFiltersTable() {
         return targetTableIsFiltersTable(dataMapTableViewTarget);
+    }
+
+    public boolean targetTableIsWhereFiltersTable() {
+        if (dataMapTableViewTarget.getZone() != Zone.OUTPUTS) {
+            return false;
+        }
+        return currentTableTarget == dataMapTableViewTarget.getTableViewerCreatorForWhereFilters().getTable();
+    }
+
+    public boolean targetTableIsOtherFiltersTable() {
+        if (dataMapTableViewTarget.getZone() != Zone.OUTPUTS) {
+            return false;
+        }
+        return currentTableTarget == dataMapTableViewTarget.getTableViewerCreatorForOtherFilters().getTable();
     }
 
     private TableItem getTableItemFromPosition(Point cursorPosition) {
@@ -315,11 +330,11 @@ public class DropContextAnalyzer {
     private boolean dropVarsEntryIsValid(TableItem tableItemTarget) {
         Table table = tableItemTarget.getParent();
         TableItem[] tableItems = table.getItems();
-        for (int i = 0; i < tableItems.length; i++) {
-            if (tableItemTarget == tableItems[i]) {
+        for (TableItem tableItem : tableItems) {
+            if (tableItemTarget == tableItem) {
                 break;
             }
-            if (tableItemSource == tableItems[i]) {
+            if (tableItemSource == tableItem) {
                 return true;
             }
         }

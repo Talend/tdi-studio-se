@@ -36,9 +36,13 @@ import org.talend.designer.dbmap.model.tableentry.OutputColumnTableEntry;
  */
 public class OutputTable extends AbstractInOutTable {
 
-    protected List<FilterTableEntry> filterTableEntries = new ArrayList<FilterTableEntry>(0);
+    protected List<FilterTableEntry> whereFilterTableEntries = new ArrayList<FilterTableEntry>(0);
 
-    private ExtendedTableModel<FilterTableEntry> tableFiltersEntriesModel;
+    protected List<FilterTableEntry> otherFilterTableEntries = new ArrayList<FilterTableEntry>(0);
+
+    private ExtendedTableModel<FilterTableEntry> tableWhereFiltersEntriesModel;
+
+    private ExtendedTableModel<FilterTableEntry> tableOtherFiltersEntriesModel;
 
     private String uniqueName;
 
@@ -54,10 +58,14 @@ public class OutputTable extends AbstractInOutTable {
             this.uniqueName = uniqueName;
         }
         this.tableName = tableName;
-        this.tableFiltersEntriesModel = new ExtendedTableModel<FilterTableEntry>(
-                uniqueName + " : model for Filters", filterTableEntries); //$NON-NLS-1$
+        this.tableWhereFiltersEntriesModel = new ExtendedTableModel<FilterTableEntry>(
+                uniqueName + " : model for where Filters", whereFilterTableEntries); //$NON-NLS-1$
+
+        this.tableOtherFiltersEntriesModel = new ExtendedTableModel<FilterTableEntry>(
+                uniqueName + " : model for other Filters", otherFilterTableEntries); //$NON-NLS-1$
     }
 
+    @Override
     public void initFromExternalData(ExternalDbMapTable externalMapperTable) {
         super.initFromExternalData(externalMapperTable);
         List<IMetadataColumn> columns = this.metadataTable.getListColumns();
@@ -70,8 +78,7 @@ public class OutputTable extends AbstractInOutTable {
 
         for (IMetadataColumn column : columns) {
             AbstractInOutTableEntry columnEntry = getNewTableEntry(column);
-            ExternalDbMapEntry externalMapperTableEntry = nameToPerTabEntry.get(columnEntry.getMetadataColumn()
-                    .getLabel());
+            ExternalDbMapEntry externalMapperTableEntry = nameToPerTabEntry.get(columnEntry.getMetadataColumn().getLabel());
             // Entry match with current column
             if (externalMapperTableEntry != null) {
                 columnEntry.setExpression(externalMapperTableEntry.getExpression());
@@ -79,13 +86,22 @@ public class OutputTable extends AbstractInOutTable {
             dataMapTableEntries.add(columnEntry);
         }
         if (externalMapperTable != null) {
-            List<ExternalDbMapEntry> externalConstraintTableEntries = externalMapperTable.getCustomConditionsEntries();
-            if (externalConstraintTableEntries != null) {
-                for (ExternalDbMapEntry entry : externalConstraintTableEntries) {
-                    FilterTableEntry filterTableEntry = new FilterTableEntry(this, entry.getName(), entry
-                            .getExpression());
+            List<ExternalDbMapEntry> externalWhereConstraintTableEntries = externalMapperTable.getCustomWhereConditionsEntries();
+            if (externalWhereConstraintTableEntries != null) {
+                for (ExternalDbMapEntry entry : externalWhereConstraintTableEntries) {
+                    FilterTableEntry whereFilterTableEntry = new FilterTableEntry(this, entry.getName(), entry.getExpression(),
+                            FilterTableEntry.WHERE_FILTER);
                     // mapperManager.getProblemsManager().checkProblemsForTableEntry(filterTableEntry, false);
-                    addFilterEntry(filterTableEntry);
+                    addWhereFilterEntry(whereFilterTableEntry);
+                }
+            }
+            List<ExternalDbMapEntry> externalOtherConstraintTableEntries = externalMapperTable.getCustomOtherConditionsEntries();
+            if (externalOtherConstraintTableEntries != null) {
+                for (ExternalDbMapEntry entry : externalOtherConstraintTableEntries) {
+                    FilterTableEntry otherFilterTableEntry = new FilterTableEntry(this, entry.getName(), entry.getExpression(),
+                            FilterTableEntry.OTHER_FILTER);
+                    // mapperManager.getProblemsManager().checkProblemsForTableEntry(filterTableEntry, false);
+                    addOtherFilterEntry(otherFilterTableEntry);
                 }
             }
         }
@@ -96,29 +112,54 @@ public class OutputTable extends AbstractInOutTable {
         return new OutputColumnTableEntry(this, metadataColumn);
     }
 
-    public void addFilterEntry(FilterTableEntry constraintTableEntry) {
-        this.tableFiltersEntriesModel.add(constraintTableEntry);
+    public void addWhereFilterEntry(FilterTableEntry constraintTableEntry) {
+        this.tableWhereFiltersEntriesModel.add(constraintTableEntry);
     }
 
-    public void addFilterEntry(FilterTableEntry constraintTableEntry, Integer index) {
-        this.tableFiltersEntriesModel.add(constraintTableEntry, index);
+    public void addOtherFilterEntry(FilterTableEntry constraintTableEntry) {
+        this.tableOtherFiltersEntriesModel.add(constraintTableEntry);
     }
 
-    public void removeFilterEntry(FilterTableEntry constraintTableEntry) {
-        this.tableFiltersEntriesModel.remove(constraintTableEntry);
+    public void addWhereFilterEntry(FilterTableEntry constraintTableEntry, Integer index) {
+        this.tableWhereFiltersEntriesModel.add(constraintTableEntry, index);
     }
 
-    public List<FilterTableEntry> getFilterEntries() {
-        return this.tableFiltersEntriesModel.getBeansList();
+    public void addOtherFilterEntry(FilterTableEntry constraintTableEntry, Integer index) {
+        this.tableOtherFiltersEntriesModel.add(constraintTableEntry, index);
+    }
+
+    public void removeWhereFilterEntry(FilterTableEntry constraintTableEntry) {
+        this.tableWhereFiltersEntriesModel.remove(constraintTableEntry);
+    }
+
+    public void removeOtherFilterEntry(FilterTableEntry constraintTableEntry) {
+        this.tableOtherFiltersEntriesModel.remove(constraintTableEntry);
+    }
+
+    public List<FilterTableEntry> getWhereFilterEntries() {
+        return this.tableWhereFiltersEntriesModel.getBeansList();
+    }
+
+    public List<FilterTableEntry> getOtherFilterEntries() {
+        return this.tableOtherFiltersEntriesModel.getBeansList();
     }
 
     /**
-     * Getter for tableFiltersEntriesModel.
+     * Getter for tableWhereFiltersEntriesModel.
      * 
-     * @return the tableFiltersEntriesModel
+     * @return the tableWhereFiltersEntriesModel
      */
-    public ExtendedTableModel<FilterTableEntry> getTableFiltersEntriesModel() {
-        return this.tableFiltersEntriesModel;
+    public ExtendedTableModel<FilterTableEntry> getWhereTableFiltersEntriesModel() {
+        return this.tableWhereFiltersEntriesModel;
+    }
+
+    /**
+     * Getter for tableOtherFiltersEntriesModel.
+     * 
+     * @return the tableOtherFiltersEntriesModel
+     */
+    public ExtendedTableModel<FilterTableEntry> getOtherTableFiltersEntriesModel() {
+        return this.tableOtherFiltersEntriesModel;
     }
 
     /**

@@ -80,11 +80,13 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         return (UIManager) super.getUiManager();
     }
 
+    @Override
     public void dragEnter(DropTargetEvent event) {
         super.dragEnter(event);
         draggableTable.setFocus();
     }
 
+    @Override
     public void dragOver(DropTargetEvent event) {
 
         super.dragOver(event);
@@ -262,6 +264,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         return insertionIndicator;
     }
 
+    @Override
     public void dragLeave(DropTargetEvent event) {
         // System.out.println("\n>>dragLeave");
         // System.out.println(event);
@@ -281,6 +284,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         uiManager.setDragging(false);
     }
 
+    @Override
     public void dragOperationChanged(DropTargetEvent event) {
         // System.out.println("\n>>dragOperationChanged");
         // showInfos(event);
@@ -312,6 +316,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
     // System.out.println("DND.DROP_TARGET_MOVE=" + DND.DROP_TARGET_MOVE);
     // }
     //
+    @Override
     public void drop(DropTargetEvent event) {
 
         super.drop(event);
@@ -355,7 +360,11 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
         TableViewerCreator tableViewerCreatorTarget = null;
         if (targetTableIsFiltersTable) {
-            tableViewerCreatorTarget = dataMapTableViewTarget.getTableViewerCreatorForFilters();
+            if (analyzer.targetTableIsWhereFiltersTable()) {
+                tableViewerCreatorTarget = dataMapTableViewTarget.getTableViewerCreatorForWhereFilters();
+            } else {
+                tableViewerCreatorTarget = dataMapTableViewTarget.getTableViewerCreatorForOtherFilters();
+            }
         } else {
             tableViewerCreatorTarget = dataMapTableViewTarget.getTableViewerCreatorForColumns();
         }
@@ -440,7 +449,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
             metadataEditorView.getTableViewerCreator().getTableViewer().refresh();
         }
 
-        int[] selection = ArrayUtils.toPrimitive((Integer[]) columnIndicesToSelect.toArray(new Integer[0]));
+        int[] selection = ArrayUtils.toPrimitive(columnIndicesToSelect.toArray(new Integer[0]));
         tableViewerCreatorTarget.getSelectionHelper().setSelection(selection);
         ISelection iselection = tableViewerCreatorTarget.getTableViewer().getSelection();
         List<ITableEntry> selectedEntries = uiManager.extractSelectedTableEntries(iselection);
@@ -501,7 +510,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
      * @param metadataColumnsBeingAdded
      * @param metadataEditorEvent
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private void updateExpressionsOfInsertedEntries(IDbLanguage currentLanguage, MetadataTableEditorView metadataEditorView,
             int currentIndex, ArrayList<ITableEntry> sourceEntriesOfEntriesBeingAdded, boolean targetTableIsConstraintsTable,
             TableViewerCreator tableViewerCreatorTarget, ArrayList<IMetadataColumn> metadataColumnsBeingAdded
@@ -562,7 +571,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         }
     }
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private ITableEntry getNextEntryTarget(ITableEntry currentEntryTarget, TableViewerCreator tableViewerCreatorTarget) {
         // mapperManager.get
         // currentEntryTarget.getParent()
@@ -644,6 +653,7 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
 
     }
 
+    @Override
     public void dropAccept(DropTargetEvent event) {
         // System.out.println("\n>>dropAccept");
         // System.out.println(event);

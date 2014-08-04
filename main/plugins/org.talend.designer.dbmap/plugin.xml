@@ -22,6 +22,15 @@
             name="ELTMapSaveToEmfMigrationTask"
             version="5.1.2">
       </projecttask>
+      <projecttask
+            beforeLogon="false"
+            breaks="5.1.2"
+            class="org.talend.designer.dbmap.migration.DBMapSplitTableConstraintFiltersMigrationTask"
+            description="Split the old constraint filter to WHERE filter and other filter"
+            id="org.talend.designer.dbmap.migration.DBMapSplitTableConstraintFiltersMigrationTask"
+            name="DBMapSplitTableConstraintFiltersMigrationTask"
+            version="5.6.0">
+      </projecttask>
    </extension>
    <extension
          point="org.talend.core.runtime.repositoryComponent_provider">
