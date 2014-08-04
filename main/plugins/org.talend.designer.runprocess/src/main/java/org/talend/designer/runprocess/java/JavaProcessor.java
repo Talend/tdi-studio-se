@@ -1053,7 +1053,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         return list;
     }
 
-    protected String[] addMapReduceJobCommands(String[] strings) {
+    private String[] addMapReduceJobCommands(String[] strings) {
         List<String> list = new ArrayList<String>();
         if (strings != null && strings.length > 0) {
             for (String commandSegment : strings) {
@@ -1326,7 +1326,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             String nodeName = node.getComponent().getName();
             if (("tESBConsumer".equals(nodeName) || "tESBProviderRequest".equals(nodeName) //$NON-NLS-1$ //$NON-NLS-2$
                     || "tRESTClient".equals(nodeName) || "tRESTRequest".equals(nodeName) //$NON-NLS-1$ //$NON-NLS-2$
-                    || "cCXFRS".equals(nodeName)) //$NON-NLS-1$
+            || "cCXFRS".equals(nodeName)) //$NON-NLS-1$
                     && node.isActivate()) {
 
                 if (!samEnabled) {
@@ -1352,10 +1352,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             File esbConfigsSourceFolder = EsbConfigUtils.getEclipseEsbFolder();
             if (!esbConfigsSourceFolder.exists()) {
                 RunProcessPlugin
-                    .getDefault()
-                    .getLog()
-                    .log(new Status(IStatus.WARNING, RunProcessPlugin.getDefault().getBundle().getSymbolicName(),
-                            "ESB configuration folder does not exists - " + esbConfigsSourceFolder.toURI())); //$NON-NLS-1$
+                        .getDefault()
+                        .getLog()
+                        .log(new Status(IStatus.WARNING, RunProcessPlugin.getDefault().getBundle().getSymbolicName(),
+                                "ESB configuration folder does not exists - " + esbConfigsSourceFolder.toURI())); //$NON-NLS-1$
                 return;
             }
 

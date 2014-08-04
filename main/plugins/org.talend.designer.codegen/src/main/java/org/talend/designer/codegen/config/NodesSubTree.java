@@ -64,9 +64,8 @@ public class NodesSubTree {
     boolean subTreeContainsParallelIterate = false;
 
     List<INode> mergeBranchStarts;
-    
-    List<INode> mergeNodes;
 
+    List<INode> mergeNodes;
 
     boolean isRefSubTree = false;// for mr only
 
@@ -135,23 +134,16 @@ public class NodesSubTree {
             allMainSubTreeConnections = new ArrayList<IConnection>();
 
             buildMRSubTree(node);
+        } else if (typeGen == ETypeGen.STORM) {
+            this.rootNode = node;
+            this.name = node.getUniqueName();
+            this.nodes = new ArrayList<INode>();
+            afterSubProcesses = new ArrayList<String>();
+            beforeSubProcesses = new ArrayList<String>();
 
-            // if (refNodes != null) {
-            // for (INode refNode : refNodes) {
-            // this.nodes.add(refNode);
-            // for (IConnection connection : refNode.getOutgoingSortedConnections()) {
-            // if (connection.getTarget().isActivate()) {
-            //
-            // if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
-            // afterSubProcesses.add(connection.getTarget().getUniqueName());
-            // }
-            // if (connection.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)) {
-            // beforeSubProcesses.add(connection.getTarget().getUniqueName());
-            // }
-            // }
-            // }
-            // }
-            // }
+            allMainSubTreeConnections = new ArrayList<IConnection>();
+
+            buildStormSubTree(node);
         }
     }
 
@@ -170,14 +162,14 @@ public class NodesSubTree {
             }
 
             // if the node link with the same merge node
-            for(INode mNode:mergeNodes){
-            	if (node.isActivate() && node.isSubProcessStart() && node.getLinkedMergeInfo() != null
+            for (INode mNode : mergeNodes) {
+                if (node.isActivate() && node.isSubProcessStart() && node.getLinkedMergeInfo() != null
                         && node.getLinkedMergeInfo().get(mNode) != null) {
                     mergeBranchStarts.add(node);
                     buildSubTree(node, true);
                 }
             }
-            
+
         }
     }
 
@@ -218,6 +210,38 @@ public class NodesSubTree {
                         allMainSubTreeConnections.add(connection);
                     }
                     buildMRSubTree(connection.getTarget());
+                }
+                if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
+                    afterSubProcesses.add(connection.getTarget().getUniqueName());
+                }
+                if (connection.getLineStyle().equals(EConnectionType.ON_SUBJOB_OK)) {
+                    beforeSubProcesses.add(connection.getTarget().getUniqueName());
+                }
+            }
+        }
+
+        nodes.add(node);
+    }
+
+    private void buildStormSubTree(INode node) {
+        // Use a copy of buildMRSubTree for now.  This will soon evolve.
+        if (((AbstractNode) node).isThereLinkWithRef()) {
+            this.isRefSubTree = true;
+            this.refNodes = ((AbstractNode) node).getRefNodes();
+            if (refNodes != null) {
+                for (INode refNode : refNodes) {
+                    buildStormSubTree(refNode);
+                }
+            }
+        }
+        for (IConnection connection : node.getOutgoingSortedConnections()) {
+            if (connection.getTarget().isActivate()) {
+
+                if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.MAIN)) {
+                    if (!connection.getLineStyle().hasConnectionCategory(IConnectionCategory.USE_ITERATE)) {
+                        allMainSubTreeConnections.add(connection);
+                    }
+                    buildStormSubTree(connection.getTarget());
                 }
                 if (connection.getLineStyle().equals(EConnectionType.RUN_AFTER)) {
                     afterSubProcesses.add(connection.getTarget().getUniqueName());
@@ -452,24 +476,24 @@ public class NodesSubTree {
 
                 @Override
                 public int compare(INode node1, INode node2) {
-                	Map<INode,Integer> mergeInfo1=node1.getLinkedMergeInfo();
-                	Map<INode,Integer> mergeInfo2=node2.getLinkedMergeInfo();
-                	for(INode mNode:mergeNodes){
-                		if (mergeInfo1.get(mNode)!=null && mergeInfo2.get(mNode)!=null) {
-                			if(mergeInfo1.get(mNode) > mergeInfo2.get(mNode)){
-                				return 1;
-                			}else{
-                				return -1;
-                			}
-                		}
-                		if (mergeInfo1.get(mNode)!=null && mergeInfo2.get(mNode)==null) {
-                			return -1;
-                		}
-                		if (mergeInfo1.get(mNode)==null && mergeInfo2.get(mNode)!=null) {
-                			return 1;
-                		}
-                	}
-                        return -1;
+                    Map<INode, Integer> mergeInfo1 = node1.getLinkedMergeInfo();
+                    Map<INode, Integer> mergeInfo2 = node2.getLinkedMergeInfo();
+                    for (INode mNode : mergeNodes) {
+                        if (mergeInfo1.get(mNode) != null && mergeInfo2.get(mNode) != null) {
+                            if (mergeInfo1.get(mNode) > mergeInfo2.get(mNode)) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        }
+                        if (mergeInfo1.get(mNode) != null && mergeInfo2.get(mNode) == null) {
+                            return -1;
+                        }
+                        if (mergeInfo1.get(mNode) == null && mergeInfo2.get(mNode) != null) {
+                            return 1;
+                        }
+                    }
+                    return -1;
 
                 }
             });
@@ -481,14 +505,14 @@ public class NodesSubTree {
     public boolean isMergeSubTree() {
         return this.isMergeSubTree;
     }
-    
-    public List<INode> getMergeNodes() {
-		return mergeNodes;
-	}
 
-//    public INode getMergeNode() {
-//        return this.mergeNode;
-//    }
+    public List<INode> getMergeNodes() {
+        return mergeNodes;
+    }
+
+    // public INode getMergeNode() {
+    // return this.mergeNode;
+    // }
 
     /**
      * Getter for allMainSubTreeConnections.
