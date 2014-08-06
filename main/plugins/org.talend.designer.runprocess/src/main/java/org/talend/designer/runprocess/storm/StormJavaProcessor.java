@@ -53,7 +53,7 @@ import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
-import org.talend.repository.ui.wizards.exportjob.scriptsmanager.MapReduceJobJavaScriptsManager;
+import org.talend.repository.ui.wizards.exportjob.scriptsmanager.StormJobJavaScriptsManager;
 
 /**
  * <pre>
@@ -189,7 +189,7 @@ public class StormJavaProcessor extends JavaProcessor {
         // IProcessor.NO_TRACES, JobExportType.POJO);
 
         // Now only support the JobExportType.POJO, means "Autonomous job".
-        JobScriptsManager jobScriptsManager = new MapReduceJobJavaScriptsManager(exportChoiceMap, processItem.getProcess()
+        JobScriptsManager jobScriptsManager = new StormJobJavaScriptsManager(exportChoiceMap, processItem.getProcess()
                 .getDefaultContext(), JobScriptsManager.ALL_ENVIRONMENTS, IProcessor.NO_STATISTICS, IProcessor.NO_TRACES);
         String codeOptions = null;
         List<ExportFileResource> exportResources = jobScriptsManager.getExportResources(exportFileResources, codeOptions);
@@ -200,7 +200,7 @@ public class StormJavaProcessor extends JavaProcessor {
 
         final String archiveFilePath = Path.fromOSString(CorePlugin.getDefault().getPreferenceStore()
                 .getString(ITalendCorePrefConstants.FILE_PATH_TEMP))
-                + "/mr_export_" + process.getName() + ".zip"; //$NON-NLS-1$ //$NON-NLS-2$
+                + "/storm_export_" + process.getName() + ".zip"; //$NON-NLS-1$ //$NON-NLS-2$
         File exportZipFile = new File(archiveFilePath);
         if (!exportZipFile.getParentFile().exists()) {
             exportZipFile.getParentFile().mkdirs();
