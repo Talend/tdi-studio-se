@@ -2214,6 +2214,15 @@
               name="ChangeUseBatchSizetoFalse4AS400"
               version="5.3.3">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="5.6.0"
+              class="org.talend.repository.model.migration.UpdateTmatchGroupQualityTask"
+              description="update &quot;compute group quality&quot; to false for non-separate mode"
+              id="org.talend.repository.model.migration.UpdateTmatchGroupQualityTask"
+              name="Update &quot;compute group quality&quot; to false for non-separate mode"
+              version="5.6.0">
+        </projecttask>
    </extension>
 
    <extension
