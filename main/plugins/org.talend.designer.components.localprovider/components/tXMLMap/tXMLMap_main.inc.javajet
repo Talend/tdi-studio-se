@@ -139,8 +139,8 @@ skeleton="tXMLMap_java.skeleton"
 //	int indexLastPersistentSortedTable = -1;
 	 
 	ArrayList<InputXmlTree> inputTablesWithInnerJoin = new ArrayList<InputXmlTree>();
-	if(inputConnections==null || inputConnections.size() < 1) {
-		return "";
+	if(inputConnections==null) {
+		inputConnections = new ArrayList<IConnection>();//avoid NPE
 	}
 	%>
 	boolean <%= rejectedInnerJoin %> = false;
@@ -149,25 +149,27 @@ skeleton="tXMLMap_java.skeleton"
 	boolean isMatchDocRow<%=cid%> = false;
 	  
 	<%
-	if(inputTables==null || inputTables.size()==0) return "";
 	for(IConnection conn : inputConnections) { // find the input main table
-		InputXmlTree inputTable = inputTables.get(0);
 		EConnectionType connectionType = conn.getLineStyle();
 		if (connectionType == EConnectionType.FLOW_MAIN) {
+			InputXmlTree inputTable = inputTables.get(0);
 			if(!inputTable.isLookup()) { // lookup is used to sign it is lookup table
     			mainInputTable = inputTable;
     			break;
 			}
 		}
 	}
-	if(mainInputTable != null) {
+	
+	MatchXmlTreeExpr matchXmlTreeExpr = new MatchXmlTreeExpr(cid);
+	
+	if(mainInputTable != null) {//TD8096
 		
 		List<TreeNode> allNodes = new ArrayList<TreeNode>();
 		for(InputXmlTree inputTable : inputTables) {
 			allNodes.addAll(inputTable.getNodes());
 		}
 		
-		MatchXmlTreeExpr matchXmlTreeExpr = new MatchXmlTreeExpr(allNodes,cid);
+		matchXmlTreeExpr = new MatchXmlTreeExpr(allNodes,cid);
 		for(OutputXmlTree outputTable : outputTables) {
 			String outputTableName = outputTable.getName();
 			if(nameToOutputConnection.get(outputTableName) == null) {
@@ -271,6 +273,8 @@ skeleton="tXMLMap_java.skeleton"
 		<%@ include file="tXMLMap_lookup.inc.javajet" %>
 <%
 	} // end for lookup tables
+	
+}//TD8096
 	
 	// /////////////////////////////////////////////////////////////////////////////////////////////////////
         // /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -641,7 +645,6 @@ skeleton="tXMLMap_java.skeleton"
 <%= sb.toString()%>
 
 <%
-	}
 	
 	if((!isPlainNode && !hasDocumentGlobal) || (hasDocumentGlobal && !isPlainNode)) {
 		gm.addBlocksCodeToClose(new BlockCode("G_TXM_M_001 close"));

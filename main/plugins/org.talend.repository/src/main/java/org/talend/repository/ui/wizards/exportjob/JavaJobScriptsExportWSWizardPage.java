@@ -1273,6 +1273,15 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
         }
 
+		// TESB-13867 Export limitations for ESB 'Jobs'
+		// add extra checks.
+		if (isValid) {
+			String errorMsg = presenter.extraCheck(getCurrentExportType1(), getCheckNodes());
+			if (errorMsg != null) {
+				setErrorMessage(errorMsg);
+				return false;
+			}
+		}
         setPageComplete(isValid);
         return isValid;
     }

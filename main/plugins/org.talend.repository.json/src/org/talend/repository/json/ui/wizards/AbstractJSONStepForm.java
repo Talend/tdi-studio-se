@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.json.ui.wizards;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,10 +24,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ContextItem;
+import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.repository.json.util.JSONConnectionContextHelper;
 import org.talend.repository.model.IConnParamName;
 import org.talend.repository.ui.swt.utils.AbstractForm;
+import org.talend.repository.ui.utils.ConnectionContextHelper;
 import org.talend.repository.ui.wizards.metadata.connection.files.xml.treeNode.FOXTreeNode;
 
 /**
@@ -85,14 +88,25 @@ public abstract class AbstractJSONStepForm extends AbstractForm {
             if (isContextMode()) {
                 JSONConnectionContextHelper.openInConetxtModeDialog();
             } else {
-                ContextItem contextItem = JSONConnectionContextHelper.exportAsContext(connectionItem, getConetxtParams());
-                contextManager = JSONConnectionContextHelper.contextManager;
-                if (contextItem != null) { // create
-                    if (contextManager instanceof JobContextManager) {
-                        Map<String, String> map = ((JobContextManager) contextManager).getNameMap();
-                        // set properties for context mode
-                        JSONConnectionContextHelper.setPropertiesForContextMode(connectionItem, contextItem, getConetxtParams(),
-                                map);
+                Map<ContextItem, List<ConectionAdaptContextVariableModel>> variableModels = JSONConnectionContextHelper
+                        .exportAsContext(connectionItem, getConetxtParams());
+                contextManager = ConnectionContextHelper.contextManager;
+
+                Iterator<ContextItem> contextItor = variableModels.keySet().iterator();
+                while (contextItor.hasNext()) {
+                    ContextItem contextItem = contextItor.next();
+                    List<ConectionAdaptContextVariableModel> apaptModels = variableModels.get(contextItem);
+                    if (contextItem != null && apaptModels.size() == 0) { // create
+                        if (contextManager instanceof JobContextManager) {
+                            Map<String, String> map = ((JobContextManager) contextManager).getNameMap();
+                            // set properties for context mode
+                            JSONConnectionContextHelper.setPropertiesForContextMode(connectionItem, contextItem,
+                                    getConetxtParams(), map);
+                        }
+                    } else {
+                        // set properties for exist context
+                        JSONConnectionContextHelper.setPropertiesForExistContextMode(connectionItem, getConetxtParams(),
+                                variableModels);
                     }
                     // refresh current UI.
                     initialize();

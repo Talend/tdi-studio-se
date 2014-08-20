@@ -59,6 +59,11 @@ public class MissingSettingsMultiThreadDynamicComposite extends TopMessagesMulti
             JavaProcessUtil.addNodeRelatedModules(((Node) ele).getProcess(), modules, ((Node) ele));
             // get not installed modules
             List<ModuleNeeded> updatedModules = LibrariesManagerUtils.getNotInstalledModules(modules);
+            for (ModuleNeeded needed : updatedModules) {
+                if (needed.isRequired(((Node) ele).getElementParameters())) {
+                    needed.setRequired(true);
+                }
+            }
             missModulesNeeded.addAll(updatedModules);
         }
         setVisibleTopMessage(!missModulesNeeded.isEmpty());

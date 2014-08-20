@@ -24,11 +24,13 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
@@ -84,6 +86,14 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
                         && !ERepositoryObjectType.SERVICESOPERATION.equals(nodProperty)
                         && !ERepositoryObjectType.SERVICESPORT.equals(nodProperty)) {
                     visible = true;
+                }
+                
+                if (nodProperty != null && GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                            .getService(ICamelDesignerCoreService.class);
+                    if(nodProperty.equals(camelService.getRouteDocsType())|| nodProperty.equals(camelService.getRouteDocType())){
+                    	visible = false;
+                    }
                 }
                 // for cdc
                 RepositoryNode parent = node.getParent();

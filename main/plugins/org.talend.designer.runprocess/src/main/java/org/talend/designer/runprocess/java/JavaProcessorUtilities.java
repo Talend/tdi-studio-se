@@ -56,7 +56,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
-import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IContext;
@@ -518,8 +517,6 @@ public class JavaProcessorUtilities {
                 ILibraryManagerService repositoryBundleService = CorePlugin.getDefault().getRepositoryBundleService();
                 repositoryBundleService.retrieve(jarsNeedRetrieve, libDir.getAbsolutePath());
                 if (process instanceof IProcess2) {
-                    ILibrariesService moduleService = CorePlugin.getDefault().getLibrariesService();
-                    moduleService.resetModulesNeeded();
                     ((IProcess2) process).checkProcess();
                 }
             }

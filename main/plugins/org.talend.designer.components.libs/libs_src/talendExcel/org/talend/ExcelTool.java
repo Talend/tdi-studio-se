@@ -61,6 +61,8 @@ public class ExcelTool {
 	private Font font = null;
 
 	private Map<String, CellStyle> cellStylesMapping = null;
+	
+	boolean recalculateFormula = false;
 
 	private int rowAccessWindowSize = SXSSFWorkbook.DEFAULT_WINDOW_SIZE;//used in auto flush
 
@@ -82,6 +84,10 @@ public class ExcelTool {
 
 	public void setSheet(String sheetName) {
 		this.sheetName = sheetName;
+	}
+	
+	public void setRecalculateFormula(boolean recalculateFormula) {
+		this.recalculateFormula = recalculateFormula;
 	}
 
 	public void prepareStream() throws Exception {
@@ -286,14 +292,14 @@ public class ExcelTool {
 			}
 		}
 		FileOutputStream fileOutput = new FileOutputStream(fileName);
-		if(appendWorkbook && appendSheet){
+		if(appendWorkbook && appendSheet && recalculateFormula){
 		    evaluateFormulaCell();
 		}
 		wb.write(fileOutput);
 		fileOutput.close();
 	}
 	
-	public void evaluateFormulaCell(){
+	private void evaluateFormulaCell(){
 	    FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
         for(int sheetNum = 0; sheetNum < wb.getNumberOfSheets(); sheetNum++) {
             sheet = wb.getSheetAt(sheetNum);

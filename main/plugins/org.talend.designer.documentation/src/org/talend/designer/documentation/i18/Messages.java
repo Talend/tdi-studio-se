@@ -105,6 +105,14 @@ public class Messages extends NLS {
     public static String HTMLDocGenerator_Values;
 
     public static String HTMLDocGenerator_Version;
+    
+    //special for route
+    public static String HTMLDocGenerator_Route_Manifest_Type;
+    public static String HTMLDocGenerator_Route_Manifest_Value;
+    public static String HTMLDocGenerator_Route_Resource_Name;
+    public static String HTMLDocGenerator_Route_Resource_Version;
+    public static String HTMLDocGenerator_Route_Resource_Path;
+    
     static {
         // initialize resource bundle
         NLS.initializeMessages(BUNDLE_NAME, Messages.class);

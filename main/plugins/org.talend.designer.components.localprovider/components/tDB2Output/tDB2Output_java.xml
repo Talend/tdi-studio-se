@@ -180,7 +180,7 @@
       </ITEMS>
     </PARAMETER>
 
-    <PARAMETER NAME="NOTE_CUSTOMER" FIELD="LABEL" REQUIRED="true" NUM_ROW="36" COLOR="255;0;0" SHOW_IF="(PARALLELIZE == 'false') AND ((TABLE_ACTION == 'TRUNCATE') OR (TABLE_ACTION == 'TRUNCATE_REUSE_STORAGE')) AND (USE_EXISTING_CONNECTION == 'true')">
+    <PARAMETER NAME="NOTE_CUSTOMER" FIELD="LABEL" REQUIRED="true" NUM_ROW="36" COLOR="255;0;0" NOT_SHOW_IF="(PARALLELIZE == 'true') OR ((TABLE_ACTION != 'TRUNCATE') AND (TABLE_ACTION != 'TRUNCATE_REUSE_STORAGE')) OR (USE_EXISTING_CONNECTION == 'false')">
         <DEFAULT>Please note: The Truncate statement must be the first statement in a transaction, so it will invoke commit statement before truncate</DEFAULT>
     </PARAMETER>
     

@@ -156,6 +156,8 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
     private List<String> mavenModules = new ArrayList<String>();
 
+    private ExportFileResource[] exportFileResource;
+
     /**
      * Getter for compiledModules.
      * 
@@ -200,10 +202,16 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     protected Set<String> getCompiledModuleNames() {
+        return getCompiledModuleNames(false);
+    }
+
+    protected Set<String> getCompiledModuleNames(boolean isSpecialMR) {
         Set<String> compiledModulesSet = new HashSet<String>(100);
 
         for (ModuleNeeded module : getCompiledModuleNeededs()) {
-            compiledModulesSet.add(module.getModuleName());
+            if ((isSpecialMR && module.isMrRequired()) || !isSpecialMR) {
+                compiledModulesSet.add(module.getModuleName());
+            }
         }
         return compiledModulesSet;
     }
@@ -682,7 +690,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     @Override
     public List<ExportFileResource> getExportResources(ExportFileResource[] process, String... codeOptions)
             throws ProcessorException {
-
+        exportFileResource = process;
         for (int i = 0; i < process.length; i++) {
             ProcessItem processItem = (ProcessItem) process[i].getItem();
             String selectedJobVersion = processItem.getProperty().getVersion();
@@ -773,10 +781,14 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     }
 
     protected ExportFileResource getCompiledLibExportFileResource(ExportFileResource[] processes) {
+        return getCompiledLibExportFileResource(processes, false);
+    }
+
+    protected ExportFileResource getCompiledLibExportFileResource(ExportFileResource[] processes, boolean isSpecialMR) {
         ExportFileResource libResource = new ExportFileResource(null, LIBRARY_FOLDER_NAME);
         // Gets talend libraries
         List<URL> talendLibraries = getExternalLibraries(isOptionChoosed(ExportChoice.needTalendLibraries), processes,
-                getCompiledModuleNames());
+                getCompiledModuleNames(isSpecialMR));
         if (talendLibraries != null) {
             libResource.addResources(talendLibraries);
         }
@@ -2034,5 +2046,25 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         }
         return null;
 
+    }
+
+    public List<File> getLibPath(boolean isSpecialMR) {
+        List<File> ret = new ArrayList<File>();
+        if (exportFileResource != null) {
+            ExportFileResource libResource = getCompiledLibExportFileResource(exportFileResource, isSpecialMR);
+            Collection<Set<URL>> col = libResource.getAllResources();
+            for (Set<URL> set : col) {
+                Iterator<URL> it = set.iterator();
+                while (it.hasNext()) {
+                    URL url = it.next();
+                    if (url.getFile().startsWith("/")) {
+                        ret.add(new File(url.getFile().substring(1, url.getFile().length())));
+                    } else {
+                        ret.add(new File(url.getFile()));
+                    }
+                }
+            }
+        }
+        return ret;
     }
 }

@@ -327,7 +327,7 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
         }
         String temPath = fsProject.getLocationURI().getPath() + File.separator + "temp"; //$NON-NLS-1$
         String fileName = ""; //$NON-NLS-1$
-        if (getConnection().getJSONFilePath() != null) { //$NON-NLS-1$
+        if (getConnection().getJSONFilePath() != null) {
             fileName = "tempJSONFile" + '.' + "json";
         }
         File temfile = new File(temPath + File.separator + fileName);
@@ -387,26 +387,33 @@ public abstract class AbstractJSONFileStepForm extends AbstractJSONStepForm {
         return null;
     }
 
+    @Override
     public void redrawLinkers() {
     }
 
+    @Override
     public void updateConnection() {
     }
 
+    @Override
     public void updateStatus() {
     }
 
+    @Override
     public List<FOXTreeNode> getTreeData() {
         return null;
     }
 
+    @Override
     public void setSelectedText(String label) {
     }
 
+    @Override
     public MetadataTable getMetadataTable() {
         return null;
     }
 
+    @Override
     public TableViewer getSchemaViewer() {
         return null;
     }

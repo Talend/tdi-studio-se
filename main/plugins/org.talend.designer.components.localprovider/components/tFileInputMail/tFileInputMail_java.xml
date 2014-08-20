@@ -37,15 +37,43 @@
     </PARAMETER>
 
     <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="2"/>
-	<PARAMETER NAME="ATTACHMENT_PATH" FIELD="DIRECTORY" REQUIRED="true" NUM_ROW="3">
+    <PARAMETER NAME="MAIL_TYPE" FIELD="CLOSED_LIST" REQUIRED="true" NUM_ROW="10" >
+    	<ITEMS DEFAULT="MIME">
+			<ITEM NAME="MIME" VALUE="MIME" />
+			<ITEM NAME="MSG" VALUE="MSG" />
+		</ITEMS>
+    </PARAMETER>
+	<PARAMETER NAME="ATTACHMENT_PATH" FIELD="DIRECTORY" REQUIRED="true" NUM_ROW="15">
 	<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="MAIL_PARTS" FIELD="TABLE" REQUIRED="true" NUM_ROW="4" NB_LINES="5">
+    <PARAMETER NAME="MAIL_PARTS" FIELD="TABLE" REQUIRED="true" NUM_ROW="20" NB_LINES="5" SHOW_IF="(MAIL_TYPE == 'MIME')">
       <ITEMS BASED_ON_SCHEMA="true">
         <ITEM NAME="MAIL_PART" />
         <ITEM NAME="MULTI_VALUE" FIELD="CHECK" VALUE="false"/>
         <ITEM NAME="PART_SEPARATOR" VALUE='""'/>
+      </ITEMS>
+    </PARAMETER>
+    <PARAMETER NAME="MSG_MAIL_PARTS" FIELD="TABLE" REQUIRED="true" NUM_ROW="20" NB_LINES="5" SHOW_IF="(MAIL_TYPE == 'MSG')">
+      <ITEMS BASED_ON_SCHEMA="true">
+        <ITEM NAME="MAIL_PART" FIELD="CLOSED_LIST">
+        	 <ITEMS DEFAULT="FROM">
+        	 	<ITEM NAME="FROM" VALUE="From" />
+        	 	<ITEM NAME="TO" VALUE="To" />
+        	 	<ITEM NAME="CC" VALUE="CC" />
+        	 	<ITEM NAME="BCC" VALUE="BCC" />
+        	 	<ITEM NAME="SUBJECT" VALUE="Subject" />
+        	 	<ITEM NAME="BODY" VALUE="Body" />
+        	 	<ITEM NAME="CONVERSATION_TOPIC" VALUE="ConversationTopic" />
+        	 	<ITEM NAME="HTML_BODY" VALUE="HtmlBody" />
+        	 	<ITEM NAME="MESSAGE_DATE" VALUE="MessageDate" />
+        	 	<ITEM NAME="RECIPIENT_ADDRESS" VALUE="RecipientAddress" />
+        	 	<ITEM NAME="RECIPIENT_ADDRESS_LIST" VALUE="RecipientAddressList" />
+        	 	<ITEM NAME="RECIPIENT_NAMES" VALUE="RecipientNames" />
+        	 	<ITEM NAME="RECIPIENT_NAMES_LIST" VALUE="RecipientNamesList" />
+        	 	<ITEM NAME="RTF_BODY" VALUE="RtfBody" />
+        	 </ITEMS>
+        </ITEM>
       </ITEMS>
     </PARAMETER>
 
@@ -56,8 +84,12 @@
 
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="JavaMail" MODULE="mail.jar" UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/mail.jar" REQUIRED="true" />
-      <IMPORT NAME="JAF" MODULE="activation.jar" UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation.jar" REQUIRED="true" />
+      <IMPORT NAME="JavaMail" MODULE="mail.jar"  REQUIRED_IF="(MAIL_TYPE == 'MIME')" />
+      <IMPORT NAME="JAF" MODULE="activation.jar"  REQUIRED_IF="(MAIL_TYPE == 'MIME')" />
+      <IMPORT NAME="poi" MODULE="poi-3.10-FINAL-20140219_modified_talend.jar" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-3.10-FINAL-20140219_modified_talend.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
+      <IMPORT NAME="poi-scratchpad" MODULE="poi-scratchpad-3.10-FINAL-20140208.jar" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-scratchpad-3.10-FINAL-20140208.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
+      <IMPORT NAME="talendMsgMailUtil" MODULE="talendMsgMailUtil-1.0.0.jar"  REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
+      <IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar" UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED_IF="(MAIL_TYPE == 'MSG')" />
     </IMPORTS>
   </CODEGENERATION>
 <RETURNS>

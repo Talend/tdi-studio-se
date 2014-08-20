@@ -449,6 +449,10 @@ public class ElementParameter implements IElementParameter {
         boolean showParameter = false;
 
         if (((showIf != null) || (notShowIf != null)) && show) {
+            if (listParam.isEmpty()) {
+                return true;
+            }
+
             if (showIf != null) {
                 showParameter = Expression.evaluate(showIf, listParam, this);
             } else {

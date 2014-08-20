@@ -149,13 +149,19 @@ int nb_line_<%=cid%> = 0;
 //fix bug 21630,use method getAdvancedMemoryHashFile to get a exist AdvancedMemoryHashFile
 %>	
 org.talend.designer.components.hashfile.common.MapHashFile mf_<%=cid %>=org.talend.designer.components.hashfile.common.MapHashFile.getMapHashFile();
-org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=tHashOutput_incommingDataConnName %>Struct> tHashFile_<%=cid %> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid + Thread.currentThread().getId() +"_<%=tHashOutputName %>");
+org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=tHashOutput_incommingDataConnName %>Struct> tHashFile_<%=cid%> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
 if(tHashFile_<%=cid %>==null) {
 	throw new RuntimeException("The hash is not initialized : The hash must exist before you read from it");
 }
-java.util.Iterator<<%=tHashOutput_incommingDataConnName %>Struct> iterator_<%=cid %> = tHashFile_<%=cid %>.iterator();
-while (iterator_<%=cid %>.hasNext()) {
-    <%=tHashOutput_incommingDataConnName %>Struct next_<%=cid %> = iterator_<%=cid %>.next();
+String hashKey_<%=cid%> = "tHashFile_<%=jobName%>_" + pid + "_<%=cid%>";
+org.talend.designer.components.hashfile.common.CacheReader<<%=tHashOutput_incommingDataConnName %>Struct> cacheReader_<%=cid%> = tHashFile_<%=cid%>.getCacheReader(hashKey_<%=cid%>);
+<%=tHashOutput_incommingDataConnName%>Struct next_<%=cid%>;
+while (true) {
+    try{
+    	next_<%=cid%> = cacheReader_<%=cid%>.read();
+    }catch(java.lang.IndexOutOfBoundsException e){
+    	break;
+    }
 
 <%
     List<IMetadataColumn> columns = metadata.getListColumns();

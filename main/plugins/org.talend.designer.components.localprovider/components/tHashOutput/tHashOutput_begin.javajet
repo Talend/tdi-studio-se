@@ -170,28 +170,9 @@ if(!isLinked){//111
 	if(incommingDataConn != null){//222
 		String connectionName = incommingDataConn.getName();
 %>    
-		org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName %>Struct> tHashFile_<%=cid %> = null;
-		String hashKey_<%=cid%> = "tHashFile_<%=jobName%>_" + pid + Thread.currentThread().getId() + "_<%=cid%>";
+		String hashKey_<%=cid%> = "tHashFile_<%=jobName%>_" + pid + "_<%=cid%>";
+		org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName %>Struct> tHashFile_<%=cid%> = mf_<%=cid%>.createAdvancedMemoryHashFile(hashKey_<%=cid%>, org.talend.designer.components.hashfile.common.MATCHING_MODE.<%=matchingMode%>, <%=isAppend%>);
 <%
-		if (isAppend) {
-%>
-			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid%>)){
-			    if(mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>) == null){
-	      		    mf_<%=cid%>.getResourceMap().put(hashKey_<%=cid%>, new org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName%>Struct>(org.talend.designer.components.hashfile.common.MATCHING_MODE.<%=matchingMode%>));
-	      		    tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
-			    }else{
-			    	tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
-			    }
-			}
-<%
-		} else {
-%>
-			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid%>)){
-				mf_<%=cid%>.getResourceMap().put(hashKey_<%=cid%>, new org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName%>Struct>(org.talend.designer.components.hashfile.common.MATCHING_MODE.<%=matchingMode%>));
-				tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
-			}
-<%
-		}
 	}//222
 }else{//111
 	//////////////////////////////////////////////////////////////
@@ -199,7 +180,7 @@ if(!isLinked){//111
 %>
 		org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=tHashOutput_incommingDataConnName %>Struct> tHashFile_<%=cid %> = null; 
 		//use this map to keep the present key and the previous key of AdvancedMemoryHashFile
-		mf_<%=cid %>.getKeyMap().put("tHashFile_<%=jobName %>_" +pid + Thread.currentThread().getId() + "_<%=cid %>", "tHashFile_<%=jobName %>_" + pid + Thread.currentThread().getId() + "_<%=tHashOutputName %>");
+		mf_<%=cid %>.getKeyMap().put("tHashFile_<%=jobName %>_" +pid + "_<%=cid %>", "tHashFile_<%=jobName %>_" + pid + "_<%=tHashOutputName %>");
 <%
 }//111
 %>

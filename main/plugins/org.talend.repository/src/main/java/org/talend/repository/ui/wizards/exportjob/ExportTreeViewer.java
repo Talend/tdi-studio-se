@@ -290,6 +290,8 @@ public class ExportTreeViewer {
                 return true;
             } else if (contentType == ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "PROCESS_MR")) {
                 return true;
+            } else if (contentType == ERepositoryObjectType.valueOf(ERepositoryObjectType.class, "PROCESS_STORM")) {
+                return true;
             } else {
                 return false;
             }

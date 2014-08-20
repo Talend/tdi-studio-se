@@ -1,0 +1,99 @@
+	<%
+	List<Map<String, String>> msgMailParts = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__MSG_MAIL_PARTS__");
+	%>
+	try{
+		org.talend.msg.utils.MsgMailUtil msgMailUtil_<%=cid%>=new org.talend.msg.utils.MsgMailUtil(<%=filename%>,<%=directory%>);
+		<%
+		if(isLog4jEnabled){
+		%>
+			msgMailUtil_<%=cid%>.activeLog(log,"<%=cid%>");
+		<%
+		}
+		%>
+		msgMailUtil_<%=cid%>.getAttachments();
+		<%
+		List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
+		String firstConnName = "";
+		Map<String,String> partsColumnValues=new java.util.HashMap<String,String>();
+		if (conns!=null) {//1
+			if (conns.size()>0) {//2
+				IConnection conn = conns.get(0); //the first connection
+				firstConnName = conn.getName();			
+				if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//3
+					for (int i=0; i<msgMailParts.size(); i++) {
+						Map<String, String> lineValue = msgMailParts.get(i);
+						partsColumnValues.put(lineValue.get("SCHEMA_COLUMN"),lineValue.get("MAIL_PART"));
+					}
+					List<IMetadataColumn> columns=metadata.getListColumns();
+					int columnSize = columns.size();
+					for (int i=0;i<columnSize;i++) {//4
+						IMetadataColumn column=columns.get(i);
+						String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+						JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+						String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+						%>
+						Object value_<%=i%>_<%=cid%>=msgMailUtil_<%=cid%>.processMessage("<%=partsColumnValues.get(column.getLabel())%>");
+						if(value_<%=i%>_<%=cid%>!=null){
+							<%
+							if(javaType == JavaTypesManager.STRING) {
+							%>
+								<%=conn.getName() %>.<%=column.getLabel() %> = String.valueOf(value_<%=i%>_<%=cid%>);
+							<%
+							} else if(javaType == JavaTypesManager.DATE) { //Date
+							%>
+								<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date((java.util.Date)value_<%=i%>_<%=cid%>, <%= patternValue %>);
+							<%
+							} else if(javaType == JavaTypesManager.BYTE_ARRAY) { //byte[]
+							%>
+								<%=conn.getName() %>.<%=column.getLabel() %> = value_<%=i%>_<%=cid%>.getBytes();
+							<%
+							}else if(javaType == JavaTypesManager.OBJECT){
+							%>
+								<%=conn.getName() %>.<%=column.getLabel() %> = value_<%=i%>_<%=cid%>;
+								<%
+							}else if(javaType == JavaTypesManager.LIST){
+							%>
+								if(value_<%=i%>_<%=cid%> instanceof Object[]){
+									<%=conn.getName() %>.<%=column.getLabel() %> = java.util.Arrays.asList((Object[])value_<%=i%>_<%=cid%>);
+								}else{
+									<%=conn.getName() %>.<%=column.getLabel() %> = java.util.Arrays.asList(value_<%=i%>_<%=cid%>);
+								}
+							<%
+							}else  { //other
+							%>						
+								<%=conn.getName() %>.<%=column.getLabel() %> = ParserUtils.parseTo_<%= typeToGenerate %>(value_<%=i%>_<%=cid%>);
+							<%
+							}
+							%>
+						}
+						<%
+						if(i==0){
+						%>
+							hasData_<%=cid%> = true;
+						<%
+						}
+					} //4
+				}//3
+			}//2
+		}//1
+		%>
+	}catch (java.lang.Exception e_<%=cid%>){
+		<% 
+		if(dieOnError){ 
+			%>
+			throw e_<%=cid%>;
+			<%
+		}else{
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+			//nothing to do, ignore the exception if don't die on error
+			System.err.println("Exception in component <%=cid%>: " + e_<%=cid%>.getMessage());
+		<%
+		}
+		%>
+	}
+	if(hasData_<%=cid%>){

@@ -50,8 +50,6 @@ import org.talend.commons.utils.system.EnvironmentUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.component_cache.ComponentCacheFactory;
@@ -67,7 +65,6 @@ import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.InstallModule;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
@@ -85,7 +82,6 @@ import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.ComponentSetting;
 import org.talend.core.model.properties.SQLPatternItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -95,6 +91,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.service.IComponentsLocalProviderService;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.core.ui.componentsettings.ComponentsSettingsHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ITisLocalProviderService;
 import org.talend.designer.core.i18n.Messages;
@@ -2839,24 +2836,7 @@ public class EmfComponent extends AbstractComponent {
         if (visible != null) {
             return visible;
         }
-        RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
-                Context.REPOSITORY_CONTEXT_KEY);
-        Project project = repositoryContext.getProject();
-
-        List<ComponentSetting> components = project.getEmfProject().getComponentsSettings();
-        for (ComponentSetting componentSetting : components) {
-            // remove the check of family since in all case the GUI won't care about the name of family in
-            // PaletteSettingPage, the components will be hidden in each family
-            if (/*
-                 * componentSetting.getFamily() != null && componentSetting.getFamily().equals(family) &&
-                 */componentSetting.getName().equals(getName())) {
-                return !componentSetting.isHidden();
-            }
-
-        }
-
-        // return compType.getHEADER().isVISIBLE();
-        return true;
+        return ComponentsSettingsHelper.isComponentVisible(this, family);
     }
 
     @Override
@@ -3879,5 +3859,53 @@ public class EmfComponent extends AbstractComponent {
     @Override
     public boolean isSupportDbType() {
         return compType.getHEADER().isSUPPORTS_DB_TYPE();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.getPaletteType() == null) ? 0 : this.getPaletteType().hashCode());
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!super.equals(obj)) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        EmfComponent other = (EmfComponent) obj;
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.getPaletteType() == null) {
+            if (other.getPaletteType() != null) {
+                return false;
+            }
+        } else if (!this.getPaletteType().equals(other.getPaletteType())) {
+            return false;
+        }
+        return true;
     }
 }

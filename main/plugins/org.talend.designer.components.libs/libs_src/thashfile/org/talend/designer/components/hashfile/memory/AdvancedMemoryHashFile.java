@@ -12,13 +12,14 @@
 // ============================================================================
 package org.talend.designer.components.hashfile.memory;
 
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.talend.designer.components.hashfile.common.CacheReader;
 import org.talend.designer.components.hashfile.common.IteratorHashFile;
 import org.talend.designer.components.hashfile.common.MATCHING_MODE;
 
@@ -38,6 +39,7 @@ public class AdvancedMemoryHashFile<V> {
             allList = Collections.synchronizedList(new ArrayList<V>());
         } else if (matchingMode == MATCHING_MODE.KEEP_FIRST) {
             firstHash = Collections.synchronizedMap(new HashMap<V, V>());
+            allList = Collections.synchronizedList(new ArrayList<V>());
         }
     }
 
@@ -54,6 +56,7 @@ public class AdvancedMemoryHashFile<V> {
                 return value;
             } else if (matchingMode == MATCHING_MODE.KEEP_FIRST) {
                 if (!firstHash.containsKey(value)) {
+                    allList.add(value);
                     firstHash.put(value, value);
                     return value;
                 }
@@ -62,8 +65,22 @@ public class AdvancedMemoryHashFile<V> {
         return null;
     }
 
+    @Deprecated
     public Iterator<V> iterator() {
         return new IteratorHashFile(firstHash, allList, matchingMode);
+    }
+
+    private Map<String, CacheReader> resourceMap = new HashMap<String, CacheReader>();
+
+    public CacheReader getCacheReader(String cid) {
+        if (resourceMap.get(cid) == null) {
+            synchronized (this) {
+                if (resourceMap.get(cid) == null) {
+                    resourceMap.put(cid, CacheReader.getInstance(firstHash, allList, matchingMode));
+                }
+            }
+        }
+        return resourceMap.get(cid);
     }
 
     public static void main(String[] args) {

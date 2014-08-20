@@ -20,6 +20,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
@@ -27,10 +28,12 @@ import java.util.jar.Manifest;
 
 import org.eclipse.core.resources.IProject;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.general.Project;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.ResourceModelUtils;
 import org.talend.repository.utils.ZipFileUtils;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * This is a jar file builder. <br/>
@@ -57,6 +60,8 @@ public class JarBuilder {
     private static final String CONTEXT = "context"; //$NON-NLS-1$
 
     private static final String TEMP = "temp"; //$NON-NLS-1$
+
+    private List<File> libPath;
 
     /**
      * Constructure.
@@ -214,6 +219,16 @@ public class JarBuilder {
                     }
                 }
             }
+            if (libPath != null && libPath.size() > 0) {
+                File tempLib = new File(tempFolderPath + File.separatorChar + JavaUtils.JAVA_LIB_DIRECTORY);
+                if (!tempLib.exists()) {
+                    tempLib.mkdir();
+                }
+                for (File file : libPath) {
+                    FilesUtils.copyFile(new FileInputStream(file),
+                            new File(tempLib.getAbsolutePath() + File.separatorChar + file.getName()));
+                }
+            }
             ZipFileUtils.zip(tempFolderPath, jarFile.getPath(), false);
         } else {
             JarOutputStream jarOut = null;
@@ -281,5 +296,23 @@ public class JarBuilder {
         }
         tmpFolder = tmpFolder + "/talendExporter"; //$NON-NLS-1$
         return tmpFolder;
+    }
+
+    /**
+     * Getter for libPath.
+     * 
+     * @return the libPath
+     */
+    public List<File> getLibPath() {
+        return this.libPath;
+    }
+
+    /**
+     * Sets the libPath.
+     * 
+     * @param libPath the libPath to set
+     */
+    public void setLibPath(List<File> libPath) {
+        this.libPath = libPath;
     }
 }

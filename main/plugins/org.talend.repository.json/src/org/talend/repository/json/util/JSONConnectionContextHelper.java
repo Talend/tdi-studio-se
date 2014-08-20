@@ -54,6 +54,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -65,8 +66,10 @@ import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.RepositoryNodeUtilities;
 import org.talend.repository.model.json.JSONFileConnection;
 import org.talend.repository.model.json.JSONXPathLoopDescriptor;
+import org.talend.repository.ui.utils.DBConnectionContextUtils.EDBParamName;
+import org.talend.repository.ui.utils.FileConnectionContextUtils.EFileParamName;
 import org.talend.repository.ui.utils.OtherConnectionContextUtils.EParamName;
-import org.talend.repository.ui.wizards.context.ContextWizard;
+import org.talend.repository.ui.wizards.context.ContextModeWizard;
 import org.talend.repository.ui.wizards.metadata.ContextSetsSelectionDialog;
 
 /**
@@ -87,7 +90,9 @@ public final class JSONConnectionContextHelper {
      * ggu Comment method "exportAsContext".
      * 
      */
-    public static ContextItem exportAsContext(ConnectionItem connItem, Set<IConnParamName> paramSet) {
+    public static Map<ContextItem, List<ConectionAdaptContextVariableModel>> exportAsContext(ConnectionItem connItem,
+            Set<IConnParamName> paramSet) {
+
         if (connItem == null) {
             return null;
         }
@@ -103,16 +108,24 @@ public final class JSONConnectionContextHelper {
         if (selection == null) {
             return null;
         }
+        Map<ContextItem, List<ConectionAdaptContextVariableModel>> variableContextMap = new HashMap();
+        List<ConectionAdaptContextVariableModel> models = new ArrayList<ConectionAdaptContextVariableModel>();
 
-        ContextWizard contextWizard = new ContextWizard(contextName, selection.isEmpty(), selection, varList);
+        Set<String> connectionVaribles = getConnVariables(connItem, paramSet);
+        ContextModeWizard contextWizard = new ContextModeWizard(contextName, selection.isEmpty(), selection, varList,
+                connectionVaribles);
         WizardDialog dlg = new WizardDialog(Display.getCurrent().getActiveShell(), contextWizard);
         if (dlg.open() == Window.OK) {
             ContextItem contextItem = contextWizard.getContextItem();
+            models = contextWizard.getAdaptModels();
+            if (contextItem != null) {
+                variableContextMap.put(contextItem, models);
+            }
             contextManager = contextWizard.getContextManager();
             if (contextItem != null) {
                 contextItem.getProperty().setLabel(contextName);
             }
-            return contextItem;
+            return variableContextMap;
         }
         return null;
     }
@@ -191,6 +204,29 @@ public final class JSONConnectionContextHelper {
         return varList;
     }
 
+    private static Set<String> getConnVariables(ConnectionItem connectionItem, Set<IConnParamName> paramSet) {
+        if (connectionItem == null) {
+            return null;
+        }
+
+        Set<String> varList = new HashSet<String>();
+
+        Iterator<IConnParamName> paramIt = paramSet.iterator();
+        while (paramIt.hasNext()) {
+            Object param = paramIt.next();
+            if (param instanceof EDBParamName) {
+                varList.add(((EDBParamName) param).name());
+            }
+            if (param instanceof EFileParamName) {
+                varList.add(((EFileParamName) param).name());
+            }
+            if (param instanceof EParamName) {
+                varList.add(((EParamName) param).name());
+            }
+        }
+        return varList;
+    }
+
     public static void setPropertiesForContextMode(ConnectionItem connectionItem, ContextItem contextItem,
             Set<IConnParamName> paramSet, Map<String, String> map) {
         if (connectionItem == null || contextItem == null) {
@@ -207,6 +243,27 @@ public final class JSONConnectionContextHelper {
         connectionItem.getConnection().setContextMode(true);
         connectionItem.getConnection().setContextId(contextItem.getProperty().getId());
         connectionItem.getConnection().setContextName(contextItem.getDefaultContext());
+
+    }
+
+    public static void setPropertiesForExistContextMode(ConnectionItem connectionItem, Set<IConnParamName> paramSet,
+            Map<ContextItem, List<ConectionAdaptContextVariableModel>> map) {
+        if (connectionItem == null) {
+            return;
+        }
+        ContextItem selItem = null;
+        if (map.keySet().size() == 1) {
+            selItem = map.keySet().iterator().next();
+        }
+        Connection conn = connectionItem.getConnection();
+
+        if (conn instanceof JSONFileConnection) {
+            setJSONFilePropertiesForExistContextMode((JSONFileConnection) conn, paramSet, map);
+        }
+        // set connection for context mode
+        connectionItem.getConnection().setContextMode(true);
+        connectionItem.getConnection().setContextId(selItem.getProperty().getId());
+        connectionItem.getConnection().setContextName(selItem.getDefaultContext());
 
     }
 
@@ -605,6 +662,55 @@ public final class JSONConnectionContextHelper {
             conn.setOutputFilePath(ContextParameterUtils.getNewScriptCode(paramName, LANGUAGE));
         }
 
+    }
+
+    static void setJSONFilePropertiesForExistContextMode(JSONFileConnection jsonConn, Set<IConnParamName> paramSet,
+            Map<ContextItem, List<ConectionAdaptContextVariableModel>> map) {
+        if (jsonConn == null) {
+            return;
+        }
+        String jsonVariableName = null;
+        for (IConnParamName param : paramSet) {
+            if (param instanceof EParamName) {
+                EParamName jsonParam = (EParamName) param;
+                if (map != null && map.size() > 0) {
+                    for (Map.Entry<ContextItem, List<ConectionAdaptContextVariableModel>> entry : map.entrySet()) {
+                        List<ConectionAdaptContextVariableModel> modelList = entry.getValue();
+                        for (ConectionAdaptContextVariableModel model : modelList) {
+                            if (model.getName().equals(jsonParam.name())) {
+                                jsonVariableName = model.getValue();
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (jsonConn.isInputModel()) {
+                    switch (jsonParam) {
+                    case XmlFilePath:
+                        jsonConn.setJSONFilePath(ContextParameterUtils.getNewScriptCode(jsonVariableName, LANGUAGE));
+                        break;
+                    case Encoding:
+                        jsonConn.setEncoding(ContextParameterUtils.getNewScriptCode(jsonVariableName, LANGUAGE));
+                        break;
+                    case XPathQuery:
+                        EList schema = jsonConn.getSchema();
+                        if (schema != null) {
+                            if (schema.get(0) instanceof JSONXPathLoopDescriptor) {
+                                JSONXPathLoopDescriptor descriptor = (JSONXPathLoopDescriptor) schema.get(0);
+                                descriptor.setAbsoluteXPathQuery(ContextParameterUtils.getNewScriptCode(jsonVariableName,
+                                        LANGUAGE));
+                            }
+                        }
+                    default:
+                    }
+
+                } else {
+                    if (jsonParam.equals(EParamName.OutputFilePath)) {
+                        jsonConn.setOutputFilePath(ContextParameterUtils.getNewScriptCode(jsonVariableName, LANGUAGE));
+                    }
+                }
+            }
+        }
     }
 
     static void revertJSONFilePropertiesForContextMode(JSONFileConnection conn, ContextType contextType) {

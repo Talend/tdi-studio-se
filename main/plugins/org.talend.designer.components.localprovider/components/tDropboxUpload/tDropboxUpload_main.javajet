@@ -59,10 +59,7 @@ imports="
 %>
 <%if("false".equals(exposeOutput)){%>
 	com.dropbox.core.DbxEntry.WithChildren <%=cid%>_entries = <%=cid%>_client.getMetadataWithChildren(<%=dropboxPath%>);
-	if (<%=cid%>_entries == null) {
-		throw new Exception("No File or Directory found at " + <%=dropboxPath%>);
-	}
-	if (<%=cid%>_entries.entry.isFile()) {
+	if (<%=cid%>_entries != null && <%=cid%>_entries.entry.isFile()) {
 		throw new Exception("The specified Path should be a Directory: " + <%=dropboxPath%>);
 	}
 
@@ -88,7 +85,8 @@ imports="
 	}
 	
 	try {
-		String path = <%=dropboxPath%>.endsWith("/")?<%=dropboxPath%>:<%=dropboxPath%>+"/";
+		String path = <%=dropboxPath%>;
+		path = path.endsWith("/")?path:path+"/";
 		com.dropbox.core.DbxEntry.File <%=cid%>_UploadedFile = <%=cid%>_client.uploadFile(path+<%=cid%>_fileName,
 				<%=mode%>, -1, <%=cid%>_InputStream);
 	} finally {

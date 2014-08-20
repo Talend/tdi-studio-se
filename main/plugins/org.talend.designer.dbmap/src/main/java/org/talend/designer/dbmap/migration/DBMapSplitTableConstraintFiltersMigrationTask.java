@@ -68,10 +68,6 @@ public class DBMapSplitTableConstraintFiltersMigrationTask extends AbstractJobMi
                                         && !DbGenerationManager
                                                 .containWith(expression, DbMapSqlConstants.ORDER_BY_PATTERN, false)) {
                                     continue;
-                                } else if (DbGenerationManager.containWith(expression, DbMapSqlConstants.GROUP_BY_PATTERN, true)
-                                        || DbGenerationManager.containWith(expression, DbMapSqlConstants.ORDER_BY_PATTERN, true)) {
-                                    pFilter.setFilterKind(FilterTableEntry.OTHER_FILTER);
-                                    modified = true;
                                 } else {
                                     // can not split the clause directly here, because clause like this(a = b GROUP BY
                                     // c) will be put at
@@ -84,22 +80,34 @@ public class DBMapSplitTableConstraintFiltersMigrationTask extends AbstractJobMi
                         if (!needSplitFilters.isEmpty()) {
                             EList<FilterEntry> entryList = pTable.getFilterEntries();
                             for (FilterEntry pFilter : needSplitFilters) {
-                                String expression = pFilter.getExpression();
+                                String expression = pFilter.getExpression().trim();
                                 int splitIndex = firstIndexInString(expression, DbMapSqlConstants.GROUP_BY_PATTERN);
                                 int orderIndex = firstIndexInString(expression, DbMapSqlConstants.ORDER_BY_PATTERN);
 
-                                if (splitIndex < 0 || (0 < orderIndex && orderIndex < splitIndex)) {
+                                if (splitIndex < 0 || (0 <= orderIndex && orderIndex < splitIndex)) {
                                     splitIndex = orderIndex;
                                 }
-                                String whereClause = expression.substring(0, splitIndex);
-                                pFilter.setExpression(whereClause);
-                                FilterEntry tFilter = DbmapFactory.eINSTANCE.createFilterEntry();
-                                tFilter.setName("newFilterSplited" + ++i); //$NON-NLS-1$
-                                tFilter.setExpression(expression.substring(splitIndex));
-                                tFilter.setFilterKind(FilterTableEntry.OTHER_FILTER);
-                                entryList.remove(pFilter);
-                                entryList.add(pFilter);
-                                newFilters.add(tFilter);
+
+                                if (splitIndex == 0) {
+                                    // keep the order of "GROUP BY" and "ORDER BY"
+                                    pFilter.setFilterKind(FilterTableEntry.OTHER_FILTER);
+                                    entryList.remove(pFilter);
+                                    newFilters.add(pFilter);
+                                } else {
+                                    String whereClause = expression.substring(0, splitIndex);
+                                    if (!DbGenerationManager.containWith(expression, DbMapSqlConstants.OR + "\\b", true) //$NON-NLS-1$
+                                            && !DbGenerationManager.containWith(expression, DbMapSqlConstants.AND + "\\b", true)) { //$NON-NLS-1$ 
+                                        whereClause = DbMapSqlConstants.AND + " " + whereClause; //$NON-NLS-1$
+                                    }
+                                    pFilter.setExpression(whereClause);
+                                    FilterEntry tFilter = DbmapFactory.eINSTANCE.createFilterEntry();
+                                    tFilter.setName("newFilterSplited" + ++i); //$NON-NLS-1$
+                                    tFilter.setExpression(expression.substring(splitIndex).trim());
+                                    tFilter.setFilterKind(FilterTableEntry.OTHER_FILTER);
+                                    entryList.remove(pFilter);
+                                    entryList.add(pFilter);
+                                    newFilters.add(tFilter);
+                                }
                                 modified = true;
                             }
                             if (!newFilters.isEmpty()) {

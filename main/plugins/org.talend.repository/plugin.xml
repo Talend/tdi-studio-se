@@ -1151,6 +1151,15 @@
        </projecttask>
        <projecttask
              beforeLogon="false"
+             breaks="5.5.1"
+             class="org.talend.repository.model.migration.AddDieOnErrorOnSqoopComponents"
+             description="Add the die on error and reverse its value on Sqoop components"
+             id="org.talend.repository.model.migration.AddDieOnErrorOnSqoopComponents"
+             name="Add a option and reverse its value on FS components"
+             version="5.4.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
              breaks="5.1.1"
              class="org.talend.repository.model.migration.ChangeDefaultValueMigrationTaskBug8562"
              description="Change tSalesforceOutput Extened Ouput Default Value to true"
@@ -2205,6 +2214,15 @@
               name="ChangeUseBatchSizetoFalse4AS400"
               version="5.3.3">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="5.4.2"
+              class="org.talend.repository.model.migration.ChangeRecalculateFormulaValueMigrationTask"
+              description="set the checkbox:RECALCULATE_FORMULA to true for old job"
+              id="org.talend.repository.model.migration.ChangeRecalculateFormulaValueMigrationTask"
+              name="ChangeRecalculateFormulaValueMigrationTask"
+              version="5.4.3">
+        </projecttask>        
    </extension>
 
    <extension

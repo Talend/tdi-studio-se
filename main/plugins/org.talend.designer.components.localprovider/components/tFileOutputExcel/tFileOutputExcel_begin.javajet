@@ -514,10 +514,13 @@ if(isIncludeHeader){
 			xlsxTool_<%=cid%>.setRowAccessWindowSize(-1);
 			//turn-off auto flush
 <%		
-		} 
+		}
+		
+		boolean recalculateFormula = "true".equals(ElementParameterParser.getValue(node,"__RECALCULATE_FORMULA__"));
 %>
 		xlsxTool_<%=cid%>.setSheet(<%=sheetname%>);
 		xlsxTool_<%=cid%>.setAppend(<%=isAppendFile%>,<%=isAppendSheet%>);
+		xlsxTool_<%=cid%>.setRecalculateFormula(<%=recalculateFormula%>);
 		xlsxTool_<%=cid%>.setXY(<%=firstCellYAbsolute%>,<%=firstCellXStr%>,<%=firstCellYStr%>,<%=keepCellFormating%>);
 		<%if(!useStream){%>
 		xlsxTool_<%=cid%>.prepareXlsxFile(fileName_<%=cid%>);

@@ -14,20 +14,15 @@ package org.talend.repository.preference;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
-import org.eclipse.gef.palette.PaletteContainer;
-import org.eclipse.gef.palette.PaletteEntry;
-import org.eclipse.gef.palette.PaletteRoot;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -39,6 +34,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -48,23 +44,43 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.advanced.composite.ThreeCompositesSashForm;
 import org.talend.core.CorePlugin;
-import org.talend.core.model.components.ComponentPaletteUtilities;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ComponentSetting;
+import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.componentsettings.ComponentsSettingsHelper;
+import org.talend.designer.components.preference.provider.IPaletteItem;
 import org.talend.designer.components.preference.provider.TalendPaletteLabelProvider;
 import org.talend.designer.components.preference.provider.TalendPaletteTreeProvider;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.ComponentsFactoryProvider;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.preference.palettesettings.ComponentPaletteItem;
+import org.talend.repository.preference.palettesettings.FolderPaletteItem;
+import org.talend.repository.preference.palettesettings.PaletteItemHelper;
+import org.talend.repository.preference.palettesettings.RootPaletteItem;
 import org.talend.repository.ui.actions.ShowStandardAction;
 
 /**
@@ -91,7 +107,7 @@ public class PaletteSettingPage extends ProjectSettingPage {
     private boolean needCodeGen;
 
     // <name:visiblility>
-    private Map<String, Boolean> statusBackup = new HashMap<String, Boolean>();
+    private List<ComponentSetting> statusBackup = new ArrayList<ComponentSetting>();
 
     /*
      * (non-Javadoc)
@@ -128,15 +144,12 @@ public class PaletteSettingPage extends ProjectSettingPage {
         // this.project = pro;
         List<ComponentSetting> c = getComponentsFromProject(project);
         for (ComponentSetting componentSetting : c) {
-            statusBackup.put(componentSetting.getFamily() + FAMILY_SPEARATOR + componentSetting.getName(),
-                    !componentSetting.isHidden());
+            statusBackup.add(componentSetting);
         }
     }
 
-    private PaletteRoot getViewerInput() {
-        return ComponentPaletteUtilities.createPaletteRootWithAllComponents();
-        // PaletteRoot paletteRoot = CorePlugin.getDefault().getDesignerCoreService().getAllNodeStructure(components);
-        // return paletteRoot;
+    private List<IPaletteItem> getViewerInput() {
+        return PaletteItemHelper.buildFullPaletteItemList();
     }
 
     /**
@@ -145,7 +158,56 @@ public class PaletteSettingPage extends ProjectSettingPage {
      * @param parent
      */
     private void addTreeViewer(ThreeCompositesSashForm parent) {
+        ViewerSorter sorter = new ViewerSorter() {
 
+            /*
+             * (non-Javadoc)
+             * 
+             * @see org.eclipse.jface.viewers.ViewerComparator#compare(org.eclipse.jface.viewers.Viewer,
+             * java.lang.Object, java.lang.Object)
+             */
+            @Override
+            public int compare(Viewer viewer, Object e1, Object e2) {
+                if (e1 instanceof ComponentPaletteItem && e2 instanceof ComponentPaletteItem) {
+                    return super.compare(viewer, ((IPaletteItem) e1).getLabel(), ((IPaletteItem) e2).getLabel());
+                } else if (e1 instanceof FolderPaletteItem && e2 instanceof FolderPaletteItem) {
+                    return super.compare(viewer, ((IPaletteItem) e1).getLabel(), ((IPaletteItem) e2).getLabel());
+                } else if (e1 instanceof ComponentPaletteItem && e2 instanceof FolderPaletteItem) {
+                    return 1;
+                } else if (e1 instanceof FolderPaletteItem && e2 instanceof ComponentPaletteItem) {
+                    return -1;
+                } else if (e1 instanceof RootPaletteItem && e2 instanceof RootPaletteItem) {
+                    if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_DI) {
+                        return -1; // up
+                    } else if (((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_DI) {
+                        return 1; // down
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE) {
+                        return -1; // up
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL) {
+                        return 1; // down
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_STORM) {
+                        return -1; // up
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_STORM
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_MAPREDUCE) {
+                        return 1; // down
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_STORM) {
+                        return -1; // up
+                    } else if (((IPaletteItem) e1).getPaletteType() == ComponentCategory.CATEGORY_4_STORM
+                            && ((IPaletteItem) e2).getPaletteType() == ComponentCategory.CATEGORY_4_CAMEL) {
+                        return 1; // down
+                    }
+
+                }
+                return super.compare(viewer, e1, e2);
+            }
+
+        };
+
+        List<IPaletteItem> input = getViewerInput();
         Composite leftComposite = parent.getLeftComposite();
         Label label = new Label(leftComposite, SWT.NONE);
         label.setText("Hide");
@@ -154,8 +216,8 @@ public class PaletteSettingPage extends ProjectSettingPage {
         hiddenViewer.setContentProvider(new TalendPaletteTreeProvider());
         hiddenViewer.setLabelProvider(new TalendPaletteLabelProvider());
         hiddenViewer.addFilter(getFilterForComponent(false));
+        hiddenViewer.setSorter(sorter);
 
-        hiddenViewer.expandToLevel(2);
         hiddenViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
@@ -173,7 +235,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
         displayViewer.setLabelProvider(new TalendPaletteLabelProvider());
         displayViewer.addFilter(getFilterForComponent(true));
 
-        displayViewer.expandToLevel(2);
         displayViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 
             @Override
@@ -181,11 +242,17 @@ public class PaletteSettingPage extends ProjectSettingPage {
                 hideCompnentsButton.setEnabled(!event.getSelection().isEmpty());
             }
         });
+        displayViewer.setSorter(sorter);
 
-        PaletteRoot input = getViewerInput();
         getComponentsFromProject(project);
         hiddenViewer.setInput(input);
         displayViewer.setInput(input);
+        if (!input.isEmpty()) {
+            displayViewer.expandToLevel(input.get(0), 1);
+        }
+        if (!input.isEmpty()) {
+            hiddenViewer.expandToLevel(input.get(0), 1);
+        }
     }
 
     /**
@@ -198,10 +265,10 @@ public class PaletteSettingPage extends ProjectSettingPage {
 
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element) {
-                PaletteEntry entry = (PaletteEntry) element;
+                IPaletteItem entry = (IPaletteItem) element;
 
-                if (entry instanceof PaletteContainer) {
-                    return isFolderVisible((PaletteContainer) entry, isVisible);
+                if (!(entry instanceof ComponentPaletteItem)) {
+                    return isFolderVisible(entry, isVisible);
                 }
 
                 if (isVisible) {
@@ -221,11 +288,10 @@ public class PaletteSettingPage extends ProjectSettingPage {
      * @param isVisible
      * @return
      */
-    protected boolean isFolderVisible(PaletteContainer container, boolean isVisible) {
-        for (Iterator iterator = container.getChildren().iterator(); iterator.hasNext();) {
-            PaletteEntry entry = (PaletteEntry) iterator.next();
-            if (entry instanceof PaletteContainer) {
-                boolean display = isFolderVisible((PaletteContainer) entry, isVisible);
+    protected boolean isFolderVisible(IPaletteItem container, boolean isVisible) {
+        for (IPaletteItem entry : container.getChildren()) {
+            if (!(entry instanceof ComponentPaletteItem)) {
+                boolean display = isFolderVisible(entry, isVisible);
                 if (display) {
                     return true;
                 } else {
@@ -288,7 +354,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setComponentVisible(hiddenViewer.getSelection(), true);
-                // getButton(IDialogConstants.OK_ID).setEnabled(true);
                 setValid(true);
                 needCodeGen = true;
             }
@@ -304,7 +369,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 setComponentVisible(displayViewer.getSelection(), false);
-                // getButton(IDialogConstants.OK_ID).setEnabled(true);
                 setValid(true);
             }
         });
@@ -322,26 +386,25 @@ public class PaletteSettingPage extends ProjectSettingPage {
      */
     protected void setComponentVisible(ISelection selection, boolean visible) {
         IStructuredSelection sel = (IStructuredSelection) selection;
-        Set<String> names = new HashSet<String>();
+        Set<IPaletteItem> items = new HashSet<IPaletteItem>();
 
         for (Iterator iterator = sel.iterator(); iterator.hasNext();) {
-            PaletteEntry entry = (PaletteEntry) iterator.next();
-            retreiveAllEntry(names, entry);
+            IPaletteItem entry = (IPaletteItem) iterator.next();
+            retrieveAllEntry(items, entry);
         }
 
-        Set<String> usedComponents = ComponentPaletteUtilities.getComponentsUsedInProject(ProjectManager.getInstance()
-                .getCurrentProject());
+        Set<IComponent> usedComponents = getComponentsUsedInProject(ProjectManager.getInstance().getCurrentProject());
 
         boolean isUsed = false;
-        for (String string : names) {
-            if (!visible) {
-                if (usedComponents.contains(string)) {
+        for (IPaletteItem item : items) {
+            if (!visible && item instanceof ComponentPaletteItem) {
+                if (usedComponents.contains(((ComponentPaletteItem) item).getComponent())) {
                     isUsed = true;
                     continue;
                 }
 
             }
-            setComponentVisible(string, visible, !RESTORE);
+            setComponentVisible(item, visible);
 
         }
         if (isUsed) {
@@ -356,16 +419,15 @@ public class PaletteSettingPage extends ProjectSettingPage {
         refreshViewer();
     }
 
-    private void retreiveAllEntry(Set<String> list, PaletteEntry entry) {
-        if (entry instanceof PaletteContainer) {
-            PaletteContainer container = (PaletteContainer) entry;
-            for (Iterator iterator = container.getChildren().iterator(); iterator.hasNext();) {
-                PaletteEntry en = (PaletteEntry) iterator.next();
-                retreiveAllEntry(list, en);
+    private void retrieveAllEntry(Set<IPaletteItem> list, IPaletteItem entry) {
+        if (!(entry instanceof ComponentPaletteItem)) {
+            IPaletteItem container = entry;
+            for (Object element : container.getChildren()) {
+                IPaletteItem en = (IPaletteItem) element;
+                retrieveAllEntry(list, en);
             }
         } else {
-            String family = ComponentsFactoryProvider.getPaletteEntryFamily(entry.getParent());
-            list.add(family + FAMILY_SPEARATOR + entry.getLabel());
+            list.add(entry);
         }
 
     }
@@ -376,57 +438,35 @@ public class PaletteSettingPage extends ProjectSettingPage {
         return components;
     }
 
-    public boolean isComponentVisible(PaletteEntry entry) {
-        String label = entry.getLabel();
-
-        String family = ComponentsFactoryProvider.getPaletteEntryFamily(entry.getParent());
-        List<ComponentSetting> components = getComponentsFromProject(project);
-
-        for (ComponentSetting componentSetting : components) {
-            if (componentSetting.getName().equals(label) && componentSetting.getFamily() != null
-                    && componentSetting.getFamily().equals(family)) {
-                return !componentSetting.isHidden();
-            }
-        }
-
-        return true;
+    public boolean isComponentVisible(IPaletteItem entry) {
+        return ComponentsSettingsHelper.isComponentVisible(entry.getPaletteType().getName(), entry.getLabel(), entry.getFamily());
     }
 
-    private void setComponentVisibleForRestore(String name, boolean visible) {
-        setComponentVisible(name, visible, RESTORE);
-    }
-
-    private void setComponentVisible(String name, boolean visible, boolean restore) {
+    private void setComponentVisible(IPaletteItem item, boolean visible) {
         try {
-            String[] names = name.split(FAMILY_SPEARATOR);
-            if (names.length != 2) {
-                return;
-            }
-            String family = names[0];
-            String label = names[1];
+            ComponentPaletteItem componentPaletteItem = (ComponentPaletteItem) item;
             List<ComponentSetting> components = getComponentsFromProject(project);
             List<ComponentSetting> toRemoveFromSettings = new ArrayList<ComponentSetting>();
             for (ComponentSetting componentSetting : components) {
-                if (/*
-                     * componentSetting.getFamily() != null && componentSetting.getFamily().equals(family) &&
-                     */componentSetting.getName().equals(label)) {
-                    if (visible) {
+                if (componentSetting.getFamily() != null
+                        && componentSetting.getFamily().equals(componentPaletteItem.getFamily())
+                        && componentSetting.getName().equals(
+                                item.getPaletteType().getName() + "|" + componentPaletteItem.getLabel())) {
+                    if (visible == componentPaletteItem.getComponent().isVisibleInComponentDefinition()) {
                         toRemoveFromSettings.add(componentSetting);
                     }
                     componentSetting.setHidden(!visible);
                 }
             }
-            if (visible) {
-                components.removeAll(toRemoveFromSettings);
-            }
-            if (toRemoveFromSettings.isEmpty() && !restore) {
+            components.removeAll(toRemoveFromSettings);
+            if (visible != componentPaletteItem.getComponent().isVisibleInComponentDefinition()) {
                 ComponentSetting cs = PropertiesFactory.eINSTANCE.createComponentSetting();
-                cs.setName(label);
+                cs.setName(item.getPaletteType().getName() + "|" + item.getLabel());
                 cs.setHidden(!visible);
-                cs.setFamily(family);
+                cs.setFamily(item.getFamily());
                 components.add(cs);
-                statusBackup.put(label, !visible);
             }
+            ComponentsSettingsHelper.resetHiddenComponents();
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
@@ -510,7 +550,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
      */
     @Override
     protected void performDefaults() {
-        // TODO Auto-generated method stub
         super.performDefaults();
         retoreDefaultSettings();
     }
@@ -521,7 +560,6 @@ public class PaletteSettingPage extends ProjectSettingPage {
     private void retoreDefaultSettings() {
         ComponentsFactoryProvider.restoreComponentVisibilityStatus();
         refreshViewer();
-        // getButton(IDialogConstants.OK_ID).setEnabled(true);
         setValid(true);
     }
 
@@ -532,16 +570,15 @@ public class PaletteSettingPage extends ProjectSettingPage {
      */
     @Override
     public boolean performCancel() {
-        // TODO Auto-generated method stub
         cancelPressed();
         return super.performCancel();
     }
 
     protected void cancelPressed() {
-        for (Object element : statusBackup.keySet()) {
-            String name = (String) element;
-            setComponentVisibleForRestore(name, statusBackup.get(name));
-        }
+        List<ComponentSetting> components = getComponentsFromProject(project);
+        components.clear();
+        components.addAll(statusBackup);
+        ComponentsSettingsHelper.resetHiddenComponents();
     }
 
     /*
@@ -552,5 +589,158 @@ public class PaletteSettingPage extends ProjectSettingPage {
     @Override
     public void refresh() {
 
+    }
+
+    Set<IComponent> componentsUsed;
+
+    public Set<IComponent> getComponentsUsedInProject(Project project) {
+        if (componentsUsed != null) {
+            return componentsUsed;
+        }
+        componentsUsed = new HashSet<IComponent>();
+        IProxyRepositoryFactory repositoryFactory = CoreUIPlugin.getDefault().getProxyRepositoryFactory();
+
+        try {
+            ERepositoryObjectType jobType = ERepositoryObjectType.PROCESS;
+            if (jobType != null) {
+                List<IRepositoryViewObject> allProcess = repositoryFactory.getAll(project, jobType, true);
+                addUsedComponents(componentsUsed, allProcess, ComponentCategory.CATEGORY_4_DI);
+            }
+            ERepositoryObjectType jobletType = ERepositoryObjectType.JOBLET;
+            if (jobletType != null) {
+                List<IRepositoryViewObject> allJoblet = repositoryFactory.getAll(project, jobletType, true);
+                addUsedComponents(componentsUsed, allJoblet, ComponentCategory.CATEGORY_4_DI);
+            }
+            ERepositoryObjectType routeType = ERepositoryObjectType.valueOf("ROUTES"); //$NON-NLS-1$
+            if (jobletType != null) {
+                List<IRepositoryViewObject> allRoutes = repositoryFactory.getAll(project, routeType, true);
+                addUsedComponents(componentsUsed, allRoutes, ComponentCategory.CATEGORY_4_CAMEL);
+            }
+            ERepositoryObjectType mrType = ERepositoryObjectType.valueOf("PROCESS_MR"); //$NON-NLS-1$
+            if (jobletType != null) {
+                List<IRepositoryViewObject> allMr = repositoryFactory.getAll(project, mrType, true);
+                addUsedComponents(componentsUsed, allMr, ComponentCategory.CATEGORY_4_MAPREDUCE);
+            }
+            ERepositoryObjectType stormType = ERepositoryObjectType.valueOf("PROCESS_STORM"); //$NON-NLS-1$
+            if (jobletType != null) {
+                List<IRepositoryViewObject> allStorm = repositoryFactory.getAll(project, stormType, true);
+                addUsedComponents(componentsUsed, allStorm, ComponentCategory.CATEGORY_4_STORM);
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+        return componentsUsed;
+    }
+
+    private void addUsedComponents(Set<IComponent> components, List<IRepositoryViewObject> allProcess, ComponentCategory category) {
+        for (IRepositoryViewObject object : allProcess) {
+            Item item = object.getProperty().getItem();
+
+            List parameters = null;
+            ProcessType processType = null;
+            if (item instanceof ProcessItem) {
+                processType = ((ProcessItem) item).getProcess();
+            } else if (item instanceof JobletProcessItem) {
+                processType = ((JobletProcessItem) item).getJobletProcess();
+            }
+            if (processType != null) {
+                for (Object oNode : processType.getNode()) {
+                    NodeType node = (NodeType) oNode;
+                    IComponent component = ComponentsFactoryProvider.getInstance().get(node.getComponentName(),
+                            category.getName());
+                    if (component != null && component.getComponentType() == EComponentType.EMF) {
+                        components.add(component);
+                    }
+                }
+                if (processType.getParameters() != null) { // occurs actually only in joblets
+                    parameters = processType.getParameters().getElementParameter();
+                }
+            }
+
+            if (parameters != null) {
+                // used in stats&log and implicite
+                Set<IComponent> inStatsLogsAndImplicit = getComponentsInStatsLogsAndImplicit(parameters);
+                if (inStatsLogsAndImplicit != null) {
+                    components.addAll(inStatsLogsAndImplicit);
+                }
+            }
+        }
+    }
+
+    private Set<IComponent> getComponentsInStatsLogsAndImplicit(List parameters) {
+        Set<IComponent> components = new HashSet<IComponent>();
+        for (Object obj : parameters) {
+            String paramName = null;
+            Object value = null;
+            if (obj instanceof ElementParameterType) {
+                ElementParameterType param = (ElementParameterType) obj;
+                paramName = param.getName();
+                value = param.getValue();
+            }
+            if (value == null) {
+                continue;
+            }
+            if ("ON_STATCATCHER_FLAG".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tStatCatcher", value); //$NON-NLS-1$
+            } else if ("ON_METERCATCHER_FLAG".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tFlowMeterCatcher", value); //$NON-NLS-1$
+            } else if ("ON_LOGCATCHER_FLAG".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tLogCatcher", value); //$NON-NLS-1$
+            } else if ("ON_CONSOLE_FLAG".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tLogRow", value); //$NON-NLS-1$
+            } else if ("ON_FILES_FLAG".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tFileOutputDelimited", value); //$NON-NLS-1$
+            } else if ("ON_DATABASE_FLAG".equals(paramName)) { //$NON-NLS-1$
+                String usedDatabase = getUsedDatabase(parameters, "DB_TYPE"); //$NON-NLS-1$
+                if (usedDatabase != null) {
+                    addComponent(components, usedDatabase, value);
+                }
+            } else if ("IMPLICIT_TCONTEXTLOAD".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tContextLoad", value); //$NON-NLS-1$
+            } else if ("FROM_FILE_FLAG_IMPLICIT_CONTEXT".equals(paramName)) { //$NON-NLS-1$
+                addComponent(components, "tFileInputDelimited", value); //$NON-NLS-1$
+            } else if ("FROM_DATABASE_FLAG_IMPLICIT_CONTEXT".equals(paramName)) { //$NON-NLS-1$
+                String usedDatabase = getUsedDatabase(parameters, "DB_TYPE_IMPLICIT_CONTEXT"); //$NON-NLS-1$
+                if (usedDatabase != null) {
+                    addComponent(components, usedDatabase, value);
+                }
+
+            }
+        }
+        return components;
+    }
+
+    private String getUsedDatabase(List parameters, String typeName) {
+        for (Object obj : parameters) {
+            String paramName = null;
+            Object value = null;
+            String field = null;
+            if (obj instanceof IElementParameter) {
+                IElementParameter param = (IElementParameter) obj;
+                paramName = param.getName();
+                value = param.getValue();
+                field = param.getFieldType().getName();
+            } else if (obj instanceof ElementParameterType) {
+                ElementParameterType param = (ElementParameterType) obj;
+                paramName = param.getName();
+                value = param.getValue();
+                field = param.getField();
+            }
+            if (EParameterFieldType.CLOSED_LIST.getName().equals(field) && typeName.equals(paramName)) {
+                if (value != null) {
+                    return value.toString();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void addComponent(Set<IComponent> components, String name, Object value) {
+        if (Boolean.TRUE.equals(Boolean.valueOf(value.toString()))) {
+            IComponent component = ComponentsFactoryProvider.getInstance().get(name, ComponentCategory.CATEGORY_4_DI.getName());
+            if (component != null && component.getComponentType() == EComponentType.EMF) {
+                components.add(component);
+            }
+        }
     }
 }

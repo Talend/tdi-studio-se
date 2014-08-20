@@ -62,6 +62,9 @@ if (inConns!=null) {
 		}
 	}
 }
+
+boolean isDocumentType = false;
+
 if(useXMLField){
 %>
 	String xmlStr_<%=cid%> = <%=strXMLText %>;
@@ -78,17 +81,37 @@ if(useXMLField){
 				{
 %>
 	String xmlStr_<%=cid%> = null;
+	routines.system.Document xmlDocument_<%=cid%> = null;
 	if(<%=inConn.getName()%>.<%=xmlField%>!=null){
-		xmlStr_<%=cid%> = <%=inConn.getName()%>.<%=xmlField%><%="id_Document".equals(inputCol.getTalendType())?".toString()":""%>;
+<%
+			if("id_Document".equals(inputCol.getTalendType())) {
+				isDocumentType = true;
+%>
+				xmlDocument_<%=cid%> = <%=inConn.getName()%>.<%=xmlField%>;
+<%
+			} else {
+%>
+				xmlStr_<%=cid%> = <%=inConn.getName()%>.<%=xmlField%>;
+<%
+			}
+%>
 	}
 <%
 					break;
 				}
 			}
 		}
+		
+		if(isDocumentType) {
 %>
-	if(xmlStr_<%=cid%>!=null){// C_01
+			if(xmlDocument_<%=cid%>!=null && xmlDocument_<%=cid%>.getDocument()!=null){// C_01
 <%
+		} else {
+%>
+			if(xmlStr_<%=cid%>!=null){// C_01
+<%
+		}
+		
 		List<BlockCode> blockCodes = new java.util.ArrayList<BlockCode>(1);
 		blockCodes.add(new BlockCode("C_01"));
 		((org.talend.core.model.process.AbstractNode) node).setBlocksCodeToClose(blockCodes);
@@ -133,7 +156,14 @@ if (outConn!=null) {
     org.dom4j.io.SAXReader reader_<%=cid%> = new org.dom4j.io.SAXReader();
 	<%if(ignore_NS_Str){%>
 		org.dom4j.Document doc_tmp_<%=cid %> = org.dom4j.DocumentHelper.createDocument();
-		XML_ns_rmv_<%=cid %>.removeNamespace(reader_<%=cid%>.read(new java.io.StringReader(xmlStr_<%=cid%>)),doc_tmp_<%=cid %>);
+		XML_ns_rmv_<%=cid %>.removeNamespace(
+		<%if(isDocumentType) {%>
+			xmlDocument_<%=cid%>.getDocument()
+		<%} else {%>
+			reader_<%=cid%>.read(new java.io.StringReader(xmlStr_<%=cid%>))
+		<%}%>
+			,doc_tmp_<%=cid %>
+		);
 	<%}%>
     org.dom4j.Document doc_<%=cid%> = null;
     java.util.HashMap xmlNameSpaceMap_<%=cid%> = null;
@@ -159,11 +189,22 @@ if (outConn!=null) {
     boolean isStructError_<%=cid %>= true;
         
     try{
-		<%if(!ignore_NS_Str){%>
+		<%if(!ignore_NS_Str){
+			if(isDocumentType) {
+		%>
+	    	doc_<%=cid%>= xmlDocument_<%=cid%>.getDocument();
+	    <%
+	    	} else {
+	    %>
 	    	doc_<%=cid%>= reader_<%=cid%>.read(new java.io.StringReader(xmlStr_<%=cid%>));
-	    <%}else{%>
+	    <%
+	    	}
+	    }else{
+	    %>
 			doc_<%=cid%>= doc_tmp_<%=cid %>;
-		<%}%>
+		<%
+		}
+		%>
 	    nsTool_<%=cid%>.countNSMap(doc_<%=cid%>.getRootElement());
 	    xmlNameSpaceMap_<%=cid%> = nsTool_<%=cid%>.xmlNameSpaceMap;
 
@@ -214,7 +255,18 @@ if (outConn!=null) {
 	    	    }
 	    	}
 %>
-	<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+	
+<%
+	if(isDocumentType) {
+%>
+		<%=rejectConnName %>.errorXMLField = xmlDocument_<%=cid%>.toString();
+<%
+	} else {
+%>
+		<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+<%
+	}
+%>
 	<%=rejectConnName %>.errorMessage = ex_<%=cid %>.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 <%
 		} else if(("").equals(rejectConnName)){
@@ -451,8 +503,17 @@ if(outConns!=null){
 <%
 				}
     	    }
+    	    
+			if(isDocumentType) {
 %>
-	<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+				<%=rejectConnName %>.errorXMLField = xmlDocument_<%=cid%>.toString();
+<%
+			} else {
+%>
+				<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+<%
+			}
+%>
 	<%=rejectConnName %>.errorMessage = ex_<%=cid %>.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 	<%=firstConnName %> = null;
 <%
@@ -462,8 +523,16 @@ if(outConns!=null){
     <%=firstConnName %> = null;
 <%
 		} else if(rejectConnName.equals(firstConnName)){
+			if(isDocumentType) {
 %>
-	<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+				<%=rejectConnName %>.errorXMLField = xmlDocument_<%=cid%>.toString();
+<%
+			} else {
+%>
+				<%=rejectConnName %>.errorXMLField = xmlStr_<%=cid%>;
+<%
+			}
+%>
 	<%=rejectConnName %>.errorMessage = ex_<%=cid %>.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
 <%
 		}

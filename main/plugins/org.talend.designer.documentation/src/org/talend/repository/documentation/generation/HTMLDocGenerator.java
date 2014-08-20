@@ -97,6 +97,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.designer.codegen.ITalendSynchronizer;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ConnectionType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
@@ -1254,6 +1255,12 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         if (version != null && version.length == 1) {
             jobVersion = version[0];
         }
+        if(isRouteProcess(item)){
+        	jobElement.addAttribute("type", "route");
+        	 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+    				 .getService(ICamelDesignerCoreService.class);
+        	 camelService.appendRouteInfo2Doc(item, jobElement);
+        }
         jobElement.addAttribute("version", HTMLDocUtils.checkString(jobVersion)); //$NON-NLS-1$
         jobElement.addAttribute("purpose", HTMLDocUtils.checkString(property.getPurpose())); //$NON-NLS-1$
         jobElement.addAttribute("status", HTMLDocUtils.checkString(property.getStatusCode())); //$NON-NLS-1$
@@ -1309,6 +1316,21 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         // }
         // }
         return jobElement;
+    }
+    
+    /**
+     * add by gliu for 
+     * TESB-13788
+     * @param item
+     * @return
+     */
+    protected boolean isRouteProcess(Item item){
+    	 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+    		 ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+    				 .getService(ICamelDesignerCoreService.class);
+    		 return camelService.isInstanceofCamel(item);
+    	 }
+    	 return false;
     }
 
     /**
@@ -1401,6 +1423,13 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         element.addAttribute("i18n.job.original.function.parameters", Messages.HTMLDocGenerator_Original_Function_Parameters); //$NON-NLS-1$
         element.addAttribute("i18n.job.ended", Messages.HTMLDocGenerator_ended); //$NON-NLS-1$
         element.addAttribute("i18n.job.content", Messages.HTMLDocGenerator_content); //$NON-NLS-1$
+        
+        //special for Route
+        element.addAttribute("i18n.route.manifest.type", Messages.HTMLDocGenerator_Route_Manifest_Type); //$NON-NLS-1$
+        element.addAttribute("i18n.route.manifest.value", Messages.HTMLDocGenerator_Route_Manifest_Value); //$NON-NLS-1$
+        element.addAttribute("i18n.route.resource.name", Messages.HTMLDocGenerator_Route_Resource_Name); //$NON-NLS-1$
+        element.addAttribute("i18n.route.resource.version", Messages.HTMLDocGenerator_Route_Resource_Version); //$NON-NLS-1$
+        element.addAttribute("i18n.route.resource.path", Messages.HTMLDocGenerator_Route_Resource_Path); //$NON-NLS-1$
 
         return element;
     }

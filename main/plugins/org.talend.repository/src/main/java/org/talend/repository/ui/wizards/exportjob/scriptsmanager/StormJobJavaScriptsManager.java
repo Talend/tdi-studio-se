@@ -30,7 +30,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.model.ResourceModelUtils;
 
 /**
- * Created by Ryan Skraba on August 6, 2014. 
+ * Created by Ryan Skraba on August 6, 2014.
  */
 public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
 
@@ -79,6 +79,8 @@ public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
 
             // Do not remove the context from job.jar.
             jarbuilder.setExcludeDir(null);
+
+            jarbuilder.setLibPath(getLibPath(false));
             jarbuilder.buildJar();
             list.add(jarFile.toURI().toURL());
         } catch (IOException e) {

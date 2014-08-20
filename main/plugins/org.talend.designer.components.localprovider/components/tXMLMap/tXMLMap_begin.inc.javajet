@@ -41,7 +41,7 @@
 
 	XmlMapData 	xmlMapData=(XmlMapData)ElementParameterParser.getObjectValueXMLTree(node);
 
-	EList<InputXmlTree> inputTables = xmlMapData.getInputTrees();
+	List<InputXmlTree> inputTables = xmlMapData.getInputTrees();
 	EList<OutputXmlTree> outputTables = xmlMapData.getOutputTrees();
 	EList<VarTable> varTables = xmlMapData.getVarTables();
 	
@@ -447,17 +447,15 @@ class TreeNode_API_<%=cid %> {
 // ###############################
 <%
 	
-//	List<IConnection> inputConnections = (List<IConnection>) node.getIncomingConnections();
 	InputXmlTree mainInputTable = null;  // the main input table
-	if(inputConnections==null || inputConnections.size() < 1) {
-		return "";
+	if(inputConnections==null) {
+		inputConnections = new ArrayList<IConnection>();//avoid NPE
 	}
-
-	if(inputTables==null || inputTables.size()==0) return "";
+	
 	for(IConnection conn : inputConnections) { // find the input main table
-		InputXmlTree inputTable = inputTables.get(0);
 		EConnectionType connectionType = conn.getLineStyle();
 		if (connectionType == EConnectionType.FLOW_MAIN) {
+			InputXmlTree inputTable = inputTables.get(0);
 			if(!inputTable.isLookup()) { // lookup is used to sign it is lookup table
     			mainInputTable = inputTable;
     			break;

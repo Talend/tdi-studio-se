@@ -20,6 +20,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,9 +37,11 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.TalendPaletteGroup;
+import org.talend.core.ui.componentsettings.ComponentsSettingsHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IPaletteFilter;
 import org.talend.designer.core.i18n.Messages;
@@ -93,10 +96,12 @@ public final class TalendEditorPaletteFactory {
         }
         List<IComponent> componentList = new ArrayList<IComponent>(compFac.getComponents());
 
+        String paletteType = ComponentCategory.CATEGORY_4_DI.getName();
         // Added by Marvin Wang on Jan. 10, 2012
         if (compFac.getComponentsHandler() != null) {
             componentList = compFac.getComponentsHandler().filterComponents(componentList);
             compFac.getComponentsHandler().sortComponents(componentList);
+            paletteType = compFac.getComponentsHandler().extractComponentsCategory().getName();
         }
 
         Collections.sort(componentList, new Comparator<IComponent>() {
@@ -107,6 +112,8 @@ public final class TalendEditorPaletteFactory {
             }
 
         });
+
+        Set<String> displayedFamilies = ComponentsSettingsHelper.getDisplayedFamilies(paletteType);
 
         for (int i = 0; i < componentList.size(); i++) {
             IComponent xmlComponent = componentList.get(i);
@@ -125,11 +132,10 @@ public final class TalendEditorPaletteFactory {
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
-                    if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
-                        continue;
+                    if (displayedFamilies.contains(oraStrings[j])) {
+                        families.add(strings[j]);
+                        familyMap.put(strings[j], oraStrings[j]);
                     }
-                    families.add(strings[j]);
-                    familyMap.put(strings[j], oraStrings[j]);
                 }
             }
         }
@@ -202,10 +208,6 @@ public final class TalendEditorPaletteFactory {
                 }
             }
 
-            if (!needHiddenComponent && !xmlComponent.isVisible()) {
-                continue;
-            }
-
             if (xmlComponent.isLoaded()) {
                 name = xmlComponent.getName();
                 longName = xmlComponent.getLongName();
@@ -234,6 +236,9 @@ public final class TalendEditorPaletteFactory {
 
                     if (a == 0) {
                         componentsDrawer = ht.get(strings[j]);
+                        if (componentsDrawer == null) {
+                            continue;
+                        }
                         component.setParent(componentsDrawer);
                         componentsDrawer.add(component);
                     } else if (a == 1) {
@@ -312,10 +317,6 @@ public final class TalendEditorPaletteFactory {
             if (xmlComponent.isTechnical()) {
                 continue;
             }
-
-            // if (xmlComponent.isTechnical() || !xmlComponent.isVisible()) {
-            // continue;
-            // }
 
             if (xmlComponent.isLoaded()) {
                 family = xmlComponent.getTranslatedFamilyName();
@@ -411,10 +412,6 @@ public final class TalendEditorPaletteFactory {
                         continue;
                     }
                 }
-            }
-
-            if (!needHiddenComponent && !xmlComponent.isVisible()) {
-                continue;
             }
 
             family = xmlComponent.getTranslatedFamilyName();

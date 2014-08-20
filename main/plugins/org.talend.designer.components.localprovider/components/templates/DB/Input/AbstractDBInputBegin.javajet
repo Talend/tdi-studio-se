@@ -29,6 +29,12 @@ imports="
 	String dbencoding = ElementParameterParser.getValue(node, "__ENCODING__");
 	String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
 	String dbms=ElementParameterParser.getValue(node, "__MAPPING__");
+	if("tJDBCInput".equals(node.getComponent().getName())) {
+		boolean isEnableMapping = ("true").equals(ElementParameterParser.getValue(node, "__ENABLE_MAPPING__"));
+		if (!isEnableMapping) {
+			dbms = "";
+		}
+	}
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
     boolean whetherTrimAllCol = ("true").equals(ElementParameterParser.getValue(node, "__TRIM_ALL_COLUMN__"));

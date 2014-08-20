@@ -130,12 +130,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // editor mode.
         ProcessorUtilities.setExportConfig(JAVA, "", ""); //$NON-NLS-1$
 
-        ExportFileResource libResource = getCompiledLibExportFileResource(processes);
-        list.add(libResource);
-
         try {
+            ProcessItem processItem = null;
             for (ExportFileResource process : processes) {
-                ProcessItem processItem = (ProcessItem) process.getItem();
+                processItem = (ProcessItem) process.getItem();
                 if (processItem.eIsProxy() || processItem.getProcess().eIsProxy()) {
                     try {
                         Property property = ProxyRepositoryFactory.getInstance().getUptodateProperty(processItem.getProperty());
@@ -193,10 +191,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                     addOSGIRouteResources(osgiResource, processItem);
                 }
 
-                // generate the META-INFO folder
-                ExportFileResource metaInfoFolder = genMetaInfoFolder(libResource, processItem);
-                list.add(0, metaInfoFolder);
-
                 /*
                  *  export current item's dependencies.
                  *  this used for TDM components specially
@@ -204,6 +198,13 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                  */
                 BuildExportManager.getInstance().exportDependencies(osgiResource, processItem);
             }
+
+            ExportFileResource libResource = getCompiledLibExportFileResource(processes);
+            list.add(libResource);
+
+            // generate the META-INFO folder
+            ExportFileResource metaInfoFolder = genMetaInfoFolder(libResource, processItem);
+            list.add(0, metaInfoFolder);
 
             ExportFileResource providedLibResources = getProvidedLibExportFileResource(processes);
             if (providedLibResources != null) {
@@ -274,19 +275,6 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
              * Else, add the bundle id in "Require-Bundle", but don't add the lib.
              */
             if (isIncludedLib(module)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected boolean isSpecialLib(String libName) {
-        if (libName != null) {
-            // temp workaround for https://jira.talendforge.org/browse/TDI-22934
-            if (libName.startsWith("camel-core-") //$NON-NLS-1$
-                    || libName.startsWith("dom4j-") //$NON-NLS-1$
-                    // temp workaround for https://jira.talendforge.org/browse/TESB-7271
-                    || libName.startsWith("ojdbc")) { //$NON-NLS-1$
                 return true;
             }
         }

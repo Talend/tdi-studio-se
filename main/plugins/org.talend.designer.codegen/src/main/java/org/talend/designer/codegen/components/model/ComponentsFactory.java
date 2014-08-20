@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -49,15 +48,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
-import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.io.SHA1Util;
-import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
-import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.component_cache.ComponentCachePackage;
 import org.talend.core.model.component_cache.ComponentInfo;
@@ -70,7 +64,6 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
-import org.talend.core.model.general.Project;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
@@ -84,7 +77,6 @@ import org.talend.designer.core.model.components.ComponentBundleToPath;
 import org.talend.designer.core.model.components.ComponentFilesNaming;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
-import org.talend.repository.model.ComponentsFactoryProvider;
 
 /**
  * Component factory that look for each component and load their information. <br/>
@@ -193,27 +185,6 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.display = false;
         // TimeMeasure.displaySteps = false;
         // TimeMeasure.measureActive = false;
-
-        if (!CommonUIPlugin.isFullyHeadless()) {
-            RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
-                    Context.REPOSITORY_CONTEXT_KEY);
-            if (repositoryContext == null) {
-                return;
-            }
-            Project project = repositoryContext.getProject();
-            if (project == null) {
-                return;
-            }
-            org.talend.core.model.properties.Project emfProject = project.getEmfProject();
-            if (emfProject == null) {
-                return;
-            }
-            EList list = emfProject.getComponentsSettings();
-            if (list.isEmpty()) {
-                ComponentsFactoryProvider.saveComponentVisibilityStatus();
-            }
-        }
-
     }
 
     /**

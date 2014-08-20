@@ -1106,10 +1106,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             pType = (ElementParameterType) listParamType.get(j);
             if (pType != null) {
                 IElementParameter param = null;
-                if ("SURVIVOR_RELATION".equals(pType.getName())) {
+                if (EParameterFieldType.SURVIVOR_RELATION.name().equals(pType.getField())) {
                     param = new ElementParameter(elemParam);
                     param.setValue(pType.getValue());
-                    param.setName("SURVIVOR_RELATION");
+                    param.setName(pType.getName());
                     param.setCategory(EComponentCategory.TECHNICAL);
                     param.setFieldType(EParameterFieldType.SURVIVOR_RELATION);
                     param.setNumRow(99);

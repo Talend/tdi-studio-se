@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="1.1"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+	<xsl:template name="TransferLF2BR">
+		<xsl:param name="input" />
+		<xsl:choose>
+			<xsl:when test="contains($input, '&#10;')">
+				<xsl:value-of select="substring-before($input, '&#10;')" />
+				<br />
+				<xsl:call-template name="TransferLF2BR">
+					<xsl:with-param name="input"
+						select="substring-after($input, '&#10;')" />
+				</xsl:call-template>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$input" />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
+	
 	<xsl:template match="/">
 		<xsl:variable name="ucase"
 			select="'ABCDEFGHIJKLMNOPQRSTUVWXYZ'" />
@@ -27,7 +44,8 @@
 					a:hover {TEXT-DECORATION:underline}
 					.TITLESTYLE {font-size: 26px; color: #818181;}
 					.TOPTITLESTYLE {font-size: 40px; color: #818181;}
-					.TABLECOLUMNSTYLE {font-family: Arial, Helvetica,sans-serif; color: #818181; background-color:#E6E6E6;align: center} 
+					.TABLECOLUMNSTYLE {font-size: 14px; font-family: Arial, Helvetica,sans-serif; color: #818181; background-color:#E6E6E6;align: center} 
+					.CODESTYLE {font-size: 14px; font-family: Arial, Helvetica,sans-serif; color: #00e; background-color:#E6E6E6;} 
 					tr {page-break-inside: avoid}
 				</style>
 			</head>
@@ -125,6 +143,23 @@
 						<a href="#Job Settings"><xsl:value-of select="/project/@i18n.job.job.setting" /></a>
 					</b>
 				</div>
+				<xsl:if test="/project/job/@type = 'route' ">
+					<div class="FONTSTYLE">
+						<b>
+							<a href="#MANIFEST">MANIFEST</a>
+						</b>
+					</div>
+					<div class="FONTSTYLE">
+						<b>
+							<a href="#Spring">Spring</a>
+						</b>
+					</div>
+					<div class="FONTSTYLE">
+						<b>
+							<a href="#Resources">Resources</a>
+						</b>
+					</div>
+				</xsl:if>
 				<div class="FONTSTYLE">
 					<b>
 						<a href="#Context List"><xsl:value-of select="/project/@i18n.job.context.list" /></a>
@@ -233,6 +268,14 @@
 							<xsl:value-of select="$job/@version" />
 						</td>
 					</tr>
+					<xsl:if test="$job/@type = 'route' ">
+						<tr>
+							<td class="FONTSTYLE" align="left"><xsl:value-of select="/project/@i18n.job.type" /></td>
+							<td class="FONTSTYLE" align="left">
+								<xsl:value-of select="$job/@type" />
+							</td>
+						</tr>
+					</xsl:if>
 					<tr>
 						<td class="FONTSTYLE" align="left"><xsl:value-of select="/project/@i18n.job.purpose" /></td>
 						<td class="FONTSTYLE" align="left">
@@ -460,6 +503,126 @@
 				</xsl:for-each>
 				<br />
 				<br />
+				
+				<!-- Route Special Part -->
+				<xsl:if test="$job/@type = 'route' ">
+				
+					<!-- Route MANIFEST -->
+					<h2 class="FONTSTYLE">
+						<a name="#MANIFEST">MANIFEST</a>
+					</h2>
+					<table width="90%" border="1" cellpadding="0"
+						cellspacing="0"
+						style="border-collapse: collapse; padding-left:10mm;"
+						bordercolor="#111111" frame="box" summary="">
+						<tr>
+							<th width="30%" align="left"
+								class="TABLECOLUMNSTYLE">
+								<xsl:value-of select="/project/@i18n.route.manifest.type" />
+							</th>
+							<th width="70%" align="left"
+								class="TABLECOLUMNSTYLE">
+								<xsl:value-of select="/project/@i18n.route.manifest.value" />
+							</th>
+						</tr>
+						<tr>
+							<td class="FONTSTYLE" align="left">
+								Import-Package(s)
+							</td>
+							<td class="FONTSTYLE" align="left">
+								<pre>
+									<xsl:call-template name="TransferLF2BR">
+										<xsl:with-param name="input" select="$job/RouteManifest/Import-package/text()"/>
+									</xsl:call-template>
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td class="FONTSTYLE" align="left">
+								Export-Package(s)
+							</td>
+							<td class="FONTSTYLE" align="left">
+								<pre>
+									<xsl:call-template name="TransferLF2BR">
+										<xsl:with-param name="input" select="$job/RouteManifest/Export-package/text()"/>
+									</xsl:call-template>
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td class="FONTSTYLE" align="left">
+								Required-Bundle(s)
+							</td>
+							<td class="FONTSTYLE" align="left">
+								<pre>
+									<xsl:call-template name="TransferLF2BR">
+										<xsl:with-param name="input" select="$job/RouteManifest/Required-bundle/text()"/>
+									</xsl:call-template>
+								</pre>
+							</td>
+						</tr>
+						<tr>
+							<td class="FONTSTYLE" align="left">
+								Bundle-Classpath(s)
+							</td>
+							<td class="FONTSTYLE" align="left">
+								<pre>
+									<xsl:call-template name="TransferLF2BR">
+										<xsl:with-param name="input" select="$job/RouteManifest/Bundle-classpath/text()"/>
+									</xsl:call-template>
+								</pre>
+							</td>
+						</tr>
+					</table>
+					
+					<!-- Route Spring -->
+					<h2 class="FONTSTYLE">
+						<a name="#Spring">Spring</a>
+						<pre class="CODESTYLE">
+							<xsl:call-template name="TransferLF2BR">
+								<xsl:with-param name="input" select="$job/RouteSpring/text()"/>
+							</xsl:call-template>
+						</pre>
+					</h2>
+					
+					<!-- Route Resources -->
+					<h2 class="FONTSTYLE">
+						<a name="#Resources">Resources</a>
+					</h2>
+					<table width="90%" border="1" cellpadding="0"
+						cellspacing="0"
+						style="border-collapse: collapse; padding-left:10mm;"
+						bordercolor="#111111" frame="box" summary="">
+						<tr>
+							<th width="30%" align="left"
+								class="TABLECOLUMNSTYLE">
+								<xsl:value-of select="/project/@i18n.route.resource.name" />
+							</th>
+							<th width="30%" align="left"
+								class="TABLECOLUMNSTYLE">
+								<xsl:value-of select="/project/@i18n.route.resource.version" />
+							</th>
+							<th width="40%" align="left"
+								class="TABLECOLUMNSTYLE">
+								<xsl:value-of select="/project/@i18n.route.resource.path" />
+							</th>
+						</tr>
+						<xsl:for-each select="$job/RouteResources/Resource">
+							<tr>
+								<td class="FONTSTYLE" align="left">
+									<xsl:value-of select="@name"/>
+								</td>
+								<td class="FONTSTYLE" align="left">
+									<xsl:value-of select="@version"/>
+								</td>
+								<td class="FONTSTYLE" align="left">
+									<xsl:value-of select="@path"/>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</table>
+				</xsl:if>
+				
 				<!-- Component List-->
 				<!--HR-->
 				<h2 class="FONTSTYLE">

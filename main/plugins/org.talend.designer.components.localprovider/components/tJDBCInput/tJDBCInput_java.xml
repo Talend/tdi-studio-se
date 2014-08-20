@@ -206,7 +206,6 @@
 	</PARAMETER>
 
 	
-	
 	<PARAMETER NAME="TRIM_ALL_COLUMN" FIELD="CHECK" NUM_ROW="30">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
@@ -217,6 +216,44 @@
 			<ITEM NAME="TRIM" FIELD="CHECK"></ITEM>
 		</ITEMS>
 	</PARAMETER>		
+
+	<PARAMETER NAME="ENABLE_MAPPING" FIELD="CHECK" NUM_ROW="110">
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+
+	<PARAMETER
+      NAME="MAPPING"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="120"
+      SHOW_IF="ENABLE_MAPPING=='true'"
+    >
+		<ITEMS DEFAULT="MYSQL">
+			<ITEM NAME="AS400" VALUE="as400_id" />
+			<ITEM NAME="ACCESS" VALUE="access_id" />
+			<ITEM NAME="DB2" VALUE="ibmdb2_id" />
+			<ITEM NAME="FIREBIRD" VALUE="firebird_id" />
+			<ITEM NAME="HSQLDB" VALUE="hsqldb_id" />
+			<ITEM NAME="INFORMIX" VALUE="informix_id" />
+			<ITEM NAME="INGRES" VALUE="ingres_id" />
+			<ITEM NAME="VECTORWISE" VALUE="vectorwise_id" />
+			<ITEM NAME="INTERBASE" VALUE="interbase_id" />
+			<ITEM NAME="JAVADB" VALUE="javadb_id" />
+			<ITEM NAME="MAXDB" VALUE="maxdb_id" />
+			<ITEM NAME="MSSQL" VALUE="id_MSSQL" />
+			<ITEM NAME="MYSQL" VALUE="mysql_id" />
+			<ITEM NAME="NETEZZA" VALUE="netezza_id" />
+			<ITEM NAME="ORACLE" VALUE="oracle_id" />
+			<ITEM NAME="POSTGRESQL" VALUE="postgres_id" />
+			<ITEM NAME="POSTGREPLUS" VALUE="postgresplus_id" />
+			<ITEM NAME="SQLITE" VALUE="sqlite_id" />
+			<ITEM NAME="SYBASE" VALUE="sybase_id" />
+			<ITEM NAME="SAPHANA" VALUE="saphana_id" />
+			<ITEM NAME="TERADATA" VALUE="teradata_id" />
+			<ITEM NAME="VERTICA" VALUE="vertica_id" />
+			<ITEM NAME="H2" VALUE="h2_id" />
+			<ITEM NAME="ODBC" VALUE="MSODBC" />
+		</ITEMS>
+    </PARAMETER>
    </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>

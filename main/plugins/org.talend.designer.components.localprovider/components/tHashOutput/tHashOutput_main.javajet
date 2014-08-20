@@ -200,8 +200,8 @@ if(!isLinked){//111
 //fix bug 21630,use method getAdvancedMemoryHashFile to get a exist AdvancedMemoryHashFile
 %>
 		if(tHashFile_<%=cid %> == null){
-			tHashFile_<%=cid %> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid + Thread.currentThread().getId() +"_<%=tHashOutputName %>");
-			mf_<%=cid %>.getResourceMap().put("tHashFile_<%=jobName %>_" + pid + Thread.currentThread().getId() +"_<%=cid %>", tHashFile_<%=cid %>);
+			tHashFile_<%=cid %> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
+			mf_<%=cid %>.getResourceMap().put("tHashFile_<%=jobName %>_" + pid +"_<%=cid %>", tHashFile_<%=cid %>);
 		}
 		<%=tHashOutput_incommingDataConnName %>Struct oneRow_<%=cid %> = new <%=tHashOutput_incommingDataConnName %>Struct();
 <%      

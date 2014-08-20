@@ -49,6 +49,9 @@ Using the bug tracker [Talend bugtracker](http://jira.talendforge.org/) is the b
 
 Feel free to share your Talend components on [Talend Exchange](http://www.talendforge.org/exchange).
 
+## Contributors
+
+See the [CONTRIBUTORS.md](http://github.com/Talend/tdi-studio-se/CONTRIBUTORS.md) file for details.
 
 ## License
 

@@ -63,7 +63,11 @@ if(!"true".equals(useExistingConn)){
 		<%=cid%>_files = <%=cid%>_entries.children;
 	}
 	if (<%=cid%>_files != null) {
-		String <%=cid%>_outputPath = new java.io.File(<%=outputFolder%>).getAbsolutePath()+java.io.File.separator;
+		java.io.File <%=cid%>_outputDirectory = new java.io.File(<%=outputFolder%>);
+		if(!<%=cid%>_outputDirectory.exists()){
+			<%=cid%>_outputDirectory.mkdirs();
+		}
+		String <%=cid%>_outputPath = <%=cid%>_outputDirectory.getAbsolutePath()+java.io.File.separator;
 		for (com.dropbox.core.DbxEntry <%=cid%>_child : <%=cid%>_files) {
 			if (!<%=cid%>_child.isFile()) {
 				continue;
