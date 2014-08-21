@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.talend.sqlbuilder.jars"/>
 	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry exported="true" kind="lib" path="squirrel.jar"/>
-	<classpathentry exported="true" kind="lib" path="sqlexplorer.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="class"/>

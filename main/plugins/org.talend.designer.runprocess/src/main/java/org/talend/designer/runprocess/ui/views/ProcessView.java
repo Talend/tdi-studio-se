@@ -399,6 +399,15 @@ public class ProcessView extends ViewPart {
                 dc = null;
             }
             sash.setWeights(new int[] { 24, 0 });
+        } else if (EComponentCategory.STORM_JOB_CONFIG.equals(category)) {
+            if (processContext != null) {
+                dc = new MultipleThreadDynamicComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, category,
+                        (Element) processContext.getProcess(), true, Display.getCurrent().getSystemColor(
+                                SWT.COLOR_WIDGET_BACKGROUND));
+            } else {
+                dc = null;
+            }
+            sash.setWeights(new int[] { 24, 0 });
         }
         refresh();
         if (dc != null) {
@@ -479,6 +488,9 @@ public class ProcessView extends ViewPart {
                         ArrayUtils.indexOf(categories, EComponentCategory.DEBUGRUN));
                 categories = (EComponentCategory[]) ArrayUtils.add(categories, 1,
                         EComponentCategory.MAPREDUCE_JOB_CONFIG_FOR_HADOOP);
+            }
+            if (processContext.getProcess().getComponentsType().equals(ComponentCategory.CATEGORY_4_STORM.getName())) {
+                categories = (EComponentCategory[]) ArrayUtils.add(categories, 1, EComponentCategory.STORM_JOB_CONFIG);
             }
         }
         return categories;
