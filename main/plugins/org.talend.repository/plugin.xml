@@ -2207,6 +2207,15 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
+              breaks="5.6.0"
+              class="org.talend.repository.model.migration.UpdateTMultiPatternCheckTask"
+              description="Add the column REGEX_INVALIDITY_MESSAGE into the tMultiPatternCheck's non-matching output schema"
+              id="org.talend.repository.model.migration.UpdateTMultiPatternCheckTask"
+              name="UpdateTMultiPatternCheckTask"
+              version="5.6.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
               breaks="5.3.0"
               class="org.talend.repository.model.migration.ChangeUseBatchSizetoFalse4AS400"
               description="set the checkbox:USE_BATCH_SIZE to default from old jobs"
