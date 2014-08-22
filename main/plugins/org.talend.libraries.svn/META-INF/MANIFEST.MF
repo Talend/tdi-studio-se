@@ -6,8 +6,7 @@ Bundle-Version: 2.2.0.qualifier
 Bundle-ClassPath: .,
  lib/svnkit-javahl16-1.8.5.jar,
  lib/svnkit-1.8.5.jar,
- lib/trilead-ssh2-1.0.0-build217.jar,
- lib/antlr-runtime-3.4.jar
+ lib/trilead-ssh2-1.0.0-build217.jar
 Export-Package: org.tigris.subversion.javahl,
  org.tmatesoft.svn.core,
  org.tmatesoft.svn.core.io,
