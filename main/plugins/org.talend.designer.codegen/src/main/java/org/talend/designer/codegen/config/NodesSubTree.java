@@ -195,9 +195,14 @@ public class NodesSubTree {
     private void buildMRSubTree(INode node) {
         if (((AbstractNode) node).isThereLinkWithRef()) {
             this.isRefSubTree = true;
-            this.refNodes = ((AbstractNode) node).getRefNodes();
-            if (refNodes != null) {
-                for (INode refNode : refNodes) {
+            List<INode> newRefNodes = ((AbstractNode) node).getRefNodes();
+            if (newRefNodes != null) {
+                if (refNodes == null) {
+                    refNodes = new ArrayList<INode>(newRefNodes);
+                } else {
+                    refNodes.addAll(((AbstractNode) node).getRefNodes());
+                }
+                for (INode refNode : newRefNodes) {
                     buildMRSubTree(refNode);
                 }
             }
@@ -224,7 +229,7 @@ public class NodesSubTree {
     }
 
     private void buildStormSubTree(INode node) {
-        // Use a copy of buildMRSubTree for now.  This will soon evolve.
+        // Use a copy of buildMRSubTree for now. This will soon evolve.
         if (((AbstractNode) node).isThereLinkWithRef()) {
             this.isRefSubTree = true;
             this.refNodes = ((AbstractNode) node).getRefNodes();
