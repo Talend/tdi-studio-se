@@ -144,7 +144,7 @@ java.sql.Connection conn_<%=cid%> = null;
 			}
 		}
 		
-		if(((isCustom && !useYarn) || (!isCustom && !"PIVOTAL_HD_1_0_1".equals(hiveVersion) && !"PIVOTAL_HD_2_0".equals(hiveVersion) && !"HDP_2_0".equals(hiveVersion) && !"HDP_2_1".equals(hiveVersion) && !"Cloudera_CDH4_YARN".equals(hiveVersion) && !"Cloudera_CDH5".equals(hiveVersion))) && setMapredJT) {
+		if(((isCustom && !useYarn) || (!isCustom && !"PIVOTAL_HD_1_0_1".equals(hiveVersion) && !"PIVOTAL_HD_2_0".equals(hiveVersion) && !"HDP_2_0".equals(hiveVersion) && !"HDP_2_1".equals(hiveVersion) && !"Cloudera_CDH4_YARN".equals(hiveVersion) && !"Cloudera_CDH5".equals(hiveVersion) && !"APACHE_2_4_0_EMR".equals(hiveVersion))) && setMapredJT) {
 			String mapredJT = ElementParameterParser.getValue(node, "__MAPRED_JT__");
 %>
 			System.setProperty("mapred.job.tracker", <%=mapredJT%>);
@@ -177,7 +177,7 @@ java.sql.Connection conn_<%=cid%> = null;
 			System.setProperty("hive.metastore.execute.setugi", "true");
 			String url_<%=cid%> = "jdbc:<%=hiveServer%>://";
 <%
-			if(isCustom || (!isCustom && ("HDP_1_0,HDP_1_2,HDP_1_3,HDP_2_0,HDP_2_1,Cloudera_CDH4,Cloudera_CDH4_YARN,Cloudera_CDH5,PIVOTAL_HD_1_0_1,PIVOTAL_HD_2_0".contains(hiveVersion)))) {
+			if(isCustom || (!isCustom && (("HDP_1_0,HDP_1_2,HDP_1_3,HDP_2_0,HDP_2_1,Cloudera_CDH4,Cloudera_CDH4_YARN,Cloudera_CDH5,PIVOTAL_HD_1_0_1,PIVOTAL_HD_2_0".contains(hiveVersion)) || ("APACHE_2_4_0_EMR".equals(hiveVersion))))) {
 %>
 				if(dbUser_<%=cid %>!=null && !"".equals(dbUser_<%=cid %>.trim())) {
 					System.setProperty("HADOOP_USER_NAME",dbUser_<%=cid %>);
@@ -234,7 +234,7 @@ java.sql.Connection conn_<%=cid%> = null;
 	}
 	
 	boolean isKerberosAvailableHadoop2 = !isCustom && ("HDP_2_0".equals(hiveVersion) || "HDP_2_1".equals(hiveVersion) || "Cloudera_CDH4_YARN".equals(hiveVersion) || "Cloudera_CDH5".equals(hiveVersion) || "PIVOTAL_HD_2_0".equals(hiveVersion));
-	boolean isHadoop2 = "PIVOTAL_HD_1_0_1".equals(hiveVersion) || isKerberosAvailableHadoop2;
+	boolean isHadoop2 = "PIVOTAL_HD_1_0_1".equals(hiveVersion) ||  "APACHE_2_4_0_EMR".equals(hiveVersion) || isKerberosAvailableHadoop2;
 	
 	boolean isKerberosAvailableHadoop1 = !isCustom && ("HDP_1_0".equals(hiveVersion) || "HDP_1_2".equals(hiveVersion) || "HDP_1_3".equals(hiveVersion) || "Cloudera_CDH4".equals(hiveVersion));
 		
@@ -284,6 +284,12 @@ java.sql.Connection conn_<%=cid%> = null;
 				init_<%=cid%>.execute("SET yarn.resourcemanager.scheduler.address=" + <%=schedulerAddress%>);
 <%
 			}
+    		
+            if ("true".equals(ElementParameterParser.getValue(node, "__USE_DATANODE_HOSTNAME__"))) {
+                %>
+                init_<%=cid%>.execute("SET dfs.client.use.datanode.hostname=true");
+                <%
+            }
 			
     		if("true".equals(ElementParameterParser.getValue(node, "__SET_FS_DEFAULT_NAME__"))) {
     			String namenode = ElementParameterParser.getValue(node, "__FS_DEFAULT_NAME__");
