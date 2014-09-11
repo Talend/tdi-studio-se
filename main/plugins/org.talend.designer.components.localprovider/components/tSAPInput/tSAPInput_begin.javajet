@@ -33,7 +33,7 @@
 			<%
 			} else if(javaType == JavaTypesManager.OBJECT) {
 			%>
-				<%=justConn.getName() %>.<%=justColumn.getLabel() %> = <%=value%>.getString(<%=paramName%>);
+				<%=justConn.getName() %>.<%=justColumn.getLabel() %> = <%=value%>.getValue(<%=paramName%>);
 			<%
 			} else{
 			%>
