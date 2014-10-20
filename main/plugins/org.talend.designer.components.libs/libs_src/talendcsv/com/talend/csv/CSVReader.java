@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.HashMap;
 
 public class CSVReader {
 	
@@ -42,6 +43,8 @@ public class CSVReader {
 	private char previousChar = '\0';
 	
 	private String[] values = new String[10];
+	
+	private HeadersReader headersReader = new HeadersReader();
 	
 	private int columnCount = 0;
 	
@@ -471,6 +474,91 @@ public class CSVReader {
 	
 	public void close() throws IOException {
 		reader.close();
+		headersReader.clear();
+	}
+
+	//Added 20141016 TDQ-9496
+	public int getCurrentRecord(){
+	    return this.currentPosition;
 	}
 	
+	public char getSeperator(){
+	    return separator;
+	}
+	
+	/**
+     * Read the first record of data as the column headers. Added 20141016 TDQ-9496
+     * 
+     * @return If the header was successfully read or not.
+     */
+	public boolean readHeaders() throws IOException {
+        boolean result = readNext();
+
+        headersReader.length = columnCount;
+
+        headersReader.headers = new String[columnCount];
+
+        for (int i = 0; i < headersReader.length; i++) {
+            String columnValue = get(i);
+            headersReader.headers[i] = columnValue;
+            headersReader.indexByHeaderName.put(columnValue, new Integer(i));
+        }
+
+        if (result) {
+            currentPosition--;
+        }
+
+        columnCount = 0;
+        return result;
+    }
+	/**
+     * Returns the current column value for a given column header name.
+     */
+    public String get(String headerName) throws IOException {
+        return get(getIndex(headerName));
+    }
+
+    private int getIndex(String headerName) throws IOException {
+        if(headersReader.indexByHeaderName==null){
+            return -1;
+        }
+        Object indexValue = headersReader.indexByHeaderName.get(headerName);
+
+        if (indexValue != null) {
+            return ((Integer) indexValue).intValue();
+        } else {
+            return -1;
+        }
+    }
+    
+    public String[] getHeaders() throws IOException {
+        if (headersReader.headers == null) {
+            return null;
+        } else {
+            String[] clone = new String[headersReader.length];
+            System.arraycopy(headersReader.headers, 0, clone, 0,
+                    headersReader.length);
+            return clone;
+        }
+    }  
+    
+    private class HeadersReader {
+        private String[] headers;
+
+        private int length;
+
+        private HashMap indexByHeaderName;
+
+        public HeadersReader() {
+            headers = null;
+            length = 0;
+            indexByHeaderName = new HashMap();
+        }
+        
+        public void clear(){
+            headers = null;
+            indexByHeaderName = null;
+        }
+    }
+    /**End of added by TDQ-9496 **/
 }
