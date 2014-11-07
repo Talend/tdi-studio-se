@@ -254,17 +254,24 @@ imports="
 <%
 								} else if("Geometry".equals(typeToGenerate) && type.indexOf("ORACLE") >= 0) {
 %>
-                                    oracle.spatial.geometry.JGeometry jGeom = oracle.spatial.geometry.JGeometry.load((oracle.sql.STRUCT) rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>));
-                                    oracle.spatial.util.WKT wkt = new oracle.spatial.util.WKT();
-                                    String wktValue = new String(wkt.fromJGeometry(jGeom));
+                                    oracle.sql.STRUCT jGeomStruct = (oracle.sql.STRUCT) rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+                                    if (jGeomStruct != null) {
+                                      oracle.spatial.geometry.JGeometry jGeom = oracle.spatial.geometry.JGeometry.load(jGeomStruct);
+                                      oracle.spatial.util.WKT wkt = new oracle.spatial.util.WKT();
+                                      String wktValue = new String(wkt.fromJGeometry(jGeom));
 
-                                    <%=firstConnName%>.<%=column.getLabel()%> = new Geometry(wktValue);
+                                      <%=firstConnName%>.<%=column.getLabel()%> = new Geometry(wktValue);
+                                    } else {
+                                      <%=firstConnName%>.<%=column.getLabel()%> = null;
+                                    }
 <%
                                     String sourceCRS = ElementParameterParser.getValue(node,"__CRS__");
                                     String forceCRS = ElementParameterParser.getValue(node,"__FORCE_CRS__");
                                     if (forceCRS.equals("true")) {
 %>
-                                        <%=firstConnName%>.<%=column.getLabel()%>.setEPSG(<%=sourceCRS%>);
+                                        if (<%=firstConnName%>.<%=column.getLabel()%> != null) {
+                                          <%=firstConnName%>.<%=column.getLabel()%>.setEPSG(<%=sourceCRS%>);
+                                        }
 <%
                                     }
 								} else if(("Bytes").equals(typeToGenerate) && (columnType != null && (("LONG RAW").equals(columnType) || ("RAW").equals(columnType)))) {//oracle
@@ -302,10 +309,16 @@ imports="
 									}
 								} else if(typeToGenerate.equals("Geometry")) {
 %>
-                                	org.postgis.Geometry o = org.postgis.PGgeometry.geomFromString(rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>).toString());
-                                	StringBuffer sb = new StringBuffer();
-                                	o.outerWKT(sb, false);
-                                	<%=firstConnName%>.<%=column.getLabel()%> = new Geometry(sb.toString());
+                                  Object geom = rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+                                  if (geom != null) {
+                                  	org.postgis.Geometry o = 
+                                      org.postgis.PGgeometry.geomFromString(geom.toString());
+                                  	StringBuffer sb = new StringBuffer();
+                                  	o.outerWKT(sb, false);
+                                  	<%=firstConnName%>.<%=column.getLabel()%> = new Geometry(sb.toString());
+                                  } else {
+                                  	<%=firstConnName%>.<%=column.getLabel()%> = null;
+                                  }
 <%
                  	            } else {
 %>
