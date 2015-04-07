@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.metadata.AvroMetadataTable;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
@@ -580,7 +581,13 @@ public class MapperManager extends AbstractMapperManager {
 
         } else {
             process.addUniqueConnectionName(tableName);
-            MetadataTable metadataTable = new MetadataTable();
+            IMetadataTable metadataTable;
+            if (process.getComponentsType().equals(ComponentCategory.CATEGORY_4_SPARK.getName())
+                    || process.getComponentsType().equals(ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName())) {
+                metadataTable = new AvroMetadataTable(process);
+            } else {
+                metadataTable = new MetadataTable();
+            }
             metadataTable.setTableName(tableName);
             abstractDataMapTable = new OutputTable(this, metadataTable, tableName);
         }
