@@ -267,7 +267,7 @@ if(columnList != null && columnList.size()>0) {
         <%
     } else if (("INSERT_OR_UPDATE").equals(dataAction)) {
         %>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM \"" + tableName_<%=cid%> + "\" WHERE <%=updateWhereStmt.toString()%>");
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM " + tableName_<%=cid%> + " WHERE <%=updateWhereStmt.toString()%>");
         String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
         java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
         String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";

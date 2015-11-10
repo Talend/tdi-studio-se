@@ -315,7 +315,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 insertedCount_<%=cid%> = insertedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().inserting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-                conn_<%=cid%>.rollback(sp_<%=cid %>);
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -451,7 +450,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 updatedCount_<%=cid%> = updatedCount_<%=cid%> + pstmt_<%=cid %>.executeUpdate();
                 <%dbLog.data().updating(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-                conn_<%=cid%>.rollback(sp_<%=cid %>);
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
@@ -601,7 +599,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                     nb_line_<%=cid%>++;
                     <%dbLog.data().updating(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
-                    conn_<%=cid%>.rollback(sp_<%=cid %>);
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -679,7 +676,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                     nb_line_<%=cid%>++;
                     <%dbLog.data().inserting(dbLog.var("nb_line"));%>
                 } catch(java.lang.Exception e) {
-                    conn_<%=cid%>.rollback(sp_<%=cid %>);
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -856,7 +852,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                         <%dbLog.data().updating(dbLog.var("nb_line"));%>
                     }
                 } catch(java.lang.Exception e) {
-                    conn_<%=cid%>.rollback(sp_<%=cid %>);
                     whetherReject_<%=cid%> = true;
                     <%
                     if (("true").equals(dieOnError)) {
@@ -945,7 +940,6 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 nb_line_<%=cid%>++;
                 <%dbLog.data().deleting(dbLog.var("nb_line"));%>
             } catch(java.lang.Exception e) {
-                conn_<%=cid%>.rollback(sp_<%=cid %>);
                 whetherReject_<%=cid%> = true;
                 <%
                 if (("true").equals(dieOnError)) {
