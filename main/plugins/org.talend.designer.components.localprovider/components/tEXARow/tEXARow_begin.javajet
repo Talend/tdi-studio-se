@@ -6,7 +6,7 @@ imports="
 " 
 %>
 
-<%@ include file="../templates/DB/Row/HelpClass.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Row/HelpClass.javajet"%>
 <%
 
 	class DBRowBeginUtil extends DefaultDBRowUtil{
@@ -14,7 +14,7 @@ imports="
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
 			cid = node.getUniqueName();
-	    }
+	   }
 	    
 		public void setURL(INode node) {
 			String dbSchema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
@@ -35,4 +35,4 @@ imports="
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();
 %>
-<%@ include file="../templates/DB/Row/AbstractDBRowBegin.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Row/AbstractDBRowBegin.javajet"%>
