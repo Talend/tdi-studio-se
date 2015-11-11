@@ -178,7 +178,7 @@
 			NUM_ROW="20"
 			REQUIRED="true"
 		>
-			<DEFAULT>","</DEFAULT>
+			<DEFAULT>";"</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER 

@@ -32,6 +32,7 @@ String fileOptEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
 String fileOptSkip = ElementParameterParser.getValue(node, "__SKIP__");
 String fileOptNullString = ElementParameterParser.getValue(node, "__NULLSTRING__");
 String defaultDateFormat = ElementParameterParser.getValue(node, "__DEFAULT_DATE_FORMAT__");
+String defaultTimestampFormat = ElementParameterParser.getValue(node, "__DEFAULT_TIMESTAMP_FORMAT__");
 String numGroupSep = ElementParameterParser.getValue(node, "__THOUSANDS_SEPARATOR__");
 if (numGroupSep == null|| numGroupSep.trim().isEmpty()) {
 	numGroupSep = "null";
@@ -112,6 +113,19 @@ org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol
 <%=cid%>.setTransferSecure(<%=secureTransfer%>);
 <%=cid%>.setTable(tableName_<%=cid%>);
 <%=cid%>.setLocalFilePath(<%=file%>);
+<% if (defaultDateFormat != null && defaultDateFormat.trim().isEmpty() == false) { %>
+// setup the format of date values if no dedicated pattern is provided for a column 
+<%=cid%>.setDefaultDateFormat(<%=defaultDateFormat%>);
+<% } %>
+<% if (defaultTimestampFormat != null && defaultTimestampFormat.trim().isEmpty() == false) { %>
+// setup the format of timestamp values if no dedicated pattern is provided for a column
+<%=cid%>.setDefaultTimestampFormat(<%=defaultTimestampFormat%>);
+<% } %>
+// setup numeric separators, default if nothing set is the English format
+<%=cid%>.setDefaultNumericCharacters(<%=numGroupSep%>, <%=numDecSep%>);
+<% if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
+<% } %>
 <% if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
 <% } %>
@@ -123,6 +137,15 @@ org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol
 <% } %>
 <% if (fileOptRowSeparator != null && fileOptRowSeparator.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptRowSeparator(<%=fileOptRowSeparator%>);
+<% } %>
+<% if (fileOptTrim != null && fileOptTrim.trim().isEmpty() == false && "NONE".equals(fileOptTrim) == false) { %>
+<%=cid%>.setFileOptTrim("<%=fileOptTrim%>");
+<% } %>
+<% if (fileOptSkip != null && fileOptSkip.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptSkip(<%=fileOptSkip%>);
+<% } %>
+<% if (fileOptNullString != null && fileOptNullString.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptNullIdentifier(<%=fileOptNullString%>);
 <% } %>
 // add columns
 <% if (columnList != null && columnList.size() > 0) {
