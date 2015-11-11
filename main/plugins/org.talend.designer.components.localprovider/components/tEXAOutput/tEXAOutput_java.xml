@@ -2,18 +2,18 @@
   <HEADER
     PLATEFORM="ALL"
     SERIAL=""
-    VERSION="0.102"
-    STATUS="ALPHA"
+    VERSION="2.0"
+    STATUS="PROD"
     
     COMPATIBILITY="ALL"
     AUTHOR="Talend"
-    RELEASE_DATE="20081201A"
+    RELEASE_DATE="20151112A"
     STARTABLE="false"
     DATA_AUTO_PROPAGATE="false"
     HAS_CONDITIONAL_OUTPUTS="true"
     PARALLELIZE="true"
 	PARTITIONING="AUTO"
-  LOG4J_ENABLED="true"
+    LOG4J_ENABLED="true"
   >
     <SIGNATURE/>
   </HEADER>
@@ -49,11 +49,29 @@
     />
 
     <PARAMETER
+      NAME="USE_EXISTING_CONNECTION"
+      FIELD="CHECK"
+      NUM_ROW="10"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="CONNECTION"
+      FIELD="COMPONENT_LIST"
+      REQUIRED="true" FILTER="tEXAConnection"
+      NUM_ROW="10"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+      DYNAMIC_SETTINGS="true"
+    />
+
+    <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="SERVER_NAME"
-	REQUIRED="true"
+	  REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -61,29 +79,40 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="PORT"
       REQUIRED="true"
     >
-      <DEFAULT>""</DEFAULT>
+      <DEFAULT>"8563"</DEFAULT>
     </PARAMETER>    
     
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        NUM_ROW="21">
+      <DEFAULT>Note: You can configure a server or cluster as ip-address range or comma separated host/ip-address list. 
+        Examples: "172.16.173.128" or "172.16.173.128..130" or "server1,server2"</DEFAULT>
+    </PARAMETER>
+
 	<PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       SHOW="true"
       REPOSITORY_VALUE="SID"
 	REQUIRED="true"
     >
-      <DEFAULT>""</DEFAULT>
+      <DEFAULT>"SYS"</DEFAULT>
     </PARAMETER>    
 
-    
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="5"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
     >
@@ -93,7 +122,8 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="5"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
     >
@@ -103,7 +133,7 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="6"
+      NUM_ROW="50"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
@@ -112,7 +142,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="7"
+      NUM_ROW="60"
     >
       <ITEMS DEFAULT="NONE">
         <ITEM NAME="NONE" VALUE="NONE" />
@@ -121,13 +151,14 @@
         <ITEM NAME="CREATE_IF_NOT_EXISTS" VALUE="CREATE_IF_NOT_EXISTS"/>
         <ITEM NAME="DROP_IF_EXISTS_AND_CREATE" VALUE="DROP_IF_EXISTS_AND_CREATE" />
         <ITEM NAME="CLEAR" VALUE="CLEAR"/>
+        <ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
       </ITEMS>
     </PARAMETER>
 
     <PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <ITEMS DEFAULT="INSERT">
         <ITEM NAME="INSERT"           VALUE="INSERT" />
@@ -141,7 +172,7 @@
     <PARAMETER
       NAME="SCHEMA_FLOW"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="8"
+      NUM_ROW="80"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -150,7 +181,7 @@
       NAME="SCHEMA_REJECT"
       FIELD="SCHEMA_TYPE"
       REQUIRED="true"
-      NUM_ROW="8"
+      NUM_ROW="90"
       CONTEXT="REJECT"
       SHOW="true">
       <TABLE READONLY="true">
@@ -162,7 +193,7 @@
     <PARAMETER
       NAME="DIE_ON_ERROR"
       FIELD="CHECK"
-      NUM_ROW="8"
+      NUM_ROW="91"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -170,7 +201,7 @@
 	<PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
-      NUM_ROW="11"
+      NUM_ROW="100"
       SHOW="false"
     >       
       <DEFAULT>Exasol_id</DEFAULT>
@@ -179,7 +210,7 @@
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="9"
+      NUM_ROW="110"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -192,43 +223,49 @@
 	<PARAMETER
       NAME="USE_COMMIT_CONTROL"
       FIELD="CHECK"
-      NUM_ROW="7" 
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      NUM_ROW="10" 
     >
-      <DEFAULT>false</DEFAULT>
+      <DEFAULT>true</DEFAULT>
     </PARAMETER>
 	
     <PARAMETER
       NAME="COMMIT_EVERY"
       FIELD="TEXT"
-      NUM_ROW="7"
+      NUM_ROW="10"
       REQUIRED="true"
-      SHOW_IF="USE_COMMIT_CONTROL == 'true'"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (USE_COMMIT_CONTROL == 'true')"
     >
       <DEFAULT>10000</DEFAULT>
-    </PARAMETER>  
-   <PARAMETER NAME="PROPERTIES" FIELD="TEXT" NUM_ROW="8" REPOSITORY_VALUE="PROPERTIES_STRING" >
-		<DEFAULT>""</DEFAULT>
-	</PARAMETER>
-  	<PARAMETER
-      NAME="ENCODING"
-      FIELD="TEXT"
-      NUM_ROW="9"
-      REQUIRED="true"
-      SHOW="false"
+    </PARAMETER> 
+    
+    <PARAMETER 
+      NAME="PROPERTIES" 
+      FIELD="TEXT" 
+      NUM_ROW="20" 
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      REPOSITORY_VALUE="PROPERTIES_STRING" 
     >
-      <DEFAULT>"ISO-8859-15"</DEFAULT>
+		<DEFAULT>"encryption=0;clientname=Talend"</DEFAULT>
+	</PARAMETER>
+
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        NUM_ROW="21">
+      <DEFAULT>Note: Example for Additional JDBC Parameters: "parameterName1=value1;parameterName2=value2;"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
       NAME="ADD_COLS"
       FIELD="TABLE"
       REQUIRED="false"
-      NUM_ROW="10"
+      NUM_ROW="40"
       NB_LINES="3"
     >
       <ITEMS>
         <ITEM NAME="NAME" VALUE='"colname"' />
-		<ITEM NAME="DATATYPE" VALUE="VARCHAR(50)" RAW="true" NOT_SHOW_IF="(TABLE_ACTION=='NONE') or (TABLE_ACTION=='CLEAR')"/>
+		    <ITEM NAME="DATATYPE" VALUE="VARCHAR(50)" RAW="true" NOT_SHOW_IF="(TABLE_ACTION=='NONE') or (TABLE_ACTION=='CLEAR')"/>
         <ITEM NAME="SQL" VALUE='"now()"' />
         <ITEM NAME="POS" FIELD="CLOSED_LIST">
           <ITEMS DEFAULT="BEFORE">
@@ -244,7 +281,7 @@
     <PARAMETER
       NAME="USE_FIELD_OPTIONS"
       FIELD="CHECK"
-      NUM_ROW="12"
+      NUM_ROW="50"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -253,7 +290,7 @@
       NAME="FIELD_OPTIONS"
       FIELD="TABLE"
       REQUIRED="true"
-      NUM_ROW="13"
+      NUM_ROW="60"
       NB_LINES="5"
       SHOW_IF="USE_FIELD_OPTIONS == 'true'"
     >
@@ -268,9 +305,28 @@
   	<PARAMETER 
   	  NAME="ENABLE_DEBUG_MODE" 
   	  FIELD="CHECK"
-	  NUM_ROW="14">
+	  NUM_ROW="70">
 	  <DEFAULT>false</DEFAULT>
-	</PARAMETER>    
+    </PARAMETER>
+    
+    <PARAMETER
+  	  NAME="USE_BATCH_SIZE"
+  	  FIELD="CHECK"
+	  NUM_ROW="80"
+	  SHOW_IF="((DATA_ACTION == 'INSERT') OR (DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE'))"
+	>
+	    <DEFAULT>true</DEFAULT>
+	  </PARAMETER>
+    
+    <PARAMETER
+  	  NAME="BATCH_SIZE"
+  	  FIELD="TEXT"
+  	  NUM_ROW="80"
+  	  SHOW_IF="(USE_BATCH_SIZE == 'true') AND (isShow[USE_BATCH_SIZE])"
+	>
+	    <DEFAULT>10000</DEFAULT>
+	  </PARAMETER>
+    
   </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>

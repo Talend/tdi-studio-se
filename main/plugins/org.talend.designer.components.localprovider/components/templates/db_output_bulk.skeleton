@@ -282,6 +282,10 @@ public class CLASS {
               if (columnName.contains(" ")) {
                   return true;
               }
+              // minus are also a problem
+              if (columnName.contains("-")) {
+                  return true;
+              }
           }
           return false;
       }
@@ -4000,19 +4004,108 @@ public class CLASS {
     }    
     
     public class ExasolManager extends Manager{
+    
+		private String[] keywords = { "ABS", "ACOS", "ADD_DAYS", "ADD_HOURS",
+				"ADD_MINUTES", "ADD_MONTHS", "ADD_SECONDS", "ADD_WEEKS",
+				"ADD_YEARS", "ADMIN", "ALIGN", "ALWAYS", "ANALYZE", "ANSI",
+				"ASCII", "ASIN", "ASSIGNMENT", "ASYMMETRIC", "ATAN", "ATAN2",
+				"ATOMIC", "AUDIT", "AUTHENTICATED", "AUTO", "AVG", "BACKUP",
+				"BERNOULLI", "BIT_AND", "BIT_CHECK", "BIT_LENGTH", "BIT_NOT",
+				"BIT_OR", "BIT_SET", "BIT_TO_NUM", "BIT_XOR", "BREADTH",
+				"CEIL", "CEILING", "CHANGE", "CHARACTERS", "CHARACTER_LENGTH",
+				"CHR", "CLEAR", "COBOL", "COLOGNE_PHONETIC", "COMMENT",
+				"COMMENTS", "COMMITTED", "CONCAT", "CONNECT", "CONVERT_TZ",
+				"CORR", "COS", "COSH", "COT", "COUNT", "COVAR_POP",
+				"COVAR_SAMP", "CREATED", "CROSS", "CURDATE", "DATABASE",
+				"DATE_TRUNC", "DAYS_BETWEEN", "DECODE", "DEFAULTS", "DEGREES",
+				"DELIMIT", "DELIMITER", "DENSE_RANK", "DEPTH", "DIAGNOSTICS",
+				"DICTIONARY", "DISTRIBUTE", "DISTRIBUTION", "DIV", "DOWN",
+				"DUMP", "EDIT_DISTANCE", "EMITS", "ENCODING", "ESTIMATE",
+				"EVALUATE", "EXA", "EXCLUDE", "EXCLUDING", "EXP", "EXPRESSION",
+				"FIRST_VALUE", "FLOOR", "FLUSH", "FOREIGN", "FORTRAN",
+				"FROM_POSIX_TIME", "GREATEST", "GROUPING_ID", "HANDLER", "HAS",
+				"HASH", "HASH_MD5", "HASH_SHA", "HASH_SHA1", "HASH_TIGER",
+				"HIERARCHY", "HOURS_BETWEEN", "IDENTIFIED", "IGNORE",
+				"INCLUDING", "INITIALLY", "INSTR", "INVALID", "ISOLATION",
+				"IS_BOOLEAN", "IS_DATE", "IS_DSINTERVAL", "IS_NUMBER",
+				"IS_TIMESTAMP", "IS_YMINTERVAL", "JAVA", "JAVASCRIPT", "KEEP",
+				"KEY", "KEYS", "KILL", "LAG", "LANGUAGE", "LAST_VALUE",
+				"LCASE", "LEAD", "LEAST", "LENGTH", "LINK", "LN", "LOCATE",
+				"LOCK", "LOG10", "LOG2", "LOGS", "LONG", "LOWER", "LPAD",
+				"LTRIM", "LUA", "MAX", "MAXIMAL", "MEDIAN", "MID", "MIN",
+				"MINUTES_BETWEEN", "MONTHS_BETWEEN", "MUMPS", "NEVER", "NICE",
+				"NORMALIZED", "NOW", "NULLIFZERO", "NULLS", "NUMTODSINTERVAL",
+				"NUMTOYMINTERVAL", "NVL", "OCTETS", "OCTET_LENGTH", "OFFSET",
+				"OPTIMIZE", "ORA", "OWNER", "PADDING", "PARTITION", "PASCAL",
+				"PERCENTILE_CONT", "PERCENTILE_DISC", "PI", "PLI",
+				"POSIX_TIME", "POWER", "PRECISION", "PRELOAD", "PRIMARY",
+				"PRIORITY", "PRIVILEGE", "PYTHON", "QUERY_CACHE",
+				"QUERY_TIMEOUT", "R", "RADIANS", "RAND", "RANK",
+				"RATIO_TO_REPORT", "RECOMPRESS", "RECORD", "REGEXP_INSTR",
+				"REGEXP_REPLACE", "REGEXP_SUBSTR", "REGR_AVGX", "REGR_AVGY",
+				"REGR_COUNT", "REGR_INTERCEPT", "REGR_R2", "REGR_SLOPE",
+				"REGR_SXX", "REGR_SXY", "REGR_SYY", "REJECT", "REORGANIZE",
+				"REPEATABLE", "REVERSE", "ROLE", "ROUND", "ROWID",
+				"ROW_NUMBER", "RPAD", "RTRIM", "SCALAR", "SCHEMAS", "SCHEME",
+				"SECONDS_BETWEEN", "SECURE", "SERIALIZABLE", "SHUT", "SIGN",
+				"SIMPLE", "SIN", "SINH", "SIZE", "SKIP", "SOUNDEX", "SQRT",
+				"STATISTICS", "STDDEV", "STDDEV_POP", "STDDEV_SAMP", "ST_AREA",
+				"ST_BOUNDARY", "ST_BUFFER", "ST_CENTROID", "ST_CONTAINS",
+				"ST_CONVEXHULL", "ST_CROSSES", "ST_DIFFERENCE", "ST_DIMENSION",
+				"ST_DISJOINT", "ST_DISTANCE", "ST_ENDPOINT", "ST_ENVELOPE",
+				"ST_EQUALS", "ST_EXTERIORRING", "ST_FORCE2D", "ST_GEOMETRYN",
+				"ST_GEOMETRYTYPE", "ST_INTERIORRINGN", "ST_INTERSECTION",
+				"ST_INTERSECTS", "ST_ISCLOSED", "ST_ISEMPTY", "ST_ISRING",
+				"ST_ISSIMPLE", "ST_LENGTH", "ST_NUMGEOMETRIES",
+				"ST_NUMINTERIORRINGS", "ST_NUMPOINTS", "ST_OVERLAPS",
+				"ST_POINTN", "ST_SETSRID", "ST_STARTPOINT", "ST_SYMDIFFERENCE",
+				"ST_TOUCHES", "ST_TRANSFORM", "ST_UNION", "ST_WITHIN", "ST_X",
+				"ST_Y", "SUBSTR", "SUM", "SYMMETRIC", "SYS_CONNECT_BY_PATH",
+				"SYS_GUID", "TABLES", "TABLESAMPLE", "TAN", "TANH", "TASKS",
+				"TIES", "TIME_ZONE", "TIME_ZONE_BEHAVIOR", "TO_CHAR",
+				"TO_DATE", "TO_DSINTERVAL", "TO_NUMBER", "TO_TIMESTAMP",
+				"TO_YMINTERVAL", "TRANSLATE", "TRUNC", "TYPE", "UCASE",
+				"UNBOUNDED", "UNCOMMITTED", "UNDO", "UNICODE", "UNICODECHR",
+				"UNLIMITED", "UPPER", "UTF8", "VARIANCE", "VARYING", "VAR_POP",
+				"VAR_SAMP", "WEEK", "WRITE", "YEARS_BETWEEN", "ZEROIFNULL" };
+				
         public ExasolManager(String cid) {
             super(cid);
         }
+
+        protected boolean isReservedWord(String keyword) {
+            for (int i=0 ; i < keywords.length ; i++){
+                if (keywords[i].equalsIgnoreCase(keyword)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         protected String getDBMSId() {
             return EXASOL;
         }
         protected String getLProtectedChar() {
-            return "";
+            return "\\\"";
         }
         protected String getRProtectedChar() {
-            return "";
+            return "\\\"";
+        }
+        protected String getLProtectedChar(String name) {
+        	if (contaionsSpaces(name) || isReservedWord(name)) {
+	            return "\\\"";
+        	} else {
+        		return "";
+        	}
+        }
+        protected String getRProtectedChar(String name) {
+        	if (contaionsSpaces(name) || isReservedWord(name)) {
+	            return "\\\"";
+        	} else {
+        		return "";
+        	}
         }  
-   }
+    }
     public class UnDefinedManager extends Manager{
         
         private String dbmsId = "";

@@ -87,7 +87,7 @@ imports="
 				dbInputBeginUtil.createConnection(node);
 				if ("teradata_id".equalsIgnoreCase(dbms)) {
 %>
-				<%@ include file="../../../tTeradataInput/TeradataQueryBandBegin.javajet"%>
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/tTeradataInput/TeradataQueryBandBegin.javajet"%>
 <%
 				}
 		    }
