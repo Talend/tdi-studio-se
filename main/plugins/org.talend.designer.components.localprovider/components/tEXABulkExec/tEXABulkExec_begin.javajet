@@ -35,11 +35,11 @@ String defaultDateFormat = ElementParameterParser.getValue(node, "__DEFAULT_DATE
 String defaultTimestampFormat = ElementParameterParser.getValue(node, "__DEFAULT_TIMESTAMP_FORMAT__");
 String numGroupSep = ElementParameterParser.getValue(node, "__THOUSANDS_SEPARATOR__");
 if (numGroupSep == null|| numGroupSep.trim().isEmpty()) {
-	numGroupSep = "null";
+  numGroupSep = "null";
 }
 String numDecSep = ElementParameterParser.getValue(node, "__DECIMAL_SEPARATOR__");
 if (numDecSep == null|| numDecSep.trim().isEmpty()) {
-	numDecSep = "null";
+  numDecSep = "null";
 }
 String file = ElementParameterParser.getValue(node, "__FILENAME__");
 boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
@@ -47,18 +47,19 @@ String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 boolean secureTransfer = "true".equals(ElementParameterParser.getValue(node, "__SECURE_TRANSFER__"));
 String errorTable = ElementParameterParser.getValue(node, "__ERROR_TABLE__");
 if (errorTable == null || errorTable.trim().isEmpty()) {
-	errorTable = "null";
+  errorTable = "null";
 }
+List<Map<String, String>> columnConfigList = (List<Map<String,String>>) ElementParameterParser.getObjectValue(node, "__COLUMN_CONFIG__");
 boolean errorTableWithTimestamp = "true".equals(ElementParameterParser.getValue(node, "__ERROR_TABLE_WITH_CURRENT_TIMESTAMP__"));
 String localErrorFile = ElementParameterParser.getValue(node, "__LOCAL_ERROR_FILE__");
 if (localErrorFile == null || localErrorFile.trim().isEmpty()) {
-	localErrorFile = "null";
+  localErrorFile = "null";
 }
 String errorDest = ElementParameterParser.getValue(node, "__ERROR_LOG_DESTINATION__");
 boolean localErrorFileWithTimestamp = "true".equals(ElementParameterParser.getValue(node, "__LOCAL_ERROR_FILE_WITH_CURRENT_TIMESTAMP__"));
 String errorLimit = ElementParameterParser.getValue(node, "__ERROR_LIMIT__");
 if (errorLimit == null || errorLimit.trim().isEmpty()) {
-	errorLimit = "null";
+  errorLimit = "null";
 }
 boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
@@ -69,14 +70,14 @@ int insertedCount_<%=cid%> = 0;
 // schema is mandatory
 String tableName_<%=cid%> = <%=dbschema%> + "." + <%=table%>;
 java.sql.Connection conn_<%=cid%> = null;
-<%	if (useExistingConnection) { %>
+<%  if (useExistingConnection) { %>
 conn_<%=cid%> = (java.sql.Connection) globalMap.get("conn_" + "<%=connection%>");
 <% } else { %>
 try {
-	 java.lang.Class.forName("com.exasol.jdbc.EXADriver").newInstance();
+   java.lang.Class.forName("com.exasol.jdbc.EXADriver").newInstance();
 } catch (Exception e) {
-	 globalMap.put("<%=cid%>_ERROR_MESSAGE", "Load driver failed: " + e.getMessage());
-	 throw e;
+   globalMap.put("<%=cid%>_ERROR_MESSAGE", "Load driver failed: " + e.getMessage());
+   throw e;
 }
 <%     if (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) { %>
 String url_<%=cid%> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%>+ ";schema=" + <%=dbschema%>; 
@@ -90,13 +91,13 @@ String url_<%=cid%> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%> + ";schema="
 String dbPwd_<%=cid%> = decryptedPassword_<%=cid%>;
 
 try {    
-	 conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, <%=userName%>, dbPwd_<%=cid%>);
+   conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, <%=userName%>, dbPwd_<%=cid%>);
 } catch (Exception e) {
-	 String message = "Connect failed: " + e.getMessage();
-	 globalMap.put("<%=cid%>_ERROR_MESSAGE", message);
-	 throw e;
+   String message = "Connect failed: " + e.getMessage();
+   globalMap.put("<%=cid%>_ERROR_MESSAGE", message);
+   throw e;
 }
-<%	} %>
+<%  } %>
 
 <% String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
@@ -104,8 +105,8 @@ try {
    List<Column> stmtStructure = null;
    Manager manager = null;
    if (columnList != null && columnList.size() > 0) {
-	    stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null); %>
-<%@include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForBulk.javajet"%>	
+      stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null); %>
+<%@include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForBulk.javajet"%>  
 <% } %>
 globalMap.put("<%=cid%>_NB_LINE_DELETED", deletedCount_<%=cid%>); 
 org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol.EXABulkUtil();
@@ -147,16 +148,48 @@ org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol
 <% if (fileOptNullString != null && fileOptNullString.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptNullIdentifier(<%=fileOptNullString%>);
 <% } %>
-// add columns
+// add column configurations
 <% if (columnList != null && columnList.size() > 0) {
-       for (IMetadataColumn column : columnList) { 
-       	  String name = column.getLabel();
-       	  String format = column.getPattern();
-       	  if (format == null || format.trim().isEmpty()) {
-       	 	   format = "null";
-       	  } %>
-<%=cid%>.addCSVColumn("<%=name%>", null, <%=format%>);
-<%     }
+       int index = 0;
+       for (IMetadataColumn column : columnList) {
+          String name = column.getLabel();
+          String pattern = column.getPattern();
+          if (pattern == null || pattern.trim().isEmpty()) {
+            pattern = "null";
+         }
+          Map<String, String> config = columnConfigList.get(index);
+          boolean hasGroupSep = "true".equals(config.get("HAS_GROUP_DELIMITERS"));
+          String format = config.get("FORMAT");
+          if (format == null || format.trim().isEmpty()) {
+               format = "null";
+          }
+          String lengthStr = "null";
+          String precisionStr = "null";
+          Integer length = column.getLength();
+          if (length != null && hasGroupSep) {
+               lengthStr = String.valueOf(length);
+          }
+          Integer precision = column.getPrecision();
+          if (precision != null && hasGroupSep) {
+              precisionStr = String.valueOf(precision);
+          }
+          String talendType = column.getTalendType();
+          if ("id_Date".equals(talendType) 
+           || "id_Timestamp".equals(talendType) 
+           || "id_Time".equals(talendType)) { %>
+<%=cid%>.addCSVDateColumn("<%=name%>", null, <%=pattern%>);
+<%          } else if ("id_BigDecimal".equals(talendType)
+                   || "id_Long".equals(talendType)
+                   || "id_Integer".equals(talendType)
+                   || "id_Short".equals(talendType)
+                   || "id_Float".equals(talendType)
+                   || "id_Double".equals(talendType)) { %>
+<%=cid%>.addCSVNumberColumn("<%=name%>", null, <%=lengthStr%>, <%=precisionStr%>, <%=format%>);
+<%        } else { %>
+<%=cid%>.addCSVColumn("<%=name%>", null);
+<%        } 
+           index++;
+       }
    }
 %>
 <%=cid%>.setErrorRejectLimit(<%=errorLimit%>);
@@ -173,11 +206,17 @@ globalMap.put("<%=cid%>_ERROR_LOG_FILE", <%=cid%>.getLocalErrorFile());
 <% } %>
 // execute the import
 try {
-	 globalMap.put("<%=cid%>_FILENAME", <%=cid%>.getLocalFilePath());
+   globalMap.put("<%=cid%>_FILENAME", <%=cid%>.getLocalFilePath());
     <%=cid%>.executeImport();
     insertedCount_<%=cid%> = <%=cid%>.getCountAffectedRows();
+<% if (useExistingConnection == false) { %>
+    <%=cid%>.commitAndClose();
+<% } %>
     globalMap.put("<%=cid%>_NB_LINE_INSERTED", insertedCount_<%=cid%>); 
 } catch (Exception e) {
-	 globalMap.put("<%=cid%>_ERROR_MESSAGE", "Import failed: " + e.getMessage());
-	 throw e;
+   globalMap.put("<%=cid%>_ERROR_MESSAGE", "Import failed: " + e.getMessage());
+<% if (useExistingConnection == false) { %>
+    <%=cid%>.rollbackAndClose();
+<% } %>
+   throw e;
 }
