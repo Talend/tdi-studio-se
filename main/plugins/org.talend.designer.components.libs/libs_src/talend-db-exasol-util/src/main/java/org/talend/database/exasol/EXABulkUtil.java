@@ -77,7 +77,40 @@ public class EXABulkUtil {
 		}
 	}
 	
-	public void addCSVColumn(String dbColumnName, Integer sourceIndex, String format) {
+	private String createNumberFormat(Integer length, Integer precision) {
+		if (length != null) {
+			StringBuilder sb = new StringBuilder();
+			int numGroups = (length.intValue() / 3) + 1; 
+			for (int i = 0; i < numGroups; i++) {
+				if (i > 0) {
+					sb.append("G");
+				}
+				sb.append("999");
+			}
+			if (precision != null && precision.intValue() > 0) {
+				sb.append("D");
+				for (int i = 0; i < precision.intValue(); i++) {
+					sb.append("9");
+				}
+			}
+			return sb.toString();
+		} else {
+			return null;
+		}
+	}
+	
+	public void addCSVNumberColumn(String dbColumnName, Integer sourceIndex, Integer length, Integer precision, String format) {
+		if (sourceIndex == null) {
+			sourceIndex = columns.size();
+		}
+		if (format == null || format.trim().isEmpty()) {
+			format = createNumberFormat(length, precision);
+		}
+		Column c = Column.getCSVColumn(dbColumnName, sourceIndex, format);
+		columns.add(c);
+	}
+
+	public void addCSVDateColumn(String dbColumnName, Integer sourceIndex, String format) {
 		if (sourceIndex == null) {
 			sourceIndex = columns.size();
 		}
@@ -85,6 +118,14 @@ public class EXABulkUtil {
 		columns.add(c);
 	}
 	
+	public void addCSVColumn(String dbColumnName, Integer sourceIndex) {
+		if (sourceIndex == null) {
+			sourceIndex = columns.size();
+		}
+		Column c = Column.getCSVColumn(dbColumnName, sourceIndex, null);
+		columns.add(c);
+	}
+
 	private void addStatement(String sql, boolean isDML) {
 		if (isNotEmpty(sql)) {
 			statements.add(new BulkExecStatement(sql, isDML));
@@ -470,10 +511,13 @@ public class EXABulkUtil {
 	private String translateDateFormat(String dateFormat) {
 		if (dateFormat != null) {
 			dateFormat = dateFormat.replace("yyyy", "YYYY");
+			dateFormat = dateFormat.replace("HH24", "HH");
+			dateFormat = dateFormat.replace("HH", "HH24");
 			dateFormat = dateFormat.replace("dd", "DD");
 			dateFormat = dateFormat.replace("mm", "MI");
 			dateFormat = dateFormat.replace("ss", "SS");
-			dateFormat = dateFormat.replace("sss", "ff3");
+			dateFormat = dateFormat.replace("SSS", "FF3");
+			dateFormat = dateFormat.replace("SSSSSS", "FF6");
 			return dateFormat.trim();
 		} else {
 			return null;
@@ -514,9 +558,10 @@ public class EXABulkUtil {
 
 	/**
 	 * Set here the numeric characters for group separator and decimal point as one String
-	 * @param defaultNumericCharacters
+	 * @param defaultDecimalPoint
+	 * @param defaultGroupSeparator
 	 */
-	public void setDefaultNumericCharacters(String defaultGroupSeparator, String defaultDecimalPoint) {
+	public void setDefaultNumericCharacters(String defaultDecimalPoint, String defaultGroupSeparator) {
 		if (isNotEmpty(defaultGroupSeparator)) {
 			this.defaultNumericCharacters = defaultGroupSeparator.trim();
 		} else {
@@ -637,6 +682,38 @@ public class EXABulkUtil {
 
 	public void setRemoteFilePassword(String remoteFilePassword) {
 		this.remoteFilePassword = remoteFilePassword;
+	}
+	
+	public void commitAndClose() {
+		if (connection != null) {
+			try {
+				connection.commit();
+			} catch (SQLException e1) {
+				// ignore
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// ignore
+			}
+		}
+	}
+	
+	public void rollbackAndClose() {
+		if (connection != null) {
+			try {
+				if (connection.isClosed() == false) {
+					connection.rollback();
+				}
+			} catch (SQLException e) {
+				// ignore
+			}
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// ignore
+			}
+		}
 	}
 	
 }
