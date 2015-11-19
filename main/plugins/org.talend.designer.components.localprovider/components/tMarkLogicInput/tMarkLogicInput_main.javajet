@@ -15,8 +15,6 @@ imports="
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
     String cid = node.getUniqueName();
-
-    String asDocIdColumn = ElementParameterParser.getValue(node,"__AS_DOCID_COLUMN__");
 %>
 
 <%
@@ -26,51 +24,53 @@ imports="
         if(metadata != null){//TagB
             List<IMetadataColumn> columnList = metadata.getListColumns();
             List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-            List<? extends IConnection> incomingConns = node.getIncomingConnections();
-            if(columnList.size() > 0 && (outgoingConns != null && outgoingConns.size() > 0) && (incomingConns != null && incomingConns.size() > 0)){//TagC
-                //Begin to Transfer Data
+            if(columnList.size() > 0 && (outgoingConns != null && outgoingConns.size() > 0)){//TagC
                 IConnection outputConn = outgoingConns.get(0);
-                IConnection inputConn = incomingConns.get(0);
                 if(outputConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)){//TagD
+                %>
+                for(com.marklogic.client.query.MatchDocumentSummary matchDocSummary: matchDocSummary_<%= cid %>){//TagF
+                   String docId_<%= cid %> = matchDocSummary.getUri();
+                <%
                 if(columnList.size() > 1){//TagE
-                  IMetadataColumn column = columnList.get(1);//treat the second column as docContent
-                  String columnName = column.getLabel();
-                  String javaTypeId = column.getTalendType();
-                  String returnIOClazz = null;
-                  if("id_String".equalsIgnoreCase(javaTypeId)){
-                    returnIOClazz = "java.lang.String";
-                  }else if("id_Document".equalsIgnoreCase(javaTypeId)){
-                    returnIOClazz = "java.io.File";
-                  }else if("id_Object".equalsIgnoreCase(javaTypeId)){
-                    returnIOClazz = "java.io.InputStream";
-                  }else{
-                  %>
-                     Compile Err: can not return <%= javaTypeId %>, try to set the type to String Document Object.
-                  <%
-                  }
-                  if("id_Document".equalsIgnoreCase(javaTypeId)){
-                  %>
-                     routines.system.Document docment_<%= cid %> = new routines.system.Document();
-                     docment_<%= cid %>.setDocument(
-                                                   new org.dom4j.io.SAXReader().read(
-                                                                                    (<%= returnIOClazz %>)docMgr_<%= cid %>.readAs(<%= inputConn.getName() %>.<%= asDocIdColumn %>,
-                                                                                                                                                          <%= (returnIOClazz + ".class") %>
-                                                                                                                                  )
-                                                                                    )
-                                                   );
-                    <%= outputConn.getName() %>.<%= columnName %> = docment_<%= cid %>;
-                  <%
-                  }else{
-                  %>
-                     <%= outputConn.getName() %>.<%= columnName %> = (<%= returnIOClazz %>)docMgr_<%= cid %>.readAs(<%= inputConn.getName() %>.<%= asDocIdColumn %>,
-                                                                      <%= (returnIOClazz + ".class") %>
-                                                                     );
-                  <%
-                  }
+                    IMetadataColumn column = columnList.get(1);//treat the second column as docContent
+                    String columnName = column.getLabel();
+                    String javaTypeId = column.getTalendType();
+                    String returnIOClazz = null;
+                    if("id_String".equalsIgnoreCase(javaTypeId)){
+                      returnIOClazz = "java.lang.String";
+                    }else if("id_Document".equalsIgnoreCase(javaTypeId)){
+                      returnIOClazz = "java.io.File";
+                    }else if("id_Object".equalsIgnoreCase(javaTypeId)){
+                      returnIOClazz = "java.io.InputStream";
+                    }else{
+                    %>
+                       Compile Err: can not return <%= javaTypeId %>, try to set the type to String Document Object.
+                    <%
+                    }
+                    if("id_Document".equalsIgnoreCase(javaTypeId)){
+                    %>
+                       routines.system.Document docment_<%= cid %> = new routines.system.Document();
+                       docment_<%= cid %>.setDocument(
+                                                     new org.dom4j.io.SAXReader().read(
+                                                                                      (<%= returnIOClazz %>)docMgr_<%= cid %>.readAs(docId_<%= cid %>,
+                                                                                                                                    <%= (returnIOClazz + ".class") %>
+                                                                                                                                    )
+                                                                                      )
+                                                     );
+                      <%= outputConn.getName() %>.<%= columnName %> = docment_<%= cid %>;
+                    <%
+                    }else{
+                    %>
+                       <%= outputConn.getName() %>.<%= columnName %> = (<%= returnIOClazz %>)docMgr_<%= cid %>.readAs(docId_<%= cid %>,
+                                                                        <%= (returnIOClazz + ".class") %>
+                                                                       );
+                    <%
+                   }
                   }//TagE
                   %>
-                  <%= outputConn.getName() %>.docId = <%= inputConn.getName() %>.<%= asDocIdColumn %>;
-                  <%
+                  <%= outputConn.getName() %>.docId = docId_<%= cid %>;
+                <% /* //}//TagF */ %>
+                <%
                 }//TagD
             }//TagC
         }//TagB

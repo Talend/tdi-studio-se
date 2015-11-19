@@ -58,6 +58,8 @@ public class EventHandler extends AbstractHandler {
      */
     private static Thread lockThread = createLockThread();
 
+    private Boolean isAlreadyExecuteOpenJob = false;
+
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
 
@@ -97,6 +99,9 @@ public class EventHandler extends AbstractHandler {
                     }
                 }
             });
+
+            // 3. initialize parameters
+            initializeParameters();
         }
         if (EVENT_TYPE_ON_CLOSE.equals(eventType)) {
             synchronized (lockThread) {
@@ -114,36 +119,46 @@ public class EventHandler extends AbstractHandler {
         return null;
     }
 
-    private void doImport(final String pluginId, final String zipPath, final String jobName) {
-        boolean alreadyImportDemoJob = OnBoardingResourceUtil.getPreferenceStore().getBoolean(
-                OnBoardingResourceConstants.PREFERENCE_ALREADY_IMPORT_DEMO_JOB);
-        if (alreadyImportDemoJob) {
-            return;
-        }
+    private void initializeParameters() {
+        isAlreadyExecuteOpenJob = false;
+    }
 
+    private void doImport(final String pluginId, final String zipPath, final String jobName) {
+        synchronized (isAlreadyExecuteOpenJob) {
+            if (isAlreadyExecuteOpenJob) {
+                return;
+            }
+            isAlreadyExecuteOpenJob = true;
+        }
         if (pluginId == null || pluginId.isEmpty() || zipPath == null || zipPath.isEmpty() || jobName == null
                 || jobName.isEmpty()) {
             return;
         }
-
-        OnBoardingResourceUtil.getPreferenceStore()
-                .setValue(OnBoardingResourceConstants.PREFERENCE_ALREADY_IMPORT_DEMO_JOB, true);
-        OnBoardingResourceUtil.savePreferenceStore();
         new Thread(new Runnable() {
 
             @Override
             public void run() {
 
                 try {
-                    Bundle bundle = Platform.getBundle(pluginId);
-                    URL resourceURL = bundle.getEntry(zipPath);
-                    try {
-                        String demoZipPath = FileLocator.toFileURL(resourceURL).getPath();
-                        TalendImportUtil.importItems(demoZipPath, new NullProgressMonitor(), false, true, false);
-                        TalendImportUtil.openJob(jobName);
-                    } catch (Throwable e) {
-                        CommonExceptionHandler.process(e);
+                    boolean alreadyImportDemoJob = OnBoardingResourceUtil.getPreferenceStore().getBoolean(
+                            OnBoardingResourceConstants.PREFERENCE_ALREADY_IMPORT_DEMO_JOB);
+                    if (!alreadyImportDemoJob) {
+                        OnBoardingResourceUtil.getPreferenceStore().setValue(
+                                OnBoardingResourceConstants.PREFERENCE_ALREADY_IMPORT_DEMO_JOB, true);
+                        OnBoardingResourceUtil.savePreferenceStore();
+                        Bundle bundle = Platform.getBundle(pluginId);
+                        URL resourceURL = bundle.getEntry(zipPath);
+                        try {
+                            String demoZipPath = FileLocator.toFileURL(resourceURL).getPath();
+                            TalendImportUtil.importItems(demoZipPath, new NullProgressMonitor(), false, true, false);
+                        } catch (Throwable e) {
+                            CommonExceptionHandler.process(e);
+                        }
                     }
+
+                    // now always open it if exists
+                    TalendImportUtil.openJob(jobName);
+
                 } catch (Throwable e) {
                     CommonExceptionHandler.process(e);
                 }

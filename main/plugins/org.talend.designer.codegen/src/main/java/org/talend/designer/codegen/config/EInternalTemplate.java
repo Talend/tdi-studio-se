@@ -21,8 +21,6 @@ package org.talend.designer.codegen.config;
 public enum EInternalTemplate {
     HEADER("header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     FOOTER("footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    FOOTER_ROUTE("footer_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    HEADER_ROUTE("header_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     CONTEXT("context", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     SUBPROCESS_HEADER("subprocess_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     SUBPROCESS_FOOTER("subprocess_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -38,14 +36,6 @@ public enum EInternalTemplate {
     ITERATE_SUBPROCESS_HEADER("iterate_subprocess_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     ITERATE_SUBPROCESS_FOOTER("iterate_subprocess_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     DEFAULT_TEMPLATE("default_template", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_HEADER("camel_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_FOOTER("camel_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_RUNIF("camel_run_if", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_END_BLOCK("camel_end_block", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_TRYCATCH("camel_trycatch", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    CAMEL_SPECIALLINKS("camel_speciallinks", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
-    // ADDED for TESB-7887 By GangLiu
-    SPRING("spring", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
 
     MR_HEADER("mr_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     MR_FOOTER("mr_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
@@ -64,6 +54,12 @@ public enum EInternalTemplate {
     STORM_SUBPROCESS_FOOTER("storm_subprocess_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     STORM_MONITOR_HEADER("storm_monitor_header", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
     STORM_MONITOR_FOOTER("storm_monitor_footer", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
+
+    // just to have compiled templates
+    FOOTER_ROUTE("footer_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
+    HEADER_ROUTE("header_route", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
+    CAMEL_RUNIF("camel_run_if", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
+    CAMEL_SPECIALLINKS("camel_speciallinks", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
 
     HEADER_ADDITIONAL("header_additional", "0.0.1"), //$NON-NLS-1$ //$NON-NLS-2$
 

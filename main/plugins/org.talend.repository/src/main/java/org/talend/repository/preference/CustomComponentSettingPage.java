@@ -404,9 +404,7 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
                             String projectLabel = pro.getTechnicalLabel();
                             IWorkspace workspace = ResourcesPlugin.getWorkspace();
                             IProject eclipseProject = workspace.getRoot().getProject(projectLabel);
-
-                            String targetRoot = new Path(Platform.getInstanceLocation().getURL().getPath()).toFile().getPath()
-                                    + File.separatorChar + projectLabel + File.separatorChar
+                            String targetRoot = eclipseProject.getLocation().toString() + "/"
                                     + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
                             File componentFolder = new File(targetRoot);
                             URL url = null;

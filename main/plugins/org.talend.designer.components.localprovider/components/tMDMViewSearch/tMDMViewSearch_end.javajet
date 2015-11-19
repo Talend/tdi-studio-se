@@ -10,9 +10,12 @@ imports="
         java.util.List
 		" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
+
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 	
@@ -34,9 +37,13 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 					}
 				}
 				<%if(!useExistingConn){%>
+				    <% logUtil.info("\"To Close service.\"");%>
 					service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+				    <% logUtil.info("\"Close service successfully.\"");%>
 				<%}%>
-				 	
+				
+				<% logUtil.info("\"Write record count: \"+nb_line_"+cid);%>
+				
 				globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);   
 			<%
 			}

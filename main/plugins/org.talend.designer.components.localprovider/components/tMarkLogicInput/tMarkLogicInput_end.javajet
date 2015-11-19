@@ -3,6 +3,11 @@ imports="
         org.talend.core.model.process.INode
         org.talend.core.model.process.ElementParameterParser
         org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        java.util.List
 "
 %>
 
@@ -12,7 +17,30 @@ imports="
     String cid = node.getUniqueName();
 
     boolean reuseConn = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+%>
 
+    <%
+        List<IMetadataTable> metadataTableList = node.getMetadataList();
+        if((metadataTableList != null) && (metadataTableList.size() > 0)){//TagA
+            IMetadataTable metadata = metadataTableList.get(0);
+            if(metadata != null){//TagB
+                List<IMetadataColumn> columnList = metadata.getListColumns();
+                List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+                if(columnList.size() > 0 && outgoingConns != null && outgoingConns.size() > 0){//TagC
+                    IConnection outputConn = outgoingConns.get(0);
+                    if(outputConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)){//TagD
+                    %>
+                    }
+                    <%
+                    }//TagD
+                }//TagC
+            }//TagB
+        }//TagA
+     %>
+
+    globalMap.put("<%= cid %>_NB_LINE", nb_line_<%=cid%>);
+
+<%
     if(!reuseConn){
     %>
        client_<%= cid %>.release();

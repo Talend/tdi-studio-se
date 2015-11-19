@@ -398,6 +398,9 @@ public class OracleGenerationManager extends DbGenerationManager {
 
     @Override
     protected String addQuoteForSpecialChar(String expression, DbMapComponent component) {
+        if (expression == null) {
+            return expression;
+        }
         List<String> specialList = new ArrayList<String>();
         Map<String, List<String>> map = new HashMap<String, List<String>>();
         List<IConnection> inputConnections = (List<IConnection>) component.getIncomingConnections();

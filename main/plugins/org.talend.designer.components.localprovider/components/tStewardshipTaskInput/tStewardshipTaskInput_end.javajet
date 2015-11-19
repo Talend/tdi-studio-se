@@ -10,9 +10,11 @@
 		java.util.List 
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
 
 	List<IMetadataTable> metadatas = node.getMetadataList();
@@ -40,10 +42,8 @@
 			}
 		}
 	}
-	if (isLog4jEnabled) {
 	%>
-		log.info("<%=cid%> - Retrieved tasks count: "+ nb_line_<%=cid%> + " .");
-	<%
-	}
-	%>
+	
+	    <% logUtil.debug("\"Retrieved tasks count: \"+ nb_line_"+cid);%>
+	
 		globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);

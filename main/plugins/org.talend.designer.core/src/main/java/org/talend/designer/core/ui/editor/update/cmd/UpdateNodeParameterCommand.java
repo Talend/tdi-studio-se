@@ -442,7 +442,8 @@ public class UpdateNodeParameterCommand extends Command {
                                             List<HashMap<String, Object>> oldValue = (List<HashMap<String, Object>>) param
                                                     .getValue();
                                             for (HashMap<String, Object> map : oldValue) {
-                                                if (map.get("BUILDIN") != null && !map.get("BUILDIN").equals("")) {
+                                                if (map.get("BUILDIN") != null && !map.get("BUILDIN").equals("")
+                                                        && Boolean.valueOf(String.valueOf(map.get("BUILDIN")))) {
                                                     ((List<HashMap<String, Object>>) objectValue).add(map);
                                                 }
                                             }
@@ -607,76 +608,81 @@ public class UpdateNodeParameterCommand extends Command {
                         // node.getMetadataFromConnector(newTable.getAttachedConnector()).setListColumns(newTable.
                         // getListColumns());
                         if (newTable != null) {
+                            INodeConnector nodeConnector = node.getConnectorFromName(newTable.getAttachedConnector());
+                            // for (INodeConnector nodeConnector : node.getListConnector()) {
+                            // if (nodeConnector.getBaseSchema().equals(newTable.getAttachedConnector())) {
+                            if (nodeConnector != null) {
+                                List<IElementParameter> params = node
+                                        .getElementParametersFromField(EParameterFieldType.SCHEMA_TYPE);
+                                // IElementParameter param =
+                                // node.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
+                                if (params != null) {
+                                    for (IElementParameter param : params) {
 
-                            for (INodeConnector nodeConnector : node.getListConnector()) {
-                                if (nodeConnector.getBaseSchema().equals(newTable.getAttachedConnector())) {
-                                    List<IElementParameter> params = node
-                                            .getElementParametersFromField(EParameterFieldType.SCHEMA_TYPE);
-                                    // IElementParameter param =
-                                    // node.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
-                                    if (params != null) {
-                                        for (IElementParameter param : params) {
-                                            ChangeMetadataCommand cmd = null;
+                                        if (!newTable.getAttachedConnector().equals(param.getContext())) {
+                                            continue;
+                                        }
 
-                                            if (param.getChildParameters() != null
-                                                    && param.getChildParameters().get("REPOSITORY_SCHEMA_TYPE") != null
-                                                    && result.getContextModeConnectionItem() != null) {
-                                                final Object value = param.getChildParameters().get("REPOSITORY_SCHEMA_TYPE")
-                                                        .getValue();
-                                                // for sap
-                                                String remark = result.getRemark();
-                                                String namePrefix = "";
-                                                if (remark != null) {
-                                                    String[] split = remark.split(UpdatesConstants.SEGMENT_LINE);
-                                                    if (split.length == 2) {
-                                                        String tableName = split[1];
-                                                        String[] tableSplit = tableName.split("/");
-                                                        if (tableSplit.length == 3) {
-                                                            namePrefix = tableSplit[0] + "/" + tableSplit[1] + "/";
-                                                        }
+                                        ChangeMetadataCommand cmd = null;
+
+                                        if (param.getChildParameters() != null
+                                                && param.getChildParameters().get("REPOSITORY_SCHEMA_TYPE") != null
+                                                && result.getContextModeConnectionItem() != null) {
+                                            final Object value = param.getChildParameters().get("REPOSITORY_SCHEMA_TYPE")
+                                                    .getValue();
+                                            // for sap
+                                            String remark = result.getRemark();
+                                            String namePrefix = "";
+                                            if (remark != null) {
+                                                String[] split = remark.split(UpdatesConstants.SEGMENT_LINE);
+                                                if (split.length == 2) {
+                                                    String tableName = split[1];
+                                                    String[] tableSplit = tableName.split("/");
+                                                    if (tableSplit.length == 3) {
+                                                        namePrefix = tableSplit[0] + "/" + tableSplit[1] + "/";
                                                     }
                                                 }
+                                            }
 
-                                                String idAndName = result.getContextModeConnectionItem().getProperty().getId()
-                                                        + UpdatesConstants.SEGMENT_LINE + namePrefix + newTable.getLabel();
-                                                if (idAndName.equals(value)) {
-                                                    cmd = new ChangeMetadataCommand(node, param, null, newTable);
-                                                }
-                                            } else {
+                                            String idAndName = result.getContextModeConnectionItem().getProperty().getId()
+                                                    + UpdatesConstants.SEGMENT_LINE + namePrefix + newTable.getLabel();
+                                            if (idAndName.equals(value)) {
                                                 cmd = new ChangeMetadataCommand(node, param, null, newTable);
                                             }
-                                            if (cmd != null) {
-                                                // wzhang added to fix 9251. get the current connection.
-                                                String propertyValue = (String) node
-                                                        .getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                                                IRepositoryViewObject lastVersion = UpdateRepositoryUtils
-                                                        .getRepositoryObjectById(propertyValue);
-                                                Connection repositoryConn = null;
-                                                if (lastVersion != null) {
-                                                    final Item item = lastVersion.getProperty().getItem();
-                                                    if (item != null && item instanceof ConnectionItem) {
-                                                        repositoryConn = ((ConnectionItem) item).getConnection();
-                                                    }
-                                                }
-                                                cmd.setConnection(repositoryConn);
-                                                if (node.getProcess() instanceof IProcess2) {
-                                                    IUpdateManager updateManager = ((IProcess2) node.getProcess())
-                                                            .getUpdateManager();
-                                                    if (updateManager instanceof AbstractUpdateManager) {
-                                                        cmd.setColumnRenameMap(((AbstractUpdateManager) updateManager)
-                                                                .getColumnRenamedMap());
-                                                    }
-                                                }
-
-                                                cmd.setRepositoryMode(true);
-                                                cmd.execute(true);
-                                            }
+                                        } else {
+                                            cmd = new ChangeMetadataCommand(node, param, null, newTable);
                                         }
-                                    } else {
-                                        MetadataToolHelper.copyTable(newTable,
-                                                node.getMetadataFromConnector(nodeConnector.getName()));
+                                        if (cmd != null) {
+                                            // wzhang added to fix 9251. get the current connection.
+                                            String propertyValue = (String) node
+                                                    .getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                                            IRepositoryViewObject lastVersion = UpdateRepositoryUtils
+                                                    .getRepositoryObjectById(propertyValue);
+                                            Connection repositoryConn = null;
+                                            if (lastVersion != null) {
+                                                final Item item = lastVersion.getProperty().getItem();
+                                                if (item != null && item instanceof ConnectionItem) {
+                                                    repositoryConn = ((ConnectionItem) item).getConnection();
+                                                }
+                                            }
+                                            cmd.setConnection(repositoryConn);
+                                            if (node.getProcess() instanceof IProcess2) {
+                                                IUpdateManager updateManager = ((IProcess2) node.getProcess()).getUpdateManager();
+                                                if (updateManager instanceof AbstractUpdateManager) {
+                                                    cmd.setColumnRenameMap(((AbstractUpdateManager) updateManager)
+                                                            .getColumnRenamedMap());
+                                                }
+                                            }
+
+                                            cmd.setRepositoryMode(true);
+                                            cmd.execute(true);
+                                        }
                                     }
+                                } else {
+                                    MetadataToolHelper
+                                            .copyTable(newTable, node.getMetadataFromConnector(nodeConnector.getName()));
                                 }
+                                // }
                             }
                             builtIn = false;
                         }
@@ -744,6 +750,11 @@ public class UpdateNodeParameterCommand extends Command {
                     String schemaParamName = UpdatesConstants.SCHEMA + UpdatesConstants.COLON
                             + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();
                     IElementParameter repositoryParam = node.getElementParameter(schemaParamName);
+                    if (repositoryParam == null) {
+                        schemaParamName = UpdatesConstants.SCHEMA_FLOW + UpdatesConstants.COLON
+                                + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();
+                        repositoryParam = node.getElementParameter(schemaParamName);
+                    }
                     if (repositoryParam != null && oldSourceId.equals(repositoryParam.getValue())) {
                         node.setPropertyValue(schemaParamName, newSourceId);
                         if (newTable != null) {

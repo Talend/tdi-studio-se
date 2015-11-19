@@ -2770,7 +2770,12 @@ public class Node extends Element implements IGraphicalNode {
                     break;
                 case COMPONENT_LIST:
                     if (param != null) {
-                        String errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
+                        String errorMessage;
+                        if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
+                            errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
+                        } else {
+                            errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$
+                        }
                         if (isUseExistedConnetion(this)) {
                             List<INode> list = (List<INode>) this.getProcess().getNodesOfType(param.getFilter());
                             if (list == null || list.size() == 0 || list.isEmpty()) {
@@ -2836,11 +2841,13 @@ public class Node extends Element implements IGraphicalNode {
                             }
                         }
                     }
+                    checkDataprepRun(param);
                 }
             }
             checkValidationRule(param);
 
             checktAggregateRow(param);
+
         }
 
         checkJobletConnections();
@@ -3028,6 +3035,17 @@ public class Node extends Element implements IGraphicalNode {
             String errorMessage = Messages.getString("Node.eachRowNeedLoop", param.getDisplayName()); //$NON-NLS-1$
             Problems.add(ProblemStatus.ERROR, this, errorMessage);
             // }
+        }
+    }
+
+    private void checkDataprepRun(IElementParameter param) {
+        if (EParameterName.PREPARATION_ID.getName().equals(param.getName())) {
+            final IElementParameter prepIdParam = getElementParameter(EParameterName.PREPARATION_ID.getName());
+            if (prepIdParam == null || prepIdParam.getValue() == null
+                    || "".equals(TalendTextUtils.removeQuotes(String.valueOf(prepIdParam.getValue())).trim())) {
+                Problems.add(ProblemStatus.ERROR, this, "Must set the preparation id");
+
+            }
         }
     }
 
@@ -3978,8 +3996,11 @@ public class Node extends Element implements IGraphicalNode {
             for (ICheckNodesService checkService : checkNodeServices) {
                 checkService.checkNode(this);
             }
-            if (externalNode != null) {
-                List<Problem> problems = externalNode.getProblems();
+
+            // init external node firstly by method getExternalNode
+            IExternalNode iExternalNode = getExternalNode();
+            if (iExternalNode != null) {
+                List<Problem> problems = iExternalNode.getProblems();
                 if (problems != null) {
                     for (Problem current : problems) {
                         current.setElement(this);

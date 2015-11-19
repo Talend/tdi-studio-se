@@ -2103,7 +2103,7 @@
               name="ChangeLocalModeForSparkConfiguration"
               version="6.1.0">
         </projecttask>
-        
+
         <projecttask
               beforeLogon="false"
               breaks="6.1.0"
@@ -2113,7 +2113,7 @@
               name="RenameSparkVersions"
               version="6.1.0">
         </projecttask>
-        
+
         <projecttask
               beforeLogon="false"
               breaks="6.1.0"
@@ -2123,7 +2123,7 @@
               name="ReviewPigLoadLayout"
               version="6.1.0">
         </projecttask>
-        
+
         <projecttask
               beforeLogon="false"
               breaks="5.2.3"
@@ -2392,6 +2392,14 @@
               id="org.talend.repository.model.migration.CorrectBatchModeForTeradataOutput"
               name="CorrectBatchModeForTeradataOutput"
               version="5.6.2">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.1.0"
+              class="org.talend.repository.model.migration.TickDieOnError4tFileUnarchive"
+              id="org.talend.repository.model.migration.TickDieOnError4tFileUnarchive"
+              name="TickDieOnError4tFileUnarchive"
+              version="6.1.1">
         </projecttask>
         <projecttask
               beforeLogon="false"

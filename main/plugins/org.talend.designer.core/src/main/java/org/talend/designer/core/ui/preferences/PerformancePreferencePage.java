@@ -158,6 +158,10 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
                     }
                 }
             });
+            final CheckBoxFieldEditor autoRefreshLocksField = new CheckBoxFieldEditor(
+                    ITalendCorePrefConstants.AUTO_REFRESH_LOCKS,
+                    Messages.getString("PerformancePreferencePage.autoRefreshLocksField"), getFieldEditorParent()); //$NON-NLS-1$
+            addField(autoRefreshLocksField);
         }
 
     }

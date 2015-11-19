@@ -19,4 +19,6 @@ public interface IComponentFactoryFilter {
 
     public boolean isAvailable(String componentName);
 
+    public void cleanCache();
+
 }

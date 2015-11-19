@@ -11,9 +11,11 @@
 		java.util.Map		
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 	<% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
     String recordType = ElementParameterParser.getValue(node, "__RECORD_TYPE__");
 	List<Map<String, String>> recordColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__RECORD_COLUMN__");
@@ -41,46 +43,27 @@
 						%>
 					}
 					if(tasks_<%=cid%>.getTaskCount()>=1){
-						<%
-						if(isLog4jEnabled){
-						%>
-							int tasksNo_<%=cid%> = tasks_<%=cid%>.getTaskCount();
-							log.info("<%=cid%> - Uploading "+tasksNo_<%=cid%>+" tasks...");
-						<%
-						}
-						%>
+					
+					    <% logUtil.info("\"Uploading \"+ tasks_"+cid+".getTaskCount()+\" tasks...\"");%>
+						
 						String content = tasks_<%=cid%>.getTasksAndClear();
 						//System.out.println(content);
 						boolean loadResult_<%=cid%> = taskLoadClient_<%=cid%>.doLoad(content);
 						if(!loadResult_<%=cid%>){
-							<%
-							if(isLog4jEnabled){
-							%>
-								log.error("<%=cid%> - An error occured while uploading tasks.");
-							<%
-							}
-							%>
+						
+						    <% logUtil.error("\"An error occured while uploading tasks.\"");%>
+							
 							System.err.println("An error occured while uploading tasks.");
+						} else{
+						    <% logUtil.info("\"Uploaded \"+ tasks_"+cid+".getTaskCount()+\" tasks successfully.\"");%>
 						}
-						<%
-						if(isLog4jEnabled){
-						%>
-						else{
-							log.info("<%=cid%> - Uploaded "+tasksNo_<%=cid%>+" tasks successfully.");
-						}
-						<%
-						}
-						%>
 					}
 				<%
 				}	
 			}
 		}	
 	}
-	if(isLog4jEnabled){
 	%>
-		log.info("<%=cid%> - Has been uploaded " + nb_line_<%=cid%> + " tasks.");
-	<%
-	}
-	%>
+	
+	<% logUtil.info("\"Has been uploaded \"+ nb_line_"+cid+"+\" tasks.\"");%>
 	globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);

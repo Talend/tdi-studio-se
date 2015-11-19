@@ -16,7 +16,9 @@ import java.io.File;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -33,6 +35,7 @@ import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.designer.maven.model.TalendMavenConstants;
 
 /**
  * Delete all the perl and java jobs when T.O.S start up.
@@ -65,6 +68,12 @@ public class DeleteAllJobWhenStartUp implements IStartup {
             return;
         }
         if (!GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            return;
+        }
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+
+        IProject codeProject = root.getProject(TalendMavenConstants.PROJECT_NAME);
+        if (!codeProject.exists() || !codeProject.isAccessible()) {
             return;
         }
         final IWorkspaceRunnable op = new IWorkspaceRunnable() {

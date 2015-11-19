@@ -850,27 +850,10 @@ public class NetsuiteManagement_CXF {
 	}
 	
 	public void setNullFieldValue(NullField fl, String id) {
-		List<String> cfl = fl.getName();
-		int index = -1;
-		if ((cfl != null) && (cfl.size() > 0)) {
-			for (int i = 0; i < cfl.size(); i++) {
-				if (id.equals(cfl.get(i))) {
-					index = i;
-					break;
-				}
-			}
+		List<String> nullFields = fl.getName();
+		if(!nullFields.contains(id)){
+			nullFields.add(id);
 		}
-		
-		if (index == -1) {
-			if ((cfl == null)) {
-				cfl = new ArrayList<String>();
-			}
-			cfl.add(id);
-		} else {
-			cfl.set(index, id);
-		}
-		
-		fl.getName().addAll(cfl);
 	}
 
 }

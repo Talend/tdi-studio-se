@@ -452,10 +452,18 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                                 ((IFile) resource).setContents(new ByteArrayInputStream(new byte[0]), IResource.KEEP_HISTORY,
                                         null);
                             } else {
-                                FilesUtils.deleteFile(resource.getLocation().toFile(), true);
+                                try {
+                                    org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, resource, true, true);
+                                } catch (Exception e) {
+                                    throw new ProcessorException(e);
+                                }
                             }
                         } else {
-                            FilesUtils.deleteFile(resource.getLocation().toFile(), true);
+                            try {
+                                org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, resource, true, true);
+                            } catch (Exception e) {
+                                throw new ProcessorException(e);
+                            }
                         }
                     }
                 }
@@ -615,8 +623,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             // Generating files
             IFile codeFile = this.getCodeProject().getFile(this.getSrcCodePath());
             if (!codeFile.exists()) {
-                // see bug 0003592, detele file with different case in windows
-                deleteFileIfExisted(codeFile);
+                // maybe have been removed in cleanBeforeGenerate. just confirm to remove the files with different case
+                // in win.
+                try {
+                    org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, codeFile, true, true);
+                } catch (Exception e) {
+                    throw new ProcessorException(e);
+                }
                 IFolder parentFolder = (IFolder) codeFile.getParent();
                 if (!parentFolder.exists()) {
                     parentFolder.create(true, true, null);
@@ -1310,24 +1323,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     protected String[] addVMArguments(String[] strings) {
         String[] vmargs = getJVMArgs();
 
-        RunProcessContext runProcessContext = RunProcessPlugin.getDefault().getRunProcessContextManager().getActiveContext();
-        if (runProcessContext != null) {
-            ITargetExecutionConfig config = runProcessContext.getSelectedTargetExecutionConfig();
-            if (config != null && config.getCommandlineServerConfig() == null) {
-                if (config.isRemote()) {
-                    if (config.isUseJMX()) {
-                        String[] jmxArg = new String[] { "-Dcom.sun.management.jmxremote",
-                                "-Dcom.sun.management.jmxremote.port=" + config.getRemotePort(),
-                                "-Dcom.sun.management.jmxremote.ssl=false", "-Dcom.sun.management.jmxremote.authenticate=false " };
-                        String[] _vmargs = new String[vmargs.length + jmxArg.length];
-                        System.arraycopy(vmargs, 0, _vmargs, 0, vmargs.length);
-                        System.arraycopy(jmxArg, 0, _vmargs, vmargs.length, jmxArg.length);
-                        vmargs = _vmargs;
-                    }
-                }
-            }
-        }
-
         if (vmargs != null && vmargs.length > 0) {
             String[] lines = new String[strings.length + vmargs.length];
             System.arraycopy(strings, 0, lines, 0, 1);
@@ -1342,10 +1337,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public String[] getJVMArgs() {
         String[] vmargs = getSettingsJVMArguments();
         /* check parameter won't happened on exportingJob */
+        List<String> asList = convertArgsToList(vmargs);
         if (!isExportConfig() && !isRunAsExport()) {
             String fileEncoding = System.getProperty("file.encoding"); //$NON-NLS-1$
             String encodingFromIni = "-Dfile.encoding=" + fileEncoding; //$NON-NLS-1$
-            List<String> asList = convertArgsToList(vmargs);
             boolean encodingSetInjob = false;
             for (String arg : asList) {
                 if (arg.startsWith("-Dfile.encoding") && fileEncoding != null) { //$NON-NLS-1$
@@ -1356,9 +1351,25 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
             if (!encodingSetInjob) {
                 asList.add(encodingFromIni);
-                vmargs = asList.toArray(new String[0]);
             }
         }
+        // add args if using JMX.
+        RunProcessContext runProcessContext = RunProcessPlugin.getDefault().getRunProcessContextManager().getActiveContext();
+        if (runProcessContext != null) {
+            ITargetExecutionConfig config = runProcessContext.getSelectedTargetExecutionConfig();
+            if (config != null && config.getCommandlineServerConfig() == null) {
+                if (config.isRemote()) {
+                    if (config.isUseJMX()) {
+                        asList.add("-Dcom.sun.management.jmxremote"); //$NON-NLS-1$
+                        asList.add("-Dcom.sun.management.jmxremote.port=" + config.getRemotePort()); //$NON-NLS-1$
+                        asList.add("-Dcom.sun.management.jmxremote.ssl=false"); //$NON-NLS-1$
+                        asList.add("-Dcom.sun.management.jmxremote.authenticate=false"); //$NON-NLS-1$
+                    }
+                }
+            }
+        }
+
+        vmargs = asList.toArray(new String[0]);
         return vmargs;
     }
 

@@ -3,12 +3,12 @@
   <HEADER
     PLATEFORM="ALL"
     SERIAL=""
-    VERSION="0.102"
-    STATUS="ALPHA"
+    VERSION="2.0"
+    STATUS="PROD"
     
     COMPATIBILITY="ALL"
-    AUTHOR="EXASOL"
-    RELEASE_DATE="20081201A"
+    AUTHOR="Talend"
+    RELEASE_DATE="20151112A"
     STARTABLE="true"
     LOG4J_ENABLED="true"
   >
@@ -38,17 +38,35 @@
     <PARAMETER
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
-      SHOW="true"
-      NUM_ROW="2"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+      NUM_ROW="1"
       REPOSITORY_VALUE="DATABASE:Exasol"
     />
+
+	<PARAMETER
+		NAME="USE_EXISTING_CONNECTION"
+		FIELD="CHECK"
+		NUM_ROW="10"
+	>
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+
+	<PARAMETER
+		NAME="CONNECTION"
+		FIELD="COMPONENT_LIST"
+		REQUIRED="true" FILTER="tEXAConnection"
+		NUM_ROW="10"
+		SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+		DYNAMIC_SETTINGS="true"
+	/>
 
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="SERVER_NAME"
-	REQUIRED="true"
+	  REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -56,20 +74,30 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="20"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="PORT"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>    
     
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        NUM_ROW="21">
+      <DEFAULT>Note: You can configure a server or cluster as ip-address range or comma separated host/ip-address list. 
+        Examples: "172.16.173.128" or "172.16.173.128..130" or "server1,server2"</DEFAULT>
+    </PARAMETER>
+
 	<PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="3"
-      SHOW="true"
+      NUM_ROW="30"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="SID"
-	REQUIRED="true"
+	  REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>    
@@ -77,7 +105,8 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
     >
@@ -87,7 +116,8 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="4"
+      NUM_ROW="40"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
     >
@@ -97,7 +127,7 @@
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="5"
+      NUM_ROW="50"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -105,14 +135,15 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="6"
+      NUM_ROW="60"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+
     <PARAMETER
       NAME="QUERYSTORE"
       FIELD="QUERYSTORE_TYPE"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -120,7 +151,7 @@
  	<PARAMETER
       NAME="GUESS_SCHEMA"
       FIELD="GUESS_SCHEMA"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -128,16 +159,16 @@
     <PARAMETER
       NAME="QUERY"
       FIELD="MEMO_SQL"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
-      <DEFAULT>"select * from exa_all_objects "</DEFAULT>
+      <DEFAULT>"select * from sys.exa_all_objects"</DEFAULT>
     </PARAMETER>
     
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="9"
+      NUM_ROW="90"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -147,7 +178,7 @@
 	<PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
-      NUM_ROW="11"
+      NUM_ROW="100"
       SHOW="false"
     >       
       <DEFAULT>Exasol_id</DEFAULT>
@@ -155,26 +186,56 @@
 
    </PARAMETERS>
    <ADVANCED_PARAMETERS>
-	<PARAMETER NAME="PROPERTIES" FIELD="TEXT" NUM_ROW="4" REPOSITORY_VALUE="PROPERTIES_STRING" >
-		<DEFAULT>""</DEFAULT>
+	<PARAMETER
+		NAME="USE_CURSOR"
+		FIELD="CHECK"
+		NUM_ROW="10"
+	>
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+
+	<PARAMETER
+		NAME="CURSOR_SIZE"
+		FIELD="TEXT"
+		NUM_ROW="10"
+		SHOW_IF="(USE_CURSOR == 'true')"
+	>
+		<DEFAULT>10000</DEFAULT>
+	</PARAMETER>
+
+	<PARAMETER 
+		NAME="PROPERTIES" 
+		FIELD="TEXT" 
+		NUM_ROW="20" 
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+		REPOSITORY_VALUE="PROPERTIES_STRING" 
+	>
+		<DEFAULT>"encryption=0;clientname=Talend"</DEFAULT>
 	</PARAMETER>
 		
-	<PARAMETER
-     		NAME="ENCODING"
-     		FIELD="ENCODING_TYPE"
-     		NUM_ROW="10"
-     		REQUIRED="true"
-     		SHOW="false"
-   	>
-     		<DEFAULT>"ISO-8859-15"</DEFAULT>
-	</PARAMETER>
-	
-	<PARAMETER NAME="TRIM_ALL_COLUMN" FIELD="CHECK" NUM_ROW="30">
+    <PARAMETER
+        NAME="NOTE"
+        FIELD="LABEL"
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+        NUM_ROW="21">
+      <DEFAULT>Note: Example for Additional JDBC Parameters: "parameterName1=value1;parameterName2=value2;"</DEFAULT>
+    </PARAMETER>
+
+	<PARAMETER 
+		NAME="TRIM_ALL_COLUMN" 
+		FIELD="CHECK" 
+		NUM_ROW="40"
+	>
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
 	
-	<PARAMETER NAME="TRIM_COLUMN" FIELD="TABLE" NUM_ROW="40"
-		NB_LINES="5" SHOW_IF="TRIM_ALL_COLUMN == 'false'">
+	<PARAMETER 
+		NAME="TRIM_COLUMN" 
+		FIELD="TABLE" 
+		NUM_ROW="50"
+		NB_LINES="5" 
+		SHOW_IF="TRIM_ALL_COLUMN == 'false'"
+	>
 		<ITEMS BASED_ON_SCHEMA="true">
 			<ITEM NAME="TRIM" FIELD="CHECK"></ITEM>
 		</ITEMS>

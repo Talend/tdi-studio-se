@@ -1,27 +1,27 @@
 <COMPONENT>
-    <HEADER PLATEFORM="ALL" 
-            SERIAL="" 
-            VERSION="0.1" 
+    <HEADER PLATEFORM="ALL"
+            SERIAL=""
+            VERSION="0.1"
             STATUS="PRE-ALPHA"
             COMPATIBILITY="ALL"
-            AUTHOR="Talend" 
+            AUTHOR="Talend"
             RELEASE_DATE="20150120P"
-            STARTABLE="false" 
+            STARTABLE="false"
             HAS_CONDITIONAL_OUTPUTS="true"
-            SCHEMA_AUTO_PROPAGATE="true" 
+            SCHEMA_AUTO_PROPAGATE="true"
             DATA_AUTO_PROPAGATE="false">
         <SIGNATURE />
     </HEADER>
-    
+
     <FAMILIES>
         <FAMILY>Business/NetSuite</FAMILY>
         <FAMILY>Cloud/NetSuite</FAMILY>
     </FAMILIES>
-    
+
     <DOCUMENTATION>
         <URL />
     </DOCUMENTATION>
-    
+
     <CONNECTORS>
         <CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="1" />
         <CONNECTOR NAME="REJECT" CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" LINE_STYLE="2" COLOR="FF0000" BASE_SCHEMA="FLOW" NOT_SHOW_IF="CEASE_FOR_ERROR == 'true'"/>
@@ -32,28 +32,28 @@
         <CONNECTOR CTYPE="COMPONENT_ERROR" />
         <CONNECTOR CTYPE="RUN_IF" />
     </CONNECTORS>
-    
+
     <PARAMETERS>
         <PARAMETER NAME="ENDPOINT" FIELD="TEXT" NUM_ROW="2" REQUIRED="true" SHOW_IF="false" GROUP="LOGIN">
             <DEFAULT>"https://webservices.netsuite.com/services/NetSuitePort_2014_2"</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="3" REQUIRED="true"  GROUP="LOGIN">
             <DEFAULT>"youremail@yourcompany.com"</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="4" REQUIRED="true"  GROUP="LOGIN">
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="ROLE" FIELD="TEXT" NUM_ROW="5" REQUIRED="true" REPOSITORY_VALUE="ROLE" GROUP="LOGIN">
             <DEFAULT>3</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="ACCOUNT" FIELD="TEXT" NUM_ROW="6" REQUIRED="true" REPOSITORY_VALUE="ACCOUNT" GROUP="LOGIN">
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="ACTION" FIELD="CLOSED_LIST" NUM_ROW="7" REQUIRED="true">
             <ITEMS DEFAULT="insert">
                 <ITEM NAME="insert" VALUE="insert" />
@@ -62,7 +62,7 @@
                 <ITEM NAME="upsert" VALUE="upsert" />
             </ITEMS>
         </PARAMETER>
-        
+
         <PARAMETER NAME="MODULENAME" FIELD="CLOSED_LIST" NUM_ROW="8" REQUIRED="true" REPOSITORY_VALUE="MODULENAME">
             <ITEMS DEFAULT="Account">
                 <ITEM NAME="Account" VALUE="Account" />
@@ -179,14 +179,14 @@
                 <ITEM NAME="WorkOrderIssue" VALUE="WorkOrderIssue" />
             </ITEMS>
         </PARAMETER>
-        
+
         <PARAMETER NAME="SCHEMA_REJECT" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="9" CONTEXT="REJECT" SHOW="true">
 			<TABLE READONLY="true">
 				<COLUMN NAME="errorCode" TYPE="id_String" LENGTH="255" READONLY="false" CUSTOM="true"/>
 				<COLUMN NAME="errorMessage" TYPE="id_String" LENGTH="255" READONLY="false" CUSTOM="true"/>
 			</TABLE>
         </PARAMETER>
-        
+
         <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="8" REQUIRED="true">
             <TABLE IF="ACTION == 'delete'">
                 <COLUMN KEY="true" NAME="InternalId" LENGTH="200" TYPE="id_String"  />
@@ -7098,22 +7098,22 @@
                 <COLUMN KEY="true" NAME="ExternalId" LENGTH="200" TYPE="id_String"  />
             </TABLE>
         </PARAMETER>
-        
+
         <PARAMETER NAME="CEASE_FOR_ERROR" FIELD="CHECK" NUM_ROW="91">
             <DEFAULT>true</DEFAULT>
         </PARAMETER>
 
     </PARAMETERS>
-    
+
     <CODEGENERATION>
         <IMPORTS>
             <IMPORT NAME="Netsuite_Client" MODULE="Netsuite_Client.jar" MVN="mvn:org.talend.libraries/Netsuite_Client/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/Netsuite_Client.jar" REQUIRED="true" />
-            <IMPORT NAME="NetSuite_Management" MODULE="NetSuite_Management.jar" MVN="mvn:org.talend.libraries/NetSuite_Management/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/NetSuite_Management.jar" REQUIRED="true" />
-            <IMPORT NAME="CXF-CORE" MODULE="cxf-core-3.1.3.jar" MVN="mvn:org.talend.libraries/cxf-core-3.1.3/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-core-3.1.3.jar" REQUIRED="true" BundleID="" />
-            <IMPORT NAME="CXF-RT-DATABINDING-JAXB" MODULE="cxf-rt-databinding-jaxb-3.1.3.jar" MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.3/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-jaxb-3.1.3.jar" REQUIRED="true" BundleID="" />
+            <IMPORT NAME="NetSuite_Management" MODULE="NetSuite_Management-1.0.0.jar" MVN="mvn:org.talend.libraries/NetSuite_Management-1.0.0/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/NetSuite_Management-1.0.0.jar" REQUIRED="true" />
+            <IMPORT NAME="CXF-CORE" MODULE="cxf-core-3.1.4.jar" MVN="mvn:org.talend.libraries/cxf-core-3.1.4/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-core-3.1.4.jar" REQUIRED="true" BundleID="" />
+            <IMPORT NAME="CXF-RT-DATABINDING-JAXB" MODULE="cxf-rt-databinding-jaxb-3.1.4.jar" MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.4/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-jaxb-3.1.4.jar" REQUIRED="true" BundleID="" />
         </IMPORTS>
     </CODEGENERATION>
-    
+
     <RETURNS>
         <RETURN NAME="NB_LINE" TYPE="id_Integer" AVAILABILITY="AFTER" />
         <RETURN NAME="CURRENT_INTERNALID" TYPE="id_Integer" AVAILABILITY="FLOW" />

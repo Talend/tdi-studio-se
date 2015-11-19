@@ -40,7 +40,6 @@ import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
 import org.talend.core.ui.branding.IBrandingService;
@@ -58,7 +57,6 @@ import org.talend.designer.codegen.i18n.Messages;
 import org.talend.designer.codegen.model.CodeGeneratorEmittersPoolFactory;
 import org.talend.designer.codegen.model.CodeGeneratorInternalTemplatesFactoryProvider;
 import org.talend.designer.codegen.proxy.JetProxy;
-import org.talend.designer.core.ICamelDesignerCoreService;
 
 /**
  * CodeGenerator.
@@ -150,22 +148,8 @@ public class CodeGenerator implements ICodeGenerator {
                 System.out.println(Messages.getString("CodeGenerator.getGraphicalNode2")); //$NON-NLS-1$
                 printForDebug();
             }
-            boolean isCamel = false;
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
-                        .getService(ICamelDesignerCoreService.class);
-                if (process != null && process instanceof IProcess2) {
-                    IProcess2 process2 = (IProcess2) process;
-                    if (camelService.isInstanceofCamelRoutes(process2.getProperty().getItem())) {
-                        isCamel = true;
-                    }
-                }
-            }
-            if (isCamel) {
-                processTree = new NodesTree(process, nodes, true, ETypeGen.CAMEL);
-            } else {
-                processTree = new NodesTree(process, nodes, true);
-            }
+            processTree = new NodesTree(process, nodes, true);
+
             RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
                     Context.REPOSITORY_CONTEXT_KEY);
             language = repositoryContext.getProject().getLanguage();
@@ -224,135 +208,56 @@ public class CodeGenerator implements ICodeGenerator {
             headerArgument.add(process);
 
             headerArgument.add(VersionUtils.getVersion());
-            boolean isCamel = false;
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
-                        .getService(ICamelDesignerCoreService.class);
-                if (process != null && process instanceof IProcess2) {
-                    IProcess2 process2 = (IProcess2) process;
-                    if (camelService.isInstanceofCamelRoutes(process2.getProperty().getItem())) {
-                        isCamel = true;
-                    }
-                }
-            }
-            if (isCamel) {
-                componentsCode.append(generateTypedComponentCode(EInternalTemplate.HEADER_ROUTE, headerArgument));
-            } else {
-                componentsCode.append(generateTypedComponentCode(EInternalTemplate.HEADER, headerArgument));
-            }
-            if (isCamel) {
-                if ((processTree.getSubTrees() != null) && (processTree.getSubTrees().size() > 0)) {
+            componentsCode.append(generateTypedComponentCode(EInternalTemplate.HEADER, headerArgument));
 
-                    // sortSubTree(processTree.getSubTrees());
+            // ####
+            componentsCode.append(generateTypedComponentCode(EInternalTemplate.HEADER_ADDITIONAL, headerArgument));
+            if ((processTree.getSubTrees() != null) && (processTree.getSubTrees().size() > 0)) {
 
-                    boolean displayMethodSize = isMethodSizeNeeded();
-                    NodesSubTree lastSubtree = null;
-                    boolean generateHeaders = true;
-                    boolean isFirstRoute = true;
-
-                    List<NodesSubTree> nodeSubTreeList = new ArrayList<NodesSubTree>();
-                    List<INode> sortedNodeList = new ArrayList<INode>();
-
-                    for (NodesSubTree subTree : processTree.getSubTrees()) {
-                        lastSubtree = subTree;
-
-                        // Generate headers only one time, for each routes in the CamelContext.
-                        if (generateHeaders) {
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_HEADER_ROUTE, subTree));
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.CAMEL_HEADER, headerArgument));
-                            generateHeaders = false;
+                boolean displayMethodSize = isMethodSizeNeeded();
+                for (NodesSubTree subTree : processTree.getSubTrees()) {
+                    subTree.setMethodSizeNeeded(displayMethodSize);
+                    if (!subTree.isMergeSubTree()) {
+                        componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_HEADER, subTree));
+                        componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.BEGIN, null));
+                        componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.MAIN, null));
+                        componentsCode.append(generateTypedComponentCode(EInternalTemplate.PART_ENDMAIN,
+                                subTree.getRootNode()));
+                        componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.END, null));
+                        StringBuffer finallyPart = new StringBuffer();
+                        finallyPart.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.FINALLY, null));
+                        Vector subprocess_footerArgument = new Vector(2);
+                        subprocess_footerArgument.add(subTree);
+                        subprocess_footerArgument.add(finallyPart.toString());
+                        componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_FOOTER,
+                                subprocess_footerArgument));
+                    } else {
+                        StringBuffer finallyPart = new StringBuffer();
+                        componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_HEADER, subTree));
+                        for (INode mergeNode : subTree.getMergeNodes()) {
+                            componentsCode.append(generateComponentsCode(subTree, mergeNode, ECodePart.BEGIN, null));
                         }
+                        List<INode> sortedMergeBranchStarts = subTree.getSortedMergeBranchStarts();
+                        for (INode startNode : sortedMergeBranchStarts) {
+                            componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.BEGIN, null));
+                            componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.MAIN, null));
 
-                        // Fix bug TESB-2951 Generated Codes error when Route
-                        // starts with cFile/cFTP/cActiveMQ/cFTP/cJMS
-                        // LiXiaopeng 2011-09-05
-                        INode subProcessStartNode = subTree.getRootNode().getSubProcessStartNode(true);
-                        String startNodeName = subProcessStartNode.getComponent().getName();
-                        IElementParameter family = subProcessStartNode.getElementParameter("FAMILY");
-                        if (subProcessStartNode.isStart() && null != family && "Messaging".equals(family.getValue())) {
-                            nodeSubTreeList.add(subTree);
-                        } else if ("cConfig".equals(startNodeName)) {
-                            // Customized remove the cConfig routeId codes.
-                            // TESB-2825 LiXP 20110823
-                            // Do nothing.
-                        } else {
-                            componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.MAIN, null,
-                                    ETypeGen.CAMEL)); // And
-                                                      // generate
-                                                      // the
-                                                      // component
-                                                      // par
-                                                      // of
-                                                      // code
-                            componentsCode.append(";");
-                        }
-                    }
-
-                    for (NodesSubTree subTree : nodeSubTreeList) {
-                        lastSubtree = subTree;
-                        componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.MAIN, null,
-                                ETypeGen.CAMEL)); // And generate the component par of code
-                        componentsCode.append(";");
-                    }
-                    componentsCode.append(generateTypedComponentCode(EInternalTemplate.CAMEL_FOOTER, headerArgument)); // Close
-                                                                                                                       // the
-                                                                                                                       // last
-                                                                                                                       // route
-                                                                                                                       // in
-                                                                                                                       // the
-                                                                                                                       // CamelContext
-                    componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_FOOTER_ROUTE, lastSubtree));
-                }
-            } else {
-                // ####
-                componentsCode.append(generateTypedComponentCode(EInternalTemplate.HEADER_ADDITIONAL, headerArgument));
-                if ((processTree.getSubTrees() != null) && (processTree.getSubTrees().size() > 0)) {
-
-                    boolean displayMethodSize = isMethodSizeNeeded();
-                    for (NodesSubTree subTree : processTree.getSubTrees()) {
-                        subTree.setMethodSizeNeeded(displayMethodSize);
-                        if (!subTree.isMergeSubTree()) {
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_HEADER, subTree));
-                            componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.BEGIN, null));
-                            componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.MAIN, null));
                             componentsCode.append(generateTypedComponentCode(EInternalTemplate.PART_ENDMAIN,
                                     subTree.getRootNode()));
-                            componentsCode.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.END, null));
-                            StringBuffer finallyPart = new StringBuffer();
-                            finallyPart.append(generateComponentsCode(subTree, subTree.getRootNode(), ECodePart.FINALLY, null));
-                            Vector subprocess_footerArgument = new Vector(2);
-                            subprocess_footerArgument.add(subTree);
-                            subprocess_footerArgument.add(finallyPart.toString());
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_FOOTER,
-                                    subprocess_footerArgument));
-                        } else {
-                            StringBuffer finallyPart = new StringBuffer();
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_HEADER, subTree));
-                            for (INode mergeNode : subTree.getMergeNodes()) {
-                                componentsCode.append(generateComponentsCode(subTree, mergeNode, ECodePart.BEGIN, null));
-                            }
-                            List<INode> sortedMergeBranchStarts = subTree.getSortedMergeBranchStarts();
-                            for (INode startNode : sortedMergeBranchStarts) {
-                                componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.BEGIN, null));
-                                componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.MAIN, null));
 
-                                componentsCode.append(generateTypedComponentCode(EInternalTemplate.PART_ENDMAIN,
-                                        subTree.getRootNode()));
-
-                                componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.END, null));
-                                finallyPart.append(generateComponentsCode(subTree, startNode, ECodePart.FINALLY, null));
-                            }
-
-                            for (INode mergeNode : subTree.getMergeNodes()) {
-                                componentsCode.append(generateComponentsCode(subTree, mergeNode, ECodePart.END, null));
-                                finallyPart.append(generateComponentsCode(subTree, mergeNode, ECodePart.FINALLY, null));
-                            }
-                            Vector subprocess_footerArgument = new Vector(2);
-                            subprocess_footerArgument.add(subTree);
-                            subprocess_footerArgument.add(finallyPart.toString());
-                            componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_FOOTER,
-                                    subprocess_footerArgument));
+                            componentsCode.append(generateComponentsCode(subTree, startNode, ECodePart.END, null));
+                            finallyPart.append(generateComponentsCode(subTree, startNode, ECodePart.FINALLY, null));
                         }
+
+                        for (INode mergeNode : subTree.getMergeNodes()) {
+                            componentsCode.append(generateComponentsCode(subTree, mergeNode, ECodePart.END, null));
+                            finallyPart.append(generateComponentsCode(subTree, mergeNode, ECodePart.FINALLY, null));
+                        }
+                        Vector subprocess_footerArgument = new Vector(2);
+                        subprocess_footerArgument.add(subTree);
+                        subprocess_footerArgument.add(finallyPart.toString());
+                        componentsCode.append(generateTypedComponentCode(EInternalTemplate.SUBPROCESS_FOOTER,
+                                subprocess_footerArgument));
                     }
                 }
             }
@@ -360,11 +265,8 @@ public class CodeGenerator implements ICodeGenerator {
             Vector footerArgument = new Vector(2);
             footerArgument.add(process);
             footerArgument.add(processTree.getRootNodes());
-            if (isCamel) {
-                componentsCode.append(generateTypedComponentCode(EInternalTemplate.FOOTER_ROUTE, footerArgument));
-            } else {
-                componentsCode.append(generateTypedComponentCode(EInternalTemplate.FOOTER, footerArgument));
-            }
+            componentsCode.append(generateTypedComponentCode(EInternalTemplate.FOOTER, footerArgument));
+
             componentsCode.append(generateTypedComponentCode(EInternalTemplate.PROCESSINFO, componentsCode.length()));
             // ####
             return componentsCode.toString();
@@ -649,38 +551,7 @@ public class CodeGenerator implements ICodeGenerator {
                     codeComponent.append(generateTypedComponentCode(EInternalTemplate.ITERATE_SUBPROCESS_FOOTER,
                             iterate_Argument, ECodePart.END, incomingName, subProcess));
                 } else {
-                    if (ETypeGen.CAMEL == typeGen) {
-                        if (node.getIncomingConnections() != null && node.getIncomingConnections().size() > 0) {
-                            if (!(node.getIncomingConnections().get(0).getLineStyle().equals(EConnectionType.ROUTE))) {
-                                codeComponent.append(generateTypedComponentCode(EInternalTemplate.CAMEL_SPECIALLINKS, node));
-                            }
-                        }
-                    }
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.MAIN, incomingName, typeGen));
-                    if (ETypeGen.CAMEL == typeGen) {
-                        if (node.getIncomingConnections().size() < 1 && node.isStart()) {
-                            // http://jira.talendforge.org/browse/TESB-4086 XiaopengLi
-                            String label = null;
-                            IElementParameter parameter = node.getElementParameter("LABEL");
-                            if (parameter != null && !"__UNIQUE_NAME__".equals(parameter.getValue())) {
-                                label = (String) parameter.getValue();
-                            }
-
-                            /*
-                             * Fix https://jira.talendforge.org/browse/TESB-6685 label + uniqueName to make it unique
-                             */
-                            if (label == null) {
-                                label = node.getUniqueName();
-                            } else {
-                                label += "_" + node.getUniqueName();
-                            }
-                            if (!"cErrorHandler".equals(node.getComponent().getName())) {
-                                codeComponent.append(".routeId(\"" + label + "\")");
-                            }
-                        } else {
-                            codeComponent.append(".id(\"" + node.getUniqueName() + "\")");
-                        }
-                    }
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
                 }
                 break;
@@ -825,16 +696,6 @@ public class CodeGenerator implements ICodeGenerator {
                             code.append(generateTypedComponentCode(EInternalTemplate.SUBTREE_END, subTreeArgument));
                         }
 
-                    }
-                }
-            } else if (ETypeGen.CAMEL == typeGen) {
-                for (IConnection connection : node.getOutgoingCamelSortedConnections()) {
-                    INode targetNode = connection.getTarget();
-                    if ((targetNode != null) && (subProcess != null)) {
-                        subTreeArgument.setInputSubtreeConnection(connection);
-                        code.append(CamelConnectionTagGenerator.getInstance().generateStartTag(node, connection));
-                        code.append(generateComponentsCode(subProcess, targetNode, part, connection.getName(), typeGen));
-                        code.append(CamelConnectionTagGenerator.getInstance().generateEndTag(node, connection));
                     }
                 }
             }

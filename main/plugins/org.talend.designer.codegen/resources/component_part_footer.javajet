@@ -40,7 +40,7 @@ boolean isRunInMultiThread = codeGenArgument.getIsRunInMultiThread();
 
 Set<IConnection> connSet =  new HashSet<IConnection>();
 connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MAIN));
-connSet.addAll(node.getOutgoingConnections(EConnectionType.FLOW_MERGE));
+connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MERGE));
 
 Set<IConnection> iterateConnSet =  new HashSet<IConnection>();
 iterateConnSet.addAll(node.getOutgoingConnections(EConnectionType.ITERATE));

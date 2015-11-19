@@ -4,3 +4,4 @@ Bundle-Name: Microsoft
 Bundle-SymbolicName: org.talend.libraries.microsoft
 Bundle-Version: 6.1.1.qualifier
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir

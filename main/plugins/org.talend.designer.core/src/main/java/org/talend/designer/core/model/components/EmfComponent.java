@@ -144,6 +144,7 @@ import org.talend.hadoop.distribution.condition.ComponentCondition;
 import org.talend.hadoop.distribution.condition.EqualityOperator;
 import org.talend.hadoop.distribution.condition.MultiComponentCondition;
 import org.talend.hadoop.distribution.condition.NestedComponentCondition;
+import org.talend.hadoop.distribution.condition.ShowExpression;
 import org.talend.hadoop.distribution.condition.SimpleComponentCondition;
 import org.talend.hadoop.distribution.utils.ComponentConditionUtil;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
@@ -1231,7 +1232,7 @@ public class EmfComponent extends AbstractComponent {
 
         // These parameters is only work when TIS is loaded
         // GLiu Added for Task http://jira.talendforge.org/browse/TESB-4279
-        if (PluginChecker.isTeamEdition() && !"CAMEL".equals(getPaletteType())) { //$NON-NLS-1$
+        if (PluginChecker.isTeamEdition() && !ERepositoryObjectType.PROD_CAMEL.equals(getPaletteType())) {
             boolean defaultParalelize = new Boolean(compType.getHEADER().isPARALLELIZE());
             param = new ElementParameter(node);
             param.setReadOnly(!defaultParalelize);
@@ -1514,7 +1515,7 @@ public class EmfComponent extends AbstractComponent {
             newParam.setParentParameter(parentParam);
         } else if (type == EParameterFieldType.HADOOP_LIBRARIES) {
             if (!areHadoopLibsLoaded) {
-                // We get the component type defined by the NAME of the HADOOP_DISTRIBUTION parameter.
+                // We get the component type defined by the NAME of the HADOOP_LIBRARIES parameter.
                 ComponentType componentType = ComponentType.getComponentType(parentParam.getName());
 
                 componentHadoopDistributionImportNeedsList = new ArrayList<>();
@@ -1658,11 +1659,11 @@ public class EmfComponent extends AbstractComponent {
 
                 @Override
                 public int compare(Bean b1, Bean b2) {
-                    if (!b1.getName().equals(b2.getName())) {
-                        return b1.getDistributionName().compareTo(b2.getDistributionName());
-                    } else {
-                        return b1.getName().compareTo(b2.getName());
+                    int cmp = b1.getDistributionName().compareTo(b2.getDistributionName());
+                    if (cmp == 0) {
+                        cmp = b1.getName().compareTo(b2.getName());
                     }
+                    return cmp;
                 }
             });
 
@@ -1765,16 +1766,25 @@ public class EmfComponent extends AbstractComponent {
                                     componentType.getDistributionParameter(), that.getDistributionName(), EqualityOperator.EQ);
                             org.talend.hadoop.distribution.condition.Expression e2 = new BasicExpression(
                                     componentType.getVersionParameter(), that.getName(), EqualityOperator.EQ);
+                            org.talend.hadoop.distribution.condition.Expression e3 = new ShowExpression(
+                                    componentType.getDistributionParameter());
+                            org.talend.hadoop.distribution.condition.Expression e4 = new ShowExpression(
+                                    componentType.getVersionParameter());
+
+                            // The import is needed only if the good version and the good distribution are selected, and
+                            // if the Distribution and Version parameters are shown. The second condition to take the
+                            // USE_EXISTING_CONNECTIOn into account.
+
+                            condition = new MultiComponentCondition(new SimpleComponentCondition(e1),
+                                    new MultiComponentCondition(new SimpleComponentCondition(e2), new MultiComponentCondition(
+                                            new SimpleComponentCondition(e3), new SimpleComponentCondition(e4),
+                                            BooleanOperator.AND), BooleanOperator.AND), BooleanOperator.AND);
 
                             if (group.getRequiredIf() != null) {
-                                condition = new MultiComponentCondition(new SimpleComponentCondition(e1),
-                                        new MultiComponentCondition(new SimpleComponentCondition(e2),
-                                                new NestedComponentCondition(group.getRequiredIf()), BooleanOperator.AND),
-                                        BooleanOperator.AND);
-                            } else {
-                                condition = new MultiComponentCondition(new SimpleComponentCondition(e1),
-                                        new SimpleComponentCondition(e2), BooleanOperator.AND);
+                                condition = new MultiComponentCondition(condition, new NestedComponentCondition(
+                                        group.getRequiredIf()), BooleanOperator.AND);
                             }
+
                             importType.setREQUIREDIF(condition.getConditionString());
                             importType.setMRREQUIRED(group.isMrRequired());
                             ModulesNeededProvider.collectModuleNeeded(node.getComponent() != null ? node.getComponent().getName()

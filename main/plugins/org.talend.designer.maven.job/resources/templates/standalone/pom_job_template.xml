@@ -139,7 +139,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>${basedir}/src/main/assemblies/assembly_${talend.job.name}.xml</descriptor>
+								<descriptor>${basedir}/src/main/assemblies/assembly_${talend.job.name}_${talend.job.version}.xml</descriptor>
 							</descriptors>
 							<tarLongFileMode>gnu</tarLongFileMode>
 							<appendAssemblyId>false</appendAssemblyId>

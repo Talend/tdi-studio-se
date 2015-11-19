@@ -50,18 +50,6 @@
       NUM_ROW="3"
       REPOSITORY_VALUE="DATABASE:TERADATA"
     />
-    <PARAMETER
-      NAME="EXECUTION"
-      FIELD="CLOSED_LIST"
-      NUM_ROW="4"
-      SHOW_IF="USE_COMMANDLINE=='true'"
-      REQUIRED="true"
-    >
-      <ITEMS DEFAULT="WINDOWS">
-    		<ITEM NAME="WINDOWS" VALUE="Windows" />
-    		<ITEM NAME="UNIX" VALUE="Unix" />
-    	</ITEMS>
-    </PARAMETER>
 
 	<PARAMETER
       NAME="HOST"
@@ -219,6 +207,20 @@
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
+        <PARAMETER
+            NAME="CREATE_DIRECTORIES_WHEN_NEEDED"
+            FIELD="CHECK"
+            NUM_ROW="1"
+        >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        <PARAMETER
+            NAME="DIE_WHEN_UNNORMAL_TERMINATED"
+            FIELD="CHECK"
+            NUM_ROW="2"
+            >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
         <PARAMETER NAME="PROPERTIES" FIELD="TEXT" NUM_ROW="3"
             SHOW="false">
             <DEFAULT>"TYPE=FASTEXPORT"</DEFAULT>

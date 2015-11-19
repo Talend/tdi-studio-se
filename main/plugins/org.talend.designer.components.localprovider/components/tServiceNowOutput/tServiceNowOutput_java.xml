@@ -58,8 +58,8 @@
            <TABLE IF="TABLENAME=='incident'">
                 <COLUMN KEY="false" LENGTH="0" NAME="skills" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="upon_approval" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="reopen_count" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="reopen_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="46" NAME="close_notes" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_Integer"/>
@@ -71,23 +71,23 @@
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_plan" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="2" NAME="sys_mod_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="work_notes_list" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="closed_at" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="closed_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sla_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_task" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_updated_on" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="parent" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="10" NAME="number" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="7" NAME="calendar_stc" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="7" NAME="calendar_stc" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="business_duration" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="8" NAME="category" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="incident_state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="activity_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="correlation_display" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="active" TYPE="id_Boolean"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="knowledge" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="made_sla" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="comments_and_work_notes" TYPE="id_String"/>
@@ -95,13 +95,13 @@
                 <COLUMN KEY="false" LENGTH="1" NAME="state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="user_input" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_created_on" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="reassignment_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="rfc" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="child_incidents" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="child_incidents" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="opened_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="43" NAME="short_description" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="6" NAME="sys_updated_by" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="notify" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="upon_reject" TYPE="id_String"/>
@@ -114,8 +114,8 @@
                 <COLUMN KEY="false" LENGTH="0" NAME="caused_by" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="severity" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="13" NAME="sys_created_by" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="resolved_at" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="7" NAME="business_stc" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="resolved_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="7" NAME="business_stc" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="sys_domain_path" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="subcategory" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="8" NAME="sys_class_name" TYPE="id_String"/>
@@ -128,10 +128,10 @@
             <TABLE IF="TABLENAME=='problem'">
                 <COLUMN KEY="false" LENGTH="0" NAME="skills" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="7" NAME="upon_approval" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="45" NAME="close_notes" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_Integer"/>
+                <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="correlation_id" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sys_tags" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="197" NAME="description" TYPE="id_String"/>
@@ -139,23 +139,23 @@
                 <COLUMN KEY="false" LENGTH="1" NAME="priority" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_plan" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="sys_mod_count" TYPE="id_Integer"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="related_incidents" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="related_incidents" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="work_notes_list" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="closed_at" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="closed_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sla_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_task" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_updated_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="parent" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="10" NAME="number" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="closed_by" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="business_duration" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="activity_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="correlation_display" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="company" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="active" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="known_error" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="assignment_group" TYPE="id_String"/>
@@ -165,11 +165,11 @@
                 <COLUMN KEY="false" LENGTH="1" NAME="problem_state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="user_input" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_created_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="reassignment_count" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="reassignment_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="opened_at" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="55" NAME="short_description" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="11" NAME="sys_updated_by" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="6" NAME="upon_reject" TYPE="id_String"/>
@@ -192,12 +192,12 @@
                 <COLUMN KEY="false" LENGTH="0" NAME="skills" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="7" NAME="upon_approval" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="reason" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="close_notes" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="13" NAME="type" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="justification" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_Integer"/>
+                <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="correlation_id" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sys_tags" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="219" NAME="description" TYPE="id_String"/>
@@ -206,29 +206,29 @@
                 <COLUMN KEY="false" LENGTH="0" NAME="u_vendor_responsible_for_ta" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_plan" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="2" NAME="sys_mod_count" TYPE="id_Integer"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="requested_by_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="requested_by_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="work_notes_list" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="closed_at" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="closed_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="production_system" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sla_due" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="cab_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="cab_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_task" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_updated_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="parent" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="work_end" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="work_end" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="10" NAME="number" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="closed_by" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="work_start" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="work_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="implementation_plan" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="review_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="review_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="business_duration" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="21" NAME="category" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="activity_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="correlation_display" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="company" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="active" TYPE="id_Boolean"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="due_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="cab_recommendation" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="9" NAME="phase" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="2" NAME="scope" TYPE="id_Integer"/>
@@ -238,13 +238,13 @@
                 <COLUMN KEY="false" LENGTH="1" NAME="state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="user_input" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_created_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
-                <COLUMN KEY="false" LENGTH="19" NAME="approval_set" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="reassignment_count" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="19" NAME="approval_set" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="reassignment_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="risk" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="end_date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="opened_at" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="70" NAME="short_description" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="13" NAME="sys_updated_by" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="6" NAME="upon_reject" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="287" NAME="change_plan" TYPE="id_String"/>
@@ -274,7 +274,7 @@
             <TABLE IF="TABLENAME=='sc_request'">
                 <COLUMN KEY="false" LENGTH="0" NAME="skills" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="7" NAME="upon_approval" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="expected_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="close_notes" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="impact" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="urgency" TYPE="id_Integer"/>
@@ -286,18 +286,18 @@
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_plan" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="sys_mod_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="work_notes_list" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="closed_at" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="follow_up" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="closed_at" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sla_due" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="1" NAME="delivery_address" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="delivery_task" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_updated_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="parent" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_end" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
                 <COLUMN KEY="false" LENGTH="10" NAME="number" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="closed_by" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="calendar_stc" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="work_start" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="calendar_stc" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="business_duration" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="6" NAME="price" TYPE="id_Float" PRECISION="3"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="activity_due" TYPE="id_String"/>
@@ -312,12 +312,12 @@
                 <COLUMN KEY="false" LENGTH="1" NAME="state" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="user_input" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_created_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="1" NAME="reassignment_count" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="approval_set" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;"/>
+                <COLUMN KEY="false" LENGTH="1" NAME="reassignment_count" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="9" NAME="stage" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="requested_date" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="requested_date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;"/>
                 <COLUMN KEY="false" LENGTH="19" NAME="opened_at" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="order" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="short_description" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="11" NAME="sys_updated_by" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="6" NAME="upon_reject" TYPE="id_String"/>
@@ -358,7 +358,7 @@
                 <COLUMN KEY="false" LENGTH="19" NAME="sys_updated_on" PATTERN="&quot;yyyy-MM-dd HH:mm:ss&quot;" TYPE="id_Date"/>
                 <COLUMN KEY="false" LENGTH="32" NAME="image" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="ordered_item_link" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="7" NAME="cost" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="7" NAME="cost" TYPE="id_BigDecimal"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="picture" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="price" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="no_order_now" TYPE="id_Boolean"/>
@@ -386,7 +386,7 @@
                 <COLUMN KEY="false" LENGTH="5" NAME="no_order" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="no_proceed_checkout" TYPE="id_Boolean"/>
                 <COLUMN KEY="false" LENGTH="55" NAME="sys_name" TYPE="id_String"/>
-                <COLUMN KEY="false" LENGTH="0" NAME="sc_ic_version" TYPE="id_String"/>
+                <COLUMN KEY="false" LENGTH="0" NAME="sc_ic_version" TYPE="id_Integer"/>
                 <COLUMN KEY="false" LENGTH="0" NAME="sc_ic_item_staging" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="32" NAME="sys_id" TYPE="id_String"/>
                 <COLUMN KEY="false" LENGTH="5" NAME="visible_standalone" TYPE="id_Boolean"/>

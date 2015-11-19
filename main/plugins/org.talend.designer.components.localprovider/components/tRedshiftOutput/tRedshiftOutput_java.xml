@@ -321,7 +321,7 @@
       NAME="USE_BATCH"
       FIELD="CHECK"
       NUM_ROW="30"
-      SHOW_IF="((DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE'))"
+      SHOW_IF="(DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE') OR ((DATA_ACTION == 'INSERT') AND (EXTENDINSERT == 'false'))"
       >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>

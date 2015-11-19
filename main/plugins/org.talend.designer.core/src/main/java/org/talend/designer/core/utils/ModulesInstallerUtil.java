@@ -67,9 +67,8 @@ public class ModulesInstallerUtil {
                 }
             }
             if (!opened) {
-                ComponentExternalModulesDialog dialog = new ComponentExternalModulesDialog(shell, modules, text, title);
-                dialog.setCoponentName(name);
-                dialog.openDialog();
+                ComponentExternalModulesDialog dialog = new ComponentExternalModulesDialog(shell, text, title);
+                dialog.showDialog(true, modules);
             }
 
         }
@@ -85,8 +84,8 @@ public class ModulesInstallerUtil {
                 needed.addAll(component.getModulesNeeded());
             }
             if (!needed.isEmpty()) {
-                ComponentExternalModulesDialog dialog = new ComponentExternalModulesDialog(shell, needed, text, title);
-                dialog.openDialog();
+                ComponentExternalModulesDialog dialog = new ComponentExternalModulesDialog(shell, text, title);
+                dialog.showDialog(true, needed);
             }
         }
     }

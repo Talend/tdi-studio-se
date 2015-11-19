@@ -10,9 +10,11 @@ imports="
         java.util.List
 		" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
 	String dieOnErrorStr = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
@@ -47,15 +49,19 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 				<%if(!useExistingConn){%>
 					try {
+					   <% logUtil.info("\"To Close service.\"");%>
 						service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+					   <% logUtil.info("\"Close service successfully.\"");%>
 					} catch(java.lang.Exception e) {
 						<%if(dieOnError) {%>
-						throw e;
+						      <% logUtil.error("\"Die on error:\"+e.getMessage()");%>
+						      throw e;
 						<% } else { %>
-						System.err.println(e.getMessage());
+						      System.err.println(e.getMessage());
 						<% } %>
 					}
 				<%}%>
+				<% logUtil.info("\"Read item count: \"+nb_line_"+cid);%>
 				globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);   
 			<%
 			}

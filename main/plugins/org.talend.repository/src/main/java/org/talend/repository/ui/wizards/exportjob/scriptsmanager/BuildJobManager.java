@@ -32,6 +32,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.CorePlugin;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
@@ -169,6 +170,7 @@ public class BuildJobManager {
         final String label = processItem.getProperty().getLabel();
         final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
                 exportChoiceMap, jobExportType);
+        ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist(processItem));
         final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
             @Override
@@ -199,7 +201,7 @@ public class BuildJobManager {
             }
             throw new PersistenceException(cause);
         }
-
+        ProcessUtils.setHDInsight(false);
         IFile jobTargetFile = buildJobHandler.getJobTargetFile();
         if (jobTargetFile != null && jobTargetFile.exists()) {
             IPath jobZipLocation = jobTargetFile.getLocation();

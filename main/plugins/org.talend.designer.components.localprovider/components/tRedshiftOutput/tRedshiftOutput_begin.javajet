@@ -52,7 +52,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
-	
+
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
 
@@ -63,21 +63,18 @@ skeleton="../templates/db_output_bulk.skeleton"
         rejectConnName = rejectConn.getName();
     }
 
+    boolean extendedInsert = false;
+    if ("INSERT".equalsIgnoreCase(dataAction)) {
+        extendedInsert = ("true").equals(ElementParameterParser.getValue(node, "__EXTENDINSERT__"));
+    }
+
     useBatch = (rejectConnName == null)
              && (
-                  ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
+                  ("INSERT".equals(dataAction) && !extendedInsert) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
                 )
              && useBatch;
 
-	boolean extendedInsert = false;
-
-	String dbVersion = "" ;
-
-	if ("INSERT".equalsIgnoreCase(dataAction)) {
-		extendedInsert = ("true").equals(ElementParameterParser.getValue(node, "__EXTENDINSERT__"));
-	}else {
-		extendedInsert = false;
-	}
+    String dbVersion = "" ;
 
 	String numPerInsert = ElementParameterParser.getValue(node, "__NB_ROWS_PER_INSERT__");
 %>
@@ -341,7 +338,7 @@ if(isDynamic) {
             <%
         }
     }
-    
+
     if(isDynamic) {
     	Column dynamicColumn = getColumn(getDynamicColumn());
 		String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
@@ -370,7 +367,7 @@ if(isDynamic) {
 	            count++;
 	        }
 	    }
-	    
+
 		if(isDynamic) {
 	    	Column dynamicColumn = getColumn(getDynamicColumn());
 			String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
@@ -390,7 +387,7 @@ if(isDynamic) {
 	                <%
 	            }
 	        }
-	        
+
 			if(isDynamic) {
 		    	Column dynamicColumn = getColumn(getDynamicColumn());
 				String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
@@ -410,7 +407,7 @@ if(isDynamic) {
     int rowCount<%=cid%> = 0;
 <%
 	}
-%> 
+%>
 	java.sql.PreparedStatement pstmt_<%=cid %> =null;
 	java.sql.PreparedStatement pstmtInsert_<%=cid %> =null;
 	java.sql.PreparedStatement pstmtUpdate_<%=cid %> =null;

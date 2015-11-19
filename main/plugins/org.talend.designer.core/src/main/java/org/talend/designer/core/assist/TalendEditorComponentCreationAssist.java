@@ -33,7 +33,6 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.ui.editor.PaletteComponentFactory;
 import org.talend.designer.core.ui.editor.cmd.CreateNodeContainerCommand;
-import org.talend.designer.core.ui.editor.cmd.CreateNoteCommand;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.ConnectionFigure;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
@@ -41,7 +40,6 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
-import org.talend.designer.core.ui.editor.notes.Note;
 import org.talend.designer.core.ui.editor.process.Process;
 
 public class TalendEditorComponentCreationAssist {
@@ -284,12 +282,6 @@ public class TalendEditorComponentCreationAssist {
         e.stateMask = 0;
         e.widget = graphicControl;
         MouseEvent mouseEvent = new MouseEvent(e);
-        if (component.getName().toLowerCase().equals("note")) {
-            newNode = new Note();
-            CreateNoteCommand command = new CreateNoteCommand((Process) process, (Note) newNode, new Point(e.x, e.y));
-            command.execute();
-            return newNode;
-        }
 
         TalendAssistantCreationTool creationTool = new TalendAssistantCreationTool(new PaletteComponentFactory(component));
 

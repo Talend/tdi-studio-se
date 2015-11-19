@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.designer.codegen;
 
-import org.eclipse.core.runtime.Preferences;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.talend.core.GlobalServiceRegister;
@@ -50,25 +48,6 @@ public class CodeGeneratorActivator extends AbstractUIPlugin {
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
-        Preferences preferences = JavaCore.getPlugin().getPluginPreferences();
-
-        if (!isRequiredJREVersion(preferences.getString(JavaCore.COMPILER_COMPLIANCE))) {
-            preferences.setValue(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_5);
-        }
-
-        if (!isRequiredJREVersion(preferences.getString(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM))) {
-            preferences.setValue(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_5);
-        }
-        if (!isRequiredJREVersion(preferences.getString(JavaCore.COMPILER_SOURCE))) {
-            preferences.setValue(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_5);
-        }
-    }
-
-    private boolean isRequiredJREVersion(String version) {
-        if (version.equals(JavaCore.VERSION_1_5) || version.equals(JavaCore.VERSION_1_6)) {
-            return true;
-        }
-        return false;
     }
 
     /**

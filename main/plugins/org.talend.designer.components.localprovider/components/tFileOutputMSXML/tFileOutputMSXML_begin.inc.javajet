@@ -370,13 +370,16 @@ class GenerateToolByDom4j{
 		org.dom4j.QName qname_<%=currEleName%>_<%=cid%> = org.dom4j.DocumentHelper.createQName("<%=localName%>",org.dom4j.DocumentHelper.createNamespace("<%=prefix%>","<%=uri%>"));
 		<%touchXMLNode.putCurrentElementByQName(currEleName);%>
 		
-		java.util.List<org.dom4j.Element> allElements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements();
-		java.util.List<org.dom4j.Element> elements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements(qname_<%=currEleName%>_<%=cid%>);
-		int order_<%=currEleName%>_<%=cid%> = allElements_<%=currEleName%>_<%=cid%>.size();
-		int app_size_<%=cid %> = elements_<%=currEleName%>_<%=cid%>.size();
-		if(app_size_<%=cid %> > 0){
-			order_<%=currEleName%>_<%=cid%> = 1 + allElements_<%=currEleName%>_<%=cid%>.indexOf(elements_<%=currEleName%>_<%=cid%>.get(app_size_<%=cid %>-1));
-		}else{
+		if(orderHelper_<%=cid%>.need_recalculate("<%=tool.connName + "_" + currEleName%>")) {
+			java.util.List<org.dom4j.Element> allElements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements();
+			int order_<%=cid%> = allElements_<%=currEleName%>_<%=cid%>.size();
+			
+    		java.util.List<org.dom4j.Element> elements_<%=currEleName%>_<%=cid%> = <%touchXMLNode.getXMLElement(parentName);%>.elements(qname_<%=currEleName%>_<%=cid%>);
+    		int app_size_<%=cid %> = elements_<%=currEleName%>_<%=cid%>.size();
+    		
+    		if(app_size_<%=cid %> > 0){
+    			order_<%=cid%> = 1 + allElements_<%=currEleName%>_<%=cid%>.indexOf(elements_<%=currEleName%>_<%=cid%>.get(app_size_<%=cid %>-1));
+    		}else{
 <%
 			List<XMLNode> nextSiblings = node.getNextSiblings();
 			int size = nextSiblings.size();
@@ -388,24 +391,41 @@ class GenerateToolByDom4j{
 				prefix = namespaceHelper.getPrefix();
 				localName = namespaceHelper.getLocalName();
 %>
-			org.dom4j.QName qname_sibling_<%=currEleName%>_<%=cid%>_<%=i%> = org.dom4j.DocumentHelper.createQName("<%=localName%>",org.dom4j.DocumentHelper.createNamespace("<%=prefix%>","<%=uri%>"));
-			org.dom4j.Element sibling_<%=currEleName%>_<%=cid%>_<%=i%> = <%touchXMLNode.getXMLElement(parentName);%>.element(qname_sibling_<%=currEleName%>_<%=cid%>_<%=i%>);
-			int index_sibling_<%=currEleName%>_<%=cid%>_<%=i%> = allElements_<%=currEleName%>_<%=cid%>.indexOf(sibling_<%=currEleName%>_<%=cid%>_<%=i%>);
-			if(index_sibling_<%=currEleName%>_<%=cid%>_<%=i%> > -1) {
-				order_<%=currEleName%>_<%=cid%> = index_sibling_<%=currEleName%>_<%=cid%>_<%=i%>;
-			} else {
+    			org.dom4j.QName qname_sibling_<%=currEleName%>_<%=cid%>_<%=i%> = org.dom4j.DocumentHelper.createQName("<%=localName%>",org.dom4j.DocumentHelper.createNamespace("<%=prefix%>","<%=uri%>"));
+    			org.dom4j.Element sibling_<%=currEleName%>_<%=cid%>_<%=i%> = <%touchXMLNode.getXMLElement(parentName);%>.element(qname_sibling_<%=currEleName%>_<%=cid%>_<%=i%>);
+    			int index_sibling_<%=currEleName%>_<%=cid%>_<%=i%> = allElements_<%=currEleName%>_<%=cid%>.indexOf(sibling_<%=currEleName%>_<%=cid%>_<%=i%>);
+    			if(index_sibling_<%=currEleName%>_<%=cid%>_<%=i%> > -1) {
+    				order_<%=cid%> = index_sibling_<%=currEleName%>_<%=cid%>_<%=i%>;
+    			} else {
 <%
 			
 			}//TD512
 			
 			while(size-- > 0) {
 %>
-			}
+				}
 <%
 			}
 %>
+			}
+			
+			if(order_<%=cid%> == allElements_<%=currEleName%>_<%=cid%>.size()) {
+				orderHelper_<%=cid%>.fillTailAppendMap("<%=tool.connName + "_" + currEleName%>",true);
+			}
+			
+			orderHelper_<%=cid%>.setOrder("<%=tool.connName + "_" + currEleName%>",order_<%=cid%>);
+			orderHelper_<%=cid%>.fillRecalculateOrderMap("<%=tool.connName + "_" + currEleName%>",false);
+		} else {
+			int order_<%=cid%> = orderHelper_<%=cid%>.order("<%=tool.connName + "_" + currEleName%>");
+			orderHelper_<%=cid%>.setOrder("<%=tool.connName + "_" + currEleName%>",++order_<%=cid%>);
 		}
-		<%touchXMLNode.getXMLElement(parentName);%>.elements().add(order_<%=currEleName%>_<%=cid%>,<%touchXMLNode.getXMLNode(currEleName);%>);
+		
+		if(orderHelper_<%=cid%>.tailAppend("<%=tool.connName + "_" + currEleName%>")) {
+			<%touchXMLNode.getXMLElement(parentName);%>.add(<%touchXMLNode.getXMLNode(currEleName);%>);
+		} else {
+			<%touchXMLNode.getXMLElement(parentName);%>.elements().add(orderHelper_<%=cid%>.order("<%=tool.connName + "_" + currEleName%>"),<%touchXMLNode.getXMLNode(currEleName);%>);
+		}
+		
 <%
 		}else{
 			

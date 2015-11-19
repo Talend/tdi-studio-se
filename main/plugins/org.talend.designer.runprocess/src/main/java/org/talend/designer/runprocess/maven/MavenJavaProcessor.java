@@ -151,6 +151,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         }
     }
 
+    @Override
     protected String getBasePathClasspath() throws ProcessorException {
         final boolean exportingJob = ProcessorUtilities.isExportConfig();
         String basePathClasspath = super.getBasePathClasspath();
@@ -191,11 +192,11 @@ public class MavenJavaProcessor extends JavaProcessor {
     }
 
     /**
-     * .Java/pom_TestJob.xml
+     * .Java/pom_TestJob_0.1.xml
      */
     protected IFile getPomFile() {
         if (isStandardJob()) {
-            String pomFileName = PomUtil.getPomFileName(this.getProperty().getLabel());
+            String pomFileName = PomUtil.getPomFileName(this.getProperty().getLabel(), this.getProperty().getVersion());
             return this.getTalendJavaProject().getProject().getFile(pomFileName);
         } else { // not standard job, won't have pom file.
             return null;
@@ -203,11 +204,11 @@ public class MavenJavaProcessor extends JavaProcessor {
     }
 
     /**
-     * .Java/src/main/assemblies/assembly_TestJob.xml
+     * .Java/src/main/assemblies/assembly_TestJob_0.1.xml
      */
     protected IFile getAssemblyFile() {
         if (isStandardJob()) {
-            String assemblyFileName = PomUtil.getAssemblyFileName(this.getProperty().getLabel());
+            String assemblyFileName = PomUtil.getAssemblyFileName(this.getProperty().getLabel(), this.getProperty().getVersion());
             return this.getTalendJavaProject().getAssembliesFolder().getFile(assemblyFileName);
         } else { // not standard job, won't have assembly file.
             return null;

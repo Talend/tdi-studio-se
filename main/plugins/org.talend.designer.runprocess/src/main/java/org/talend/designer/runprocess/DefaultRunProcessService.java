@@ -51,6 +51,7 @@ import org.talend.core.model.runprocess.data.PerformanceData;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.language.SyntaxCheckerFactory;
@@ -165,6 +166,17 @@ public class DefaultRunProcessService implements IRunProcessService {
      * @return
      */
     protected IProcessor createJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
+        boolean isTestContainer = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                    .getDefault().getService(ITestContainerProviderService.class);
+            if (testContainerService != null && property != null && property.getItem() != null) {
+                isTestContainer = testContainerService.isTestContainerItem(property.getItem());
+            }
+        }
+        if (isTestContainer) {
+            return new MavenJavaProcessor(process, property, filenameFromLabel);
+        }
         if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType())) {
             return new MapReduceJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(process.getComponentsType())) {

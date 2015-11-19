@@ -79,7 +79,7 @@
 			NUM_ROW="21" REPOSITORY_VALUE="PASSWORD" NOT_SHOW_IF="((SFTP=='true') AND (AUTH_METHOD == 'PUBLICKEY')) OR (USE_EXISTING_CONNECTION == 'true')">
 			<DEFAULT>"suomynona"</DEFAULT>
 		</PARAMETER>
-		
+
 		<PARAMETER NAME="SFTP" FIELD="CHECK" NUM_ROW="81" REPOSITORY_VALUE="SFTP" SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
           <DEFAULT>false</DEFAULT>
         </PARAMETER>
@@ -121,11 +121,11 @@
 			NUM_ROW="41">
 			<DEFAULT>"."</DEFAULT>
 		</PARAMETER>
-		
+
 	    <PARAMETER NAME="MOVE_TO_THE_CURRENT_DIRECTORY" FIELD="CHECK" NUM_ROW="41" SHOW_IF="USE_EXISTING_CONNECTION == 'true'">
 	      <DEFAULT>true</DEFAULT>
 	    </PARAMETER>
-	    
+
 		<PARAMETER NAME="DIR_FULL" FIELD="CHECK" NUM_ROW="51">
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
@@ -142,7 +142,7 @@
 	     	<ITEM NAME="ACTIVE"  VALUE="ACTIVE" />
 	      </ITEMS>
 	    </PARAMETER>
-	    
+
 	    <PARAMETER
       NAME="USE_ENCODING"
       FIELD="CHECK"
@@ -151,7 +151,7 @@
       REQUIRED="true" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (SFTP == 'true')">
        <DEFAULT>false</DEFAULT>
     </PARAMETER>
-	    
+
     <PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"
@@ -161,8 +161,8 @@
       NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') or ((SFTP == 'true') and (USE_ENCODING == 'false'))">
        <DEFAULT>"ISO-8859-15"</DEFAULT>
     </PARAMETER>
-	    
-    
+
+
 	</PARAMETERS>
 
 	<ADVANCED_PARAMETERS>
@@ -198,7 +198,7 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Java-FTP" MODULE="edtftpj.jar" MVN="mvn:org.talend.libraries/edtftpj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj.jar" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
+			<IMPORT NAME="Java-FTP" MODULE="edtftpj-2.4.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.4.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.4.0.jar" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
 			<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.51.jar" MVN="mvn:org.talend.libraries/jsch-0.1.51/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.51.jar" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		</IMPORTS>
 	</CODEGENERATION>

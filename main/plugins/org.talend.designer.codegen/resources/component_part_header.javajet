@@ -137,7 +137,7 @@
 	<%
 	connSet =  new HashSet<IConnection>();
 	connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MAIN));
-	connSet.addAll(node.getOutgoingConnections(EConnectionType.FLOW_MERGE));
+	connSet.addAll(node.getIncomingConnections(EConnectionType.FLOW_MERGE));
 
 	if ((codePart.equals(ECodePart.BEGIN))&&(stat)&&connSet.size()>0) {
 		for(IConnection con:connSet){

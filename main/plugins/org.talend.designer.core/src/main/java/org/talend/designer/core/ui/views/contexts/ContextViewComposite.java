@@ -85,7 +85,7 @@ public class ContextViewComposite extends ContextComposite {
 
     @Override
     public IProcess2 getProcess() {
-        if (part == null) {
+        if (part == null || !(part instanceof AbstractMultiPageTalendEditor)) {
             return null;
         }
         if (((AbstractMultiPageTalendEditor) part).getTalendEditor() == null) {

@@ -19,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -145,35 +144,8 @@ public class JavaScdDialog extends AbstractScdDialog {
         sashForm.setSashWidth(3);
 
         // the following codes are used to adjust the heights
-        sashForm.pack();
-
-        GridData gridData1 = (GridData) filterUnusedComposite.getLayoutData();
-        Control type2Control = type2Fields.getControl();
-        type2Control.pack();
-
-        GridData gridData2 = (GridData) type2Control.getLayoutData();
-        Control surrogateControl = surrogateKeys.getControl();
-        surrogateControl.pack();
-
         int totalHeight = getDialogSize().y;
-        int surrogateHeight = (surrogateControl.getSize().y + 40) * 2;
-        int averageHeight = (int) (totalHeight * 1.0 / 3);
-        int sashForm2Height = type2Control.getSize().y;
-
-        if (sashForm2Height < surrogateHeight) {
-            sashForm2Height = surrogateHeight;
-        }
-
-        if (averageHeight < sashForm2Height) {
-            sashForm2Height = (int) ((sashForm2Height - averageHeight) * 3.0 / 4 + averageHeight);
-            averageHeight = (int) ((totalHeight - sashForm2Height) * 2.0 / 5);
-        }
-        int sashForm3Height = averageHeight;
-        int sashForm1Height = totalHeight - sashForm2Height - sashForm3Height;
-        gridData1.heightHint = sashForm1Height;
-        gridData2.heightHint = sashForm2Height;
-
-        sashForm.setWeights(new int[] { sashForm1Height, sashForm2Height, sashForm3Height });
+        sashForm.setWeights(new int[] { totalHeight / 4, totalHeight / 2, totalHeight / 4 });
         return sashForm;
     }
 

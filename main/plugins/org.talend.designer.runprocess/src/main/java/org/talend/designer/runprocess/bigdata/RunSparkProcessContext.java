@@ -12,10 +12,13 @@
 // ============================================================================
 package org.talend.designer.runprocess.bigdata;
 
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Property;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.designer.runprocess.spark.SparkJavaProcessor;
 
 /**
@@ -42,6 +45,17 @@ public class RunSparkProcessContext extends RunBigDataProcessContext {
      */
     @Override
     protected IProcessor createProcessor(IProcess process, Property property, boolean filenameFromLabel) {
+        boolean isTestContainer = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                    .getDefault().getService(ITestContainerProviderService.class);
+            if (testContainerService != null && property != null && property.getItem() != null) {
+                isTestContainer = testContainerService.isTestContainerItem(property.getItem());
+            }
+        }
+        if (isTestContainer) {
+            return new MavenJavaProcessor(process, property, filenameFromLabel);
+        }
         return new SparkJavaProcessor(process, property, filenameFromLabel);
     }
 

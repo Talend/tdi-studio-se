@@ -160,6 +160,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         if (PluginChecker.isSVNProviderPluginLoaded()) {
             store.setDefault(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK, true);
             store.setDefault(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK_TIME_INTERVAL, 1);
+            store.setDefault(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK, true);
+            store.setDefault(ITalendCorePrefConstants.AUTO_REFRESH_LOCKS, true);
         }
 
         if (!CommonUIPlugin.isFullyHeadless()) {

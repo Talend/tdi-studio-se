@@ -24,6 +24,12 @@ imports="
  %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
+    int nb_line_<%=cid%> = 0;
+    int nb_line_inserted_<%=cid%> = 0;
+    int nb_line_deleted_<%=cid%> = 0;
+    int nb_line_updated_<%= cid %> = 0;
+    int nb_line_rejected_<%=cid%> = 0;
+
        String docIdSuffix_<%= cid %> = "";
        com.marklogic.client.DatabaseClient client_<%= cid %> = null;
 <%

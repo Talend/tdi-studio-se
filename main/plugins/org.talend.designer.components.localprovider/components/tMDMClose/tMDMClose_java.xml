@@ -9,6 +9,7 @@
     AUTHOR="Talend"
     RELEASE_DATE="20100106A"
     STARTABLE="true"
+    LOG4J_ENABLED="true"
   >
     <SIGNATURE/>
   </HEADER>

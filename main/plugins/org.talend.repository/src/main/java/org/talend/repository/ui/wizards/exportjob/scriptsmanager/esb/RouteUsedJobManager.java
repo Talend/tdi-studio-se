@@ -47,10 +47,9 @@ public class RouteUsedJobManager extends JobJavaScriptOSGIForESBManager {
 	private String artifactId;
 	private String artifactVersion;
     private List<URL> dllLibraries = new java.util.ArrayList<URL>();
-    
 
-	public RouteUsedJobManager(Map<ExportChoice, Object> exportChoiceMap) {
-		super(exportChoiceMap, null, null, IProcessor.NO_STATISTICS, IProcessor.NO_TRACES);
+	public RouteUsedJobManager(Map<ExportChoice, Object> exportChoiceMap, String context) {
+		super(exportChoiceMap, context, null, IProcessor.NO_STATISTICS, IProcessor.NO_TRACES);
 		setMultiNodes(false);
 	}
 

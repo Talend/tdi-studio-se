@@ -827,6 +827,10 @@ public class ComponentsFactory implements IComponentsFactory {
         componentList = null;
         skeletonList = null;
         customComponentList = null;
+        Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+        for (IComponentFactoryFilter filter : filters) {
+            filter.cleanCache();
+        }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
             IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
                     IJobletProviderService.class);
@@ -903,6 +907,7 @@ public class ComponentsFactory implements IComponentsFactory {
         return list;
     }
 
+    @Override
     public List<ComponentProviderInfo> getComponentsProvidersInfo() {
         List<ComponentProviderInfo> list = new ArrayList<ComponentProviderInfo>();
         ComponentsProviderManager componentsProviderManager = ComponentsProviderManager.getInstance();

@@ -1052,6 +1052,7 @@ public class RunProcessContext {
                     LineNumberReader reader = new LineNumberReader(new InputStreamReader(in));
                     while (!stopThread) {
                         String line = reader.readLine();
+                        // System.out.println("***" + line);
                         showMapReduceData(line);
                         showSparkStreamingData(line);
                         if (LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA) {

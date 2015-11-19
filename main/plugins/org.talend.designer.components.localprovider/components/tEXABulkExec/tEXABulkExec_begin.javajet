@@ -1,0 +1,183 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.MetadataTalendType    
+    org.talend.core.model.metadata.MappingTypeRetriever    
+    java.util.List
+    java.util.ArrayList    
+    java.util.Map
+    java.util.HashMap
+" 
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+String table = ElementParameterParser.getValue(node, "__TABLE__");
+String dbhost = ElementParameterParser.getValue(node, "__HOST__");
+String dbport = ElementParameterParser.getValue(node, "__PORT__");
+String userName = ElementParameterParser.getValue(node, "__USER__");
+String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
+String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
+String fileOptColumnSeparator = ElementParameterParser.getValue(node, "__COLUMN_SEPARATOR__");
+String fileOptColumnEnclosure = ElementParameterParser.getValue(node, "__COLUMN_DELIMITER__");
+String fileOptRowSeparator = ElementParameterParser.getValue(node, "__ROW_SEPARATOR__");
+String fileOptTrim = ElementParameterParser.getValue(node, "__TRIM_METHOD__");
+String fileOptEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
+String fileOptSkip = ElementParameterParser.getValue(node, "__SKIP__");
+String fileOptNullString = ElementParameterParser.getValue(node, "__NULLSTRING__");
+String defaultDateFormat = ElementParameterParser.getValue(node, "__DEFAULT_DATE_FORMAT__");
+String defaultTimestampFormat = ElementParameterParser.getValue(node, "__DEFAULT_TIMESTAMP_FORMAT__");
+String numGroupSep = ElementParameterParser.getValue(node, "__THOUSANDS_SEPARATOR__");
+if (numGroupSep == null|| numGroupSep.trim().isEmpty()) {
+	numGroupSep = "null";
+}
+String numDecSep = ElementParameterParser.getValue(node, "__DECIMAL_SEPARATOR__");
+if (numDecSep == null|| numDecSep.trim().isEmpty()) {
+	numDecSep = "null";
+}
+String file = ElementParameterParser.getValue(node, "__FILENAME__");
+boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+boolean secureTransfer = "true".equals(ElementParameterParser.getValue(node, "__SECURE_TRANSFER__"));
+String errorTable = ElementParameterParser.getValue(node, "__ERROR_TABLE__");
+if (errorTable == null || errorTable.trim().isEmpty()) {
+	errorTable = "null";
+}
+boolean errorTableWithTimestamp = "true".equals(ElementParameterParser.getValue(node, "__ERROR_TABLE_WITH_CURRENT_TIMESTAMP__"));
+String localErrorFile = ElementParameterParser.getValue(node, "__LOCAL_ERROR_FILE__");
+if (localErrorFile == null || localErrorFile.trim().isEmpty()) {
+	localErrorFile = "null";
+}
+String errorDest = ElementParameterParser.getValue(node, "__ERROR_LOG_DESTINATION__");
+boolean localErrorFileWithTimestamp = "true".equals(ElementParameterParser.getValue(node, "__LOCAL_ERROR_FILE_WITH_CURRENT_TIMESTAMP__"));
+String errorLimit = ElementParameterParser.getValue(node, "__ERROR_LIMIT__");
+if (errorLimit == null || errorLimit.trim().isEmpty()) {
+	errorLimit = "null";
+}
+boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jDBConnUtil.javajet"%>
+
+int deletedCount_<%=cid%> = 0;
+int insertedCount_<%=cid%> = 0;
+// schema is mandatory
+String tableName_<%=cid%> = <%=dbschema%> + "." + <%=table%>;
+java.sql.Connection conn_<%=cid%> = null;
+<%	if (useExistingConnection) { %>
+conn_<%=cid%> = (java.sql.Connection) globalMap.get("conn_" + "<%=connection%>");
+<% } else { %>
+try {
+	 java.lang.Class.forName("com.exasol.jdbc.EXADriver").newInstance();
+} catch (Exception e) {
+	 globalMap.put("<%=cid%>_ERROR_MESSAGE", "Load driver failed: " + e.getMessage());
+	 throw e;
+}
+<%     if (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) { %>
+String url_<%=cid%> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%>+ ";schema=" + <%=dbschema%>; 
+<%     } else { %>
+String url_<%=cid%> = "jdbc:exa:" + <%=dbhost%> + ":" + <%=dbport%> + ";schema=" + <%=dbschema%> + ";" + <%=dbproperties%>;
+<%     } %> 
+
+<% String passwordFieldName = "__PASS__"; %>
+<%@include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+String dbPwd_<%=cid%> = decryptedPassword_<%=cid%>;
+
+try {    
+	 conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, <%=userName%>, dbPwd_<%=cid%>);
+} catch (Exception e) {
+	 String message = "Connect failed: " + e.getMessage();
+	 globalMap.put("<%=cid%>_ERROR_MESSAGE", message);
+	 throw e;
+}
+<%	} %>
+
+<% String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
+   String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+   List<IMetadataColumn> columnList = getColumnList(node);
+   List<Column> stmtStructure = null;
+   Manager manager = null;
+   if (columnList != null && columnList.size() > 0) {
+	    stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null); %>
+<%@include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForBulk.javajet"%>	
+<% } %>
+globalMap.put("<%=cid%>_NB_LINE_DELETED", deletedCount_<%=cid%>); 
+org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol.EXABulkUtil();
+<%=cid%>.setConnection(conn_<%=cid%>);
+<%=cid%>.setTransferSecure(<%=secureTransfer%>);
+<%=cid%>.setTable(tableName_<%=cid%>);
+<%=cid%>.setLocalFilePath(<%=file%>);
+<% if (defaultDateFormat != null && defaultDateFormat.trim().isEmpty() == false) { %>
+// setup the format of date values if no dedicated pattern is provided for a column 
+<%=cid%>.setDefaultDateFormat(<%=defaultDateFormat%>);
+<% } %>
+<% if (defaultTimestampFormat != null && defaultTimestampFormat.trim().isEmpty() == false) { %>
+// setup the format of timestamp values if no dedicated pattern is provided for a column
+<%=cid%>.setDefaultTimestampFormat(<%=defaultTimestampFormat%>);
+<% } %>
+// setup numeric separators, default if nothing set is the English format
+<%=cid%>.setDefaultNumericCharacters(<%=numGroupSep%>, <%=numDecSep%>);
+<% if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
+<% } %>
+<% if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
+<% } %>
+<% if (fileOptColumnSeparator != null && fileOptColumnSeparator.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptColumnSeparator(<%=fileOptColumnSeparator%>);
+<% } %>
+<% if (fileOptEncoding != null && fileOptEncoding.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptEncoding(<%=fileOptEncoding%>);
+<% } %>
+<% if (fileOptRowSeparator != null && fileOptRowSeparator.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptRowSeparator(<%=fileOptRowSeparator%>);
+<% } %>
+<% if (fileOptTrim != null && fileOptTrim.trim().isEmpty() == false && "NONE".equals(fileOptTrim) == false) { %>
+<%=cid%>.setFileOptTrim("<%=fileOptTrim%>");
+<% } %>
+<% if (fileOptSkip != null && fileOptSkip.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptSkip(<%=fileOptSkip%>);
+<% } %>
+<% if (fileOptNullString != null && fileOptNullString.trim().isEmpty() == false) { %>
+<%=cid%>.setFileOptNullIdentifier(<%=fileOptNullString%>);
+<% } %>
+// add columns
+<% if (columnList != null && columnList.size() > 0) {
+       for (IMetadataColumn column : columnList) { 
+       	  String name = column.getLabel();
+       	  String format = column.getPattern();
+       	  if (format == null || format.trim().isEmpty()) {
+       	 	   format = "null";
+       	  } %>
+<%=cid%>.addCSVColumn("<%=name%>", null, <%=format%>);
+<%     }
+   }
+%>
+<%=cid%>.setErrorRejectLimit(<%=errorLimit%>);
+<% if ("TABLE".equals(errorDest)) { %>
+// setup error monitoring to a log table
+<%=cid%>.setErrorTableWithCurrentTimestamp(<%=errorTableWithTimestamp%>);
+<%=cid%>.setErrorTable(<%=errorTable%>);
+<% } %>
+<% if ("LOCAL_FILE".equals(errorDest)) { %>
+// setup error monitoring to a local log file
+<%=cid%>.setLocalErrorFileWithCurrentTimestamp(<%=localErrorFileWithTimestamp%>);
+<%=cid%>.setLocalErrorFile(<%=localErrorFile%>);
+globalMap.put("<%=cid%>_ERROR_LOG_FILE", <%=cid%>.getLocalErrorFile());
+<% } %>
+// execute the import
+try {
+	 globalMap.put("<%=cid%>_FILENAME", <%=cid%>.getLocalFilePath());
+    <%=cid%>.executeImport();
+    insertedCount_<%=cid%> = <%=cid%>.getCountAffectedRows();
+    globalMap.put("<%=cid%>_NB_LINE_INSERTED", insertedCount_<%=cid%>); 
+} catch (Exception e) {
+	 globalMap.put("<%=cid%>_ERROR_MESSAGE", "Import failed: " + e.getMessage());
+	 throw e;
+}

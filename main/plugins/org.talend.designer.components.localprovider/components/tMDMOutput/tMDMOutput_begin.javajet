@@ -5,9 +5,11 @@ imports="
     	org.talend.designer.codegen.config.CodeGeneratorArgument
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
 	if(destination!=null && !"".equals(destination)){
@@ -36,6 +38,8 @@ imports="
 int nb_line_<%=cid %> = 0;
 int nb_line_rejected_<%=cid%> = 0;
 <%if(!usePartialUpdate){%>
+    <% logUtil.debug("\"Try to use full update.\"");%>
+    
 	<%if(addTaskID){%>
 		class Util_<%=cid%>{
 			public org.talend.mdm.webservice.WSUpdateMetadataItem makeUpdateMeteItm(String taskID,org.talend.mdm.webservice.WSItemPK wspk){
@@ -58,8 +62,10 @@ int nb_line_rejected_<%=cid%> = 0;
 	<%}%>
 	<%if(isMassInsert){
 		if(!isStaging && withReport){%>
+		    <% logUtil.debug("\"Put item with report to master data.\"");%>
 			java.util.List <org.talend.mdm.webservice.WSPutItemWithReport> miList_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSPutItemWithReport>();
 	<%	}else{%>
+		    <% logUtil.debug("\"Put item to staging data.\"");%>
 			java.util.List <org.talend.mdm.webservice.WSPutItem> miList_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSPutItem>();
 	<%
 		}
@@ -72,6 +78,9 @@ int nb_line_rejected_<%=cid%> = 0;
 }%>
 
 <%if(!useExistingConn){%>
+
+    <% logUtil.info("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+    
     String murl = <%=mdmUrl %>;
     if(murl.endsWith("?wsdl")) {
         murl = murl.substring(0, murl.length() - 5);
@@ -92,6 +101,8 @@ int nb_line_rejected_<%=cid%> = 0;
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
+    
+    <% logUtil.info("\"Got service successfully.\"");%>
 <%}else{%>
 	org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 <%}%>

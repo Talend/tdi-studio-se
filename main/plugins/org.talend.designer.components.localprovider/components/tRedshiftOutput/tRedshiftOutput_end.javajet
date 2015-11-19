@@ -40,7 +40,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	String incomingConnName = null;
     List<IMetadataColumn> columnList = getColumnList(node);
-    
+
     List< ? extends IConnection> conns = node.getIncomingConnections();
     if(conns!=null && conns.size()>0){
         IConnection conn = conns.get(0);
@@ -57,14 +57,14 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
 
     List<Column> stmtStructure =  getManager(dbmsId, cid).createColumnList(columnList, useFieldOptions, fieldOptions, addCols);
-    
+
     List<Column> colStruct =  new ArrayList();
     for(Column colStmt:stmtStructure){
     	if (!colStmt.isReplaced()&&!colStmt.isAddCol()&&!colStmt.isDynamic()) {
             colStruct.add(colStmt);
         }
     }
-    
+
     isDynamic = isDynamic && !getManager(dbmsId, cid).isDynamicColumnReplaced();
 
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
@@ -77,13 +77,16 @@ skeleton="../templates/db_output_bulk.skeleton"
         rejectConnName = rejectConn.getName();
     }
 
+    boolean extendedInsert = false;
+    if ("INSERT".equalsIgnoreCase(dataAction)) {
+        extendedInsert = "true".equals(ElementParameterParser.getValue(node, "__EXTENDINSERT__"));
+    }
+
     useBatch = (rejectConnName == null)
              && (
-                  ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
+                  ("INSERT".equals(dataAction) && !extendedInsert) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
                 )
              && useBatch;
-
-	boolean extendedInsert = false;
 
 	Map<String, StringBuilder> actionSQLMap = getManager(dbmsId, cid).createProcessSQL(stmtStructure);
     StringBuilder insertColName = actionSQLMap.get(INSERT_COLUMN_NAME);
@@ -92,9 +95,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     StringBuilder updateWhereStmt = actionSQLMap.get(UPDATE_WHERE_STMT);
     StringBuilder deleteWhereStmt = actionSQLMap.get(DELETE_WHERE_STMT);
 
-	if ("INSERT".equalsIgnoreCase(dataAction)) {
-		extendedInsert = ("true").equals(ElementParameterParser.getValue(node, "__EXTENDINSERT__"));
-	}
+
 
 	String numPerInsert = ElementParameterParser.getValue(node, "__NB_ROWS_PER_INSERT__");
 
@@ -300,7 +301,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 			rowCount<%=cid%> = 0;
 	        for(BufferLine_<%=cid%> bufferL<%=cid%> : exInsertColValueList<%=cid%>){
-				int count<%=cid%> = rowCount<%=cid%> * 
+				int count<%=cid%> = rowCount<%=cid%> *
 					(<%=insertableCount%>
 <%
 					if(isDynamic) {
@@ -309,7 +310,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 						+ bufferL<%=cid%>.<%=dynamicColumn.getName()%>.getColumnCount()
 <%
 					}
-%> 
+%>
 					)
 				+ 1;
 <%
@@ -322,7 +323,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                    <%
 	                }
 	            }
-	            
+
 	            if(isDynamic) {
 					Column dynamicColumn = getColumn(getDynamicColumn());
 					String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());

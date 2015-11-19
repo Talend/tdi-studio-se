@@ -11,15 +11,15 @@
 
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
     final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-    if (isLog4jEnabled) {
 	%>
-		log.info("<%=cid%> - Deleted tasks count: "+ deleted_task_<%=cid%> + " .");
-	<%
-	}
-	%>
+	
+    <% logUtil.info("\"Deleted tasks count: \"+deleted_task_"+cid);%>
+	
 	globalMap.put("<%=cid %>_DELETED_TASK_NUMBER",deleted_task_<%=cid%>);

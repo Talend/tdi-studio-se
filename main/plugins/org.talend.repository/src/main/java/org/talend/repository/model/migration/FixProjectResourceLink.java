@@ -18,12 +18,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ReferenceFileItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.XmiResourceManager;
@@ -52,6 +54,8 @@ public class FixProjectResourceLink extends AbstractItemMigrationTask {
         // (like for example item look for: ../../../talend.project, but it should be: ../../talend.project)
         IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         item.getProperty().setAuthor(factory.getRepositoryContext().getUser());
+
+        clearReferenceResourcesFileName(item);
 
         // now we should remove wrong URI from resource manager.
         // if this bug above happen, means the resourceSet keep wrong link to the project
@@ -83,6 +87,16 @@ public class FixProjectResourceLink extends AbstractItemMigrationTask {
         return ExecutionResult.SUCCESS_NO_ALERT;
     }
 
+    private void clearReferenceResourcesFileName(Item item) {
+        EList<ReferenceFileItem> referenceResources = item.getReferenceResources();
+        if (referenceResources != null && !referenceResources.isEmpty()) {
+            for (ReferenceFileItem refFileItem : referenceResources) {
+                refFileItem.setName(null);
+            }
+        }
+    }
+
+    @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2010, 12, 20, 12, 0, 0);
         return gc.getTime();

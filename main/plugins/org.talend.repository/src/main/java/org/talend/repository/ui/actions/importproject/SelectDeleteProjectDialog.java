@@ -113,14 +113,22 @@ public class SelectDeleteProjectDialog extends SelectionDialog {
         List<String> notExportProjects = Arrays.asList(GeneralParametersProvider
                 .getStrings(GeneralParameters.PROJECTS_EXCLUDED_FROM_EXPORT));
         IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+        if (projects == null) {
+            CommonExceptionHandler.process(new Exception(Messages.getString("SelectDeleteProjectDialog.retrieveProjects.npe"))); //$NON-NLS-1$
+            return;
+        }
         for (int i = 0; i < projects.length; i++) {
-            if (!projects[i].getResourceAttributes().isReadOnly() && projects[i].isOpen()
-                    && !notExportProjects.contains(projects[i].getName())) {
-                if (!login && pro.getLabel().toLowerCase().equals(projects[i].getName().toLowerCase())) {
-                    // nothing need to do
-                } else {
-                    projectItemList.add(projects[i]);
+            try {
+                if (projects[i] != null && !projects[i].getResourceAttributes().isReadOnly() && projects[i].isOpen()
+                        && !notExportProjects.contains(projects[i].getName())) {
+                    if (!login && pro.getLabel().toLowerCase().equals(projects[i].getName().toLowerCase())) {
+                        // nothing need to do
+                    } else {
+                        projectItemList.add(projects[i]);
+                    }
                 }
+            } catch (Throwable e) {
+                CommonExceptionHandler.process(e);
             }
         }
 

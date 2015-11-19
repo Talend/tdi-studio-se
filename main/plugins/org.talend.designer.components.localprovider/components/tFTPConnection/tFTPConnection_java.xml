@@ -108,7 +108,7 @@
     >
       <DEFAULT>"123456"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="AUTH_METHOD"
       FIELD="CLOSED_LIST"
@@ -155,7 +155,7 @@
      	<ITEM NAME="EXPLICIT"  VALUE="EXPLICIT" />
       </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="USE_ENCODING"
       FIELD="CHECK"
@@ -173,7 +173,7 @@
       REQUIRED="true" NOT_SHOW_IF="(SFTP == 'true') and (USE_ENCODING == 'false')">
        <DEFAULT>"ISO-8859-15"</DEFAULT>
     </PARAMETER>
-    
+
    </PARAMETERS>
 
 	<ADVANCED_PARAMETERS>
@@ -204,7 +204,7 @@
 
   <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Java-FTP" MODULE="edtftpj.jar" MVN="mvn:org.talend.libraries/edtftpj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false')"/>
+       <IMPORT NAME="Java-FTP" MODULE="edtftpj-2.4.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.4.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.4.0.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false')"/>
        <IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.51.jar" MVN="mvn:org.talend.libraries/jsch-0.1.51/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.51.jar" REQUIRED_IF="(SFTP == 'true')"/>
        <IMPORT NAME="Java-FTPS" MODULE="ftp4j-1.7.2.jar" MVN="mvn:org.talend.libraries/ftp4j-1.7.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/ftp4j-1.7.2.jar" REQUIRED_IF="(FTPS == 'true')" />
      </IMPORTS>

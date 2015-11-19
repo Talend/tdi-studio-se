@@ -132,6 +132,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
                 String processId = processItem.getProperty().getId();
 
+                if (null == contextName) {
+                    contextName = processItem.getProcess().getDefaultContext();
+                }
                 IProcess iProcess = generateJobFiles(processItem, contextName, jobVersion,
                         statisticPort != IProcessor.NO_STATISTICS, tracePort != IProcessor.NO_TRACES,
                         isOptionChoosed(ExportChoice.applyToChildren), progressMonitor);

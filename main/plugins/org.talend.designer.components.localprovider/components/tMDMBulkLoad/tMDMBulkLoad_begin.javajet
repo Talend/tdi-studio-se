@@ -5,9 +5,11 @@ imports="
     	org.talend.designer.codegen.config.CodeGeneratorArgument
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	
 	String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
@@ -34,7 +36,12 @@ String passwordFieldName = "__PASSWORD__";
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
+<% logUtil.info("\"Attempt to get bulkload client from: \"", mdmUrl,"\".\"");%>
+
 org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl%>, <%=username %>, decryptedPassword_<%=cid%>, null, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule%>);
+
+<% logUtil.info("\"Got bulkload client successfully.\"");%>
+
 <%if(useTransaction) {%>
 com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
 if(mdmTransaction_<%=cid%>!=null) {

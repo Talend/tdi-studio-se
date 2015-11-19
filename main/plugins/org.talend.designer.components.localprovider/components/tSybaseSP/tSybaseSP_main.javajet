@@ -202,7 +202,7 @@ if (canGenerate) {
 					<%
 				} else if (("java.util.Date").equals(typeToGenerate)) {
 					%>
-					statement_<%=cid%>.setDate(<%=argIndex%>, new java.sql.Date(<%=inConnectionName%>.<%=argName%>.getTime()));
+					statement_<%=cid%>.setTimestamp(<%=argIndex%>, new java.sql.Timestamp(<%=inConnectionName%>.<%=argName%>.getTime()));
 					<%
 				} else {
 					%>

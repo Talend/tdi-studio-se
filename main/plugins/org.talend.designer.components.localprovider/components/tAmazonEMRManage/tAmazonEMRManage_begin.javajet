@@ -236,6 +236,9 @@
             String status_<%=cid%> = result2_<%=cid%>.getCluster().getStatus().getState();
             if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "RUNNING".equalsIgnoreCase(status_<%=cid%>)) {
                 clusterReady_<%=cid%> = true;
+            } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>)) {
+            	clusterReady_<%=cid%> = true;
+            	System.err.println("Fail to start the cluster.");
             } else {
                 System.out.print(".");
                 Thread.sleep(2000);

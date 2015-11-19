@@ -12,9 +12,11 @@
 		java.util.List 
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
 %>
 <%
@@ -61,25 +63,15 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
                     	return new java.net.PasswordAuthentication(<%=username%>, decryptedPassword_<%=cid%>.toCharArray());
                 }});
 				
+				<% logUtil.info("\"Attempt to get a task retrieve service from: \"", url,"\".\"");%>
+				
 				java.net.URL wsdlUrl_<%=cid%> = new java.net.URL(<%=url %>);
 				
-				<%
-				if(isLog4jEnabled){
-				%>	
-					log.info("<%=cid%> - Attempt to get a task retrieve service from: " + wsdlUrl_<%=cid%> + ".");
-				<%
-				}
-				%>
 				org.talend.datastewardship.server.ws.TDSCWS_Service service_<%=cid%> = new org.talend.datastewardship.server.ws.TDSCWS_Service(wsdlUrl_<%=cid%>);
 				org.talend.datastewardship.server.ws.TDSCWS TDSCWS_<%=cid%> = service_<%=cid%>.getTDSCWSImplPort();
-				<%
-				if(isLog4jEnabled){
-				%>	
-					log.info("<%=cid%> - Got successfully.");
-				<%
-				}
-				%>
 				
+				<% logUtil.info("\"Got service successfully.\"");%>
+								
 				String startDateString_<%=cid%> = <%=startDate.equals("")?null:startDate%>;
 				String endDateString_<%=cid%> = <%=endDate.equals("")?null:endDate%>;
 				javax.xml.datatype.DatatypeFactory factory_<%=cid%> = javax.xml.datatype.DatatypeFactory.newInstance();
@@ -99,13 +91,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
                     java.util.GregorianCalendar endDate_<%=cid%> = (java.util.GregorianCalendar) endCal_<%=cid%>;
 					endXMLGregorianCalendar_<%=cid%> = factory_<%=cid%>.newXMLGregorianCalendar(endDate_<%=cid%>);
 				}
-				<%
-				if(isLog4jEnabled){
-				%>
-					log.info("<%=cid%> - Start to retrieve tasks from server.");
-				<%
-				}
-				%>
+				
+				<% logUtil.info("\"Start to retrieve tasks from server.\"");%>
+				
 				java.util.List<net.java.dev.jaxb.array.StringArray> tasksResult_<%=cid%> = TDSCWS_<%=cid%>.searchTasks(<%=taskType%>,<%=owner.equals("")?null:owner%>,<%=tag.equals("")?null:tag%>,startXMLGregorianCalendar_<%=cid%>,endXMLGregorianCalendar_<%=cid%>,<%=starRanking%>,<%=limit%>,<%=status.equals("null")?null:"\""+status+"\""%>);
 				for(net.java.dev.jaxb.array.StringArray taskResult_<%=cid%>:tasksResult_<%=cid%>){
 					java.util.List<String> taskCols_<%=cid%> = taskResult_<%=cid%>.getItem();
@@ -144,13 +132,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			            }
 		            <%}%>
 		            for(java.util.Map<String,String> record_<%=cid%> : records_<%=cid%>){
-		            	<%
-		            	if(isLog4jEnabled){
-						%>
-							log.debug("<%=cid%> - Retrieving the task " + (nb_line_<%=cid%>+1) + ".");
-						<%
-						}
-		            	%>
+		            
+		                <% logUtil.debug("\"Retrieving the task \"+ nb_line_"+cid);%>
+		            	
 		            	<%=outgoingConn.getName()%>.TASK_ID = taskCols_<%=cid%>.get(0);
 						<%=outgoingConn.getName()%>.TASK_TYPE = taskCols_<%=cid%>.get(1);
 						<%=outgoingConn.getName()%>.TASK_CREATEDBY = taskCols_<%=cid%>.get(2);

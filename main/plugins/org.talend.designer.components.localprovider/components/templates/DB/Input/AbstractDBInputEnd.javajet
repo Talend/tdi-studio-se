@@ -5,7 +5,7 @@ imports="
 		org.talend.core.model.process.ElementParameterParser
 " 
 %>
-<%@ include file="../../Log4j/Log4jDBConnUtil.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jDBConnUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();

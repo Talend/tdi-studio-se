@@ -9,10 +9,11 @@ imports="
        java.util.List;
 "
 %>
-
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();	
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	
     List<IMetadataTable> metadatas = node.getMetadataList();
@@ -31,7 +32,7 @@ imports="
 		  	}
 			%>
 			MDMOutputMessage = <%=incomingName %>.MDM_Message;
-	
+	        <% logUtil.debug("\"Die on error:\"+MDMOutputMessage");%>
 		<%
   		}
  	}	

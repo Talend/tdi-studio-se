@@ -115,7 +115,6 @@ public class OpenNewEditorAction extends SelectionProviderAction {
             isQuery = false;
         } else {
             connParam.setEditorTitle(TextUtil.getNewQueryLabel());
-            connParam.setQueryObject(null);
         }
         dialog.openEditor(firstNode, repositoryNames, connParam, false);
     }

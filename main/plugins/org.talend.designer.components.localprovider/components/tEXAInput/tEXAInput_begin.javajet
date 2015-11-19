@@ -12,13 +12,13 @@ imports="
         java.util.Map
         "
 %>
-    <%@ include file="../templates/DB/Input/HelpClass.javajet"%>
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/HelpClass.javajet"%>
 <%
 
     class DBInputBeginUtil extends DefaultDBInputUtil{
     
         public void beforeComponentProcess(INode node){
-			super.beforeComponentProcess(node);
+			   super.beforeComponentProcess(node);
             cid = node.getUniqueName();
         }
         
@@ -40,12 +40,24 @@ imports="
             return "com.exasol.jdbc.EXADriver";
         }
         
-        public void createStatement(INode node) {
-            super.createStatement(node);
-        }
-        
+		  public void createConnection(INode node) {
+				super.createConnection(node);
+				log4jCodeGenerateUtil.autoCommit(node,false);
+			}
+			
+			public void createStatement(INode node) {
+				super.createStatement(node);
+				String useCursor= ElementParameterParser.getValue(node, "__USE_CURSOR__");
+				String cursorSize= ElementParameterParser.getValue(node, "__CURSOR_SIZE__");
+	            if(("true").equals(useCursor)) {
+	%>
+	                stmt_<%=cid %>.setFetchSize(<%=cursorSize%>);
+	<%
+	            }
+			}
+
     }//end class
     
     dbInputBeginUtil = new DBInputBeginUtil();
 %>
-    <%@ include file="../templates/DB/Input/AbstractDBInputBegin.javajet"%>
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Input/AbstractDBInputBegin.javajet"%>

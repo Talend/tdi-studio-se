@@ -105,11 +105,11 @@ COMPATIBILITY="ALL"
     <PARAMETER NAME="SFTP" FIELD="CHECK" REQUIRED="true" NUM_ROW="10" REPOSITORY_VALUE="SFTP" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (FTPS == 'false')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER NAME="FTPS" FIELD="CHECK" REQUIRED="true" NUM_ROW="10" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (SFTP == 'false')">
-    	 <DEFAULT>false</DEFAULT> 
+    	 <DEFAULT>false</DEFAULT>
 	</PARAMETER>
-	
+
     <PARAMETER
       NAME="AUTH_METHOD"
       FIELD="CLOSED_LIST"
@@ -149,28 +149,28 @@ COMPATIBILITY="ALL"
     <PARAMETER NAME="REMOTEDIR" FIELD="TEXT" REQUIRED="false" NUM_ROW="6">
       <DEFAULT>"."</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER NAME="MOVE_TO_THE_CURRENT_DIRECTORY" FIELD="CHECK" NUM_ROW="6" SHOW_IF="USE_EXISTING_CONNECTION == 'true'">
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
-    
-	<PARAMETER 
-	   NAME="KEYSTORE_FILE" 
-	   FIELD="FILE" 
-	   NUM_ROW="7" 
-	   NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (FTPS=='false')" 
-	 > 
-	   <DEFAULT>""</DEFAULT> 
-	 </PARAMETER> 
-	
-	<PARAMETER 
-	   NAME="KEYSTORE_PASS" 
-	   FIELD="PASSWORD" 
-	   NUM_ROW="8" 
-	   NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (FTPS=='false')" 
-	 > 
-	   <DEFAULT>"123456"</DEFAULT> 
-	 </PARAMETER> 
+
+	<PARAMETER
+	   NAME="KEYSTORE_FILE"
+	   FIELD="FILE"
+	   NUM_ROW="7"
+	   NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (FTPS=='false')"
+	 >
+	   <DEFAULT>""</DEFAULT>
+	 </PARAMETER>
+
+	<PARAMETER
+	   NAME="KEYSTORE_PASS"
+	   FIELD="PASSWORD"
+	   NUM_ROW="8"
+	   NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') OR (FTPS=='false')"
+	 >
+	   <DEFAULT>"123456"</DEFAULT>
+	 </PARAMETER>
 
     <PARAMETER NAME="MODE" FIELD="CLOSED_LIST" NUM_ROW="7" SHOW_IF="((USE_EXISTING_CONNECTION == 'true') AND (#LINK@NODE.CONNECTION.SFTP == 'false') AND (#LINK@NODE.CONNECTION.FTPS == 'false')) OR ((USE_EXISTING_CONNECTION == 'false') AND (SFTP=='false') AND (FTPS == 'false'))">
       <ITEMS DEFAULT="ascii">
@@ -203,7 +203,7 @@ COMPATIBILITY="ALL"
         <ITEM NAME="APPEND"  VALUE="append"/>
       </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
     	NAME="FTPSOVERWRITE"
     	FIELD="CLOSED_LIST"
@@ -231,20 +231,20 @@ COMPATIBILITY="ALL"
     </PARAMETER>
 
 
-    <PARAMETER NAME="CONNECT_MODE" FIELD="CLOSED_LIST" NUM_ROW="101" REPOSITORY_VALUE="CONNECT_MODE" NOT_SHOW_IF="(SFTP=='true') OR (FTPS=='true') OR (USE_EXISTING_CONNECTION == 'true')"> 
+    <PARAMETER NAME="CONNECT_MODE" FIELD="CLOSED_LIST" NUM_ROW="101" REPOSITORY_VALUE="CONNECT_MODE" NOT_SHOW_IF="(SFTP=='true') OR (FTPS=='true') OR (USE_EXISTING_CONNECTION == 'true')">
       <ITEMS DEFAULT="PASSIVE">
         <ITEM NAME="PASSIVE"  VALUE="PASSIVE" />
      	<ITEM NAME="ACTIVE"  VALUE="ACTIVE" />
       </ITEMS>
     </PARAMETER>
-    
-	<PARAMETER NAME="SECURITY_MODE" FIELD="CLOSED_LIST" NUM_ROW="101" REPOSITORY_VALUE="SECURITY_MODE" SHOW_IF="FTPS == 'true'"> 
-	  <ITEMS DEFAULT="IMPLICIT"> 
-	    <ITEM NAME="IMPLICIT"  VALUE="IMPLICIT" />         
-    	<ITEM NAME="EXPLICIT"  VALUE="EXPLICIT" /> 
-	  </ITEMS> 
-	</PARAMETER> 
-	
+
+	<PARAMETER NAME="SECURITY_MODE" FIELD="CLOSED_LIST" NUM_ROW="101" REPOSITORY_VALUE="SECURITY_MODE" SHOW_IF="FTPS == 'true'">
+	  <ITEMS DEFAULT="IMPLICIT">
+	    <ITEM NAME="IMPLICIT"  VALUE="IMPLICIT" />
+    	<ITEM NAME="EXPLICIT"  VALUE="EXPLICIT" />
+	  </ITEMS>
+	</PARAMETER>
+
 	<PARAMETER
       NAME="USE_ENCODING"
       FIELD="CHECK"
@@ -253,7 +253,7 @@ COMPATIBILITY="ALL"
       REQUIRED="true" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (SFTP == 'true')">
        <DEFAULT>false</DEFAULT>
     </PARAMETER>
-	
+
     <PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"
@@ -262,8 +262,8 @@ COMPATIBILITY="ALL"
       REQUIRED="true"
       NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') or ((SFTP == 'true') and (USE_ENCODING == 'false'))">
        <DEFAULT>"ISO-8859-15"</DEFAULT>
-    </PARAMETER>	
-    
+    </PARAMETER>
+
     <PARAMETER
       NAME="DIE_ON_ERROR"
       FIELD="CHECK"
@@ -306,7 +306,7 @@ COMPATIBILITY="ALL"
 
   <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Java-FTP" MODULE="edtftpj.jar" MVN="mvn:org.talend.libraries/edtftpj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
+		<IMPORT NAME="Java-FTP" MODULE="edtftpj-2.4.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.4.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.4.0.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.51.jar" MVN="mvn:org.talend.libraries/jsch-0.1.51/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.51.jar" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
        <IMPORT NAME="Java-FTPS" MODULE="ftp4j-1.7.2.jar" MVN="mvn:org.talend.libraries/ftp4j-1.7.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/ftp4j-1.7.2.jar" REQUIRED_IF="(FTPS == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
      </IMPORTS>

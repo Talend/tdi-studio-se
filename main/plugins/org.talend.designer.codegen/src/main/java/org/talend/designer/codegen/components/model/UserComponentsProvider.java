@@ -20,6 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -104,15 +106,16 @@ public class UserComponentsProvider extends AbstractComponentsProvider {
             allProjects.addAll(ProjectManager.getInstance().getReferencedProjects());
             for (Project project : allProjects) {
                 String projectLabel = project.getTechnicalLabel();
-                String sourcePath = new Path(Platform.getInstanceLocation().getURL().getPath()).toFile().getPath()
-                        + File.separatorChar + projectLabel + File.separatorChar
+                IProject eclipseProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectLabel);
+                String sourcePath = eclipseProject.getLocation().toString() + "/"
                         + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
                 File source = new File(sourcePath);
                 if (source.exists()) {
                     for (File file : source.listFiles(ff)) {
-                        FilesUtils.copyFolder(file,
-                                new File(installationFolder.getAbsolutePath() + File.separator + file.getName()), true, ff, null,
-                                true, false);
+                        if (file.isDirectory())
+                            FilesUtils.copyFolder(file,
+                                    new File(installationFolder.getAbsolutePath() + File.separator + file.getName()), true, ff,
+                                    null, true, false);
                     }
                 }
             }

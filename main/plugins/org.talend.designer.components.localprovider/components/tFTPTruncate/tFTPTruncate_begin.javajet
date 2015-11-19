@@ -123,7 +123,9 @@ if (sftp) {// *** sftp *** //
 			<%}%>
 			jsch_<%=cid%>.addIdentity(<%=privateKey %>, defaultUserInfo_<%=cid%>.getPassphrase());
     	<%}%>
+    	
 		com.jcraft.jsch.Session session_<%=cid%>=jsch_<%=cid%>.getSession(<%=user%>, <%=host%>, <%=port%>);
+		session_<%=cid%>.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive,gssapi-with-mic");
 
 		<%if (("PASSWORD").equals(authMethod)) {%> 
 			<%if(isLog4jEnabled){%>

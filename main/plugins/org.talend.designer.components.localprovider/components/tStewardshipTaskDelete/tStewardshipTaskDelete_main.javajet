@@ -11,9 +11,11 @@
 
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
 
 	boolean isDeleteById = ("true").equals(ElementParameterParser.getValue(node, "__DELETE_BY_ID__"));
@@ -23,14 +25,20 @@
 	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	if(isDeleteById){
 		if (isSpecifyTaskID || (metadatas!=null)&&(metadatas.size()>0)) {//1
-        	if(isLog4jEnabled){
 			%>
-				log.debug("<%=cid%> - Deleting the task: " + (deleted_task_<%=cid%>+1) + ".");
+			
+			    int delTaskId =  deleted_task_<%=cid%>+1;
+			    <% logUtil.debug("\"Deleting the task: \"+ delTaskId");%>
+			    
 			<%
-			}
 			if(isSpecifyTaskID){
 		    %>
+		        <% logUtil.info("\"Attempt to delete task by specify task id: \"+"+taskID);%>
+		        
 				TDSCWS_<%=cid%>.deleteTask(<%=taskID%>);
+				
+		        <% logUtil.info("\"Delete task by specify task id successfully.\"");%>
+		        
 				deleted_task_<%=cid%>++;
 			<%
 		    }else{
@@ -41,7 +49,12 @@
 			    	for (IConnection conn : conns) {//3
 			    		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
 						%>
+						    <% logUtil.info("\"Attempt to delete task, do not specify task id.\"");%>
+						    
 							TDSCWS_<%=cid%>.deleteTask(<%=conn.getName()%>.<%=idColumn%>);
+							
+						    <% logUtil.info("\"Delete task by specify task id successfully.\"");%>
+						    
 							deleted_task_<%=cid%>++;
 						<%
 						}

@@ -1,23 +1,23 @@
 <%@ jet
 imports="
-	org.talend.designer.codegen.config.CodeGeneratorArgument
-	org.talend.core.model.process.INode
-	org.talend.core.model.process.ElementParameterParser
-	org.talend.core.model.process.IConnection
-	java.util.List
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.IConnection
+    java.util.List
 "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
 
-	String cid = node.getUniqueName();
-	dbLog = new DBLogUtil(node);
-	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+    String cid = node.getUniqueName();
+    dbLog = new DBLogUtil(node);
+    String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
-	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
-	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+    String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+    String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 
     String dieOnError = ElementParameterParser.getValue(node,"__DIE_ON_ERROR__");
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
@@ -68,8 +68,6 @@ imports="
         <%
     } else {
         %>
-
-
                 <%
                    if(useBatch){
                 %>
@@ -79,6 +77,7 @@ imports="
                             if(pstmt_<%=cid %>!=null && batchSizeCounter_<%=cid%> > 0 ){
                                 <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                                 status_<%=cid%> = pstmt_<%=cid %>.executeBatch();
+                                pstmt_<%= cid %>.clearBatch();
                                 <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                                 for(int countEach_<%=cid%>: status_<%=cid%>) {
                                     countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);

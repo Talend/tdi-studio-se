@@ -25,6 +25,7 @@ imports="
        host = ElementParameterParser.getValue(reusedNode, "__HOST__");
        port = ElementParameterParser.getValue(reusedNode, "__PORT__");
        userName = ElementParameterParser.getValue(reusedNode, "__USER_NAME__");
+       database = ElementParameterParser.getValue(reusedNode, "__DATABASE__");
        %>
        <%if(ElementParameterParser.canEncrypt(reusedNode, passwordFieldName)){%>
            final String decryptedPassword_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(reusedNode, passwordFieldName)%>);
@@ -54,7 +55,7 @@ imports="
     if(runOnWindows_<%= cid %>){
         mlcpCmd_<%= cid %>.append("cmd /c mlcp.bat");
     }else{
-        mlcpCmd_<%= cid %>.append("sh -c mlcp.sh");
+        mlcpCmd_<%= cid %>.append("mlcp.sh");
     }
     if(fmtLoadPath_<%= cid %>.contains(":")){
        fmtLoadPath_<%= cid %> = "/" + fmtLoadPath_<%= cid %>;
@@ -70,12 +71,24 @@ imports="
     mlcpCmd_<%= cid %>.append(" -port ");
     mlcpCmd_<%= cid %>.append(Integer.valueOf(<%= port %>));
     <%
+    if(database != null && !"".equals(database) && !"\"\"".equals(database)){
+    %>
+     mlcpCmd_<%= cid %>.append(" -database ");
+     mlcpCmd_<%= cid %>.append(<%= database %>);
+    <%
+     }
+    %>
+    <%
     if(replaceOutputURI){
     %>
+       String handledDocIdPrefix_<%= cid %> = <%= outputURIReplaceTo %>;
+       if(handledDocIdPrefix_<%= cid %>.endsWith("/") || handledDocIdPrefix_<%= cid %>.endsWith("\\")){
+          handledDocIdPrefix_<%= cid %> = handledDocIdPrefix_<%= cid %>.substring(0, handledDocIdPrefix_<%= cid %>.length() - 1);
+       }
        mlcpCmd_<%= cid %>.append(" -output_uri_replace \"");
        mlcpCmd_<%= cid %>.append(fmtLoadPath_<%= cid %>);
-       mlcpCmd_<%= cid %>.append(", '");
-       mlcpCmd_<%= cid %>.append((<%= outputURIReplaceTo %>).replace("\\", "/"));
+       mlcpCmd_<%= cid %>.append(",'");
+       mlcpCmd_<%= cid %>.append(handledDocIdPrefix_<%= cid %>.replace("\\", "/"));
        mlcpCmd_<%= cid %>.append("'\"");
     <%
     }

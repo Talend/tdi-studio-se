@@ -9,7 +9,7 @@ imports="
         org.talend.core.model.metadata.IMetadataColumn
         java.util.List
 "
- %>
+%>
 
 <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -22,13 +22,38 @@ imports="
     String database = ElementParameterParser.getValue(node,"__DATABASE__");
     String authType = ElementParameterParser.getValue(node,"__AUTHENTICATION_TYPE__");
 
-    String asDocIdColumn = ElementParameterParser.getValue(node,"__AS_DOCID_COLUMN__");
+    final String MAXIMAL_RETRIEVE_NUMBER = ElementParameterParser.getValue(node, "__MAXIMAL_RETRIEVE_NUMBER__");
     boolean reuseConn = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    boolean useQueryOption = "true".equals(ElementParameterParser.getValue(node,"__USE_QUERY_OPTION__"));
+    String queryOptionName = ElementParameterParser.getValue(node, "__QUERY_OPTION_NAME__");
+    boolean isValidQueryOptionName = false;
+    if(queryOptionName != null && !"".equals(queryOptionName) && !"\"\"".equals(queryOptionName)){
+        isValidQueryOptionName = true;
+    }
+    if(useQueryOption && !isValidQueryOptionName){
+    %>
+    Compile Err: QUERY OPTION NAME CAN'T BE NULL OR EMPTY STRING.
+    <%
+    }
+    String queryOptionType = ElementParameterParser.getValue(node,"__QUERY_OPTION_TYPE__");
+    String queryOptionLiterals = ElementParameterParser.getValue(node,"__QUERY_OPTION_LITERALS__");
+    boolean isQueryOptionLiteralsEmpty = true;
+    if(queryOptionLiterals != null && !"".equals(queryOptionLiterals) && !"\"\"".equals(queryOptionLiterals)){
+        isQueryOptionLiteralsEmpty = false;
+    }
+    if(useQueryOption && !isQueryOptionLiteralsEmpty){
+            if(queryOptionLiterals.startsWith("\"") && queryOptionLiterals.endsWith("\"")){
+               queryOptionLiterals = queryOptionLiterals.substring(1, queryOptionLiterals.length()-1);
+            }
+               queryOptionLiterals = queryOptionLiterals.replace("\r","").replace("\n","").replace("\\\"", "\"").replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+    String queryCriteria = ElementParameterParser.getValue(node,"__QUERY_CRITERIA__");
+
     String passwordFieldName = "__PASSWORD__";
  %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-
+      long nb_line_<%= cid %> = 0;
       com.marklogic.client.DatabaseClient client_<%= cid %> = null;
 <%
     if(reuseConn){
@@ -62,4 +87,58 @@ imports="
     }
  %>
 
-    com.marklogic.client.document.DocumentManager docMgr_<%= cid %> = client_<%= cid %>.newDocumentManager();
+ <%
+ if(useQueryOption && isValidQueryOptionName){
+ %>
+        com.marklogic.client.admin.QueryOptionsManager qryOptMgr_<%= cid %> = client_<%= cid %>.newServerConfigManager().newQueryOptionsManager();
+        <%
+        if(!isQueryOptionLiteralsEmpty){
+        %>
+            com.marklogic.client.io.StringHandle strHandle = new com.marklogic.client.io.StringHandle();
+            strHandle.withFormat(
+                                                 <%
+                                                 if("XML".equals(queryOptionType)){
+                                                 %>
+                                                    com.marklogic.client.io.Format.XML
+                                                 <%
+                                                 }else if("JSON".equals(queryOptionType)){
+                                                 %>
+                                                    com.marklogic.client.io.Format.JSON
+                                                 <%
+                                                 }else{
+                                                 %>
+                                                    Compile Err: UNSUPPORTED QUERY OPTION TYPE <%= queryOptionType %>.
+                                                 <%
+                                                 }
+                                                 %>
+                                                 ).set("<%= queryOptionLiterals %>");
+            qryOptMgr_<%= cid %>.writeOptions(<%= queryOptionName %>, strHandle);
+        <%
+        }
+         %>
+     <%
+ }
+  %>
+ com.marklogic.client.query.QueryManager qryMgr_<%= cid %> = client_<%= cid %>.newQueryManager();
+ com.marklogic.client.query.StringQueryDefinition strQryDef_<%= cid %> = qryMgr_<%= cid %>.newStringDefinition(
+                                                                                                              <% if(useQueryOption && isValidQueryOptionName){ %>
+                                                                                                               <%= queryOptionName %>
+                                                                                                              <% } %>
+                                                                                                              );
+ strQryDef_<%= cid %>.setCriteria(<%= queryCriteria %>);
+ com.marklogic.client.io.SearchHandle searchHdl_<%= cid %> = new com.marklogic.client.io.SearchHandle();
+ qryMgr_<%= cid %>.search(strQryDef_<%= cid %>, searchHdl_<%= cid %>);
+ long matchedDocNumber_<%= cid %> = searchHdl_<%= cid %>.getTotalResults();
+ long max_retrieve_num_<%= cid %> = Long.valueOf(<%= MAXIMAL_RETRIEVE_NUMBER %>);
+      if(max_retrieve_num_<%= cid %> <= 0){
+        nb_line_<%= cid %> = matchedDocNumber_<%= cid %>;
+      }else if(max_retrieve_num_<%= cid %> <= matchedDocNumber_<%= cid %>){
+        nb_line_<%= cid %> = max_retrieve_num_<%= cid %>;
+      }else{
+        nb_line_<%= cid %> = matchedDocNumber_<%= cid %>;
+      }
+ qryMgr_<%= cid %>.setPageLength(nb_line_<%= cid %>);
+ qryMgr_<%= cid %>.search(strQryDef_<%= cid %>, searchHdl_<%= cid %>);
+ com.marklogic.client.query.MatchDocumentSummary[] matchDocSummary_<%= cid %> = searchHdl_<%= cid %>.getMatchResults();
+
+ com.marklogic.client.document.DocumentManager docMgr_<%= cid %> = client_<%= cid %>.newDocumentManager();

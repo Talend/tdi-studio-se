@@ -548,14 +548,6 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         }
 
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-            ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault().getService(
-                    ICamelDesignerCoreService.class);
-            if (getTargetEditPart().getModel() != null && (getTargetEditPart().getModel() instanceof Process)
-                    && camelService.isCamelMulitPageEditor(((Process) getTargetEditPart().getModel()).getEditor())) {
-                return;
-            }
-        }
         List<Object> sources = getSelectSource();
         if (containsContextSource(sources)) {
             createContext(sources);

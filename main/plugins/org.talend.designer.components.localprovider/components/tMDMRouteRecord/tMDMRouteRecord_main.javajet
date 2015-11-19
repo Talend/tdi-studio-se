@@ -7,9 +7,11 @@ imports="
         java.util.Map
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	
 	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
@@ -29,6 +31,9 @@ imports="
 %>       
 int nb_line_<%=cid %> = 0;
 <%if(!useExistingConn){%>
+    
+    <% logUtil.info("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+
 	String murl = <%=mdmUrl %>;
 	if(murl.endsWith("?wsdl")) {
 	   murl = murl.substring(0, murl.length() - 5);
@@ -50,6 +55,8 @@ int nb_line_<%=cid %> = 0;
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	
 	context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
+    
+    <% logUtil.info("\"Got service successfully.\"");%>
 <%}else{%>
 	org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 <%}%>
@@ -62,6 +69,7 @@ List<String> pkIds = new java.util.ArrayList<String>();
 <%
 for(Map<String, String> map:ids){
 %>
+<% logUtil.debug("\"Route item id :\"+"+map.get("ID"));%>
 pkIds.add(<%=map.get("ID")%>);
 <%
 }
@@ -71,5 +79,7 @@ org.talend.mdm.webservice.WSItemPK wsItemPK_<%=cid %> = new org.talend.mdm.webse
 wsRouteItem_<%=cid %>.setWsItemPK(wsItemPK_<%=cid %>);
 
 //
+<% logUtil.info("\"Attempt to route item .\"");%>
 service_<%=cid %>.routeItemV2(wsRouteItem_<%=cid %>);
+<% logUtil.info("\"Route item successfully.\"");%>
 

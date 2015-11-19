@@ -51,6 +51,7 @@ import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.advanced.composite.ThreeCompositesSashForm;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
@@ -66,6 +67,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.preference.provider.IPaletteItem;
 import org.talend.core.ui.component.preference.provider.TalendPaletteLabelProvider;
@@ -627,6 +629,19 @@ public class PaletteSettingPage extends ProjectSettingPage {
                 List<IRepositoryViewObject> allStorm = repositoryFactory.getAll(project, stormType, true);
                 addUsedComponents(componentsUsed, allStorm, ComponentCategory.CATEGORY_4_STORM);
                 addUsedComponents(componentsUsed, allStorm, ComponentCategory.CATEGORY_4_SPARKSTREAMING);
+            }
+
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                        .getDefault().getService(ITestContainerProviderService.class);
+                if (testContainerService != null) {
+                    ERepositoryObjectType testCaseType = testContainerService.getTestCaseObjectType();
+                    if (testCaseType != null) {
+                        List<IRepositoryViewObject> allTestCase = repositoryFactory.getAll(project, testCaseType, true);
+                        addUsedComponents(componentsUsed, allTestCase, ComponentCategory.CATEGORY_4_SPARK);
+                        addUsedComponents(componentsUsed, allTestCase, ComponentCategory.CATEGORY_4_DI);
+                    }
+                }
             }
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);

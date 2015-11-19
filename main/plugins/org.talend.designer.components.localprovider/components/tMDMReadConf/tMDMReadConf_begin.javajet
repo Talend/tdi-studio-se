@@ -11,9 +11,11 @@ imports="
         java.util.Map
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
 String cid = node.getUniqueName();
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
@@ -72,6 +74,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 				
 				int nb_line_<%=cid %> = 0;
 				<%if(!useExistingConn){%>
+				    
+				    <% logUtil.info("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+
                     String murl = <%=mdmUrl %>;
                     if(murl.endsWith("?wsdl")) {
                         murl = murl.substring(0, murl.length() - 5);
@@ -95,6 +100,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
                     
                     context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
                     
+				    <% logUtil.info("\"Got service successfully.\"");%>
 				<%}else{%>
 					org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 				<%}%>
@@ -114,6 +120,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 						String idValue = map.get("IDVALUE");
 					%>
 					ids_<%=cid %>.add(<%=idValue %>);
+					<% logUtil.debug("\"To get item :\"+"+idValue);%>
 					<%
 					}//for
 					%>
@@ -122,14 +129,19 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 					new org.talend.mdm.webservice.WSGetItem(new org.talend.mdm.webservice.WSItemPK(<%=concept %>,ids_<%=cid %>, dataCluster_<%=cid %>));
 					String <%=outgoingConn.getName() %>_xml = "";
 					try {
+					   <% logUtil.info("\"Attempt to get item .\"");%>
+					   
 						org.talend.mdm.webservice.WSItem item_<%=cid %>=service_<%=cid %>.getItem(wsitem_<%=cid %>);
+						
+						<% logUtil.info("\"Get item successfully.\"");%>
 						
 						<%=outgoingConn.getName() %>_xml = item_<%=cid %>.getContent();
 					} catch(java.lang.Exception e) {
 						<%if(dieOnError) {%>
-						throw e;
+						  <% logUtil.error("\"Die on error:\"+e.getMessage()");%>
+						  throw e;
 						<% } else { %>
-						System.err.println(e.getMessage());
+						  System.err.println(e.getMessage());
 						<% } %>			
 					}
 					nb_line_<%=cid %> ++;
@@ -217,16 +229,20 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 
 						String[] items_<%=cid%> = {};
 						try {
+						    <% logUtil.info("\"Attempt to get items .\"");%>
 							items_<%=cid%> = service_<%=cid %>.getItems(getitems_<%=cid%>).getStrings().toArray(new String[0]);
+							<% logUtil.info("\"Get items successfully.\"");%>
 							
 							if(totalCount_<%=cid%> < 0){ 
 								totalCount_<%=cid%> = Integer.valueOf(items_<%=cid%>[0].replaceAll("<totalCount>", "").replaceAll("</totalCount>", ""));
+								<% logUtil.debug("\"Get item count:\"+totalCount_"+cid);%>
 							}
 						} catch(java.lang.Exception e) {
 							<%if(dieOnError) {%>
-							throw e;
+							     <% logUtil.error("\"Die on error:\"+e.getMessage()");%>
+							     throw e;
 							<% } else { %>
-							System.err.println(e.getMessage());
+							     System.err.println(e.getMessage());
 							<% } %>
 						}
 						retrievedCount_<%=cid%> += (items_<%=cid%>.length - 1);

@@ -39,6 +39,7 @@ import org.talend.designer.abstractmap.ui.listener.DefaultDropTargetListener;
 import org.talend.designer.dbmap.language.IDbLanguage;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
+import org.talend.designer.dbmap.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.dbmap.model.tableentry.InputColumnTableEntry;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.model.tableentry.VarTableEntry;
@@ -541,7 +542,14 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
                 if (zoneSource == Zone.OUTPUTS) {
                     location = tableEntrySource.getExpression();
                 } else {
-                    location = currentLanguage.getLocation(tableEntrySource.getParentName(), tableEntrySource.getName());
+                    String dbColumn = tableEntrySource.getName();
+                    if (tableEntrySource instanceof AbstractInOutTableEntry) {
+                        String originalName = ((AbstractInOutTableEntry) tableEntrySource).getOriginalName();
+                        if (originalName != null && !"".equals(originalName)) {
+                            dbColumn = originalName;
+                        }
+                    }
+                    location = currentLanguage.getLocation(tableEntrySource.getParentName(), dbColumn);
                 }
 
                 if (location != null) {
@@ -625,7 +633,14 @@ public class CompleteDropTargetListener extends DefaultDropTargetListener {
         if (zoneSourceEntry == Zone.OUTPUTS) {
             expression = tableEntrySource.getExpression();
         } else {
-            expression = currentLanguage.getLocation(tableEntrySource.getParentName(), tableEntrySource.getName());
+            String dbColumn = tableEntrySource.getName();
+            if (tableEntrySource instanceof AbstractInOutTableEntry) {
+                String originalName = ((AbstractInOutTableEntry) tableEntrySource).getOriginalName();
+                if (originalName != null && !"".equals(originalName)) {
+                    dbColumn = originalName;
+                }
+            }
+            expression = currentLanguage.getLocation(tableEntrySource.getParentName(), dbColumn);
         }
         if (expression == null) {
             return;

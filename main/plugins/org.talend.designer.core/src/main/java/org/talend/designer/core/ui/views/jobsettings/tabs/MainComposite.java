@@ -25,6 +25,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -582,8 +583,14 @@ public class MainComposite extends AbstractTabComposite {
                         if (!originalDescription.equals(StringUtils.trimToEmpty(repositoryObject.getDescription()))) {
                             property.setDescription(originalDescription);
                         }
-
                         if (ConvertJobsUtil.isNeedConvert(jobTypeValue, frameworkValue, originalJobType, originalFramework)) {
+                            boolean hasTestCase = ConvertJobsUtil.hasTestCase(repositoryObject.getProperty());
+                            if (hasTestCase
+                                    && !MessageDialogWithToggle
+                                            .openConfirm(null, "Warning",
+                                                    "Warning: You will lost all the testcases when you do converting, do you want to continue?")) {
+                                return;
+                            }
                             // Convert
                             final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType,
                                     originalFramework, repositoryObject);

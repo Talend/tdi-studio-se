@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <COMPONENT>
-    <HEADER PLATEFORM="ALL" 
-            SERIAL="" 
-            VERSION="0.1" 
-            STATUS="PRE-ALPHA" 
-            COMPATIBILITY="ALL" 
-            AUTHOR="Talend" 
-            RELEASE_DATE="20150120P" 
-            STARTABLE="true" 
+    <HEADER PLATEFORM="ALL"
+            SERIAL=""
+            VERSION="0.1"
+            STATUS="PRE-ALPHA"
+            COMPATIBILITY="ALL"
+            AUTHOR="Talend"
+            RELEASE_DATE="20150120P"
+            STARTABLE="true"
             SCHEMA_AUTO_PROPAGATE="true">
         <SIGNATURE />
     </HEADER>
-    
+
     <FAMILIES>
         <FAMILY>Business/NetSuite</FAMILY>
         <FAMILY>Cloud/NetSuite</FAMILY>
     </FAMILIES>
-    
+
     <DOCUMENTATION>
         <URL />
     </DOCUMENTATION>
-    
+
     <CONNECTORS>
         <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="1" />
         <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="1" />
@@ -30,14 +30,14 @@
         <CONNECTOR CTYPE="COMPONENT_ERROR" />
         <CONNECTOR CTYPE="RUN_IF" />
     </CONNECTORS>
-    
+
     <PARAMETERS>
         <PARAMETER NAME="PROPERTY" FIELD="PROPERTY_TYPE" SHOW="false" NUM_ROW="1"/>
-        
+
         <PARAMETER NAME="ENDPOINT" FIELD="TEXT" NUM_ROW="2" REQUIRED="true" SHOW_IF="false" GROUP="LOGIN">
             <DEFAULT>"https://webservices.netsuite.com/services/NetSuitePort_2014_2"</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="USER" FIELD="TEXT" NUM_ROW="3" REQUIRED="true" GROUP="LOGIN">
             <DEFAULT>"youremail@yourcompany.com"</DEFAULT>
         </PARAMETER>
@@ -50,7 +50,7 @@
         <PARAMETER NAME="ACCOUNT" FIELD="TEXT" NUM_ROW="6" REQUIRED="true" GROUP="LOGIN">
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
-        
+
         <PARAMETER NAME="MODULENAME" FIELD="CLOSED_LIST" NUM_ROW="7" REQUIRED="true">
             <ITEMS DEFAULT="Account">
                 <ITEM NAME="Account" VALUE="Account" />
@@ -167,7 +167,7 @@
                 <ITEM NAME="WorkOrderIssue" VALUE="WorkOrderIssue" />
             </ITEMS>
         </PARAMETER>
-        
+
         <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="8" REQUIRED="true">
             <TABLE IF="MODULENAME=='Account'">
                 <COLUMN KEY="false" NAME="AcctType" LENGTH="0" TYPE="id_Object"  />
@@ -3683,8 +3683,8 @@
 
         <PARAMETER NAME="SHOW_CONDITIONS" FIELD="CHECK" NUM_ROW="9">
             <DEFAULT>true</DEFAULT>
-        </PARAMETER> 
-        
+        </PARAMETER>
+
         <PARAMETER SHOW_IF="SHOW_CONDITIONS=='true'" NAME="CONDITIONS" FIELD="TABLE" REQUIRED="false" NUM_ROW="10" NB_LINES="10">
             <ITEMS>
                 <ITEM NAME="INPUT_COLUMN" FIELD="CLOSED_LIST">
@@ -6152,10 +6152,10 @@
                         <ITEM NAME="externalId" VALUE="ExternalId" SHOW_IF="MODULENAME=='WorkOrderIssue'"/>
                     </ITEMS>
                 </ITEM>
-                
+
                 <ITEM NAME="OPERATOR" FIELD="CLOSED_LIST">
                     <ITEMS DEFAULT="CONTAINS">
-                    
+
                         <!-- String Operators -->
                         <ITEM NAME="CONTAINS" VALUE="S-contains" />
                         <ITEM NAME="DOESNOTCONTAIN" VALUE="S-doesNotContain" />
@@ -6166,7 +6166,7 @@
                         <ITEM NAME="ISNOT" VALUE="S-isNot" />
                         <ITEM NAME="NOTEMPTYS" VALUE="S-notEmpty" />
                         <ITEM NAME="STARTSWITH" VALUE="S-startsWith" />
-                        
+
                         <!-- Numeric Operators -->
                         <ITEM NAME="BETWEEN" VALUE="N-between" />
                         <ITEM NAME="NOTBETWEEN" VALUE="N-notBetween" />
@@ -6198,7 +6198,7 @@
                         <ITEM NAME="ONOTGREATERTHANOREQUALTO" VALUE="O-notGreaterThanOrEqualTo" />
                         <ITEM NAME="ONOTLESSTHAN" VALUE="O-notLessThan" />
                         <ITEM NAME="ONOTLESSTHANOREQUALTO" VALUE="O-notLessThanOrEqualTo" />
-                        
+
                         <!-- Set Operators -->
                         <ITEM NAME="ANYOF" VALUE="L-anyOf" />
                         <ITEM NAME="NONEOF" VALUE="L-noneOf" />
@@ -6227,23 +6227,23 @@
                 <ITEM NAME="RVALUE2" FIELD="String" VALUE="" READONLY_IF="(CONDITIONS.OPERATOR != 'D-within') and (CONDITIONS.OPERATOR != 'D-notWithin') and (CONDITIONS.OPERATOR != 'N-between') and (CONDITIONS.OPERATOR != 'N-notBetween') and (CONDITIONS.OPERATOR != 'O-between') and (CONDITIONS.OPERATOR != 'O-notBetween')"/>
             </ITEMS>
         </PARAMETER>
-        
+
     </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
     </ADVANCED_PARAMETERS>
-    
+
     <CODEGENERATION>
         <IMPORTS>
             <IMPORT NAME="Netsuite_Client" MODULE="Netsuite_Client.jar" MVN="mvn:org.talend.libraries/Netsuite_Client/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/Netsuite_Client.jar" REQUIRED="true" />
-            <IMPORT NAME="NetSuite_Management" MODULE="NetSuite_Management.jar" MVN="mvn:org.talend.libraries/NetSuite_Management/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/NetSuite_Management.jar" REQUIRED="true" />
-            <IMPORT NAME="CXF-CORE" MODULE="cxf-core-3.1.3.jar" MVN="mvn:org.talend.libraries/cxf-core-3.1.3/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-core-3.1.3.jar" REQUIRED="true" BundleID="" />
-            <IMPORT NAME="CXF-RT-DATABINDING-JAXB" MODULE="cxf-rt-databinding-jaxb-3.1.3.jar" MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.3/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-jaxb-3.1.3.jar" REQUIRED="true" BundleID="" />
+            <IMPORT NAME="NetSuite_Management" MODULE="NetSuite_Management-1.0.0.jar" MVN="mvn:org.talend.libraries/NetSuite_Management-1.0.0/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.netsuite/lib/NetSuite_Management-1.0.0.jar" REQUIRED="true" />
+            <IMPORT NAME="CXF-CORE" MODULE="cxf-core-3.1.4.jar" MVN="mvn:org.talend.libraries/cxf-core-3.1.4/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-core-3.1.4.jar" REQUIRED="true" BundleID="" />
+            <IMPORT NAME="CXF-RT-DATABINDING-JAXB" MODULE="cxf-rt-databinding-jaxb-3.1.4.jar" MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.4/6.1.0" UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-jaxb-3.1.4.jar" REQUIRED="true" BundleID="" />
         </IMPORTS>
     </CODEGENERATION>
-    
+
     <RETURNS>
         <RETURN NAME="NB_LINE" TYPE="id_Integer" AVAILABILITY="AFTER" />
     </RETURNS>
-    
+
 </COMPONENT>

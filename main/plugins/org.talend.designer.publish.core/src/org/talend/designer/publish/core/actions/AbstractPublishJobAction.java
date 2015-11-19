@@ -81,6 +81,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
     public AbstractPublishJobAction(IRepositoryNode node, String groupId, String artifactName, String artifactVersion,
             String bundleVersion, String jobVersion, JobExportType exportType, Map<ExportChoice, Object> exportChoiceMap) {
         this(node, groupId, artifactName, artifactVersion, bundleVersion, jobVersion);
+        this.exportType = exportType;
         this.exportChoiceMap = exportChoiceMap;
     }
 

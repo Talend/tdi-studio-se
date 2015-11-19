@@ -32,8 +32,8 @@ import org.eclipse.swt.graphics.Image;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.commons.ui.runtime.image.OverlayImageProvider;
 import org.talend.commons.ui.runtime.image.OverlayImage.EPosition;
+import org.talend.commons.ui.runtime.image.OverlayImageProvider;
 import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
 import org.talend.commons.utils.workbench.preferences.GlobalConstant;
 import org.talend.core.model.process.IConnection;
@@ -453,7 +453,7 @@ public class ConnectionTraceFigure extends Figure {
         if (foundLine != null) {
             return Boolean.valueOf(foundLine.get(IConnection.TRACE_SCHEMA_COLUMN_CHECKED).toString());
         }
-        return true;
+        return columnsCheckInfo == null || columnsCheckInfo.isEmpty();
     }
 
     /**

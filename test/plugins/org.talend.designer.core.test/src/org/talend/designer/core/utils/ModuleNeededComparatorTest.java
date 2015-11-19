@@ -89,15 +89,8 @@ public class ModuleNeededComparatorTest {
         refNeededModules.add(m14);
         refNeededModules.add(m12);
         refNeededModules.add(m11);
-
-        // After the equals and hashCode method have been reviewed, the first assertion will fail. To make it work, just
-        // uncomment the 2 below lines and remove the 2 next.
-
-        // refNeededModules.add(m16);
-        // refNeededModules.add(m15);
-        refNeededModules.add(m15);
         refNeededModules.add(m16);
-
+        refNeededModules.add(m15);
         refNeededModules.add(m13);
 
         refMap.put(1, "c4"); //$NON-NLS-1$

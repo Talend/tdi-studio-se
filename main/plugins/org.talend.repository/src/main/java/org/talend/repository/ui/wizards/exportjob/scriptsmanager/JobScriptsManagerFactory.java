@@ -53,7 +53,8 @@ public class JobScriptsManagerFactory {
                     && exportChoiceMap.get(ExportChoice.needMavenScript) == Boolean.TRUE) {
                 return new OSGIJavaScriptForESBWithMavenManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
             } else {
-                return new JobJavaScriptOSGIForESBManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
+                // TESB-16721 [Export Job] On export job context always "Default"
+                return new JobJavaScriptOSGIForESBManager(exportChoiceMap, null, launcher, statisticPort, tracePort);
             }
         default:
             //

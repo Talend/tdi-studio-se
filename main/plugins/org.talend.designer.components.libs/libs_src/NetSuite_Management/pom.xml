@@ -15,7 +15,7 @@
 	<dependency>
 		<groupId>org.apache.cxf</groupId>
 		<artifactId>cxf-rt-frontend-jaxws</artifactId>
-		<version>2.7.7</version>
+		<version>3.1.3</version>
 	</dependency>
 	</dependencies>
 
@@ -31,6 +31,21 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>../../../../../../tcommon-studio-se/main/plugins/org.talend.libraries.netsuite/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		
 		<resources>
@@ -38,5 +53,6 @@
 				<directory>src/main/java</directory>
 			</resource>
 		</resources>
+		
 	</build>
 </project>

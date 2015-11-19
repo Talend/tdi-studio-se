@@ -15,6 +15,7 @@ package org.talend.designer.core.ui.editor;
 import org.eclipse.gef.requests.CreationFactory;
 import org.talend.core.model.components.IComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.notes.Note;
 
 /**
  * Factory used to create a new Node. <br/>
@@ -37,7 +38,15 @@ public class PaletteComponentFactory implements CreationFactory {
      */
     @Override
     public Object getNewObject() {
-        return new Node(component);
+        String componentName = null;
+        if (component != null) {
+            componentName = component.getName();
+        }
+        if (componentName != null && componentName.toLowerCase().equals("note")) { //$NON-NLS-1$
+            return new Note();
+        } else {
+            return new Node(component);
+        }
     }
 
     /*

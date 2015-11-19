@@ -1,12 +1,12 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.metadata.IMetadataTable
     org.talend.core.model.metadata.IMetadataColumn
     org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
-" 
+"
 %>
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
 <%
@@ -23,185 +23,214 @@ String logDB = ElementParameterParser.getValue(node, "__LOG_DB__");
 String logTable = ElementParameterParser.getValue(node, "__LOG_TABLE__");
 
 boolean needHost = ("".equals(host) || "\"\"".equals(host)) ? false : true;
-logDB = ("".equals(logDB) || "\"\"".equals(logDB)) ? dbname : logDB;
-logTable = ("".equals(logTable) || "\"\"".equals(logTable)) ? table + "+\"_lt\"" : logTable;
+        logDB = ("".equals(logDB) || "\"\"".equals(logDB)) ? dbname : logDB;
+        logTable = ("".equals(logTable) || "\"\"".equals(logTable)) ? table + "+\"_lt\"" : logTable;
 
 boolean useQuery = "true".equals(ElementParameterParser.getValue(node, "__USE_QUERY__"));
-String query = ElementParameterParser.getValue(node, "__QUERY__"); 
-query = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(query);
+String query = ElementParameterParser.getValue(node, "__QUERY__");
+       query = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(query);
 
-String execution= ElementParameterParser.getValue(node, "__EXECUTION__");
 String scriptPath= ElementParameterParser.getValue(node, "__SCRIPT_PATH__");
 String exportedFile= ElementParameterParser.getValue(node, "__EXPORTED_FILE__");
 String separator= ElementParameterParser.getValue(node, "__FIELD_SEPARATOR__");
 String errorFile= ElementParameterParser.getValue(node, "__ERROR_FILE__");
 
-//windows line separator as default
-String lineSeparator = "\\r\\n";
+boolean createDirsWhenNeeded = "true".equals(ElementParameterParser.getValue(node, "__CREATE_DIRECTORIES_WHEN_NEEDED__"));
+boolean dieWhenUnnormalTerminated = "true".equals(ElementParameterParser.getValue(node, "__DIE_WHEN_UNNORMAL_TERMINATED__"));
 
-if(!scriptPath.endsWith("/\"")){
-	scriptPath = scriptPath+	"+\"/\"";
-}
-if(exportedFile.indexOf("/") !=0 && ("Windows").equals(execution)){
-	exportedFile = exportedFile.replaceAll("/", "\\\\\\\\");
-} else {
-	//Unix line separator
-	lineSeparator = "\\n";
-}
+%>
+   String runtimeFileSep_<%= cid %> = System.getProperty("file.separator");
+   String runtimeLineSep_<%= cid %> = System.getProperty("line.separator");
+   boolean runOnWindows_<%= cid %> = "\\".equals(runtimeFileSep_<%= cid %>);
 
+   java.util.Map<String,String> fileSeparatorMapping_<%= cid %> = new java.util.HashMap<>();
+   fileSeparatorMapping_<%= cid %>.put("\\", "/");
+   fileSeparatorMapping_<%= cid %>.put("/", "\\");
+
+   String scriptPath_<%= cid %> = <%= scriptPath %>;
+   String exportedFile_<%= cid %> = <%= exportedFile %>;
+   String errorFile_<%= cid %> = <%= errorFile %>;
+   if(!(scriptPath_<%= cid %>.endsWith("\\") || scriptPath_<%= cid %>.endsWith("/"))){
+       scriptPath_<%= cid %> = scriptPath_<%= cid %> + java.io.File.separator;
+   }
+   scriptPath_<%= cid %> = scriptPath_<%= cid %>.replace(
+                                                         fileSeparatorMapping_<%= cid %>.get(runtimeFileSep_<%= cid %>)
+                                                         , runtimeFileSep_<%= cid %>);
+   exportedFile_<%= cid %> = exportedFile_<%= cid %>.replace(
+                                                         fileSeparatorMapping_<%= cid %>.get(runtimeFileSep_<%= cid %>)
+                                                         , runtimeFileSep_<%= cid %>);
+   errorFile_<%= cid %> = errorFile_<%= cid %>.replace(
+                                                         fileSeparatorMapping_<%= cid %>.get(runtimeFileSep_<%= cid %>)
+                                                         , runtimeFileSep_<%= cid %>);
+      <%
+      if(createDirsWhenNeeded){
+      %>
+         java.nio.file.Path pathScriptDir_<%= cid %> = java.nio.file.FileSystems.getDefault().getPath(scriptPath_<%= cid %>);
+         if(!java.nio.file.Files.exists(pathScriptDir_<%= cid %>, java.nio.file.LinkOption.NOFOLLOW_LINKS)){
+            java.nio.file.Files.createDirectories(pathScriptDir_<%= cid %>);
+         }
+
+         java.nio.file.Path pathExportedFile_<%= cid %> = java.nio.file.FileSystems.getDefault().getPath(exportedFile_<%= cid %>);
+         if(!java.nio.file.Files.exists(pathExportedFile_<%= cid %>, java.nio.file.LinkOption.NOFOLLOW_LINKS)){
+            java.nio.file.Files.createDirectories(pathExportedFile_<%= cid %>.getParent());
+         }
+
+         java.nio.file.Path pathErrorFile_<%= cid %> = java.nio.file.FileSystems.getDefault().getPath(errorFile_<%= cid %>);
+         if(!java.nio.file.Files.exists(pathErrorFile_<%= cid %>, java.nio.file.LinkOption.NOFOLLOW_LINKS)){
+            java.nio.file.Files.createDirectories(pathErrorFile_<%= cid %>.getParent());
+         }
+      <%
+      }
+      %>
+
+<%
 List<IMetadataColumn> columnList = null;
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {
-	IMetadataTable metadata = metadatas.get(0);
-	if (metadata!=null) {
-		columnList = metadata.getListColumns();
-	}
+    IMetadataTable metadata = metadatas.get(0);
+    if (metadata!=null) {
+        columnList = metadata.getListColumns();
+    }
 }
-boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__")); 
+boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
-	String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
-<%
-	if(("Windows").equals(execution)){
-%>
-	java.io.File file_<%=cid%> = new java.io.File(<%=scriptPath%>+<%=table%>+".script");
-<%
-	}else{
-%>
-	java.io.File file_<%=cid%> = new java.io.File(<%=scriptPath%>+<%=table%>+".scr");
-<%
-	}
-%>
-	
-	<%//build script---------------------------------------------------------%>
-	
+    String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
+    String generatedScriptPath_<%= cid %> = scriptPath_<%= cid %> + <%=table%> +".script";
+    java.io.File file_<%=cid%> = new java.io.File(generatedScriptPath_<%= cid %>);
 try{
-	java.io.FileWriter fw_<%=cid %> = new java.io.FileWriter(file_<%=cid%>);
-	StringBuilder script_<%=cid%> = new StringBuilder();
-	fw_<%=cid %>.write(".LOGTABLE "+<%=logDB%>+"."+<%=logTable%>+";" + "<%=lineSeparator%>");
-	        
-	<%
-	String passwordFieldName = "__PASS__";
-	%>
-	
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-   	
-	fw_<%=cid %>.write(".LOGON "+<%if(needHost) {%><%=host%>+"/"<%} else {%> "" <%}%>+<%=dbuser%>+","+decryptedPassword_<%=cid%>+";"+ "<%=lineSeparator%>");
-	
-	<%//Layout---------------------------------------------------------------%>
-	fw_<%=cid %>.write(".BEGIN EXPORT SESSIONS 8;"+"<%=lineSeparator%>");
-	<%if(!useQuery) {%>
-		fw_<%=cid %>.write("SELECT <%if(separator.length()>0 && !"\"\"".equals(separator)){%>CAST(('' ||<%}%>"+"<%=lineSeparator%>");
-		<%
-		if(columnList!=null){
-			int counter = 1;
-			int columnsLength = 0;
-			for(IMetadataColumn column:columnList){	
-				if( columnList.size() != counter){	
-					if(separator.length()>0 && !"\"\"".equals(separator)){
-						columnsLength+=(column.getLength()==null?0:column.getLength())+separator.length();
-				%>
-					fw_<%=cid %>.write("TRIM(COALESCE(CAST(<%=column.getOriginalDbColumnName()%> AS CHAR(<%=column.getLength()%>)),'')) || '"+<%=separator%>+"' ||"+"<%=lineSeparator%>");
-					<%}else{%>
-					fw_<%=cid %>.write("cast( <%=column.getOriginalDbColumnName()%> as CHAR(<%=column.getLength()%>)),"+"<%=lineSeparator%>");
-					<%}%>
-			<%
-				} else {
-					if(separator.length()>0 && !"\"\"".equals(separator)){
-						columnsLength+=(column.getLength()==null?0:column.getLength())+1;
-			%>
-					fw_<%=cid %>.write("TRIM(COALESCE(CAST(<%=column.getOriginalDbColumnName()%> AS VARCHAR(<%=column.getLength()%>)),''))) AS CHAR(<%=columnsLength%>))"+"<%=lineSeparator%>");
-					<%}else{%>
-					fw_<%=cid %>.write("cast( <%=column.getOriginalDbColumnName()%> as CHAR(<%=column.getLength()%>))"+"<%=lineSeparator%>");
-					<%}%>
-			<% } 
-				counter++;
-			}
-		}
-		%>
-	
-		fw_<%=cid %>.write("FROM "+ <%=dbname%> + "." + <%=table%>+";"+"<%=lineSeparator%>");
-	<%} else {%>
-		fw_<%=cid %>.write(<%=query%> +";"+"<%=lineSeparator%>");
-	<%}%>
-	
-	<%//Export file----------------------------------------------------------%>
-	fw_<%=cid %>.write(".EXPORT OUTFILE \""+<%=exportedFile%>+".data\" FORMAT TEXT mode record;"+"<%=lineSeparator%>");
-	fw_<%=cid %>.write(".END EXPORT;"+"<%=lineSeparator%>");
-	fw_<%=cid %>.write(".LOGOFF;"+"<%=lineSeparator%>");
-	
-	<%//write script to file-------------------------------------------------%>
-	fw_<%=cid %>.close();
-	
-	<%//run fexp command----------------------------------------------------%>
-	String sb__<%=cid%> = null;
-	<%
-	if("Windows".equals(execution)){
-	%>
-	sb__<%=cid%> = "fexp < \""+<%=scriptPath%>+<%=table%>+".script\" > \""+<%=errorFile%>+"\" 2>&1";
-	String[] sb_<%=cid%> = {"cmd","/c", sb__<%=cid%>};
-	<%}else{%>
-	sb__<%=cid%> = "fexp < "+<%=scriptPath%>+<%=table%>+".scr"+" > \""+<%=errorFile%>+"\" 2>&1";
-	String[] sb_<%=cid%> = {"sh","-c",sb__<%=cid%>};
-	<%}%>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Executing command '" + sb__<%=cid%> + "'.");
-	<%}%>
-	final Process process_<%=cid %> = Runtime.getRuntime().exec(sb_<%=cid%>);
-	
-	Thread normal_<%=cid %> = new Thread() {
-	    public void run() {
-	    	try {
-	    		java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getInputStream()));
-	    		String line = "";
-	    		
-	    		try {
-	    			while((line = reader.readLine()) != null) {
-	    				System.out.println(line);
-	    	        }
-	    	    } finally {
-	    	         reader.close();
-	    	    }
-	        }catch(java.io.IOException ioe) {
-				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
-	    		ioe.printStackTrace();
-	    	}
-	    }
-	};
-	normal_<%=cid %>.start();
-	
-	Thread error_<%=cid %> = new Thread() {
-		public void run() {
-			try {
-				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getErrorStream()));
-				String line = "";
-				try {
-					while((line = reader.readLine()) != null) {
-						System.err.println(line); 
-					}
-				} finally {
-					reader.close();
-				}
-			} catch(java.io.IOException ioe) {
-				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
-			   ioe.printStackTrace();
-			}
-		}
-	};
-	error_<%=cid %>.start();
-	
-	process_<%=cid %>.waitFor();
-	
-	normal_<%=cid %>.interrupt();
-	
-	error_<%=cid %>.interrupt();
-	
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Excute '" + sb__<%=cid%> + "' has finished.");
-	<%}%>
+    java.io.FileWriter fw_<%=cid %> = new java.io.FileWriter(file_<%=cid%>);
+    StringBuilder script_<%=cid%> = new StringBuilder();
+    fw_<%=cid %>.write(".LOGTABLE "+<%=logDB%>+"."+<%=logTable%>+";" + runtimeLineSep_<%= cid %>);
+
+    <%
+    String passwordFieldName = "__PASS__";
+    %>
+
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+    fw_<%=cid %>.write(".LOGON "+<%if(needHost) {%><%=host%>+"/"<%} else {%> "" <%}%>+<%=dbuser%>+","+decryptedPassword_<%=cid%>+";"+ runtimeLineSep_<%= cid %>);
+
+    <%//Layout---------------------------------------------------------------%>
+    fw_<%=cid %>.write(".BEGIN EXPORT SESSIONS 8;"+runtimeLineSep_<%= cid %>);
+    <%if(!useQuery) {%>
+        fw_<%=cid %>.write("SELECT <%if(separator.length()>0 && !"\"\"".equals(separator)){%>CAST(('' ||<%}%>"+runtimeLineSep_<%= cid %>);
+        <%
+        if(columnList!=null){
+            int counter = 1;
+            int columnsLength = 0;
+            for(IMetadataColumn column:columnList){
+                if( columnList.size() != counter){
+                    if(separator.length()>0 && !"\"\"".equals(separator)){
+                        columnsLength+=(column.getLength()==null?0:column.getLength())+separator.length();
+                %>
+                    fw_<%=cid %>.write("TRIM(COALESCE(CAST(<%=column.getOriginalDbColumnName()%> AS CHAR(<%=column.getLength()%>)),'')) || '"+<%=separator%>+"' ||"+runtimeLineSep_<%= cid %>);
+                    <%}else{%>
+                    fw_<%=cid %>.write("cast( <%=column.getOriginalDbColumnName()%> as CHAR(<%=column.getLength()%>)),"+runtimeLineSep_<%= cid %>);
+                    <%}%>
+            <%
+                } else {
+                    if(separator.length()>0 && !"\"\"".equals(separator)){
+                        columnsLength+=(column.getLength()==null?0:column.getLength())+1;
+            %>
+                    fw_<%=cid %>.write("TRIM(COALESCE(CAST(<%=column.getOriginalDbColumnName()%> AS VARCHAR(<%=column.getLength()%>)),''))) AS CHAR(<%=columnsLength%>))"+runtimeLineSep_<%= cid %>);
+                    <%}else{%>
+                    fw_<%=cid %>.write("cast( <%=column.getOriginalDbColumnName()%> as CHAR(<%=column.getLength()%>))"+runtimeLineSep_<%= cid %>);
+                    <%}%>
+            <% }
+                counter++;
+            }
+        }
+        %>
+
+        fw_<%=cid %>.write("FROM "+ <%=dbname%> + "." + <%=table%>+";"+runtimeLineSep_<%= cid %>);
+    <%} else {%>
+        fw_<%=cid %>.write(<%=query%> +";"+runtimeLineSep_<%= cid %>);
+    <%}%>
+
+    <%//Export file----------------------------------------------------------%>
+    fw_<%=cid %>.write(".EXPORT OUTFILE \""+ exportedFile_<%= cid %> +"\" FORMAT TEXT mode record;"+runtimeLineSep_<%= cid %>);
+    fw_<%=cid %>.write(".END EXPORT;"+runtimeLineSep_<%= cid %>);
+    fw_<%=cid %>.write(".LOGOFF;"+runtimeLineSep_<%= cid %>);
+
+    <%//write script to file-------------------------------------------------%>
+    fw_<%=cid %>.close();
+
+    <%//run fexp command----------------------------------------------------%>
+    String[] strArr_<%= cid %> = new String[3];
+    String expCmd_<%= cid %> = null;
+    if(runOnWindows_<%= cid %>){
+        expCmd_<%= cid %> = "fexp < \""+ generatedScriptPath_<%= cid %> + "\" > \""+errorFile_<%= cid %>+"\" 2>&1";
+        strArr_<%= cid %>[0] = "cmd";
+        strArr_<%= cid %>[1] = "/c";
+    }else{
+        expCmd_<%= cid %> = "fexp < "+ generatedScriptPath_<%= cid %> + " > \""+errorFile_<%= cid %>+"\" 2>&1";
+        strArr_<%= cid %>[0] = "sh";
+        strArr_<%= cid %>[1] = "-c";
+    }
+        strArr_<%= cid %>[2] = expCmd_<%= cid %>;
+
+    <%if(isLog4jEnabled){%>
+        log.info("<%=cid%> - Executing command '" + expCmd_<%= cid %> + "'.");
+    <%}%>
+    final Process process_<%=cid %> = Runtime.getRuntime().exec(strArr_<%= cid %>);
+
+    Thread normal_<%=cid %> = new Thread() {
+        public void run() {
+            try {
+                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getInputStream()));
+                String line = "";
+
+                try {
+                    while((line = reader.readLine()) != null) {
+                        System.out.println(line);
+                    }
+                } finally {
+                     reader.close();
+                }
+            }catch(java.io.IOException ioe) {
+                <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
+                ioe.printStackTrace();
+            }
+        }
+    };
+    normal_<%=cid %>.start();
+
+    Thread error_<%=cid %> = new Thread() {
+        public void run() {
+            try {
+                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getErrorStream()));
+                String line = "";
+                try {
+                    while((line = reader.readLine()) != null) {
+                        System.err.println(line);
+                    }
+                } finally {
+                    reader.close();
+                }
+            } catch(java.io.IOException ioe) {
+                <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
+               ioe.printStackTrace();
+            }
+        }
+    };
+    error_<%=cid %>.start();
+    process_<%=cid %>.waitFor();
+    normal_<%=cid %>.interrupt();
+    error_<%=cid %>.interrupt();
+
+    <%
+        if(dieWhenUnnormalTerminated){
+        %>
+           if(process_<%=cid %>.exitValue() != 0){
+                throw new RuntimeException("The subprocess terminated unnormally.");
+           }
+        <%
+        }
+     %>
+
+    <%if(isLog4jEnabled){%>
+        log.info("<%=cid%> - Excute '" + expCmd_<%= cid %> + "' has finished.");
+    <%}%>
 }finally{
-	try{
-		file_<%=cid %>.delete();
-	}catch(Exception e_<%=cid%>){
-        <%log4jCodeGenerateUtil.logError(node,"warn","e_"+cid);%>
-	}
+    file_<%=cid %>.delete();
 }

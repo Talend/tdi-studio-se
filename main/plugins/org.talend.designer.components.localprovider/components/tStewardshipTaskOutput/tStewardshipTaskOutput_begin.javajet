@@ -10,9 +10,11 @@
     	java.util.Map		
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 	<% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
     
     String url = ElementParameterParser.getValue(node, "__URL__");
@@ -42,22 +44,14 @@
 					%>
 
 					<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-					<%
-					if(isLog4jEnabled){
-					%>	
-						log.info("<%=cid%> - Attempt to get a task load client from: " + url_<%=cid%> + ".");
-					<%
-					}
-					%>
+					
+					<% logUtil.info("\"Attempt to get a task load client from: \"+"+url);%>
+					
 					org.talend.datastewardship.server.task.creation.TaskLoadClient taskLoadClient_<%=cid%> = new org.talend.datastewardship.server.task.creation.TaskLoadClient(url_<%=cid%>,<%=username%>,decryptedPassword_<%=cid%>);
 					taskLoadClient_<%=cid%>.validate();
-					<%
-					if(isLog4jEnabled){
-					%>	
-						log.info("<%=cid%> - Got successfully.");
-					<%
-					}
-					%>
+					
+					<% logUtil.info("\"Got task load client successfully.\"");%>
+					
 					org.talend.stewardship.Record record_<%=cid%> = null;
 					boolean targetRecordExisted_<%=cid%> = false;
 					<%//For TDI-26345
@@ -71,11 +65,11 @@
 					<%
 						}
 					}
-					if (isLog4jEnabled) {
 					%>
-						log.info("<%=cid%> - Start to upload task records to server.");
+					
+					<% logUtil.info("\"Start to upload task records to server.\"");%>
+					
 					<%
-					}
 				}
 			}
 		}	

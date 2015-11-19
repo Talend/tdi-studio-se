@@ -9,9 +9,11 @@ imports="
 		org.talend.core.model.utils.NodeUtil	
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String virtualcid = cid;
 	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
@@ -78,6 +80,8 @@ int nb_line_rejected_<%=cid%> = 0;
 }%>
 
 <%if(!useExistingConn){%>
+    <% logUtil.info("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+    
     String murl = <%=mdmUrl %>;
     if(murl.endsWith("?wsdl")) {
        murl = murl.substring(0, murl.length() - 5);
@@ -98,6 +102,8 @@ int nb_line_rejected_<%=cid%> = 0;
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	
 	context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
+	
+    <% logUtil.info("\"Got service successfully.\"");%>
 <%}else{%>
 	org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 <%}%>

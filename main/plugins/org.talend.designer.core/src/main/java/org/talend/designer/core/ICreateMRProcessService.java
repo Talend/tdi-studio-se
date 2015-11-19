@@ -12,8 +12,11 @@
 // ============================================================================
 package org.talend.designer.core;
 
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.IService;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.ui.editor.process.Process;
 
 
@@ -23,4 +26,6 @@ import org.talend.designer.core.ui.editor.process.Process;
 public interface ICreateMRProcessService extends IService {
 
     public Process createMRProcess(Property property);
+    
+    public ProcessEditorInput getMRProcessEditorInput(ProcessItem processItem, boolean load) throws PersistenceException;
 }

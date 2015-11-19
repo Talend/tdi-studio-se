@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.CorePlugin;
 import org.talend.repository.ui.ERepositoryImages;
@@ -48,6 +49,7 @@ public class DeleteProjectsAsAction extends Action implements IWorkbenchWindowAc
      * 
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
      */
+    @Override
     public void dispose() {
         // TODO Auto-generated method stub
 
@@ -58,6 +60,7 @@ public class DeleteProjectsAsAction extends Action implements IWorkbenchWindowAc
      * 
      * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#init(org.eclipse.ui.IWorkbenchWindow)
      */
+    @Override
     public void init(IWorkbenchWindow window) {
         // TODO Auto-generated method stub
 
@@ -68,16 +71,21 @@ public class DeleteProjectsAsAction extends Action implements IWorkbenchWindowAc
      * 
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
+    @Override
     public void run(IAction action) {
         run();
     }
 
+    @Override
     public void run() {
-        // TODO Auto-generated method stub
-        Shell activeShell = Display.getCurrent().getActiveShell();
-        SelectDeleteProjectDialog dialog = new SelectDeleteProjectDialog(activeShell, this.login);
-        if (dialog.open() == Dialog.OK) {
-            CorePlugin.getDefault().getRepositoryLocalProviderService().resetXmiResourceSet();
+        try {
+            Shell activeShell = Display.getCurrent().getActiveShell();
+            SelectDeleteProjectDialog dialog = new SelectDeleteProjectDialog(activeShell, this.login);
+            if (dialog.open() == Dialog.OK) {
+                CorePlugin.getDefault().getRepositoryLocalProviderService().resetXmiResourceSet();
+            }
+        } catch (Throwable e) {
+            CommonExceptionHandler.process(e);
         }
     }
 
@@ -87,6 +95,7 @@ public class DeleteProjectsAsAction extends Action implements IWorkbenchWindowAc
      * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
      * org.eclipse.jface.viewers.ISelection)
      */
+    @Override
     public void selectionChanged(IAction action, ISelection selection) {
         // TODO Auto-generated method stub
 

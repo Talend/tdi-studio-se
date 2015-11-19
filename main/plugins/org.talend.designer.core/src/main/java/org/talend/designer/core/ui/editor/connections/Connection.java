@@ -312,11 +312,9 @@ public class Connection extends Element implements IConnection, IPerformance {
                 param.setShowIf("(" + EParameterName.ROUTETYPE.getName() + "=='xpath') AND ("
                         + EParameterName.USE_NAMESPACES.getName() + " == 'true')");
                 param.setNumRow(18);
-                String[] columns = new String[] { EParameterName.PREFIX.getName(),
-                        EParameterName.URI.getName() };
+                String[] columns = new String[] { EParameterName.PREFIX.getName(), EParameterName.URI.getName() };
                 param.setListItemsDisplayCodeName(columns);
-                param.setListItemsDisplayName(new String[] { EParameterName.PREFIX.getDisplayName(),
-                        EParameterName.URI.getName() });
+                param.setListItemsDisplayName(new String[] { EParameterName.PREFIX.getDisplayName(), EParameterName.URI.getName() });
                 ElementParameter p = new ElementParameter(this);
                 p.setFieldType(EParameterFieldType.TEXT);
                 p.setName(EParameterName.PREFIX.getName());
@@ -682,6 +680,23 @@ public class Connection extends Element implements IConnection, IPerformance {
     }
 
     public void initTraceParamters() {
+
+        // won't store them by default when creating
+        // initTraceFilterParameters();
+
+        if (trace != null) {
+            this.trace.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), checkTraceShowEnable());
+        }
+        // if (resuming != null) {
+        // this.resuming.setPropertyValue(EParameterName.RESUMING_CHECKPOINT.getName(), checkResumingShowEnable());
+        // }
+    }
+
+    /**
+     * just keep this method in case we need it again in some day, or we can delete it dirrectly, since it is never
+     * used.
+     */
+    private void initTraceFilterParameters() {
         List<Map<String, Object>> values = new ArrayList<Map<String, Object>>();
         IMetadataTable metadataTable = this.getMetadataTable();
         if (metadataTable != null) {
@@ -698,12 +713,6 @@ public class Connection extends Element implements IConnection, IPerformance {
         if (getElementParameter(EParameterName.TRACES_CONNECTION_FILTER.getName()) != null && values != null) {
             getElementParameter(EParameterName.TRACES_CONNECTION_FILTER.getName()).setValue(values);
         }
-        if (trace != null) {
-            this.trace.setPropertyValue(EParameterName.TRACES_SHOW_ENABLE.getName(), checkTraceShowEnable());
-        }
-        // if (resuming != null) {
-        // this.resuming.setPropertyValue(EParameterName.RESUMING_CHECKPOINT.getName(), checkResumingShowEnable());
-        // }
     }
 
     public boolean checkTraceShowEnable() {

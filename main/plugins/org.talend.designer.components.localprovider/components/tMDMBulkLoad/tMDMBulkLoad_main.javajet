@@ -9,9 +9,11 @@ imports="
 		java.util.List
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
 String cid = node.getUniqueName();
 
 String xmlField = ElementParameterParser.getValue(node,"__XMLFIELD__");
@@ -26,13 +28,18 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
     		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
 %>
 if (count_<%=cid%> % <%=arraySize%> == 0) {
-	if(inputStreamMerger_<%=cid%> != null)
-		inputStreamMerger_<%=cid%>.close();
+	if(inputStreamMerger_<%=cid%> != null) {
+	   <% logUtil.info("\"Close input stream.\"");%>
+	   inputStreamMerger_<%=cid%>.close();
+	}
+	
+	<% logUtil.info("\"Load bulk load.\"");%>
 	inputStreamMerger_<%=cid%> = bulkloadClient_<%=cid %>.load();
         resourceMap.put("mdmBulkStream<%=cid %>", inputStreamMerger_<%=cid%>);
 }
 
 if(<%=conn.getName()%>.<%=xmlField %>!=null){
+    <% logUtil.info("\"Input stream push.\"");%>
 	inputStreamMerger_<%=cid%>.push(new java.io.ByteArrayInputStream(<%=conn.getName()%>.<%=xmlField %>.toString().getBytes("UTF-8")));
 }else{
 	inputStreamMerger_<%=cid%>.push(null);

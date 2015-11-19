@@ -21,9 +21,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
@@ -32,7 +30,6 @@ import org.talend.core.model.runprocess.LastGenerationInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
-import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
@@ -162,7 +159,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         }
         // the running context is only useful, when binaries
         addArg(profileBuffer, isBinaries && isOptionChoosed(ExportChoice.needContext),
-                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS, isHDInsight());
+                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS, ProcessUtils.isHDInsight());
 
         // for test
         addArg(profileBuffer, isOptionChoosed(ExportChoice.includeTestSource), TalendMavenConstants.PROFILE_INCLUDE_TEST_SOURCES);
@@ -240,23 +237,4 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         return jobFile;
     }
     
-    private boolean isHDInsight() {
-        // if need to judge spark.
-        /*String processType = processor.getProcess().getComponentsType();
-        if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(processType)
-                || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(processType)) {
-        }*/
-        boolean isHD = false;
-        IDesignerCoreService service = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
-                IDesignerCoreService.class);
-        IProcess process = service.getProcessFromItem(processItem);
-        IElementParameter param = process.getElementParameter("DISTRIBUTION");  //$NON-NLS-1$
-        if (param != null) {
-            String distribution = (String) param.getValue();
-            if ("MICROSOFT_HD_INSIGHT".equals(distribution)) {//$NON-NLS-1$
-                isHD = true;
-            }
-        }
-        return isHD;
-    }
 }

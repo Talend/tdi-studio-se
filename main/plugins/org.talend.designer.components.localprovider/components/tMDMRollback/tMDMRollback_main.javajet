@@ -5,10 +5,11 @@ imports="
     org.talend.designer.codegen.config.CodeGeneratorArgument
 " 
 %>
-
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
 
     String cid = node.getUniqueName();
 
@@ -29,9 +30,18 @@ imports="
     {
     	com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
     	if(mdmTransaction_<%=cid%>!=null) {
+    	
+    	   <% logUtil.info("\"Attempt to roll back transaction .\"");%>
+    	   
     		mdmTransaction_<%=cid%>.rollback();
+    		
+    	   <% logUtil.info("\"Roll back transaction successfully.\"");%>
     	}
     <%  if(close){%>
+        <% logUtil.info("\"To Close service.\"");%>
+        
         service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+        
+        <% logUtil.info("\"Close service successfully.\"");%>
     <% }%>
     }

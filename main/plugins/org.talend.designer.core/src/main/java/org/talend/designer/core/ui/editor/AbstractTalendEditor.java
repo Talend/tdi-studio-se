@@ -185,7 +185,9 @@ import org.talend.designer.core.ui.action.TalendConnectionCreationTool;
 import org.talend.designer.core.ui.action.ToggleSubjobsAction;
 import org.talend.designer.core.ui.editor.cmd.ConnectionCreateCommand;
 import org.talend.designer.core.ui.editor.cmd.ConnectionReconnectCommand;
+import org.talend.designer.core.ui.editor.cmd.CreateCommand;
 import org.talend.designer.core.ui.editor.cmd.CreateNodeContainerCommand;
+import org.talend.designer.core.ui.editor.cmd.CreateNoteCommand;
 import org.talend.designer.core.ui.editor.cmd.MoveNodeCommand;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -195,6 +197,7 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
+import org.talend.designer.core.ui.editor.notes.Note;
 import org.talend.designer.core.ui.editor.outline.NodeTreeEditPart;
 import org.talend.designer.core.ui.editor.outline.ProcessTreePartFactory;
 import org.talend.designer.core.ui.editor.palette.TalendDrawerEditPart;
@@ -1765,9 +1768,25 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
 
                 if (request instanceof CreateRequest) {
                     CreateRequest cRequest = (CreateRequest) request;
-                    if (cRequest.getNewObject() instanceof Node) {
-                        Object newObject = (cRequest).getNewObject();
-                        if (newObject != null) {
+                    Object newObject = cRequest.getNewObject();
+                    boolean isNodeInstance = (newObject instanceof Node);
+                    boolean isNoteInstance = (newObject instanceof Note);
+                    if (isNodeInstance || isNoteInstance) {
+                        // step 1: get the orginal position in editor
+                        Point originalPoint = ((CreateRequest) request).getLocation();
+                        RootEditPart rep = getViewer().getRootEditPart().getRoot();
+                        Point viewOriginalPosition = new Point();
+                        if (rep instanceof ScalableFreeformRootEditPart) {
+                            ScalableFreeformRootEditPart root = (ScalableFreeformRootEditPart) rep;
+                            Viewport viewport = (Viewport) root.getFigure();
+                            viewOriginalPosition = viewport.getViewLocation();
+                        }
+                        Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y
+                                + viewOriginalPosition.y);
+
+                        // step 2: create node/note
+                        CreateCommand createCmd = null;
+                        if (isNodeInstance) {
                             Node node = (Node) newObject;
                             // TDI-23304 this bug is caused by TDI-23058
                             if (!node.getComponent().getComponentType().equals(EComponentType.JOBLET)) {
@@ -1778,22 +1797,13 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                                     nodeContainer = new NodeContainer(node);
                                 }
 
-                                Point originalPoint = ((CreateRequest) request).getLocation();
-                                RootEditPart rep = getViewer().getRootEditPart().getRoot();
-                                Point viewOriginalPosition = new Point();
-                                if (rep instanceof ScalableFreeformRootEditPart) {
-                                    ScalableFreeformRootEditPart root = (ScalableFreeformRootEditPart) rep;
-                                    Viewport viewport = (Viewport) root.getFigure();
-                                    viewOriginalPosition = viewport.getViewLocation();
-                                }
-                                Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y
-                                        + viewOriginalPosition.y);
-                                CreateNodeContainerCommand createCmd = new CreateNodeContainerCommand((Process) getProcess(),
-                                        nodeContainer, point);
-                                if (createCmd != null) {
-                                    execCommandStack(createCmd);
-                                }
+                                createCmd = new CreateNodeContainerCommand((Process) getProcess(), nodeContainer, point);
                             }
+                        } else if (isNoteInstance) {
+                            createCmd = new CreateNoteCommand((Process) getProcess(), (Note) newObject, point);
+                        }
+                        if (createCmd != null) {
+                            execCommandStack(createCmd);
                         }
                         // IComponent component = ((Node) cRequest.getNewObject()).getComponent();
                         // ModulesInstallerUtil.installModules(getSite().getShell(), component);

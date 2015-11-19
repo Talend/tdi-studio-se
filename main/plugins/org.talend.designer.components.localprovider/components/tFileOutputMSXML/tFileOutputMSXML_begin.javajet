@@ -129,6 +129,41 @@ final org.dom4j.io.OutputFormat format_<%=cid%> = org.dom4j.io.OutputFormat.crea
 format_<%=cid %>.setEncoding(<%=encoding%>);
 format_<%=cid %>.setTrimText(<%=trimText%>);
 
+class OrderHelper_<%=cid%> {
+    java.util.Map<String,Boolean> recalculateOrderMap = new java.util.HashMap<String,Boolean>();
+	java.util.Map<String,Integer> orderMap = new java.util.HashMap<String,Integer>();
+	java.util.Map<String,Boolean> tailAppendMap = new java.util.HashMap<String,Boolean>();
+	
+	boolean need_recalculate(String field) {
+		Boolean result = recalculateOrderMap.get(field);
+		return result == null ? true : result;
+	}
+	
+	boolean tailAppend(String field) {
+		Boolean result = tailAppendMap.get(field);
+		return result == null ? false : result;
+	}
+	
+	int order(String field) {
+		Integer order = orderMap.get(field);
+		return order == null ? 0 : order;
+	}
+	
+	void fillRecalculateOrderMap(String field,Boolean value) {
+		recalculateOrderMap.put(field,value);
+	}
+	
+	void fillTailAppendMap(String field,Boolean value) {
+		tailAppendMap.put(field,value);
+	}
+	
+	void setOrder(String field,Integer order) {
+		orderMap.put(field,order);
+	}
+}
+
+final OrderHelper_<%=cid%> orderHelper_<%=cid%> = new OrderHelper_<%=cid%>();
+
 <%@ include file="tFileOutputMSXML_begin.inc.javajet"%>
 
 <%

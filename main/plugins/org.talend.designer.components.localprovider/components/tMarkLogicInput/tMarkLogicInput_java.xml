@@ -126,31 +126,89 @@
             </ITEMS>
         </PARAMETER>
 
-        <PARAMETER
-            NAME="AS_DOCID_COLUMN"
-            FIELD="PREV_COLUMN_LIST"
-            NUM_ROW="30"
-            REQUIRED="true"
-        >
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
-
         <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="35"
             REQUIRED="true"
         >
-            <TABLE>
+            <TABLE READONLY="true">
                 <COLUMN KEY="false" LENGTH="255" NAME="docId"
-                    TYPE="id_String" NULLABLE="false" READONLY="true"
+                    TYPE="id_String" NULLABLE="false"
                 />
                 <COLUMN KEY="false" LENGTH="255" NAME="docContent"
-                    TYPE="id_String" NULLABLE="false" READONLY="false"
+                    TYPE="id_String" NULLABLE="false"
                 />
             </TABLE>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="QUERY_CRITERIA"
+            FIELD="TEXT"
+            REQUIRED="true"
+            NUM_ROW="45"
+        >
+            <DEFAULT>""</DEFAULT>
         </PARAMETER>
 
     </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
+        <PARAMETER
+            NAME="PAGE_SIZE"
+            FIELD="TEXT"
+            NUM_ROW="5"
+            SHOW="false"
+        >
+            <DEFAULT>"10"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+             NAME="MAXIMAL_RETRIEVE_NUMBER"
+             FIELD="TEXT"
+             NUM_ROW="5"
+             REQUIRED="true"
+        >
+            <DEFAULT>100</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="USE_QUERY_OPTION"
+            FIELD="CHECK"
+            NUM_ROW="10"
+            >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="QUERY_OPTION_TYPE"
+            FIELD="CLOSED_LIST"
+            NUM_ROW="40"
+            SHOW_IF="USE_QUERY_OPTION == 'true'"
+            >
+            <ITEMS DEFAULT="XML">
+                <ITEM NAME="XML" VALUE="XML" />
+                <ITEM NAME="JSON" VALUE="JSON" />
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="QUERY_OPTION_NAME"
+            FIELD="TEXT"
+            REQUIRED="true"
+            NUM_ROW="40"
+            SHOW_IF="USE_QUERY_OPTION == 'true'"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="QUERY_OPTION_LITERALS"
+            FIELD="MEMO"
+            NB_LINES="4"
+            NUM_ROW="50"
+            SHOW_IF="USE_QUERY_OPTION == 'true'"
+        >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
     </ADVANCED_PARAMETERS>
 
     <CODEGENERATION>
@@ -245,7 +303,7 @@
     </CODEGENERATION>
 
     <RETURNS>
-        <RETURN NAME="NB_LINE" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+        <RETURN NAME="NB_LINE" TYPE="id_Long" AVAILABILITY="AFTER"/>
     </RETURNS>
 
 </COMPONENT>

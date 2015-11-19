@@ -11,9 +11,12 @@ imports="
         java.util.Map
 		" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
+
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String spName = ElementParameterParser.getValue(node, "__SPNAME__");
 	
@@ -64,20 +67,26 @@ org.talend.mdm.webservice.WSExecuteStoredProcedure wsExeProc_<%=cid %> = new org
 		String outputCol = null;
 		if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
 %>
+        <% logUtil.info("\"Attempt to execute stored procedure: \"");%>
 		List<String> xmlFields = service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>).getStrings();
+		<% logUtil.info("\"Execute stored procedure successfully.\"");%>
 		
 			for(String xmlField_<%=cid %> : xmlFields){
 				<%=outgoingConn.getName()%>.xmlField = xmlField_<%=cid %>;
 <%
 			} else {
 %>
+                <% logUtil.info("\"Attempt to execute stored procedure: \"");%>
 				service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+				<% logUtil.info("\"Execute stored procedure successfully.\"");%>
 <%
 			}
 			
 	} else {
 %>
+        <% logUtil.info("\"Attempt to execute stored procedure: \"");%>
 		service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+        <% logUtil.info("\"Execute stored procedure successfully.\"");%>
 <%
 	}
 %>

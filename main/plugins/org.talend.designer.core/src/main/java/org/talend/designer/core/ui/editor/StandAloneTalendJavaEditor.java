@@ -12,10 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import org.eclipse.core.internal.events.ResourceChangeEvent;
 import org.eclipse.core.internal.resources.Workspace;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
@@ -252,6 +255,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
         return super.getPartName();
     }
 
+    @SuppressWarnings("restriction")
     @Override
     public void dispose() {
         // remove the Runtines .java file in the .Java Project.
@@ -301,8 +305,17 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
 
         // only for sql template
         if (item instanceof SQLPatternItem) {
+            IProject jProject = talendProcessJavaProject.getProject();
+            ResourceChangeEvent event = new ResourceChangeEvent(item, IResourceChangeEvent.PRE_CLOSE, 1, null);
+            try {
+                Field resourceField = event.getClass().getDeclaredField("resource"); //$NON-NLS-1$
+                resourceField.setAccessible(true);
+                resourceField.set(event, jProject);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
             Workspace ws = (Workspace) ResourcesPlugin.getWorkspace();
-            ws.broadcastBuildEvent(item, IResourceChangeEvent.PRE_CLOSE, 1);
+            ws.getNotificationManager().broadcastChanges(ws.getElementTree(), event, false);
         }
     }
 

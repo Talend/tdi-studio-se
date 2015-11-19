@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -303,7 +305,7 @@ public class ExportItemUtil {
                 if (item.getProperty() instanceof FakePropertyImpl) {
                     FakePropertyImpl fakeProperty = (FakePropertyImpl) item.getProperty();
                     IPath itemResPath = fakeProperty.getItemPath().makeRelative();
-                    IPath itemSourcePath = workspacePath.append(itemResPath);
+                    IPath itemSourcePath = getProjectLocationPath().removeLastSegments(1).append(itemResPath);
                     // replace the project segment
                     IPath outputRelativeItemPath = getProjectOutputPath().append(itemResPath.removeFirstSegments(1));
                     IPath itemTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(outputRelativeItemPath);
@@ -318,7 +320,7 @@ public class ExportItemUtil {
                 for (Resource curResource : localRepositoryManager.getAffectedResources(item.getProperty())) {
                     URI uri = curResource.getURI();
                     IPath relativeItemPath = URIHelper.convert(uri).makeRelative();
-                    IPath sourcePath = workspacePath.append(relativeItemPath);
+                    IPath sourcePath = getProjectLocationPath().removeLastSegments(1).append(relativeItemPath);
                     // replace the project segment
                     IPath outputRelativeItemPath = getProjectOutputPath().append(relativeItemPath.removeFirstSegments(1));
                     IPath targetPath = new Path(destinationDirectory.getAbsolutePath()).append(outputRelativeItemPath);
@@ -335,7 +337,7 @@ public class ExportItemUtil {
                         List<IResource> dataFileList = testContainerService.getDataFiles(item);
                         for (IResource dataFile : dataFileList) {
                             IPath relativeItemPath = dataFile.getFullPath();
-                            IPath sourcePath = workspacePath.append(relativeItemPath);
+                            IPath sourcePath = getProjectLocationPath().removeLastSegments(1).append(relativeItemPath);
                             // replace the project segment
                             IPath outputRelativeItemPath = getProjectOutputPath().append(relativeItemPath.removeFirstSegments(1));
                             IPath targetPath = new Path(destinationDirectory.getAbsolutePath()).append(outputRelativeItemPath);
@@ -473,8 +475,14 @@ public class ExportItemUtil {
     }
 
     private IPath getProjectLocationPath() {
-        // it's workspace project, the project name should be technical name always.
-        return workspacePath.append(project.getTechnicalLabel());
+        return getEclipseProject(pManager.getCurrentProject()).getLocation();
+    }
+
+    // For fix TDI-34281
+    protected IProject getEclipseProject(org.talend.core.model.general.Project project) {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IProject eclipseProject = workspace.getRoot().getProject(project.getTechnicalLabel());
+        return eclipseProject;
     }
 
     private void fixItem(Item item) {

@@ -13,9 +13,11 @@
     	java.util.Map		
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
     
 	String loopingColumn = ElementParameterParser.getValue(node, "__LOOPING_COLUMN__");
@@ -108,44 +110,25 @@
 						%>
 						targetRecordExisted_<%=cid%> = false;
 					}
-					<%
-					if(isLog4jEnabled){
-					%>
-						log.debug("<%=cid%> - Task " + (nb_line_<%=cid %>+1) + " was generated.");
-					<%
-					}
-					%>
+					
+					<% logUtil.debug("\"Task \"+ (nb_line_"+cid+"+1) + \" was generated.\"");%>
+					
 					if(tasks_<%=cid%>.getTaskCount()>=<%=maxTaskCount%>){
-						<%
-						if(isLog4jEnabled){
-						%>
-							int tasksNo_<%=cid%> = tasks_<%=cid%>.getTaskCount();
-							log.info("<%=cid%> - Uploading "+tasksNo_<%=cid%>+" tasks...");
-						<%
-						}
-						%>
+					
+					    <% logUtil.info("\"Uploading \"+ tasks_"+cid+".getTaskCount() + \" tasks...\"");%>
+					    
 						String content = tasks_<%=cid%>.getTasksAndClear();
 						//System.out.println(content);
 						boolean loadResult_<%=cid%> = taskLoadClient_<%=cid%>.doLoad(content);
 						if(!loadResult_<%=cid%>){
-							<%
-							if(isLog4jEnabled){
-							%>
-								log.error("<%=cid%> - An error occured while uploading tasks.");
-							<%
-							}
-							%>
+						    
+						    <% logUtil.info("\"An error occured while uploading tasks.\"");%>
+							
 							System.err.println("An error occured while uploading tasks.");
 						}
-						<%
-						if(isLog4jEnabled){
-						%>
 						else{
-							log.info("<%=cid%> - Uploaded "+tasksNo_<%=cid%>+" tasks successfully.");
+						    <% logUtil.info("\"Uploaded tasks successfully.\"");%>
 						}
-						<%
-						}
-						%>
 					}
 					nb_line_<%=cid%> ++;
 					task_<%=cid%> = tasks_<%=cid%>.addTask();

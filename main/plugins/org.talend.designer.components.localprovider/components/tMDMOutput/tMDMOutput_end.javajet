@@ -5,9 +5,11 @@ imports="
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
 	if(destination!=null && !"".equals(destination)){
@@ -26,42 +28,72 @@ imports="
 %>
 
 <%
-if(!usePartialUpdate){
+if(!usePartialUpdate){%>
+    <% logUtil.info("\"Try to use full update.\"");%>
+<%
 	if(isMassInsert){
 		if(!isStaging && withReport){
 %> 
+    <% logUtil.info("\"Try to put item with report to master data.\"");%>
+    
 	if(miList_<%=cid %>.size() > 0){
 	    org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
+	    
+	    <% logUtil.info("\"Try to put item with report array.\"");%>
+	    
 		wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
+		
+	    <% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+	    <% logUtil.info("\"Put item with report array successfully.\"");%>
+	    
 		miList_<%=cid %>.clear();
 		miList_<%=cid %> = null;
 		<%if(addTaskID){%>
-		
+		    <% logUtil.info("\"Try to add task id.\"");%>
 			int i2_<%=cid %> = 0;
 		    for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+		        String compositeId = "";
+		        for(String id:wspk2_<%=cid %>.getIds()) {
+		          compositeId += id;
+		        }
+		        <% logUtil.debug("\"Add task id for item :\"+compositeId");%>
+		        
 		    	wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
 		    	service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
 		    	i2_<%=cid %>++;
 		    }
-		    
+		    <% logUtil.info("\"Add task ids successfully.\"");%>
         	taskIDs_<%=cid%>.clear();
         <%}%>
 	}
 <%
 		}else{%>
 	if(miList_<%=cid %>.size() > 0){
+	    <% logUtil.info("\"Try to put item array.\"");%>
+	    
 		wspks_<%=cid %> = service_<%=cid %>.putItemArray(miList_<%=cid %>).getWsItemPK();
+		
+		<% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+		
 		miList_<%=cid %>.clear();
 		miList_<%=cid %> = null;
 		<%if(addTaskID){%>
-		
+		    <% logUtil.info("\"Try to add task id.\"");%>
+		    
         	int i2_<%=cid %> = 0;
 		    for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+		        
+		        String compositeId = "";
+                for(String id:wspk2_<%=cid %>.getIds()) {
+                  compositeId += id;
+                }
+                <% logUtil.debug("\"Add task id for item :\"+compositeId");%>
+                
 		    	wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
 		    	service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
 		    	i2_<%=cid %>++;
 		    }
-		    
+		    <% logUtil.info("\"Add task ids successfully.\"");%>
         	taskIDs_<%=cid%>.clear();
         <%}%>
 	}
@@ -70,9 +102,12 @@ if(!usePartialUpdate){
 	}
 }%>
  	<%if(!useExistingConn){%>
+ 	    <% logUtil.info("\"To close service.\"");%>
  		service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+ 		<% logUtil.info("\"Close service successfully.\"");%>
  	<%}%>
  	
+ 	<% logUtil.info("\"Write record count: \"+nb_line_"+cid+"+\".\"");%>
  	globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);             
  	globalMap.put("<%=cid %>_NB_LINE_REJECTED",nb_line_rejected_<%=cid%>);
             

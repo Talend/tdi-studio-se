@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.formtools.LabelText;
@@ -494,7 +495,11 @@ public class ConnectionFormComposite extends Composite {
 
         @Override
         public void widgetSelected(SelectionEvent e) {
-            deleteProject();
+            try {
+                deleteProject();
+            } catch (Throwable t) {
+                CommonExceptionHandler.process(t);
+            }
         }
 
         @Override

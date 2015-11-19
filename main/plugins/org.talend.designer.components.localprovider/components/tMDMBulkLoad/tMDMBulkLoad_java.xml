@@ -1,7 +1,14 @@
 <COMPONENT>
-	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.101" STATUS="ALPHA"
-		COMPATIBILITY="ALL" AUTHOR="Talend" RELEASE_DATE="20090320A"
-		STARTABLE="false" PARTITIONING="AUTO">
+	<HEADER 
+	   PLATEFORM="ALL" 
+	   SERIAL="" VERSION="0.101" 
+	   STATUS="ALPHA" 
+	   COMPATIBILITY="ALL" 
+	   AUTHOR="Talend" 
+	   RELEASE_DATE="20090320A"	
+	   STARTABLE="false" 
+	   PARTITIONING="AUTO" 
+	   LOG4J_ENABLED="true">
 		<SIGNATURE></SIGNATURE>
 	</HEADER>
 
@@ -99,7 +106,7 @@
 
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="MDM-Bulkloadclient" MODULE="bulkloadclient.jar" MVN="mvn:org.talend.libraries/bulkloadclient/6.0.0"  REQUIRED="true" />
+      <IMPORT NAME="MDM-Bulkloadclient" MODULE="bulkloadclient.jar" MVN="mvn:org.talend.libraries/bulkloadclient/6.1.0"  REQUIRED="true" />
       <IMPORT NAME="SOAP-codec" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true" />
       <IMPORT NAME="SOAP-httpclient" MODULE="commons-httpclient.jar" MVN="mvn:org.talend.libraries/commons-httpclient/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient.jar" REQUIRED="true" />
       <IMPORT NAME="SOAP-logging" MODULE="commons-logging.jar" MVN="mvn:org.talend.libraries/commons-logging/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED="true" />

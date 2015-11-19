@@ -416,7 +416,7 @@ public class DBStructureComposite extends Composite {
                 manager.add(generateSelectAction);
 
                 // open editor
-                builderDialog.getConnParameters().setQuery(""); //$NON-NLS-1$
+                builderDialog.getConnParameters().setQueryObject(null);
                 manager.add(openNewEditorAction);
 
                 // Separator

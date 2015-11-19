@@ -11,6 +11,12 @@
 		</layout>
 	</appender>
 	
+	<!-- logstash appender -->
+    <!-- <appender name="LOGSTASH" class="org.apache.log4j.net.SocketAppender">
+        <param name="RemoteHost" value="localhost"/>
+        <param name="Port" value="8052"/>
+    </appender> -->
+	
 	<!-- Spring Logger -->  
 	<logger name="log4j.logger.org.springframework">  
         <level value="WARN" />  
@@ -18,12 +24,6 @@
     </logger>
     
     <!-- throwableRenderer <throwableRenderer class="org.apache.log4j.EnhancedThrowableRenderer"/>--> 
-     
-    <!-- logstash appender -->
-  	<!-- <appender name="LOGSTASH" class="org.apache.log4j.net.SocketAppender">
-  		<param name="RemoteHost" value="localhost"/>
-  		<param name="Port" value="8052"/>
-	</appender> -->
 	
     <!-- Root Logger -->  
 	<root>

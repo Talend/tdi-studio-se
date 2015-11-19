@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.CorePlugin;
+import org.talend.core.model.process.IContainerEntry;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
@@ -55,8 +57,8 @@ import org.talend.repository.model.RepositoryNode;
  */
 public class JobErrorsChecker {
 
-    public static boolean hasErrors(Shell shell) {
-
+    public static List<IContainerEntry> getErrors() {
+        List<IContainerEntry> input = new ArrayList<IContainerEntry>();
         try {
             Item item = null;
             IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
@@ -92,9 +94,22 @@ public class JobErrorsChecker {
             // collect error
             List<Problem> errors = Problems.getProblemList().getProblemsBySeverity(ProblemStatus.ERROR);
             ErrorDetailTreeBuilder builder = new ErrorDetailTreeBuilder();
-            List<JobErrorEntry> input = builder.createTreeInput(errors, jobIds);
+            input.addAll(builder.createTreeInput(errors, jobIds));
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+
+        return input;
+    }
+
+    public static boolean hasErrors(Shell shell, List<IContainerEntry> input, boolean isTestCase) {
+        try {
+            if (input == null) {
+                input = getErrors();
+            }
             if (input.size() > 0) {
                 ErrorDetailDialog dialog = new ErrorDetailDialog(shell, input);
+                dialog.setTestcase(isTestCase);
                 if (dialog.open() != IDialogConstants.OK_ID) {
                     // stop running
                     return true;
@@ -103,8 +118,11 @@ public class JobErrorsChecker {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-
         return false;
+    }
+
+    public static boolean hasErrors(Shell shell) {
+        return hasErrors(shell, null, false);
     }
 
     public static boolean checkExportErrors(IStructuredSelection selection, boolean isJob) {
@@ -251,7 +269,7 @@ public class JobErrorsChecker {
                 final IResource[] members = file.getParent().members();
                 for (IResource member : members) {
                     if (member instanceof IFile && "java".equals(member.getFileExtension())) {
-                        IMarker[] markers = ((IFile)member).findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
+                        IMarker[] markers = ((IFile) member).findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
                         for (IMarker marker : markers) {
                             Integer lineNr = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
                             String message = (String) marker.getAttribute(IMarker.MESSAGE);

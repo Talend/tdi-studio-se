@@ -44,8 +44,6 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
-import org.talend.core.model.process.IContext;
-import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
@@ -55,7 +53,6 @@ import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.runprocess.LastGenerationInfo;
-import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.ICamelDesignerCoreService;
@@ -314,69 +311,38 @@ public class JavaProcessorUtilities {
         File libDir = getJavaProjectLibFolder();
         ILibraryManagerService repositoryBundleService = CorePlugin.getDefault().getRepositoryBundleService();
         if ((libDir != null) && (libDir.isDirectory())) {
-            Set<String> jarsNeedRetrieve = new HashSet<String>();
+            Set<ModuleNeeded> jarsNeedRetrieve = new HashSet<ModuleNeeded>();
             for (ModuleNeeded moduleNeeded : listModulesReallyNeeded) {
-                jarsNeedRetrieve.add(moduleNeeded.getModuleName());
-            }
-            for (File externalLib : libDir.listFiles(FilesUtils.getAcceptJARFilesFilter())) {
-                jarsNeedRetrieve.remove(externalLib.getName());
+                jarsNeedRetrieve.add(moduleNeeded);
             }
 
             if (!jarsNeedRetrieve.isEmpty()) {
-                // get original context value
-                Set<String> originalConexts = new HashSet<String>();
-                Iterator<String> iterator = jarsNeedRetrieve.iterator();
-                while (iterator.hasNext()) {
-                    String jarNeedRetrieve = iterator.next();
-                    if (ContextParameterUtils.isContainContextParam(jarNeedRetrieve) && process instanceof IProcess2) {
-                        iterator.remove(); // remove the context one.
-                        IContext lastRunContext = ((IProcess2) process).getLastRunContext();
-                        if (lastRunContext != null) {
-                            String contextValue = ContextParameterUtils.parseScriptContextCode(jarNeedRetrieve, lastRunContext);
-                            if (contextValue != null) {
-                                originalConexts.add(new File(contextValue).getName());
-                            }
-                        } else {
-                            IContextManager contextManager = process.getContextManager();
-                            if (contextManager != null) {
-                                String contextValue = ContextParameterUtils.parseScriptContextCode(jarNeedRetrieve,
-                                        contextManager.getDefaultContext());
-                                if (contextValue != null) {
-                                    originalConexts.add(new File(contextValue).getName());
-                                }
-                            }
-                        }
-                    }
-                }
-                jarsNeedRetrieve.addAll(originalConexts);
+                repositoryBundleService.retrieve(jarsNeedRetrieve, libDir.getAbsolutePath(), true);
 
-                repositoryBundleService.retrieve(jarsNeedRetrieve, libDir.getAbsolutePath());
-                // Just for test
-                // try {
-                // MavenDeployUtil.deployToLocalMaven(null, jarsNeedRetrieve.toArray(new String[0]));
-                // } catch (Exception e) {
-                // ExceptionHandler.process(e);
-                // }
                 if (process instanceof IProcess2) {
                     ((IProcess2) process).checkProcess();
                 }
             }
 
+            Set<ModuleNeeded> exist = new HashSet<ModuleNeeded>();
             for (File externalLib : libDir.listFiles(FilesUtils.getAcceptJARFilesFilter())) {
-                jarsNeedRetrieve.remove(externalLib.getName());
+                for (ModuleNeeded module : jarsNeedRetrieve) {
+                    if (externalLib.getName().equals(module.getModuleName())) {
+                        exist.add(module);
+                    }
+
+                }
             }
+            jarsNeedRetrieve.removeAll(exist);
             Set<String> jarStringListNeededByProcess = new HashSet<String>();
             for (ModuleNeeded moduleNeeded : jobModuleList) {
                 jarStringListNeededByProcess.add(moduleNeeded.getModuleName());
             }
-            for (String jar : jarsNeedRetrieve) {
-                if (ContextParameterUtils.isContainContextParam(jar)) {
-                    continue;
-                }
+            for (ModuleNeeded jar : jarsNeedRetrieve) {
                 if (jobModuleList.contains(jar)) {
-                    missingJarsForProcessOnly.add(jar);
+                    missingJarsForProcessOnly.add(jar.getModuleName());
                 } else {
-                    missingJarsForRoutinesOnly.add(jar);
+                    missingJarsForRoutinesOnly.add(jar.getModuleName());
                 }
                 if (missingJars == null) {
                     missingJars = Messages.getString("JavaProcessorUtilities.msg.missingjar.forProcess") + jar; //$NON-NLS-1$
@@ -401,7 +367,7 @@ public class JavaProcessorUtilities {
         }
         if (!foundLog4jJar) {
             ModuleNeeded log4j = new ModuleNeeded("log4j", "log4j-1.2.16.jar", null, true); //$NON-NLS-1$ //$NON-NLS-2$
-            jarList.add(log4j); //$NON-NLS-1$
+            jarList.add(log4j);
             added = true;
         }
 

@@ -32,9 +32,8 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.dialogs.SelectionDialog;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.model.process.IContainerEntry;
 import org.talend.core.model.process.Problem;
-import org.talend.designer.runprocess.ErrorDetailTreeBuilder.IContainerEntry;
-import org.talend.designer.runprocess.ErrorDetailTreeBuilder.JobErrorEntry;
 import org.talend.designer.runprocess.i18n.Messages;
 
 /**
@@ -42,16 +41,18 @@ import org.talend.designer.runprocess.i18n.Messages;
  */
 public class ErrorDetailDialog extends SelectionDialog {
 
-    private List<JobErrorEntry> errors;
+    private List<IContainerEntry> errors;
 
     private TreeViewer viewer;
+
+    private boolean isTestcase;
 
     /**
      * DOC chuang ErrorDetailDialog constructor comment.
      * 
      * @param parentShell
      */
-    public ErrorDetailDialog(Shell parentShell, List<JobErrorEntry> errors) {
+    public ErrorDetailDialog(Shell parentShell, List<IContainerEntry> errors) {
         super(parentShell);
         setShellStyle(SWT.TITLE | SWT.RESIZE | SWT.APPLICATION_MODAL | getDefaultOrientation());
         setHelpAvailable(false);
@@ -63,7 +64,9 @@ public class ErrorDetailDialog extends SelectionDialog {
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
-        createButton(parent, IDialogConstants.OK_ID, "Continue", false); //$NON-NLS-1$
+        if (!isTestcase) {
+            createButton(parent, IDialogConstants.OK_ID, "Continue", false); //$NON-NLS-1$
+        }
     }
 
     @Override
@@ -125,6 +128,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getChildren(java.lang.Object)
          */
+        @Override
         public Object[] getChildren(Object parentElement) {
             if (parentElement instanceof IContainerEntry) {
                 return ((IContainerEntry) parentElement).getChildren().toArray();
@@ -137,6 +141,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.ITreeContentProvider#getParent(java.lang.Object)
          */
+        @Override
         public Object getParent(Object element) {
             return null;
         }
@@ -146,6 +151,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.ITreeContentProvider#hasChildren(java.lang.Object)
          */
+        @Override
         public boolean hasChildren(Object element) {
             if (element instanceof IContainerEntry) {
                 return ((IContainerEntry) element).hasChildren();
@@ -158,6 +164,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.IStructuredContentProvider#getElements(java.lang.Object)
          */
+        @Override
         public Object[] getElements(Object inputElement) {
             if (inputElement instanceof List) {
                 return ((List) inputElement).toArray();
@@ -170,6 +177,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.IContentProvider#dispose()
          */
+        @Override
         public void dispose() {
         }
 
@@ -179,6 +187,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * @see org.eclipse.jface.viewers.IContentProvider#inputChanged(org.eclipse.jface.viewers.Viewer,
          * java.lang.Object, java.lang.Object)
          */
+        @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 
         }
@@ -196,6 +205,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
          */
+        @Override
         public Image getColumnImage(Object element, int columnIndex) {
             if (columnIndex == 0) {
                 if (element instanceof IContainerEntry) {
@@ -214,6 +224,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
          */
+        @Override
         public String getColumnText(Object element, int columnIndex) {
             if (columnIndex == 0) {
                 if (element instanceof IContainerEntry) {
@@ -233,6 +244,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * @see
          * org.eclipse.jface.viewers.IBaseLabelProvider#addListener(org.eclipse.jface.viewers.ILabelProviderListener)
          */
+        @Override
         public void addListener(ILabelProviderListener listener) {
 
         }
@@ -242,6 +254,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.IBaseLabelProvider#dispose()
          */
+        @Override
         public void dispose() {
 
         }
@@ -251,6 +264,7 @@ public class ErrorDetailDialog extends SelectionDialog {
          * 
          * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
          */
+        @Override
         public boolean isLabelProperty(Object element, String property) {
             return false;
         }
@@ -261,8 +275,27 @@ public class ErrorDetailDialog extends SelectionDialog {
          * @see
          * org.eclipse.jface.viewers.IBaseLabelProvider#removeListener(org.eclipse.jface.viewers.ILabelProviderListener)
          */
+        @Override
         public void removeListener(ILabelProviderListener listener) {
         }
 
+    }
+
+    /**
+     * Getter for isRunTestcase.
+     * 
+     * @return the isRunTestcase
+     */
+    public boolean isTestcase() {
+        return this.isTestcase;
+    }
+
+    /**
+     * Sets the isRunTestcase.
+     * 
+     * @param isRunTestcase the isRunTestcase to set
+     */
+    public void setTestcase(boolean isTestcase) {
+        this.isTestcase = isTestcase;
     }
 }

@@ -11,9 +11,11 @@
 
 	" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <% 
     CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
     INode node = (INode)codeGenArgument.getArgument();
+    LogUtil logUtil = new LogUtil(node);
     String cid = node.getUniqueName();	
 
 	String url = ElementParameterParser.getValue(node, "__URL__");
@@ -44,24 +46,17 @@
             	return new java.net.PasswordAuthentication(<%=username%>, decryptedPassword_<%=cid%>.toCharArray());
         }});
 		
+		<% logUtil.info("\"Attempt to get a task delete service from: \"", url,"\".\"");%>
+		
 		java.net.URL wsdlUrl_<%=cid%> = new java.net.URL(<%=url %>);
 		
-		<%
-		if(isLog4jEnabled){
-		%>	
-			log.info("<%=cid%> - Attempt to get a task delete service from: " + wsdlUrl_<%=cid%> + ".");
-		<%
-		}
-		%>
 		org.talend.datastewardship.server.ws.TDSCWS_Service service_<%=cid%> = new org.talend.datastewardship.server.ws.TDSCWS_Service(wsdlUrl_<%=cid%>);
 		org.talend.datastewardship.server.ws.TDSCWS TDSCWS_<%=cid%> = service_<%=cid%>.getTDSCWSImplPort();
+		
+		<% logUtil.info("\"Got successfully.\"");%>
+		<% logUtil.info("\"Start to delete tasks from server.\"");%>
+		
 		<%
-		if(isLog4jEnabled){
-		%>	
-			log.info("<%=cid%> - Got successfully.");
-			log.info("<%=cid%> - Start to delete tasks from server.");
-		<%
-		}
 		if(!isDeleteById){
 		%>
 			String startDateString_<%=cid%> = <%=startDate.equals("")?null:startDate%>;
@@ -83,7 +78,10 @@
 	            java.util.GregorianCalendar endDate_<%=cid%> = (java.util.GregorianCalendar) endCal_<%=cid%>;
 				endXMLGregorianCalendar_<%=cid%> = factory_<%=cid%>.newXMLGregorianCalendar(endDate_<%=cid%>);
 			}
+			
+			<% logUtil.info("\"Attempt to delete task .\"");%>
 			deleted_task_<%=cid%> = TDSCWS_<%=cid%>.deleteTasks(<%=taskType%>,<%=owner.equals("")?null:owner%>,<%=tag.equals("")?null:tag%>,startXMLGregorianCalendar_<%=cid%>,endXMLGregorianCalendar_<%=cid%>,<%=starRanking%>,<%=limit%>,<%=status.equals("null")?null:"\""+status+"\""%>);
+			<% logUtil.info("\"Delete task successfully .\"");%>
 		<%
 		}
 		%>

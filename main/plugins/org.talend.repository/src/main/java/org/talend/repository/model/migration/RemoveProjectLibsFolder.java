@@ -30,10 +30,8 @@ import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
-import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.librariesmanager.maven.ArtifactsDeployer;
 import org.talend.librariesmanager.maven.ShareLibrareisHelper;
-import org.talend.librariesmanager.model.service.LibrariesIndexManager;
 
 /**
  * created by Talend on 2015年7月30日 Detailled comment
@@ -97,14 +95,8 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
         public Map<ModuleNeeded, File> getFilesToShare(IProgressMonitor monitor) {
             Map<ModuleNeeded, File> libsToShare = new HashMap<ModuleNeeded, File>();
             File[] listFiles = libsFolder.listFiles();
-            LibrariesIndexManager indexManager = LibrariesIndexManager.getInstance();
             for (File lib : listFiles) {
                 ModuleNeeded module = new ModuleNeeded("", lib.getName(), "", true);
-                String mvnUriFromIndex = indexManager.getMvnUriFromIndex(lib.getName());
-                if (mvnUriFromIndex == null || "".equals(mvnUriFromIndex)) {
-                    mvnUriFromIndex = MavenUrlHelper.generateMvnUrlForJarName(module.getModuleName());
-                }
-                module.setMavenUriSnapshot(mvnUriFromIndex);
                 libsToShare.put(module, lib);
             }
 

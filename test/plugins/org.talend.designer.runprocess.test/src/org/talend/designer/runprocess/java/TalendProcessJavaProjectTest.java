@@ -21,6 +21,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -158,7 +159,7 @@ public class TalendProcessJavaProjectTest {
      * {@link org.talend.designer.runprocess.java.TalendProcessJavaProject#cleanSources(org.eclipse.core.runtime.IProgressMonitor, org.talend.core.model.general.Project)}
      * .
      */
-    @Test
+    @Test @Ignore
     public void testCleanSources() {
         fail("Not yet implemented");
     }
@@ -201,7 +202,7 @@ public class TalendProcessJavaProjectTest {
      * {@link org.talend.designer.runprocess.java.TalendProcessJavaProject#getResourceSubFolder(org.eclipse.core.runtime.IProgressMonitor, java.lang.String)}
      * .
      */
-    @Test
+    @Test @Ignore
     public void testGetResourceSubFolder() {
         fail("Not yet implemented");
     }

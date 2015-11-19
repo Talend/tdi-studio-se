@@ -5,9 +5,11 @@ imports="
     	org.talend.designer.codegen.config.CodeGeneratorArgument
 		"
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
@@ -22,7 +24,9 @@ imports="
 %>       
 	int nb_line_<%=cid %> = 0;
 
-	<%if(!useExistingConn){%>
+<%if(!useExistingConn){%>
+    <% logUtil.info("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+
 	String murl = <%=mdmUrl %>;
     if(murl.endsWith("?wsdl")) {
        murl = murl.substring(0, murl.length() - 5);
@@ -44,6 +48,8 @@ imports="
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
     
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
+    
+    <% logUtil.info("\"Got service successfully.\"");%>
 <%}else{%>
     org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 <%}%>
@@ -52,3 +58,5 @@ imports="
 
 	org.talend.mdm.webservice.WSStoredProcedurePK wsStoredProcPK_<%=cid %> = new org.talend.mdm.webservice.WSStoredProcedurePK();
 	wsStoredProcPK_<%=cid %>.setPk(<%=spName %>);
+	
+	<% logUtil.debug("\"Stored procedure id :\"+"+spName);%>

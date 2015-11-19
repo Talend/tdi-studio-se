@@ -80,12 +80,12 @@
 				<include>**/*.*</include>
 			</includes>
 		</fileSet>
-		<fileSet><!-- assembly.xml -->
+		<fileSet><!-- assembly_*.xml -->
 			<directory>${assemblies.dir}</directory>
 			<outputDirectory>${talend.job.name}/src/main/assemblies/
 			</outputDirectory>
 			<includes>
-				<include>assembly_${talend.job.name}.xml</include>
+				<include>assembly_${talend.job.name}_${talend.job.version}.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet><!-- pom_*.xml -->
@@ -94,7 +94,7 @@
 			<includes>
 				<include>pom.xml</include>
 				<include>pom_routines.xml</include>
-				<include>pom_${talend.job.name}.xml</include>
+				<include>pom_${talend.job.name}_${talend.job.version}.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet><!-- pom_pigudfs.xml -->

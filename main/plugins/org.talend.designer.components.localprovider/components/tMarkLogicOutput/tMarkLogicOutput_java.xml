@@ -5,10 +5,11 @@
         PLATEFORM="ALL"
         RELEASE_DATE="20151030A"
         SERIAL=""
-        STARTABLE="true"
+        STARTABLE="false"
         STATUS="ALPHA"
         DATA_AUTO_PROPAGATE="false"
-        SCHEMA_AUTO_PROPAGATE="false"
+        SCHEMA_AUTO_PROPAGATE="true"
+        HAS_CONDITIONAL_OUTPUTS="true"
         VERSION="0.1">
         <SIGNATURE/>
     </HEADER>
@@ -23,6 +24,12 @@
 
     <CONNECTORS>
       <CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="1"/>
+      <CONNECTOR NAME="REJECT" CTYPE="FLOW" MAX_INPUT="0"
+                 MAX_OUTPUT="1"
+                 LINE_STYLE="2"
+                 COLOR="FF0000"
+                 BASE_SCHEMA="FLOW"
+      />
       <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="0"/>
       <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
       <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
@@ -132,6 +139,7 @@
         >
             <ITEMS DEFAULT="INSERT">
                 <ITEM NAME="INSERT" VALUE="INSERT" />
+                <ITEM NAME="UPDATE" VALUE="UPDATE" />
                 <ITEM NAME="DELETE" VALUE="DELETE" />
             </ITEMS>
         </PARAMETER>
@@ -144,6 +152,15 @@
                     TYPE="id_String" NULLABLE="false" READONLY="true" />
                 <COLUMN KEY="false" LENGTH="255" NAME="docContent"
                     TYPE="id_String" NULLABLE="false" READONLY="true" />
+            </TABLE>
+        </PARAMETER>
+
+        <PARAMETER NAME="SCHEMA_REJECT" FIELD="SCHEMA_TYPE"
+            REQUIRED="true" NUM_ROW="35" CONTEXT="REJECT"
+        >
+            <TABLE READONLY="true">
+                <COLUMN KEY="false" LENGTH="255" NAME="errMessage"
+                    TYPE="id_String" NULLABLE="false" CUSTOM="true" />
             </TABLE>
         </PARAMETER>
     </PARAMETERS>
@@ -275,6 +292,10 @@
 
     <RETURNS>
         <RETURN NAME="NB_LINE" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+        <RETURN NAME="NB_LINE_UPSERTED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+        <RETURN NAME="NB_LINE_DELETED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+        <RETURN NAME="NB_LINE_UPDATED"  TYPE="id_Integer" AVAILABILITY="AFTER"/>
+        <RETURN NAME="NB_LINE_REJECTED" TYPE="id_Integer" AVAILABILITY="AFTER"/>
     </RETURNS>
 
 </COMPONENT>

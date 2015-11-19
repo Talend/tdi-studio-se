@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -373,16 +374,26 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
                     return false;
                 }
                 @SuppressWarnings("rawtypes")
-                int sourceColumnNumber = ((HashMap) dataList.get(0)).size();
-                int colNum = tableEditorModel.getElemParameter().getListItemsDisplayCodeName().length;
+                HashMap sourceMap = (HashMap) dataList.get(0);
+                int sourceColumnNumber = sourceMap.size();
+                Object[] sourceArray = sourceMap.keySet().toArray();
+                ArrayList<Object> sourceList = new ArrayList<Object>(Arrays.asList(sourceArray));
+                String[] listItemsDisplayCodeName = tableEditorModel.getElemParameter().getListItemsDisplayCodeName();
+                List<String> itemDisCodeNameList = null;
+                int colNum = 0;
+                if (listItemsDisplayCodeName != null) {
+                    itemDisCodeNameList = Arrays.asList(listItemsDisplayCodeName);
+                    colNum = listItemsDisplayCodeName.length;
+                }
+                ArrayList<String> list = new ArrayList<String>(itemDisCodeNameList);
+                list.removeAll(sourceList);
                 if (data != null) {
-                    if (colNum == sourceColumnNumber) {
+                    if (colNum <= sourceColumnNumber && list.size() == 0) {
                         sameNumberOfParamAssSourceTable = true;
                     } else {
                         sameNumberOfParamAssSourceTable = false;
                     }
                 }
-
                 return super.getEnabledState() && (model == null || !model.getElemParameter().isBasedOnSubjobStarts())
                         && sameNumberOfParamAssSourceTable;
             }

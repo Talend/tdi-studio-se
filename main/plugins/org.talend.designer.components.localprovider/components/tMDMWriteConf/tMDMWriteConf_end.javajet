@@ -9,9 +9,11 @@ imports="
 		org.talend.core.model.utils.NodeUtil  		
 		" 
 %>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
+	LogUtil logUtil = new LogUtil(node);
 	String cid = node.getUniqueName();
 	String virtualcid = cid;
 	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
@@ -65,43 +67,79 @@ if(nextMergeConn != null && nextMergeConn.getInputId()>1 && startNodeCid != null
 globalMap.put(readFinishMarkWithPipeId_<%=cid%>,null);//syn
 globalMap.remove(readFinishMarkWithPipeId_<%=cid%>);
 <%
-if(!usePartialUpdate){
+if(!usePartialUpdate){%>
+    <% logUtil.info("\"Try to use full update.\"");%>
+<%
 	if(isMassInsert){
 		if(!isStaging && withReport){
 %> 
+    <% logUtil.info("\"Try to put item with report to master data.\"");%>
+    
 	if(miList_<%=cid %>.size() > 0){
+	    <% logUtil.info("\"Attempt to put item with report array .\"");%>
+	    
 	    org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
 		wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
+		
+		<% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+	    <% logUtil.info("\"Put item with report array successfully.\"");%>
+	    
 		miList_<%=cid %>.clear();
 		miList_<%=cid %> = null;
 		<%if(addTaskID){%>
+        	<% logUtil.info("\"Attempt to add task id .\"");%>
         	
         	int i2_<%=cid %> = 0;
 			for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+			     
+			    String compositeId = "";
+                for(String id:wspk2_<%=cid %>.getIds()) {
+                  compositeId += id;
+                }
+                <% logUtil.debug("\"Add task id for item :\"+compositeId");%>
+                
 				wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
 				service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
 				i2_<%=cid %>++;
 			}
         	
+        	<% logUtil.info("\"Add task id successfully.\"");%>
         	taskIDs_<%=cid%>.clear();
         <%}%>
 	}
 <%
 		}else{%>
+		<% logUtil.info("\"Try to put item with report to staging data.\"");%>
+		
 	if(miList_<%=cid %>.size() > 0){
+	   <% logUtil.info("\"Attempt to put item array .\"");%>
+	   
 	    org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);
 		wspks_<%=cid %> = service_<%=cid %>.putItemArray(putItemArray).getWsItemPK();
+		
+		<% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+		<% logUtil.info("\"Put item with report array successfully.\"");%>
+		
 		miList_<%=cid %>.clear();
 		miList_<%=cid %> = null;
 		<%if(addTaskID){%>
+        	<% logUtil.info("\"Attempt to add task id .\"");%>
         	
         	int i2_<%=cid %> = 0;
 			for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+			     
+			    String compositeId = "";
+                for(String id:wspk2_<%=cid %>.getIds()) {
+                  compositeId += id;
+                }
+                <% logUtil.debug("\"Add task id for item :\"+compositeId");%>
+                
 				wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
 				service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
 				i2_<%=cid %>++;
 			}
         	
+        	<% logUtil.info("\"Add task id successfully.\"");%>
         	taskIDs_<%=cid%>.clear();
         <%}%>
 	}
@@ -110,8 +148,12 @@ if(!usePartialUpdate){
 	}
 }%>
  	<%if(!useExistingConn){%>
+ 	    <% logUtil.info("\"To Close service.\"");%>
  		service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+ 	    <% logUtil.info("\"Close service successfully.\"");%>
  	<%}%>
+ 	
+ 	<% logUtil.info("\"Write record count: \"+nb_line_"+cid);%>
  	
  	globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);  
  	globalMap.put("<%=cid %>_NB_LINE_REJECTED",nb_line_rejected_<%=cid%>);           
