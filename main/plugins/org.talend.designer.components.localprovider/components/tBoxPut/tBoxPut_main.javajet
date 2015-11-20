@@ -154,11 +154,12 @@ imports="
 	}
 	String <%=cid%>_remoteName = getFolderFromPath(<%=cid%>_remotePath);
 	java.io.InputStream <%=cid%>_InputStream = null;
-	String <%=cid%>_filePath = normalizePath(<%=filePath%>);
-	java.io.File <%=cid%>_fileToUpload = new java.io.File(<%=cid%>_filePath);
+	java.nio.file.Path <%=cid%>_path = java.nio.file.FileSystems.getDefault().getPath(<%=filePath%>,
+                new String[] {});
+	java.io.File <%=cid%>_fileToUpload = <%=cid%>_path.toFile();
 	if(!<%=cid%>_fileToUpload.exists())
 	{
-		throw new Exception("The Uploaded Box file doesn't exist");
+		throw new Exception("Can not find file at " + <%=cid%>_path.toString());
 	}
 	if(<%=cid%>_fileToUpload.isDirectory())
 	{

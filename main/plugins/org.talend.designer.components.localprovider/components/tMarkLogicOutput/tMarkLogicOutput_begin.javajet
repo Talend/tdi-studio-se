@@ -19,6 +19,10 @@ imports="
 
     boolean reuseConn = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
     String docType = ElementParameterParser.getValue(node,"__DOC_TYPE__");
+    String actionType = ElementParameterParser.getValue(node,"__ACTION_TYPE__");
+    if("DELETE".equals(actionType)){
+        docType = "GENERIC";
+    }
 
     String passwordFieldName = "__PASSWORD__";
  %>

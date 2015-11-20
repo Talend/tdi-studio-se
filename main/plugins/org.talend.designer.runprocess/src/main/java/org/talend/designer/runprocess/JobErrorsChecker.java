@@ -56,6 +56,16 @@ import org.talend.repository.model.RepositoryNode;
  * Check if there is error in jobs before running.
  */
 public class JobErrorsChecker {
+    
+    private static String checkDependencyError = null;
+    
+    public static String getCheckDependencyError() {
+        return checkDependencyError;
+    }
+    
+    public static void setCheckDependencyError(String checkDependencyError) {
+        JobErrorsChecker.checkDependencyError = checkDependencyError;
+    }
 
     public static List<IContainerEntry> getErrors() {
         List<IContainerEntry> input = new ArrayList<IContainerEntry>();

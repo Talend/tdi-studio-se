@@ -151,7 +151,7 @@
                 <COLUMN KEY="true" LENGTH="255" NAME="docId"
                     TYPE="id_String" NULLABLE="false" READONLY="true" />
                 <COLUMN KEY="false" LENGTH="255" NAME="docContent"
-                    TYPE="id_String" NULLABLE="false" READONLY="true" />
+                    TYPE="id_Object" NULLABLE="false" READONLY="true" />
             </TABLE>
         </PARAMETER>
 
@@ -170,13 +170,14 @@
             NAME="DOC_TYPE"
             FIELD="CLOSED_LIST"
             NUM_ROW="15"
+            NOT_SHOW_IF="ACTION_TYPE == 'DELETE'"
         >
             <ITEMS DEFAULT="GENERIC">
                 <ITEM NAME="GENERIC" VALUE="GENERIC" />
                 <ITEM NAME="TEXT" VALUE="TEXT" />
                 <ITEM NAME="JSON" VALUE="JSON" />
                 <ITEM NAME="XML" VALUE="XML" />
-                <ITEM NAME="BINARY" VALUE="BINARY" />
+                <ITEM NAME="BINARY" VALUE="BINARY" NOT_SHOW_IF="ACTION_TYPE == 'UPDATE'"/>
             </ITEMS>
         </PARAMETER>
 

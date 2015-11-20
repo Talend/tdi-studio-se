@@ -384,11 +384,11 @@ public class TalendJetEmitter extends JETEmitter {
             } catch (CoreException exception) {
                 TalendDebugHandler.debug(exception);
                 throw new JETException(
-                        Messages.getString("TalendJetEmitter.exception") + templateName + codePart + templateLanguage, exception); //$NON-NLS-1$
+                        Messages.getString("TalendJetEmitter.exception") + " " + templateName + codePart + templateLanguage, exception); //$NON-NLS-1$
             } catch (Exception exception) {
                 TalendDebugHandler.debug(exception);
                 throw new JETException(
-                        Messages.getString("TalendJetEmitter.exception") + templateName + codePart + templateLanguage, exception); //$NON-NLS-1$
+                        Messages.getString("TalendJetEmitter.exception") + " " + templateName + codePart + templateLanguage, exception); //$NON-NLS-1$
             } finally {
                 try {
                     contents.close();

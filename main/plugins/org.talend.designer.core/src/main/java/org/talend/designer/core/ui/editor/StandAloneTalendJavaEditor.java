@@ -363,12 +363,7 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
         IRepositoryService service = CorePlugin.getDefault().getRepositoryService();
         final IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
         try {
-            repFactory.updateLockStatus();
-            // For TDI-23825, if not lock by user try to lock again.
-            boolean locked = repFactory.getStatus(item) == ERepositoryStatus.LOCK_BY_USER;
-            if (!locked) {
-                repFactory.lock(item);
-            }
+            repFactory.lock(item);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }

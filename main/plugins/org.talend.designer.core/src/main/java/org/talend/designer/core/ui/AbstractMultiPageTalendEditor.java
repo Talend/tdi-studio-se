@@ -991,10 +991,8 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         IRepositoryService service = CorePlugin.getDefault().getRepositoryService();
         IProxyRepositoryFactory repFactory = service.getProxyRepositoryFactory();
         try {
-            repFactory.updateLockStatus();
             // For TDI-23825, if not lock by user try to lock again.
-            boolean locked = repFactory.getStatus(curItem) == ERepositoryStatus.LOCK_BY_USER;
-            if (!locked && !getProcess().isReadOnly()) {
+            if (!getProcess().isReadOnly()) {
                 repFactory.lock(curItem);
             }
         } catch (Exception e) {

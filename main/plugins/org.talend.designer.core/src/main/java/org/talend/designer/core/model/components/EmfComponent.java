@@ -1196,7 +1196,7 @@ public class EmfComponent extends AbstractComponent {
 
         param = new ElementParameter(node);
         param.setName(EParameterName.JAVA_LIBRARY_PATH.getName());
-        param.setCategory(EComponentCategory.ADVANCED);
+        param.setCategory(EComponentCategory.TECHNICAL);
         param.setFieldType(EParameterFieldType.DIRECTORY);
         param.setDisplayName(EParameterName.JAVA_LIBRARY_PATH.getDisplayName());
         param.setNumRow(99);
