@@ -49,6 +49,7 @@ String errorTable = ElementParameterParser.getValue(node, "__ERROR_TABLE__");
 if (errorTable == null || errorTable.trim().isEmpty()) {
 	errorTable = "null";
 }
+List<Map<String, String>> columnConfigList = (List<Map<String,String>>) ElementParameterParser.getObjectValue(node, "__COLUMN_CONFIG__");
 boolean errorTableWithTimestamp = "true".equals(ElementParameterParser.getValue(node, "__ERROR_TABLE_WITH_CURRENT_TIMESTAMP__"));
 String localErrorFile = ElementParameterParser.getValue(node, "__LOCAL_ERROR_FILE__");
 if (localErrorFile == null || localErrorFile.trim().isEmpty()) {
@@ -147,16 +148,48 @@ org.talend.database.exasol.EXABulkUtil <%=cid%> = new org.talend.database.exasol
 <% if (fileOptNullString != null && fileOptNullString.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptNullIdentifier(<%=fileOptNullString%>);
 <% } %>
-// add columns
+// add column configurations
 <% if (columnList != null && columnList.size() > 0) {
-       for (IMetadataColumn column : columnList) { 
+       int index = 0;
+       for (IMetadataColumn column : columnList) {
        	  String name = column.getLabel();
-       	  String format = column.getPattern();
+       	  String pattern = column.getPattern();
+	        if (pattern == null || pattern.trim().isEmpty()) {
+      	 	 	pattern = "null";
+   	     }
+       	  Map<String, String> config = columnConfigList.get(index);
+       	  boolean hasGroupSep = "true".equals(config.get("HAS_GROUP_DELIMITERS"));
+       	  String format = config.get("FORMAT");
        	  if (format == null || format.trim().isEmpty()) {
-       	 	   format = "null";
-       	  } %>
-<%=cid%>.addCSVColumn("<%=name%>", null, <%=format%>);
-<%     }
+       	  	   format = "null";
+       	  }
+       	  String lengthStr = "null";
+       	  String precisionStr = "null";
+       	  Integer length = column.getLength();
+       	  if (length != null && hasGroupSep) {
+       	  	   lengthStr = String.valueOf(length);
+       	  }
+       	  Integer precision = column.getPrecision();
+       	  if (precision != null && hasGroupSep) {
+       	      precisionStr = String.valueOf(precision);
+       	  }
+       	  String talendType = column.getTalendType();
+       	  if ("id_Date".equals(talendType) 
+       	   || "id_Timestamp".equals(talendType) 
+       	   || "id_Time".equals(talendType)) { %>
+<%=cid%>.addCSVDateColumn("<%=name%>", null, <%=pattern%>);
+<%      	  } else if ("id_BigDecimal".equals(talendType)
+                   || "id_Long".equals(talendType)
+                   || "id_Integer".equals(talendType)
+                   || "id_Short".equals(talendType)
+                   || "id_Float".equals(talendType)
+                   || "id_Double".equals(talendType)) { %>
+<%=cid%>.addCSVNumberColumn("<%=name%>", null, <%=lengthStr%>, <%=precisionStr%>, <%=format%>);
+<%     	  } else { %>
+<%=cid%>.addCSVColumn("<%=name%>", null);
+<%     	  } 
+           index++;
+       }
    }
 %>
 <%=cid%>.setErrorRejectLimit(<%=errorLimit%>);
@@ -176,8 +209,14 @@ try {
 	 globalMap.put("<%=cid%>_FILENAME", <%=cid%>.getLocalFilePath());
     <%=cid%>.executeImport();
     insertedCount_<%=cid%> = <%=cid%>.getCountAffectedRows();
+<% if (useExistingConnection == false) { %>
+    <%=cid%>.commitAndClose();
+<% } %>
     globalMap.put("<%=cid%>_NB_LINE_INSERTED", insertedCount_<%=cid%>); 
 } catch (Exception e) {
 	 globalMap.put("<%=cid%>_ERROR_MESSAGE", "Import failed: " + e.getMessage());
+<% if (useExistingConnection == false) { %>
+    <%=cid%>.rollbackAndClose();
+<% } %>
 	 throw e;
 }

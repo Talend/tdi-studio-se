@@ -313,7 +313,7 @@
   	  NAME="USE_BATCH_SIZE"
   	  FIELD="CHECK"
 	  NUM_ROW="80"
-	  SHOW_IF="((DATA_ACTION == 'INSERT') OR (DATA_ACTION == 'UPDATE') OR (DATA_ACTION == 'DELETE'))"
+	  SHOW_IF="DATA_ACTION == 'INSERT'"
 	>
 	    <DEFAULT>true</DEFAULT>
 	  </PARAMETER>
@@ -331,7 +331,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc.jar" MVN="mvn:org.talend.libraries/exajdbc/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbcexajdbc-5.0.12.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.12/6.1.1"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    

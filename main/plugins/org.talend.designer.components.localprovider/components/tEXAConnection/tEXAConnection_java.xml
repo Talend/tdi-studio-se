@@ -85,7 +85,7 @@
     
     <PARAMETER 
     	NAME="PASS" 
-    	FIELD="TEXT" 
+    	FIELD="PASSWORD" 
     	NUM_ROW="40" 
     	REPOSITORY_VALUE="PASSWORD" 
     	REQUIRED="true">
@@ -139,7 +139,7 @@
   
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc.jar" REQUIRED="true"/>
+		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbcexajdbc-5.0.12.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.12/6.1.1"  REQUIRED="true" />
     </IMPORTS>
   </CODEGENERATION>
   
