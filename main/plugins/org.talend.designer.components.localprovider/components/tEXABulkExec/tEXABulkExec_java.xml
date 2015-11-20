@@ -338,7 +338,7 @@
    <CODEGENERATION>
      <IMPORTS>
 		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbcexajdbc-5.0.12.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.12/6.1.1"  REQUIRED="true" />
-		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-1.0.0-6.0.0-SNAPSHOT.jar" MVN="mvn:org.talend.libraries/talend-db-exasol-1.0.0/6.1.1"  REQUIRED="true" />
+		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-db-exasol-1.0.0/6.1.1"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
