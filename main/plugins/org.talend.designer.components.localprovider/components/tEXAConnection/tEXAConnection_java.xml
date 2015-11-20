@@ -139,7 +139,7 @@
   
   <CODEGENERATION>
     <IMPORTS>
-      <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.12/6.1.1" REQUIRED="true"/>
+      <IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-5.0.12.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.12/6.1.1" REQUIRED="true"/>
     </IMPORTS>
   </CODEGENERATION>
   
