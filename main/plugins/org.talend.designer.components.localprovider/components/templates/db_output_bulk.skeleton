@@ -4086,10 +4086,10 @@ public class CLASS {
             return EXASOL;
         }
         protected String getLProtectedChar() {
-            return "\\\"";
+            return "";
         }
         protected String getRProtectedChar() {
-            return "\\\"";
+            return "";
         }
         protected String getLProtectedChar(String name) {
         	if (contaionsSpaces(name) || isReservedWord(name)) {
