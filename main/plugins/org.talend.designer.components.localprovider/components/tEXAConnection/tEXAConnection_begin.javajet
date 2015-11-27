@@ -40,7 +40,7 @@ imports="
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/AbstractDBConnection.javajet"%>
    // provide the schema for usage in input and output components
    // schemas are always in upper case letters
-	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>.toUpperCase());
+	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>);
     // provide the connection for further usage in other components
 	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);
 	globalMap.put("host_" + "<%=cid%>", <%=dbhost%>); 

@@ -71,7 +71,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 
   boolean useBatch = useBatchSize && (rejectConnName == null)
                    && (
-                        ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
+                        ("INSERT").equals(dataAction)
                       );
 %>
 
