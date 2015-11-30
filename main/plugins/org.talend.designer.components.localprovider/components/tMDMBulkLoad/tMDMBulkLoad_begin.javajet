@@ -22,6 +22,7 @@ imports="
 	
 	boolean validate = ("true").equals(ElementParameterParser.getValue(node,"__VALIDATE__"));
 	boolean isGenerateId = ("true").equals(ElementParameterParser.getValue(node,"__GENERATE_ID__"));
+	boolean insertOnly = ("true").equals(ElementParameterParser.getValue(node,"__INSERT_ONLY__"));
 	
 	boolean useTransaction = ("true").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
 	String transactionProvider = ElementParameterParser.getValue(node,"__TRANSACTION_PROVIDER__");
@@ -41,6 +42,6 @@ if(mdmTransaction_<%=cid%>!=null) {
 }
 <%}%>
 bulkloadClient_<%=cid %>.startThreadCount();
-bulkloadClient_<%=cid %>.setOptions(new org.talend.mdm.bulkload.client.BulkloadOptions(<%=isGenerateId %>, <%=validate %>, <%=arraySize%>));
+bulkloadClient_<%=cid %>.setOptions(new org.talend.mdm.bulkload.client.BulkloadOptions(<%=isGenerateId %>, <%=validate %>, <%=arraySize%>, <%=insertOnly%>));
 int count_<%=cid%> = 0;
 org.talend.mdm.bulkload.client.InputStreamMerger inputStreamMerger_<%=cid%> = null;
