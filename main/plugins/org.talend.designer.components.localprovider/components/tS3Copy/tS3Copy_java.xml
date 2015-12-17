@@ -1,0 +1,210 @@
+<COMPONENT>
+
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="0.102"
+    STATUS="ALPHA"
+
+    COMPATIBILITY="ALL"
+    AUTHOR="Talend"
+    RELEASE_DATE="20130810A"
+    STARTABLE="true"
+    PARTITIONING="NONE"
+    LOG4J_ENABLED="true"
+  >
+    <SIGNATURE/>
+  </HEADER>
+
+  <FAMILIES>
+    <FAMILY>Cloud/AmazonS3</FAMILY>
+  </FAMILIES>
+
+  <DOCUMENTATION>
+    <URL/>
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0"/>
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="1"/>
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="COMPONENT_OK"/>
+    <CONNECTOR CTYPE="COMPONENT_ERROR"/>
+    <CONNECTOR CTYPE="RUN_IF"/>
+  </CONNECTORS>
+
+    <PARAMETERS>
+    <PARAMETER NAME="USE_EXISTING_CONNECTION" FIELD="CHECK"
+        NUM_ROW="2"  GROUP="CONNECTION_CONFIG">
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER NAME="CONNECTION" FIELD="COMPONENT_LIST" REQUIRED="true" FILTER="tS3Connection"
+        NUM_ROW="2" SHOW_IF="USE_EXISTING_CONNECTION == 'true'" GROUP="CONNECTION_CONFIG"/>
+
+    <PARAMETER
+      NAME="ACCESS_KEY"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="SECRET_KEY"
+      FIELD="PASSWORD"
+      NUM_ROW="20"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER 
+	    NAME="REGION" 
+	    FIELD="OPENED_LIST" 
+	    RAW="true" 
+	    NUM_ROW="25" 
+	    REQUIRED="true" 
+	    GROUP="CONNECTION_CONFIG"
+	    SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	 >
+     	<ITEMS DEFAULT="DEFAULT">
+        	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+         	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+	        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+	        <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	        <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+	        <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+	        <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+	        <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+	        <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+	        <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+	        <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+    	</ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="FROM_BUCKET"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      REQUIRED="true"
+      GROUP="FROM_CONFIG"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="FROM_KEY"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      REQUIRED="false"
+      GROUP="FROM_CONFIG"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TO_BUCKET"
+      FIELD="TEXT"
+      NUM_ROW="40"
+      REQUIRED="true"
+      GROUP="TO_CONFIG"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TO_KEY"
+      FIELD="TEXT"
+      NUM_ROW="40"
+      REQUIRED="false"
+      GROUP="TO_CONFIG"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+        NAME="ENABLE-SERVER-SIDE-ENCRYPTION"
+        FIELD="CHECK"
+        NUM_ROW="85"
+        REQUIRED="false"
+    >
+    	<DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+        NAME="DIE_ON_ERROR"
+        FIELD="CHECK"
+        NUM_ROW="90"
+    >
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+   </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+		<PARAMETER
+		  NAME="CONFIG_CLIENT"
+		  FIELD="CHECK"
+		  NUM_ROW="10"
+		  NB_LINES="5"
+		  SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+		  GROUP="CLIENT_CONFIG"
+		>
+		</PARAMETER>
+		
+		<PARAMETER
+		  NAME="CLIENT_CONFIGURATION"
+		  FIELD="TABLE"
+		  NUM_ROW="30"
+		  NB_LINES="5"
+		  REQUIRED="true"
+		  GROUP="CLIENT_CONFIG"
+		  SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
+		>
+          <ITEMS>
+            <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">
+                <ITEMS DEFAULT="CONNECTIONTIMEOUT">
+                    <ITEM NAME="CONNECTIONTIMEOUT" VALUE="ConnectionTimeout"/>
+                    <ITEM NAME="MAXCONNECTIONS" VALUE="MaxConnections"/>
+                    <ITEM NAME="MAXERRORRETRY" VALUE="MaxErrorRetry"/>
+                    <ITEM NAME="PROTOCOL" VALUE="Protocol"/>
+                    <ITEM NAME="PROXYDOMAIN" VALUE="ProxyDomain"/>
+                    <ITEM NAME="PROXYHOST" VALUE="ProxyHost"/>
+                    <ITEM NAME="PROXYPASSWORD" VALUE="ProxyPassword"/>
+                    <ITEM NAME="PROXYPORT" VALUE="ProxyPort"/>
+                    <ITEM NAME="PROXYUSERNAME" VALUE="ProxyUsername"/>
+                    <ITEM NAME="PROXYWORKSTATION" VALUE="ProxyWorkstation"/>
+                    <ITEM NAME="SOCKETTIMEOUT" VALUE="SocketTimeout"/>
+                    <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
+                    <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
+                    <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
+                </ITEMS>
+            </ITEM>
+            <ITEM NAME="VALUE" />
+          </ITEMS>
+        </PARAMETER>
+
+    </ADVANCED_PARAMETERS>
+
+   <CODEGENERATION>
+    <IMPORTS>
+       <IMPORT NAME="aws-java-sdk-1.9.13" MODULE="aws-java-sdk-1.9.13.jar" MVN="mvn:org.talend.libraries/aws-java-sdk-1.9.13/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.s3/lib/aws-java-sdk-1.9.13.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+       <IMPORT NAME="Driver-Commons-Logging-1.1.1" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" BundleID="" />
+       <IMPORT NAME="httpcore-4.2.1" MODULE="httpcore-4.2.1.jar" MVN="mvn:org.talend.libraries/httpcore-4.2.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.2.1.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+       <IMPORT NAME="httpclient-4.2.1" MODULE="httpclient-4.2.1.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.2.1.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+       <IMPORT NAME="commons-codec" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
+       <IMPORT NAME="jackson-annotations" MODULE="jackson-annotations-2.3.0.jar" MVN="mvn:org.talend.libraries/jackson-annotations-2.3.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.3.0.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+	   <IMPORT NAME="jackson-core" MODULE="jackson-core-2.3.2.jar" MVN="mvn:org.talend.libraries/jackson-core-2.3.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.3.2.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+	   <IMPORT NAME="jackson-databind" MODULE="jackson-databind-2.3.2.jar" MVN="mvn:org.talend.libraries/jackson-databind-2.3.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.3.2.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+	   <IMPORT NAME="joda-time" MODULE="joda-time-2.3.jar" MVN="mvn:org.talend.libraries/joda-time-2.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/joda-time-2.3.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
+    </IMPORTS>
+   </CODEGENERATION>
+
+   <RETURNS/>
+</COMPONENT>
