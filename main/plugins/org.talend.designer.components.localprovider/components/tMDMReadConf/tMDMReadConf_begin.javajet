@@ -102,7 +102,60 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
                     
 				    <% logUtil.debug("\"Web service initialized successfully.\"");%>
 				<%}else{%>
-					org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
+					<% logUtil.debug("\"Attempt to get a service from: \"", mdmUrl,"\".\"");%>
+					org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("TMDMService_<%=connection %>" + "_" + Thread.currentThread().getId());
+					
+					if(service_<%=cid %> == null){
+						String murl = (String)globalMap.get("mdmUrl_<%=connection %>");
+						if(murl.endsWith("?wsdl")) {
+							murl = murl.substring(0, murl.length() - 5);
+						}
+					
+						org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
+						service_<%=cid %> = service_service_<%=cid %>.getTMDMPort();
+						javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
+						stub_<%=cid %>.getRequestContext().put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, false);
+						
+						java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
+						context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, (String)globalMap.get("username_<%=connection %>"));
+						context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl);
+					
+						context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, (String)globalMap.get("password_<%=connection %>"));
+					
+						<% logUtil.debug("\"Got service successfully.\"");%>
+					
+						if((boolean)globalMap.get("useTransaction")) {
+					
+							String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL((String)globalMap.get("mdmUrl_<%=connection %>"), true);
+							com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = null;
+							if((boolean)globalMap.get("useClientTranId")){
+								mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
+								mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
+								String clientTranId_<%=cid%> = "<%=connection%>"+java.util.UUID.randomUUID()+Thread.currentThread().getId();
+								mdmTransaction_<%=cid%>.setId(clientTranId_<%=cid%>);
+								mdmTransaction_<%=cid%>.setUsername((String)globalMap.get("username_<%=connection %>"));
+								mdmTransaction_<%=cid%>.setPassword((String)globalMap.get("password_<%=connection %>"));
+							}else{
+								<% logUtil.debug("\"Attempt to get a remote transaction from url: \"", mdmUrl,"\".\"");%>
+								mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,(String)globalMap.get("username_<%=connection %>"),(String)globalMap.get("password_<%=connection %>"));
+							}
+							List<org.apache.cxf.headers.Header> headers = new java.util.ArrayList<org.apache.cxf.headers.Header>();
+					
+							org.apache.cxf.databinding.DataBinding dataBinding = new org.apache.cxf.jaxb.JAXBDataBinding(String.class); 
+							org.apache.cxf.headers.Header dummyHeader = new org.apache.cxf.headers.Header(new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id"), mdmTransaction_<%=cid%>.getId(), dataBinding);
+							headers.add(dummyHeader);
+					
+							context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, headers);
+					
+							<% logUtil.debug("\"Got transaction successfully.\"");%>
+					
+							globalMap.put("mdmTransaction_<%=connection %>" + "_" + Thread.currentThread().getId(), mdmTransaction_<%=cid%>);
+						}
+					
+					    service_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
+					    
+					    globalMap.put("TMDMService_<%=connection %>" + "_" + Thread.currentThread().getId(), service_<%=cid %>);
+					}
 				<%}%>
 				
 				String suffix = "";
@@ -127,9 +180,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 					org.talend.mdm.webservice.WSGetItem wsitem_<%=cid %> = 
 					new org.talend.mdm.webservice.WSGetItem(new org.talend.mdm.webservice.WSItemPK(<%=concept %>,ids_<%=cid %>, dataCluster_<%=cid %>));
 					String <%=outgoingConn.getName() %>_xml = "";
-					try {					   
+					try {					  
 					   
-						org.talend.mdm.webservice.WSItem item_<%=cid %>=service_<%=cid %>.getItem(wsitem_<%=cid %>);												
+						org.talend.mdm.webservice.WSItem item_<%=cid %>=service_<%=cid %>.getItem(wsitem_<%=cid %>);
 						
 						<%=outgoingConn.getName() %>_xml = item_<%=cid %>.getContent();
 					} catch(java.lang.Exception e) {
@@ -226,7 +279,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 						String[] items_<%=cid%> = {};
 						try {
 						    <% logUtil.debug("\"Attempt to get items .\"");%>
-							items_<%=cid%> = service_<%=cid %>.getItems(getitems_<%=cid%>).getStrings().toArray(new String[0]);							
+							items_<%=cid%> = service_<%=cid %>.getItems(getitems_<%=cid%>).getStrings().toArray(new String[0]);
 							
 							if(totalCount_<%=cid%> < 0){ 
 								totalCount_<%=cid%> = Integer.valueOf(items_<%=cid%>[0].replaceAll("<totalCount>", "").replaceAll("</totalCount>", ""));
