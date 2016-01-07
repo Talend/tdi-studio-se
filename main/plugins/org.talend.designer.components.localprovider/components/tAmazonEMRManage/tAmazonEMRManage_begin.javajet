@@ -13,6 +13,36 @@
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 	
+	List<Map<String, String>> lines = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__STEP_TABLE__");
+%>
+	int count = 0;
+	com.amazonaws.services.elasticmapreduce.model.HadoopJarStepConfig hadoopConfig1 = null;
+	com.amazonaws.services.elasticmapreduce.model.StepConfig customStep = null;
+
+	java.util.List<com.amazonaws.services.elasticmapreduce.model.StepConfig> steps_<%=cid %> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.StepConfig>();
+<%
+	for (int i=0; i<lines.size(); i++) {
+	Map<String, String> line = lines.get(i);
+%>
+
+	count++;
+
+	hadoopConfig1 = new com.amazonaws.services.elasticmapreduce.model.HadoopJarStepConfig()
+		      .withMainClass(<%= line.get("MAIN_CLASS") %>)
+		      .withJar(<%= line.get("JAR") %>)
+		      .withArgs(<%= line.get("ARGS") %>); // optional list of arguments
+    
+	customStep = new com.amazonaws.services.elasticmapreduce.model.StepConfig("Step_" + count, hadoopConfig1)
+		   .withActionOnFailure(<%= line.get("ACTION_ON_FAILURE") %>)
+		   .withName(<%= line.get("NAME") %>);
+
+	steps_<%=cid %>.add(customStep);    
+
+<%
+	}
+%>
+
+<%
 	String action = ElementParameterParser.getValue(node, "__ACTION__");
 	String region = ElementParameterParser.getValue(node, "__REGION__");
 	String cluster_name = ElementParameterParser.getValue(node, "__CLUSTER_NAME__");
@@ -42,12 +72,15 @@
 	String additional_slave_security_groups = ElementParameterParser.getValue(node, "__ADDITIONAL_SLAVE_SECURITY_GROUPS__");
 	
 	boolean wait_for_cluster_ready = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_CLUSTER_READY__"));
+	boolean wait_for_steps_complete = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_STEPS_COMPLETE__"));
 	
 	String accesskey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 	
 	String availability_zone = ElementParameterParser.getValue(node, "__AVAILABILITY_ZONE__");
 	
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
+	boolean keep_alive = "true".equals(ElementParameterParser.getValue(node, "__KEEP_ALIVE__"));
 	
 	class ParameterUtil {
 		
@@ -155,6 +188,8 @@
     	)
     	.withHadoopJarStep(stepFactory_<%=cid%>.newEnableDebuggingStep());
 
+    	steps_<%=cid %>.add(0, enabledebugging_<%=cid%>);
+
 	<%
 	boolean setApps = cluster_version!=null && "\"emr-4.2.0\",\"emr-4.1.0\",\"emr-4.0.0\"".contains(cluster_version);
 	if(setApps) {
@@ -191,7 +226,7 @@
     	}
     	%>
     	
-    	.withSteps(enabledebugging_<%=cid%>)
+    	.withSteps(steps_<%=cid%>)
     	
     	.withServiceRole(<%=service_role%>)
     	.withJobFlowRole(<%=jobflow_role%>)
@@ -233,7 +268,7 @@
     			.withTerminationProtected(true)
     			<%}%>
     			
-    			.withKeepJobFlowAliveWhenNoSteps(true)
+    			.withKeepJobFlowAliveWhenNoSteps(<%=keep_alive%>)
     	);
 
 	com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult result_<%=cid%> = emr_<%=cid%>.runJobFlow(request_<%=cid%>);
@@ -256,11 +291,36 @@
                		.withClusterId(result_<%=cid%>.getJobFlowId())
             );
             String status_<%=cid%> = result2_<%=cid%>.getCluster().getStatus().getState();
-            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "RUNNING".equalsIgnoreCase(status_<%=cid%>)) {
+            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "RUNNING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>)) {
                 clusterReady_<%=cid%> = true;
-            } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>)) {
+            } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>)) {
             	clusterReady_<%=cid%> = true;
             	System.err.println("Fail to start the cluster.");
+            } else {
+                System.out.print(".");
+                Thread.sleep(2000);
+            }
+        }
+	<%
+	}
+	%>
+
+	<%
+	if(wait_for_steps_complete && wait_for_cluster_ready) {
+	%>
+		boolean stepsComplete_<%=cid%> = false;
+        System.out.println("Wating for steps to complete.");
+        while (!stepsComplete_<%=cid%>) {
+            com.amazonaws.services.elasticmapreduce.model.DescribeClusterResult result2_<%=cid%> = emr_<%=cid%>.describeCluster(
+            	new com.amazonaws.services.elasticmapreduce.model.DescribeClusterRequest()
+               		.withClusterId(result_<%=cid%>.getJobFlowId())
+            );
+            String status_<%=cid%> = result2_<%=cid%>.getCluster().getStatus().getState();
+            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>) || "TERMINATING".equalsIgnoreCase(status_<%=cid%>)) {
+                stepsComplete_<%=cid%> = true;
+            } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>)) {
+            	stepsComplete_<%=cid%> = true;
+            	System.err.println("Fail to complete steps_.");
             } else {
                 System.out.print(".");
                 Thread.sleep(2000);
