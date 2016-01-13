@@ -53,6 +53,14 @@
 
 	<build>
 		<finalName>${talend.job.finalName}</finalName>
+		<resources>
+            <resource>
+                <directory>${sourcecodes.dir}</directory>
+                <includes>                      
+                    <include>**/*.wsdl</include>
+                </includes>
+            </resource>
+        </resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -120,6 +128,7 @@
 							<includes>
 								<!-- only package the job classes -->
 								<include>${talend.job.path}/*.class</include>
+								<include>${talend.job.path}/**/*.wsdl</include>
 							</includes>
 						</configuration>
 					</execution>
