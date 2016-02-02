@@ -128,29 +128,31 @@ int nb_line_rejected_<%=cid%> = 0;
 		if((boolean)globalMap.get("useTransaction")) {
 	
 			String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL((String)globalMap.get("mdmUrl_<%=connection %>"), true);
-			com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = null;
-			if((boolean)globalMap.get("useClientTranId")){
-				mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
-				mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
-				String clientTranId_<%=cid%> = "<%=connection%>"+java.util.UUID.randomUUID()+Thread.currentThread().getId();
-				mdmTransaction_<%=cid%>.setId(clientTranId_<%=cid%>);
-				mdmTransaction_<%=cid%>.setUsername((String)globalMap.get("username_<%=connection %>"));
-				mdmTransaction_<%=cid%>.setPassword((String)globalMap.get("password_<%=connection %>"));
-			}else{
-				<% logUtil.debug("\"Attempt to get a remote transaction from url: \"", mdmUrl,"\".\"");%>
-				mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,(String)globalMap.get("username_<%=connection %>"),(String)globalMap.get("password_<%=connection %>"));
-			}
-			List<org.apache.cxf.headers.Header> headers = new java.util.ArrayList<org.apache.cxf.headers.Header>();
-	
-			org.apache.cxf.databinding.DataBinding dataBinding = new org.apache.cxf.jaxb.JAXBDataBinding(String.class); 
-			org.apache.cxf.headers.Header dummyHeader = new org.apache.cxf.headers.Header(new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id"), mdmTransaction_<%=cid%>.getId(), dataBinding);
-			headers.add(dummyHeader);
-	
-			context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, headers);
-	
-			<% logUtil.debug("\"Got transaction successfully.\"");%>
-	
-			globalMap.put("mdmTransaction_<%=connection %>" + "_" + Thread.currentThread().getId(), mdmTransaction_<%=cid%>);
+			com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)threadLocalTransaction.get();
+			if(mdmTransaction_<%=cid%> == null){
+				if((boolean)globalMap.get("useClientTranId")){
+					mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
+					mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
+					String clientTranId_<%=cid%> = "<%=connection%>"+java.util.UUID.randomUUID()+Thread.currentThread().getId();
+					mdmTransaction_<%=cid%>.setId(clientTranId_<%=cid%>);
+					mdmTransaction_<%=cid%>.setUsername((String)globalMap.get("username_<%=connection %>"));
+					mdmTransaction_<%=cid%>.setPassword((String)globalMap.get("password_<%=connection %>"));
+				}else{
+					<% logUtil.debug("\"Attempt to get a remote transaction from url: \"", mdmUrl,"\".\"");%>
+					mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,(String)globalMap.get("username_<%=connection %>"),(String)globalMap.get("password_<%=connection %>"));
+				}
+				List<org.apache.cxf.headers.Header> headers = new java.util.ArrayList<org.apache.cxf.headers.Header>();
+		
+				org.apache.cxf.databinding.DataBinding dataBinding = new org.apache.cxf.jaxb.JAXBDataBinding(String.class); 
+				org.apache.cxf.headers.Header dummyHeader = new org.apache.cxf.headers.Header(new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id"), mdmTransaction_<%=cid%>.getId(), dataBinding);
+				headers.add(dummyHeader);
+		
+				context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, headers);
+		
+				<% logUtil.debug("\"Got transaction successfully.\"");%>
+		
+				threadLocalTransaction.set(mdmTransaction_<%=cid%>);
+			}			
 		}
 	
 	    service_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
