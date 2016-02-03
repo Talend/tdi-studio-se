@@ -22,8 +22,6 @@ public interface IGenericConstants {
 
     public static final String COMPONENT_PROPERTIES_TAG = "component.json.serialized"; //$NON-NLS-1$
 
-    public static final String REPOSITORY_LOCATION_SEPARATOR = "#"; //$NON-NLS-1$
-
     public static final String NAME_PROPERTY = "name"; //$NON-NLS-1$
 
 }

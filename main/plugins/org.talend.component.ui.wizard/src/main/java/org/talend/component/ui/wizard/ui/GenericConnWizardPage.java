@@ -51,7 +51,7 @@ public class GenericConnWizardPage extends GenericWizardPage {
 
         Element element = new FakeElement(form.getName());
         dynamicComposite = new DynamicComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
-                element, true, container.getBackground(), form, true);
+                element, true, container.getBackground(), form);
         dynamicComposite.setLayoutData(createMainFormData(addContextFields));
         dynamicComposite.setConnectionItem(connectionItem);
         addCheckListener(dynamicComposite.getChecker());

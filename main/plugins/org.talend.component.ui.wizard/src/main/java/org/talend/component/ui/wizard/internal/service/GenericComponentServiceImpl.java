@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
-import org.talend.component.ui.model.genericMetadata.GenericConnectionItem;
 import org.talend.component.ui.wizard.util.GenericContextUtil;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.ComponentImageType;
@@ -28,6 +27,7 @@ import org.talend.components.api.service.ComponentService;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 
@@ -39,9 +39,9 @@ public class GenericComponentServiceImpl implements ComponentService {
 
     private ComponentService componentService;
 
-    private GenericConnectionItem connectionItem;
+    private ConnectionItem connectionItem;
 
-    public GenericComponentServiceImpl(ComponentService componentService, GenericConnectionItem connectionItem) {
+    public GenericComponentServiceImpl(ComponentService componentService, ConnectionItem connectionItem) {
         this.componentService = componentService;
         this.connectionItem = connectionItem;
     }
