@@ -34,6 +34,8 @@ String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 String user = ElementParameterParser.getValue(node, "__USER__");
 String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+String escapechar = ElementParameterParser.getValue(node, "__ESCAPE_CHAR__");
+boolean is_escape_char = ("false").equals(ElementParameterParser.getValue(node, "__ESCAPE_CHARACTER_OPTION__"));
 
 String table = ElementParameterParser.getValue(node, "__TABLE__");
 boolean ros = ("true").equals(ElementParameterParser.getValue(node, "__ROS__"));
@@ -160,11 +162,21 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 		boolean useSchema = "true".equals(ElementParameterParser.getValue(node, "__USE_SCHEMA_FOR_COPY__"));
 %>
 		Character OUT_DELIM_<%=cid %> = <%=field_separator%>.charAt(0);
+		<%if(!is_escape_char){%>
+		String escapechar_<%=cid %> = <%=escapechar%>;
+		if(("").equals(escapechar_<%=cid %>)){
+			escapechar_<%=cid %> = "\"\"";
+		}
+		char escape_char_<%=cid %> = escapechar_<%=cid %>.charAt(0);
+		<%}%>
 		String sql_<%=cid %> = "COPY " + tableName_<%=cid%> 
 		<%if(useSchema) {%>
 			+ "<%=copySchema %>"
 		<%}%>		
 		+ " FROM STDIN DELIMITER '" +OUT_DELIM_<%=cid %> + "'" 
+		<%if(!is_escape_char){%>
+		+ "ESCAPE AS '" + escape_char_<%=cid %> + "'"
+		<%}%>
 	    <%if(hasNullString){
 		%> + " NULL '"  + <%=null_string%> + "'"
 		<%}%>
