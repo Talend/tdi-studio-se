@@ -712,8 +712,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         pstmt_<%=cid %>.executeBatch();
                         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         pstmt_<%=cid %>.clearBatch();
-                    }
-                    if(commitEvery_<%=cid%> != batchSize_<%=cid%>){
+          
                         <%if (("INSERT").equals(dataAction)) {
                         %>
                             insertedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
