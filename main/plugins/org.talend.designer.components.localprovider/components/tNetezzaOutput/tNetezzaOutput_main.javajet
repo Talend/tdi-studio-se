@@ -712,7 +712,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                         pstmt_<%=cid %>.executeBatch();
                         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         pstmt_<%=cid %>.clearBatch();
-                    }
+                   
                         <%if (("INSERT").equals(dataAction)) {
                         %>
                             insertedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
@@ -726,6 +726,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                             deletedCount_<%=cid%> += pstmt_<%=cid %>.getUpdateCount();
                         <%
                         }%>
+                     }   
                 }catch (java.sql.BatchUpdateException e){
                     <%if(("true").equals(dieOnError)) {
                     %>
