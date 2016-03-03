@@ -15,11 +15,19 @@ imports="
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 %>
     
-    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
+    <% logUtil.debug("\"Closing connection to MDM Server.\"");%>
     
 	<%String conn = "TMDMService_" + connection;%>
-	org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
-	if(service_<%=cid %> != null)
-	{
-		service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());        
-	}
+	
+	java.util.Iterator it = globalMap.keySet().iterator();
+    while (it.hasNext()) {
+        String key = it.next().toString();
+        if (key.startsWith("<%=conn%>_")) {
+            org.talend.mdm.webservice.TMDMService service = (org.talend.mdm.webservice.TMDMService)globalMap.get(key);
+            if(service != null)
+			{
+				service.logout(new org.talend.mdm.webservice.WSLogout());
+		        <% logUtil.debug("\"Close service successfully.\"");%>
+			}
+        }
+    }

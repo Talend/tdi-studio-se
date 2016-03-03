@@ -42,7 +42,7 @@ String passwordFieldName = "__PASSWORD__";
 org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl%>, <%=username %>, decryptedPassword_<%=cid%>, null, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule%>);
 
 <%if(useTransaction) {%>
-com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
+com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)threadLocalTransaction.get();
 if(mdmTransaction_<%=cid%>!=null) {
 	bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid%>.getId());
 }

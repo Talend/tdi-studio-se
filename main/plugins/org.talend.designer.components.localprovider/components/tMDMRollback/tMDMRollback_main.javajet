@@ -24,11 +24,11 @@ imports="
 
 	<%conn = "TMDMService_" + connection;%>
 	
-    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
+    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>_" + Thread.currentThread().getId());
 
     if(service_<%=cid %> != null)
     {
-    	com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
+    	com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)threadLocalTransaction.get();
     	if(mdmTransaction_<%=cid%>!=null) {
     	
     	   <% logUtil.info("\"Attempt to rollback transaction .\"");%>
@@ -36,6 +36,8 @@ imports="
     		mdmTransaction_<%=cid%>.rollback();
     		
     	   <% logUtil.info("\"Transaction rollback successfully.\"");%>
+    	   
+    	   threadLocalTransaction.remove();
     	}
     <%  if(close){%>
         <% logUtil.debug("\"Closing connection to MDM server.\"");%>

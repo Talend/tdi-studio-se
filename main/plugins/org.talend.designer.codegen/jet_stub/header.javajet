@@ -299,6 +299,7 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	private final String projectName = "<%=codeGenArgument.getCurrentProjectName() %>";
 	public Integer errorCode = null;
 	private String currentComponent = "";
+	private ThreadLocal<Object> threadLocalTransaction = new ThreadLocal<Object>();
 	<%
 	//tParallelize will wrap globalMap with synchronizedMap
 	if(isRunInMultiThread || NodeUtil.containsMultiThreadComponent(process)){
