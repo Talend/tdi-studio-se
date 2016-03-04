@@ -554,8 +554,14 @@ if(("true").equals(use_existing_ctl_file)) {
     <%
 }
 %>
-
-String command_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" + dbPwd_<%=cid %> + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
+String password_<%=cid %> = java.util.UUID.randomUUID().toString().substring(0,3) + "....";
+String command_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" 
+<%if(isLog4jEnabled){%>
++ password_<%=cid %>
+<%}else{%>
+ + dbPwd_<%=cid %> 
+<%}%> 
++ "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
 
 <%
 if(("UPDATE").equals(data_action)) {
