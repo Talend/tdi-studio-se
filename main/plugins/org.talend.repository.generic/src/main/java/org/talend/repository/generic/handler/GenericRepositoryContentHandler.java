@@ -24,18 +24,17 @@ import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.cwm.helper.PackageHelper;
 import org.talend.cwm.helper.SubItemHelper;
+import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
-import org.talend.repository.generic.persistence.SchemaUtils;
 import org.talend.repository.generic.ui.GenericConnWizard;
 import org.talend.repository.generic.ui.GenericSchemaWizard;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.StableRepositoryNode;
-
 import orgomg.cwm.objectmodel.core.Package;
 
 /**
@@ -214,7 +213,7 @@ public class GenericRepositoryContentHandler extends AbstractRepositoryContentHa
             return null;
         }
         ConnectionItem connectionItem = (ConnectionItem) object.getProperty().getItem();
-        table = SchemaUtils.getMetadataTable(connectionItem.getConnection(), table.getLabel());
+        table = SchemaUtils.getMetadataTable(connectionItem.getConnection(), table.getLabel(), table.eContainer().getClass());
         return new GenericSchemaWizard(wb, creation, connectionItem, table, forceReadOnly);
     }
 

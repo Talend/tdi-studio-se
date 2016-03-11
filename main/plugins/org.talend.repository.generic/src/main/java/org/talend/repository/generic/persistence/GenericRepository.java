@@ -18,13 +18,11 @@ import org.apache.avro.Schema;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.components.api.properties.ComponentProperties;
-import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.cwm.helper.PackageHelper;
-import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.service.Repository;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -33,22 +31,25 @@ import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
+import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
  * created by ycbai on 2015年9月29日 Detailled comment
  *
  */
-public class GenericRepository implements Repository {
+public class GenericRepository implements Repository<ComponentProperties> {
 
     @Override
-    public String storeProperties(Properties properties, String name, String repositoryLocation, String schemaPropertyName) {
+    public String storeProperties(ComponentProperties properties, String name, String repositoryLocation,
+            String schemaPropertyName) {
+        if (properties == null) {
+            throw new RuntimeException("Properties argument cannot be null!"); //$NON-NLS-1$
+        }
+
         // Add repository value if it is from repository
-        if (properties != null && properties instanceof ComponentProperties) {
-            List<org.talend.daikon.properties.Property> propertyValues = ComponentsUtils
-                    .getAllValuedProperties((ComponentProperties) properties);
-            for (org.talend.daikon.properties.Property property : propertyValues) {
-                property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
-            }
+        List<org.talend.daikon.properties.Property> propertyValues = ComponentsUtils.getAllValuedProperties(properties);
+        for (org.talend.daikon.properties.Property property : propertyValues) {
+            property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
         }
 
         String serializedProperties = properties.toSerialized();
@@ -59,22 +60,19 @@ public class GenericRepository implements Repository {
                 throw new RuntimeException("Failed to find the GenericConnectionItem for location:" + repositoryLocation); //$NON-NLS-1$
             }
             GenericConnection connection = (GenericConnection) item.getConnection();
-            SubContainer subContainer = createContainer(name, serializedProperties);
+            orgomg.cwm.objectmodel.core.Package parentContainer = null;
             if (repositoryLocation.endsWith(IGenericConstants.REPOSITORY_LOCATION_SEPARATOR)) {// first nested property
-                if (item != null) {
-                    connection.getOwnedElement().add(subContainer);
-                }
+                parentContainer = connection;
             } else {
-                SubContainer parentContainer = getContainer(connection, repositoryLocation);
-                parentContainer.getOwnedElement().add(subContainer);
+                parentContainer = getContainer(connection, repositoryLocation);
             }
-            // if there is a schema then creates a Schema element
-            if (schemaPropertyName != null) {
-                Schema schema = (Schema) properties.getValuedProperty(schemaPropertyName).getValue();
-                MetadataTable metadataTable = SchemaUtils.createSchema(name, serializedProperties);
-                subContainer.getOwnedElement().add(metadataTable);
-                SchemaUtils.convertComponentSchemaIntoTalendSchema(schema, metadataTable);
+            ModelElement childElement = null;
+            if (schemaPropertyName == null) {// If schema property name is not provided, then create the subcontainer.
+                childElement = createContainer(name, serializedProperties);
+            } else {
+                childElement = SchemaUtils.createSchema(name, properties, schemaPropertyName);
             }
+            parentContainer.getOwnedElement().add(childElement);
             return repositoryLocation + IGenericConstants.REPOSITORY_LOCATION_SEPARATOR + name;
         } else {// simple properties to be set
             GenericConnectionItem item = getGenericConnectionItem(repositoryLocation);

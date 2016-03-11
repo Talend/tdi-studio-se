@@ -30,7 +30,8 @@ import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.service.IMetadataManagmentService;
-import org.talend.repository.generic.persistence.SchemaUtils;
+import org.talend.designer.core.generic.utils.SchemaUtils;
+import org.talend.repository.generic.model.genericMetadata.SubContainer;
 
 /**
  * 
@@ -68,7 +69,7 @@ public class GenericUpdateManager extends RepositoryUpdateManager {
             return Collections.emptyMap();
         }
         Map<String, String> idAndNameMap = new HashMap<>();
-        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(connItem.getConnection());
+        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(connItem.getConnection(), SubContainer.class);
         for (MetadataTable table : metadataTables) {
             idAndNameMap.put(table.getId(), table.getLabel());
         }
@@ -105,7 +106,7 @@ public class GenericUpdateManager extends RepositoryUpdateManager {
         }
         Map<String, String> schemaRenamedMap = new HashMap<>();
         final String prefix = connItem.getProperty().getId() + UpdatesConstants.SEGMENT_LINE;
-        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(connItem.getConnection());
+        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(connItem.getConnection(), SubContainer.class);
         for (MetadataTable table : metadataTables) {
             String oldName = oldTableMap.get(table.getId());
             String newName = table.getLabel();

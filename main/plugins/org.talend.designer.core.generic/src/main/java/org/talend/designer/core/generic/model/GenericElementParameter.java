@@ -36,6 +36,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Property;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
@@ -243,23 +244,23 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private void updateSchema() {
-        Object schemaObj = null;
-        try {
-            schemaObj = ComponentsUtils.getGenericPropertyValue(componentProperties, "schema.schema"); //$NON-NLS-1$
-        } catch (Exception e) {
-            // do nothing
-        }
-        if (schemaObj != null && schemaObj instanceof Schema) {
-            MetadataTable metadataTable = SchemaUtils
-                    .createSchema(String.valueOf(getValue()), componentProperties.toSerialized());
-            SchemaUtils.convertComponentSchemaIntoTalendSchema((Schema) schemaObj, metadataTable);
-            IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
-            IElement element = this.getElement();
-            if (element instanceof Node) {
-                Node node = (Node) element;
-                List<IMetadataTable> metadataList = node.getMetadataList();
-                if (metadataList.size() > 0) {
-                    IMetadataTable oldTable = metadataList.get(0);
+        IElement element = this.getElement();
+        if (element instanceof Node) {
+            Node node = (Node) element;
+            List<IMetadataTable> metadataList = node.getMetadataList();
+            if (metadataList.size() > 0) {
+                IMetadataTable oldTable = metadataList.get(0);
+                String schemaPropertyName = oldTable.getAdditionalProperties().get(IGenericConstants.COMPONENT_SCHEMA_TAG);
+                Object schemaObj = null;
+                try {
+                    schemaObj = ComponentsUtils.getGenericPropertyValue(componentProperties, schemaPropertyName);
+                } catch (Exception e) {
+                    // do nothing
+                }
+                if (schemaObj != null && schemaObj instanceof Schema) {
+                    MetadataTable metadataTable = SchemaUtils.createSchema(String.valueOf(getValue()), componentProperties,
+                            schemaPropertyName);
+                    IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
                     if (!newTable.sameMetadataAs(oldTable)) {
                         IElementParameter schemaParameter = node.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
                         ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, schemaParameter, oldTable, newTable, null);
@@ -281,8 +282,7 @@ public class GenericElementParameter extends ElementParameter {
             paramName = paramName.substring(paramName.lastIndexOf(IGenericConstants.UNDERLINE_SEPARATOR) + 1);
         }
         // Reset some param name
-        ComponentProperties currentComponentProperties = ComponentsUtils.getCurrentComponentProperties(componentProperties,
-                paramName);
+        Properties currentComponentProperties = ComponentsUtils.getCurrentComponentProperties(componentProperties, paramName);
         if (currentComponentProperties == null) {
             if (paramName.startsWith(componentProperties.getName())) {
                 paramName = ComponentsUtils.getPropertyName(paramName);

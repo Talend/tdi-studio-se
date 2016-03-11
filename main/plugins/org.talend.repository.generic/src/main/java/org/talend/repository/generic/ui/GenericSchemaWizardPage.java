@@ -21,7 +21,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
-import org.talend.repository.generic.persistence.SchemaUtils;
+import org.talend.designer.core.generic.utils.SchemaUtils;
+import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.common.GenericWizardPage;
 
 /**
@@ -44,7 +45,7 @@ public class GenericSchemaWizardPage extends GenericWizardPage {
         container.setLayoutData(new GridData(GridData.FILL_BOTH));
         container.setLayout(new GridLayout());
         setControl(container);
-        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(getConnection());
+        List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(getConnection(), SubContainer.class);
         List<String> existingTableLabels = new ArrayList<>();
         for (MetadataTable metaTable : metadataTables) {
             String label = metaTable.getLabel();

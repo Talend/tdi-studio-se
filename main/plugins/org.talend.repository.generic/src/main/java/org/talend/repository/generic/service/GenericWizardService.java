@@ -35,11 +35,12 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
+import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
-import org.talend.repository.generic.persistence.SchemaUtils;
+import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
@@ -132,7 +133,7 @@ public class GenericWizardService implements IGenericWizardService {
     public List<MetadataTable> getMetadataTables(Connection connection) {
         List<MetadataTable> metadataTables = new ArrayList<>();
         if (connection != null) {
-            return SchemaUtils.getMetadataTables(connection);
+            return SchemaUtils.getMetadataTables(connection, SubContainer.class);
         }
         return metadataTables;
     }
