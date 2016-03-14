@@ -262,7 +262,23 @@
 			%>
 			util_<%=cid%> = new Util_<%=cid%>(<%if(("fileupdated").equals(triggerAction) || ("fileall").equals(triggerAction)) {%>false<%}%>);
 			
-            java.util.List<String> fetchFilesOneTime_<%=cid %> = util_<%=cid %>.getFiles();
+            java.util.List<String> fetchFilesOneTime_<%=cid %> = util_<%=cid %>.getFiles();                     
+            
+			List<String> removedFileList = new java.util.ArrayList<String>();
+					
+			for(String cachedFile : originalFiles_<%=cid%>)
+			{
+				if(!fetchFilesOneTime_<%=cid%>.contains(cachedFile))
+				{
+					removedFileList.add(cachedFile);
+				}
+			}
+									
+			for(String removedFile : removedFileList)
+			{
+				originalFiles_<%=cid%>.remove(removedFile);
+			}          
+            
             util_<%=cid%> = new Util_<%=cid%>();
             <%
             if(("filecreated").equals(triggerAction)) {
