@@ -554,8 +554,8 @@ if(("true").equals(use_existing_ctl_file)) {
     <%
 }
 %>
-
-String command_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" + "...." + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
+String command_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" + dbPwd_<%=cid %> + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
+String command2_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" + "...." + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
 
 <%
 if(("UPDATE").equals(data_action)) {
@@ -570,7 +570,7 @@ if(("UPDATE").equals(data_action)) {
     stmtCreateTmp_<%=cid%>.close();
         <%if(isLog4jEnabled){%>
         log.info("<%=cid%> - Create temp table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
-        log.info("<%=cid%> - Executing command:'" + command_<%=cid %> + "'.");
+        log.info("<%=cid%> - Executing command:'" + command2_<%=cid %> + "'.");
     <%}%>
     <%
     }
@@ -620,7 +620,7 @@ if(("UPDATE").equals(data_action)) {
     }
     if(isLog4jEnabled){
     %>
-        log.info("<%=cid%> - Executing command:'" + command_<%=cid %> + "'.");
+        log.info("<%=cid%> - Executing command:'" + command2_<%=cid %> + "'.");
     <%
     }
 %>
@@ -709,7 +709,7 @@ if ("true".equals((String)globalMap.get("<%=cid%>_SQLLOAD_ERROR"))) {
 <%
 if(isLog4jEnabled){
 %>
-    log.info("<%=cid%> - Excute command: '" + command_<%=cid %> + "' has finished.");
+    log.info("<%=cid%> - Excute command: '" + command2_<%=cid %> + "' has finished.");
     log.info("<%=cid%> - Retrieving information from oracle log file: '" + logf_<%=cid %> + "'.");
 <%
 }
