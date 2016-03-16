@@ -19,10 +19,10 @@ imports="
 
     String conn = "conn_" + connection;
     
-    String VERSION_SAP2 = "sapjco.jar";
+    
     String VERSION_SAP3 = "sapjco3.jar";
     
-    String version = VERSION_SAP2;
+    String version = null;
     List<? extends INode> nodes = node.getProcess().getGeneratingNodes();
     for(INode targetNode : nodes){
     	if (targetNode.getUniqueName().equals(connection)) {
@@ -30,31 +30,7 @@ imports="
 	    }
     }
 %>
-<%if(VERSION_SAP2.equals(version)){%>
-				
-	com.sap.mw.jco.JCO.Client client_<%=cid %> = (com.sap.mw.jco.JCO.Client)globalMap.get("<%=conn%>");	
-	
-	if(client_<%=cid %> != null)
-	{
-		com.sap.mw.jco.IRepository repository_<%=cid %> = com.sap.mw.jco.JCO.createRepository("REPOSITORY", client_<%=cid %>);
-	
-		com.sap.mw.jco.IFunctionTemplate functionTemplate_<%=cid %> = repository_<%=cid %>.getFunctionTemplate("BAPI_TRANSACTION_COMMIT");
-	
-	    com.sap.mw.jco.JCO.Function function_<%=cid %> = functionTemplate_<%=cid %>.getFunction();
-	    
-		try{
-			client_<%=cid %>.execute(function_<%=cid %>);
-	    }catch (java.lang.Exception e_<%=cid%>) {
-			com.sap.mw.jco.JCO.releaseClient(client_<%=cid %>);
-		    throw new RuntimeException(e_<%=cid%>.getMessage());
-		}	
-		
-		<%if(close){%>
-    	com.sap.mw.jco.JCO.releaseClient(client_<%=cid %>);
-		<%}%>	
-	}
-	
-<%}else if(VERSION_SAP3.equals(version)){%>
+<%if(VERSION_SAP3.equals(version)){%>
 	com.sap.conn.jco.JCoDestination dest_<%=cid%> = (com.sap.conn.jco.JCoDestination)globalMap.get("<%=conn%>");
 <%	
 	INode connectionNode = null; 

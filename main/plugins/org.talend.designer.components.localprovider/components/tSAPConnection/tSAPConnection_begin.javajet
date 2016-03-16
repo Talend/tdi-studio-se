@@ -41,66 +41,7 @@
     
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
     
-<%if("sapjco.jar".equals(version)){%>
-	com.sap.mw.jco.JCO.Client client_<%=cid %> = null;
-	java.util.Properties properties_<%=cid%> = new java.util.Properties();
-	<%if("ApplicationServer".equals(serverType)){%>
-		//Create a client connection to a dedicated R/3 system
-		properties_<%=cid%>.put("jco.client.type", "3");
-		if (<%=client %> != null) properties_<%=cid%>.put("jco.client.client", <%=client %>);
-		if (<%=userid %> != null) properties_<%=cid%>.put("jco.client.user", <%=userid %>);
-		if (decryptedPassword_<%=cid%> != null) properties_<%=cid%>.put("jco.client.passwd", decryptedPassword_<%=cid%>);
-		if (<%=language %> != null) properties_<%=cid%>.put("jco.client.lang", <%=language %>);
-		if (<%=hostname %> != null) properties_<%=cid%>.put("jco.client.ashost", <%=hostname %>);
-		if (<%=systemnumber %> != null) properties_<%=cid%>.put("jco.client.sysnr", <%=systemnumber %>);	            				 
-	<%}else{%>
-		//Create a client connection to Message Server 
-		properties_<%=cid%>.put("jco.client.type", "3");
-        if (<%=client %> != null) properties_<%=cid%>.put("jco.client.client", <%=client %>);
-		if (<%=userid %> != null) properties_<%=cid%>.put("jco.client.user", <%=userid %>);
-		if (decryptedPassword_<%=cid%> != null) properties_<%=cid%>.put("jco.client.passwd", decryptedPassword_<%=cid%>);
-		if (<%=language %> != null) properties_<%=cid%>.put("jco.client.lang", <%=language %>);
-		if (<%=hostname %> != null) properties_<%=cid%>.put("jco.client.mshost", <%=hostname %>);
-		if (<%=systemId %> != null) properties_<%=cid%>.put("jco.client.r3name", <%=systemId %>);
-		if (<%=groupName%> != null) properties_<%=cid%>.put("jco.client.group", <%=groupName%>);
-	<%}%>
-	<%
-	if(activeSNC){
-	%>
-		properties_<%=cid%>.setProperty("jco.client.snc_mode", "1");
-		properties_<%=cid%>.setProperty("jco.client.snc_partnername", <%=partnerSNCName%>);
-		properties_<%=cid%>.setProperty("jco.client.snc_qop", String.valueOf(<%=sncLevel%>));
-		<%if(hasMySNCName){%>
-    		if(<%=mySNCName%> != null){
-    			properties_<%=cid%>.setProperty("jco.client.snc_myname", <%=mySNCName%>);
-    		}
-		<%}%>
-		<%if(hasSNCLibPath){%>
-    		if(<%=sncLibPath%> != null){
-    			properties_<%=cid%>.setProperty("jco.client.snc_lib", <%=sncLibPath%>);
-    		}
-		<%}%>
-	<%
-	}
-	%>
-	<%
-    if(sapProps!=null) {
-		for(Map<String, String> item : sapProps){
-		%>	
-		properties_<%=cid%>.put(<%=item.get("PROPERTY") %> ,<%=item.get("VALUE") %>);
-		<% 
-		}
-    }
-	%>
-	client_<%=cid %> = com.sap.mw.jco.JCO.createClient(properties_<%=cid%>);
-	// Open the connection
-	client_<%=cid %>.connect();
-	<%if(useFtpHttp){%>
-	com.sap.mw.jco.JCO.setMiddlewareProperty("jco.middleware.allow_start_of_programs", "ftp;sapftp;sapftpa;sapkprotp;http;saphttp;saphttpa");
-	client_<%=cid %>.setSapGui(2);
-	<%}%>
-	globalMap.put("conn_<%=cid %>", client_<%=cid %>);
-<%}else if("sapjco3.jar".equals(version)){%>
+<%if("sapjco3.jar".equals(version)){%>
 		com.sap.conn.jco.JCoDestination dest_<%=cid%> = null;
 <%
 		boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));

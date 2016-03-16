@@ -168,7 +168,7 @@
     </ADVANCED_PARAMETERS>
   <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="sapjco-ntintel-2.1.8" MODULE="sapjco.jar" MVN="mvn:org.talend.libraries/sapjco/6.0.0"  REQUIRED_IF="DB_VERSION == 'sapjco.jar'" BundleID="" />
+ 
        <IMPORT NAME="sapjco-ntintel-3" MODULE="sapjco3.jar" MVN="mvn:org.talend.libraries/sapjco3/6.0.0"  REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" BundleID="" />
        <IMPORT NAME="talend-sap" MODULE="talend-sap.jar" MVN="mvn:org.talend.libraries/talend-sap/6.0.0"  REQUIRED_IF="DB_VERSION == 'sapjco3.jar'" />
        <IMPORT NAME="sap-api.jar" MODULE="sap-api.jar" MVN="mvn:org.talend.libraries/sap-api/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.sap/lib/sap-api.jar" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />
