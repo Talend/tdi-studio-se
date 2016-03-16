@@ -262,6 +262,7 @@ public class ComponentsUtils {
                 List<?> possibleValues = property.getPossibleValues();
                 if (possibleValues != null && possibleValues.size() > 0) {
                     paramValue = possibleValues.get(0);
+                    property.setValue(paramValue);
                 }
             }
             break;
