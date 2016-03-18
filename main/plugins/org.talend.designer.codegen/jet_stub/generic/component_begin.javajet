@@ -85,6 +85,7 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
 	} // property
 } // propInfo
 %>
+
 org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() { 
     // Nothing here for now
 };
@@ -101,8 +102,10 @@ if(metadata != null){
 		java.util.List<org.apache.avro.Schema.Field> designFields_<%=cid%> = designSchema_<%=cid%>.getFields();
 		boolean hasDynamic_<%=cid%> = false;
 		for(org.apache.avro.Schema.Field designField_<%=cid%> : designFields_<%=cid%>){
-			hasDynamic_<%=cid%> = org.talend.daikon.avro.util.AvroUtils.isDynamic(designField_<%=cid%>.schema());
-			break;
+			hasDynamic_<%=cid%> = org.talend.daikon.avro.DynamicTypeFactory.isDynamic(designField_<%=cid%>.schema());
+			if(hasDynamic_<%=cid%>){
+				break;
+			}
 		}
 		org.apache.avro.Schema runtimeSchema_<%=cid%> = org.talend.components.api.component.runtime.RuntimeHelper.resolveSchema(container_<%=cid%>, source_<%=cid%>, designSchema_<%=cid%>);
 		<%if(hasDynamic){%>
