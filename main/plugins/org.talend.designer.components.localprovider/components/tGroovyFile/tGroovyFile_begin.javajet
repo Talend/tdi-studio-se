@@ -33,6 +33,6 @@ groovy.lang.Binding binding<%=cid%> = new groovy.lang.Binding();
 %>
 
 
-groovy.lang.GroovyShell shell_<%=cid%> = new groovy.lang.GroovyShell(binding<%=cid%>);
-shell_<%=cid%>.evaluate(new java.io.FileInputStream(new java.io.File(<%=groovyFile%>)));
+groovy.lang.GroovyShell shell<%=cid%> = new groovy.lang.GroovyShell(binding<%=cid%>);
+shell<%=cid%>.evaluate(new java.io.File(<%=groovyFile%>));
 

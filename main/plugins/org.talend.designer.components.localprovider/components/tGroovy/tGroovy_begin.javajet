@@ -21,7 +21,7 @@ String code<%=cid%> = ""
     %>
     + "<%=codeStringArray[i]%>" + "\n"
 <%}%>; 
-java.io.ByteArrayInputStream is<%=cid%> = new java.io.ByteArrayInputStream(code<%=cid%>.getBytes());
+
 groovy.lang.Binding binding<%=cid%> = new groovy.lang.Binding();
 
 <%
@@ -40,5 +40,5 @@ groovy.lang.Binding binding<%=cid%> = new groovy.lang.Binding();
 %>
 
 groovy.lang.GroovyShell shell<%=cid%> = new groovy.lang.GroovyShell(binding<%=cid%>);
-shell<%=cid%>.evaluate(is<%=cid%>);
+shell<%=cid%>.evaluate(code<%=cid%>);
 
