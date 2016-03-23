@@ -94,6 +94,17 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
         if (found) {
             object = ComponentsUtils.getGenericPropertyValue(componentProperties, value);
         } else {
+            String seletetedMetadataTableName = null;
+            if (table != null) {
+                if (table instanceof MetadataTableRepositoryObject) {
+                    MetadataTableRepositoryObject metaTableRepObj = (MetadataTableRepositoryObject) table;
+                    if (metaTableRepObj.getTable() != null) {
+                        seletetedMetadataTableName = metaTableRepObj.getTable().getName();
+                    }
+                } else if (table instanceof org.talend.core.model.metadata.MetadataTable) {
+                    seletetedMetadataTableName = table.getLabel();
+                }
+            }
             for (ModelElement modelElement : connection.getOwnedElement()) {
                 ComponentProperties subComponentProperties = null;
                 if (modelElement instanceof SubContainer) {
@@ -106,6 +117,11 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                         if (IGenericConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                             subComponentProperties = ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue.getValue());
                         }
+                    }
+                }
+                if (seletetedMetadataTableName != null) {
+                    if (!modelElement.getName().equals(seletetedMetadataTableName)) {
+                        continue;
                     }
                 }
                 if (subComponentProperties != null) {
@@ -218,7 +234,6 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 currentComponentProperties = SchemaUtils.getCurrentComponentProperties(newTable);
             }
         }
-        //
         if (currentComponentProperties != null) {
             try {
                 List<ComponentDefinition> possibleComponents = ComponentsUtils.getComponentService().getPossibleComponents(
