@@ -164,10 +164,9 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 		Character OUT_DELIM_<%=cid %> = <%=field_separator%>.charAt(0);
 		<%if(is_escape_char){%>
 		String escapechar_<%=cid %> = <%=escapechar%>;
-		if(("").equals(escapechar_<%=cid %>)){
-			escapechar_<%=cid %> = "\"\"";
+		if(!escapechar_<%=cid %>.isEmpty()){
+			escapechar_<%=cid %> = "" + escapechar_<%=cid %>.charAt(0);
 		}
-		char escape_char_<%=cid %> = escapechar_<%=cid %>.charAt(0);
 		<%}%>
 		String sql_<%=cid %> = "COPY " + tableName_<%=cid%> 
 		<%if(useSchema) {%>
@@ -175,7 +174,7 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 		<%}%>		
 		+ " FROM STDIN DELIMITER '" +OUT_DELIM_<%=cid %> + "'" 
 		<%if(is_escape_char){%>
-		+ "ESCAPE AS '" + escape_char_<%=cid %> + "'"
+		+ "ESCAPE AS '" + escapechar_<%=cid %> + "'"
 		<%}else{%>
 		+" NO ESCAPE"
 		<%}%>
