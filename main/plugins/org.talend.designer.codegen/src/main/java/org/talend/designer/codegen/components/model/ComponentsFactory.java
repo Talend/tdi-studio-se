@@ -78,6 +78,7 @@ import org.talend.designer.core.ITisLocalProviderService.ResClassLoader;
 import org.talend.designer.core.model.components.ComponentBundleToPath;
 import org.talend.designer.core.model.components.ComponentFilesNaming;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.process.AbstractGenericProvider;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 
 /**
@@ -338,6 +339,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     private void loadComponentsFromExtensions() {
         AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractGenericProvider.loadComponentsFromProviders();
     }
 
     private void loadComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {

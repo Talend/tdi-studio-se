@@ -63,9 +63,11 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
             for (IConfigurationElement elem : elems) {
                 String pid = elem.getAttribute(ATTR_PID);
                 try {
-                    AbstractProcessProvider createExecutableExtension = (AbstractProcessProvider) elem
-                            .createExecutableExtension(ATTR_CLASS);
-                    providerMap.put(pid, createExecutableExtension);
+                    Object provider = elem.createExecutableExtension(ATTR_CLASS);
+                    if (provider instanceof AbstractProcessProvider) {
+                        AbstractProcessProvider createExecutableExtension = (AbstractProcessProvider) provider;
+                        providerMap.put(pid, createExecutableExtension);
+                    }
                 } catch (CoreException ex) {
                     ExceptionHandler.process(ex);
                 }
@@ -109,7 +111,6 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
      * @return
      */
     public static void loadComponentsFromProviders() {
-
         for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
             processProvider.loadComponentsFromExtensionPoint();
         }

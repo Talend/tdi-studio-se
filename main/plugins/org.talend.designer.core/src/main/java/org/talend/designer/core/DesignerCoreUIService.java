@@ -24,6 +24,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.core.model.process.AbstractGenericProvider;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.ui.editor.TalendEditorPaletteFactory;
 import org.talend.designer.core.ui.editor.palette.TalendPaletteDrawer;
@@ -84,10 +85,13 @@ public class DesignerCoreUIService implements IDesignerCoreUIService {
     }
 
     @Override
-    public List<PaletteEntry> createJobletEtnry() {
+    public List<PaletteEntry> createPaletteEtnry() {
         List<PaletteEntry> list = new ArrayList<PaletteEntry>();
         for (AbstractProcessProvider provider : AbstractProcessProvider.findAllProcessProviders()) {
             list.addAll(provider.addJobletEntry());
+        }
+        for (AbstractGenericProvider provider : AbstractGenericProvider.findAllProcessProviders()) {
+            list.addAll(provider.addPaletteEntry());
         }
         return list;
     }

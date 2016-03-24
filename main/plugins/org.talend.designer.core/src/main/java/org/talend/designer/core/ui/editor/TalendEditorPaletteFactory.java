@@ -71,6 +71,7 @@ import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IPaletteFilter;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.process.AbstractGenericProvider;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.notes.NoteCreationFactory;
@@ -1127,6 +1128,7 @@ public final class TalendEditorPaletteFactory {
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
         palette = root;
         AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractGenericProvider.loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, histate);
         return palette;
     }
@@ -1141,6 +1143,7 @@ public final class TalendEditorPaletteFactory {
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
         palette = root;
         AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractGenericProvider.loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, isFavorite, histate);
         return palette;
     }
@@ -1148,6 +1151,7 @@ public final class TalendEditorPaletteFactory {
     public static PaletteRoot getAllNodeStructure(final IComponentsFactory compFac) {
         palette = new PaletteRoot();
         AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractGenericProvider.loadComponentsFromProviders();
         createComponentsDrawer(compFac, true, 0);
         return palette;
     }
@@ -1156,6 +1160,7 @@ public final class TalendEditorPaletteFactory {
         palette = root;
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
         AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractGenericProvider.loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, histate);
         return palette;
     }
