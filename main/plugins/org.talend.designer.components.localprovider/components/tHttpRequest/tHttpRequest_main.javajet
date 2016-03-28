@@ -43,6 +43,9 @@ String sOutFilePath = ElementParameterParser.getValue(node, "__OUT_FILE_NAME__")
 List<Map<String, String>> headerParams = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__HEADERS__");
 boolean bNeedAuthentication = "true".equals(ElementParameterParser.getValue(node, "__NEED_AUTHENTICATION__"));
 String sUser = ElementParameterParser.getValue(node, "__USR__");
+boolean isTimeOutSetting = "true".equals(ElementParameterParser.getValue(node, "__TIMEOUT_SETTING__"));
+String connectTimeOut = ElementParameterParser.getValue(node, "__CONNECT_TIMEOUT__");
+String readTimeOut = ElementParameterParser.getValue(node, "__READ_TIMEOUT__");
 
 boolean createDirs = "true".equals(ElementParameterParser.getValue(node, "__CREATE_DIRS__"));
 boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
@@ -73,6 +76,10 @@ urlConn_<%=cid%>.setRequestMethod("<%=sMethod%>");
 urlConn_<%=cid%>.setDoOutput(true);
 urlConn_<%=cid%>.setDoInput(true);
 urlConn_<%=cid%>.setUseCaches(false);
+<%if(isTimeOutSetting){%>
+	urlConn_<%=cid%>.setConnectTimeout(<%=connectTimeOut%>);
+	urlConn_<%=cid%>.setReadTimeout(<%=readTimeOut%>);
+<%}%>
 
 <%for (Map<String, String> header : headerParams){ // set request properties%>
   urlConn_<%=cid%>.setRequestProperty(<%=header.get("HEADER_NAME")%>, <%=header.get("HEADER_VALUE")%>);
