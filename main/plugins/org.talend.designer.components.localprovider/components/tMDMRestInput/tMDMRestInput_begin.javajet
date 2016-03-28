@@ -35,10 +35,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		
 			IConnection outgoingConn = outgoingConns.get(0);
 			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
-	
+	            boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+				String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+				String connConfig = "connConfig_" + connection;
 				String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
 				String username = ElementParameterParser.getValue(node, "__USERNAME__");
-
 				String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
 				String containerType = ElementParameterParser.getValue(node, "__CONTAINER_TYPE__");
 				boolean retrieveRawData = ("true").equals(ElementParameterParser.getValue(node,"__RETRIEVE_RAW_DATA__"));
@@ -417,13 +418,18 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 					<%}%>
                     int nb_line_<%=cid %> = 0;
                     <% logUtil.debug("\"Initializing data service base from URL: \"", mdmUrl,"\".\"");%>
-                    <% String passwordFieldName = "__PASSWORD__"; %>
-                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-                    java.util.Map<String, String> connConfig_<%=cid%> = new java.util.HashMap<String, String>();
-                    connConfig_<%=cid%>.put("url", <%=mdmUrl%>);
-                    connConfig_<%=cid%>.put("username", <%=username %>);
-                    connConfig_<%=cid%>.put("password", decryptedPassword_<%=cid%>);
+                    <%if(useExistingConn){%>
+                        java.util.Map<String, String> connConfig_<%=cid%> = (java.util.HashMap<String, String>)globalMap.get("<%=connConfig%>");
+                    <%}else{%>
+                        <% String passwordFieldName = "__PASSWORD__"; %>
+                        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+                        java.util.Map<String, String> connConfig_<%=cid%> = new java.util.HashMap<String, String>();
+                        connConfig_<%=cid%>.put("url", <%=mdmUrl%>);
+                        connConfig_<%=cid%>.put("username", <%=username %>);
+                        connConfig_<%=cid%>.put("password", decryptedPassword_<%=cid%>);
+                    <%}%>
+
                     String dataCluster_<%=cid%> = <%=dataCluster%>;
                     String containerType_<%=cid%> = "<%=containerType%>";
                     String queryText_<%=cid%> = "<%=queryText%>";
