@@ -1,0 +1,30 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    java.util.List
+" 
+%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+
+boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
+String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
+String username = ElementParameterParser.getValue(node, "__USERNAME__");    
+%>
+    <% logUtil.debug("\"Initializing data service base from URL: \"", mdmUrl,"\".\"");%>
+
+    java.util.Map<String, String> connConfig_<%=cid%> = new java.util.HashMap<String, String>();
+    connConfig_<%=cid%>.put("url", <%=mdmUrl%>);
+    connConfig_<%=cid%>.put("username", <%=username %>);
+    <%String passwordFieldName = "__PASSWORD__";%>
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+    connConfig_<%=cid%>.put("password", decryptedPassword_<%=cid%>);
+    globalMap.put("connConfig_<%=cid%>", connConfig_<%=cid%>);

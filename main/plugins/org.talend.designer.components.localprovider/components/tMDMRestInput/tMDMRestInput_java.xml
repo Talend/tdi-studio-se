@@ -63,21 +63,39 @@
             </TABLE>
         </PARAMETER>
 
+        <PARAMETER
+            NAME="USE_EXISTING_CONNECTION"
+            FIELD="CHECK"
+            NUM_ROW="10">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER
+            NAME="CONNECTION"
+            FIELD="COMPONENT_LIST"
+            REQUIRED="true"
+            FILTER="tMDMRestConnection"
+            NUM_ROW="15"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'true'">
+        </PARAMETER>
+
         <PARAMETER 
             NAME="MDMURL"
             FIELD="TEXT"
             NUM_ROW="20"
             REQUIRED="true"
-            REPOSITORY_VALUE="MDMURL">
+            REPOSITORY_VALUE="MDMURL"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
             <DEFAULT>"http://localhost:8180/talendmdm/services/rest"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER 
             NAME="USERNAME"
             FIELD="TEXT"
-            REQUIRED="true"
-            NUM_ROW="30" 
-            REPOSITORY_VALUE="USERNAME">
+            REQUIRED="true
+            NUM_ROW="30"
+            REPOSITORY_VALUE="USERNAME"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
             <DEFAULT>"userName"</DEFAULT>
         </PARAMETER>
 
@@ -85,8 +103,9 @@
             NAME="PASSWORD"
             FIELD="PASSWORD"
             REQUIRED="true"
-            NUM_ROW="30" 
-            REPOSITORY_VALUE="PASSWORD">
+            NUM_ROW="30"
+            REPOSITORY_VALUE="PASSWORD"
+            SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
             <DEFAULT>"password"</DEFAULT>
         </PARAMETER>
 
