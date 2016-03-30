@@ -46,15 +46,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Groovy_Module" MODULE="antlr-2.7.6.jar" MVN="mvn:org.talend.libraries/antlr-2.7.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/antlr-2.7.6.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="asm-2.2.jar" MVN="mvn:org.talend.libraries/asm-2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.asm/lib/asm-2.2.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="asm-analysis-2.2.jar" MVN="mvn:org.talend.libraries/asm-analysis-2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.asm/lib/asm-analysis-2.2.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="asm-attrs-2.2.jar" MVN="mvn:org.talend.libraries/asm-attrs-2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.asm/lib/asm-attrs-2.2.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="asm-tree-2.2.jar" MVN="mvn:org.talend.libraries/asm-tree-2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.asm/lib/asm-tree-2.2.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="asm-util-2.2.jar" MVN="mvn:org.talend.libraries/asm-util-2.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.asm/lib/asm-util-2.2.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="groovy-1.0.jar" MVN="mvn:org.talend.libraries/groovy-1.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.groovy/lib/groovy-1.0.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="groovy-starter.jar" MVN="mvn:org.talend.libraries/groovy-starter/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.groovy/lib/groovy-starter.jar" REQUIRED="true" />
-		<IMPORT NAME="Groovy_Module" MODULE="groovy-xmlrpc-0.3.jar" MVN="mvn:org.talend.libraries/groovy-xmlrpc-0.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.groovy/lib/groovy-xmlrpc-0.3.jar" REQUIRED="true" />
+   		<IMPORT NAME="Groovy_Module" MODULE="groovy-all-2.4.6.jar" MVN="mvn:org.talend.libraries/groovy-all-2.4.6/6.0.0" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
