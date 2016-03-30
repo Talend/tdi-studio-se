@@ -225,7 +225,7 @@ if(metadata != null){
 		writeOperation_<%=cid%>.initialize(container_<%=cid%>);<%//create folder for file; create database/table for db%>
 		org.talend.components.api.component.runtime.Writer writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
 		writer_<%=cid%>.open("<%=cid%>");
-		org.apache.avro.Schema designSchema_<%=cid%> = sink_<%=cid%>.getSchemaFromProperties(container_<%=cid%>);
+		org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchemas().get(0);
 	<%
 	}
 }
