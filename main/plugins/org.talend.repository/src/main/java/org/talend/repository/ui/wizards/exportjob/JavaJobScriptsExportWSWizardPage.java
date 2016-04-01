@@ -69,12 +69,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     /**
      * type of job exports.
-     * */
+     */
     public static enum JobExportType {
-        POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
-        WSWAR(Messages.getString("JavaJobScriptsExportWSWizardPage.WSWAR"), false), //$NON-NLS-1$
-        WSZIP(Messages.getString("JavaJobScriptsExportWSWizardPage.WSZIP"), false), //$NON-NLS-1$
-        OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false);//$NON-NLS-1$
+                                      POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
+                                      WSWAR(Messages.getString("JavaJobScriptsExportWSWizardPage.WSWAR"), false), //$NON-NLS-1$
+                                      WSZIP(Messages.getString("JavaJobScriptsExportWSWizardPage.WSZIP"), false), //$NON-NLS-1$
+                                      OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
+                                      MICROSERVICE(Messages.getString("JavaJobScriptsExportWSWizardPage.MICROSERVICE"), false);//$NON-NLS-1$
 
         public final String label;
 
@@ -87,7 +88,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the label or the POJO type if no match.
-         * */
+         */
         public static JobExportType getTypeFromLabel(String label) {
             for (JobExportType type : JobExportType.values()) {
                 if (type.label.equals(label)) {
@@ -99,7 +100,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the type string, then try the label string or the POJO type if no match
-         * */
+         */
         public static JobExportType getTypeFromString(String str) {
             if (str == null) {
                 return POJO;
@@ -207,7 +208,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             if ((exportType == null || exportType.equals("")) && defaultExportType != null && !defaultExportType.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
                 dialogSettings.put(STORE_EXPORTTYPE_ID, defaultExportType);
             }
-        }// else ignors it
+        } // else ignors it
     }
 
     /**
@@ -325,8 +326,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // this.getDestinationValue()
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
+            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                    .getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
