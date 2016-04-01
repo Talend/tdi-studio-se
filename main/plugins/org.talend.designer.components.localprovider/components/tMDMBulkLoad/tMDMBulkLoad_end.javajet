@@ -1,26 +1,24 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode    
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		" 
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
 //for bug TDI-22445
 %>
 if (inputStreamMerger_<%=cid%>!=null) {
-inputStreamMerger_<%=cid%>.close();
+    inputStreamMerger_<%=cid%>.close();
 } 
 bulkloadClient_<%=cid %>.waitForEndOfQueue();
 bulkloadClient_<%=cid %> = null;
 <%//TDI-26145%>
-if(inputStreamMerger_<%=cid%>!=null && inputStreamMerger_<%=cid%>.getLastReportedFailure()!=null){
-
+if(inputStreamMerger_<%=cid%>!=null && inputStreamMerger_<%=cid%>.getLastReportedFailure()!=null) {
     <% logUtil.error("\"Call bulkload with error:\"+ inputStreamMerger_"+cid+".getLastReportedFailure().getMessage()");%>
-    
     throw new Exception(inputStreamMerger_<%=cid%>.getLastReportedFailure());
 }

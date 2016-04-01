@@ -1,13 +1,13 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		java.util.List
-		"
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        java.util.List
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
@@ -23,30 +23,30 @@ List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {//1
     IMetadataTable metadata = metadatas.get(0);
     if (metadata!=null) {//2
-    	List< ? extends IConnection> conns = node.getIncomingConnections();
-    	for (IConnection conn : conns) {//3
-    		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
+        List< ? extends IConnection> conns = node.getIncomingConnections();
+        for (IConnection conn : conns) {//3
+            if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
 %>
 if (count_<%=cid%> % <%=arraySize%> == 0) {
-	if(inputStreamMerger_<%=cid%> != null) {
-	   <% logUtil.debug("\"Closing input stream.\"");%>
-	   inputStreamMerger_<%=cid%>.close();
-	}
-	
-	inputStreamMerger_<%=cid%> = bulkloadClient_<%=cid %>.load();
+    if(inputStreamMerger_<%=cid%> != null) {
+       <% logUtil.debug("\"Closing input stream.\"");%>
+       inputStreamMerger_<%=cid%>.close();
+    }
+
+    inputStreamMerger_<%=cid%> = bulkloadClient_<%=cid %>.load();
         resourceMap.put("mdmBulkStream<%=cid %>", inputStreamMerger_<%=cid%>);
 }
 
 if(<%=conn.getName()%>.<%=xmlField %>!=null){
     <% logUtil.debug("\"Pushing input stream.\"");%>
-	inputStreamMerger_<%=cid%>.push(new java.io.ByteArrayInputStream(<%=conn.getName()%>.<%=xmlField %>.toString().getBytes("UTF-8")));
+    inputStreamMerger_<%=cid%>.push(new java.io.ByteArrayInputStream(<%=conn.getName()%>.<%=xmlField %>.toString().getBytes("UTF-8")));
 }else{
-	inputStreamMerger_<%=cid%>.push(null);
+    inputStreamMerger_<%=cid%>.push(null);
 }
-	count_<%=cid%>++;
+    count_<%=cid%>++;
 <%
-			}//4
-		}//3
-	}//2
+            }//4
+        }//3
+    }//2
 }//1
 %>

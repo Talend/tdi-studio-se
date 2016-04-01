@@ -1,10 +1,10 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-    java.util.List
-" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        java.util.List
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 
@@ -22,66 +22,13 @@ String version = ElementParameterParser.getValue(node, "__SERVERVERSION__");
 
 boolean useTransaction = "false".equals(ElementParameterParser.getValue(node, "__AUTO_COMMIT__"));
 boolean useClientTranId = "true".equals(ElementParameterParser.getValue(node, "__GEN_TRANSACTION_ID__"));
-    
-%>
-    <% logUtil.debug("\"Initializing web service from URL: \"", mdmUrl,"\".\"");%>
-
-    String murl = <%=mdmUrl %>;
-    if(murl.endsWith("?wsdl")) {
-        murl = murl.substring(0, murl.length() - 5);
-    }
-
-    org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
-    org.talend.mdm.webservice.TMDMService service_<%=cid %> = service_service_<%=cid %>.getTMDMPort();
-    javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
-    stub_<%=cid %>.getRequestContext().put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, false);
-    
-    java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
-    context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, <%=username %>);
-    context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl);
-    
-<%
-String passwordFieldName = "__PASSWORD__";
 %>
 
+<% String passwordFieldName = "__PASSWORD__"; %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
-
-<% logUtil.debug("\"Web service initialized successfully.\"");%>
-
-<%if(useTransaction) {%>
-
-    String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(<%=mdmUrl %>, true);
-com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = null;
-<%
-if(useClientTranId){
-%>
-<% logUtil.debug("\"Generating a transaction id from client side.\"");%>
-    mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
-    mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
-    String clientTranId_<%=cid%> = "<%=cid%>"+java.util.UUID.randomUUID()+Thread.currentThread().getId();
-    mdmTransaction_<%=cid%>.setId(clientTranId_<%=cid%>);
-    mdmTransaction_<%=cid%>.setUsername(<%=username %>);
-    mdmTransaction_<%=cid%>.setPassword(decryptedPassword_<%=cid%>);
-<%
-}else{
-%>
-<% logUtil.debug("\"Obtaining a transaction from MDM Server.\"");%>
-    mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,<%=username %>,decryptedPassword_<%=cid%>);
-<%
-}
-%>
-
-List<org.apache.cxf.headers.Header> headers = new java.util.ArrayList<org.apache.cxf.headers.Header>();
-org.apache.cxf.databinding.DataBinding dataBinding = new org.apache.cxf.jaxb.JAXBDataBinding(String.class); 
-org.apache.cxf.headers.Header dummyHeader = new org.apache.cxf.headers.Header(new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id"), mdmTransaction_<%=cid%>.getId(), dataBinding);
-headers.add(dummyHeader);
-context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, headers);
-
-globalMap.put("mdmTransaction_<%=cid %>", mdmTransaction_<%=cid%>);
-<%}%>
-
-    service_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
-    
-    globalMap.put("TMDMService_<%=cid %>", service_<%=cid %>);
+globalMap.put("mdmUrl_<%=cid %>", <%=mdmUrl %>);
+globalMap.put("username_<%=cid %>", <%=username %>);
+globalMap.put("password_<%=cid %>", decryptedPassword_<%=cid %>);
+globalMap.put("useTransaction_<%=cid %>", <%=useTransaction %>);
+globalMap.put("useClientTranId_<%=cid %>", <%=useClientTranId %>);
