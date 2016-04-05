@@ -113,6 +113,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     			}
 			%> 						
 			nb_line_<%=cid %>++;
+			resourceMap.put("nb_line_<%=cid %>", nb_line_<%=cid %>);
 <%
 			log4jFileUtil.debugWriteData(node);
 		}

@@ -86,6 +86,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		}
 %>
 		int nb_line_<%=cid%> = 0;
+		resourceMap.put("nb_line_<%=cid %>", nb_line_<%=cid %>);
 		
 <%
 		if(useByte){
@@ -587,11 +588,14 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 		String fileNewName_<%=cid%> = <%=filename%>;
 		java.io.File createFile<%=cid%> = new java.io.File(fileNewName_<%=cid%>);
 		boolean isFileGenerated_<%=cid %> = true;
+		resourceMap.put("createFile<%=cid%>", createFile<%=cid%>);
+		resourceMap.put("isFileGenerated_<%=cid%>", isFileGenerated_<%=cid%>);
 <%
 			if(isAppend){
 %>
 		if(createFile<%=cid%>.exists()){
 			isFileGenerated_<%=cid %> = false;
+			resourceMap.put("isFileGenerated_<%=cid%>", isFileGenerated_<%=cid%>);
 		}
 <%
 			}
@@ -629,15 +633,19 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
             directory_<%=cid%> = "";
         }
 		String zipName_<%=cid %> = fullName_<%=cid%> + ".zip";
+		java.io.File file_<%=cid%> = new java.io.File(zipName_<%=cid %>);
+		resourceMap.put("file_<%=cid%>", file_<%=cid%>);
 	    java.util.zip.ZipOutputStream zipOut_<%=cid %>=new java.util.zip.ZipOutputStream(
 	    			new java.io.BufferedOutputStream(new java.io.FileOutputStream(zipName_<%=cid%>)));
 	    zipOut_<%=cid %>.putNextEntry(new java.util.zip.ZipEntry(createFile<%=cid%>.getName()));
 		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(new java.io.OutputStreamWriter(zipOut_<%=cid %>,<%= encoding%>));
+		resourceMap.put("out<%=cid %>", out<%=cid %>);
 <%
 			}else{
 %>
 		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(new java.io.OutputStreamWriter(
         		new java.io.FileOutputStream(fileNewName_<%=cid%>, <%= isAppend%>),<%= encoding%>));
+        		resourceMap.put("out<%=cid %>", out<%=cid %>);
 <%
 			}
 		}else{ //the part of the output stream
@@ -647,12 +655,16 @@ Arrays_<%=cid %> arrays_<%=cid %> = new Arrays_<%=cid %>();
 	    			new java.io.BufferedOutputStream(<%=outStream %>));
 	    zipOut_<%=cid %>.putNextEntry(new java.util.zip.ZipEntry("TalendOutputPositional"));
 		java.io.OutputStreamWriter outWriter_<%=cid %> = new java.io.OutputStreamWriter(zipOut_<%=cid %>,<%= encoding%>);
+		resourceMap.put("outWriter_<%=cid %>", outWriter_<%=cid %>);
 		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(outWriter_<%=cid %>);
+		resourceMap.put("out<%=cid %>", out<%=cid %>);
 <%
 			}else{
 %>
 		java.io.OutputStreamWriter outWriter_<%=cid %> = new java.io.OutputStreamWriter(<%=outStream %>,<%= encoding%>);
-		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(outWriter_<%=cid %>);  
+		resourceMap.put("outWriter_<%=cid %>", outWriter_<%=cid %>);
+		final <%=writerClass %> out<%=cid %> = new <%=writerClass %>(outWriter_<%=cid %>); 
+		resourceMap.put("out<%=cid %>", out<%=cid %>); 
 <%
 			}
 		}
