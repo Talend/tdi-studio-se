@@ -12,8 +12,12 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.lang.reflect.Constructor;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.Bundle;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
@@ -42,6 +46,21 @@ public class BuildJobFactory {
         switch (jobExportType) {
         case POJO:
             handler = new BuildJobHandler(processItem, version, contextName, exportChoiceMap);
+            break;
+        case MICROSERVICE:
+            Bundle bundle = Platform.getBundle(PluginChecker.EXPORT_ROUTE_PLUGIN_ID);
+            try {
+                Class buildMicroServiceHandler = bundle
+                        .loadClass("org.talend.resources.export.maven.handler.BuildMicroServiceHandler");
+
+                Constructor constructor = buildMicroServiceHandler.getConstructor(ProcessItem.class, String.class, String.class,
+                        Map.class);
+
+                handler = (BuildJobHandler) constructor.newInstance(processItem, version, contextName, exportChoiceMap);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             break;
         case WSWAR:
         case WSZIP:

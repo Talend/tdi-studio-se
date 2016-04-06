@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -39,6 +40,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
 import org.talend.core.model.components.ComponentCategory;
@@ -149,7 +151,8 @@ public class DefaultRunProcessService implements IRunProcessService {
      * boolean)
      */
     @Override
-    public IProcessor createCodeProcessor(IProcess process, Property property, ECodeLanguage language, boolean filenameFromLabel) {
+    public IProcessor createCodeProcessor(IProcess process, Property property, ECodeLanguage language,
+            boolean filenameFromLabel) {
         switch (language) {
         case JAVA:
             return createJavaProcessor(process, property, filenameFromLabel);
@@ -185,6 +188,19 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new StormJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
             return new SparkJavaProcessor(process, property, filenameFromLabel);
+        } else if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
+            Bundle bundle = Platform.getBundle(PluginChecker.EXPORT_ROUTE_PLUGIN_ID);
+            try {
+                Class camelJavaProcessor = bundle.loadClass("org.talend.resources.export.maven.runprocess.CamelJavaProcessor");
+
+                Constructor constructor = camelJavaProcessor.getConstructor(IProcess.class, Property.class, boolean.class);
+
+                return (MavenJavaProcessor) constructor.newInstance(process, property, filenameFromLabel);
+
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         }
