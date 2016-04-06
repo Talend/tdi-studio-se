@@ -198,7 +198,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                 return (MavenJavaProcessor) constructor.newInstance(process, property, filenameFromLabel);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                ExceptionHandler.process(e);
             }
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
