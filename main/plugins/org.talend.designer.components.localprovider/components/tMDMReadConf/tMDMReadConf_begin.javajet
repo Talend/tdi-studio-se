@@ -77,9 +77,9 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 				    
 				    <% logUtil.debug("\"Initializing web service from URL: \"", mdmUrl,"\".\"");%>
 
-                    String murl = <%=mdmUrl %>;
-                    if(murl.endsWith("?wsdl")) {
-                        murl = murl.substring(0, murl.length() - 5);
+                    String murl_<%=cid %> = <%=mdmUrl %>;
+                    if(murl_<%=cid %>.endsWith("?wsdl")) {
+                        murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
                     }
                     
 				    org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
@@ -90,7 +90,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
                     java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
 
                     context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, <%=username %>);
-                    context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl);
+                    context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
 				
                     <%
                     String passwordFieldName = "__PASSWORD__";
@@ -105,11 +105,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 					org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
 				<%}%>
 				
-				String suffix = "";
+				String suffix_<%=cid %> = "";
 				if(true ==<%=isStaging %>) {
-				    suffix = "#STAGING";
+				    suffix_<%=cid %> = "#STAGING";
 				}
-				org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + suffix);
+				org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + suffix_<%=cid %>);
 				
 				<%if(!isSingle){//item%>
 					List<String> ids_<%=cid %> = new java.util.ArrayList<String>(); 
