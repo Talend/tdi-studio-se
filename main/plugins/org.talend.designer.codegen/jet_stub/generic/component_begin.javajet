@@ -8,6 +8,7 @@ imports="
         org.talend.components.api.component.ComponentDefinition
         org.talend.components.api.component.InputComponentDefinition
         org.talend.components.api.component.OutputComponentDefinition
+        org.talend.components.api.component.RunnableComponentDefinition
         org.talend.components.api.properties.ComponentProperties
         org.talend.components.api.container.RuntimeContainer
         org.talend.daikon.properties.Property
@@ -251,6 +252,17 @@ if(metadata != null){
 		org.talend.components.api.component.runtime.Writer writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
 		writer_<%=cid%>.open("<%=cid%>");
 		org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchemas().get(0);
+	<%
+	}
+}else{
+	if(def instanceof RunnableComponentDefinition){
+	%>
+		org.talend.components.api.component.runtime.SourceOrSink sinkOrSink_<%=cid%> = ((org.talend.components.api.component.RunnableComponentDefinition)def_<%=cid%>).getRuntime();
+		sinkOrSink_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
+		org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sinkOrSink_<%=cid%>.validate(container_<%=cid%>);
+		if(vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR){
+			throw new RuntimeException(vr_<%=cid%>.getMessage());
+		}
 	<%
 	}
 }
