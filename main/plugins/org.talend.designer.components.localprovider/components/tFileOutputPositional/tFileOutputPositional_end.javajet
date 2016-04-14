@@ -46,10 +46,19 @@
 	synchronized (pLockWrite) {
 <% 
 	}
+	if(!useStream){
 %>
 	
-
+	out<%=cid %>.close();
+	
+<% 
+	}else{
+%>
+	out<%=cid %>.flush();
+	outWriter_<%=cid %>.flush();
+	outWriter_<%=cid %> = null;
 <%
+	}
 	if ( isParallelize) {
 %>
     } 
