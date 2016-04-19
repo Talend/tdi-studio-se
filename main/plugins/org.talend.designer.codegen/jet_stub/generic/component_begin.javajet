@@ -108,6 +108,11 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
                     props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
                     routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, property.getStringValue())%>));
                     <%
+            }else if (value != null && Property.Type.DATE.equals(property.getType())){
+            		%>
+    				props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+	                	TalendDate.parseDate("yyyy-MM-dd HH:mm:ss",<%=component.getCodegenValue(property, property.getStringValue())%>));
+    				<%
             } else if (value != null && (!(value instanceof String) || !((String)value).equals(""))) { // if                    
 					%>
                     props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
