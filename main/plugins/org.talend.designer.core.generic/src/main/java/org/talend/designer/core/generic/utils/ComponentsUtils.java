@@ -270,7 +270,7 @@ public class ComponentsUtils {
                         newParam.setNoContextAssist(false);
                         newParam.setRaw(false);
                         newParam.setReadOnly(false);
-                        newParam.setValue(curChildProp.getDefaultValue());
+                        newParam.setValue(curChildProp.getStringValue());
                         possVals.add(newParam);
                         if (isPrevColumnList(curChildProp)) {
                             // temporary code while waiting for TCOMP-143
@@ -286,7 +286,7 @@ public class ComponentsUtils {
                         }
                         if (curChildProp.getType().equals(Property.Type.BOOLEAN)) {
                             newParam.setFieldType(EParameterFieldType.CHECK);
-                            newParam.setValue(new Boolean(curChildProp.getDefaultValue()));
+                            newParam.setValue(curChildProp.getBooleanValue());
                         }
                         codeNames.add(curChildProp.getName());
                         possValsDisplay.add(curChildProp.getDisplayName());
@@ -350,7 +350,7 @@ public class ComponentsUtils {
     }
 
     public static Object getParameterValue(IElement element, Property property) {
-        Object paramValue = property.getValue() != null ? property.getValue() : property.getDefaultValue();
+        Object paramValue = property.getValue();
         Property.Type propertyType = property.getType();
         switch (propertyType) {
         case STRING:
@@ -466,7 +466,7 @@ public class ComponentsUtils {
         }
         Property property = componentProperties.getValuedProperty(paramName);
         if (property != null) {
-            return property.getValue() != null ? property.getValue() : property.getDefaultValue();
+            return property.getValue();
         }
         return null;
     }
