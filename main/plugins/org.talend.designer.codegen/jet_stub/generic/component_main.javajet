@@ -58,6 +58,7 @@ if(def instanceof org.talend.components.api.component.OutputComponentDefinition)
 		for (IConnection conn : conns) { // conn
 			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // conn line style
 			%>
+			//TODO Design Schema for current component isn't good - related to TUP-4352
 				org.apache.avro.generic.GenericData.Record row_<%=cid%> = new org.apache.avro.generic.GenericData.Record(designSchema_<%=cid%>);
 				<%
 				for (IMetadataColumn column : columnList) { // column
