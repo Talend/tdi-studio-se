@@ -2718,6 +2718,7 @@
               version="6.2.0">
         </projecttask>
         <projecttask
+              beforeLogon="false"
               breaks="6.1.0"
               class="org.talend.repository.model.migration.SubstituteRemovedMDMOperatorMigrationTask"
               description="Substitute removed operator in tMDM component"
