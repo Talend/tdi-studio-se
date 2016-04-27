@@ -2717,6 +2717,14 @@
               name="ChangeDefaultValueForCassandra3Version"
               version="6.2.0">
         </projecttask>
+        <projecttask
+              breaks="6.1.0"
+              class="org.talend.repository.model.migration.SubstituteRemovedMDMOperatorMigrationTask"
+              description="Substitute removed operator in tMDM component"
+              id="org.talend.repository.model.migration.SubstituteRemovedMDMOperatorMigrationTask"
+              name="SubstituteRemovedMDMOperatorMigrationTask"
+              version="6.2.0">
+		</projecttask>
    </extension>
 
    <extension
