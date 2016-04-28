@@ -94,7 +94,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 if (property != null) {
                     Object paramValue = property.getValue();
                     if (Property.Type.STRING.equals(property.getType()) && paramValue != null) {
-                        return getRepositoryValueOfStringType(connection, StringUtils.trimToNull(paramValue.toString()));
+                        return getRepositoryValueOfStringType(connection, paramValue.toString());
                     }
                     return paramValue;
                 }

@@ -14,6 +14,8 @@ package org.talend.repository.generic.model.migration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,6 +30,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
@@ -38,9 +41,14 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.exception.TalendRuntimeException;
+import org.talend.daikon.properties.PropertiesDynamicMethodHelper;
 import org.talend.daikon.properties.Property;
+import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
+import org.talend.repository.generic.internal.IGenericWizardInternalService;
+import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 
@@ -83,17 +91,24 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
             GenericConnection genericConnection = initGenericConnection(connection);
             initProperty(connectionItem, genericConnectionItem);
 
-            ComponentProperties componentProperties = service.getComponentProperties(CONNECTION_COMPONENT_NAME);
+            ComponentWizard componentWizard = service.getComponentWizard(TYPE_NAME, genericConnectionItem.getProperty().getId());            
+            ComponentProperties componentProperties = (ComponentProperties) componentWizard.getForms().get(0).getProperties();
+            componentProperties.init();
+
             // Update
             modify = updateComponentProperties(connection, componentProperties, props);
             NamedThing nt = componentProperties.getProperty("loginType"); //$NON-NLS-1$
             if (nt instanceof Property) {
-                Property property = (Property)nt;
+                Property property = (Property) nt;
                 if ("OAuth2".equals(property.getValue())) { //$NON-NLS-1$
                     property.setValue("OAuth"); //$NON-NLS-1$
-                    componentProperties.setValue("endpoint", "https://login.salesforce.com/services/oauth2");  //$NON-NLS-1$//$NON-NLS-2$
+                    componentProperties.setValue("endpoint", "https://login.salesforce.com/services/oauth2"); //$NON-NLS-1$//$NON-NLS-2$
                 }
             }
+            // set empty value instead of default null value, this will add automatically the double quotes in the job when drag&drop metadata
+            componentProperties.setValue("userPassword.securityKey", ""); //$NON-NLS-1$ //$NON-NLS-2$
+            Property property = componentProperties.getValuedProperty("userPassword.securityKey"); //$NON-NLS-1$
+            property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, "securityKey"); //$NON-NLS-1$
             genericConnection.setCompProperties(componentProperties.toSerialized());
             genericConnectionItem.setConnection(genericConnection);
             updateMetadataTable(connection, genericConnection, componentProperties);
@@ -148,6 +163,12 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
                         .getClass().getClassLoader(), new Object[] { metaTable.getName() });
                 if (object != null && object instanceof ComponentProperties) {
                     ComponentProperties salesforceModuleProperties = (ComponentProperties) object;
+                    salesforceModuleProperties.getProperties("connection").copyValuesFrom(componentProperties); //$NON-NLS-1$
+                    copyTaggedValues(componentProperties, salesforceModuleProperties.getProperties("connection")); //$NON-NLS-1$
+                    NamedThing tmp = salesforceModuleProperties.getProperty("moduleName"); //$NON-NLS-1$
+                    ((Property) tmp).setTaggedValue(IGenericConstants.REPOSITORY_VALUE, "moduleName"); //$NON-NLS-1$
+                    ((Property) tmp).setValue(metaTable.getLabel());
+                    
                     TaggedValue serializedPropsTV = CoreFactory.eINSTANCE.createTaggedValue();
                     serializedPropsTV.setTag(IComponentConstants.COMPONENT_PROPERTIES_TAG);
                     serializedPropsTV.setValue(salesforceModuleProperties.toSerialized());
@@ -166,6 +187,67 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
             }
         }
         return modified;
+    }
+
+    /**
+     * Copy all of the values from the specified {@link Properties} object. This includes the values from any nested
+     * objects. This can be used even if the {@code Properties} objects are not the same class. Fields that are not
+     * present in the this {@code Properties} object are ignored.
+     * 
+     * @param props
+     */
+    public void copyTaggedValues(org.talend.daikon.properties.Properties source, org.talend.daikon.properties.Properties target) {
+        for (NamedThing otherProp : source.getProperties()) {
+            NamedThing thisProp = target.getProperty(otherProp.getName());
+            if (thisProp == null) {
+                try {
+                    Class otherClass = otherProp.getClass();
+
+                    if (Property.class.isAssignableFrom(otherClass)) {
+                        Constructor c = otherClass.getConstructor(String.class);
+                        thisProp = (NamedThing) c.newInstance(otherProp.getName());
+                    } else if (org.talend.daikon.properties.Properties.class.isAssignableFrom(otherClass)) {
+                        // Look for single arg String, but an inner class will have a Properties as first arg
+                        Constructor constructors[] = otherClass.getConstructors();
+                        for (Constructor c : constructors) {
+                            Class pts[] = c.getParameterTypes();
+                            if (pts.length == 1 && String.class.isAssignableFrom(pts[0])) {
+                                thisProp = (NamedThing) c.newInstance(otherProp.getName());
+                                break;
+                            }
+                            if (pts.length == 2 && org.talend.daikon.properties.Properties.class.isAssignableFrom(pts[0])
+                                    && String.class.isAssignableFrom(pts[1])) {
+                                thisProp = (NamedThing) c.newInstance(this, otherProp.getName());
+                                break;
+                            }
+                        }
+                    } else {
+                        TalendRuntimeException.unexpectedException("Unexpected property class: " + otherProp.getClass()
+                                + " prop: " + otherProp);
+                    }
+
+                    try {
+                        Field f = getClass().getField(otherProp.getName());
+                        f.set(this, thisProp);
+                    } catch (NoSuchFieldException e) {
+                        // A field exists in the other that's not in ours, just ignore it
+                        continue;
+                    }
+                } catch (Exception e) {
+                    TalendRuntimeException.unexpectedException(e);
+                }
+            }
+            if (otherProp instanceof org.talend.daikon.properties.Properties) {
+                copyTaggedValues((org.talend.daikon.properties.Properties) otherProp,
+                        ((org.talend.daikon.properties.Properties) thisProp));
+            } else {
+                Object value = ((Property) otherProp).getTaggedValue(IGenericConstants.REPOSITORY_VALUE);
+                if (value != null) {
+                    ((Property) thisProp).setTaggedValue(IGenericConstants.REPOSITORY_VALUE, value);
+                }
+            }
+        }
+
     }
 
     @Override

@@ -179,7 +179,7 @@ public class BDJobReArchieveCreator {
             jarbuilder.setExcludeDir(null);
             if (isMRWithHDInsight()) {
                 jarbuilder.setLibPath(getLibPath(zipTmpFolder, true));
-                // jarbuilder.setFatJar(true);
+                jarbuilder.setFatJar(true);
             } else if (isFatJar()) {
                 jarbuilder.setLibPath(getLibPath(zipTmpFolder, false));
                 jarbuilder.setFatJar(true);

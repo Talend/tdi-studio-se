@@ -733,7 +733,7 @@ public class Component extends AbstractBasicComponent {
             }
         }
 
-        boolean isOutputComponent = componentDefinition instanceof OutputComponentDefinition;
+        boolean isOutputComponent = componentDefinition instanceof OutputComponentDefinition || componentDefinition instanceof VirtualComponentDefinition;
         INodeConnector connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
         if (isOutputComponent) {
             connector.setMaxLinkInput(1);

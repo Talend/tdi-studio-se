@@ -60,7 +60,6 @@ public class SubstituteRemovedMDMOperatorMigrationTask extends AbstractJobMigrat
 					for(ElementValueType elementValue : (List<ElementValueType>) operations.getElementValue()) {
                         if ("STRICTCONTAINS".equals(elementValue.getValue()) && "FUNCTION".equals(elementValue.getElementRef())) {
                             elementValue.setValue("CONTAINS");
-                            System.out.println("Hello World!!!");
                         }
 					}
 				}

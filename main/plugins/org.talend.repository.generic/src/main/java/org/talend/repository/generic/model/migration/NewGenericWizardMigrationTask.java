@@ -26,9 +26,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.utils.ReflectionUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
@@ -79,14 +79,20 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
                                         changed = true;
                                     }
                                 }
-                                if (property.isFlag(org.talend.daikon.properties.Property.Flags.ENCRYPT)) {
+                                if (property.isFlag(org.talend.daikon.properties.Property.Flags.ENCRYPT) && !oldConnection.isContextMode()) {
                                 	componentProperties.setValue(propsKey, CryptoHelper.getDefault().decrypt(String.valueOf(value)));
                                     modified = true;
+                                    changed = true;
                                 }
                             }
                             if (!changed) {
                                 componentProperties.setValue(propsKey, value);
                                 modified = true;
+                            }
+                            NamedThing tmp = componentProperties.getProperty(propsKey);
+                            if (tmp instanceof org.talend.daikon.properties.Property) {
+                                org.talend.daikon.properties.Property property = (org.talend.daikon.properties.Property)tmp;
+                                property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
                             }
                         }
                     } catch (Exception e) {
