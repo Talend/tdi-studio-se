@@ -36,9 +36,23 @@ String trans = "mdmTrans_" + connection;
 org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl%>, <%=username %>, decryptedPassword_<%=cid%>, <%=version==null || "".equals(version)? "null":version%>, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule%>);
 <%if(useTransaction) {%>
     com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
-    if(mdmTransaction_<%=cid%> != null) {
-        bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid%>.getId());
+    if(mdmTransaction_<%=cid%> == null) {
+        String murl_<%=cid%> = (String)globalMap.get("mdmUrl_<%=connection %>");
+        String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>);
+        String username_<%=cid%> = (String)globalMap.get("username_<%=connection %>");
+        String password_<%=cid%> = (String)globalMap.get("password_<%=connection %>");
+        if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
+            mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
+            mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
+            mdmTransaction_<%=cid%>.setId("<%=cid%>_" + java.util.UUID.randomUUID());
+            mdmTransaction_<%=cid%>.setUsername(username_<%=cid%>);
+            mdmTransaction_<%=cid%>.setPassword(password_<%=cid%>);
+        } else {
+            mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+        }
     }
+    bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid%>.getId());
+    globalMap.put("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName(), mdmTransaction_<%=cid %>);
 <%}%>
 
 bulkloadClient_<%=cid %>.startThreadCount();

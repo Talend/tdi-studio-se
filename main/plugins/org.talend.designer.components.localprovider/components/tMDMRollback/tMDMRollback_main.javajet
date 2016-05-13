@@ -17,13 +17,14 @@ String conn = "xtentisWS_" + connection;
 String trans = "mdmTrans_" + connection;
 %>
 
-org.talend.mdm.webservice.XtentisPort_PortType conn_<%=cid%> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName());
-if(conn_<%=cid%> != null) {
-    com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
-    if(mdmTransaction_<%=cid%> != null) {
-        mdmTransaction_<%=cid%>.rollback();
-    }
-<% if(close){%>
-    conn_<%=cid%>.logout(new org.talend.mdm.webservice.WSLogout());
-<% }%>
+com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
+if(mdmTransaction_<%=cid%> != null) {
+    mdmTransaction_<%=cid%>.rollback();
 }
+
+<% if(close){%>
+    org.talend.mdm.webservice.XtentisPort_PortType conn_<%=cid%> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName());
+    if(conn_<%=cid%> != null) {
+        conn_<%=cid%>.logout(new org.talend.mdm.webservice.WSLogout());
+    }
+<% }%>
