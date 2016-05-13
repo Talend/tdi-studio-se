@@ -1,192 +1,218 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         java.util.List
         java.util.Map
-		"
+        "
 %>
+
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
 
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas != null) && (metadatas.size() > 0)) {
-	IMetadataTable metadata = metadatas.get(0);
-	
-	if (metadata != null) {
-	
-		List<IMetadataColumn> columnList = metadata.getListColumns();
-		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    IMetadataTable metadata = metadatas.get(0);
 
-		// if output columns are defined
-		if (outgoingConns != null && outgoingConns.size() > 0){
-		
-			IConnection outgoingConn = outgoingConns.get(0);
-			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
-	
-				boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-				String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-				String conn = "xtentisWS_" + connection;
-				String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
-				String username = ElementParameterParser.getValue(node, "__USERNAME__");
+    if (metadata != null) {
 
-				String universe = ElementParameterParser.getValue(node, "__UNIVERSE__");
-				//String concept = ElementParameterParser.getValue(node, "__CONCEPT__");
-				String xmlField = ElementParameterParser.getValue(node, "__XMLFIELD__");
-				
-				String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
-				boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-				String viewName = ElementParameterParser.getValue(node, "__VIEWNAME__");
-				
-				List<Map<String, String>> operations = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OPERATIONS__");
-				List<Map<String, String>> orders = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ORDER_TABLE__");
-				
-				String spellThrehold = ElementParameterParser.getValue(node, "__SPELLTHREHOLD__");
-				String skip = ElementParameterParser.getValue(node, "__SKIP__");
-				String limit = ElementParameterParser.getValue(node, "__MAXVALUE__");
-				String bufferSize = ElementParameterParser.getValue(node, "__FETCHSIZE__");
-				if(spellThrehold==null || ("").equals(spellThrehold)){
-					spellThrehold = "-1";
-				}
-				if(skip==null || ("").equals(skip)){
-					skip = "0";
-				}
-				
-				if(limit==null || ("").equals(limit)){
-					limit = "-1";
-				}
-				%>       
-				int nb_line_<%=cid %> = 0;
-				<%if(!useExistingConn){%>
-					org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
-					xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
-					org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();    
-					org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
-	
-					// Authentification
-					<%if(universe==null || ("").equals(universe.trim())){%>
-						stub_<%=cid %>.setUsername(<%=username %>);
-					<%}else{%>
-						stub_<%=cid %>.setUsername(<%=universe%> + "/" + <%=username %>);
-					<%}%>
-					
-                    <%
-                    String passwordFieldName = "__PASSWORD__";
+        List<IMetadataColumn> columnList = metadata.getListColumns();
+        List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+        // if output columns are defined
+        if (outgoingConns != null && outgoingConns.size() > 0){
+
+            IConnection outgoingConn = outgoingConns.get(0);
+            if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
+
+                boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+                String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+                String conn = "xtentisWS_" + connection;
+                String trans = "mdmTrans_" + connection;
+                String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
+                String username = ElementParameterParser.getValue(node, "__USERNAME__");
+
+                String universe = ElementParameterParser.getValue(node, "__UNIVERSE__");
+                //String concept = ElementParameterParser.getValue(node, "__CONCEPT__");
+                String xmlField = ElementParameterParser.getValue(node, "__XMLFIELD__");
+
+                String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
+                boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+                String viewName = ElementParameterParser.getValue(node, "__VIEWNAME__");
+
+                List<Map<String, String>> operations = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OPERATIONS__");
+                List<Map<String, String>> orders = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ORDER_TABLE__");
+
+                String spellThrehold = ElementParameterParser.getValue(node, "__SPELLTHREHOLD__");
+                String skip = ElementParameterParser.getValue(node, "__SKIP__");
+                String limit = ElementParameterParser.getValue(node, "__MAXVALUE__");
+                String bufferSize = ElementParameterParser.getValue(node, "__FETCHSIZE__");
+                if(spellThrehold==null || ("").equals(spellThrehold)){
+                    spellThrehold = "-1";
+                }
+                if(skip==null || ("").equals(skip)){
+                    skip = "0";
+                }
+
+                if(limit==null || ("").equals(limit)){
+                    limit = "-1";
+                }
+                %>
+
+                int nb_line_<%=cid %> = 0;
+                <%if(!useExistingConn){%>
+                    org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
+                    xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
+                    org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();
+                    org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
+
+                    <%if(universe==null || ("").equals(universe.trim())){%>
+                        stub_<%=cid %>.setUsername(<%=username %>);
+                    <%}else{%>
+                        stub_<%=cid %>.setUsername(<%=universe%> + "/" + <%=username %>);
+                    <%}%>
+
+                    <% String passwordFieldName = "__PASSWORD__"; %>
+                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+                    stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
+                <%}else{%>
+                    org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName());
+                    if(xtentisWS_<%=cid %> == null) {
+                        String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
+                        org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
+                        xtentisService_<%=cid %>.setXtentisPortEndpointAddress(murl_<%=cid %>);
+                        xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();
+                        org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
+                        stub_<%=cid %>.setUsername((String)globalMap.get("username_<%=connection %>"));
+                        stub_<%=cid %>.setPassword((String)globalMap.get("password_<%=connection %>"));
+                        if((Boolean)globalMap.get("useTransaction_<%=connection %>")) {
+                            String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>);
+                            com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
+                            if(mdmTransaction_<%=cid%> == null) {
+                                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
+                                    mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
+                                    mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
+                                    mdmTransaction_<%=cid%>.setId("<%=cid%>_" + java.util.UUID.randomUUID());
+                                    mdmTransaction_<%=cid%>.setUsername(stub_<%=cid %>.getUsername());
+                                    mdmTransaction_<%=cid%>.setPassword(stub_<%=cid %>.getPassword());
+                                } else {
+                                    mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,stub_<%=cid %>.getUsername(),stub_<%=cid %>.getPassword());
+                                }
+                                stub_<%=cid %>.setHeader(new org.apache.axis.message.SOAPHeaderElement("http://www.talend.com/mdm", "transaction-id", mdmTransaction_<%=cid%>.getId()));
+                                globalMap.put("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName(), mdmTransaction_<%=cid %>);
+                            }
+                        }
+                        stub_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
+                        globalMap.put("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName(), xtentisWS_<%=cid %>);
+                    }
+                <%}%>
+
+                org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
+
+                org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
+                java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
+                <%
+                boolean isOnlyOrPredicate=true;
+                for(int i=0; i < operations.size(); i++){
+                    Map<String, String> map= operations.get(i);
+                    String xpath=map.get("XPATH");
+                    String operator=map.get("FUNCTION");
+                    String value = map.get("VALUE");
+                    String predicate = map.get("PREDICATE");
+                    if((i < operations.size()-1) && (!"OR".equals(predicate))){
+                        isOnlyOrPredicate = false;
+                    }
                     %>
-                    
-                    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>					
-					
-					stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
-				<%}else{%>
-					org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>");
-				<%}%>
-				
-				org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
-				
-				org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
-				java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
-				<%
-				boolean isOnlyOrPredicate=true;
-				for(int i=0; i < operations.size(); i++){
-					Map<String, String> map= operations.get(i);
-					String xpath=map.get("XPATH");
-					String operator=map.get("FUNCTION");
-					String value = map.get("VALUE");
-					String predicate = map.get("PREDICATE");
-					if((i < operations.size()-1) && (!"OR".equals(predicate))){
-						isOnlyOrPredicate = false;
-					}
-					%>
-					wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>,false);
-					org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>=new org.talend.mdm.webservice.WSWhereItem(wc_<%=cid %>,null,null);
-					conditions_<%=cid %>.add(wsItem_<%=i %>);
-				<%
-				}//for
-				%>
-				org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
-				if(conditions_<%=cid %>.size() > 0){
-				<%
-				if(!isOnlyOrPredicate){
-				%>
-					wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]),null);
-				<%
-				}else{
-				%>
-					wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]));
-				<%
-				}
-				%>
-				}
-				
-				org.talend.mdm.webservice.WSViewSearch wsViewSearch_<%=cid %> = null;
-				
-				int limit_<%=cid%> = <%=limit%>;
-				int recordsPerPage_<%=cid%> = <%=bufferSize%>;
-				int skip_<%=cid%> = <%=skip%>;
-				
-				if (skip_<%=cid%> < 0)
-	                skip_<%=cid%> = 0;
-	
-	            if (recordsPerPage_<%=cid%> <= 0)
-	                recordsPerPage_<%=cid%> = -1;// read whole records in one time
-	
-	            if (limit_<%=cid%> <= 0)
-	                limit_<%=cid%> = -1;// no limit
-				
-	            int retrievedCount_<%=cid%> = 0;
-       			int readRecordsSize_<%=cid%> = limit_<%=cid%> == -1 ? recordsPerPage_<%=cid%> : (recordsPerPage_<%=cid%> == -1 ? limit_<%=cid%> : (recordsPerPage_<%=cid%> > limit_<%=cid%> ? limit_<%=cid%>
+                    wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>,false);
+                    org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>=new org.talend.mdm.webservice.WSWhereItem(wc_<%=cid %>,null,null);
+                    conditions_<%=cid %>.add(wsItem_<%=i %>);
+                <%
+                }//for
+                %>
+                org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
+                if(conditions_<%=cid %>.size() > 0){
+                <%
+                if(!isOnlyOrPredicate){
+                %>
+                    wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]),null);
+                <%
+                }else{
+                %>
+                    wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]));
+                <%
+                }
+                %>
+                }
+
+                org.talend.mdm.webservice.WSViewSearch wsViewSearch_<%=cid %> = null;
+
+                int limit_<%=cid%> = <%=limit%>;
+                int recordsPerPage_<%=cid%> = <%=bufferSize%>;
+                int skip_<%=cid%> = <%=skip%>;
+
+                if (skip_<%=cid%> < 0)
+                    skip_<%=cid%> = 0;
+
+                if (recordsPerPage_<%=cid%> <= 0)
+                    recordsPerPage_<%=cid%> = -1;// read whole records in one time
+
+                if (limit_<%=cid%> <= 0)
+                    limit_<%=cid%> = -1;// no limit
+
+                int retrievedCount_<%=cid%> = 0;
+                   int readRecordsSize_<%=cid%> = limit_<%=cid%> == -1 ? recordsPerPage_<%=cid%> : (recordsPerPage_<%=cid%> == -1 ? limit_<%=cid%> : (recordsPerPage_<%=cid%> > limit_<%=cid%> ? limit_<%=cid%>
                 : recordsPerPage_<%=cid%>));
 
-				org.talend.mdm.webservice.WSGetItems getitems_<%=cid %>=null;
-				
-        		boolean continueFlag_<%=cid%> = true;
-				int totalCount_<%=cid%> = -1;<%//For TDI-26039%>
-        		while (continueFlag_<%=cid%>) {
-					wsViewSearch_<%=cid%> = new org.talend.mdm.webservice.WSViewSearch();       					                
-	                wsViewSearch_<%=cid%>.setWsDataClusterPK(dataCluster_<%=cid%>);
-					wsViewSearch_<%=cid%>.setWsViewPK(new org.talend.mdm.webservice.WSViewPK(<%=viewName%>));
-					
-					wsViewSearch_<%=cid%>.setSpellTreshold(<%=spellThrehold%>);
-					wsViewSearch_<%=cid%>.setSkip(skip_<%=cid%> + retrievedCount_<%=cid%>);
-					wsViewSearch_<%=cid%>.setMaxItems(readRecordsSize_<%=cid%>);
-					
-					<%
-					for(int i=0; i< orders.size(); i++){ // only the first one will be effective.
-						Map<String, String> map= orders.get(i);
-						%>
-						wsViewSearch_<%=cid%>.setOrderBy(<%=map.get("XPATH")%>); // OPTIONAL
-						wsViewSearch_<%=cid%>.setDirection("<%=map.get("ORDER")%>"); // OPTIONAL
-						<%
-						break;
-					}
-					%>
-					wsViewSearch_<%=cid%>.setWhereItem(wsItem_<%=cid%>); // OPTIONAL
-					
-					String[] items_<%=cid%> = xtentisWS_<%=cid%>.viewSearch(wsViewSearch_<%=cid%>);
-					if(totalCount_<%=cid%> < 0){
-						totalCount_<%=cid%> = Integer.valueOf(items_<%=cid%>[0].replaceAll("<totalCount>", "").replaceAll("</totalCount>", ""));
-					}
-					
-					retrievedCount_<%=cid%> += items_<%=cid%>.length - 1; // for header
-					if (totalCount_<%=cid%> == retrievedCount_<%=cid%> || recordsPerPage_<%=cid%> == -1 || items_<%=cid%>.length < readRecordsSize_<%=cid%> || limit_<%=cid%> == retrievedCount_<%=cid%>) {
-	                    continueFlag_<%=cid%> = false;
-	                } else if (limit_<%=cid%> != -1 && limit_<%=cid%> < retrievedCount_<%=cid%> + readRecordsSize_<%=cid%>) {
-	                    readRecordsSize_<%=cid%> = limit_<%=cid%> - retrievedCount_<%=cid%>;
-	                }
-				
-					for(int i_<%=cid %>=1;i_<%=cid %> < items_<%=cid %>.length; i_<%=cid %>++){
-						nb_line_<%=cid %> ++;
-						<%=outgoingConn.getName() %>.<%=xmlField %> = items_<%=cid %>[i_<%=cid %>];	
-			<%
-			}
-		}
-	}
+                org.talend.mdm.webservice.WSGetItems getitems_<%=cid %>=null;
+
+                boolean continueFlag_<%=cid%> = true;
+                int totalCount_<%=cid%> = -1;<%//For TDI-26039%>
+                while (continueFlag_<%=cid%>) {
+                    wsViewSearch_<%=cid%> = new org.talend.mdm.webservice.WSViewSearch();
+                    wsViewSearch_<%=cid%>.setWsDataClusterPK(dataCluster_<%=cid%>);
+                    wsViewSearch_<%=cid%>.setWsViewPK(new org.talend.mdm.webservice.WSViewPK(<%=viewName%>));
+                    wsViewSearch_<%=cid%>.setSpellTreshold(<%=spellThrehold%>);
+                    wsViewSearch_<%=cid%>.setSkip(skip_<%=cid%> + retrievedCount_<%=cid%>);
+                    wsViewSearch_<%=cid%>.setMaxItems(readRecordsSize_<%=cid%>);
+
+                    <%
+                    for(int i=0; i< orders.size(); i++){ // only the first one will be effective.
+                        Map<String, String> map= orders.get(i);
+                        %>
+                        wsViewSearch_<%=cid%>.setOrderBy(<%=map.get("XPATH")%>); // OPTIONAL
+                        wsViewSearch_<%=cid%>.setDirection("<%=map.get("ORDER")%>"); // OPTIONAL
+                        <%
+                        break;
+                    }
+                    %>
+                    wsViewSearch_<%=cid%>.setWhereItem(wsItem_<%=cid%>); // OPTIONAL
+                    
+                    String[] items_<%=cid%> = xtentisWS_<%=cid%>.viewSearch(wsViewSearch_<%=cid%>);
+                    if(totalCount_<%=cid%> < 0){
+                        totalCount_<%=cid%> = Integer.valueOf(items_<%=cid%>[0].replaceAll("<totalCount>", "").replaceAll("</totalCount>", ""));
+                    }
+
+                    retrievedCount_<%=cid%> += items_<%=cid%>.length - 1; // for header
+                    if (totalCount_<%=cid%> == retrievedCount_<%=cid%> || recordsPerPage_<%=cid%> == -1 || items_<%=cid%>.length < readRecordsSize_<%=cid%> || limit_<%=cid%> == retrievedCount_<%=cid%>) {
+                        continueFlag_<%=cid%> = false;
+                    } else if (limit_<%=cid%> != -1 && limit_<%=cid%> < retrievedCount_<%=cid%> + readRecordsSize_<%=cid%>) {
+                        readRecordsSize_<%=cid%> = limit_<%=cid%> - retrievedCount_<%=cid%>;
+                    }
+
+                    for(int i_<%=cid %>=1;i_<%=cid %> < items_<%=cid %>.length; i_<%=cid %>++){
+                        nb_line_<%=cid %> ++;
+                        <%=outgoingConn.getName() %>.<%=xmlField %> = items_<%=cid %>[i_<%=cid %>];
+            <%
+            }
+        }
+    }
 }
 %>
