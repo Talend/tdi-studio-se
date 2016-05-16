@@ -1,18 +1,19 @@
 <%@ jet 
-  imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.core.model.metadata.IMetadataTable 
-    org.talend.core.model.metadata.IMetadataColumn
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-    org.talend.core.model.process.IConnection
-    org.talend.core.model.process.IConnectionCategory
-    org.talend.core.model.metadata.types.JavaTypesManager
-    org.talend.core.model.metadata.types.JavaType    
-    java.util.List
-    java.util.Map
-  "
+imports="
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.metadata.types.JavaType
+        java.util.List
+        java.util.Map
+        "
 %>
+
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -55,7 +56,7 @@ if (destination != null && !"".equals(destination)) {
 if (metadatas != null && metadatas.size()>0) { 
   IMetadataTable metadata = metadatas.get(0);
   if (metadata != null) { 
-  
+
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
     List<IMetadataColumn> rejectColumnList = null;
@@ -63,15 +64,13 @@ if (metadatas != null && metadatas.size()>0) {
     if (rejectConns != null && rejectConns.size() > 0) {
       IConnection rejectConn = rejectConns.get(0);
       if(rejectConn!=null){
-      	rejectConnName = rejectConn.getName();
-      	IMetadataTable metadataTable = rejectConn.getMetadataTable();
-      	if(metadataTable!=null){
-      		rejectColumnList = metadataTable.getListColumns();
-      	}
+        rejectConnName = rejectConn.getName();
+        IMetadataTable metadataTable = rejectConn.getMetadataTable();
+        if(metadataTable!=null){
+          rejectColumnList = metadataTable.getListColumns();
+        }
       }
     }
-   
-
 
     String outConnName = null;
     List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
@@ -81,11 +80,11 @@ if (metadatas != null && metadatas.size()>0) {
       if (tmpconn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
         if(rejectConnName==null || !rejectConnName.equals(tmpconn.getName())){
           outConnName=tmpconn.getName();
-	  IMetadataTable outputMetadata = tmpconn.getMetadataTable();
-	  if(outputMetadata!=null){
-	      outputColumnList = outputMetadata.getListColumns();
-	  }
-	}
+    IMetadataTable outputMetadata = tmpconn.getMetadataTable();
+    if(outputMetadata!=null){
+        outputColumnList = outputMetadata.getListColumns();
+    }
+  }
       %>
         <%=tmpconn.getName() %> = null;
       <%
@@ -95,158 +94,166 @@ if (metadatas != null && metadatas.size()>0) {
     if (outConnName != null) {
     %>
       <%=outConnName %> = new <%=outConnName %>Struct();
-  	<%
-  		if(outputColumnList!=null){
-  			for(IMetadataColumn column:outputColumnList) {
-  				if(column.getLabel().equals(xmlField) && "id_Document".equals(column.getTalendType())) {
-  					xmlFieldDocType=true;
-  					break;
-  				}
-  			}
-  		}
-      	if(xmlFieldDocType) {
-		%>
-			<%=outConnName %>.<%=xmlField %> = ParserUtils.parseTo_Document(queue_<%=cid %>.peek());
-		<%
-		}else{
-		%>
-			<%=outConnName %>.<%=xmlField %> = queue_<%=cid %>.peek();
-		<%
-		}
-		 if(storeFlow){%>
-      		java.util.Map<String,String> xmlFlow_<%=cid%> = xmlFlowList_<%=cid%>.get(flowNum_<%=cid%>);
-      		String valueStr_<%=cid%>;
-			<%
-			if(outputColumnList!=null){
-				for( int i = 0; i < outputColumnList.size(); i++) {
-					IMetadataColumn column = outputColumnList.get(i);
-					String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
-					JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-					String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
-					if(xmlField.equals(column.getLabel())){
-						continue;
-					}
-				%>
-	 			valueStr_<%=cid%> = xmlFlow_<%=cid%>.get("<%=column.getLabel()%>");
-	  			if (valueStr_<%=cid%> != null){
-					<%
-					if (javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) { // String or Object
-					%>
-						<%=outConnName%>.<%=column.getLabel()%> = valueStr_<%=cid%>;
-					<%
-					} else if(javaType == JavaTypesManager.DATE) { // Date
-					%>
-						<%=outConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_Date(valueStr_<%=cid%>, <%= patternValue %>);
-					<%
-					} else if(javaType == JavaTypesManager.BYTE_ARRAY) { // byte[]
-					%>
-						<%=outConnName%>.<%=column.getLabel()%> = valueStr_<%=cid%>.getBytes();
-					<%
-					} else  { // other
-					%>						
-						<%=outConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_<%= typeToGenerate %>(valueStr_<%=cid%>);
-					<%
-					}
-					%>			
-				} else {
-					<%=outConnName%>.<%=column.getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
-				}
-	      		<%}
-	      	}
+    <%
+      if(outputColumnList!=null){
+        for(IMetadataColumn column:outputColumnList) {
+          if(column.getLabel().equals(xmlField) && "id_Document".equals(column.getTalendType())) {
+            xmlFieldDocType=true;
+            break;
+          }
+        }
+      }
+        if(xmlFieldDocType) {
+    %>
+      <%=outConnName %>.<%=xmlField %> = ParserUtils.parseTo_Document(queue_<%=cid %>.peek());
+    <%
+    }else{
+    %>
+      <%=outConnName %>.<%=xmlField %> = queue_<%=cid %>.peek();
+    <%
+    }
+     if(storeFlow){%>
+          java.util.Map<String,String> xmlFlow_<%=cid%> = xmlFlowList_<%=cid%>.get(flowNum_<%=cid%>);
+          String valueStr_<%=cid%>;
+      <%
+      if(outputColumnList!=null){
+        for( int i = 0; i < outputColumnList.size(); i++) {
+          IMetadataColumn column = outputColumnList.get(i);
+          String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+          JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+          String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+          if(xmlField.equals(column.getLabel())){
+            continue;
+          }
+        %>
+         valueStr_<%=cid%> = xmlFlow_<%=cid%>.get("<%=column.getLabel()%>");
+          if (valueStr_<%=cid%> != null){
+          <%
+          if (javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) { // String or Object
+          %>
+            <%=outConnName%>.<%=column.getLabel()%> = valueStr_<%=cid%>;
+          <%
+          } else if(javaType == JavaTypesManager.DATE) { // Date
+          %>
+            <%=outConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_Date(valueStr_<%=cid%>, <%= patternValue %>);
+          <%
+          } else if(javaType == JavaTypesManager.BYTE_ARRAY) { // byte[]
+          %>
+            <%=outConnName%>.<%=column.getLabel()%> = valueStr_<%=cid%>.getBytes();
+          <%
+          } else  { // other
+          %>
+            <%=outConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_<%= typeToGenerate %>(valueStr_<%=cid%>);
+          <%
+          }
+          %>
+        } else {
+          <%=outConnName%>.<%=column.getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+        }
+            <%}
+          }
       }%>
     <%}%>
     input_<%=cid %> = queue_<%=cid %>.peek();
 
     try {
-		<%if(usePartialUpdate){ // partial%>
-			org.talend.mdm.webservice.WSPartialPutItem wsPartialPutItem_<%=cid%> = new org.talend.mdm.webservice.WSPartialPutItem(input_<%=cid %>,<%=dataCluster %>,<%=pivot%>,<%=dataModule %>,<%=key.equals("")?null:key%>,<%=position.equals("")?null:position%>,<%=overwrite%>,<%= true==isStaging?false:withReport%>);
-			wspk_<%=cid %> = xtentisWS_<%=cid %>.partialPutItem(wsPartialPutItem_<%=cid%>);
-			
+    <%if(usePartialUpdate){ // partial%>
+<%
+      String stagingString = "";
+        if(isStaging){
+          stagingString = dataCluster + " + \"#STAGING\"";
+        } else {
+          stagingString = dataCluster;
+        }
+%>
+      org.talend.mdm.webservice.WSPartialPutItem wsPartialPutItem_<%=cid%> = new org.talend.mdm.webservice.WSPartialPutItem(input_<%=cid %>,<%=stagingString %>,<%=pivot%>,<%=dataModule %>,<%=key.equals("")?null:key%>,<%=position.equals("")?null:position%>,<%=overwrite%>,<%= true==isStaging?false:withReport%>, <%=sourceName %>);
+      wspk_<%=cid %> = xtentisWS_<%=cid %>.partialPutItem(wsPartialPutItem_<%=cid%>);
+
+          <%
+          if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
+            for (int i = 0; i < keysReturn.size(); i++){
+                Map<String,String> map = keysReturn.get(i);
+                  %>
+                  <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
+              <%
+              }
+           }
+         %>
+
+    <%}else{// not partial %>
+
+      org.talend.mdm.webservice.WSPutItem item_<%=cid %> = new org.talend.mdm.webservice.WSPutItem(dataCluster_<%=cid %>,input_<%=cid %>,dataModel_<%=cid %>, <%=isUpdate %>);
+          <%
+        if (!isStaging && withReport) {%>
+            org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport(item_<%=cid %>,<%=sourceName %>,<%=needCheck %>);
+
+            <%if (isMassInsert) {%>
+              <%if(addTaskID){%>
+                taskIDs_<%=cid%>.add(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>);
+              <%}%>
+              miList_<%=cid %>.add(itemReport_<%=cid %>);
+
+              if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
+                wspks_<%=cid %> = xtentisWS_<%=cid %>.putItemWithReportArray(miList_<%=cid %>.toArray(new org.talend.mdm.webservice.WSPutItemWithReport[<%=numMassInsert %>]));
+                miList_<%=cid %>.clear();
+                <%if(addTaskID){%>
+                  xtentisWS_<%=cid %>.updateItemArrayMetadata(util_<%=cid%>. makeUpdateMeteItms(taskIDs_<%=cid%>,wspks_<%=cid %>));
+                  taskIDs_<%=cid%>.clear();
+                <%}%>
+              }
+            <%} else {%>
+              wspk_<%=cid %> = xtentisWS_<%=cid %>.putItemWithReport(itemReport_<%=cid %>);
+                <%if(addTaskID){%>
+                  xtentisWS_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>,wspk_<%=cid %>));
+                <%}%>
             <%
-	        if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-	        	for (int i = 0; i < keysReturn.size(); i++){
-	            	Map<String,String> map = keysReturn.get(i);
-	              	%>
-	              	<%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
-	            <%
-	            }
-	       	}
-		   	%>     
+            }
+
+            if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
             
-		<%}else{// not partial %>   
-			
-			org.talend.mdm.webservice.WSPutItem item_<%=cid %> = new org.talend.mdm.webservice.WSPutItem(dataCluster_<%=cid %>,input_<%=cid %>,dataModel_<%=cid %>, <%=isUpdate %>);
-	      	<%
-		    if (!isStaging && withReport) {%>
-	        	org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport(item_<%=cid %>,<%=sourceName %>,<%=needCheck %>);
-		
-		        <%if (isMassInsert) {%>
-		        	<%if(addTaskID){%>
-		        		taskIDs_<%=cid%>.add(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>);
-		        	<%}%>
-		          miList_<%=cid %>.add(itemReport_<%=cid %>);
-		
-		          if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
-		            wspks_<%=cid %> = xtentisWS_<%=cid %>.putItemWithReportArray(miList_<%=cid %>.toArray(new org.talend.mdm.webservice.WSPutItemWithReport[<%=numMassInsert %>]));
-		            miList_<%=cid %>.clear();
-		            <%if(addTaskID){%>
-		            	xtentisWS_<%=cid %>.updateItemArrayMetadata(util_<%=cid%>. makeUpdateMeteItms(taskIDs_<%=cid%>,wspks_<%=cid %>));
-		            	taskIDs_<%=cid%>.clear();
-		            <%}%>
-		          }
-		        <%} else {%>
-		          wspk_<%=cid %> = xtentisWS_<%=cid %>.putItemWithReport(itemReport_<%=cid %>);
-		          	<%if(addTaskID){%>
-		            	xtentisWS_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>,wspk_<%=cid %>));
-		            <%}%>
-		        <%
-		        }
-		
-		        if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-		        
-		          for (int i = 0; i < keysReturn.size(); i++){
-		            Map<String,String> map = keysReturn.get(i);
-		            %>
-		            <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
-		          <%
-		          }
-		        }
-		      } else {
-		      
-		        if (isMassInsert) {
-		        %>
-		        	<%if(addTaskID){%>
-		        		taskIDs_<%=cid%>.add(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>);
-		        	<%}%>
-		          miList_<%=cid %>.add(item_<%=cid %>);
-		
-		          if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
-		            wspks_<%=cid %> = xtentisWS_<%=cid %>.putItemArray(miList_<%=cid %>.toArray(new org.talend.mdm.webservice.WSPutItem[<%=numMassInsert %>]));
-		            miList_<%=cid %>.clear();
-		            <%if(addTaskID){%>
-		            	xtentisWS_<%=cid %>.updateItemArrayMetadata(util_<%=cid%>. makeUpdateMeteItms(taskIDs_<%=cid%>,wspks_<%=cid %>));
-		            	taskIDs_<%=cid%>.clear();
-		            <%}%>
-		          }
-		        <%
-		        } else {%>
-		          wspk_<%=cid %> = xtentisWS_<%=cid %>.putItem(item_<%=cid %>);
-					<%if(addTaskID){%>
-		            	xtentisWS_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>,wspk_<%=cid %>));
-		            <%}%>
-		          <%
-		          if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-		            for (int i = 0; i < keysReturn.size(); i++){
-		              Map<String,String> map = keysReturn.get(i);
-		              %>
-		              <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
-		            <%
-		            }
-		          }
-		        }
-		      }
-		      %>
-	    <%}//end partial%>  
+              for (int i = 0; i < keysReturn.size(); i++){
+                Map<String,String> map = keysReturn.get(i);
+                %>
+                <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
+              <%
+              }
+            }
+          } else {
+
+            if (isMassInsert) {
+            %>
+              <%if(addTaskID){%>
+                taskIDs_<%=cid%>.add(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>);
+              <%}%>
+              miList_<%=cid %>.add(item_<%=cid %>);
+
+              if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
+                wspks_<%=cid %> = xtentisWS_<%=cid %>.putItemArray(miList_<%=cid %>.toArray(new org.talend.mdm.webservice.WSPutItem[<%=numMassInsert %>]));
+                miList_<%=cid %>.clear();
+                <%if(addTaskID){%>
+                  xtentisWS_<%=cid %>.updateItemArrayMetadata(util_<%=cid%>. makeUpdateMeteItms(taskIDs_<%=cid%>,wspks_<%=cid %>));
+                  taskIDs_<%=cid%>.clear();
+                <%}%>
+              }
+            <%
+            } else {%>
+              wspk_<%=cid %> = xtentisWS_<%=cid %>.putItem(item_<%=cid %>);
+          <%if(addTaskID){%>
+                  xtentisWS_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:"xmlFlowList_" + cid + ".get(flowNum_" + cid + ").get(\"" + prevColumn + "\")"%>,wspk_<%=cid %>));
+                <%}%>
+              <%
+              if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
+                for (int i = 0; i < keysReturn.size(); i++){
+                  Map<String,String> map = keysReturn.get(i);
+                  %>
+                  <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds(<%=i %>);
+                <%
+                }
+              }
+            }
+          }
+          %>
+      <%}//end partial%>
     } catch (java.lang.Exception e) {
       <%if (dieOnError) {%>
         throw(e);
@@ -259,57 +266,57 @@ if (metadatas != null && metadatas.size()>0) {
           <%=rejectConnName %> = new <%=rejectConnName %>Struct();
           
           <%if(storeFlow){%>
-      		java.util.Map<String,String> rejectXmlFlow_<%=cid%> = xmlFlowList_<%=cid%>.get(flowNum_<%=cid%>);
-      		String rejectValueStr_<%=cid%>;
-			<%
-			if(rejectColumnList!=null){
-				for( int i = 0; i < rejectColumnList.size(); i++) {
-					IMetadataColumn column = rejectColumnList.get(i);
-					String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
-					JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
-					String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
-					if(xmlField.equals(column.getLabel())){
-						continue;
-					}
-				%>
-	 			rejectValueStr_<%=cid%> = rejectXmlFlow_<%=cid%>.get("<%=column.getLabel()%>");
-	  			if (rejectValueStr_<%=cid%> != null){
-					<%
-					if (javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) { // String or Object
-					%>
-						<%=rejectConnName%>.<%=column.getLabel()%> = rejectValueStr_<%=cid%>;
-					<%
-					} else if(javaType == JavaTypesManager.DATE) { // Date
-					%>
-						<%=rejectConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_Date(rejectValueStr_<%=cid%>, <%= patternValue %>);
-					<%
-					} else if(javaType == JavaTypesManager.BYTE_ARRAY) { // byte[]
-					%>
-						<%=rejectConnName%>.<%=column.getLabel()%> = rejectValueStr_<%=cid%>.getBytes();
-					<%
-					} else  { // other
-					%>						
-						<%=rejectConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_<%= typeToGenerate %>(rejectValueStr_<%=cid%>);
-					<%
-					}
-					%>			
-				} else {
-					<%=rejectConnName%>.<%=column.getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
-				}
-	      		<%}
-	      	}
-      	  }
-      	  if(xmlFieldDocType) {
-		  %>
-			<%=rejectConnName %>.<%=xmlField %> = ParserUtils.parseTo_Document(queue_<%=cid %>.peek());
-		  <%
-		  }else{
-		  %>
-			<%=rejectConnName %>.<%=xmlField %> = queue_<%=cid %>.peek();
-		  <%
-		  }
-		  %>
-		  nb_line_rejected_<%=cid%>++; 
+          java.util.Map<String,String> rejectXmlFlow_<%=cid%> = xmlFlowList_<%=cid%>.get(flowNum_<%=cid%>);
+          String rejectValueStr_<%=cid%>;
+      <%
+      if(rejectColumnList!=null){
+        for( int i = 0; i < rejectColumnList.size(); i++) {
+          IMetadataColumn column = rejectColumnList.get(i);
+          String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+          JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+          String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+          if(xmlField.equals(column.getLabel())){
+            continue;
+          }
+        %>
+         rejectValueStr_<%=cid%> = rejectXmlFlow_<%=cid%>.get("<%=column.getLabel()%>");
+          if (rejectValueStr_<%=cid%> != null){
+          <%
+          if (javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) { // String or Object
+          %>
+            <%=rejectConnName%>.<%=column.getLabel()%> = rejectValueStr_<%=cid%>;
+          <%
+          } else if(javaType == JavaTypesManager.DATE) { // Date
+          %>
+            <%=rejectConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_Date(rejectValueStr_<%=cid%>, <%= patternValue %>);
+          <%
+          } else if(javaType == JavaTypesManager.BYTE_ARRAY) { // byte[]
+          %>
+            <%=rejectConnName%>.<%=column.getLabel()%> = rejectValueStr_<%=cid%>.getBytes();
+          <%
+          } else  { // other
+          %>
+            <%=rejectConnName%>.<%=column.getLabel()%> = ParserUtils.parseTo_<%= typeToGenerate %>(rejectValueStr_<%=cid%>);
+          <%
+          }
+          %>
+        } else {
+          <%=rejectConnName%>.<%=column.getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+        }
+            <%}
+          }
+          }
+          if(xmlFieldDocType) {
+      %>
+      <%=rejectConnName %>.<%=xmlField %> = ParserUtils.parseTo_Document(queue_<%=cid %>.peek());
+      <%
+      }else{
+      %>
+      <%=rejectConnName %>.<%=xmlField %> = queue_<%=cid %>.peek();
+      <%
+      }
+      %>
+      nb_line_rejected_<%=cid%>++;
           <%=rejectConnName %>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
         <%} else {%>
           System.err.println(e.getMessage());

@@ -5,34 +5,30 @@ imports="
        org.talend.core.model.process.IConnection
        org.talend.core.model.process.INode
        org.talend.designer.codegen.config.CodeGeneratorArgument
-
        java.util.List;
-"
+       "
 %>
 
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();	
-	String cid = node.getUniqueName();
-	
-    List<IMetadataTable> metadatas = node.getMetadataList();
-    if ((metadatas != null) && (metadatas.size() > 0)) {
-        IMetadataTable metadata = metadatas.get(0);
-        if (metadata != null) {
-    		
-    		String incomingName = "";
-        
-		  	List<? extends IConnection> inputConns = node.getIncomingConnections(EConnectionType.FLOW_MAIN);
-		  	if ((inputConns!=null)&&(inputConns.size()>0)) {
-		  		IConnection incomingConn = inputConns.get(0); 
-		  		incomingName = incomingConn.getName();
-		  	}else{
-		  		return "";
-		  	}
-			%>
-			MDMOutputMessage = <%=incomingName %>.MDM_Message;
-	
-		<%
-  		}
- 	}	
-	%>
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+    IMetadataTable metadata = metadatas.get(0);
+    if (metadata != null) {
+        String incomingName = "";
+        List<? extends IConnection> inputConns = node.getIncomingConnections(EConnectionType.FLOW_MAIN);
+        if ((inputConns!=null)&&(inputConns.size()>0)) {
+            IConnection incomingConn = inputConns.get(0);
+            incomingName = incomingConn.getName();
+        }else{
+            return "";
+        }
+        %>
+        MDMOutputMessage = <%=incomingName %>.MDM_Message;
+    <%
+    }
+}
+%>

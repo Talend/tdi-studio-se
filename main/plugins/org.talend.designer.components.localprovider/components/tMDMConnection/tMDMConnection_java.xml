@@ -61,6 +61,15 @@
 	    <DEFAULT>true</DEFAULT>
     </PARAMETER>
 
+    <PARAMETER
+	    NAME="GEN_TRANSACTION_ID"
+	    FIELD="CHECK"
+	    NUM_ROW="40"
+	    SHOW_IF="AUTO_COMMIT=='false'"
+	>
+	    <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS/>

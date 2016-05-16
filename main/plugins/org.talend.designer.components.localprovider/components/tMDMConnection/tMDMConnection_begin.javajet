@@ -1,11 +1,11 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
-	
+
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -16,35 +16,20 @@ String username = ElementParameterParser.getValue(node, "__USERNAME__");
 
 String universe = ElementParameterParser.getValue(node, "__UNIVERSE__");
 boolean useTransaction = "false".equals(ElementParameterParser.getValue(node, "__AUTO_COMMIT__"));
+boolean useClientTranId = "true".equals(ElementParameterParser.getValue(node, "__GEN_TRANSACTION_ID__"));
 %>
 
-org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
-xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
-org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();    
-org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
-
-// Authentification
-<%if(universe==null || ("").equals(universe.trim())){%>
-stub_<%=cid %>.setUsername(<%=username %>);
+<%if(universe == null || ("").equals(universe.trim())){%>
+    String username_<%=cid %> = <%=username %>;
 <%}else{%>
-stub_<%=cid %>.setUsername(<%=universe%> + "/" + <%=username %>);
+    String username_<%=cid %> = <%=universe%> + "/" + <%=username %>;
 <%}%>
 
-<%
-String passwordFieldName = "__PASSWORD__";
-%>
-
+<% String passwordFieldName = "__PASSWORD__"; %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
-
-<%if(useTransaction) {%>
-String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(<%=mdmUrl %>);
-com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,stub_<%=cid %>.getUsername(),stub_<%=cid %>.getPassword());
-stub_<%=cid %>.setHeader(new org.apache.axis.message.SOAPHeaderElement("http://www.talend.com/mdm", "transaction-id", mdmTransaction_<%=cid%>.getId()));
-globalMap.put("mdmTransaction_<%=cid %>", mdmTransaction_<%=cid%>);
-<%}%>
-
-stub_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
-
-globalMap.put("xtentisWS_<%=cid %>", xtentisWS_<%=cid %>);
+globalMap.put("mdmUrl_<%=cid %>", <%=mdmUrl %>);
+globalMap.put("username_<%=cid %>", username_<%=cid %>);
+globalMap.put("password_<%=cid %>", decryptedPassword_<%=cid %>);
+globalMap.put("useTransaction_<%=cid %>", <%=useTransaction %>);
+globalMap.put("useClientTranId_<%=cid %>", <%=useClientTranId %>);
