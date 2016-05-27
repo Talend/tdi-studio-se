@@ -6,11 +6,12 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 
 public class MDMTransactionClient {
 	
-	public static MDMTransaction newTransaction(String url, String username, String password) throws IOException {
+	public static MDMTransaction newTransaction(String url, String username, String password, String sessionID) throws IOException {
 		HttpClient client = new HttpClient();
 		client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 		
@@ -18,6 +19,7 @@ public class MDMTransactionClient {
 		put.setDoAuthentication(true);
 		String tid = "";
 		try {
+			put.setRequestHeader("Cookie", "JSESSIONID=" + sessionID); //$NON-NLS-1$ //$NON-NLS-2$
 			client.executeMethod(put);
 			tid = put.getResponseBodyAsString();
 		} catch (HttpException e) {
@@ -37,6 +39,28 @@ public class MDMTransactionClient {
 		return result;
 	}
 	
+	public static String getSessionID(String url, String username, String password) throws IOException {
+	    HttpClient client = new HttpClient();
+        client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        GetMethod get = new GetMethod(url);
+        get.setDoAuthentication(true);
+        String sessionID = "";
+        try {
+            client.executeMethod(get);
+            String setCookie = get.getResponseHeader("Set-Cookie").getValue(); //$NON-NLS-1$
+            int beginIndex = setCookie.indexOf("JSESSIONID=") + 11; //$NON-NLS-1$
+            int endIndex = setCookie.indexOf(";", beginIndex); //$NON-NLS-1$
+            sessionID = setCookie.substring(beginIndex, endIndex);
+        } catch (HttpException e) {
+            throw e;
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            get.releaseConnection();
+        }
+        return sessionID;
+	}
+
 	public static String getMDMTransactionURL(String url) {
 		if(url == null || "".equals(url)) {
 			return "";
@@ -61,13 +85,16 @@ public class MDMTransactionClient {
 	}
 
 	public static void main(String[] args) throws IOException {
-		MDMTransaction mt = MDMTransactionClient.newTransaction("http://localhost:8080/datamanager/services/transactions", "administrator", "administrator");
-		mt.commit();
+	    String sessionID = MDMTransactionClient.getSessionID("http://localhost:8000/datamanager/services/transactions", "administrator", "administrator");
+	    System.out.println(sessionID);
+	    
+		MDMTransaction mt = MDMTransactionClient.newTransaction("http://localhost:8000/datamanager/services/transactions", "administrator", "administrator", sessionID);
+		mt.commit(sessionID);
 		
-		MDMTransaction mt1 = MDMTransactionClient.newTransaction("http://localhost:8080/datamanager/services/transactions", "administrator", "administrator");
-		mt1.rollback();
+		MDMTransaction mt1 = MDMTransactionClient.newTransaction("http://localhost:8000/datamanager/services/transactions", "administrator", "administrator", sessionID);
+		mt1.rollback(sessionID);
 		
-		String url = "http://localhost:8080/talend/TalendPort";
+		String url = "http://localhost:8000/talend/TalendPort";
 		String mdmurl = MDMTransactionClient.getMDMTransactionURL(url);
 		System.out.println(mdmurl);
 	}

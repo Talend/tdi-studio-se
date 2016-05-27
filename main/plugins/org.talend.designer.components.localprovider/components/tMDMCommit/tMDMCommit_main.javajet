@@ -15,11 +15,12 @@ String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
 String conn = "xtentisWS_" + connection;
 String trans = "mdmTrans_" + connection;
+String session = "mdmSession_" + connection;
 %>
 
 com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
 if(mdmTransaction_<%=cid%> != null) {
-    mdmTransaction_<%=cid%>.commit();
+    mdmTransaction_<%=cid%>.commit((String)globalMap.get("<%=session%>_" + Thread.currentThread().getThreadGroup().getName()));
 }
 
 <% if(close){%>

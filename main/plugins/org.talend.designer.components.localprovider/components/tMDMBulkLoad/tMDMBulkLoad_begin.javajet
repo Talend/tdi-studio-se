@@ -28,6 +28,7 @@ boolean insertOnly = ("true").equals(ElementParameterParser.getValue(node,"__INS
 boolean useTransaction = ("true").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
 String connection = ElementParameterParser.getValue(node,"__TRANSACTION_PROVIDER__");
 String trans = "mdmTrans_" + connection;
+String session = "mdmSession_" + connection;
 %>
 
 <% String passwordFieldName = "__PASSWORD__"; %>
@@ -36,11 +37,13 @@ String trans = "mdmTrans_" + connection;
 org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl%>, <%=username %>, decryptedPassword_<%=cid%>, <%=version==null || "".equals(version)? "null":version%>, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule%>);
 <%if(useTransaction) {%>
     com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
+    String sessionID_<%=cid%> = (String)globalMap.get("<%=session%>_" + Thread.currentThread().getThreadGroup().getName());
     if(mdmTransaction_<%=cid%> == null) {
         String murl_<%=cid%> = (String)globalMap.get("mdmUrl_<%=connection %>");
-        String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>);
         String username_<%=cid%> = (String)globalMap.get("username_<%=connection %>");
         String password_<%=cid%> = (String)globalMap.get("password_<%=connection %>");
+        String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>);
+        sessionID_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
         if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
             mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
             mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
@@ -48,11 +51,13 @@ org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org
             mdmTransaction_<%=cid%>.setUsername(username_<%=cid%>);
             mdmTransaction_<%=cid%>.setPassword(password_<%=cid%>);
         } else {
-            mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+            mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>,sessionID_<%=cid%>);
         }
+        globalMap.put("<%=session%>_" + Thread.currentThread().getThreadGroup().getName(), sessionID_<%=cid%>);
+        globalMap.put("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName(), mdmTransaction_<%=cid %>);
     }
+    bulkloadClient_<%=cid %>.setSessionId(sessionID_<%=cid%>);
     bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid%>.getId());
-    globalMap.put("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName(), mdmTransaction_<%=cid %>);
 <%}%>
 
 bulkloadClient_<%=cid %>.startThreadCount();

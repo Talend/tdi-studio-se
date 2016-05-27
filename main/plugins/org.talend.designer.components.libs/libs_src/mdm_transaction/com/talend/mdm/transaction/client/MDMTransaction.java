@@ -17,7 +17,7 @@ public class MDMTransaction {
 	private String username;
 	private String password;
 	
-	public void commit() throws IOException {
+	public void commit(String sessionID) throws IOException {
 		HttpClient client = new HttpClient();
 		client.getState().setCredentials(AuthScope.ANY,
 				new UsernamePasswordCredentials(username, password));
@@ -25,6 +25,7 @@ public class MDMTransaction {
 		HttpMethod method = new PostMethod(url + "/" + id);
 		method.setDoAuthentication(true);
 		try {
+			method.setRequestHeader("Cookie", "JSESSIONID=" + sessionID); //$NON-NLS-1$ //$NON-NLS-2$
 			client.executeMethod(method);
 		} catch (HttpException e) {
 			throw e;
@@ -40,7 +41,7 @@ public class MDMTransaction {
 		}
 	}
 
-	public void rollback() throws IOException {
+	public void rollback(String sessionID) throws IOException {
 		HttpClient client = new HttpClient();
 		client.getState().setCredentials(AuthScope.ANY,
 				new UsernamePasswordCredentials(username, password));
@@ -48,6 +49,7 @@ public class MDMTransaction {
 		HttpMethod method = new DeleteMethod(url + "/" + id);
 		method.setDoAuthentication(true);
 		try {
+			method.setRequestHeader("Cookie", "JSESSIONID=" + sessionID); //$NON-NLS-1$ //$NON-NLS-2$
 			client.executeMethod(method);
 		} catch (HttpException e) {
 			throw e;
