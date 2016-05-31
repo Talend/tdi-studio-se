@@ -2,6 +2,7 @@ package com.talend.mdm.transaction.client;
 
 import java.io.IOException;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
@@ -62,10 +63,19 @@ public class MDMTransactionClient {
     }
 
     public static String parseSessionID(HttpMethod method) {
-        String setCookie = method.getResponseHeader("Set-Cookie").getValue(); //$NON-NLS-1$
-        int beginIndex = setCookie.indexOf("JSESSIONID=") + 11; //$NON-NLS-1$
-        int endIndex = setCookie.indexOf(";", beginIndex); //$NON-NLS-1$
-        return setCookie.substring(beginIndex, endIndex);
+        String sessionID = "";
+        String stickySession = MDMTransaction.getStickySession();
+        Header[] setCookie = method.getResponseHeaders("Set-Cookie"); //$NON-NLS-1$
+        for(Header header : setCookie) {
+            String headerValue = header.getValue();
+            if(headerValue.startsWith(stickySession + "=")) { //$NON-NLS-1$
+                int beginIndex = (stickySession + "=").length(); //$NON-NLS-1$
+                int endIndex = headerValue.indexOf(";", beginIndex); //$NON-NLS-1$
+                sessionID = headerValue.substring(beginIndex, endIndex);
+                break;
+            }
+        }
+        return sessionID;
     }
 
     public static String getMDMTransactionURL(String url) {
