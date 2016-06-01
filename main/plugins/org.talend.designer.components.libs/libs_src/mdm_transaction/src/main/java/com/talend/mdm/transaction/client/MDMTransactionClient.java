@@ -10,17 +10,22 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class MDMTransactionClient {
+
+    private static final Log LOG = LogFactory.getLog(MDMTransactionClient.class);
 
     public static MDMTransaction newTransaction(String url, String username, String password) throws IOException {
         HttpClient client = new HttpClient();
         client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
 
         PutMethod put = new PutMethod(url);
         put.setDoAuthentication(true);
-        String tid = "";
-        String sessionID = "";
+        String tid;
+        String sessionID;
         try {
             client.executeMethod(put);
             tid = put.getResponseBodyAsString();
@@ -46,9 +51,10 @@ public class MDMTransactionClient {
     public static String getSessionID(String url, String username, String password) throws IOException {
         HttpClient client = new HttpClient();
         client.getState().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
         GetMethod get = new GetMethod(url);
         get.setDoAuthentication(true);
-        String sessionID = "";
+        String sessionID;
         try {
             client.executeMethod(get);
             sessionID = parseSessionID(get);
@@ -62,8 +68,8 @@ public class MDMTransactionClient {
         return sessionID;
     }
 
-    public static String parseSessionID(HttpMethod method) {
-        String sessionID = "";
+    private static String parseSessionID(HttpMethod method) {
+        String sessionID = null;
         String stickySession = MDMTransaction.getStickySession();
         Header[] setCookie = method.getResponseHeaders("Set-Cookie"); //$NON-NLS-1$
         for(Header header : setCookie) {
@@ -74,6 +80,12 @@ public class MDMTransactionClient {
                 sessionID = headerValue.substring(beginIndex, endIndex);
                 break;
             }
+        }
+        if(sessionID == null) {
+            if(LOG.isDebugEnabled()) {
+                LOG.warn("Cookie for sticky session not found!"); //$NON-NLS-1$
+            }
+            sessionID = ""; //$NON-NLS-1$
         }
         return sessionID;
     }
@@ -96,11 +108,12 @@ public class MDMTransactionClient {
         }
 
         String result = url.substring(0, i);
-        result += "/datamanager/services/transactions";
+        result += "/datamanager/services/transactions"; //$NON-NLS-1$
 
         return result;
     }
 
+    @SuppressWarnings("nls")
     public static void main(String[] args) throws IOException {
         String sessionID = MDMTransactionClient.getSessionID("http://localhost:8000/datamanager/services/transactions", "administrator", "administrator");
         System.out.println(sessionID);

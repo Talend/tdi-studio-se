@@ -25,6 +25,7 @@ public class MDMTransaction {
         HttpClient client = new HttpClient();
         client.getState().setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
 
         HttpMethod method = new PostMethod(url + "/" + id);
         method.setDoAuthentication(true);
@@ -49,6 +50,7 @@ public class MDMTransaction {
         HttpClient client = new HttpClient();
         client.getState().setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(username, password));
+        client.getParams().setAuthenticationPreemptive(true);
 
         HttpMethod method = new DeleteMethod(url + "/" + id);
         method.setDoAuthentication(true);
