@@ -408,6 +408,10 @@
             mapping="MEMO"
             name="Memo"/>
       <generator
+            class="org.talend.designer.core.ui.editor.properties.controllers.generator.MemoGenerator"
+            mapping="TEXT_AREA"
+            name="TEXT AREA"/>
+      <generator
             class="org.talend.designer.core.ui.editor.properties.controllers.generator.MessageMemoGenerator"
             mapping="MEMO_MESSAGE"
             name="Message Memo"/>
