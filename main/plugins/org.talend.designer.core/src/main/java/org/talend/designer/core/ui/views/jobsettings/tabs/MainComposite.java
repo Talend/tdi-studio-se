@@ -75,10 +75,12 @@ import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ConvertJobsUtil.JobType;
 import org.talend.core.repository.utils.ConvertJobsUtil.Status;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.editor.IJobEditorHandler;
 import org.talend.core.ui.editor.JobEditorHandlerManager;
 import org.talend.core.utils.KeywordsValidator;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
@@ -139,8 +141,8 @@ public class MainComposite extends AbstractTabComposite {
     public MainComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory factory, IRepositoryViewObject obj) {
         super(parent, style, factory, obj);
 
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
-                .getService(IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+                IBrandingService.class);
         boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
         allowEnableControl = false;
         enableControl = false;
@@ -156,6 +158,23 @@ public class MainComposite extends AbstractTabComposite {
                 enableControl = true;
                 if (!PluginChecker.isMapReducePluginLoader() && !PluginChecker.isStormPluginLoader()) {
                     allowEnableControl = false;
+                }
+                Item originalItem = repositoryObject.getProperty().getItem();
+                if (PluginChecker.isJobLetPluginLoaded()) {
+                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                            IJobletProviderService.class);
+                    if (service != null && service.isJobletItem(originalItem)) {
+                        allowEnableControl = false;
+                        enableControl = false;
+                    }
+                }
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+                    ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
+                            .getService(ICamelDesignerCoreService.class);
+                    if (camelService != null && camelService.isInstanceofCamel(originalItem)) {
+                        allowEnableControl = false;
+                        enableControl = false;
+                    }
                 }
             }
         }
@@ -191,8 +210,8 @@ public class MainComposite extends AbstractTabComposite {
 
         // Adding the decorator for nameText
         nameTextDecorator = new ControlDecoration(nameText, SWT.TOP | SWT.RIGHT);
-        FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault()
-                .getFieldDecoration(FieldDecorationRegistry.DEC_ERROR);
+        FieldDecoration fieldDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                FieldDecorationRegistry.DEC_ERROR);
         nameTextDecorator.setImage(fieldDecoration.getImage());
         nameTextDecorator.hide();
 
@@ -588,13 +607,15 @@ public class MainComposite extends AbstractTabComposite {
                         Item originalItem = repositoryObject.getProperty().getItem();
                         if (ConvertJobsUtil.isNeedConvert(originalItem, originalJobType, originalFramework, true)) {
                             boolean hasTestCase = ConvertJobsUtil.hasTestCase(repositoryObject.getProperty());
-                            if (hasTestCase && !MessageDialogWithToggle.openConfirm(null, "Warning",
-                                    "Warning: You will lost all the testcases when you do converting, do you want to continue?")) {
+                            if (hasTestCase
+                                    && !MessageDialogWithToggle
+                                            .openConfirm(null, "Warning",
+                                                    "Warning: You will lost all the testcases when you do converting, do you want to continue?")) {
                                 return;
                             }
                             // Convert
-                            final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType, originalFramework,
-                                    repositoryObject);
+                            final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType,
+                                    originalFramework, repositoryObject);
                             RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit("Convert job") { //$NON-NLS-1$
 
                                 @Override
@@ -607,8 +628,7 @@ public class MainComposite extends AbstractTabComposite {
                                                 boolean isOpened = false;
                                                 if (repositoryObject instanceof IProcess2) {
                                                     isOpened = true;
-                                                    boolean locked = proxyRepositoryFactory
-                                                            .getStatus(repositoryObject) == ERepositoryStatus.LOCK_BY_USER;
+                                                    boolean locked = proxyRepositoryFactory.getStatus(repositoryObject) == ERepositoryStatus.LOCK_BY_USER;
                                                     if (locked) {
                                                         proxyRepositoryFactory.unlock(repositoryObject);
                                                     }
@@ -622,8 +642,8 @@ public class MainComposite extends AbstractTabComposite {
                                                 if (isNewItemCreated) {
                                                     // new Item created
                                                     proxyRepositoryFactory.deleteObjectPhysical(repositoryObject);
-                                                    proxyRepositoryFactory
-                                                            .saveProject(ProjectManager.getInstance().getCurrentProject());
+                                                    proxyRepositoryFactory.saveProject(ProjectManager.getInstance()
+                                                            .getCurrentProject());
                                                 } else if (repositoryObject.getProperty() != null) {
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
                                                             repositoryObject.getProperty().getItem(), false);
@@ -785,8 +805,8 @@ public class MainComposite extends AbstractTabComposite {
         Map<String, String> statusMap = new HashMap();
         try {
             if (statusHelper != null) {
-                List<org.talend.core.model.properties.Status> statusList = statusHelper
-                        .getStatusList(repositoryObject.getProperty());
+                List<org.talend.core.model.properties.Status> statusList = statusHelper.getStatusList(repositoryObject
+                        .getProperty());
                 if (statusList != null) {
                     for (org.talend.core.model.properties.Status s : statusList) {
                         statusMap.put(s.getCode(), s.getLabel());
@@ -842,8 +862,7 @@ public class MainComposite extends AbstractTabComposite {
                 isValid = false;
             } else if (nameText.getText().startsWith(" ")//$NON-NLS-1$
                     || !Pattern.matches(RepositoryConstants.getPattern(repositoryObject.getRepositoryObjectType()),
-                            nameText.getText())
-                    || nameText.getText().trim().contains(" ")) { //$NON-NLS-1$
+                            nameText.getText()) || nameText.getText().trim().contains(" ")) { //$NON-NLS-1$
                 errorMessage = Messages.getString("MainComposite.NameFormatError"); //$NON-NLS-1$
                 isValid = false;
             } else if (KeywordsValidator.isKeyword(nameText.getText()) || "java".equalsIgnoreCase(nameText.getText())) {//$NON-NLS-1$
@@ -854,17 +873,18 @@ public class MainComposite extends AbstractTabComposite {
                 isValid = false;
             } else {
                 try {
-                    List<IRepositoryViewObject> listExistingObjects = proxyRepositoryFactory.getAll(ERepositoryObjectType.PROCESS,
-                            true, false);
+                    List<IRepositoryViewObject> listExistingObjects = proxyRepositoryFactory.getAll(
+                            ERepositoryObjectType.PROCESS, true, false);
                     if (PluginChecker.isStormPluginLoader()) {
-                        listExistingObjects
-                                .addAll(proxyRepositoryFactory.getAll(ERepositoryObjectType.PROCESS_STORM, true, false));
+                        listExistingObjects.addAll(proxyRepositoryFactory
+                                .getAll(ERepositoryObjectType.PROCESS_STORM, true, false));
                     }
                     if (PluginChecker.isMapReducePluginLoader()) {
                         listExistingObjects.addAll(proxyRepositoryFactory.getAll(ERepositoryObjectType.PROCESS_MR, true, false));
                     }
-                    if (repositoryObject.getProperty() != null && !proxyRepositoryFactory
-                            .isNameAvailable(repositoryObject.getProperty().getItem(), nameText.getText(), listExistingObjects)) {
+                    if (repositoryObject.getProperty() != null
+                            && !proxyRepositoryFactory.isNameAvailable(repositoryObject.getProperty().getItem(),
+                                    nameText.getText(), listExistingObjects)) {
                         errorMessage = Messages.getString("MainComposite.ItemExistsError");//$NON-NLS-1$
                         isValid = false;
                     }
@@ -906,8 +926,8 @@ public class MainComposite extends AbstractTabComposite {
         if (item != null) {
             try {
                 ERepositoryObjectType repObjType = ERepositoryObjectType.getItemType(item);
-                IJobEditorHandler editorInputFactory = JobEditorHandlerManager.getInstance()
-                        .extractEditorInputFactory(repObjType.getType());
+                IJobEditorHandler editorInputFactory = JobEditorHandlerManager.getInstance().extractEditorInputFactory(
+                        repObjType.getType());
                 editorInputFactory.openJobEditor(editorInputFactory.createJobEditorInput(item, true));
             } catch (PartInitException e) {
                 e.printStackTrace();

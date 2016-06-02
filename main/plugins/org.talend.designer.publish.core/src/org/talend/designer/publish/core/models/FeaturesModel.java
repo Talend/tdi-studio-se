@@ -33,79 +33,80 @@ import org.w3c.dom.Element;
 
 public class FeaturesModel extends BaseModel {
 
-	public static final String NAME_SUFFIX = "-feature";
+    public static final String NAME_SUFFIX = "-feature";
 
-	public static final String CORRELATION_FEATURE_NAME = "tesb-policy-correlationid";
+    public static final String CORRELATION_FEATURE_NAME = "tesb-policy-correlationid";
 
-	public static final String TALEND_DATA_MAPPER_FEATURE_NAME = "talend-data-mapper";
+    public static final String TALEND_DATA_MAPPER_FEATURE_NAME = "talend-data-mapper";
 
-	private final String name;
+    private final String name;
 
-	private String configName;
+    private String configName;
 
-	private Collection<FeatureModel> subFeatures = new HashSet<FeatureModel>();
+    private Collection<FeatureModel> subFeatures = new HashSet<FeatureModel>();
 
-	private Collection<BundleModel> subBundles = new HashSet<BundleModel>();
+    private Collection<BundleModel> subBundles = new HashSet<BundleModel>();
 
-	private String[] contextList = new String[] { "Default" };
-	private Map<String, Map<String, String>> contexts = new HashMap<String, Map<String, String>>();
+    private String[] contextList = new String[] { "Default" };
 
-	public FeaturesModel(String groupId, String namePrefix, String version) {
-		super(groupId, namePrefix + NAME_SUFFIX, version);
-		name = namePrefix;
-	}
+    private Map<String, Map<String, String>> contexts = new HashMap<String, Map<String, String>>();
+
+    public FeaturesModel(String groupId, String namePrefix, String version) {
+        super(groupId, namePrefix + NAME_SUFFIX, version);
+        name = namePrefix;
+    }
 
     @Override
     public String getExtension() {
         return "xml";
     }
 
-	public void setConfigName(String configName) {
-		this.configName = configName;
-	}
+    public void setConfigName(String configName) {
+        this.configName = configName;
+    }
 
-	public void addFeature(FeatureModel feature) {
-		subFeatures.add(feature);
-	}
+    public void addFeature(FeatureModel feature) {
+        subFeatures.add(feature);
+    }
 
-	public boolean addBundle(BundleModel model) {
-		return subBundles.add(model);
-	}
+    public boolean addBundle(BundleModel model) {
+        return subBundles.add(model);
+    }
 
-	public Collection<BundleModel> getBundles() {
-		return subBundles;
-	}
+    public Collection<BundleModel> getBundles() {
+        return subBundles;
+    }
 
-	private void setContextList(String[] contextList) {
-		if (contextList != null) {
-			this.contextList = contextList;
-		}
-	}
+    private void setContextList(String[] contextList) {
+        if (contextList != null) {
+            this.contextList = contextList;
+        }
+    }
 
-	public void setContexts(Map<String, Map<String, String>> contexts) {
-		Collection<String> contextNames = new HashSet<String>(Arrays.asList(this.contextList));
-		contextNames.addAll(contexts.keySet());
-		setContextList((String[]) contextNames.toArray(new String[0]));
-		for (Map.Entry<String, Map<String, String>> context : contexts.entrySet()) {
-			String contextName = context.getKey();
-			if (this.contexts.containsKey(contextName)) {
-				this.contexts.get(contextName).putAll(context.getValue());
-			} else {
-				this.contexts.put(contextName, context.getValue());
-			}
-		}
-		this.contexts = contexts;
-	}
+    public void setContexts(Map<String, Map<String, String>> contexts) {
+        Collection<String> contextNames = new HashSet<String>(Arrays.asList(this.contextList));
+        contextNames.addAll(contexts.keySet());
+        setContextList((String[]) contextNames.toArray(new String[0]));
+        for (Map.Entry<String, Map<String, String>> context : contexts.entrySet()) {
+            String contextName = context.getKey();
+            if (this.contexts.containsKey(contextName)) {
+                this.contexts.get(contextName).putAll(context.getValue());
+            } else {
+                this.contexts.put(contextName, context.getValue());
+            }
+        }
+        this.contexts = contexts;
+    }
 
-	private static String toBundleString(BundleModel model) {
-		StringBuilder sb = new StringBuilder("mvn:");
-		sb.append(model.getGroupId());
-		sb.append('/');
-		sb.append(model.getArtifactId());
-		sb.append('/');
-		sb.append(model.getVersion());
-		return sb.toString();
-	}
+    private static String toBundleString(BundleModel model) {
+        StringBuilder sb = new StringBuilder("mvn:");
+        sb.append(model.getGroupId());
+        sb.append('/');
+        sb.append(model.getArtifactId());
+        sb.append('/');
+        sb.append(model.getVersion());
+        return sb.toString();
+    }
 
     public InputStream getContent() {
         try {
@@ -163,7 +164,7 @@ public class FeaturesModel extends BaseModel {
             // add contexts config
             for (Map.Entry<String, Map<String, String>> context : contexts.entrySet()) {
                 Element config = document.createElement("config");
-                config.setAttribute("name", name +".talendcontext."+ context.getKey());
+                config.setAttribute("name", name + ".talendcontext." + context.getKey());
                 StringBuilder sb = new StringBuilder("\n");
                 for (Map.Entry<String, String> property : context.getValue().entrySet()) {
                     sb.append(property.getKey());
@@ -183,16 +184,27 @@ public class FeaturesModel extends BaseModel {
         return new ByteArrayInputStream(os.toByteArray());
     }
 
-//    public static void main(String[] args) throws java.io.IOException {
-//        FeaturesModel featureModel = new FeaturesModel("aaa", "CustomService", "1.0.0");
-//        featureModel.addBundle(new BundleModel("talend", "job-control-bundle", "1.0"));
-//        featureModel.addBundle(new BundleModel("talend", "ProviderJob", "1.0"));
-//        featureModel.addBundle(new BundleModel("talend", "ESBProvider2", "1.0"));
-//        featureModel.addFeature(new FeatureModel("custom-feature", "2.0"));
-//        featureModel.setContexts(java.util.Collections.singletonMap("name", java.util.Collections.singletonMap("key", "開始")));
-//        InputStream is = featureModel.getContent();
-//        byte[] b = new byte[is.available()];
-//        is.read(b);
-//        System.out.println(new String(b));
-//    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.publish.core.models.BaseModel#getClassifier()
+     */
+    @Override
+    public String getClassifier() {
+        return "features";
+    }
+
+    // public static void main(String[] args) throws java.io.IOException {
+    // FeaturesModel featureModel = new FeaturesModel("aaa", "CustomService", "1.0.0");
+    // featureModel.addBundle(new BundleModel("talend", "job-control-bundle", "1.0"));
+    // featureModel.addBundle(new BundleModel("talend", "ProviderJob", "1.0"));
+    // featureModel.addBundle(new BundleModel("talend", "ESBProvider2", "1.0"));
+    // featureModel.addFeature(new FeatureModel("custom-feature", "2.0"));
+    // featureModel.setContexts(java.util.Collections.singletonMap("name", java.util.Collections.singletonMap("key",
+    // "開始")));
+    // InputStream is = featureModel.getContent();
+    // byte[] b = new byte[is.available()];
+    // is.read(b);
+    // System.out.println(new String(b));
+    // }
 }

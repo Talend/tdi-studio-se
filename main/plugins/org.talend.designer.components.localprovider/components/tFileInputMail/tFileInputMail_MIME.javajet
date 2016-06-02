@@ -196,33 +196,8 @@
 	                    && ((disposition<%=cid%> != null && (disposition<%=cid%>.equals(javax.mail.Part.ATTACHMENT) || disposition<%=cid%>.equals(javax.mail.Part.INLINE)))
 						||  disposition<%=cid%>==null)) {	<%// TDI-29179 %>
 	        	        attachfileName<%=cid%> = mpart<%=cid%>.getFileName();
-	                    
-	                    if (attachfileName<%=cid%>.indexOf("=?") != -1){
-	    					int m_<%=cid%> = 2, n_<%=cid%>;
-	    					n_<%=cid%> = attachfileName<%=cid%>.indexOf(63, m_<%=cid%>); // the first ? location 
-	    					String sCharSet_<%=cid%> = attachfileName<%=cid%>.substring(attachfileName<%=cid%>.indexOf("=?") + 2, n_<%=cid%>); // the character set value         
-	    					m_<%=cid%> = n_<%=cid%> + 1;                      
-	    					n_<%=cid%> = attachfileName<%=cid%>.indexOf(63, m_<%=cid%>); // the second ? location                      
-	    					String flag_<%=cid%> = attachfileName<%=cid%>.substring(m_<%=cid%>, n_<%=cid%>);
-	    					m_<%=cid%> = n_<%=cid%> + 1;
-	    					n_<%=cid%> = attachfileName<%=cid%>.indexOf("?=", m_<%=cid%>);                      
-	    					String sNameCode_<%=cid%> = attachfileName<%=cid%>.substring(m_<%=cid%>, n_<%=cid%>);                  
-	    					java.io.ByteArrayInputStream byteArrIS_<%=cid%> = new java.io.ByteArrayInputStream(sNameCode_<%=cid%>.getBytes());                      
-	    					Object obj_<%=cid%> = null;
-	                      
-	    					if (flag_<%=cid%>.equalsIgnoreCase("B")) {
-	                        	obj_<%=cid%> = new com.sun.mail.util.BASE64DecoderStream(byteArrIS_<%=cid%>);                    
-	    					} else if (flag_<%=cid%>.equalsIgnoreCase("Q")) {
-	    						obj_<%=cid%> = new com.sun.mail.util.QDecoderStream(byteArrIS_<%=cid%>);
-	    					}
-	                      
-	    					if (obj_<%=cid%> != null){
-	                        	int k_<%=cid%> = byteArrIS_<%=cid%>.available();
-	                        	byte[] arrByte_<%=cid%> = new byte[k_<%=cid%>];
-	                        	k_<%=cid%> = ((java.io.InputStream) (obj_<%=cid%>)).read(arrByte_<%=cid%>, 0, k_<%=cid%>);
-	                        	attachfileName<%=cid%> = new String(arrByte_<%=cid%>, 0, k_<%=cid%>, sCharSet_<%=cid%>);
-	                      	}
-	                    }
+	                    attachfileName<%=cid%> = javax.mail.internet.MimeUtility.decodeText(attachfileName<%=cid%>);
+	                   
 	                    
 						if(!(<%=directory%>).endsWith("/")){
 	           				path<%=cid%> = <%=directory%> + "/";

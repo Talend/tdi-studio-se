@@ -70,9 +70,9 @@ imports="
 				if(conn_<%=cid%> != null) {
 					if(conn_<%=cid%>.getMetaData() != null) {
 						<%if (cid.startsWith("tImpala") || cid.startsWith("tHive")) {%>
-						log.info("<%=cid%> - Uses an existing connection <%=connection %>.");
+						log.debug("<%=cid%> - Uses an existing connection <%=connection %>.");
 						<%} else {%>
-						log.info("<%=cid%> - Uses an existing connection with username '" + conn_<%=cid%>.getMetaData().getUserName() + "'. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
+						log.debug("<%=cid%> - Uses an existing connection with username '" + conn_<%=cid%>.getMetaData().getUserName() + "'. Connection URL: " + conn_<%=cid%>.getMetaData().getURL() + ".");
 						<%}%>
 					}
 				}
@@ -94,15 +94,15 @@ imports="
 		}
 
 		public void connect_begin(){
-			logInfo(node,"info",cid+" - Connection attempt to '\" + url_"+cid+" + \"' with the username '\" + dbUser_"+cid+" + \"'.");
+			logInfo(node,"debug",cid+" - Connection attempt to '\" + url_"+cid+" + \"' with the username '\" + dbUser_"+cid+" + \"'.");
 		}
 
 		public void connect_begin_noUser(){
-			logInfo(node,"info",cid+" - Connection attempt to '\" + url_"+cid+" + \"'.");
+			logInfo(node,"debug",cid+" - Connection attempt to '\" + url_"+cid+" + \"'.");
 		}
 
 		public void connect_end(){
-			logInfo(node,"info",cid+" - Connection to '\" + url_"+cid+" + \"' has succeeded.");
+			logInfo(node,"debug",cid+" - Connection to '\" + url_"+cid+" + \"' has succeeded.");
 		}
 
 		public void rollback(INode node){
@@ -152,10 +152,10 @@ imports="
 		}
 
 		public void close_begin(){
-			logInfo(node,"info",cid+" - Closing the connection "+connection+"to the database.");
+			logInfo(node,"debug",cid+" - Closing the connection "+connection+"to the database.");
 		}
 		public void close_end(){
-			logInfo(node,"info",cid+" - Connection "+connection+"to the database closed.");
+			logInfo(node,"debug",cid+" - Connection "+connection+"to the database closed.");
 		}
 
 		public void autoCommit(INode node,boolean autoCommit){
@@ -172,12 +172,12 @@ imports="
 	 		String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 			dbquery = dbquery.replaceAll("\n"," ");
 			dbquery = dbquery.replaceAll("\r"," ");
-			logInfo(node,"info",cid+" - Executing the query: '\" + "+dbquery +" + \"'.");
+			logInfo(node,"debug",cid+" - Executing the query: '\" + "+dbquery +" + \"'.");
 		}
 
 		public void retrieveRecordsCount(INode node){
 			beforeComponentProcess(node);
-			logInfo(node,"info",cid+" - Retrieved records count: \"+nb_line_"+cid+" + \" .");
+			logInfo(node,"debug",cid+" - Retrieved records count: \"+nb_line_"+cid+" + \" .");
 		}
 
 		public void logError(INode node,String logLevel,String exception){

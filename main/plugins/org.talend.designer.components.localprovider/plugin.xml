@@ -2944,6 +2944,12 @@
             context="plugin:org.talend.libraries.apache.kafka"
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/slf4j-log4j12-1.6.1.jar">
         </libraryNeeded>
+        <libraryNeeded
+            id="commons-lang3-3.0.jar"
+            name="commons-lang3-3.0.jar" mvn_uri="mvn:org.talend.libraries/commons-lang3-3.0/6.0.0" 
+            context="plugin:org.talend.libraries.apache.common"
+            uripath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.0.jar">
+        </libraryNeeded>
 
         <!-- group of spark hive libraries -->
         <libraryNeededGroup
@@ -3067,6 +3073,7 @@
             <library id="commons-cli-1.2.jar"/>
             <library id="commons-collections-3.2.1.jar"/>
             <library id="commons-configuration-1.6.jar"/>
+            <library id="commons-codec-1.4.jar"/>
             <library id="commons-io-2.4.jar"/>
             <library id="commons-lang-2.6.jar"/>
             <library id="commons-logging-1.1.3.jar"/>
@@ -5657,6 +5664,12 @@
              <library
                  id="log4j-1.2.17.jar">
              </library>
+             <library
+                 id="hive-metastore-mapr-4.1.X-lastest">
+             </library>
+             <library
+                 id="hive-exec-mapr-4.1.X-lastest">
+             </library>
         </libraryNeededGroup>
 
 	    <!-- group of pig hcat storage libraries -->
@@ -7523,6 +7536,9 @@
             </library>
             <library
                 id="tez-tests-0.4.0.2.1.1.0-385.jar">
+            </library>
+            <library
+                  id="commons-lang3-3.0.jar">
             </library>
         </libraryNeededGroup>
         <libraryNeededGroup

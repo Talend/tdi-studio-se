@@ -2,7 +2,7 @@
 <feature
       id="org.talend.tos.libraries.feature"
       label="Libraries_feature"
-      version="6.2.0.qualifier">
+      version="6.2.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -295,11 +295,5 @@
          install-size="0"
          version="1.0.4.v201101211617"
          unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.redshift"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
+         
 </feature>

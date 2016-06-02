@@ -115,24 +115,16 @@ public class JavaProcessorUtilities {
      */
     public static Set<ModuleNeeded> extractLibsOnlyForMapperAndReducer(IProcess process) {
         Set<ModuleNeeded> allModules = JavaProcessUtil.getNeededModules(process, true, true);
-        // if (allModules != null) {
-        // Iterator<ModuleNeeded> itAllModules = allModules.iterator();
-        // while (itAllModules.hasNext()) {
-        // if (!itAllModules.next().isMrRequired()) {
-        // itAllModules.remove();
-        // }
-        // }
-        // }
         return allModules;
     }
 
     /**
-     * Extracts the name of libs only for mapper and reducer methods dependency. Added by Marvin Wang on Mar 4, 2013.
+     * Extracts the name of libs only for mapper and reducer methods dependency, excluding the routines/beans/udfs.
      * 
      * @param process
      * @return
      */
-    public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcess process) {
+    public static Set<String> extractLibNamesOnlyForMapperAndReducerWithoutRoutines(IProcess process) {
         Set<String> libNames = new HashSet<String>();
         Set<ModuleNeeded> libs = extractLibsOnlyForMapperAndReducer(process);
         if (libs != null) {
@@ -141,6 +133,17 @@ public class JavaProcessorUtilities {
                 libNames.add(itLibs.next().getModuleName());
             }
         }
+        return libNames;
+    }
+
+    /**
+     * Extracts the name of libs only for mapper and reducer methods dependency.
+     * 
+     * @param process
+     * @return
+     */
+    public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcess process) {
+        Set<String> libNames = extractLibNamesOnlyForMapperAndReducerWithoutRoutines(process);
         libNames.addAll(PomUtil.getCodesExportJars(process));
         return libNames;
     }
@@ -257,9 +260,10 @@ public class JavaProcessorUtilities {
     public static void computeLibrariesPath(Set<ModuleNeeded> jobModuleList, IProcess process) {
         computeLibrariesPath(jobModuleList, process, new HashSet<ModuleNeeded>());
     }
-    
+
     /**
      * DOC nrousseau Comment method "computeLibrariesPath".
+     * 
      * @param hashSet
      * @param process
      * @param alreadyRetrievedModules
@@ -286,11 +290,11 @@ public class JavaProcessorUtilities {
         }
     }
 
-
     // // see bug 3914, make the order of the jar files consistent with the
     // command
     // // line in run mode
-    private static void sortClasspath(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules) throws CoreException, BusinessException {
+    private static void sortClasspath(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
+            throws CoreException, BusinessException {
         ITalendProcessJavaProject jProject = getTalendJavaProject();
         if (jProject == null) {
             return;

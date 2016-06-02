@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.components.common.SchemaProperties;
 import org.talend.core.model.components.IComponent;
@@ -29,14 +30,12 @@ import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.properties.impl.PropertyImpl;
 import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.daikon.properties.SchemaProperty;
 import org.talend.designer.core.test.util.NodeTestCreator;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.test.utils.testproperties.TestProperties;
+import org.talend.designer.core.utils.TestProperties;
 
 /**
  * created by ycbai on 2016年4月18日 Detailled comment
@@ -93,7 +92,12 @@ public class ChangeMetadataCommandTest extends AbstractMetadataCommandTest {
         assertEquals(avroSchemaStr, schemaParam.getValue().toString());
     }
 
+    /**
+     * Test disabled since for now the propagation is done by the component itself.<br>
+     * A new test need to be created with a custom component setting
+     */
     @Test
+    @Ignore
     public void testComponentSchemaPropagated() {
         Node simpleInputNode = NodeTestCreator.createSimpleInputNode(process);
         TestProperties inputProps = (TestProperties) new TestProperties("testInput").init(); //$NON-NLS-1$

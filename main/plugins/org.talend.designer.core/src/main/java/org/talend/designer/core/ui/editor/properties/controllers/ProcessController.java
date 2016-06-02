@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.DecoratedField;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -477,6 +478,10 @@ public class ProcessController extends AbstractElementPropertySectionController 
                         }
                         ids.append(id);
                     }
+                }
+                if (repositoryNodeList.size() > 1) {
+                    MessageDialog.openInformation(button.getShell(), "Message", Messages.getString(
+                            "ProcessController.UseDynamicJobSelectionDialog.message", repositoryNodeList.get(0).getLabel()));
                 }
                 return new PropertyChangeCommand(elem, paramName, ids.toString());
             }

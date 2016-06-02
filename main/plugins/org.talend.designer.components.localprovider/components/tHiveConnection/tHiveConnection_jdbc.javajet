@@ -60,8 +60,21 @@ imports="
 			String hivePrincipal = ElementParameterParser.getValue(node, "__HIVE_PRINCIPAL__");
 			boolean useSsl = "true".equals(ElementParameterParser.getValue(node, "__USE_SSL__"));
 			String sslTrustStore = ElementParameterParser.getValue(node, "__SSL_TRUST_STORE__");
+			String sslStorepasswordFieldName = "__SSL_TRUST_STORE_PASSWORD__";
+
 			boolean configureFromClassPath = "true".equals(ElementParameterParser.getValue(node, "__CONFIGURATIONS_FROM_CLASSPATH__"));
 			boolean storeByHBase = "true".equals(ElementParameterParser.getValue(node, "__STORE_BY_HBASE__"));
+		    
+		    boolean useMapRTicket = ElementParameterParser.getBooleanValue(node, "__USE_MAPRTICKET__");
+		    String mapRTicketUsername = ElementParameterParser.getValue(node, "__MAPRTICKET_USERNAME__");
+		    String mapRTicketCluster = ElementParameterParser.getValue(node, "__MAPRTICKET_CLUSTER__");
+		    String mapRTicketDuration = ElementParameterParser.getValue(node, "__MAPRTICKET_DURATION__");
+
+		    boolean setMapRHomeDir = ElementParameterParser.getBooleanValue(node, "__SET_MAPR_HOME_DIR__");
+		    String mapRHomeDir = ElementParameterParser.getValue(node, "__MAPR_HOME_DIR__");
+
+		    boolean setMapRHadoopLogin = ElementParameterParser.getBooleanValue(node, "__SET_HADOOP_LOGIN__");
+		    String mapRHadoopLogin = ElementParameterParser.getValue(node, "__HADOOP_LOGIN__");
 
 
 			if(hiveServer!=null && !"".equals(hiveServer.trim()) && (this.isCustom || this.hiveDistrib.doSupportHive2())) {
@@ -214,14 +227,12 @@ imports="
 				boolean useKeytab = "true".equals(ElementParameterParser.getValue(node, "__USE_KEYTAB__"));
 				String userPrincipal = ElementParameterParser.getValue(node, "__PRINCIPAL__");
 				String keytabPath = ElementParameterParser.getValue(node, "__KEYTAB_PATH__");
-				String sslStorepasswordFieldName = "__SSL_TRUST_STORE_PASSWORD__";
 				String additionalJdbcSettings = ElementParameterParser.getValue(node, "__HIVE_ADDITIONAL_JDBC__");
 				// User the classpath to infer Kerberos parameters
 				// BEGIN IF03
 				if(configureFromClassPath){
 %>
 					String url_<%=cid%> = "jdbc:<%=hiveServer%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";";
-					String secureSSLMode = ";sasl.qop=auth-conf";
 
 					// Add HADOOP_CONF_DIR to the classpath if it's present
 					String hadoopConfDir_<%=cid%> = System.getenv("HADOOP_CONF_DIR");
@@ -296,7 +307,17 @@ imports="
 
 						// SSL configurations
 						if(tldHiveEnc.equalsIgnoreCase("ssl")){
-							url_<%=cid%> += urlKerberosParameter + secureSSLMode;
+<%
+							if(this.hiveDistrib.doSupportSSLwithKerberos()){
+%>
+								url_<%=cid%> += urlKerberosParameter + ";ssl=true" +";sslTrustStore=" + tldHiveSslTsPath + ";trustStorePassword=" + tldHiveSslTsPassword;
+<%
+							}else{
+%>
+								url_<%=cid%> += urlKerberosParameter + ";sasl.qop=auth-conf";
+<%
+							}
+%>
 						} else {
 							url_<%=cid%> += urlKerberosParameter;
 						}
@@ -314,24 +335,86 @@ imports="
 				} else {
 				// BEGIN IF 06
 					if(securedStandaloneHive2) {
+				        if((!isCustom && hiveDistrib.doSupportMapRTicket() && useMapRTicket)) {
+				            %>
+				            System.setProperty("pname", "MapRLogin");
+				            System.setProperty("https.protocols", "TLSv1.2");
+				            System.setProperty("mapr.home.dir", <%=setMapRHomeDir ? mapRHomeDir : "\"/opt/mapr\"" %>);
+				            System.setProperty("hadoop.login", <%=setMapRHadoopLogin ? mapRHadoopLogin : "\"kerberos\""%>);
+				            <%
+				        }
 						if(useKeytab) {
 %>
 							org.apache.hadoop.security.UserGroupInformation.loginUserFromKeytab(<%=userPrincipal%>, <%=keytabPath%>);
 <%
 						}
+                        if ((!isCustom && hiveDistrib.doSupportMapRTicket() && useMapRTicket)) {
+                            %>
+                            com.mapr.login.client.MapRLoginHttpsClient maprLogin_<%=cid%> = new com.mapr.login.client.MapRLoginHttpsClient();
+                            maprLogin_<%=cid%>.getMapRCredentialsViaKerberos(<%=mapRTicketCluster%>, <%=mapRTicketDuration%>);
+                            <%
+                        }
+
 						// Using SSL in Secure Mode
 						if(useSsl && this.hiveDistrib.doSupportSSL()){
+
+							// Does the distrib support SSL + KERBEROS
+							if(this.hiveDistrib.doSupportSSLwithKerberos()){
+								if (ElementParameterParser.canEncrypt(node, sslStorepasswordFieldName)) {
+%>
+									String decryptedSslStorePassword_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, sslStorepasswordFieldName)%>);
+<%
+								}else{
+%>
+									String decryptedSslStorePassword_<%=cid%> = <%= ElementParameterParser.getValue(node, sslStorepasswordFieldName)%>;
+<%
+								}
+%>
+								String url_<%=cid%> = "jdbc:<%=hiveServer%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";principal=" + <%=hivePrincipal%>+";ssl=true" +";sslTrustStore=" + <%=sslTrustStore%> + ";trustStorePassword=" + decryptedSslStorePassword_<%=cid%>;
+<%
+							// Does the distrib support only SASL-QOP + KERBEROS
+							}else {
+						
 %>
 							String url_<%=cid%> = "jdbc:<%=hiveServer%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";principal=" + <%=hivePrincipal%>+";sasl.qop=auth-conf";
 <%
+							}
 						}else{
 %>
-							String url_<%=cid%> = "jdbc:<%=hiveServer%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";principal=" + <%=hivePrincipal%>;
+						String url_<%=cid%> = "jdbc:<%=hiveServer%>://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + ";principal=" + <%=hivePrincipal%>;
 <%
 						}
 					// END IF06
 					// BEGIN IF07
 					} else {
+					    // Mapr ticket
+					    
+				        if((!isCustom && hiveDistrib.doSupportMapRTicket() && useMapRTicket)) {
+				            String passwordFieldName = "__MAPRTICKET_PASSWORD__";
+				            %>
+				            System.setProperty("pname", "MapRLogin");
+				            System.setProperty("https.protocols", "TLSv1.2");
+				            System.setProperty("mapr.home.dir", <%=setMapRHomeDir ? mapRHomeDir : "\"/opt/mapr\"" %>);
+				            com.mapr.login.client.MapRLoginHttpsClient maprLogin_<%=cid%> = new com.mapr.login.client.MapRLoginHttpsClient();
+				            <%
+				            if (setMapRHadoopLogin) {
+				                %>
+				                System.setProperty("hadoop.login", <%=mapRHadoopLogin%>);
+				                <%
+				            } else {
+				                %>
+				                maprLogin_<%=cid%>.setCheckUGI(false);
+				                <%
+				            }
+	                        if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%>
+                                String decryptedMaprPassword_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+                            <%} else {%>
+                                String decryptedMaprPassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>;
+                            <%}%>
+                            maprLogin_<%=cid%>.getMapRCredentialsViaPassword(<%=mapRTicketCluster%>, <%=mapRTicketUsername%>, decryptedMaprPassword_<%=cid%>, <%=mapRTicketDuration%>);
+                            <%
+				        }
+					    
 						// Using SSL in non Secure Mode
 						if(useSsl && this.hiveDistrib.doSupportSSL()){
 							if (ElementParameterParser.canEncrypt(node, sslStorepasswordFieldName)) {

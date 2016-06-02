@@ -14,6 +14,7 @@ import org.eclipse.gef.SnapToGrid;
 import org.eclipse.gef.SnapToHelper;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.rulers.RulerProvider;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.designer.core.model.components.EParameterName;
@@ -240,7 +241,24 @@ public class JobletContainerPart extends NodeContainerPart {
         }
         if (changeEvent.getPropertyName().equals(Node.UPDATE_STATUS)) {
             Node node = ((NodeContainer) getModel()).getNode();
-            ((JobletContainerFigure) getFigure()).updateStatus(node.getStatus());
+            if (node != null && node.isMapReduce()) {
+                ((JobletContainerFigure) this.getFigure()).updateErrorFlag(node.isErrorFlag());
+                ((JobletContainerFigure) this.getFigure()).setShowCompareMark(node.isCompareFlag() && !node.isErrorFlag());
+                IElementParameter param = node.getElementParameter(EParameterName.INFORMATION.getName());
+                if (param != null) {
+                    boolean showInfoFlag = Boolean.TRUE.equals(param.getValue());
+                    if (changeEvent.getNewValue() instanceof Integer) {
+                        Integer status = (Integer) changeEvent.getNewValue();
+                        if (status != null) {
+                            ((JobletContainerFigure) this.getFigure()).updateStatus(status, showInfoFlag);
+                        }
+                        ((JobletContainerFigure) this.getFigure()).setInfoHint(node.getShowHintText());
+                    }
+                    refreshVisuals();
+                }
+            } else {
+                ((JobletContainerFigure) getFigure()).updateStatus(node.getStatus());
+            }
         }
     }
 

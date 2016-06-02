@@ -124,6 +124,8 @@ public class ImportTreeFromRepository extends SelectionAction {
 
     private Map<String, String> targetAbsolutePath;
 
+    private Map<String, String> targetDatePattern;
+
     /**
      * DOC talend ImportTreeFromRepository constructor comment.
      * 
@@ -557,7 +559,11 @@ public class ImportTreeFromRepository extends SelectionAction {
             }
             if (dataType != null && !"".equals(dataType)) {
                 if (dataType.equals("id_Date")) {
-                    createTreeNode.setPattern("\"dd-MM-yyyy\"");//$NON-NLS-1$
+                    String datePattern = targetDatePattern.get(tempXpath);
+                    if (datePattern == null || "".equals(datePattern)) { //$NON-NLS-1$
+                        datePattern = "\"dd-MM-yyyy\""; //$NON-NLS-1$
+                    }
+                    createTreeNode.setPattern(datePattern);
                 }
                 createTreeNode.setType(dataType);
             } else {
@@ -715,6 +721,7 @@ public class ImportTreeFromRepository extends SelectionAction {
 
         if (targetAbsolutePath == null) {
             targetAbsolutePath = new HashMap<String, String>();
+            targetDatePattern = new HashMap<String, String>();
             targetAbsolutePath.put(absoluteXPathQuery, null);
             Pattern regex = Pattern.compile(RELATIVE_PATH_PATTERN, Pattern.CANON_EQ | Pattern.CASE_INSENSITIVE
                     | Pattern.MULTILINE);
@@ -756,8 +763,10 @@ public class ImportTreeFromRepository extends SelectionAction {
                 if (metadataTable != null && n < metadataTable.getColumns().size()) {
                     MetadataColumn column = metadataTable.getColumns().get(n);
                     targetAbsolutePath.put(tempAbsolute.toString(), column.getTalendType());
+                    targetDatePattern.put(tempAbsolute.toString(), column.getPattern());
                 } else {
                     targetAbsolutePath.put(tempAbsolute.toString(), null);
+                    targetDatePattern.put(tempAbsolute.toString(), null);
                 }
             }
         }

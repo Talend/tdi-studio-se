@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.demo.imports;
 
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
@@ -37,12 +39,19 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.general.TalendNature;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.properties.User;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.model.ResourceModelUtils;
 import org.talend.repository.ui.actions.importproject.DemoProjectBean;
 import org.talend.repository.ui.actions.importproject.EDemoProjectFileType;
@@ -213,5 +222,45 @@ public abstract class DemosImportTest {
             final IProject project = ResourceModelUtils.getProject(tempDemoProject);
             project.delete(true, null);
         }
+    }
+
+    protected int getUserRoutineSize() throws PersistenceException {
+        List<IRepositoryViewObject> all = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.ROUTINES);
+        int currentRoutineItemsSize = 0;
+        for (IRepositoryViewObject obj : all) {
+            Property property = obj.getProperty();
+            Item item = property.getItem();
+            if (item instanceof RoutineItem && !((RoutineItem) item).isBuiltIn()) { // only check for user routine.
+                currentRoutineItemsSize++;
+            }
+        }
+        return currentRoutineItemsSize;
+    }
+
+    protected int getDemoRoutineItemsSize(File baseFolder) {
+        List<File> demoRoutineItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(baseFolder,
+                FileConstants.ITEM_EXTENSION, true);
+        // remove the code, only routines left, and add system, so should return routines/system
+        IPath systemRoutinesPath = new Path(ERepositoryObjectType.ROUTINES.getFolder()).removeFirstSegments(1).append(
+                RepositoryConstants.SYSTEM_DIRECTORY);
+        int demoRoutineItemsSize = 0;
+        for (File f : demoRoutineItemsFiles) {
+            IPath itemPath = new Path(f.getAbsolutePath()).makeRelativeTo(new Path(baseFolder.getAbsolutePath()));
+            if (!systemRoutinesPath.isPrefixOf(itemPath)) { // ignore the system one
+                demoRoutineItemsSize++;
+            }
+
+        }
+        return demoRoutineItemsSize;
+    }
+
+    protected void doRoutinesItemsTest(String rootPath) throws PersistenceException {
+        File tempRoutineItemsFolder = new File(rootPath + File.separator + routineItemPath);
+        int demoRoutineItemsSize = getDemoRoutineItemsSize(tempRoutineItemsFolder);
+        int currentRoutineItemsSize = getUserRoutineSize();
+
+        Assert.assertTrue(demoRoutineItemsSize > 0);
+        Assert.assertTrue(currentRoutineItemsSize > 0);
+        Assert.assertEquals(demoRoutineItemsSize, currentRoutineItemsSize);
     }
 }

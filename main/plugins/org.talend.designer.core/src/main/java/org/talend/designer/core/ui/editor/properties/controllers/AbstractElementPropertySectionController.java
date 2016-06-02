@@ -143,6 +143,7 @@ import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposi
 import org.talend.designer.core.ui.views.properties.WidgetFactory;
 import org.talend.designer.core.utils.UpgradeParameterHelper;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.hadoop.distribution.constants.HiveConstant;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -300,7 +301,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String[] originalList = param.getListItemsDisplayCodeName();
         for (int i = 0; i < valuesList.length; i++) {
             if (valuesList[i].equals(value)) {
-                if ("DB_VERSION".equals(repositoryName)) {
+                if ("DB_VERSION".equals(repositoryName) || HiveConstant.DISTRIBUTION_PARAMETER.equals(repositoryName)
+                        || HiveConstant.VERSION_PARAMETER.equals(repositoryName)) {
                     return valuesList[i].toString();
                 }
                 return originalList[i];
@@ -2192,8 +2194,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
         if (this.curParameter != null) {
             final EComponentCategory category = this.curParameter.getCategory();
             final IElement element = this.curParameter.getElement();
-            if (AbstractPreferenceComposite.inUseProjectSettingMode(element, category,
-                    EParameterName.STATANDLOG_USE_PROJECT_SETTINGS)
+            if (element instanceof FakeElement
+                    || AbstractPreferenceComposite.inUseProjectSettingMode(element, category,
+                            EParameterName.STATANDLOG_USE_PROJECT_SETTINGS)
                     || AbstractPreferenceComposite.inUseProjectSettingMode(element, category,
                             EParameterName.IMPLICITCONTEXT_USE_PROJECT_SETTINGS)) {
                 flag = true; // don't add the listener.
@@ -2367,6 +2370,10 @@ public abstract class AbstractElementPropertySectionController implements Proper
         if (service != null) {
             service.callBeforeActivate(param);
         }
+    }
+
+    protected boolean canAddRepositoryDecoration(IElementParameter param) {
+        return !(elem instanceof FakeElement) && param.isRepositoryValueUsed();
     }
 
 }

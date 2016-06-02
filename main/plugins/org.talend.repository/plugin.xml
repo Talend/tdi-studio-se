@@ -2726,6 +2726,58 @@
               name="SubstituteRemovedMDMOperatorMigrationTask"
               version="6.2.0">
 		</projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="5.6.2"
+              class="org.talend.repository.model.migration.RenameDriverJarPathForDBConnectionMigrationTask"
+              description="Rename jar path in DB connection item"
+              id="org.talend.repository.model.migration.RenameDriverJarPathForDBConnectionMigrationTask"
+              name="RenameDriverJarPathForDBConnectionMigrationTask"
+              version="5.6.3">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.0.1"
+              class="org.talend.repository.model.migration.RemoveDuplicatedContextGroupMigrationTask"
+              description="Remove duplicated context group"
+              id="org.talend.repository.model.migration.RemoveDuplicatedContextGroupMigrationTask"
+              name="RemoveDuplicatedContextGroupMigrationTask"
+              version="6.1.2">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.2.1"
+              class="org.talend.repository.model.migration.ChangeDefaultValueForCassandraOutputBatch"
+              id="org.talend.repository.model.migration.ChangeDefaultValueForCassandraOutputBatch"
+              name="ChangeDefaultValueForCassandraOutputBatch"
+              version="6.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.1.1"
+              class="org.talend.repository.model.migration.UpdateJobletContextInJobMigrationTask"
+              description="Update Joblet context in jobs"
+              id="org.talend.repository.model.migration.UpdateJobletContextInJobMigrationTask"
+              name="UpdateJobletContextInJobMigrationTask"
+              version="6.1.2">
+        </projecttask>
+
+        <projecttask
+              beforeLogon="false"
+              breaks="6.2.0"
+              class="org.talend.repository.model.migration.SetDefaultValueForNewerEmailFirstOfTDI35976"
+              id="org.talend.repository.model.migration.SetDefaultValueForNewerEmailFirstOfTDI35976"
+              name="SetDefaultValueForNewerEmailFirstOfTDI35976"
+              version="6.2.1">
+        </projecttask>
+        <projecttask
+        	  beforeLogon="false"
+              breaks="6.2.0"
+              class="org.talend.repository.model.migration.ReplaceVarcharArrayWithVarcharIssueTDI35719"
+              id="org.talend.repository.model.migration.ReplaceVarcharArrayWithVarcharIssueTDI35719"
+              name="ReplaceVarcharArrayWithVarcharIssueTDI35719"
+              version="6.2.1">
+        </projecttask>
    </extension>
 
    <extension

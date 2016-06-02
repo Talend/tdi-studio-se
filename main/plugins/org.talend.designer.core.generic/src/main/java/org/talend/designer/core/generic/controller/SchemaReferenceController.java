@@ -326,9 +326,14 @@ public class SchemaReferenceController extends AbstractSchemaController {
                                 }
                             }
                         }
-                        ChangeMetadataCommand changeMetadataCommand = new ChangeMetadataCommand(node, param, inputNode,
-                                inputMetadata, inputMetaCopy, originaleOutputTable, outputMetaCopy);
-                        return changeMetadataCommand;
+                        if (node.getComponent().isSchemaAutoPropagated()) {
+                            ChangeMetadataCommand changeMetadataCommand = new ChangeMetadataCommand(node, param, inputNode,
+                                    inputMetadata, inputMetaCopy, originaleOutputTable, outputMetaCopy);
+                            return changeMetadataCommand;
+                        } else {
+                            originaleOutputTable.setListColumns(outputMetaCopy.getListColumns());
+                            return null;
+                        }
                     }
                 }
             }
@@ -371,22 +376,10 @@ public class SchemaReferenceController extends AbstractSchemaController {
                 String name = object.getLabel();// The name is Table Name.
                 if (name != null) {
                     if (elem instanceof Node) {
-                        Node nodeElement = (Node) elem;
                         String value = id + " - " + name; //$NON-NLS-1$
-                        IMetadataTable repositoryMetadata = MetadataToolHelper.getMetadataFromRepository(value);
-                        if (nodeElement.getComponent().getName().startsWith("tSalesforce")) {//$NON-NLS-1$
-                            paramName = paramName + ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();//$NON-NLS-1$
-                            Command selectorCommand = new PropertyChangeCommand(elem, paramName, TalendTextUtils.addQuotes(value));
-                            executeCommand(selectorCommand);
-                        } else {
-                            Command dbSelectorCommand = new PropertyChangeCommand(elem, paramName,
-                                    TalendTextUtils.addQuotes(repositoryMetadata.getTableName()));
-                            executeCommand(dbSelectorCommand);
-                            Text labelText = (Text) hashCurControls.get(paramName);
-                            if (labelText != null) {
-                                labelText.setText(TalendTextUtils.addQuotes(repositoryMetadata.getTableName()));
-                            }
-                        }
+                        paramName = paramName + ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();//$NON-NLS-1$
+                        Command selectorCommand = new PropertyChangeCommand(elem, paramName, TalendTextUtils.addQuotes(value));
+                        executeCommand(selectorCommand);
                     }
                 }
                 String value = id + " - " + name; //$NON-NLS-1$

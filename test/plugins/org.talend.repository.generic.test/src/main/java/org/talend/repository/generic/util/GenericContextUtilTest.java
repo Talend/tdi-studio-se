@@ -32,8 +32,6 @@ import org.talend.metadata.managment.ui.model.IConnParamName;
 import org.talend.metadata.managment.ui.utils.GenericConnParamName;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
-import org.talend.test.utils.testproperties.TestNestedProperties;
-import org.talend.test.utils.testproperties.TestProperties;
 
 /**
  * created by ycbai on 2016年2月16日 Detailled comment
@@ -66,6 +64,9 @@ public class GenericContextUtilTest {
         assertEquals("context.testConn_userId", deserProps.userId.getValue()); //$NON-NLS-1$
         assertEquals("context.testConn_nestedProps_userName", deserProps.nestedProps.userName.getValue()); //$NON-NLS-1$
         assertEquals("context.testConn_nestedProps_userPassword", deserProps.nestedProps.userPassword.getValue()); //$NON-NLS-1$
+        assertEquals(deserProps.userId.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
+        assertEquals(deserProps.nestedProps.userName.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
+        assertEquals(deserProps.nestedProps.userPassword.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
 
         // Test revert context
         ContextType contextType = mock(ContextType.class);
@@ -81,6 +82,9 @@ public class GenericContextUtilTest {
         assertEquals("1", deserProps.userId.getValue()); //$NON-NLS-1$
         assertEquals("testUserName", deserProps.nestedProps.userName.getValue()); //$NON-NLS-1$
         assertEquals("testUserPassword", deserProps.nestedProps.userPassword.getValue()); //$NON-NLS-1$
+        assertEquals(deserProps.userId.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
+        assertEquals(deserProps.nestedProps.userName.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
+        assertEquals(deserProps.nestedProps.userPassword.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
     }
 
     private TestProperties getPropertiesFromConnection(GenericConnection connection) {

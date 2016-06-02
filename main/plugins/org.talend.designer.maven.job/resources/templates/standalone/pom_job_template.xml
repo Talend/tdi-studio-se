@@ -116,49 +116,59 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<includes>
-								<!-- only package the job classes -->
-								<include>${talend.job.path}/*.class</include>
-								<include>${talend.job.path}/**/*.wsdl</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>${basedir}/src/main/assemblies/assembly_${talend.job.name}_${talend.job.version}.xml</descriptor>
-							</descriptors>
-							<tarLongFileMode>gnu</tarLongFileMode>
-							<appendAssemblyId>false</appendAssemblyId>
-							<finalName>${talend.job.finalName}</finalName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-jar-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>default-jar</id>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                  <configuration>
+                    <includes>
+                      <!-- only package the job classes -->
+                      <include>${talend.job.path}/*.class</include>
+                      <include>${talend.job.path}/**/*.wsdl</include>
+                    </includes>
+                  </configuration>
+                </execution>
+             </executions>
+           </plugin>			
+		 </plugins>
 	</build>
 	<profiles>
+	    <profile>
+	       <id>packaging-and-assembly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>	       
+	       <build>
+	         <plugins>
+               <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-assembly-plugin</artifactId>
+                 <executions>
+                   <execution>
+                     <phase>package</phase>
+                     <goals>
+                       <goal>single</goal>
+                     </goals>
+                     <configuration>
+                       <descriptors>
+                         <descriptor>${basedir}/src/main/assemblies/assembly_${talend.job.name}_${talend.job.version}.xml</descriptor>
+                       </descriptors>
+                       <tarLongFileMode>gnu</tarLongFileMode>
+                       <appendAssemblyId>false</appendAssemblyId>
+                       <finalName>${talend.job.finalName}</finalName>
+                     </configuration>
+                   </execution>
+                </executions>
+              </plugin>
+            </plugins>  
+	      </build>
+	    </profile>
 		<profile>
 			<id>default-settings</id>
 			<activation>

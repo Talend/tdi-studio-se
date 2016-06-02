@@ -18,9 +18,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.draw2d.Graphics;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.PointList;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.draw2d.geometry.Translatable;
 import org.eclipse.gmf.runtime.draw2d.ui.figures.PolylineConnectionEx;
 import org.eclipse.gmf.runtime.draw2d.ui.mapmode.IMapMode;
@@ -424,6 +426,24 @@ public class ConnectionFigure extends PolylineConnectionEx implements IMapMode {
         } else {
             super.setLineWidth(2);
         }
+    }
+    
+    @Override
+    public Rectangle getBounds() {
+        if (bounds == null) {
+                int expand = (int) (getLineWidthFloat() / 2.0f);
+                bounds = getPoints().getBounds().getExpanded(expand, expand);
+            for (int i = 0; i < getChildren().size(); i++) {
+                IFigure child = (IFigure) getChildren().get(i);
+                bounds.union(child.getBounds());
+            }
+        }
+        return bounds;
+    }
+
+    @Override
+    public boolean containsPoint(int x, int y) {
+        return this.getBounds().contains(x,y);
     }
 
 }

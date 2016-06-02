@@ -82,10 +82,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(TalendDesignerPrefConstants.PRODUCT_ROOT_DIR,
                 Platform.getLocation().removeLastSegments(1).toPortableString());
         // see feature 7758 add project dir to COMP_DEFAULT_PROJECT_DIR.
-        if (ProjectManager.getInstance().getCurrentProject() != null) {
-            store.setDefault(TalendDesignerPrefConstants.COMP_DEFAULT_PROJECT_DIR, Platform.getLocation().toPortableString() + "/" //$NON-NLS-1$
-                    + ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
-        }
+//        if (ProjectManager.getInstance().getCurrentProject() != null) {
+//            store.setDefault(TalendDesignerPrefConstants.COMP_DEFAULT_PROJECT_DIR, Platform.getLocation().toPortableString() + "/" //$NON-NLS-1$
+//                    + ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
+//        }
         // // ADD sizhaoliu TDQ-6698
         Bundle refBundle = Platform.getBundle("org.talend.dataquality.reporting"); //$NON-NLS-1$
         if (refBundle != null) {

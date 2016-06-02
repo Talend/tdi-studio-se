@@ -50,6 +50,7 @@ import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectAllTextControlCreator;
@@ -188,7 +189,7 @@ public class FileController extends AbstractElementPropertySectionController {
                     FieldDecorationRegistry.DEC_REQUIRED);
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.TOP, false);
         }
-        if (param.isRepositoryValueUsed()) {
+        if (canAddRepositoryDecoration(param)) {
             FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
                     FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             decoration.setDescription(Messages.getString("FileController.decoration.description")); //$NON-NLS-1$
@@ -205,7 +206,8 @@ public class FileController extends AbstractElementPropertySectionController {
             if (param.isRepositoryValueUsed() && dragAndDropActionBool == false) {
                 addRepositoryPropertyListener(filePathText);
             }
-            filePathText.setEditable(dragAndDropActionBool == true || !param.isRepositoryValueUsed());
+            filePathText.setEditable(dragAndDropActionBool == true || !param.isRepositoryValueUsed()
+                    && !(elem instanceof FakeElement) || !param.isReadOnly() && elem instanceof FakeElement);
         } else {
             filePathText.setEditable(dragAndDropActionBool == true || false);
         }

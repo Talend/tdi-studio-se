@@ -168,7 +168,7 @@ public class ComboController extends AbstractElementPropertySectionController {
                     FieldDecorationRegistry.DEC_REQUIRED);
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.TOP, false);
         }
-        if (param.isRepositoryValueUsed()) {
+        if (canAddRepositoryDecoration(param)) {
             FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
                     FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             decoration.setDescription(Messages.getString("ComboController.valueFromRepository")); //$NON-NLS-1$

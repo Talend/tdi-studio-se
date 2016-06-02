@@ -17,37 +17,37 @@ class DBConnLogUtil extends BasicLogUtil{
 	
 	public void connTry(String url, String dbUser){
 		if(dbUser != null){
-			info(str("Connection attempts to '"), url, str("' with the username '"), dbUser, str("'."));
+			debug(str("Connection attempts to '"), url, str("' with the username '"), dbUser, str("'."));
 		}else{
-			info(str("Connection attempts to '"), url, str("'."));
+			debug(str("Connection attempts to '"), url, str("'."));
 		}
 	}
 	
 	public void connDone(String url){
-		info(str("Connection to '"), url, str("' has succeeded."));
+		debug(str("Connection to '"), url, str("' has succeeded."));
 	}
 	
 	public void useExistConn(String url, String dbUser){
 		if(dbUser != null){
-			info(str("Uses an existing connection with username '"), dbUser, str("'. Connection URL: "), url, str("."));
+			debug(str("Uses an existing connection with username '"), dbUser, str("'. Connection URL: "), url, str("."));
 		}else{
-			info(str("Uses an existing connection. Connection URL: "), url, str("."));
+			debug(str("Uses an existing connection. Connection URL: "), url, str("."));
 		}
 	}
 	
 	public void closeTry(String connCompID){
 		if(connCompID == null){
-			info(str("Closing the connection to the database."));
+			debug(str("Closing the connection to the database."));
 		}else{
-			info(str("Closing the connection "), connCompID, str(" to the database."));
+			debug(str("Closing the connection "), connCompID, str(" to the database."));
 		}
 	}
 	
 	public void closeDone(String connCompID){
 		if(connCompID == null){
-			info(str("Connection to the database has closed."));	
+			debug(str("Connection to the database has closed."));	
 		}else{
-			info(str("Connection "), connCompID, str(" to the database has closed."));
+			debug(str("Connection "), connCompID, str(" to the database has closed."));
 		}
 	}
 }
@@ -100,11 +100,11 @@ class DBTableActionLogUtil extends BasicLogUtil{
 	}
 	
 	private void tableActionTry(String tableName, String action){
-		info(action, str(" table '"), tableName, str("'."));
+		debug(action, str(" table '"), tableName, str("'."));
 	}
 	
 	private void tableActionDone(String tableName, String action){
-		info(action, str(" table '"), tableName, str("' has succeeded."));
+		debug(action, str(" table '"), tableName, str("' has succeeded."));
 	}
 }
 
@@ -232,7 +232,7 @@ class DBStateLogUtil extends BasicLogUtil{
 	}
 	
 	private void logFinishedLines(String nbline, String action){
-		info(str("Has "), action, str(" "), nbline, str(" record(s)."));
+		debug(str("Has "), action, str(" "), nbline, str(" record(s)."));
 	}
 }	
 class DBLogUtil extends LogUtil{

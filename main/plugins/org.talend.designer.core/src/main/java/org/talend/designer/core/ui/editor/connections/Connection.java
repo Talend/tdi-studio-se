@@ -917,7 +917,7 @@ public class Connection extends Element implements IConnection, IPerformance {
                 } else {
                     labelText += " (" + sourceNodeConnector.getLinkName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
-            } else if (sourceNodeConnector.getName().equals(EConnectionType.FLOW_MAIN.getName())) {
+            } else if (sourceNodeConnector.getBaseSchema().equals(EConnectionType.FLOW_MAIN.getName())) {
                 // link
                 if (outputId >= 0) {
                     labelText += " (" + getLineStyle().getDefaultLinkName() + " order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

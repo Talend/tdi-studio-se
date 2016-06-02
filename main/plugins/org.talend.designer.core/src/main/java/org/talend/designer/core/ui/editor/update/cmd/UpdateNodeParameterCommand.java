@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.update.cmd;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.service.IDesignerMapperService;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.IJsonFileService;
@@ -82,7 +84,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
 import org.talend.designer.core.utils.SAPParametersUtils;
 import org.talend.metadata.managment.ui.model.ProjectNodeHelper;
@@ -278,7 +279,7 @@ public class UpdateNodeParameterCommand extends Command {
                                     .equals(connectionItem.getProperty().getId())) {
                         curPropertyParam = param;
                         parentParamName = curPropertyParam.getName();
-                        if(connectionItem!=null){
+                        if (connectionItem != null) {
                             ConnectionContextHelper.addContextForNodeParameter(node, connectionItem, false);
                         }
                         break;
@@ -764,6 +765,15 @@ public class UpdateNodeParameterCommand extends Command {
                                 + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();
                         repositoryParam = node.getElementParameter(schemaParamName);
                     }
+                    if (repositoryParam == null) {
+                        IElementParameter schemaParentParam = node
+                                .getElementParameterFromField(EParameterFieldType.SCHEMA_REFERENCE);
+                        if (schemaParentParam != null) {
+                            schemaParamName = schemaParentParam.getName() + UpdatesConstants.COLON
+                                    + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();
+                            repositoryParam = node.getElementParameter(schemaParamName);
+                        }
+                    }
                     if (repositoryParam != null && oldSourceId.equals(repositoryParam.getValue())) {
                         node.setPropertyValue(schemaParamName, newSourceId);
                         if (newTable != null) {
@@ -870,8 +880,9 @@ public class UpdateNodeParameterCommand extends Command {
                     }
                 }
                 if (toReload != null) {
+                    Set<MetadataTable> newTables = null;
                     Item item = toReload.getProperty().getItem();
-                    if (item != null && item instanceof DatabaseConnectionItem) {
+                    if (item instanceof DatabaseConnectionItem) {
                         DatabaseConnectionItem dbItem = (DatabaseConnectionItem) item;
                         Connection connection = dbItem.getConnection();
                         if (connection instanceof DatabaseConnection) {
@@ -890,22 +901,31 @@ public class UpdateNodeParameterCommand extends Command {
                                     }
                                 }
                             }
-                            Set<org.talend.core.model.metadata.builder.connection.MetadataTable> newTables = ConnectionHelper
-                                    .getTables(connection);
-                            if (newTables != null && !newTables.isEmpty() && tableToReload == null) {
-                                Iterator it = newTables.iterator();
-                                while (it.hasNext() && tableToReload == null) {
-                                    MetadataTable table = (MetadataTable) it.next();
-                                    String label = table.getLabel();
-                                    if (tableLabel != null) {
-                                        if (label != null && label.equals(tableLabel)) {
-                                            tableToReload = ConvertionHelper.convert(table);
-                                            break;
-                                        }
-                                    }
+                            newTables = ConnectionHelper.getTables(connection);
+                        }
+                    } else {
+                        IGenericWizardService wizardService = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+                                    IGenericWizardService.class);
+                        }
+                        if (wizardService != null && wizardService.isGenericItem(item)) {
+                            Connection connection = ((ConnectionItem) item).getConnection();
+                            List<MetadataTable> metadataTables = wizardService.getMetadataTables(connection);
+                            newTables = new HashSet<>(metadataTables);
+                        }
+                    }
+                    if (newTables != null && !newTables.isEmpty() && tableToReload == null) {
+                        Iterator<MetadataTable> it = newTables.iterator();
+                        while (it.hasNext() && tableToReload == null) {
+                            MetadataTable table = it.next();
+                            String label = table.getLabel();
+                            if (tableLabel != null) {
+                                if (label != null && label.equals(tableLabel)) {
+                                    tableToReload = ConvertionHelper.convert(table);
+                                    break;
                                 }
                             }
-
                         }
                     }
                     if (tableToReload != null) {

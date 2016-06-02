@@ -12,9 +12,12 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -30,6 +33,7 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -78,6 +82,23 @@ import aQute.bnd.osgi.Jar;
 public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
     protected static final char MANIFEST_ITEM_SEPARATOR = ',';
+
+    @SuppressWarnings("serial")
+    private static final Collection<String> EXCLUDED_MODULES = new HashSet<String>() {
+        {
+            try (InputStream is = RepositoryPlugin.getDefault().getBundle().getEntry("/resources/osgi-exclude.txt")
+                    .openStream()) {
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String moduleName;
+                while ((moduleName = reader.readLine()) != null) {
+                    add(moduleName);
+                }
+            } catch (IOException e) {
+                RepositoryPlugin.getDefault().getLog()
+                        .log(new Status(Status.ERROR, RepositoryPlugin.PLUGIN_ID, "Unable to load OSGi excludes", e));
+            }
+        }
+    };
 
     public JobJavaScriptOSGIForESBManager(Map<ExportChoice, Object> exportChoiceMap, String contextName, String launcher,
             int statisticPort, int tracePort) {
@@ -254,35 +275,21 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
      */
     @Override
     protected boolean isCompiledLib(ModuleNeeded module) {
-        if (module != null) {
-            /*
-             * If null, will add the lib always.
-             * 
-             * If empty, nothing will be added.
-             * 
-             * Else, add the bundle id in "Require-Bundle", but don't add the lib.
-             */
-            if (isIncludedLib(module)) {
-                return true;
-            }
-        }
-        return false;
+        /*
+         * If null, will add the lib always.
+         * If empty, nothing will be added.
+         * Else, add the bundle id in "Require-Bundle", but don't add the lib.
+         */
+        return module != null && isIncludedLib(module);
     }
 
     /**
      * If null, will add the lib always. @see isIncludedLib
-     *
      * If empty, nothing will be added. @see isExcludedLib
-     *
      * Else, add the bundle id in "Require-Bundle", but don't add the lib. @see isIncludedInRequireBundle
      */
     protected boolean isIncludedLib(ModuleNeeded module) {
-        if (module != null) {
-            if (module.getBundleName() == null) {
-                return true;
-            }
-        }
-        return false;
+        return module != null && module.getBundleName() == null && !EXCLUDED_MODULES.contains(module.getModuleName());
     }
 
     protected boolean isProvidedLib(ModuleNeeded module) {

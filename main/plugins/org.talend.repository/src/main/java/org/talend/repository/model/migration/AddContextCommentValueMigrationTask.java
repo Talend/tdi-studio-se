@@ -88,31 +88,30 @@ public class AddContextCommentValueMigrationTask extends AbstractItemMigrationTa
                     }
                 }
             }
-            if (hasNull) {
-                try {
+            try {
+                if (hasNull) {
                     ProxyRepositoryFactory.getInstance().save(item, true);
-                } catch (PersistenceException e) {
-                    ExceptionHandler.process(e);
+                    return ExecutionResult.SUCCESS_NO_ALERT;
                 }
-                return ExecutionResult.SUCCESS_NO_ALERT;
-            }
-            if (!isSame) {
-                for (int x = 1; x < contexts.size(); x++) {
-                    List<ContextParameterType> contextParams = contexts.get(x).getContextParameter();
-                    for (int y = 0; y < contextParams.size(); y++) {
-                        ContextParameterType param = contextParams.get(y);
-                        String comment = param.getComment();
-                        if (param.getRepositoryContextId() == null && !firstComments.get(y).equals(comment)) {
-                            param.setComment(firstComments.get(y));
+                if (!isSame) {
+                    for (int x = 1; x < contexts.size(); x++) {
+                        List<ContextParameterType> contextParams = contexts.get(x).getContextParameter();
+                        for (int y = 0; y < contextParams.size(); y++) {
+                            ContextParameterType param = contextParams.get(y);
+                            String comment = param.getComment();
+                            if (param.getRepositoryContextId() == null && !firstComments.get(y).equals(comment)) {
+                                if (!firstComments.get(y).equals("NOT_BUILTIN")) { //$NON-NLS-1$
+                                    param.setComment(firstComments.get(y));
+                                }
+                            }
                         }
                     }
-                }
-                try {
                     ProxyRepositoryFactory.getInstance().save(item, true);
-                } catch (PersistenceException e) {
-                    ExceptionHandler.process(e);
+                    return ExecutionResult.SUCCESS_NO_ALERT;
                 }
-                return ExecutionResult.SUCCESS_NO_ALERT;
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+                return ExecutionResult.FAILURE;
             }
         }
         return ExecutionResult.NOTHING_TO_DO;

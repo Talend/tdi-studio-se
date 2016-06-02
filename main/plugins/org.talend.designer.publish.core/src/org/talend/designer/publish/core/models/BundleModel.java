@@ -14,29 +14,38 @@ package org.talend.designer.publish.core.models;
 
 import java.io.File;
 
-
 public class BundleModel extends BaseModel {
 
-	private final File file;
+    private final File file;
 
-	public BundleModel(String groupId, String artifactId, String version) {
-		this(groupId, artifactId, version, null);
-	}
+    public BundleModel(String groupId, String artifactId, String version) {
+        this(groupId, artifactId, version, null);
+    }
 
-	public BundleModel(String groupId, String artifactId, String version, File file) {
-		super(groupId, artifactId, version);
-		this.file = file;
-	}
+    public BundleModel(String groupId, String artifactId, String version, File file) {
+        super(groupId, artifactId, version);
+        this.file = file;
+    }
 
-	public File getFile() {
-		return file;
-	}
+    public File getFile() {
+        return file;
+    }
 
     public String getExtension() {
         if (null != file) {
             String filename = file.getName();
             return filename.substring(filename.lastIndexOf('.') + 1);
         }
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.publish.core.models.BaseModel#getClassifier()
+     */
+    @Override
+    public String getClassifier() {
         return null;
     }
 

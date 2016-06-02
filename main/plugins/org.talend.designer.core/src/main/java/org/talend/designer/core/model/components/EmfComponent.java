@@ -184,7 +184,7 @@ public class EmfComponent extends AbstractBasicComponent {
 
     public static final String TEXT_TNS_FILE = Messages.getString("EmfComponent.tnsfile"); //$NON-NLS-1$
 
-    private static final String TSTATCATCHER_NAME = "tStatCatcher"; //$NON-NLS-1$
+    public static final String TSTATCATCHER_NAME = "tStatCatcher"; //$NON-NLS-1$
 
     public static final String ENCODING_TYPE_UTF_8 = "UTF-8"; //$NON-NLS-1$
 

@@ -475,7 +475,9 @@ public class ValidationRulesUtil {
             }
             if (connection != null) {
                 IMetadataTable inputTable = connection.getMetadataTable();
-                MetadataToolHelper.copyTable(null, inputTable, table);
+                if (inputTable != null) {
+                    MetadataToolHelper.copyTable(null, inputTable, table);
+                }
             }
             List<IMetadataColumn> listColumns = table.getListColumns();
             boolean isHasErrorMsgCol = false;

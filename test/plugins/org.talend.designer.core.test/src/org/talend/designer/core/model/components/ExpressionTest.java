@@ -36,7 +36,7 @@ public class ExpressionTest {
 
     @Test
     public void testIsShowFunction() {
-        List<IElementParameter> parameters = spy(new ArrayList<IElementParameter>());
+        List<IElementParameter> parameters = new ArrayList<IElementParameter>();
 
         /*
          * PARA2 -> PARA1, PARA3 -> PARA1, PARA1 -> true
@@ -137,9 +137,9 @@ public class ExpressionTest {
     }
 
     private void updateParameters(List<IElementParameter> parameters, IElementParameter... params) {
-        doReturn(params.length).when(parameters).size();
-        for (int i = 0; i < params.length; i++) {
-            doReturn(params[i]).when(parameters).get(i);
+        parameters.clear();
+        for (IElementParameter param : params) {
+            parameters.add(param);
         }
     }
 

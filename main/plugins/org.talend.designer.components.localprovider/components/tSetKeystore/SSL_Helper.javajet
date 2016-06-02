@@ -7,6 +7,10 @@ class SSL_HELPER{
 		this.node = node;
 	}
 	
+	public boolean useHTTPS() {
+        return node != null;
+    }
+	
 	public String getTSType(){
 		return ElementParameterParser.getValue(node, "__TRUSTSTORE_TYPE__");
 	}

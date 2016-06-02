@@ -32,10 +32,10 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.draw2d.Cursors;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.FreeformViewport;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LightweightSystem;
@@ -1123,37 +1123,16 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
         IFigure backgroundLayer = layerManager.getLayer(LayerConstants.GRID_LAYER);
         IFigure contentLayer = layerManager.getLayer(LayerConstants.PRINTABLE_LAYERS);
         // create image from root figure
-        int width = contentLayer.getSize().width;
-        int height = contentLayer.getSize().height;
-
-        // Added by Marvin Wang on Dec. 18, 2012 for bug TDI-24038, due to large image caused out of memory, we have to
-        // limit the size of the image. For x86-based architecture, the momory is very easy to fill up, a suggested
-        // value 3000X3000 is a temporary solution.
-        if (Platform.ARCH_X86.equals(Platform.getOSArch())) {
-            if (width * height > 3000 * 3000) {
-                if (width > 3000) {
-                    width = 3000;
-                }
-
-                if (height > 3000) {
-                    height = 3000;
-                }
-            }
-        }
-
-        if (width == 0) {
-            width = 1400;
-        }
-        if (height == 0) {
-            height = 700;
-        }
-
+        FreeformViewport viewport = (FreeformViewport) ((TalendScalableFreeformRootEditPart) layerManager).getFigure();
+        viewport.getUpdateManager().performUpdate();
+        int width = contentLayer.getBounds().width;
+        int height = contentLayer.getBounds().height;
         Image img = new Image(null, width, height);
         GC gc = new GC(img);
-        getEditor().getLightweightSystem().paint(gc);
         Graphics graphics = new SWTGraphics(gc);
+        graphics.translate(-1 * contentLayer.getBounds().x + viewport.getViewLocation().x, -1 * contentLayer.getBounds().y
+                + viewport.getViewLocation().y);
         Point point = contentLayer.getBounds().getTopLeft();
-        graphics.translate(-point.x, -point.y);
         IProcess2 process = getProcess();
         process.setPropertyValue(IProcess.SCREEN_OFFSET_X, String.valueOf(-point.x));
         process.setPropertyValue(IProcess.SCREEN_OFFSET_Y, String.valueOf(-point.y));

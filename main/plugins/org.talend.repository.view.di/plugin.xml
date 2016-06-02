@@ -1042,7 +1042,7 @@
       </navigatorContent>
       <navigatorContent
             activeByDefault="true"
-            appearsBefore="org.talend.repository.viewer.metadata.salesforce"
+            appearsBefore="org.talend.repository.viewer.metadata.genericSchemas"
             contentProvider="org.talend.repository.view.di.metadata.content.MetadataLDAPContentProvider"
             icon="icons/ldap.png"
             id="org.talend.repository.viewer.metadata.ldap"
@@ -1105,7 +1105,7 @@
             </enablement>
          </actionProvider>
       </navigatorContent>
-      <navigatorContent
+      <!--<navigatorContent
             activeByDefault="true"
             appearsBefore="org.talend.repository.viewer.metadata.genericSchemas"
             contentProvider="org.talend.repository.view.di.metadata.content.MetadataSalesforceContentProvider"
@@ -1172,7 +1172,7 @@
                </and>
             </enablement>
          </actionProvider>
-      </navigatorContent>
+      </navigatorContent> -->
       <navigatorContent
             activeByDefault="true"
             appearsBefore="org.talend.repository.viewer.metadata.mdm"

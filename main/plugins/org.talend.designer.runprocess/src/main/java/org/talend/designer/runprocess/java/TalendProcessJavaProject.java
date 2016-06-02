@@ -347,64 +347,13 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.core.runtime.process.ITalendProcessJavaProject#updateRoutinesPom(boolean,boolean)
-     */
     @Override
     public void updateRoutinesPom(final boolean withBuild, boolean inBackgroud) {
-        // disable code for now, to review later.
         return;
-        // // should process the pig udf and bean also.
-        // if (inBackgroud) {
-        // // work in backgroud or not?
-        //            Job job = new Job("updating routines pom") { //$NON-NLS-1$
-        //
-        // @Override
-        // public IStatus run(IProgressMonitor monitor) {
-        // return processRoutinesPom(withBuild);
-        // }
-        // };
-        // job.schedule();
-        // } else {
-        // processRoutinesPom(withBuild);
-        // }
     }
 
     private IStatus processRoutinesPom(boolean withBuild) {
-        // disable code for now, to review later.
         return Status.OK_STATUS;
-        // try {
-        // // update routines pom, so true here
-        // this.synchronizer.syncRoutinesPom(true);
-        //
-        // if (withBuild) {
-        // // synch the routines jar first
-        // List<String> modules = new ArrayList<String>();
-        // Set<ModuleNeeded> runningModules = ModulesNeededProvider.getRunningModules();
-        // for (ModuleNeeded m : runningModules) {
-        // modules.add(m.getModuleName());
-        // }
-        // File libDir = JavaProcessorUtilities.getJavaProjectLibFolder();
-        // ILibraryManagerService repositoryBundleService = CorePlugin.getDefault().getRepositoryBundleService();
-        // repositoryBundleService.retrieve(modules, libDir.getAbsolutePath());
-        //
-        // // install routines
-        // IFolder routinesSrcFolder = getSrcFolder().getFolder(JavaUtils.JAVA_ROUTINES_DIRECTORY);
-        // if (routinesSrcFolder.getLocation().toFile().exists()) {
-        // String routineModule = routinesSrcFolder.getProjectRelativePath().toString();
-        // buildModules(TalendMavenConstants.GOAL_INSTALL, new String[] { routineModule }, monitor);
-        // }
-        // }
-        //
-        // return Status.OK_STATUS;
-        // } catch (Exception e) {
-        // ExceptionHandler.process(e);
-        // return new Status(Status.ERROR, FrameworkUtil.getBundle(getClass()).getSymbolicName(), Status.ERROR,
-        // e.getMessage(),
-        // e);
-        // }
     }
 
     @Override

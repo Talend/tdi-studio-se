@@ -15,6 +15,8 @@ package org.talend.designer.core.generic.model.migration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,12 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
  *
  */
 public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTask {
+
+    @Override
+    public Date getOrder() {
+        GregorianCalendar gc = new GregorianCalendar(2016, 04, 18, 12, 0, 0);
+        return gc.getTime();
+    }
 
     @Override
     protected Properties getPropertiesFromFile() {

@@ -22,6 +22,8 @@ public class FakeElement extends Element {
 
     private String name;
 
+    private boolean readOnly;
+
     public FakeElement(String name) {
         super();
         this.name = name;
@@ -29,12 +31,12 @@ public class FakeElement extends Element {
 
     @Override
     public boolean isReadOnly() {
-        return false;
+        return this.readOnly;
     }
 
     @Override
     public void setReadOnly(boolean readOnly) {
-        return;
+        this.readOnly = readOnly;
     }
 
     @Override

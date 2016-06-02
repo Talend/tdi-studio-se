@@ -3,6 +3,8 @@ imports="
         java.util.List
         java.util.ArrayList
         java.util.Map
+        java.util.Set
+        java.util.HashSet
         java.util.HashMap
         java.util.Stack
         org.talend.components.api.component.ComponentDefinition
@@ -19,11 +21,14 @@ imports="
         org.talend.core.model.metadata.types.JavaType
         org.talend.core.model.metadata.types.JavaTypesManager
         org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.IElementParameter
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
         org.talend.core.model.process.INode
         org.talend.core.model.utils.TalendTextUtils
         org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.EParameterFieldType
         "
 %>
 <%
@@ -48,7 +53,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) { // metadata
 		int nbSchemaColumns = columnList.size();
 
 		hasDynamic = false;
-		
+
 		int pos = 0;
 		for (IMetadataColumn column : columnList) {
 			if (column.getTalendType().equals("id_Dynamic")) {
@@ -77,59 +82,76 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
 	for (NamedThing prop : properties) { // property
         if (prop instanceof Property) { // if, only deal with valued Properties
             Property property = (Property)prop;
-            if (property.getFlags() != null && property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY))
+            if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
             	continue;
-		    Object value = property.getValue();
-            if (value != null && (value instanceof List)) { // if
-                    // added for the support of tables
-                    %>
-                    java.util.List<java.util.Map<String, Object>> table_<%=cid %><%=propInfo.fieldName%> = new java.util.ArrayList<java.util.Map<String, Object>>();
-                    java.util.Map<String, Object> line_<%=cid %><%=propInfo.fieldName%>;
-                    <%
-                    List<Map<String, Object>> tableContent = (List<Map<String, Object>>) value;
-                    for (Map<String, Object> line : tableContent) {
-                        %>
-                        line_<%=cid %><%=propInfo.fieldName%> = new java.util.HashMap<String, Object>();
+		    Object value = property.getStoredValue();
+		    if (value != null) {
+                if (value instanceof List) { // if
+                        // added for the support of tables
+                            String tmpVarName = cid+propInfo.fieldName.replace('.','_')+"_"+property.getName();
+                            %>
+                            java.util.List<Object> <%=tmpVarName %> = new java.util.ArrayList<Object>();
+                            <%
+                            for (Object subPropertyValue : (java.util.List<Object>)property.getValue()) {
+                                if (property.getPossibleValues() != null && property.getPossibleValues().size() > 0) {
+                                %>
+                                    <%=tmpVarName %>.add("<%=subPropertyValue %>");
+                                <%
+                                } else {
+                                	if(!"".equals(subPropertyValue)) {
+                                %>
+                                    <%=tmpVarName %>.add(<%=subPropertyValue %>);
+                                <%
+                                	} else {
+                                %>
+                                    <%=tmpVarName %>.add("");
+                                <%
+                                	}
+                                }
+                            }
+                            %>
+                            ((org.talend.daikon.properties.Properties)props_<%=cid %><%=propInfo.fieldName%>).setValue("<%=property.getName()%>",<%=tmpVarName %>);
                         <%
-                        for (String key : line.keySet()) {
+                }  else if (value instanceof String && property.isFlag(Property.Flags.ENCRYPT) && ElementParameterParser.canEncryptValue((String) value)) {
+                        if (!"".equals(property.getStringValue())) {
                         %>
-                            line_<%=cid %><%=propInfo.fieldName%>.put("<%=key%>", <%=component.getTableValue(property,key,line.get(key))%>);
+                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+                        routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, (String) value)%>));
                         <%
                         }
+                } else if (value != null && "java.util.Date".equals(property.getType())){
+                		%>
+        				props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+    	                	TalendDate.parseDate("yyyy-MM-dd HH:mm:ss",<%=component.getCodegenValue(property, property.getStringValue())%>));
+        				<%
+                } else if (property instanceof org.talend.daikon.properties.EnumProperty) {
                         %>
-                        table_<%=cid %><%=propInfo.fieldName%>.add(line_<%=cid %><%=propInfo.fieldName%>);
+                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+                            <%=property.getType()%>.<%=property.getValue()%>);
                         <%
-                    }
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",table_<%=cid %><%=propInfo.fieldName%>);                    
-                    <%
-            }  else if (property.isFlag(Property.Flags.ENCRYPT) && ElementParameterParser.canEncryptValue(property.getStringValue())) {
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                    routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, property.getStringValue())%>));
-                    <%
-            }else if (value != null && Property.Type.DATE.equals(property.getType())){
-            		%>
-    				props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-	                	TalendDate.parseDate("yyyy-MM-dd HH:mm:ss",<%=component.getCodegenValue(property, property.getStringValue())%>));
-    				<%
-            } else if (value != null && (!(value instanceof String) || !((String)value).equals(""))) { // if                    
-					%>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                    <%=component.getCodegenValue(property, property.getStringValue())%>);
-                    <%
-    		} // if
+                } else if (property instanceof org.talend.daikon.properties.SchemaProperty) {
+                        %>
+                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+                            new org.apache.avro.Schema.Parser().parse(<%=component.getCodegenValue(property, property.getStringValue())%>));
+                        <%
+                } else if (!(value instanceof String) || !((String)value).equals("")) { // if
+    					%>
+                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+                        <%=component.getCodegenValue(property, value.toString())%>);
+                        <%
+        		} // if
+    		}
         }//else may be a ComponentProperties so ignore
 	} // property
 } // propInfo
 %>
-org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() { 
+org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() {
     public Object getComponentData(String componentId, String key) {
-        return globalMap.get(componentId + key);
+        return globalMap.get(componentId + "_" + key);
     }
 
     public void setComponentData(String componentId, String key, Object data) {
-        globalMap.put(componentId + key, data);
+        globalMap.put(componentId + "_" + key, data);
     }
 
     public String getCurrentComponentId() {
@@ -137,7 +159,7 @@ org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new or
     }
 };
 
-<%	
+<%
 if (def instanceof EndpointComponentDefinition) {
 %>
 	org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = ((org.talend.components.api.component.EndpointComponentDefinition)def_<%=cid%>).getRuntime();
@@ -154,53 +176,187 @@ if (metadata != null) {
 %>
 		org.talend.components.api.component.runtime.Source source_<%=cid%> = (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
 		org.talend.components.api.component.runtime.Reader reader_<%=cid%> = source_<%=cid%>.createReader(container_<%=cid%>);
-		
+
 		<%
-		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-		if(outgoingConns.size() > 0){ // outgoing size
-			// FIXME - multiple outgoing connections?
-			IConnection outgoingConn = outgoingConns.get(0);
-            if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // outgoingConn
-            	if(hasDynamic){
-            	%>
-            		boolean initDyn_<%=cid%> = false;
-            		routines.system.Dynamic dynamic_<%=cid%> = new routines.system.Dynamic();
-            	<%
-            	}
-                String connectorName = outgoingConn.getMetadataTable().getAttachedConnector();
-                columnList = outgoingConn.getMetadataTable().getListColumns();
-            	%>
-                <% //take care SourceOrSink.validate will change the schema if it contains include-all-fields, so need to get design Avro schema before validate %>
+		IConnection main = null;
+		List<? extends IConnection> mains = node.getOutgoingConnections("MAIN");
+		if(mains!=null && !mains.isEmpty()) {
+			main = mains.get(0);
+		}
+		
+		IConnection reject = null;
+    	List<? extends IConnection> rejects = node.getOutgoingConnections("REJECT");
+	    if(rejects != null && !rejects.isEmpty()) {
+	        reject = rejects.get(0);
+	    }
+	    
+		boolean hasDataOutput = main!=null || reject!=null;
+		
+		// FIXME - multiple outgoing connections?
+		
+        if(hasDataOutput) {
+        	if(hasDynamic){
+        	%>
+        		boolean initDyn_<%=cid%> = false;
+        		routines.system.Dynamic dynamic_<%=cid%> = new routines.system.Dynamic();
+        	<%
+        	}
+        	
+        	IConnection schemaSourceConnector = (main!=null ? main : reject);
+			String schemaSourceConnectorName = schemaSourceConnector.getMetadataTable().getAttachedConnector();
+        	%>
+        		boolean multi_output_is_allowed_<%=cid%> = false;
+            	<% //take care SourceOrSink.validate will change the schema if it contains include-all-fields, so need to get design Avro schema before validate %>
                 org.talend.components.api.component.Connector c_<%=cid%> = null;
                 for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, true)) {
-                    if (currentConnector.getName().equals("<%=connectorName%>")) {
+                    if (currentConnector.getName().equals("<%=schemaSourceConnectorName%>")) {
                         c_<%=cid%> = currentConnector;
-                        break;
+                    }
+                    
+                    if (currentConnector.getName().equals("REJECT")) {//it's better to move the code to javajet
+                        multi_output_is_allowed_<%=cid%> = true;
                     }
                 }
                 org.apache.avro.Schema schema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, true);
-                
+
                 org.talend.daikon.talend6.Talend6OutgoingSchemaEnforcer current_<%=cid%> = new org.talend.daikon.talend6.Talend6OutgoingSchemaEnforcer(schema_<%=cid%>, false);
+                
                 // Create a reusable factory that converts the output of the reader to an IndexedRecord.
                 org.talend.daikon.avro.IndexedRecordAdapterFactory<Object, ? extends org.apache.avro.generic.IndexedRecord> factory_<%=cid%> = null;
 
+		<%
+		}
+		%>
                 // Iterate through the incoming data.
-                for(boolean available = reader_<%=cid%>.start(); available; available = reader_<%=cid%>.advance()) {
-
+                for(boolean available = reader_<%=cid%>.start(); available; available = reader_<%=cid%>.advance()) {//}
+		<%
+		if(hasDataOutput) {
+		%>
+					if(multi_output_is_allowed_<%=cid%>) {
+						<%if(main!=null){%>
+						<%=main.getName()%> = null;
+						<%}%>
+						
+						<%if(reject!=null){%>
+						<%=reject.getName()%> = null;
+						<%}%>
+					}
+					
+					try {
+						Object data_<%=cid%> = reader_<%=cid%>.getCurrent();
+						
+						<%if(main!=null){%>
+						
+						if(multi_output_is_allowed_<%=cid%>) {
+							<%=main.getName()%> = new <%=main.getName() %>Struct();
+						}
+					
+	                    // Construct the factory once when the first data arrives.
+	                    if (factory_<%=cid%> == null)
+	                        factory_<%=cid%> = (org.talend.daikon.avro.IndexedRecordAdapterFactory<Object, ? extends org.apache.avro.generic.IndexedRecord>) new org.talend.daikon.avro.AvroRegistry()
+	                                .createAdapterFactory(data_<%=cid%>.getClass());
+	
+	                    // Enforce the outgoing schema on the input.
+	                    org.apache.avro.generic.IndexedRecord unenforced_<%=cid%> = factory_<%=cid%>.convertToAvro(data_<%=cid%>);
+	                    current_<%=cid%>.setWrapped(unenforced_<%=cid%>);
+	                    
+	                    <%
+						if(hasDynamic){
+						%>
+							if(!initDyn_<%=cid%>){
+								org.apache.avro.Schema dynSchema_<%=cid%> = current_<%=cid%>.getOutgoingDynamicRuntimeSchema();
+	
+								for(org.apache.avro.Schema.Field childDynamic_<%=cid%> : dynSchema_<%=cid%>.getFields()){
+									routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
+							    	dynamicMetadata_<%=cid%>.setName(childDynamic_<%=cid%>.name());
+							    	dynamicMetadata_<%=cid%>.setDbName(childDynamic_<%=cid%>.name());
+							    	String talendType_<%=cid%> = null;
+							    	if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.ARRAY){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.LIST.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.BOOLEAN){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.BOOLEAN.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.BYTES){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.BYTE_ARRAY.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.FIXED){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.BYTE_ARRAY.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.DOUBLE){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.DOUBLE.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.FLOAT){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.FLOAT.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.INT){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.INTEGER.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.LONG){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.LONG.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.ENUM){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.STRING.getId()%>";
+							    	}else if(childDynamic_<%=cid%>.schema().getType() == org.apache.avro.Schema.Type.STRING){
+							    		talendType_<%=cid%> = "<%=JavaTypesManager.STRING.getId()%>";
+							    	}
+							    	dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
+							    	dynamic_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
+								}
+								initDyn_<%=cid%> = true;
+							}
+							dynamic_<%=cid%>.clearColumnValues();
+	                    <%
+	                    }
+	                    
+	                    List<IMetadataColumn> main_output_columnList = main.getMetadataTable().getListColumns();
+	                    
+	                    for (int i = 0; i < main_output_columnList.size(); i++) {
+	                        IMetadataColumn column = main_output_columnList.get(i);
+	                        String columnName = column.getLabel();
+	                        JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+	                        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+	                        if(columnName.equals(dynamicColName)){
+	                        %>
+	                        	java.util.Map<String, Object> dynamicValue_<%=cid%> = (java.util.Map<String, Object>)current_<%=cid%>.get(<%=i%>);
+	                        	for(String dynamicValue_Key_<%=cid%> : dynamicValue_<%=cid%>.keySet()){
+	                        		dynamic_<%=cid%>.setColumnValue(dynamic_<%=cid%>.getIndex(dynamicValue_Key_<%=cid%>), dynamicValue_<%=cid%>.get(dynamicValue_Key_<%=cid%>));
+	                        	}
+								<%=main.getName()%>.<%=dynamicColName%> = dynamic_<%=cid%>;
+	                        <%
+	                        }else{
+	                        %>
+	                        	if(current_<%=cid%>.get(<%=i%>) == null){
+	                        		<%=main.getName()%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+	                        	}else{
+	                        		<%if(javaType == JavaTypesManager.STRING){%>
+	                        			<%=main.getName()%>.<%=columnName%> = String.valueOf(current_<%=cid%>.get(<%=i%>));
+	                        		<%}else{%>
+		                        		<%=main.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)(current_<%=cid%>.get(<%=i%>));
+		                        	<%}%>
+	                        	}
+	                    	<%
+	                    	}
+	                    }
+	                    %>
+	                    
+                	<%}%>
+        		} catch (org.talend.components.api.exception.DataRejectException e_<%=cid%>) {
+					<%if(reject!=null){%>
+					java.util.Map<String,Object> info_<%=cid%> = e_<%=cid%>.getRejectInfo();
+					Object data_<%=cid%> = info_<%=cid%>.get("talend_record");
+					
+					if(multi_output_is_allowed_<%=cid%>) {
+						<%=reject.getName()%> = new <%=reject.getName() %>Struct();
+					}
+				
                     // Construct the factory once when the first data arrives.
                     if (factory_<%=cid%> == null)
                         factory_<%=cid%> = (org.talend.daikon.avro.IndexedRecordAdapterFactory<Object, ? extends org.apache.avro.generic.IndexedRecord>) new org.talend.daikon.avro.AvroRegistry()
-                                .createAdapterFactory(reader_<%=cid%>.getCurrent().getClass());
+                                .createAdapterFactory(data_<%=cid%>.getClass());
 
                     // Enforce the outgoing schema on the input.
-                    org.apache.avro.generic.IndexedRecord unenforced_<%=cid%> = factory_<%=cid%>.convertToAvro(reader_<%=cid%>.getCurrent());
+                    org.apache.avro.generic.IndexedRecord unenforced_<%=cid%> = factory_<%=cid%>.convertToAvro(data_<%=cid%>);
                     current_<%=cid%>.setWrapped(unenforced_<%=cid%>);
+                    
                     <%
 					if(hasDynamic){
 					%>
 						if(!initDyn_<%=cid%>){
 							org.apache.avro.Schema dynSchema_<%=cid%> = current_<%=cid%>.getOutgoingDynamicRuntimeSchema();
-							
+
 							for(org.apache.avro.Schema.Field childDynamic_<%=cid%> : dynSchema_<%=cid%>.getFields()){
 								routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
 						    	dynamicMetadata_<%=cid%>.setName(childDynamic_<%=cid%>.name());
@@ -229,15 +385,21 @@ if (metadata != null) {
 						    	}
 						    	dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
 						    	dynamic_<%=cid%>.metadatas.add(dynamicMetadata_<%=cid%>);
-							} 
+							}
 							initDyn_<%=cid%> = true;
 						}
 						dynamic_<%=cid%>.clearColumnValues();
                     <%
                     }
+                    
+                    Set<String> commonColumns = new HashSet<String>();
+                    
                     for (int i = 0; i < columnList.size(); i++) {
                         IMetadataColumn column = columnList.get(i);
                         String columnName = column.getLabel();
+                        
+                        commonColumns.add(columnName);
+                        
                         JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
                         String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
                         if(columnName.equals(dynamicColName)){
@@ -246,23 +408,43 @@ if (metadata != null) {
                         	for(String dynamicValue_Key_<%=cid%> : dynamicValue_<%=cid%>.keySet()){
                         		dynamic_<%=cid%>.setColumnValue(dynamic_<%=cid%>.getIndex(dynamicValue_Key_<%=cid%>), dynamicValue_<%=cid%>.get(dynamicValue_Key_<%=cid%>));
                         	}
-							<%=outgoingConn.getName()%>.<%=dynamicColName%> = dynamic_<%=cid%>;
-                        <% 
+							<%=reject.getName()%>.<%=dynamicColName%> = dynamic_<%=cid%>;
+                        <%
                         }else{
                         %>
                         	if(current_<%=cid%>.get(<%=i%>) == null){
-                        		<%=outgoingConn.getName()%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+                        		<%=reject.getName()%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
                         	}else{
                         		<%if(javaType == JavaTypesManager.STRING){%>
-                        			<%=outgoingConn.getName()%>.<%=columnName%> = String.valueOf(current_<%=cid%>.get(<%=i%>));
+                        			<%=reject.getName()%>.<%=columnName%> = String.valueOf(current_<%=cid%>.get(<%=i%>));
                         		<%}else{%>
-	                        		<%=outgoingConn.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)(current_<%=cid%>.get(<%=i%>));
+	                        		<%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)(current_<%=cid%>.get(<%=i%>));
 	                        	<%}%>
                         	}
                     	<%
                     	}
                     }
-			}
+                    
+                    //pass error columns
+            		List<IMetadataColumn> rejectColumns = reject.getMetadataTable().getListColumns();
+            		for(IMetadataColumn column : rejectColumns) {
+            			String columnName = column.getLabel();
+            			
+            			JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+                        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+                        
+            			//error columns
+            			if(!commonColumns.contains(columnName)) {
+            			%>
+            			<%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)info_<%=cid%>.get("<%=columnName%>");
+            			<%
+            			}
+            		}
+                    %>
+	                    
+					<%}%>
+				}
+        <%
 		}
 	} else if (def instanceof OutputComponentDefinition) {
 	%>
@@ -272,13 +454,18 @@ if (metadata != null) {
 		org.talend.components.api.component.runtime.Writer writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
 		writer_<%=cid%>.open("<%=cid%>");
         org.talend.components.api.component.Connector c_<%=cid%> = null;
-        for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, true)) {
+	<%//Why didn't we use false here? This is an Output component, so we need input connectors, don't we?%>
+        for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, false)) {
             if (currentConnector.getName().equals("MAIN")) {
                 c_<%=cid%> = currentConnector;
                 break;
             }
         }
-        org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, true);
+	<%//Why didn't we use false here? This is an Output component, so we need input connectors, don't we? However, the boolean argument isn't used in the code.
+	//Maybe we need to remove it from the method signature at all? It could be used in other places, so I won't touch it for now.%>
+        org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, false);
+        org.talend.daikon.talend6.Talend6IncomingSchemaEnforcer current_<%=cid%>
+                = new org.talend.daikon.talend6.Talend6IncomingSchemaEnforcer(designSchema_<%=cid%>);
 	<%
 	}
 }

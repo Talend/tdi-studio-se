@@ -300,17 +300,40 @@ if(columnList != null && columnList.size() > 0) {
 <%
 }
 %>
+boolean isDirect = false;	
 <%
 //table atction end
+
+boolean isDirect = false;	
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 if(("true").equals(use_existing_ctl_file)) {
     String ctl_file = ElementParameterParser.getValue(node, "__CLT_FILE__");
     %>
+
     String ctlf_<%=cid %> = <%=ctl_file %>;
     String logf_<%=cid %> = <%=ctl_file %>+".log";
+	
+	try {
+		java.io.BufferedReader ctlf_br_<%=cid %> = new java.io.BufferedReader(new java.io.FileReader(ctlf_<%=cid %>));
+		
+		try{
+			String optionLine_<%=cid %> = ctlf_br_<%=cid %>.readLine();
+			String regex_<%=cid %> = "\\bdirect\\s*=\\s*true\\b";
+			java.util.regex.Pattern pattern_<%=cid %> = java.util.regex.Pattern.compile(regex_<%=cid %>, java.util.regex.Pattern.CASE_INSENSITIVE);
+			java.util.regex.Matcher matcher_<%=cid %> = pattern_<%=cid %>.matcher(optionLine_<%=cid %>);
+			isDirect = matcher_<%=cid %>.find();		
+		}
+		finally	{
+			ctlf_br_<%=cid %>.close();
+		}
+	}catch(java.io.IOException ioe) {
+        <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
+		throw ioe;
+    }
+	
     <%
-} else {
+} else {	
     //options clause begin
     List<Map<String, String>> options = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OPTIONS__");
     java.util.Map<String, String> parametersMap = new java.util.HashMap<String, String>();
@@ -327,10 +350,15 @@ if(("true").equals(use_existing_ctl_file)) {
         parametersMap.put(key, value);
     }
 
+	if("True".equalsIgnoreCase((String)parametersMap.get("DIRECT"))){
+		isDirect = true;
+	}
+	
     java.util.Set<String> keySet = parametersMap.keySet();
     boolean flag = false;
     String tempvalue=null;
     %>
+	isDirect = <%=isDirect%>;
     java.lang.StringBuilder optionClause_<%=cid %> = new java.lang.StringBuilder();
     optionClause_<%=cid %>.append("OPTIONS (");
     <%
@@ -714,7 +742,7 @@ if(isLog4jEnabled){
 <%
 }
 %>
-java.io.BufferedReader lr_<%=cid %> = new java.io.BufferedReader(new java.io.FileReader(logf_<%=cid %>));
+
 int nb_line_data_<%=cid %> = 0;
 int nb_line_bad_<%=cid %> = 0;
 int nb_line_inserted_<%=cid %> = 0;
@@ -723,84 +751,119 @@ int nb_line_discarded_<%=cid %> = 0;
 /*  1.get log file all lines count
     2.get "Total logical records read" line number from file end.
     3.get "Total logical records read" and "Total logical records rejected" count. */
-String tempLine_<%=cid %> = "";
-int countLines_<%=cid %> =0;//log file lines count
+
 //1
+
 class LogUtil_<%=cid%>{
     public int getNumber(java.io.BufferedReader br)  throws java.io.IOException {
-		if(br == null)
+        int number=0;
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\d{1,}");
+        String tempLine = br.readLine();
+        if(tempLine!=null){
+            String str_number = tempLine.substring(tempLine.indexOf(":") + 1).trim();
+            boolean isNumber= pattern.matcher(str_number).matches();
+            if(isNumber){
+                number = Integer.parseInt(str_number);
+            }
+        }
+        return number;
+    }
+	
+	public java.io.BufferedReader parseLogFileWithDirect(String logf) throws java.io.IOException
+	{
+		String tempLine = "";
+		java.io.BufferedReader lr = new java.io.BufferedReader(new java.io.FileReader(logf));
+		java.util.List<String> logLineList = new java.util.ArrayList<String>();
+		while ((tempLine = lr.readLine() )!= null) {
+			logLineList.add(tempLine);
+		}
+		lr.close();
+
+		boolean isFirstEmptyLine = true;//Is the first empty line of empty block
+		int emptyLineNum =0;//The number of empty block
+		int beforeNumLine = 0;
+		for(int i=logLineList.size()-1; i>=0; i--)
 		{
-			return 0;
+			tempLine = logLineList.get(i);
+			if(tempLine!=null && tempLine.trim().length()>0){
+				isFirstEmptyLine = true;
+			}	
+			else if (isFirstEmptyLine){//skip empty rows
+				isFirstEmptyLine = false;
+				emptyLineNum++;
+				if(emptyLineNum==3){
+					beforeNumLine = i+1;
+					break;
+				}
+			}
+		}
+	
+		lr = new java.io.BufferedReader(new java.io.FileReader(logf));
+		for (int i=0; i <= beforeNumLine; i++) {
+			lr.readLine();
+		}	
+		
+		return lr;
+	}
+	
+	public java.io.BufferedReader parseLogFileWithoutDirect(String logf, String tableName) throws java.io.IOException
+	{
+		String tempLine = "";
+		java.io.BufferedReader lr = new java.io.BufferedReader(new java.io.FileReader(logf));
+		int countLines =0;//log file lines count
+		int lastTableLine = 0;//Line Number of the last table name
+		while ((tempLine = lr.readLine() )!= null) {
+			countLines++;
+			if(tempLine.toUpperCase().indexOf("TABLE "+(tableName).toUpperCase())>-1){
+				lastTableLine = countLines;
+			}
+		}
+		lr.close();
+		//need new instance to readLine .
+		lr = new java.io.BufferedReader(new java.io.FileReader(logf));
+		for (int i=0; i<= lastTableLine; i++) {
+			lr.readLine();
+		}
+		boolean isNumber=false;
+		tempLine = lr.readLine();
+		int emptyLineNum =0;//The number of empty block
+		boolean isFirstEmptyLine = false;//Is the first empty line of empty block
+		for (int i=lastTableLine+2; i<= countLines; i++) {
+			tempLine = lr.readLine();
+			if(tempLine!=null && tempLine.trim().length()>0){
+				if(emptyLineNum==2){
+					break;
+				}
+				isFirstEmptyLine = false;
+				continue;//skip rows now empty
+			}else if (!isFirstEmptyLine){//skip empty rows
+				isFirstEmptyLine = true;
+				emptyLineNum++;
+			}
 		}
 		
-		String tempLine = br.readLine();				
-		int count = 0;
-		while(tempLine != null){
-			count++;
-			tempLine = br.readLine();
-		}
-		br.close();
-		
-		return count;
-    }
- 
-}
-int lastTableLine_<%=cid%> = 0;//Line Number of the last table name
-while ((tempLine_<%=cid %> = lr_<%=cid %>.readLine() )!= null) {
-    countLines_<%=cid %>++;
-    if(tempLine_<%=cid %>.toUpperCase().indexOf("TABLE "+(tableName_<%=cid%>).toUpperCase())>-1){
-        lastTableLine_<%=cid%> = countLines_<%=cid %>;
-    }
-}
-lr_<%=cid %>.close();
-
-java.io.File dateFileTemp_<%=cid %> = new java.io.File(dataf_<%=cid %>);
-java.io.File badFileTemp_<%=cid %> = new java.io.File(badf_<%=cid %>);
-java.io.File dscFileTemp_<%=cid %> = new java.io.File(dscf_<%=cid %>);
-		
-java.io.BufferedReader dateFile_br_<%=cid %> = null;
-java.io.BufferedReader badFile_br_<%=cid %> = null;
-java.io.BufferedReader dscFile_br_<%=cid %> = null;
-																
-try
-{																
-    if(dateFileTemp_<%=cid %>.exists()){
-	    dateFile_br_<%=cid %> = new java.io.BufferedReader(
-		    new java.io.FileReader(dataf_<%=cid %>));
-    }
-				
-    if(badFileTemp_<%=cid %>.exists()){
-	    badFile_br_<%=cid %> = new java.io.BufferedReader(
-		    new java.io.FileReader(badf_<%=cid %>));
-    }
-				
-    if(dscFileTemp_<%=cid %>.exists()){
-        dscFile_br_<%=cid %> = new java.io.BufferedReader(
-		    new java.io.FileReader(dscf_<%=cid %>));
-    }  
-    
-    LogUtil_<%=cid%> lu_<%=cid%> = new LogUtil_<%=cid%>();
-    nb_line_data_<%=cid %> = lu_<%=cid%>.getNumber(dateFile_br_<%=cid %>);//get the number of data line
-    nb_line_bad_<%=cid %> = lu_<%=cid%>.getNumber(badFile_br_<%=cid %>);//get the number of reject data line
-    nb_line_discarded_<%=cid %> = lu_<%=cid%>.getNumber(dscFile_br_<%=cid %>);//get the number of discarded data line
-    nb_line_inserted_<%=cid %> = nb_line_data_<%=cid %> - nb_line_bad_<%=cid %> - nb_line_discarded_<%=cid %>; 
-}    
-finally
-{
-	if(dateFile_br_<%=cid %> != null)
-	{
-		dateFile_br_<%=cid %>.close();
+		return lr;
 	}
-	if(badFile_br_<%=cid %> != null)
-	{
-		badFile_br_<%=cid %>.close();
-	}
-	if(dscFile_br_<%=cid %> != null)
-	{
-		dscFile_br_<%=cid %>.close();
-	}
+	
 }
 
+LogUtil_<%=cid%> lu_<%=cid%> = new LogUtil_<%=cid%>();
+java.io.BufferedReader lr_<%=cid %> = null;
+try {
+	if(isDirect){
+		lr_<%=cid %> = lu_<%=cid%>.parseLogFileWithDirect(logf_<%=cid %>);		
+	}		
+	else{
+		lr_<%=cid %> = lu_<%=cid%>.parseLogFileWithoutDirect(logf_<%=cid %>, tableName_<%=cid%>);	
+	}
+
+	nb_line_data_<%=cid %> = lu_<%=cid%>.getNumber(lr_<%=cid %>);//get the number of data line
+	nb_line_bad_<%=cid %> = lu_<%=cid%>.getNumber(lr_<%=cid %>);//get the number of reject data line
+	nb_line_discarded_<%=cid %> = lu_<%=cid%>.getNumber(lr_<%=cid %>);//get the number of discarded data line
+	nb_line_inserted_<%=cid %> = nb_line_data_<%=cid %> - nb_line_bad_<%=cid %> - nb_line_discarded_<%=cid %>;
+} finally {
+	lr_<%=cid %>.close();
+}
 globalMap.put("<%=cid %>_NB_LINE_DATA", nb_line_data_<%=cid %>);
 
 globalMap.put("<%=cid %>_NB_LINE_BAD", nb_line_bad_<%=cid %>);

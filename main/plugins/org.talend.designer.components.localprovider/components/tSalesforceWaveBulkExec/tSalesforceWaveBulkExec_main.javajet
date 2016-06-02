@@ -53,40 +53,30 @@ imports="
         //Step one: Connect to salesforce
         com.sforce.ws.ConnectorConfig connectorConfig_<%= cid %> = new com.sforce.ws.ConnectorConfig();
         <%
-          if(useExistingConn){
-               INode existingConnNode = NodeUtil.getNodeByUniqueName(node.getProcess(), connection);
-               String loginType = ElementParameterParser.getValue(existingConnNode,"__LOGIN_TYPE__");
-               if("OAUTH".equalsIgnoreCase(loginType)){
-               %>
-                    org.talend.salesforce.SforceOAuthConnection
-                               sfOAuthConn_<%= cid %> = (org.talend.salesforce.SforceOAuthConnection)globalMap.get("conn_" + "<%= connection %>");
-                    connectorConfig_<%= cid %>.setManualLogin(true);
-                    connectorConfig_<%= cid %>.setSessionId(sfOAuthConn_<%= cid %>.getSessionHeader().getSessionId());
-                    connectorConfig_<%= cid %>.setServiceEndpoint(sfOAuthConn_<%= cid %>.getServiceEndPoint());
-               <%
-               }else if("BASIC".equalsIgnoreCase(loginType)){
-               %>
-                   org.talend.salesforce.SforceBasicConnection
-                              sfBasicConn_<%= cid %> = (org.talend.salesforce.SforceBasicConnection)globalMap.get("conn_" + "<%= connection %>");
-                   connectorConfig_<%= cid %>.setManualLogin(true);
-                   connectorConfig_<%= cid %>.setSessionId(sfBasicConn_<%= cid %>.getSessionHeader().getSessionId());
-                   connectorConfig_<%= cid %>.setServiceEndpoint(sfBasicConn_<%= cid %>.getServiceEndPoint());
-               <%
-               }else{
-               %>
-                  System.err.println("Unsupported login type.");
-               <%
-               }
-          }else{
-               %>
-                  <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+        if(useExistingConn){
+        %>
+        	Object sharedConn_<%=cid%> = globalMap.get("<%= connection %>" + "_Connection");
+        	if(sharedConn_<%=cid%> != null){
+        		if(sharedConn_<%=cid%> instanceof com.sforce.soap.partner.PartnerConnection){
+        			connectorConfig_<%= cid %> = ((com.sforce.soap.partner.PartnerConnection)sharedConn_<%=cid%>).getConfig();
+        		}else{
+        			connectorConfig_<%= cid %> = ((com.sforce.async.BulkConnection)sharedConn_<%=cid%>).getConfig();
+        		}
+        		connectorConfig_<%= cid %>.setManualLogin(true);
+        	}else{
+        		System.err.println("No connection available!");
+        	}
+        <%
+        }else{
+        %>
+          	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-                  connectorConfig_<%= cid %>.setUsername(<%= userName %>);
-                  connectorConfig_<%= cid %>.setPassword(decryptedPassword_<%=cid%>);
-                  connectorConfig_<%= cid %>.setAuthEndpoint(<%= endPoint %>);
-               <%
-          }
-         %>
+          	connectorConfig_<%= cid %>.setUsername(<%= userName %>);
+          	connectorConfig_<%= cid %>.setPassword(decryptedPassword_<%=cid%>);
+          	connectorConfig_<%= cid %>.setAuthEndpoint(<%= endPoint %>);
+        <%
+        }
+        %>
 
         com.sforce.soap.partner.PartnerConnection partnerConnection_<%= cid %> = null;
         try{

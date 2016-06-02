@@ -95,13 +95,7 @@ public class BigDataEeImportTest extends DemosImportTest {
         Assert.assertEquals(demoContextItemsFiles.size(), currentContextItemsSize);
 
         // test the routine items under BigDataDemo_ee.zip
-        int currentRoutineItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.ROUTINES).size();
-        File tempRoutineItemsFolder = new File(rootPath + File.separator + routineItemPath);
-        List<File> demoRoutineItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempRoutineItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoRoutineItemsFiles.size() > 0);
-        Assert.assertTrue(currentRoutineItemsSize > 0);
-        Assert.assertEquals(demoRoutineItemsFiles.size(), currentRoutineItemsSize);
+        doRoutinesItemsTest(rootPath);
 
         // test the metadata items under BigDataDemo_ee.zip
         int currentConnectionItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.METADATA).size();

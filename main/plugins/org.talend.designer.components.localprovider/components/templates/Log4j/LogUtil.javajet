@@ -81,11 +81,11 @@ class LogUtil extends BasicLogUtil{
     }
     
     public void startWork(){
-        info(str("Start to work."));
+        debug(str("Start to work."));
     }
     
     public void endWork(){
-        info(str("Done."));
+        debug(str("Done."));
     }
     
     public void logIgnoredException(String exception){

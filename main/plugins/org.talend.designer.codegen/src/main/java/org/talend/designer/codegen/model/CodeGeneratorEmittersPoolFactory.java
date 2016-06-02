@@ -533,7 +533,8 @@ public final class CodeGeneratorEmittersPoolFactory {
             jetBean.addClassPath("CORE_LIBRARIES", CorePlugin.PLUGIN_ID); //$NON-NLS-1$
             jetBean.addClassPath("CODEGEN_LIBRARIES", CodeGeneratorActivator.PLUGIN_ID); //$NON-NLS-1$
             jetBean.addClassPath("COMMON_LIBRARIES", CommonsPlugin.PLUGIN_ID); //$NON-NLS-1$
-
+            jetBean.addClassPath("AVRO", "org.apache.servicemix.bundles.avro"); //$NON-NLS-1$ //$NON-NLS-2$
+            
             for (String pluginDependency : component.getPluginDependencies()) {
                 jetBean.addClassPath(pluginDependency.toUpperCase().replaceAll("\\.", "_") + "_LIBRARIES", pluginDependency); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }

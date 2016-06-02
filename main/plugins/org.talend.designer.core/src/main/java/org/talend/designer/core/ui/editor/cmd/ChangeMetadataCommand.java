@@ -14,7 +14,6 @@ package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -251,20 +250,18 @@ public class ChangeMetadataCommand extends Command {
         this.internal = internal;
     }
 
-    private boolean getPropagate(Boolean returnIfNull) {
-        if (propagate == null) {
-            if (returnIfNull != null) {
-                return returnIfNull;
-            }
-            propagate = MessageDialog.openQuestion(new Shell(),
+    public static boolean askPropagate() {
+        Boolean needPropagate = MessageDialog.openQuestion(new Shell(),
                     Messages.getString("ChangeMetadataCommand.messageDialog.propagate"), //$NON-NLS-1$
                     Messages.getString("ChangeMetadataCommand.messageDialog.questionMessage")); //$NON-NLS-1$ 
-        }
-        return propagate;
+        return needPropagate;
     }
 
     private boolean getPropagate() {
-        return getPropagate(null);
+        if (propagate == null) {
+            return askPropagate();
+        }
+        return propagate;
     }
 
     @SuppressWarnings("unchecked")
@@ -896,6 +893,22 @@ public class ChangeMetadataCommand extends Command {
      */
     public void setPropagate(Boolean propagate) {
         this.propagate = propagate;
+    }
+
+    /**
+     * Return the flag of propagation
+     */
+    public Boolean isPropagate() {
+        return this.propagate;
+    }
+
+    
+    /**
+     * Sets the currentConnector.
+     * @param currentConnector the currentConnector to set
+     */
+    public void setCurrentConnector(String currentConnector) {
+        this.currentConnector = currentConnector;
     }
 
 }

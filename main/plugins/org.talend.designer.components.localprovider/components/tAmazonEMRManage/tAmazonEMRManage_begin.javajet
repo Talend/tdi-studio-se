@@ -4,7 +4,9 @@
 		org.talend.core.model.process.ElementParameterParser
 		org.talend.designer.codegen.config.CodeGeneratorArgument
 		java.util.Map
+		java.util.HashMap
 		java.util.List
+		java.util.ArrayList
 	"
 %>
 
@@ -20,6 +22,33 @@
 	}
 	
 	ParameterUtil parameterUtil = new ParameterUtil();
+	
+	List<Map<String, String>> bootstrap_actions = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__BOOTSTRAP_ACTIONS__");
+	if(!bootstrap_actions.isEmpty()) {
+%>
+	java.util.List<com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig> actions_<%=cid %> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig>();
+	
+	com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig action_<%=cid%> = null;
+	<%
+	}
+	
+	for (int i=0; i<bootstrap_actions.size(); i++) {
+	Map<String, String> bootstrap_action = bootstrap_actions.get(i);
+%>
+	action_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig(
+		<%=bootstrap_action.get("NAME") %>,
+		
+		new com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig()
+    		.withPath(<%=bootstrap_action.get("SCRIPT_PATH") %>)
+    		
+    		<%if(parameterUtil.isValid(bootstrap_action.get("ARGS"))){%>
+    		.withArgs(<%=bootstrap_action.get("ARGS") %>)
+    		<%}%>
+	);
+	
+	actions_<%=cid %>.add(action_<%=cid%>);
+<%
+	}
 	
 	List<Map<String, String>> lines = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__STEP_TABLE__");
 %>
@@ -93,6 +122,8 @@
 	String accesskey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 	
 	String availability_zone = ElementParameterParser.getValue(node, "__AVAILABILITY_ZONE__");
+	
+	String subnet_id = ElementParameterParser.getValue(node, "__SUBNET_ID__");
 	
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
@@ -198,13 +229,65 @@
 	steps_<%=cid %>.add(0, enabledebugging_<%=cid%>);
 
 	<%
-	boolean setApps = cluster_version!=null && "\"emr-4.2.0\",\"emr-4.1.0\",\"emr-4.0.0\",\"emr-4.5.0\"".contains(cluster_version);
+	final boolean newApi = cluster_version!=null && "\"emr-4.2.0\",\"emr-4.1.0\",\"emr-4.0.0\",\"emr-4.5.0\",\"emr-4.6.0\"".contains(cluster_version);
+	
+	boolean setApps = newApi;
 	if(setApps) {
 	%>
 	<%@ include file="./app_mapping.javajet"%>
 	<%
 	}
+	
+	Map<String, List<Map<String,String>>> classification2Properties = new HashMap<String, List<Map<String,String>>>();
+	if(newApi) {
+		List<Map<String, String>> property_table = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__PROPERTY_TABLE__");
+		if(property_table!=null) {
+			for (int i=0; i<property_table.size(); i++) {
+				Map<String, String> property = property_table.get(i);
+				String classification = property.get("CLASSIFICATION");
+				
+				List<Map<String,String>> properties = classification2Properties.get(classification);
+				if(properties == null) {
+					properties = new ArrayList<Map<String,String>>();
+					classification2Properties.put(classification, properties);
+				}
+				
+				properties.add(property);
+			}
+			
+			if(!classification2Properties.isEmpty()) {
+			%>
+				java.util.List<com.amazonaws.services.elasticmapreduce.model.Configuration> configs_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Configuration>();
+				java.util.Map<String,String> properties_<%=cid%> = null;
+				com.amazonaws.services.elasticmapreduce.model.Configuration config_<%=cid%> = null;
+			<%
+			}
+			
+			for(java.util.Map.Entry<String, List<Map<String,String>>> entry : classification2Properties.entrySet()) {
+				String classification = entry.getKey();
+				List<Map<String,String>> properties = entry.getValue();
+				%>
+    			properties_<%=cid%> = new java.util.HashMap<String,String>();
+    			
+    			<%
+    			for(Map<String,String> property : properties) {
+    			%>
+    				properties_<%=cid%>.put(<%=property.get("KEY")%>, <%=property.get("VALUE")%>);
+    			<%
+    			}
+    			%>
+    			
+            	config_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Configuration()
+                    .withClassification(<%=classification%>)
+                    .withProperties(properties_<%=cid%>);
+                    
+                configs_<%=cid%>.add(config_<%=cid%>);
+			<%
+			}
+		}
+	}
 	%>
+	
 	com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest request_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest()
     	.withName(<%=cluster_name%>)
     	<%if(enable_log){%>
@@ -242,6 +325,14 @@
     	.withVisibleToAllUsers(true)
     	<%}%>
     	
+    	<%if(!bootstrap_actions.isEmpty()){%>
+    	.withBootstrapActions(actions_<%=cid %>)
+    	<%}%>
+    	
+    	<%if(!classification2Properties.isEmpty()){%>
+    	.withConfigurations(configs_<%=cid%>)
+    	<%}%>
+    	
     	.withInstances(
     		new com.amazonaws.services.elasticmapreduce.model.JobFlowInstancesConfig()
     			.withInstanceCount(<%=instance_count%>)
@@ -250,6 +341,10 @@
     			<%}%>
     			.withMasterInstanceType(<%=master_instance_type%>)
     			.withSlaveInstanceType(<%=slave_instance_type%>)
+    			
+    			<%if(parameterUtil.isValid(subnet_id)){%>
+    			.withEc2SubnetId(<%=subnet_id%>)
+    			<%}%>
     			
     			<%if(parameterUtil.isValid(availability_zone)){%>
     			.withPlacement(new com.amazonaws.services.elasticmapreduce.model.PlacementType().withAvailabilityZone(<%=availability_zone%>))

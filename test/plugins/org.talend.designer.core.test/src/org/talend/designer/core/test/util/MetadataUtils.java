@@ -21,8 +21,7 @@ import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
-import org.talend.test.utils.testproperties.SchemaProperties;
-
+import org.talend.designer.core.utils.SchemaProperties;
 import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
 

@@ -69,7 +69,6 @@ public class MavenJavaProcessor extends JavaProcessor {
         // only job, now for Shadow Process/Data Preview.
         if (isStandardJob()) {
             generatePom();
-            // removeGeneratedJobs(null);
         }
 
         updateProjectPom(null);
@@ -78,7 +77,7 @@ public class MavenJavaProcessor extends JavaProcessor {
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
         if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
-            buildChildrenJobs = new HashSet<JobInfo>();
+            buildChildrenJobs = new HashSet<>();
 
             if (property != null) {
                 Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem());
@@ -110,8 +109,6 @@ public class MavenJavaProcessor extends JavaProcessor {
             String contextName = JavaResourcesHelper.getJobContextName(this.context);
             setPlatformValues(Platform.OS_WIN32, contextName);
             setPlatformValues(Platform.OS_LINUX, contextName);
-
-            // ProcessorUtilities.resetExportConfig(); because will set back, so no used
         } finally {
             ProcessorUtilities.setExportConfig(oldInterpreter, oldCodeLocation, oldLibraryPath, oldExportConfig,
                     oldExportTimestamp);
@@ -223,7 +220,10 @@ public class MavenJavaProcessor extends JavaProcessor {
             CreateMavenBundleTemplatePom createTemplatePom = createMavenTemplatePom();
             if (createTemplatePom != null) {
                 createTemplatePom.setOverwrite(true);
+                boolean previousValue = ProcessUtils.isHDInsight();
+                ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
+                ProcessUtils.setHDInsight(previousValue);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -302,30 +302,24 @@ public class MavenJavaProcessor extends JavaProcessor {
     public void build(IProgressMonitor monitor) throws Exception {
         final ITalendProcessJavaProject talendJavaProject = getTalendJavaProject();
 
-        final Map<String, Object> argumentsMap = new HashMap<String, Object>();
+        final Map<String, Object> argumentsMap = new HashMap<>();
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, getGoals());
-
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-Dmaven.main.skip=true -P !" //$NON-NLS-1$
+                + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
         talendJavaProject.buildModules(monitor, null, argumentsMap);
-        // try {
-        //
-        // IFolder jobSrcFolder = talendJavaProject.getProject().getFolder(this.getSrcCodePath().removeLastSegments(1));
-        // if (jobSrcFolder.exists()) {
-        // jobSrcFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
-        // }
-        // if (isTestJob) {
-        // talendJavaProject.getTestOutputFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
-        // } else {
-        // talendJavaProject.getOutputFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
-        // }
-        // } catch (CoreException e) {
-        // ExceptionHandler.process(e);
-        // }
     }
 
     protected String getGoals() {
         if (isTestJob) {
             return TalendMavenConstants.GOAL_TEST_COMPILE;
         }
-        return TalendMavenConstants.GOAL_COMPILE;
+
+        if (requirePackaging()) {
+            // We return the PACKAGE goal if the main job and/or one of its recursive job is a Big Data job.
+            return TalendMavenConstants.GOAL_PACKAGE;
+        } else {
+            // Else, a simple compilation is needed.
+            return TalendMavenConstants.GOAL_COMPILE;
+        }
     }
 }

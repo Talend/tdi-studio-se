@@ -707,7 +707,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 elem.setPropertyValue(EParameterName.QUERYSTORE_TYPE.getName(), value);
             } else {
                 if (hasSchema) {
-                    for (IElementParameter param : elem.getElementParameters()) {
+                    for (IElementParameter param : new ArrayList<IElementParameter>(elem.getElementParameters())) {
                         if (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
                                 || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
                             if (!metadataInput) {

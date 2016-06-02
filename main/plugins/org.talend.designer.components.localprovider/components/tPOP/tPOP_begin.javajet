@@ -26,6 +26,7 @@ List<Map<String, String>> filterList = (List<Map<String,String>>)ElementParamete
 String condition = ElementParameterParser.getValue(node, "__FILTER_RELATION__");
 boolean useSSL = "true".equals(ElementParameterParser.getValue(node, "__USE_SSL__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+boolean isNewerEmailFirst = ("true").equals(ElementParameterParser.getValue(node, "__NEWER_EMAILS__"));
 %>  
 	String server_<%=cid %> = <%=host %>;
 	String mbox_<%=cid%> = "INBOX";
@@ -126,7 +127,14 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 		<%}%>
 		folder_<%=cid %>.open(javax.mail.Folder.READ_ONLY);
 	}
-	javax.mail.Message[] msgs_<%=cid %> = folder_<%=cid %>.getMessages();
+	<%if("false".equals(allEmails)&&(isNewerEmailFirst)){%>
+		int folderSize_<%=cid %> = folder_<%=cid %>.getMessageCount();
+		javax.mail.Message[] msgs_<%=cid %> = folder_<%=cid %>.getMessages(folderSize_<%=cid %>-<%=maxEmails%>,folderSize_<%=cid %>);
+	<%} else {%>
+		javax.mail.Message[] msgs_<%=cid %> = folder_<%=cid %>.getMessages();
+	<%}%>
+	
+	
 
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Retrieving mails from server.");

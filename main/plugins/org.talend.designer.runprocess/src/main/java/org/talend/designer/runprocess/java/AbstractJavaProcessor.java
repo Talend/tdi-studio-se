@@ -14,8 +14,11 @@ package org.talend.designer.runprocess.java;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
@@ -32,10 +35,12 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.service.IMRProcessService;
@@ -45,12 +50,14 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.runprocess.IProcessMessageManager;
+import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
+import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BDJobReArchieveCreator;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
@@ -74,6 +81,8 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     private Boolean runAsExport;
 
+    protected Boolean requirePackaging;
+
     /**
      * DOC marvin AbstractJavaProcessor constructor comment.
      * 
@@ -88,6 +97,43 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
      */
     protected boolean isStandardJob() {
         return true;
+    }
+
+    /**
+     * If a DI job calls somehow a Big Data job, then the PACKAGE Maven goal must be called on all the jobs.
+     * 
+     * @return true if the job or its recursive childs contain a tRunJob which points to a Big Data job
+     */
+    protected boolean requirePackaging() {
+        if (this.requirePackaging == null) {
+            List<? extends INode> generatedNodes = process.getGeneratingNodes();
+            try {
+                for (INode node : generatedNodes) {
+                    if (node.getComponent() != null && "tRunJob".equals(node.getComponent().getName())) {//$NON-NLS-1$
+                        IElementParameter elementParameter = node.getElementParameter("PROCESS:PROCESS_TYPE_PROCESS");//$NON-NLS-1$
+                        if (elementParameter != null) {
+                            Object value = elementParameter.getValue();
+                            if (value != null && !"".equals(value)) {//$NON-NLS-1$
+                                IRepositoryViewObject lastVersion = RunProcessPlugin.getDefault().getRepositoryService()
+                                        .getProxyRepositoryFactory().getLastVersion(value.toString());
+                                if (lastVersion != null) {
+                                    boolean hasBatchOrStreamingSubProcess = hasBatchOrStreamingSubProcess(lastVersion
+                                            .getProperty().getItem());
+                                    if (hasBatchOrStreamingSubProcess) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            } catch (PersistenceException e) {
+                return false;
+            }
+            return false;
+        }
+        return this.requirePackaging;
     }
 
     /**
@@ -191,21 +237,47 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
             IProcessMessageManager processMessageManager) throws ProcessorException {
         if (isStandardJob()) {
             Property property = this.getProperty();
-            if (isRunAsExport() && property != null) {
+            if (property != null) {
                 // use the same function with ExportModelJavaProcessor, but will do for maven
                 ProcessItem processItem = (ProcessItem) property.getItem();
-                // Step 1: Export job
-                archive = buildExportZip(processItem, monitor);
-                // Step 2: Deploy in local(Maybe just unpack)
-                unzipFolder = unzipAndDeploy(process, archive);
-                // Step 3: Run job from given folder.
-                return execFrom(unzipFolder + File.separatorChar + process.getName(), Level.INFO, statisticsPort, tracePort,
-                        optionsParam);
+                if (isRunAsExport()) {
+                    // Step 1: Export job
+                    archive = buildExportZip(processItem, monitor);
+                    // Step 2: Deploy in local(Maybe just unpack)
+                    unzipFolder = unzipAndDeploy(process, archive);
+                    // Step 3: Run job from given folder.
+                    return execFrom(unzipFolder + File.separatorChar + process.getName(), Level.INFO, statisticsPort, tracePort,
+                            optionsParam);
+                } else {
+                    // If we are not in an export mode, we still have to check whether jobs need to be re-archived or
+                    // not.
+                    String version = processItem.getProperty().getVersion();
+                    if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version) //$NON-NLS-1$
+                            && !version.equals(processItem.getProperty().getVersion())) {
+                        processItem = ItemCacheManager.getProcessItem(processItem.getProperty().getId(), version);
+                    }
+                    Set<ProcessItem> processItems = new HashSet<>();
+                    processItems.add(processItem);
+                    // We get the father job childs.
+                    Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(processItem);
+                    Iterator<JobInfo> infoIterator = infos.iterator();
+                    while (infoIterator.hasNext()) {
+                        processItems.add(infoIterator.next().getProcessItem());
+                    }
+
+                    // We iterate over the job and its childs in order to re-archive them if needed.
+                    for (ProcessItem pi : processItems) {
+                        BDJobReArchieveCreator bdRecreator = new BDJobReArchieveCreator(pi, processItem);
+                        bdRecreator.create(new File(this.getTalendJavaProject().getTargetFolder().getLocation()
+                                .toPortableString()), false);
+                    }
+                }
             }
         }
         return super.run(optionsParam, statisticsPort, tracePort, monitor, processMessageManager);
     }
 
+    @Override
     protected Process execFrom(String path, Level level, int statOption, int traceOption, String... codeOptions)
             throws ProcessorException {
         String[] cmds = getCommandLine(true, isRunAsExport(), statOption, traceOption, codeOptions);
@@ -235,9 +307,9 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
                 Path runDir = null;
                 // current path by default
-                String userDir = System.getProperty("user.dir");
+                String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
                 if (userDir != null) {
-                    runDir = new Path(userDir); //$NON-NLS-1$
+                    runDir = new Path(userDir);
                 }
                 if (path != null && new File(path).exists()) {
                     runDir = new Path(path); // unify via Path
@@ -258,31 +330,6 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
      */
     @Override
     public boolean shouldRunAsExport() {
-        List<? extends INode> generatedNodes = process.getGeneratingNodes();
-        try {
-            for (INode node : generatedNodes) {
-                if (node.getComponent() != null && "tRunJob".equals(node.getComponent().getName())) {//$NON-NLS-1$
-                    IElementParameter elementParameter = node.getElementParameter("PROCESS:PROCESS_TYPE_PROCESS");//$NON-NLS-1$
-                    if (elementParameter != null) {
-                        Object value = elementParameter.getValue();
-                        if (value != null && !"".equals(value)) {//$NON-NLS-1$
-                            IRepositoryViewObject lastVersion = RunProcessPlugin.getDefault().getRepositoryService()
-                                    .getProxyRepositoryFactory().getLastVersion(value.toString());
-                            if (lastVersion != null) {
-                                boolean hasBatchOrStreamingSubProcess = hasBatchOrStreamingSubProcess(lastVersion.getProperty()
-                                        .getItem());
-                                if (hasBatchOrStreamingSubProcess) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        } catch (PersistenceException e) {
-            return false;
-        }
         return false;
     }
 
@@ -372,6 +419,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
         }
         exportChoiceMap.put(ExportChoice.binaries, true);
         exportChoiceMap.put(ExportChoice.includeLibs, true);
+        exportChoiceMap.put(ExportChoice.needAssembly, true);
 
         if (progressMonitor.isCanceled()) {
             throw new ProcessorException(new InterruptedException());

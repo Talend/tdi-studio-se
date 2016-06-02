@@ -1,8 +1,10 @@
 <%@ jet
 imports="
         java.util.List
-		org.talend.components.api.component.ComponentDefinition
-		org.talend.designer.core.generic.model.Component
+        java.util.Set
+        java.util.HashSet
+        org.talend.components.api.component.ComponentDefinition
+        org.talend.designer.core.generic.model.Component
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.metadata.types.JavaType
@@ -11,9 +13,10 @@ imports="
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.process.INode
+        org.talend.core.model.process.EConnectionType
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.utils.TalendTextUtils
-		"
+        "
 %>
 // main of generic (used only for output components)
 
@@ -25,52 +28,159 @@ Component component = (Component)node.getComponent();
 ComponentDefinition def = component.getComponentDefinition();
 
 if(def instanceof org.talend.components.api.component.OutputComponentDefinition){
-%>
-	
-	// OUTPUT
-	
-	<%
-	List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-	if (outgoingConns!=null){
-		for (int i = 0; i < outgoingConns.size(); i++) {
-	    	IConnection outgoingConn = outgoingConns.get(i);
-	    	if (outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-			%>
-				<%=outgoingConn.getName()%> = null;			
-			<%
-	    	}
-	    }
-	}
-	
-	List<IMetadataTable> metadatas = node.getMetadataList();
-	IMetadataTable metadata = metadatas.get(0);
-	if ((metadatas != null) && (metadatas.size() > 0) && (metadata = metadatas.get(0)) != null) { // metadata
-	
-	%>
-	// METADATAS
-	<%
-	
-	
-		List<IMetadataColumn> columnList = metadata.getListColumns();
-		int nbSchemaColumns = columnList.size();
-	
-		List< ? extends IConnection> conns = node.getIncomingConnections();
-		for (IConnection conn : conns) { // conn
-			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // conn line style
-			%>
-				org.apache.avro.generic.GenericData.Record row_<%=cid%> = new org.apache.avro.generic.GenericData.Record(designSchema_<%=cid%>);
-				<%
-				for (IMetadataColumn column : columnList) { // column
-				%>
-					row_<%=cid%>.put("<%=column.getLabel()%>", <%=conn.getName()%>.<%=column.getLabel()%>); 						
-				<%
-				} // column
-				%>
-				writer_<%=cid%>.write(row_<%=cid%>);
-			<%
-			} // conn line style
-		} // conn
-	} // metadata
+    %>
 
+    // OUTPUT
+
+    <%
+    List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    if (outgoingConns!=null){
+        for (int i = 0; i < outgoingConns.size(); i++) {
+            IConnection outgoingConn = outgoingConns.get(i);
+            if (outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+            %>
+                <%=outgoingConn.getName()%> = null;
+            <%
+            }
+        }
+    }
+    
+    IConnection inputConn = null;
+    List< ? extends IConnection> inputConns = node.getIncomingConnections();
+    if(inputConns!=null) {
+	   	for (IConnection conn : inputConns) {
+	   		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	   			inputConn = conn;
+	    	}
+	   	}
+   	}
+   	
+   	boolean hasValidInput = inputConn!=null;
+   	
+   	IMetadataTable metadata;
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    boolean haveValidNodeMetadata = ((metadatas != null) && (metadatas.size() > 0) && (metadata = metadatas.get(0)) != null);
+    
+    if (hasValidInput && haveValidNodeMetadata) {
+        List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
+        
+        if (input_columnList!=null && !input_columnList.isEmpty()) {
+            // If there are dynamic columns in the schema, they need to be
+            // initialized into the runtime schema of the actual IndexedRecord
+            // provided to the component.
+            
+            int dynamicPos = -1;
+	        for (int i = 0; i < input_columnList.size(); i++) {
+	            if (input_columnList.get(i).getTalendType().equals("id_Dynamic")) {
+	                dynamicPos = i;
+	                break;
+	            }
+	        }
+	        
+            if (dynamicPos != -1)  {
+                %>
+                if (current_<%=cid%>.needsInitDynamicColumns()) {
+                    // Initialize the dynamic columns when they are first encountered.
+                    for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
+                        current_<%=cid%>.initDynamicColumn(
+                                dm_<%=cid%>.getName(), dm_<%=cid%>.getDbName(),
+                                dm_<%=cid%>.getType(), dm_<%=cid%>.getDbType(),
+                                dm_<%=cid%>.getDbTypeId(), dm_<%=cid%>.getLength(),
+                                dm_<%=cid%>.getPrecision(), dm_<%=cid%>.getFormat(),
+                                dm_<%=cid%>.getDescription(), dm_<%=cid%>.isKey(),
+                                dm_<%=cid%>.isNullable(),
+                                dm_<%=cid%>.getRefFieldName(), dm_<%=cid%>.getRefModuleName());
+                    }
+                    current_<%=cid%>.initDynamicColumnsFinished();
+                }
+                <%
+            }
+
+            for (int i = 0; i < input_columnList.size(); i++) { // column
+                IMetadataColumn column = input_columnList.get(i);
+                if (dynamicPos != i) {
+                    %>
+                    current_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
+                    <%
+                } else {
+                    %>
+                    for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
+                        current_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
+                                <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
+                    }
+                    <%
+                }
+            } // column
+            %>
+            
+            Object data_<%=cid%> = current_<%=cid%>.createIndexedRecord();
+            
+            try {
+            	writer_<%=cid%>.write(data_<%=cid%>);
+            	<%
+            	//pass the main flow
+            	IConnection main = null;
+            	List<? extends IConnection> mains = node.getOutgoingConnections("MAIN");
+            	if(mains!=null && !mains.isEmpty()) {
+            		main = mains.get(0);
+            		%>
+            		<%=main.getName()%> = new <%=main.getName() %>Struct();
+            		<%
+            		for (IMetadataColumn column : input_columnList) {//only propagate the data from input to output
+                		%>
+                		<%=main.getName()%>.<%=column.getLabel()%> = <%=inputConn.getName()%>.<%=column.getLabel()%>;
+                		<%
+            		}
+            		
+            		//TODO how to pass the additional columns in output connection? like salesforce_id
+            	}
+            	%>
+            } catch (org.talend.components.api.exception.DataRejectException e_<%=cid%>) {
+            	<%
+            	//pass the reject flow
+            	
+            	IConnection reject = null;
+            	List<? extends IConnection> rejects = node.getOutgoingConnections("REJECT");
+            	if(rejects!=null && !rejects.isEmpty()) {
+            		reject = rejects.get(0);
+        		}
+            	
+            	if(reject!=null) {
+            		Set<String> commonColumns = new HashSet<String>();
+            		%>
+            		<%=reject.getName()%> = new <%=reject.getName() %>Struct();
+            		<%
+            		for (IMetadataColumn column : input_columnList) {//only propagate the data from input to output
+            			commonColumns.add(column.getLabel());
+                		%>
+                		<%=reject.getName()%>.<%=column.getLabel()%> = <%=inputConn.getName()%>.<%=column.getLabel()%>;
+                		<%
+            		}
+            		%>
+            		
+            		java.util.Map<String,Object> info_<%=cid%> = e_<%=cid%>.getRejectInfo();
+            		
+            		<%
+            		//pass error columns
+            		List<IMetadataColumn> rejectColumns = reject.getMetadataTable().getListColumns();
+            		for(IMetadataColumn column : rejectColumns) {
+            			String columnName = column.getLabel();
+            			
+            			JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+                        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+                        
+            			//error columns
+            			if(!commonColumns.contains(columnName)) {
+            			%>
+            			<%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)info_<%=cid%>.get("<%=columnName%>");
+            			<%
+            			}
+            		}
+            	}
+            	%>
+            }
+        <%
+        }
+    }
 } // canStart
 %>

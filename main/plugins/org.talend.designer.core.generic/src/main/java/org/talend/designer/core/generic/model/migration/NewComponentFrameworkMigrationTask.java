@@ -45,12 +45,14 @@ import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.Item;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Property;
-import org.talend.daikon.properties.Property.Type;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.generic.utils.SchemaUtils;
@@ -58,9 +60,12 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.metadata.MetadataEmfFactory;
 import org.talend.designer.core.model.utils.emf.talendfile.ConnectionType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.MetadataType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+
+import com.sun.xml.internal.ws.api.model.ExceptionType;
 
 /**
  * created by hcyi on Nov 18, 2015 Detailled comment
@@ -94,8 +99,11 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         NamedThing currNamedThing = ComponentsUtils.getGenericSchemaElement(compProperties, paramName);
                         String oldParamName = props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName);
                         if (oldParamName != null && !(oldParamName = oldParamName.trim()).isEmpty()) {
-                            if (currNamedThing instanceof Property && ((Property) currNamedThing).getType() == Type.SCHEMA) {
-                                schemaParamMap.put(paramName, oldParamName);
+                            if (currNamedThing instanceof Property && (GenericTypeUtils.isSchemaType((Property<?>) currNamedThing))) {
+                                schemaParamMap.put(
+                                        paramName,
+                                        props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName
+                                                + IGenericConstants.EXP_SEPARATOR + "connector"));
                             }
                             ElementParameterType paramType = getParameterType(nodeType, oldParamName);
                             if (paramType != null) {
@@ -103,11 +111,15 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                                     ComponentReferenceProperties refProps = (ComponentReferenceProperties) currNamedThing;
                                     refProps.referenceType
                                             .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
-                                    refProps.componentInstanceId.setValue(ParameterUtilTool.convertParameterValue(paramType));
+                                    refProps.componentInstanceId.setStoredValue(ParameterUtilTool.convertParameterValue(paramType));
                                     refProps.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                                 } else {
                                     if (EParameterFieldType.TABLE.equals(param.getFieldType())) {
-                                        ((Property) currNamedThing).setValue(getTableValue(paramType));
+                                        String tableMapping = props.getProperty(currComponentName
+                                                + IGenericConstants.EXP_SEPARATOR + paramName + IGenericConstants.EXP_SEPARATOR
+                                                + "mapping");
+                                        GenericTableUtils.setTableValues(((ComponentProperties) currNamedThing),
+                                                getTableValues(paramType, tableMapping), param);
                                     } else {
                                         ((Property) currNamedThing).setValue(ParameterUtilTool.convertParameterValue(paramType));
                                     }
@@ -118,7 +130,6 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                             if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())) {
                                 String schemaTypeName = ":" + EParameterName.SCHEMA_TYPE.getName();//$NON-NLS-1$
                                 String repSchemaTypeName = ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();//$NON-NLS-1$
-                                oldParamName = oldParamName.split(":")[0]; //$NON-NLS-1$
                                 paramType = getParameterType(nodeType, oldParamName + schemaTypeName);
                                 if (paramType != null) {
                                     paramType.setName(param.getName() + schemaTypeName);
@@ -130,13 +141,34 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                             }
                         } else {
                             if (currNamedThing instanceof Property) {
-                                if (((Property) currNamedThing).isRequired()
-                                        && Property.Type.STRING.equals(((Property) currNamedThing).getType())) {
-                                    ((Property) currNamedThing).setValue("\"\""); //$NON-NLS-1$
+                                if (((Property<?>) currNamedThing).isRequired()
+                                        && GenericTypeUtils.isStringType(((Property<?>) currNamedThing).getType())) {
+                                    ((Property<?>) currNamedThing).setStoredValue("\"\""); //$NON-NLS-1$
                                 }
                             }
                         }
+                    } else {
+                        if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())) {
+                            String paramName = param.getName();
+                            schemaParamMap.put(
+                                    paramName,
+                                    props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName
+                                            + IGenericConstants.EXP_SEPARATOR + "connector"));
+
+                            String oldParamName = props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName);
+                            String schemaTypeName = ":" + EParameterName.SCHEMA_TYPE.getName();//$NON-NLS-1$
+                            String repSchemaTypeName = ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();//$NON-NLS-1$
+                            ElementParameterType paramType = getParameterType(nodeType, oldParamName + schemaTypeName);
+                            if (paramType != null) {
+                                paramType.setName(param.getName() + schemaTypeName);
+                            }
+                            paramType = getParameterType(nodeType, oldParamName + repSchemaTypeName);
+                            if (paramType != null) {
+                                paramType.setName(param.getName() + repSchemaTypeName);
+                            }
+                        }
                     }
+                           
                 }
                 // Migrate schemas
                 Map<String, MetadataType> metadatasMap = new HashMap<>();
@@ -145,17 +177,17 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                     metadatasMap.put(metadataType.getConnector(), metadataType);
                 }
                 Iterator<Entry<String, String>> schemaParamIter = schemaParamMap.entrySet().iterator();
+                String uniqueName = ParameterUtilTool.getParameterValue(nodeType, "UNIQUE_NAME"); //$NON-NLS-1$
 
                 while (schemaParamIter.hasNext()) {
                     Entry<String, String> schemaParamEntry = schemaParamIter.next();
                     String newParamName = schemaParamEntry.getKey();
-                    String oldParamName = schemaParamEntry.getValue();
-                    oldParamName = oldParamName.split(":")[1]; //$NON-NLS-1$
-                    MetadataType metadataType = metadatasMap.get(oldParamName);
+                    String connectorMapping = schemaParamEntry.getValue();
+                    String oldConnector = connectorMapping.split("->")[0]; //$NON-NLS-1$
+                    String newConnector = connectorMapping.split("->")[1]; //$NON-NLS-1$
+                    MetadataType metadataType = metadatasMap.get(oldConnector);
                     if (metadataType != null) {
-                        if (EConnectionType.FLOW_MAIN.getName().equals(metadataType.getConnector())) {
-                            metadataType.setConnector(Connector.MAIN_NAME);
-                        }
+                        metadataType.setConnector(newConnector);
                         MetadataEmfFactory factory = new MetadataEmfFactory();
                         factory.setMetadataType(metadataType);
                         IMetadataTable metadataTable = factory.getMetadataTable();
@@ -163,10 +195,20 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                                 .convert(metadataTable));
                         compProperties.setValue(newParamName, schema);
                     }
+                    if (!oldConnector.equals(newConnector)) {
+                        // if connector was changed, we should update the connections
+                        for (Object connectionObj : processType.getConnection()) {
+                            if (connectionObj instanceof ConnectionType) {
+                                ConnectionType connectionType = (ConnectionType) connectionObj;
+                                if (connectionType.getSource().equals(uniqueName) && connectionType.getConnectorName().equals(oldConnector)) {
+                                    connectionType.setConnectorName(newConnector);
+                                }
+                            }
+                        }
+                    }
                 }
-                String uniqueName = ParameterUtilTool.getParameterValue(nodeType, "UNIQUE_NAME"); //$NON-NLS-1$
                 for (Object connectionObj : processType.getConnection()) {
-                    ConnectionType connection = (ConnectionType)connectionObj;
+                    ConnectionType connection = (ConnectionType) connectionObj;
                     if (connection.getSource() != null && connection.getSource().equals(uniqueName)) {
                         if (EConnectionType.FLOW_MAIN.getName().equals(connection.getConnectorName())) {
                             connection.setConnectorName(Connector.MAIN_NAME);
@@ -186,6 +228,7 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
         };
 
         if (processType != null) {
+            boolean modified = false;
             for (Object obj : processType.getNode()) {
                 if (obj != null && obj instanceof NodeType) {
                     String componentName = ((NodeType) obj).getComponentName();
@@ -194,17 +237,21 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         continue;
                     }
                     IComponentFilter filter = new NameComponentFilter(componentName);
-                    try {
-                        ModifyComponentsAction.searchAndModify(item, processType, filter,
-                                Arrays.<IComponentConversion> asList(conversion));
-                    } catch (PersistenceException e) {
-                        ExceptionHandler.process(e);
-                        return ExecutionResult.FAILURE;
-                    }
+                    modified = ModifyComponentsAction.searchAndModify((NodeType) obj, filter,
+                                Arrays.<IComponentConversion> asList(conversion)) || modified;
+                }
+            }
+            if (modified) {
+                try {
+                    ProxyRepositoryFactory.getInstance().save(item, true);
+                    return ExecutionResult.SUCCESS_NO_ALERT;
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                    return ExecutionResult.FAILURE;
                 }
             }
         }
-        return ExecutionResult.SUCCESS_NO_ALERT;
+        return ExecutionResult.NOTHING_TO_DO;
     }
 
     protected void migrateComponent(String componentName) {
@@ -220,15 +267,25 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
         return ParameterUtilTool.findParameterType(node, paramName);
     }
 
-    public Object getTableValue(ElementParameterType paramType) {
-        // with default implementation
-        return ParameterUtilTool.convertParameterValue(paramType);
-    }
+    public static List<Map<String, Object>> getTableValues(ElementParameterType pType, String tableMapping) {
+        Map<String, String> columnsMapping = new HashMap<String, String>();
+        String[] mappings = tableMapping.split(";");
+        for (String curMapping : mappings) {
+            String[] columnInfo = curMapping.split("=");
+            columnsMapping.put(columnInfo[0], columnInfo[1]);
+        }
+        List<Map<String, Object>> tableValues = new ArrayList<Map<String, Object>>();
+        Map<String, Object> lineValues = null;
+        for (ElementValueType elementValue : (List<ElementValueType>) pType.getElementValue()) {
+            String columnName = columnsMapping.get(elementValue.getElementRef());
+            if ((lineValues == null) || (lineValues.get(columnName) != null)) {
+                lineValues = new HashMap<String, Object>();
+                tableValues.add(lineValues);
+            }
 
-    @Override
-    public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2015, 11, 18, 12, 0, 0);
-        return gc.getTime();
+            lineValues.put(columnName, elementValue.getValue());
+        }
+        return tableValues;
     }
 
     public static class FakeNode extends AbstractNode {

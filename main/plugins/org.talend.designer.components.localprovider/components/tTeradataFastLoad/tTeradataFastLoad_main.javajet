@@ -235,7 +235,7 @@ if(incomingConnName != null && columnList != null){
 			}
 			%>
 			if (nb_line_<%=cid%> == 0) {
-				String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%> "+DynamicUtils.getInsertIntoStmtColumnsList(<%=incomingConnName%>.<%=getDynamicColumn()%>, "teradata_id")+") VALUES (<%=insertValueStmt.toString()%>"+DynamicUtils.getInsertIntoStmtValuesList(<%=incomingConnName%>.<%=getDynamicColumn()%>)+")";
+				String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%> "+DynamicUtils.getInsertIntoStmtColumnsList(<%=incomingConnName%>.<%=getDynamicColumn()%>, "teradata_id")+") VALUES (<%=insertValueStmt.toString()%>"+DynamicUtils.getInsertIntoStmtValuesList(<%=incomingConnName%>.<%=getDynamicColumn()%>, "teradata_id")+")";
 				pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
 			}
 			<%

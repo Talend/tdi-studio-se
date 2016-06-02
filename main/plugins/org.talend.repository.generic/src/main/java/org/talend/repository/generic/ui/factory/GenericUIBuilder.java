@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.talend.commons.ui.swt.formtools.LabelledText;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Property;
@@ -105,20 +106,17 @@ public class GenericUIBuilder {
         } else if (property instanceof Property) {
             Property element = (Property) property;
             String displayName = element.getDisplayName();
-            Property.Type type = element.getType();
+            String type = element.getType();
             if (type == null) {
                 createLabel(parent, displayName, hSpan);
                 return;
             }
-            switch (type) {
-            case STRING:
-                LabelledText text = new LabelledText(parent, displayName, hSpan);
-                break;
-            case BOOLEAN:
-                break;
-            default:
+            if (GenericTypeUtils.isStringType(type)) {
+                new LabelledText(parent, displayName, hSpan);
+            } else if (GenericTypeUtils.isBooleanType(type)) {
+                // nothing
+            } else {
                 new LabelledText(parent, element.getDisplayName(), hSpan);
-                break;
             }
         }
     }

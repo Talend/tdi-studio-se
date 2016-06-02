@@ -27,11 +27,13 @@ import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.context.model.table.ConectionAdaptContextVariableModel;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties.Deserialized;
 import org.talend.daikon.properties.Property;
+import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
@@ -60,11 +62,15 @@ public class GenericContextUtil {
                     GenericConnParamName connParamName = (GenericConnParamName) param;
                     String name = connParamName.getName();
                     ComponentProperties componentProperties = getComponentProperties((GenericConnection) connection);
-                    Property property = componentProperties.getValuedProperty(name);
+                    Property<?> property = componentProperties.getValuedProperty(name);
                     paramName = paramPrefix + connParamName.getContextVar();
+
                     JavaType type = JavaTypesManager.STRING;
                     if (property.isFlag(Property.Flags.ENCRYPT)) {
                         type = JavaTypesManager.PASSWORD;
+                    }
+                    if (GenericTypeUtils.isIntegerType(property)) {
+                        type = JavaTypesManager.INTEGER;
                     }
                     String value = property == null || property.getValue() == null ? null : String.valueOf(property.getValue());
                     ConnectionContextHelper.createParameters(varList, paramName, value, type);
@@ -161,7 +167,7 @@ public class GenericContextUtil {
         GenericConnParamName genericParam = (GenericConnParamName) param;
         String paramName = genericParam.getName();
         String paramValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);
-        ComponentsUtils.setGenericPropertyValue(componentProperties, paramName, paramValue);
+        setPropertyValue(componentProperties, paramName, paramValue, true);
     }
 
     private static void updateComponentProperties(GenericConnection conn, ComponentProperties componentProperties) {
@@ -187,12 +193,37 @@ public class GenericContextUtil {
                 Property property = (Property) namedThing;
                 if (ComponentsUtils.isSupportContext(property)) {
                     String value = property.getStringValue();
-                    if (value != null) {
-                        String originalValue = ContextParameterUtils.getOriginalValue(contextType, value);
-                        property.setValue(TalendQuoteUtils.removeQuotes(originalValue));
+                    if (value != null && ContextParameterUtils.isContainContextParam(value)) {
+                        String valueFromContext = ContextParameterUtils.getOriginalValue(contextType, value);
+                        property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, false);
+                        if (GenericTypeUtils.isBooleanType(property)) {
+                            property.setValue(new Boolean(valueFromContext));
+                        } else if (GenericTypeUtils.isIntegerType(property) && !valueFromContext.isEmpty()) {
+                            property.setValue(Integer.valueOf(valueFromContext));
+                        } else if (GenericTypeUtils.isEnumType(property)) {
+                            List<?> propertyPossibleValues = ((Property<?>) property).getPossibleValues();
+                            if (propertyPossibleValues != null) {
+                                for (Object possibleValue : propertyPossibleValues) {
+                                    if (possibleValue.toString().equals(valueFromContext)) {
+                                        property.setValue(possibleValue);
+                                    }
+                                }
+                            }
+                        } else {
+                            property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
+                        }
                     }
                 }
             }
+        }
+    }
+
+    private static void setPropertyValue(ComponentProperties componentProperties, String propertyName, String propertyValue,
+            boolean isContextMode) {
+        Property property = componentProperties.getValuedProperty(propertyName);
+        if (property != null) {
+            property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+            property.setValue(propertyValue);
         }
     }
 

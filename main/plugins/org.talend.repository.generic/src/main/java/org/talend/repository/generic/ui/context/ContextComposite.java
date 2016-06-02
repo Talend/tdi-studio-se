@@ -27,8 +27,10 @@ import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Properties.Deserialized;
 import org.talend.designer.core.generic.constants.IContextEventProperties;
+import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.handler.IContextHandler;
 import org.talend.repository.generic.i18n.Messages;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
@@ -49,11 +51,14 @@ public class ContextComposite extends Composite {
 
     private ConnectionItem connectionItem;
 
+    private boolean isReadOnly;
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
-    public ContextComposite(Composite parent, ConnectionItem connectionItem, IContextHandler contextHandler) {
+    public ContextComposite(Composite parent, ConnectionItem connectionItem, boolean isReadOnly, IContextHandler contextHandler) {
         super(parent, SWT.NONE);
         this.connectionItem = connectionItem;
+        this.isReadOnly = isReadOnly;
         this.contextHandler = contextHandler;
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = 0;
@@ -133,8 +138,8 @@ public class ContextComposite extends Composite {
 
     private void refreshContextBtn() {
         boolean isContextMode = isContextMode();
-        exportContextBtn.setEnabled(!isContextMode);
-        revertContextBtn.setEnabled(isContextMode);
+        exportContextBtn.setEnabled(!isReadOnly && !isContextMode);
+        revertContextBtn.setEnabled(!isReadOnly && isContextMode);
     }
 
     private void fireExportContextEvent() {
@@ -151,7 +156,13 @@ public class ContextComposite extends Composite {
             String compPropertiesStr = connection.getCompProperties();
             if (compPropertiesStr != null) {
                 Deserialized<ComponentProperties> fromSerialized = ComponentProperties.fromSerialized(compPropertiesStr,
-                        ComponentProperties.class);
+                        ComponentProperties.class, new Properties.PostSerializationSetup<ComponentProperties>() {
+
+                            @Override
+                            public void setup(ComponentProperties properties) {
+                                properties.setValueEvaluator(new MetadataContextPropertyValueEvaluator(connection));
+                            }
+                        });
                 if (fromSerialized != null) {
                     return fromSerialized.properties;
                 }

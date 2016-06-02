@@ -407,6 +407,9 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     }
                     column.setTableEditorContent(new CheckboxTableEditorContent());
                     Boolean curValue = (Boolean) currentParam.getValue();
+                    if (curValue == null) {
+                        curValue = Boolean.FALSE;
+                    }
                     tableColumnSelectionListener.setChecked(curValue.booleanValue());
                     if (curValue.booleanValue()) {
                         column.setImageHeader(ImageProvider.getImage(EImage.CHECKED_ICON));
@@ -922,7 +925,9 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                         Object currentValue = currentLine.get(curParam.getName());
                         String currentDisplay = null;
                         if (currentValue instanceof Integer) {
-                            currentDisplay = curParam.getListItemsDisplayName()[(Integer) currentValue];
+                            if (((Integer)currentValue) < curParam.getListItemsDisplayName().length) {
+                                currentDisplay = curParam.getListItemsDisplayName()[(Integer) currentValue];
+                            }
                         } else if (currentValue instanceof String) {
                             int index = ArrayUtils.indexOf(curParam.getListItemsValue(), currentValue);
                             if (index != -1) {

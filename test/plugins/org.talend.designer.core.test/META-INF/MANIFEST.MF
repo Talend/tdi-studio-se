@@ -2,12 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: org.talend.designer.core.test
-Bundle-Version: 6.2.0.qualifier
+Bundle-Version: 6.2.1.qualifier
 Fragment-Host: org.talend.designer.core
-Require-Bundle: org.talend.repository.localprovider,
- org.junit;bundle-version="4.11.0",
- org.talend.utils;bundle-version="6.0.0",
- org.talend.testutils;bundle-version="6.0.0",
+Require-Bundle: org.junit;bundle-version="4.11.0",
+ org.talend.utils,
+ org.talend.testutils,
  org.apache.servicemix.bundles.avro,
  jackson-core-asl,
  org.talend.components.common

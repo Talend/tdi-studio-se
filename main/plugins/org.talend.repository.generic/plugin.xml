@@ -15,7 +15,7 @@
             appearsBefore="org.talend.repository.viewer.metadata.genericSchemas"
             contentProvider="org.talend.repository.generic.view.content.MetadataGenericContentProvider"
             id="org.talend.repository.viewer.metadata.genericConnection"
-            labelProvider="org.talend.repository.generic.view.content.MetadataGenericLabelProvider"
+            labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
             name="Generic Connection"
             priority="higher">
          <triggerPoints>
@@ -159,12 +159,21 @@
          point="org.talend.core.migrationTask">
         <projecttask
             beforeLogon="false"
-            breaks="6.2.0"
-            class="org.talend.repository.generic.model.migration.NewSalesforceWizardMigrationTask"
-            description="New salesforce connection migration task"
-            id="org.talend.repository.generic.model.migration.NewSalesforceMigrationTask"
-            name="NewGenericWizardMigrationTask"
-            version="6.2.0">
+            breaks="6.2.1"
+            class="org.talend.repository.generic.model.migration.Salesforce620WizardMigration"
+            description="Salesforce 620 connection migration task"
+            id="org.talend.repository.generic.model.migration.Salesforce620WizardMigration"
+            name="Salesforce620WizardMigration"
+            version="6.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.2.0"
+              class="org.talend.repository.generic.model.migration.NewSalesforceWizardMigrationTask"
+              description="New salesforce connection migration task"
+              id="org.talend.repository.generic.model.migration.NewSalesforceMigrationTask"
+              name="NewGenericWizardMigrationTask"
+              version="6.2.0">
         </projecttask>
    </extension>
 </plugin>

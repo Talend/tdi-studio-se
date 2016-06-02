@@ -359,8 +359,6 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         final Map<String, Object> argumentsMap = new HashMap<String, Object>();
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_PACKAGE);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
-        // argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_STATISTICS,
-        // isOptionChoosed(ExportChoice.addStatistics));
 
         talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
     }

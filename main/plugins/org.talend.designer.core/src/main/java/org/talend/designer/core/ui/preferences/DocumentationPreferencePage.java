@@ -44,6 +44,8 @@ public class DocumentationPreferencePage extends FieldEditorPreferencePage imple
 
     private BooleanFieldEditor useCss;
 
+    private BooleanFieldEditor generateLatestVersionFieldEditor;
+
     /**
      * ftang DocumentationPreferencePage constructor comment.
      */
@@ -63,6 +65,10 @@ public class DocumentationPreferencePage extends FieldEditorPreferencePage imple
                 ITalendCorePrefConstants.DOC_GENERATESOURCECODE,
                 org.talend.repository.i18n.Messages.getString("DocumentationPreferencePage.sourceCodeToHTML"), getFieldEditorParent()); //$NON-NLS-1$
         addField(sourceCodeGenFieldEditor);
+
+        generateLatestVersionFieldEditor = new BooleanFieldEditor(ITalendCorePrefConstants.DOC_GENERATE_LASTEST_VERSION,
+                Messages.getString("PerformancePreferencePage.generateLatestVersion"), getFieldEditorParent()); //$NON-NLS-1$
+        addField(generateLatestVersionFieldEditor);
 
         // see the bug 7073,qli
         if (isDocumentationPluginLoaded) {
@@ -95,6 +101,7 @@ public class DocumentationPreferencePage extends FieldEditorPreferencePage imple
         final Composite parentComposite = getFieldEditorParent();
         documentCssFile.getTextControl(parentComposite).addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 checkValue(parentComposite);
             }
@@ -138,6 +145,7 @@ public class DocumentationPreferencePage extends FieldEditorPreferencePage imple
 
     class UseCssListener implements IPropertyChangeListener {
 
+        @Override
         public void propertyChange(PropertyChangeEvent event) {
             activateFields(String.valueOf(event.getNewValue()).equals("true")); //$NON-NLS-1$
         }
@@ -148,6 +156,7 @@ public class DocumentationPreferencePage extends FieldEditorPreferencePage imple
      * 
      * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
      */
+    @Override
     public void init(IWorkbench workbench) {
         isDocumentationPluginLoaded = PluginChecker.isDocumentationPluginLoaded();
     }

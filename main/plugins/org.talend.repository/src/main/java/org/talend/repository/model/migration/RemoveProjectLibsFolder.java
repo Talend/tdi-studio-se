@@ -111,7 +111,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
          */
         @Override
         public void deployToLocalMaven(ArtifactsDeployer deployer, File jarFile, ModuleNeeded module) throws Exception {
-            deployer.deployToLocalMaven(jarFile.getAbsolutePath(), module.getMavenUriSnapshot(), false);
+            deployer.deployToLocalMaven(jarFile.getAbsolutePath(), module.getMavenUri(true), false);
 
         }
     }

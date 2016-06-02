@@ -17,9 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jface.wizard.WizardPage;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
@@ -31,6 +29,7 @@ import org.talend.daikon.properties.presentation.Widget;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.handler.IContextHandler;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.ui.context.ContextComposite;
@@ -71,12 +70,19 @@ public abstract class GenericWizardPage extends WizardPage {
         this.form = form;
         this.compService = compService;
         this.addContextFields = addContextFields;
+        setupPropertyValueEvaluator();
     }
 
     public GenericWizardPage(ConnectionItem connectionItem, boolean isRepositoryObjectEditable) {
         super("GenericWizardPage"); //$NON-NLS-1$
         this.connectionItem = connectionItem;
         this.isRepositoryObjectEditable = isRepositoryObjectEditable;
+    }
+
+    protected void setupPropertyValueEvaluator() {
+        if (form != null && getConnection() != null) {
+            form.getProperties().setValueEvaluator(new MetadataContextPropertyValueEvaluator(getConnection()));
+        }
     }
 
     private boolean callBefore() {
@@ -104,7 +110,8 @@ public abstract class GenericWizardPage extends WizardPage {
     protected ContextComposite addContextFields(Composite parentComposite) {
         contextHandler = new GenericContextHandler();
         contextHandler.setParameters(getContextParameters());
-        ContextComposite contextComp = new ContextComposite(parentComposite, connectionItem, contextHandler);
+        ContextComposite contextComp = new ContextComposite(parentComposite, connectionItem, !isRepositoryObjectEditable,
+                contextHandler);
         return contextComp;
     }
 

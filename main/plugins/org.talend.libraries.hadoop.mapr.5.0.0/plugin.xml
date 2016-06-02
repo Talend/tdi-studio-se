@@ -213,6 +213,9 @@
            <library
                  id="commons-lang-2.6.jar">
            </library>
+           <library
+                 id="commons-io-2.4.jar">
+           </library>
         </libraryNeededGroup>        
         <libraryNeededGroup
               description="The lastest Pig libraries of MAPR50X"
@@ -329,6 +332,9 @@
            </library>
            <library
                  id="commons-codec-1.5.jar">
+           </library>
+           <library
+                 id="netty-3.6.2.Final.jar">
            </library>
         </libraryNeededGroup>        
         <libraryNeededGroup

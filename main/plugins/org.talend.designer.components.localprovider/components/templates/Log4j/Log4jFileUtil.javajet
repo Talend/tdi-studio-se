@@ -26,7 +26,7 @@
 		public void startRetriveDataInfo() {
 			if (isLog4jEnabled) {
 			%>
-				log.info("<%=label%> - Retrieving records from the datasource.");
+				log.debug("<%=label%> - Retrieving records from the datasource.");
 			<%
 			}
 		}
@@ -34,7 +34,7 @@
 		public void retrievedDataNumberInfo() {
 			if (isLog4jEnabled) {
 			%>
-				log.info("<%=label%> - Retrieved records count: "+ nb_line_<%=cid%> + " .");
+				log.debug("<%=label%> - Retrieved records count: "+ nb_line_<%=cid%> + " .");
 			<%
 			}
 		}
@@ -42,7 +42,7 @@
 		public void retrievedDataNumberInfoFromGlobalMap(INode node) {
 			if (isLog4jEnabled) {
 			%>
-				log.info("<%=label%> - Retrieved records count: "+ globalMap.get("<%=cid %>_NB_LINE") + " .");
+				log.debug("<%=label%> - Retrieved records count: "+ globalMap.get("<%=cid %>_NB_LINE") + " .");
 			<%
 			}
 		}
@@ -51,7 +51,7 @@
 		public void retrievedDataNumberInfo(INode node) {
 			if (isLog4jEnabled) {
 			%>
-				log.info("<%=label%> - Retrieved records count: "+ nb_line_<%=cid%> + " .");
+				log.debug("<%=label%> - Retrieved records count: "+ nb_line_<%=cid%> + " .");
 			<%
 			}
 		}
@@ -59,7 +59,7 @@
 		public void writeDataFinishInfo(INode node) {
 			if(isLog4jEnabled){
 			%>
-				log.info("<%=label%> - Written records count: " + nb_line_<%=cid %> + " .");
+				log.debug("<%=label%> - Written records count: " + nb_line_<%=cid %> + " .");
 			<%
 			}
 		}
@@ -107,7 +107,7 @@
 		public void logDataCountInfo() {
 			if(isLog4jEnabled){
 			%>
-				log.info("<%=label%> - Processed records count: " + nb_line_<%=cid %> + " .");
+				log.debug("<%=label%> - Processed records count: " + nb_line_<%=cid %> + " .");
 			<%
 			}
 		}

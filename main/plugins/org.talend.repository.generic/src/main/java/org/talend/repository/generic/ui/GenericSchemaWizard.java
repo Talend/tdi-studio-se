@@ -27,6 +27,7 @@ import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.SchemaUtils;
@@ -48,8 +49,8 @@ public class GenericSchemaWizard extends CheckLastVersionRepositoryWizard implem
 
     private IMetadataTable oldMetadataTable;
 
-    public GenericSchemaWizard(IWorkbench workbench, boolean creation, ConnectionItem connectionItem,
-            MetadataTable metadataTable, boolean forceReadOnly) {
+    public GenericSchemaWizard(IWorkbench workbench, boolean creation, IRepositoryViewObject object,
+            ConnectionItem connectionItem, MetadataTable metadataTable, boolean forceReadOnly) {
         super(workbench, creation, forceReadOnly);
         this.connectionItem = connectionItem;
         this.metadataTable = metadataTable;
@@ -58,6 +59,7 @@ public class GenericSchemaWizard extends CheckLastVersionRepositoryWizard implem
             oldMetadataTable = ConvertionHelper.convert(metadataTable);
         }
         setNeedsProgressMonitor(true);
+        setRepositoryObject(object);
         isRepositoryObjectEditable();
         initLockStrategy();
     }
@@ -88,7 +90,7 @@ public class GenericSchemaWizard extends CheckLastVersionRepositoryWizard implem
         if (tableWizardPage.isPageComplete()) {
             IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
             if (!newTable.sameMetadataAs(oldMetadataTable)) {
-                SchemaUtils.updateComponentSchema(metadataTable);
+                SchemaUtils.updateComponentSchema(metadataTable, connectionItem.getConnection());
             }
             GenericUpdateManager.updateSingleSchema(connectionItem, metadataTable, oldMetadataTable, oldTableMap);
             IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();

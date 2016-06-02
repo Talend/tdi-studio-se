@@ -19,80 +19,46 @@
             id="org.talend.designer.core.generic.model.migration.NewSalesforceMigrationTask"
             name="NewSalesforceMigrationTask"
             version="6.2.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.2.1"
+              class="org.talend.designer.core.generic.model.migration.Salesforce620Migration"
+              description="Migrate salesforce components from 6.2.0 to 6.2.1"
+              id="org.talend.designer.core.generic.model.migration.Salesforce620Migration"
+              name="Salesforce620Migration"
+              version="6.2.1">
         </projecttask> 
    </extension>
    <extension
          point="org.talend.designer.core.generic.fieldType_mapping">
       <Mapping
             mapFieldType="CHECK"
-            name="DEFAULT+BOOLEAN"
-            schemaType="BOOLEAN"
+            name="DEFAULT+java.lang.Boolean"
+            schemaType="java.lang.Boolean"
             widgetType="DEFAULT">
       </Mapping>
       <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+BYTE_ARRAY"
-            schemaType="BYTE_ARRAY"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="DATE"
-            name="DEFAULT+DATE"
-            schemaType="DATE"
-            widgetType="DEFAULT">
+            mapFieldType="CHECK"
+            name="DEFAULT+java.util.List&lt;java.lang.Boolean&gt;"
+            schemaType="List&lt;java.lang.Boolean&gt;"
+            widgetType="CHECK">
       </Mapping>
       <Mapping
             mapFieldType="DATE"
-            name="DEFAULT+DATETIME"
-            schemaType="DATETIME"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+DECIMAL"
-            schemaType="DECIMAL"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+DOUBLE"
-            schemaType="DOUBLE"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+DYNAMIC"
-            schemaType="DYNAMIC"
+            name="DEFAULT+java.util.Date"
+            schemaType="java.util.Date"
             widgetType="DEFAULT">
       </Mapping>
       <Mapping
             mapFieldType="CLOSED_LIST"
-            name="DEFAULT+ENUM"
-            schemaType="ENUM"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+FLOAT"
-            schemaType="FLOAT"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+INT"
-            schemaType="INT"
-            widgetType="DEFAULT">
+            name="ENUMERATION"
+            widgetType="ENUMERATION">
       </Mapping>
       <Mapping
             mapFieldType="SCHEMA_TYPE"
             name="DEFAULT+SCHEMA"
             schemaType="SCHEMA"
-            widgetType="DEFAULT">
-      </Mapping>
-      <Mapping
-            mapFieldType="TEXT"
-            name="DEFAULT+STRING"
-            schemaType="STRING"
             widgetType="DEFAULT">
       </Mapping>
       

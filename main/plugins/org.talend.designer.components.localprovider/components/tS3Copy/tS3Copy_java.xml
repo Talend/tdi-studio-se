@@ -114,7 +114,7 @@
       NAME="FROM_KEY"
       FIELD="TEXT"
       NUM_ROW="30"
-      REQUIRED="false"
+      REQUIRED="true"
       GROUP="FROM_CONFIG"
     >
     <DEFAULT>""</DEFAULT>
@@ -134,7 +134,7 @@
       NAME="TO_KEY"
       FIELD="TEXT"
       NUM_ROW="40"
-      REQUIRED="false"
+      REQUIRED="true"
       GROUP="TO_CONFIG"
     >
     <DEFAULT>""</DEFAULT>

@@ -631,6 +631,11 @@ public class TableController extends AbstractElementPropertySectionController {
             revertToolBarButtonState(false);
             return;
         }
+        IElementParameter useDynamic = elem.getElementParameter("USE_DYNAMIC_JOB");
+        if (useDynamic != null && Boolean.valueOf(String.valueOf(useDynamic.getValue()))) {
+            String[] split = processId.split(";");
+            processId = split[0];
+        }
 
         ProcessItem processItem = ItemCacheManager.getProcessItem(processId, (String) jobVersionParam.getValue());
         Process process = null;

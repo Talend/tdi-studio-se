@@ -21,7 +21,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
@@ -34,7 +33,6 @@ import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
-import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -66,7 +64,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
     protected Map<ExportChoice, Object> exportChoice;
 
     protected ITalendProcessJavaProject talendProcessJavaProject;
-    
+
     private boolean itemDependencies;
 
     public AbstractBuildJobHandler(ProcessItem processItem, String version, String contextName,
@@ -92,12 +90,12 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         }
         return false;
     }
-    
+
     public boolean hasItemDependencies() {
         return itemDependencies;
     }
-    
-    protected void setNeedItemDependencies(boolean itemDependencies){
+
+    protected void setNeedItemDependencies(boolean itemDependencies) {
         this.itemDependencies = itemDependencies;
     }
 
@@ -161,7 +159,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         // if not binaries, need add maven resources
         boolean isBinaries = isOptionChoosed(ExportChoice.binaries);
         addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_MAVEN_RESOURCES);
-        addArg(profileBuffer, isOptionChoosed(ExportChoice.needJobItem) || itemDependencies, TalendMavenConstants.PROFILE_INCLUDE_ITEMS);
+        addArg(profileBuffer, isOptionChoosed(ExportChoice.needJobItem) || itemDependencies,
+                TalendMavenConstants.PROFILE_INCLUDE_ITEMS);
 
         // for binaries
         addArg(profileBuffer, isOptionChoosed(ExportChoice.includeLibs), TalendMavenConstants.PROFILE_INCLUDE_LIBS);
@@ -183,6 +182,11 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         // xmlMappings folders
         addArg(profileBuffer, needXmlMappings(), TalendMavenConstants.PROFILE_INCLUDE_XMLMAPPINGS);
         addArg(profileBuffer, needXmlMappings() && isBinaries, TalendMavenConstants.PROFILE_INCLUDE_RUNNING_XMLMAPPINGS);
+
+        // If the map doesn't contain the assembly key, then take the default value activation from the POM.
+        boolean isAssemblyNeeded = exportChoice.get(ExportChoice.needAssembly) == null
+                || isOptionChoosed(ExportChoice.needAssembly);
+        addArg(profileBuffer, isAssemblyNeeded, TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
 
         // rules
         if (needRules()) {
@@ -225,7 +229,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
 
     private void addArg(StringBuffer commandBuffer, boolean include, String arg, boolean isHD) {
         if (isHD) {
-            commandBuffer.append(NEGATION);
+            commandBuffer.append(COMMA);
             commandBuffer.append(arg);
         } else {
             addArg(commandBuffer, false, include, arg);

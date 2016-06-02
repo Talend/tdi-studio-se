@@ -218,7 +218,8 @@ public abstract class JobScriptsManager {
         esbServiceName,
         esbCategory,
         esbExportType,
-        properties
+        properties,
+        needAssembly
     }
 
     /**
@@ -596,8 +597,8 @@ public abstract class JobScriptsManager {
     protected IProcess generateJobFiles(ProcessItem process, String contextName, String version, boolean statistics,
             boolean trace, boolean applyContextToChildren, IProgressMonitor monitor) throws ProcessorException {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
-        IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace, applyContextToChildren,
-                    isOptionChoosed(ExportChoice.needContext), monitor);
+        IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace,
+                applyContextToChildren, isOptionChoosed(ExportChoice.needContext), monitor);
         return processor.getProcess();
     }
 

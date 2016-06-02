@@ -96,7 +96,7 @@ imports="
 
 		    String dbquery_<%=cid%> = <%=dbInputBeginUtil.getQueryString(node)%>;
 			<%if(isLog4jEnabled){%>
-                log.info("<%=cid%> - Executing the query: '"+dbquery_<%=cid%>+"'.");
+                log.debug("<%=cid%> - Executing the query: '"+dbquery_<%=cid%>+"'.");
 			<%}%>
 
             <% 
@@ -201,7 +201,7 @@ imports="
 		    	int column_index_<%=cid%> =1;
 		    <%}%>
 		    <%if(isLog4jEnabled){%>
-		    	log.info("<%=cid%> - Retrieving records from the database.");
+		    	log.debug("<%=cid%> - Retrieving records from the database.");
 		    <%}%>
 		    while (rs_<%=cid %>.next()) {
 		        nb_line_<%=cid%>++;

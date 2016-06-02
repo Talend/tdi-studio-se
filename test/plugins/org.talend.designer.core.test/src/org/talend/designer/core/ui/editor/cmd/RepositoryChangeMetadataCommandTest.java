@@ -28,10 +28,8 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.designer.core.test.util.NodeTestCreator;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.test.utils.testproperties.TestProperties;
 
 /**
  * created by ycbai on 2016年4月19日 Detailled comment

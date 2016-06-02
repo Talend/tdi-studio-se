@@ -95,6 +95,16 @@
     >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="NEWER_EMAILS"
+      FIELD="CHECK"
+      REQUIRED="true"
+      NUM_ROW="7"
+      SHOW_IF="ALL_EMAILS == 'false'"
+    >
+      <DEFAULT>true</DEFAULT>
+    </PARAMETER>
 
     <PARAMETER
       NAME="MAX_EMAILS"

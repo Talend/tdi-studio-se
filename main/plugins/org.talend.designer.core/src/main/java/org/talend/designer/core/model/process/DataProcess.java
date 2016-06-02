@@ -2328,7 +2328,7 @@ public class DataProcess implements IGeneratingProcess {
         if (!checkTriggerAndDBSettings(node, rulesConnection, isOutput)) {
             return;
         }
-        DataNode nodeUseValidationRule = (DataNode) node;
+        INode nodeUseValidationRule = node;
         endNode = nodeUseValidationRule;
         DataNode filterNode = null;
         List<IConnection> validRuleConnections;
@@ -2337,10 +2337,10 @@ public class DataProcess implements IGeneratingProcess {
         DataConnection dataConnection = null;
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections("FLOW");//$NON-NLS-1$
+            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);//$NON-NLS-1$
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections("FLOW");//$NON-NLS-1$
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);//$NON-NLS-1$
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {

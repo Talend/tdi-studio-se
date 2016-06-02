@@ -340,10 +340,13 @@ public class LoginHelper {
         if (lastUsedProject == null) {
             return false;
         }
-        String projectName = lastUsedProject.getTechnicalLabel();
-        String projectUrl = svnProviderService.getProjectUrl(lastUsedProject);
-        String lastUsedBranch = prefManipulator.getLastSVNBranch(projectUrl, projectName);
+        String lastUsedBranch = null;
         if (isRemoteConnection) {
+            if (svnProviderService != null) {
+                String projectUrl = svnProviderService.getProjectUrl(lastUsedProject);
+                String projectName = lastUsedProject.getTechnicalLabel();
+                lastUsedBranch = prefManipulator.getLastSVNBranch(projectUrl, projectName);
+            }
             List<String> branches = null;
             try {
                 branches = getProjectBranches(lastUsedProject);
@@ -358,10 +361,6 @@ public class LoginHelper {
                 MessageDialog.openError(getUsableShell(),
                         Messages.getString("LoginHelper.errorTitle"), Messages.getString("LoginHelper.branchChanged")); //$NON-NLS-1$ //$NON-NLS-2$
                 return false;
-            }
-        } else {
-            if (lastUsedBranch == null || lastUsedBranch.trim().isEmpty()) {
-                lastUsedBranch = null;
             }
         }
         setRepositoryContextInContext(connBean, user, lastUsedProject, lastUsedBranch);

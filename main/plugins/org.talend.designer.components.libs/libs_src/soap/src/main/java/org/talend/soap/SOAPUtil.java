@@ -36,6 +36,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.sun.xml.messaging.saaj.soap.SOAPPartImpl;
+
 public class SOAPUtil {
 
     private SOAPConnection connection;
@@ -113,6 +115,11 @@ public class SOAPUtil {
         SOAPMessage reply = connection.call(message, destination);
 
         SOAPPart reSoapPart = reply.getSOAPPart();
+        
+        if (reSoapPart != null && reSoapPart instanceof SOAPPartImpl) {
+			((SOAPPartImpl) reSoapPart).setSourceCharsetEncoding(encoding);
+		}
+        
         SOAPEnvelope reEnvelope = reSoapPart.getEnvelope();
 
         SOAPHeader reHeader = reEnvelope.getHeader();
@@ -226,6 +233,11 @@ public class SOAPUtil {
     	message.saveChanges();
     	SOAPMessage reply = connection.call(message, destination);
     	SOAPPart reSoapPart = reply.getSOAPPart();
+    	
+    	if (reSoapPart != null && reSoapPart instanceof SOAPPartImpl) {
+			((SOAPPartImpl) reSoapPart).setSourceCharsetEncoding(encoding);
+		}
+    	
     	try {
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer t = tf.newTransformer();

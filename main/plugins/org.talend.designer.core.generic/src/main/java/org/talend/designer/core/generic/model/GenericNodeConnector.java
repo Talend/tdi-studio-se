@@ -17,8 +17,6 @@ import java.util.Set;
 import org.talend.components.api.component.Connector;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.process.INodeConnector;
-import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.components.NodeConnector;
 
 /**
@@ -26,18 +24,23 @@ import org.talend.designer.core.model.components.NodeConnector;
  *
  */
 public class GenericNodeConnector extends NodeConnector {
+    
+    public static String INPUT_CONNECTOR = Connector.MAIN_NAME;
 
     private String genericConnectorType;
 
     private Connector myConnector;
+    
+    private boolean output;
 
     /**
      * DOC nrousseau GenericNodeConnector constructor comment.
      * 
      * @param parentNode
      */
-    public GenericNodeConnector(INode parentNode) {
+    public GenericNodeConnector(INode parentNode, boolean output) {
         super(parentNode);
+        this.output = output;
     }
 
     /*
@@ -47,7 +50,18 @@ public class GenericNodeConnector extends NodeConnector {
      */
     @Override
     public int getMaxLinkOutput() {
-        if (getConnector() != null) {
+        if (output && getConnector() != null) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.designer.core.model.components.NodeConnector#getMaxLinkInput()
+     */
+    @Override
+    public int getMaxLinkInput() {
+        if (!output && getConnector() != null) {
             return 1;
         }
         return 0;
@@ -84,7 +98,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     private Connector getConnector() {
         if (myConnector == null) {
-            Set<? extends Connector> connectors = getParentNode().getComponentProperties().getAvailableConnectors(null, true);
+            Set<? extends Connector> connectors = getParentNode().getComponentProperties().getAvailableConnectors(null, output);
             if (connectors != null) {
                 for (Connector connector : connectors) {
                     if (connector.getName().equals(genericConnectorType)) {
@@ -118,6 +132,9 @@ public class GenericNodeConnector extends NodeConnector {
      */
     @Override
     public String getName() {
+        if (!output) {
+            return EConnectionType.FLOW_MAIN.getName();
+        }
         return genericConnectorType;
     }
 
@@ -133,6 +150,15 @@ public class GenericNodeConnector extends NodeConnector {
 
     public Connector getComponentConnector() {
         return getConnector();
+    }
+
+    
+    /**
+     * Getter for output.
+     * @return the output
+     */
+    protected boolean isOutput() {
+        return this.output;
     }
 
 }

@@ -2488,11 +2488,18 @@ public class CLASS {
             return updateBulkSQL.append(updateSetStmt).append(updateSetSelectStmt).append(updateWhereSubStmt).append(updateWhereMainStmt).append(updateWhereSubStmt).toString();
         }        
         
+        public String generateSetStmt(String typeToGenerate, Column column, int index, String incomingConnName, String cid, int actionType, String dynamic) {
+        	return generateSetStmt(typeToGenerate, column.getColumn().getType(), column, index, incomingConnName, cid, actionType, dynamic);
+        }
+        
         public String generateSetStmt(String typeToGenerate, String dbType, Column column, int index, String incomingConnName, String cid, int actionType, String dynamic) {
             if(dynamic==null) {
                 dynamic="";
             } else {
                 dynamic+=cid;
+            }
+            if(dbType == null){
+            	dbType = "";
             }
             boolean isObject = false;
             String prefix = null;

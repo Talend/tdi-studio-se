@@ -413,17 +413,17 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         param.setReadOnly(true);
         addElementParameter(param);
 
-        param = new ElementParameter(this);
-        param.setName(EParameterName.COMP_DEFAULT_PROJECT_DIR.getName());
-        param.setCategory(EComponentCategory.TECHNICAL);
-        param.setFieldType(EParameterFieldType.DIRECTORY);
-        param.setDisplayName(EParameterName.COMP_DEFAULT_PROJECT_DIR.getDisplayName());
-        param.setNumRow(99);
-        param.setShow(false);
-        param.setValue(DesignerPlugin.getDefault().getPreferenceStore()
-                .getString(TalendDesignerPrefConstants.COMP_DEFAULT_PROJECT_DIR));
-        param.setReadOnly(true);
-        addElementParameter(param);
+        // param = new ElementParameter(this);
+        // param.setName(EParameterName.COMP_DEFAULT_PROJECT_DIR.getName());
+        // param.setCategory(EComponentCategory.TECHNICAL);
+        // param.setFieldType(EParameterFieldType.DIRECTORY);
+        // param.setDisplayName(EParameterName.COMP_DEFAULT_PROJECT_DIR.getDisplayName());
+        // param.setNumRow(99);
+        // param.setShow(false);
+        // param.setValue(DesignerPlugin.getDefault().getPreferenceStore()
+        // .getString(TalendDesignerPrefConstants.COMP_DEFAULT_PROJECT_DIR));
+        // param.setReadOnly(true);
+        // addElementParameter(param);
 
         param = new ElementParameter(this);
         param.setName(EParameterName.DQ_REPORTING_BUNDLE_DIR.getName());
@@ -803,7 +803,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
                 generatingProcess.buildFromGraphicalProcess(sortedFlow);
                 generatedNodeList = generatingProcess.getNodeList();
-                processModified = false;
+                if (isActivate()) {
+                    // if not activated, like during the loading of job, we will still rebuild the list of generated nodes
+                    processModified = false;
+                }
                 setBuilding(false);
             }
         }
@@ -1194,7 +1197,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void loadElementParameters(Element elemParam, EList listParamType) {
         loadElementParameters(elemParam, listParamType, false);
     }
-    
+
     protected void loadElementParameters(Element elemParam, EList listParamType, boolean isJunitLoad) {
         ElementParameterType pType;
         // if it's a generic component,try to serialize the component to json,then save all in a new ElementParameter,
@@ -1417,8 +1420,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
                 String tempValue = (String) param.getChildParameters().get(EParameterName.ENCODING_TYPE.getName()).getValue();
                 if (!tempValue.equals(EmfComponent.ENCODING_TYPE_CUSTOM)) {
-                    tempValue = tempValue.replaceAll("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                    tempValue = tempValue.replaceAll("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    tempValue = tempValue.replace("'", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    tempValue = tempValue.replace("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
                     tempValue = TalendTextUtils.addQuotes(tempValue);
                     if (!tempValue.equals(value)) {
                         setToCustom = true;
@@ -1497,10 +1500,10 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         String sourceJobType = ConvertJobsUtil.getJobTypeFromFramework(this.getProperty().getItem());
         String sourceJobFramework = (String) this.getProperty().getAdditionalProperties().get(ConvertJobsUtil.FRAMEWORK);
         if (sourceJobType != null) {
-            processType.setJobType(sourceJobType.replaceAll(" ", "_"));
+            processType.setJobType(sourceJobType.replace(' ', '_'));
         }
         if (sourceJobFramework != null) {
-            processType.setFramework(sourceJobFramework.replaceAll(" ", "_"));
+            processType.setFramework(sourceJobFramework.replace(' ', '_'));
         }
 
         EList nList = processType.getNode();
@@ -1954,6 +1957,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         loadProjectParameters(processType);
         loadAdditionalProperties();
 
+        loadContexts(processType);
+
         try {
             loadNodes(processType, nodesHashtable);
         } catch (PersistenceException e) {
@@ -1967,7 +1972,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
         loadRejectConnector(nodesHashtable);
 
-        loadContexts(processType);
         // feature 7410
         loadNotes(processType);
         loadSubjobs(processType);
@@ -2646,7 +2650,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 for (int i = 0; i < connecList.size(); i++) {
                     cType = (ConnectionType) connecList.get(i);
                     if (cType.getTarget().equals(node.getUniqueName())) {
-                        if (cType.isSetMergeOrder()) {
+                        if (cType.isSetMergeOrder()&&connectionsHashtable.get(cType)!=null) {
                             Connection connection = connectionsHashtable.get(cType);
                             connection.setInputId(cType.getMergeOrder());
                             connection.updateName();

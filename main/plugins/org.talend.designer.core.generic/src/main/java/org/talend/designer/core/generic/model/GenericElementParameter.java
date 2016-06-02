@@ -22,11 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.avro.Schema;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.runtime.model.components.IComponentConstants;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
@@ -34,23 +35,24 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.core.model.process.ElementParameterParser;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
-import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Property;
 import org.talend.daikon.properties.SchemaProperty;
+import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.presentation.Widget.WidgetType;
 import org.talend.designer.core.generic.constants.IElementParameterEventProperties;
 import org.talend.designer.core.generic.constants.IGenericConstants;
+import org.talend.designer.core.generic.i18n.Messages;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
-import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -101,10 +103,26 @@ public class GenericElementParameter extends ElementParameter {
         this.pcs.removePropertyChangeListener(listener);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.core.model.components.ElementParameter#getValue()
+     */
+    @Override
+    public Object getValue() {
+        if (getFieldType() == EParameterFieldType.CLOSED_LIST) {
+            if (super.getValue() != null) {
+                return super.getValue().toString();
+            }
+        }
+        return super.getValue();
+    }
+
     @Override
     public void setValue(Object o) {
         super.setValue(o);
-        if (!isFirstCall || widget.getContent() instanceof ComponentProperties) {
+        if (!isFirstCall
+                || (widget.getContent() instanceof ComponentProperties && !WidgetType.TABLE.equals(widget.getWidgetType()))) {
             updateProperty(o);
             boolean calledValidate = callValidate();
             if (calledValidate) {
@@ -126,21 +144,29 @@ public class GenericElementParameter extends ElementParameter {
         NamedThing widgetProperty = widget.getContent();
         if (widgetProperty instanceof SchemaProperty) {
             if (newValue instanceof String) {
-                ((SchemaProperty) widgetProperty).setValue(new Schema.Parser().parse((String)newValue));
+                ((SchemaProperty) widgetProperty).setValue(new Schema.Parser().parse((String) newValue));
+            } else if (newValue instanceof Schema) {
+                ((SchemaProperty) widgetProperty).setValue(((Schema) newValue));
             }
         } else if (widgetProperty instanceof Property) {
-            Property se = (Property) widgetProperty;
+            Property se = (Property<?>) widgetProperty;
             Object oldValue = se.getValue();
-            if (newValue != null && !newValue.equals(oldValue)) {
-                se = (Property) getSubProperties().getProperty(se.getName());
-                if (isDrivedByForm()) {
-                    form.setValue(se.getName(), newValue);
-                } else {
-                    if (newValue instanceof List && WidgetType.TABLE.equals(widget.getWidgetType())) {
-                        setTableValues(se, (List<Map<String, Object>>) newValue);
-                    } else {
-                        se.setValue(newValue);
+            Object value = newValue;
+            List<?> propertyPossibleValues = ((Property<?>) widgetProperty).getPossibleValues();
+            if (propertyPossibleValues != null) {
+                for (Object possibleValue : propertyPossibleValues) {
+                    if (possibleValue.toString().equals(newValue)) {
+                        value = possibleValue;
+                        break;
                     }
+                }
+            }
+            if (value != null && !value.equals(oldValue)) {
+                se = (Property<?>) getSubProperties().getProperty(se.getName());
+                if (isDrivedByForm()) {
+                    form.setValue(se.getName(), value);
+                } else {
+                    se.setValue(value);
                 }
                 fireConnectionPropertyChangedEvent(newValue);
             }
@@ -150,12 +176,9 @@ public class GenericElementParameter extends ElementParameter {
             if (formtoShow != null) {
                 fireShowDialogEvent(getSubProperties().getForm(formtoShow.getName()));
             }
+        } else if (widgetProperty instanceof ComponentProperties && WidgetType.TABLE.equals(widget.getWidgetType())) {
+            GenericTableUtils.setTableValues((ComponentProperties) widgetProperty, (List<Map<String, Object>>) newValue, this);
         }
-    }
-
-    private void setTableValues(Property prop, List<Map<String, Object>> value) {
-        List<Map<String, String>> newMap = ElementParameterParser.createTableValues(value, this);
-        prop.setValue(newMap);
     }
 
     private boolean hasPropertyChangeListener() {
@@ -213,6 +236,7 @@ public class GenericElementParameter extends ElementParameter {
                 @Override
                 protected void doWork() throws Throwable {
                     componentService.beforePropertyActivate(getParameterName(), getSubProperties());
+                    fireValidateStatusEvent();
                     update();
                 }
             }.call();
@@ -244,12 +268,14 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private boolean callAfter() {
-        if (widget.isCallAfter() && hasPropertyChangeListener()) {
+        if (widget.isCallAfter() && (hasPropertyChangeListener() || widget.getWidgetType() == WidgetType.SCHEMA_REFERENCE)) {
+            // schema update must also
             return new ComponentServiceCaller(widget.getContent().getDisplayName(), widget.isLongRunning()) {
 
                 @Override
                 protected void doWork() throws Throwable {
                     componentService.afterProperty(getParameterName(), getSubProperties());
+                    fireValidateStatusEvent();
                     updateSchema();
                 }
             }.call();
@@ -261,27 +287,37 @@ public class GenericElementParameter extends ElementParameter {
         IElement element = this.getElement();
         if (element instanceof Node) {
             Node node = (Node) element;
-            IMetadataTable mainTable = node.getMetadataFromConnector(Connector.MAIN_NAME);
-            if (mainTable != null) {
-                INodeConnector connector = node.getConnectorFromName(Connector.MAIN_NAME);
-                Schema schema = null;
+            Boolean propagate = null;
+            List<INodeConnector> connectors = node.getConnectorsFromType(EConnectionType.FLOW_MAIN);
+            for (INodeConnector connector : connectors) {
                 if (connector instanceof GenericNodeConnector) {
                     Connector componentConnector = ((GenericNodeConnector) connector).getComponentConnector();
-                    schema = getRootProperties().getSchema(componentConnector, true);
-                }
-                if (schema != null) {
-                    MetadataTable metadataTable = MetadataToolAvroHelper.convertFromAvro(schema);
-                    IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
-                    if (!newTable.sameMetadataAs(mainTable)) {
-                        IElementParameter schemaParameter = node
-                                .getElementParameterFromField(EParameterFieldType.SCHEMA_REFERENCE);
-                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, schemaParameter, mainTable, newTable, null);
-                        cmd.setPropagate(Boolean.TRUE);
-                        IProcess process = node.getProcess();
-                        if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
-                            CommandStack commandStack = ((org.talend.designer.core.ui.editor.process.Process) process)
-                                    .getCommandStack();
-                            commandStack.execute(cmd);
+                    Schema schema = null;
+                    schema = getRootProperties().getSchema(componentConnector, ((GenericNodeConnector) connector).isOutput());
+                    IMetadataTable mainTable = node.getMetadataFromConnector(connector.getName());
+                    if (schema != null) {
+                        MetadataTable metadataTable = MetadataToolAvroHelper.convertFromAvro(schema);
+                        IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
+                        if ((!mainTable.sameMetadataAs(newTable) || !newTable.sameMetadataAs(mainTable))) {
+                            mainTable.setListColumns(newTable.getListColumns());
+                            if (propagate == null && node.getOutgoingConnections().size() != 0) {
+                                propagate = ChangeMetadataCommand.askPropagate();
+                            }
+                            if (propagate != null && propagate) {
+                                for (IConnection connection : node.getOutgoingConnections()) {
+                                    if (connector.getName().equals(connection.getConnectorName())) {
+                                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(connection.getTarget(), null, null,
+                                                newTable, null);
+                                        cmd.setPropagate(true);
+                                        IProcess process = node.getProcess();
+                                        if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
+                                            CommandStack commandStack = ((org.talend.designer.core.ui.editor.process.Process) process)
+                                                    .getCommandStack();
+                                            commandStack.execute(cmd);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -418,4 +454,39 @@ public class GenericElementParameter extends ElementParameter {
     public void setDrivedByForm(boolean drivedByForm) {
         this.drivedByForm = drivedByForm;
     }
+
+    public Property getProperty() {
+        NamedThing content = widget.getContent();
+        if (content instanceof Property) {
+            return (Property) content;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isRepositoryValueUsed() {
+        Property property = getProperty();
+        if (property != null) {
+            return property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null;
+        }
+        return false;
+    }
+
+    @Override
+    public void setRepositoryValueUsed(boolean repositoryUsed) {
+        Property property = getProperty();
+        if (property != null) {
+            property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, repositoryUsed ? property.getName() : null);
+        }
+    }
+
+    @Override
+    public void setContextMode(boolean mode) {
+        super.setContextMode(mode);
+        Property property = getProperty();
+        if (property != null) {
+            property.setTaggedValue(IGenericConstants.IS_DYNAMIC, mode);
+        }
+    }
+
 }

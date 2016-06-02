@@ -95,13 +95,7 @@ public class DqDemoImportTest extends DemosImportTest {
         Assert.assertEquals(demoConItemsFiles.size(), currentConnectionItemsSize);
 
         // test the routine items under DQ_Demo.zip
-        int currentRoutineItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.ROUTINES).size();
-        Assert.assertTrue(currentRoutineItemsSize > 0);
-        File tempRoutineItemsFolder = new File(rootPath + File.separator + routineItemPath);
-        List<File> demoRoutineItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempRoutineItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoRoutineItemsFiles.size() > 0);
-        Assert.assertEquals(demoRoutineItemsFiles.size(), currentRoutineItemsSize);
+        doRoutinesItemsTest(rootPath);
 
         // test the business process items under DQ_Demo.zip
         int currentBusinessItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.BUSINESS_PROCESS).size();

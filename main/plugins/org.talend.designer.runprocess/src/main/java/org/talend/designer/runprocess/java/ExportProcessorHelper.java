@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -46,6 +47,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
+import org.talend.utils.files.FileUtils;
 
 /**
  * created by Administrator on 2013-3-15 Detailled comment
@@ -53,18 +55,64 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
  */
 public class ExportProcessorHelper {
 
+    protected static final String NAME_PREFIX = "Remote"; //$NON-NLS-1$
+
+    protected static final String NAME_SUFFIX = "Export"; //$NON-NLS-1$
+
     protected String processName = null;
 
-    protected File archiveFile = null;
+    private File tempExportFolder;
+
+    protected File getTmpExportFolder() {
+        if (tempExportFolder == null) {
+            tempExportFolder = createTmpFolder();
+        }
+        return tempExportFolder;
+    }
+
+    protected File createTmpFolder() {
+        File tempFolder = null;
+        String tempFolderName = null;
+        try {
+            tempFolder = File.createTempFile(NAME_PREFIX, NAME_SUFFIX);
+            tempFolder.delete();
+            tempFolderName = tempFolder.getName();
+        } catch (IOException e) {
+            //
+        }
+        if (tempFolderName == null) {
+            tempFolderName = NAME_PREFIX + System.currentTimeMillis() + NAME_SUFFIX;
+        }
+
+        IPath studioTmpPath = Path.fromOSString(CorePlugin.getDefault().getPreferenceStore()
+                .getString(ITalendCorePrefConstants.FILE_PATH_TEMP));
+        File studioTmpFolder = studioTmpPath.toFile();
+        if (!studioTmpFolder.exists()) {
+            studioTmpFolder.mkdirs();
+        }
+        if (studioTmpFolder.exists()) {
+            File workFolder = new File(studioTmpFolder, tempFolderName);
+            workFolder.mkdirs();
+            if (workFolder.exists()) {// if enable to create, set it as temp export folder
+                tempFolder = workFolder;
+            }
+
+        }
+
+        if (tempFolder == null) { // can't create temp folder still
+            tempFolder = FileUtils.createUserTmpFolder(tempFolderName);
+        }
+        tempFolder.mkdirs();
+
+        return tempFolder;
+    }
 
     public String exportJob(Processor processor, int statisticsPort, int tracePort, String watchParam,
             final IProgressMonitor progressMonitor) throws ProcessorException {
         ProcessItem processItem = (ProcessItem) processor.getProperty().getItem();
         processName = processor.getProperty().getLabel();
 
-        archiveFile = Path
-                .fromOSString(CorePlugin.getDefault().getPreferenceStore().getString(ITalendCorePrefConstants.FILE_PATH_TEMP))
-                .append("remote_run_export" + FileExtensions.ZIP_FILE_SUFFIX).toFile(); //$NON-NLS-1$
+        File archiveFile = new File(getTmpExportFolder(), "remote_run_export-" + processName + FileExtensions.ZIP_FILE_SUFFIX); //$NON-NLS-1$
 
         Properties prop = new Properties();
         if (watchParam != null) {
@@ -103,8 +151,9 @@ public class ExportProcessorHelper {
     }
 
     public void cleanWorkingDirectory() {
-        if (archiveFile != null && archiveFile.exists() && archiveFile.isFile()) {
-            archiveFile.delete();
+        File tmpExportFolder = getTmpExportFolder();
+        if (tmpExportFolder != null) {
+            org.talend.utils.io.FilesUtils.deleteFolder(tmpExportFolder, true);
         }
     }
 
@@ -182,7 +231,7 @@ public class ExportProcessorHelper {
         // set like the method export(...) for buildJob
         exportChoiceMap.put(ExportChoice.jobType, type);
         if (context == null) {
-            context = ((ProcessItem) item).getProcess().getDefaultContext();
+            context = item.getProcess().getDefaultContext();
         }
         exportChoiceMap.put(ExportChoice.contextName, context);
 
@@ -196,8 +245,8 @@ public class ExportProcessorHelper {
                 prop.put(key, value);
             }
         }
-        prop.put(TalendProcessArgumentConstant.ARG_PORT_STATS, statisticsPort);
-        prop.put(TalendProcessArgumentConstant.ARG_PORT_TRACS, tracePort);
+        // prop.put(TalendProcessArgumentConstant.ARG_PORT_STATS, statisticsPort);
+        // prop.put(TalendProcessArgumentConstant.ARG_PORT_TRACS, tracePort);
         exportChoiceMap.put(ExportChoice.properties, prop);
 
         if (monitor.isCanceled()) {

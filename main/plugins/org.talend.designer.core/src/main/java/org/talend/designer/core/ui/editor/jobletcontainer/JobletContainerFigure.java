@@ -33,7 +33,6 @@ import org.talend.commons.ui.utils.workbench.gef.SimpleHtmlFigure;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.Problem.ProblemStatus;
-import org.talend.core.model.properties.Project;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
@@ -41,7 +40,6 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.utils.DesignerColorUtils;
-import org.talend.repository.ProjectManager;
 
 public class JobletContainerFigure extends Figure {
 
@@ -60,6 +58,10 @@ public class JobletContainerFigure extends Figure {
     private SimpleHtmlFigure titleFigure;
 
     private GreenRectangle rectFig;
+
+    private ImageFigure markFigure;
+
+    private ImageFigure infoFigure;
 
     private JobletCollapseFigure collapseFigure;
 
@@ -84,6 +86,10 @@ public class JobletContainerFigure extends Figure {
     private IFigure parentMRFigure;
 
     private boolean dispose = false;
+
+    private boolean showCompareMark;
+
+    private Image errorMarkImage = ImageProvider.getImage(EImage.Error_Mark);
 
     /**
      * DOC hwang JobletContainerFigure constructor comment.
@@ -123,6 +129,16 @@ public class JobletContainerFigure extends Figure {
         errorFigure.setSize(errorFigure.getPreferredSize());
         this.add(errorFigure);
 
+        infoFigure = new ImageFigure();
+        infoFigure.setImage(ImageProvider.getImage(EImage.INFORMATION_SMALL));
+        infoFigure.setVisible(false);
+        infoFigure.setSize(infoFigure.getPreferredSize());
+        this.add(infoFigure);
+
+        markFigure = new ImageFigure();
+        markFigure.setImage(errorMarkImage);
+        this.add(markFigure, null, 0);
+
         initMRFigures();
 
         htmlStatusHint = new SimpleHtmlFigure();
@@ -131,6 +147,8 @@ public class JobletContainerFigure extends Figure {
 
         updateData();
         initializejobletContainer(jobletContainer.getJobletContainerRectangle());
+        rectFig.setVisible(false);
+        markFigure.setVisible(false);
         if (jobletContainer.getNode().isMapReduceStart()) {
             refreshNodes(false);
             refreshMRstatus();
@@ -184,6 +202,15 @@ public class JobletContainerFigure extends Figure {
         }
         if (warningFigure.isVisible()) {
             warningFigure.setLocation(jobletContainer.getWarningLocation());
+        }
+        if (infoFigure.isVisible()) {
+            infoFigure.setLocation(jobletContainer.getInfoLocation());
+        }
+        if (rectFig.isVisible()) {
+            rectFig.setLocation(jobletContainer.getMarkLocation());
+        }
+        if (markFigure.isVisible()) {
+            markFigure.setLocation(jobletContainer.getErrorMarkLocation());
         }
         Iterator it = getChildren().iterator();
         if (!jobletContainer.getNode().isJoblet()) {
@@ -485,6 +512,7 @@ public class JobletContainerFigure extends Figure {
         } else {
             rectFig.setForegroundColor(ColorUtils.getCacheColor(white));
         }
+        markFigure.setSize(errorMarkImage.getImageData().width, errorMarkImage.getImageData().height);
     }
 
     public void dispose() {
@@ -539,7 +567,7 @@ public class JobletContainerFigure extends Figure {
         }
     }
 
-    public void updateStatus(int status) {
+    public void updateStatus(int status, boolean showInfoFlag) {
         if ((status & Process.ERROR_STATUS) != 0) {
             warningFigure.setVisible(false);
             errorFigure.setVisible(true);
@@ -555,7 +583,15 @@ public class JobletContainerFigure extends Figure {
             warningFigure.setToolTip(null);
         }
 
-        if (warningFigure.isVisible() || errorFigure.isVisible()) {
+        if (((status & Process.INFO_STATUS) != 0) && !errorFigure.isVisible() && !warningFigure.isVisible() && showInfoFlag) {
+            warningFigure.setVisible(false);
+            errorFigure.setVisible(false);
+            infoFigure.setVisible(true);
+        } else {
+            infoFigure.setVisible(false);
+        }
+
+        if (warningFigure.isVisible() || errorFigure.isVisible() || infoFigure.isVisible()) {
             List<String> problemsList;
 
             String text = "<b>" + jobletContainer.getNode().getUniqueName() + "</b><br><br>"; //$NON-NLS-1$ //$NON-NLS-2$
@@ -585,6 +621,10 @@ public class JobletContainerFigure extends Figure {
             errorFigure.setVisible(false);
             errorFigure.setToolTip(null);
         }
+    }
+
+    public void updateStatus(int status) {
+        updateStatus(status, false);
     }
 
     private void initMRFigures() {
@@ -823,7 +863,31 @@ public class JobletContainerFigure extends Figure {
                 this.parentMRFigure.add(value);
             }
         }
-
     }
 
+    public void updateErrorFlag(boolean flag) {
+        rectFig.setVisible(flag);
+        markFigure.setVisible(flag);
+    }
+
+    public boolean isShowCompareMark() {
+        return this.showCompareMark;
+    }
+
+    public void setShowCompareMark(boolean showCompareMark) {
+        this.showCompareMark = showCompareMark;
+    }
+
+    public void setInfoHint(String hintText) {
+        if (infoFigure.isVisible()) {
+            if (hintText.equals("") || hintText == null) { //$NON-NLS-1$
+                infoFigure.setToolTip(null);
+            } else {
+                htmlStatusHint.setText(hintText);
+                infoFigure.setToolTip(htmlStatusHint);
+            }
+        } else {
+            infoFigure.setToolTip(null);
+        }
+    }
 }

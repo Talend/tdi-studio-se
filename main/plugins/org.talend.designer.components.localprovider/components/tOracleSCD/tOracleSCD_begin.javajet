@@ -34,6 +34,21 @@ if(incomingConnections != null && incomingConnections.size() > 0) {
     }
 }
 
+boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+
+String rejectConnName = null;
+List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
+if(rejectConns != null && rejectConns.size() > 0) {
+    IConnection rejectConn = rejectConns.get(0);
+    rejectConnName = rejectConn.getName();
+}
+
+List<IMetadataColumn> rejectColumnList = null;
+IMetadataTable metadataTable = node.getMetadataFromConnector("REJECT");
+if(metadataTable != null) {
+    rejectColumnList = metadataTable.getListColumns();
+}
+
 if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outputSchema.size() > 0) {
     String dbhost = ElementParameterParser.getValue(node, "__HOST__");
     String dbport = ElementParameterParser.getValue(node, "__PORT__");
@@ -363,6 +378,32 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     }
     %>
     SCDStruct_<%=cid%> lookUpValue_<%=cid%> = null;
+    
     <%
+    //65535 issue helper
+    if(dieOnError || rejectConnName == null || rejectColumnList == null || rejectColumnList.isEmpty()) {
+		return stringBuffer.toString();
+    }
+    %>
+    
+    class Helper65535_<%=cid%> {
+    	
+    	void propagate(<%=rejectConnName %>Struct <%=rejectConnName%>, <%=incomingConnName%>Struct <%=incomingConnName%>) {
+    	<%
+        for(IMetadataColumn inColumn : inputSchema) {
+        	 for(IMetadataColumn outColumn : outputSchema) {
+        	 	if (inColumn.getLabel().equals(outColumn.getLabel())) {
+                %>
+                <%=rejectConnName%>.<%=inColumn.getLabel()%> = <%=incomingConnName%>.<%=inColumn.getLabel()%>;
+                <%
+        		}
+        	}
+        }
+        %>
+    	}
+    	
+    }
+    
+<%
 }
 %>

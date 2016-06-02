@@ -178,7 +178,7 @@ imports="
 %>
 							addJar_<%=cid%> = conn_<%=cid%>.createStatement();
 							try {
-								addJar_<%=cid%>.execute("add jar " + getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>"));
+								addJar_<%=cid%>.execute("add jar " + getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>").replace("maprfs", "hdfs"));
 							} catch (Exception e) {
 								e.printStackTrace();
 							} finally {

@@ -2,7 +2,11 @@
 	<%
 	String application = ElementParameterParser.getValue(node, "__APPLICATION__");
 	if("ALL_APPLICATIONS".equals(application)) {
-		if("\"emr-4.5.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		%>
+		{}
+		<%
+		} else if("\"emr-4.5.0\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Hive","Hue","Mahout","Pig","Spark"}
 		<%
@@ -20,7 +24,11 @@
 		<%
 		}
 	} else if("CORE_HADOOP".equals(application)) {
-		if("\"emr-4.5.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		%>
+		{"Ganglia","Hadoop","Hive","Hue","Mahout","Pig"}
+		<%
+		} else if("\"emr-4.5.0\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Hive","Pig"}
 		<%
@@ -38,7 +46,11 @@
 		<%
 		}
 	} else if("PRESTO_SANDBOX".equals(application)) {
-		if("\"emr-4.5.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		%>
+		{"Hadoop","Hive","Presto-Sandbox"}
+		<%
+		} else if("\"emr-4.5.0\"".equals(cluster_version)) {
 		%>
 		{"Hadoop","Hive","Presto-Sandbox"}
 		<%
@@ -52,7 +64,11 @@
 		<%
 		}
 	} else if("SPARK".equals(application)) {
-		if("\"emr-4.5.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		%>
+		{"Ganglia","Hadoop","Spark"}
+		<%
+		} else if("\"emr-4.5.0\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Spark"}
 		<%
@@ -69,10 +85,26 @@
 		{"Hadoop","Spark"}
 		<%
 		}
+	} else if("HBASE".equals(application)) {
+		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		%>
+		{"HBase","Ganglia","Hadoop","Hive","Hue","ZooKeeper-Sandbox"}
+		<%
+		}
 	}
 	%>
 	;
 	
+	<%
+	if("ALL_APPLICATIONS".equals(application) && "\"emr-4.6.0\"".equals(cluster_version)) {
+	%>
+	if(true) {
+		throw new java.lang.RuntimeException("\"All Applications\" option is not supported by EMR 4.6.0");
+	}
+	<%
+	}
+	%>
+		
     java.util.List<com.amazonaws.services.elasticmapreduce.model.Application> apps_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Application>();
 	for(String application_<%=cid%> : applications_<%=cid%>) {
     	com.amazonaws.services.elasticmapreduce.model.Application app_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Application();

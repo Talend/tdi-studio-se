@@ -141,8 +141,8 @@ public class UpdateDetectionDialog extends SelectionDialog {
         // context mode added
         List<UpdateResult> contextResult = new ArrayList<UpdateResult>();
         for (UpdateResult result : getInputElements()) {
-            if (result.getUpdateType() == EUpdateItemType.CONTEXT && result.getResultType() == EUpdateResult.ADD
-                    && result.getContextModeConnectionItem() != null) {
+            if (((result.getUpdateType() == EUpdateItemType.CONTEXT && result.getContextModeConnectionItem() != null)
+                    || result.getUpdateType() == EUpdateItemType.CONTEXT_GROUP) && result.getResultType() == EUpdateResult.ADD) {
                 contextResult.add(result);
             }
         }
@@ -152,15 +152,24 @@ public class UpdateDetectionDialog extends SelectionDialog {
         List<UpdateResult> duplicatedResult = new ArrayList<UpdateResult>();
         Iterator<UpdateResult> iterator = contextResult.iterator();
         List tempItems = new ArrayList();
+        List<String> contextGroups = new ArrayList<String>();
         while (iterator.hasNext()) {
             Map<Object, ConnectionItem> jobAndContext = new HashMap<Object, ConnectionItem>();
             UpdateResult result = iterator.next();
-            ConnectionItem item = result.getContextModeConnectionItem();
-            jobAndContext.put(result.getJob(), item);
-            if (tempItems.contains(jobAndContext)) { // duplicate
-                duplicatedResult.add(result);
-            } else {
-                tempItems.add(item);
+            if (result.getUpdateType() == EUpdateItemType.CONTEXT) {
+                ConnectionItem item = result.getContextModeConnectionItem();
+                jobAndContext.put(result.getJob(), item);
+                if (tempItems.contains(jobAndContext)) { // duplicate
+                    duplicatedResult.add(result);
+                } else {
+                    tempItems.add(item);
+                }
+            } else if (result.getUpdateType() == EUpdateItemType.CONTEXT_GROUP) {
+                if (contextGroups.contains(result.getJobInfor())) {
+                    duplicatedResult.add(result);
+                } else {
+                    contextGroups.add(result.getJobInfor());
+                }
             }
 
         }

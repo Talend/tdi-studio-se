@@ -400,6 +400,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	    	    	}
 					dbLog.logPrintedException("e.getMessage()");
 					%>
+					globalMap.put(currentComponent+"_ERROR_MESSAGE",e.getMessage());
                 	System.err.println(e.getMessage());
                 	<%
                 	}%>

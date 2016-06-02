@@ -21,18 +21,20 @@ String cid = node.getUniqueName();
 Component component = (Component)node.getComponent();
 ComponentDefinition def = component.getComponentDefinition();
 
+IMetadataTable metadata = null;
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+	metadata = metadatas.get(0);
+}
+
+if (metadata == null) {
+	return stringBuffer.toString();
+}
+
 if(def instanceof org.talend.components.api.component.InputComponentDefinition){
-// Input
-	List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-	if (outgoingConns.size() > 0) { // outgoing size
-		// FIXME - multiple outgoing connections?
-		IConnection outgoingConn = outgoingConns.get(0);
-		if (outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // outgoingConn 
 %>
-			} // while
+	} // while
 <%
-		} // outgoingConn
-	} // outgoing size
 %>
 
 	reader_<%=cid%>.close();

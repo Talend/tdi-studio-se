@@ -39,6 +39,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeActivateStatusElementCommand;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
@@ -128,9 +129,9 @@ public class CheckController extends AbstractElementPropertySectionController {
             }
 
         });
-        if (param.isRepositoryValueUsed()) {
-            FieldDecoration decoration = FieldDecorationRegistry.getDefault()
-                    .getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
+        if (canAddRepositoryDecoration(param)) {
+            FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                    FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             decoration.setDescription(Messages.getString("CheckController.decoration.description")); //$NON-NLS-1$
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.BOTTOM, false);
         }
@@ -150,7 +151,7 @@ public class CheckController extends AbstractElementPropertySectionController {
         cLayout.setLayoutData(data);
         checkBtn.setData(PARAMETER_NAME, param.getName());
         hashCurControls.put(param.getName(), checkBtn);
-        checkBtn.setEnabled(!param.isReadOnly() && !param.isRepositoryValueUsed());
+        checkBtn.setEnabled(!param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed()));
         checkBtn.addSelectionListener(listenerSelection);
         if (elem instanceof Node) {
             checkBtn.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());

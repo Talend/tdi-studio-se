@@ -87,12 +87,14 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.User;
 import org.talend.core.model.repository.SVNConstant;
+import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.IRepositoryFactory;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.provider.LoginConnectionManager;
 import org.talend.core.repository.services.ILoginConnectionService;
 import org.talend.core.repository.utils.ProjectHelper;
+import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.ui.TalendBrowserLaunchHelper;
@@ -988,6 +990,13 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     public void finishPressed() {
+        // This is for check if the reference project need to update
+        try {
+            saveUpdateStatus(getProject());
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            ExceptionHandler.process(e);
+        }
         if (LoginHelper.isRestart) {
             loginDialog.okPressed();
         } else {
@@ -997,8 +1006,53 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 loginDialog.okPressed();
             } else {
                 fillUIProjectListWithBusyCursor();
+                revertUpdateStatus();
             }
         }
+    }
+
+    private void revertUpdateStatus() {
+        Context ctx = CoreRuntimePlugin.getInstance().getContext();
+        RepositoryContext repositoryContext = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        repositoryContext.setNoUpdateWhenLogon(false);
+    }
+
+    private void saveUpdateStatus(Project project) throws JSONException {
+        Context ctx = CoreRuntimePlugin.getInstance().getContext();
+        RepositoryContext repositoryContext = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        PreferenceManipulator prefManipulator = new PreferenceManipulator();
+        String url = project.getEmfProject().getUrl();
+        if (url == null || !"git".equals(getStorage(url)))
+            return;
+        String location = getLocation(url);
+        String projectName = project.getTechnicalLabel();
+        String branch = getBranch();
+        JSONObject json = prefManipulator.getLogonLocalBranchStatus(location, projectName);
+        if (json != null) {
+            Object noUpdateWhenLogon = json.get(branch);
+            if (noUpdateWhenLogon != null) {
+                repositoryContext.setNoUpdateWhenLogon((Boolean) noUpdateWhenLogon);
+            }
+        }
+
+    }
+
+    public static String getStorage(String url) throws JSONException {
+        JSONObject jsonObject = new JSONObject(url);
+        String location = ""; //$NON-NLS-1$
+        if (jsonObject.has("storage")) {
+            location = jsonObject.getString("storage"); //$NON-NLS-1$
+        }
+        return location;
+    }
+
+    public static String getLocation(String url) throws JSONException {
+        JSONObject jsonObject = new JSONObject(url);
+        String location = ""; //$NON-NLS-1$
+        if (jsonObject.has("location")) {
+            location = jsonObject.getString("location"); //$NON-NLS-1$
+        }
+        return location;
     }
 
     @Override

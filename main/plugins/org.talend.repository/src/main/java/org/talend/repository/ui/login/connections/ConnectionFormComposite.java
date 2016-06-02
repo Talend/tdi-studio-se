@@ -84,6 +84,8 @@ public class ConnectionFormComposite extends Composite {
 
     private Text descriptionText;
 
+    private Label userLabel;
+
     private Text userText;
 
     private Text passwordText;
@@ -159,15 +161,8 @@ public class ConnectionFormComposite extends Composite {
         formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(descriptionText);
 
         // User
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
-        boolean usesMailCheck = brandingService.getBrandingConfiguration().isUseMailLoginCheck();
-        Label userLabel;
-        if (usesMailCheck) {
-            userLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.username")); //$NON-NLS-1$
-        } else {
-            userLabel = toolkit.createLabel(formBody, Messages.getString("connections.form.field.usernameNoMail")); //$NON-NLS-1$
-        }
+        userLabel = toolkit.createLabel(formBody, ""); //$NON-NLS-1$
+        changeUserLabel();
 
         formDefaultFactory.copy().applyTo(userLabel);
 
@@ -314,7 +309,7 @@ public class ConnectionFormComposite extends Composite {
             errorMsg = Messages.getString("connections.form.emptyField.connname"); //$NON-NLS-1$
         } else if (valid && getUser().length() == 0) {
             errorMsg = Messages.getString("connections.form.emptyField.username"); //$NON-NLS-1$
-        } else if (valid && usesMailCheck && !Pattern.matches(RepositoryConstants.MAIL_PATTERN, getUser())) {
+        } else if (valid && isLocalConnection() && !Pattern.matches(RepositoryConstants.MAIL_PATTERN, getUser())) {
             errorMsg = Messages.getString("connections.form.malformedField.username"); //$NON-NLS-1$
         } else if (valid && emptyUrl != null) {
             errorMsg = Messages.getString("connections.form.dynamicFieldEmpty", emptyUrl.getLabel()); //$NON-NLS-1$
@@ -487,6 +482,7 @@ public class ConnectionFormComposite extends Composite {
             validateFields();
             fillBean(true);
             showHideTexts();
+            changeUserLabel();
         }
 
     };
@@ -529,6 +525,16 @@ public class ConnectionFormComposite extends Composite {
         }
 
         deleteProjectsButton.addSelectionListener(deleteProjectClickListener);
+    }
+
+    public void changeUserLabel() {
+        if (userLabel != null) {
+            if (isLocalConnection()) {
+                userLabel.setText(Messages.getString("connections.form.field.username")); //$NON-NLS-1$
+            } else {
+                userLabel.setText(Messages.getString("connections.form.field.usernameNoMail")); //$NON-NLS-1$
+            }
+        }
     }
 
     private void addWorkSpaceListener() {
@@ -626,6 +632,14 @@ public class ConnectionFormComposite extends Composite {
         return result;
     }
 
+    private boolean isLocalConnection() {
+        IRepositoryFactory repository = getRepository();
+        if (repository != null && RepositoryConstants.REPOSITORY_LOCAL_ID.equals(repository.getId())) {
+            return true;
+        }
+        return false;
+    }
+
     private void fillFields() {
         if (connection != null) {
             removeListeners();
@@ -690,6 +704,7 @@ public class ConnectionFormComposite extends Composite {
         showHideDynamicsControls();
         validateFields();
         showHideTexts();
+        changeUserLabel();
     }
 
     public void deleteProject() {

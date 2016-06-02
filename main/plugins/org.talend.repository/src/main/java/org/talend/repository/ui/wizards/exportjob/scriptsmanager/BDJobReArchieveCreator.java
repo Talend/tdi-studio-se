@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.EList;
 import org.osgi.framework.Bundle;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
@@ -40,11 +42,15 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.LastGenerationInfo;
 import org.talend.core.model.utils.JavaResourcesHelper;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.JavaJobExportReArchieveCreator;
+import org.talend.utils.files.FileUtils;
+import org.talend.utils.files.FilterInfo;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -135,8 +141,49 @@ public class BDJobReArchieveCreator {
         return false;
     }
 
-    public void create(File zipFile) {
-        if (zipFile == null || !zipFile.exists() || !zipFile.isFile() || fatherProcessItem == null) {
+    /**
+     * Modify the built jar in order to include additional artifacts into.
+     * 
+     * @param originalJarFile - the original jar {@link File} to modify.
+     * @param jarTmpFolder - the path where the original jar {@link File} will be unarchived.
+     * @param creator - a helper class to manipulate the jar.
+     * @param jobJarName - the name of the jar.
+     * @param libRootFolder - the {@link File} where to find the lib folder.
+     * @param property - the {@link ProcessItem} property object.
+     * @throws Exception
+     */
+    private void modifyJar(File originalJarFile, File jarTmpFolder, JavaJobExportReArchieveCreator creator, String jobJarName,
+            File libRootFolder, Property property) throws Exception {
+
+        if (!originalJarFile.exists()) { // can't find the job jar.
+            return;
+        }
+        FilesUtils.unzip(originalJarFile.getAbsolutePath(), jarTmpFolder.getAbsolutePath());
+        // re-build the job jar with lib.
+        File newJarFile = new File(creator.getTmpFolder(), jobJarName);
+        FilesUtils.copyFile(originalJarFile, newJarFile); // make sure enable to package the libs.
+        JarBuilder jarbuilder = new JarBuilder(jarTmpFolder, newJarFile);
+        String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(property.getItem());
+        jarbuilder.setIncludeDir(Collections.singleton(jobClassPackageFolder));
+        jarbuilder.setExcludeDir(null);
+        if (isMRWithHDInsight()) {
+            jarbuilder.setLibPath(getLibPath(libRootFolder, true));
+            jarbuilder.setFatJar(true);
+        } else if (isFatJar()) {
+            jarbuilder.setLibPath(getLibPath(libRootFolder, false));
+            jarbuilder.setFatJar(true);
+        }
+        jarbuilder.buildJar();
+
+        // use new jar to overwrite old one.
+        if (originalJarFile.exists()) {
+            originalJarFile.delete();
+        }
+        FilesUtils.copyFile(newJarFile, originalJarFile);
+    }
+
+    public void create(File file, boolean isExport) {
+        if (file == null || !file.exists() || (isExport && !file.isFile()) || fatherProcessItem == null) {
             return;
         }
 
@@ -149,51 +196,75 @@ public class BDJobReArchieveCreator {
         String label = property.getLabel();
         String fatherLabel = fatherProperty.getLabel();
         String version = property.getVersion();
-
-        JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipFile.getAbsolutePath(), label);
+        JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(file.getAbsolutePath(), label);
+        String jobJarName = JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion())
+                + FileExtensions.JAR_FILE_SUFFIX;
         try {
-            // create temp folders.
-            creator.deleteTempFiles(); // clean temp folder
-            File zipTmpFolder = new File(creator.getTmpFolder(), "zip-" + label + "_" + version); //$NON-NLS-1$ //$NON-NLS-2$
-            File jarTmpFolder = new File(creator.getTmpFolder(), "jar-" + label + "_" + version); //$NON-NLS-1$ //$NON-NLS-2$
-            zipTmpFolder.mkdirs();
-            jarTmpFolder.mkdirs();
+            if (isExport) {
+                // If we are in an export context, we first unzip the archive, then we modify the jar.
 
-            // unzip the files.
-            FilesUtils.unzip(zipFile.getAbsolutePath(), zipTmpFolder.getAbsolutePath());
+                // create temp folders.
+                creator.deleteTempFiles(); // clean temp folder
+                File zipTmpFolder = new File(creator.getTmpFolder(), "zip-" + label + "_" + version); //$NON-NLS-1$ //$NON-NLS-2$
+                File jarTmpFolder = new File(creator.getTmpFolder(), "jar-" + label + "_" + version); //$NON-NLS-1$ //$NON-NLS-2$
+                zipTmpFolder.mkdirs();
+                jarTmpFolder.mkdirs();
 
-            String jobJarName = JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion())
-                    + FileExtensions.JAR_FILE_SUFFIX;
-            // same the the job pom assembly for package.
-            File originalJarFile = new File(zipTmpFolder, fatherLabel + '/' + jobJarName);
-            if (!originalJarFile.exists()) { // can't find the job jar.
-                return;
+                // unzip the files.
+                FilesUtils.unzip(file.getAbsolutePath(), zipTmpFolder.getAbsolutePath());
+
+                // same the the job pom assembly for package.
+                File originalJarFile = new File(zipTmpFolder, fatherLabel + '/' + jobJarName);
+                modifyJar(originalJarFile, jarTmpFolder, creator, jobJarName, zipTmpFolder, property);
+                ZipToFile.zipFile(zipTmpFolder.getAbsolutePath(), file.getAbsolutePath());
+
+            } else {
+                // If we are in a local context, we just have to modify the jar.
+                creator.deleteTempFiles(); // clean temp folder
+                File jarTmpFolder = new File(creator.getTmpFolder(), "jar-" + label + "_" + version); //$NON-NLS-1$ //$NON-NLS-2$
+                jarTmpFolder.mkdirs();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
+                            IRunProcessService.class);
+                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+
+                    File targetFolder = new File(talendProcessJavaProject.getTargetFolder().getLocationURI());
+                    // In a local mode, the routines/beans/udfs jars are not in the lib folder. We then copy them.
+
+                    // Copy routines and rename it to match the
+                    // "JavaUtils.ROUTINE_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX" name
+                    Set<FilterInfo> codeJars = new HashSet<FilterInfo>(Arrays.asList(new FilterInfo(JavaUtils.ROUTINE_JAR_NAME,
+                            FileExtensions.JAR_FILE_SUFFIX)));
+                    for (File f : FileUtils.getAllFilesFromFolder(targetFolder, codeJars)) {
+                        FilesUtils.copyFile(f, new File(talendProcessJavaProject.getLibFolder().getLocation().toPortableString()
+                                + "/" + JavaUtils.ROUTINE_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX)); //$NON-NLS-1$
+                    }
+
+                    // Copy beans and rename it to match the "JavaUtils.BEANS_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX"
+                    // name
+                    codeJars = new HashSet<FilterInfo>(Arrays.asList(new FilterInfo(JavaUtils.BEANS_JAR_NAME,
+                            FileExtensions.JAR_FILE_SUFFIX)));
+                    for (File f : FileUtils.getAllFilesFromFolder(targetFolder, codeJars)) {
+                        FilesUtils.copyFile(f, new File(talendProcessJavaProject.getLibFolder().getLocation().toPortableString()
+                                + "/" + JavaUtils.BEANS_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX)); //$NON-NLS-1$
+                    }
+
+                    // Copy udfs and rename it to match the
+                    // "JavaUtils.PIGUDFS_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX"
+                    // name
+                    codeJars = new HashSet<FilterInfo>(Arrays.asList(new FilterInfo(JavaUtils.PIGUDFS_JAR_NAME,
+                            FileExtensions.JAR_FILE_SUFFIX)));
+                    for (File f : FileUtils.getAllFilesFromFolder(targetFolder, codeJars)) {
+                        FilesUtils.copyFile(f, new File(talendProcessJavaProject.getLibFolder().getLocation().toPortableString()
+                                + "/" + JavaUtils.PIGUDFS_JAR_NAME + FileExtensions.JAR_FILE_SUFFIX)); //$NON-NLS-1$
+                    }
+
+                    modifyJar(new File(file, jobJarName), jarTmpFolder, creator, jobJarName, talendProcessJavaProject
+                            .getLibFolder().getParent().getLocation().toFile(), property);
+                } else {
+                    CommonExceptionHandler.log("Unable to update the job jar because the RunProcessService is not registered."); //$NON-NLS-1$
+                }
             }
-            FilesUtils.unzip(originalJarFile.getAbsolutePath(), jarTmpFolder.getAbsolutePath());
-            // re-build the job jar with lib.
-            File newJarFile = new File(creator.getTmpFolder(), jobJarName);
-            FilesUtils.copyFile(originalJarFile, newJarFile); // make sure enable to package the libs.
-            JarBuilder jarbuilder = new JarBuilder(jarTmpFolder, newJarFile);
-            String jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(property.getItem());
-            jarbuilder.setIncludeDir(Collections.singleton(jobClassPackageFolder));
-            jarbuilder.setExcludeDir(null);
-            if (isMRWithHDInsight()) {
-                jarbuilder.setLibPath(getLibPath(zipTmpFolder, true));
-                jarbuilder.setFatJar(true);
-            } else if (isFatJar()) {
-                jarbuilder.setLibPath(getLibPath(zipTmpFolder, false));
-                jarbuilder.setFatJar(true);
-            }
-            jarbuilder.buildJar();
-
-            // use new jar to overwrite old one.
-            if (originalJarFile.exists()) {
-                originalJarFile.delete();
-            }
-            FilesUtils.copyFile(newJarFile, originalJarFile);
-
-            // zip
-            ZipToFile.zipFile(zipTmpFolder.getAbsolutePath(), zipFile.getAbsolutePath());
         } catch (Exception e) {
             ExceptionHandler.process(e);
         } finally {
@@ -202,6 +273,10 @@ public class BDJobReArchieveCreator {
                 creator.deleteTempFiles();
             }
         }
+    }
+
+    public void create(File zipFile) {
+        create(zipFile, true);
     }
 
     /**

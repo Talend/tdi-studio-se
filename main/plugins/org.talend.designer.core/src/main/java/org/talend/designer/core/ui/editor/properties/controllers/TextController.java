@@ -38,6 +38,7 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectAllTextControlCreator;
@@ -88,7 +89,7 @@ public class TextController extends AbstractElementPropertySectionController {
                     FieldDecorationRegistry.DEC_REQUIRED);
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.TOP, false);
         }
-        if (param.isRepositoryValueUsed()) {
+        if (canAddRepositoryDecoration(param)) {
             FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
                     FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             decoration.setDescription(Messages.getString("TextController.decoration.description")); //$NON-NLS-1$
@@ -119,7 +120,7 @@ public class TextController extends AbstractElementPropertySectionController {
                     }
                 });
             }
-            boolean editable = !param.isReadOnly() && !param.isRepositoryValueUsed();
+            boolean editable = !param.isReadOnly() && (elem instanceof FakeElement || !param.isRepositoryValueUsed());
             labelText.setEditable(editable);
         } else {
             labelText.setEditable(false);
@@ -144,8 +145,8 @@ public class TextController extends AbstractElementPropertySectionController {
         GC gc = new GC(labelLabel);
         Point labelSize = gc.stringExtent(param.getDisplayName());
         gc.dispose();
-        if ((labelSize.x + (ITabbedPropertyConstants.HSPACE*2)) > currentLabelWidth) {
-            currentLabelWidth = labelSize.x + (ITabbedPropertyConstants.HSPACE*2);
+        if ((labelSize.x + (ITabbedPropertyConstants.HSPACE * 2)) > currentLabelWidth) {
+            currentLabelWidth = labelSize.x + (ITabbedPropertyConstants.HSPACE * 2);
         }
 
         if (numInRow == 1) {
@@ -175,7 +176,7 @@ public class TextController extends AbstractElementPropertySectionController {
                 data.right = new FormAttachment(cLayout, -ITabbedPropertyConstants.HSPACE);
             } else {
                 data.left = new FormAttachment(lastControl, ITabbedPropertyConstants.HSPACE, SWT.RIGHT);
-                data.right = new FormAttachment(lastControl, currentLabelWidth + (ITabbedPropertyConstants.HSPACE *2), SWT.RIGHT);
+                data.right = new FormAttachment(lastControl, currentLabelWidth + (ITabbedPropertyConstants.HSPACE * 2), SWT.RIGHT);
             }
 
             // data.left = new FormAttachment(cLayout, -(currentLabelWidth + 5), SWT.LEFT);
@@ -311,6 +312,6 @@ public class TextController extends AbstractElementPropertySectionController {
 
         return parameter.isRepositoryValueUsed()
                 && (parameter.getName().equals(EParameterName.PASS.getName()) || parameter.getName().contains("PASSWORD") || //$NON-NLS-1$
-                parameter.getRepositoryValue().contains("PASSWORD")); //$NON-NLS-1$
+                parameter.getRepositoryValue() != null && parameter.getRepositoryValue().contains("PASSWORD")); //$NON-NLS-1$
     }
 }

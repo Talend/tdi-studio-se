@@ -166,7 +166,6 @@ public class OpenExistVersionProcessWizard extends Wizard {
                     @Override
                     public void run(final IProgressMonitor monitor) throws CoreException {
                         if (!alreadyEditedByUser) {
-                            getProperty().setVersion(mainPage.getNewVersion());
                             refreshNewJob();
                             try {
                                 ProxyRepositoryFactory.getInstance()
@@ -232,16 +231,20 @@ public class OpenExistVersionProcessWizard extends Wizard {
         if (alreadyEditedByUser) {
             return false;
         }
+        boolean lastVersion = true;
         StructuredSelection selection = (StructuredSelection) mainPage.getSelection();
         if (selection != null && !selection.isEmpty()) {
             RepositoryNode node = (RepositoryNode) selection.getFirstElement();
-            boolean lastVersion = node.getObject().getVersion().equals(originalVersion);
+            lastVersion = node.getObject().getVersion().equals(originalVersion);
             if (!lastVersion) {
                 originalVersion = node.getObject().getVersion();
-                String newVersion = processObject.getVersion();
+                String newVersion = mainPage.getNewVersion();
                 processObject = node.getObject();
                 processObject.getProperty().setVersion(newVersion);
             }
+        }
+        if(lastVersion){
+            getProperty().setVersion(mainPage.getNewVersion());
         }
         IProxyRepositoryFactory repositoryFactory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
         try {
@@ -311,6 +314,7 @@ public class OpenExistVersionProcessWizard extends Wizard {
             ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
             String lastVersion = factory.getLastVersion(routineItem.getProperty().getId()).getVersion();
             String curVersion = routineItem.getProperty().getVersion();
+            routineSynchronizer.syncRoutine(routineItem, true, true);
             final IFile file;
             if (curVersion != null && curVersion.equals(lastVersion)) {
                 file = routineSynchronizer.getFile(routineItem);

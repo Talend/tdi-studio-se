@@ -280,7 +280,11 @@ public final class Expression {
             }
             for (IElementParameter param : listParam) {
                 if (paraName != null && paraName.equals(param.getName())) {
-                    return param.isShow(param.getShowIf(), param.getNotShowIf(), listParam);
+                    if (simpleExpression.startsWith("!")) {
+                        return !param.isShow(param.getShowIf(), param.getNotShowIf(), listParam);
+                    } else {
+                        return param.isShow(param.getShowIf(), param.getNotShowIf(), listParam);
+                    }
                 }
             }
         }

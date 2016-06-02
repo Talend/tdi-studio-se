@@ -50,6 +50,7 @@ public class GenericConnWizardPage extends GenericWizardPage {
         setControl(container);
 
         Element element = new FakeElement(form.getName());
+        element.setReadOnly(!isRepositoryObjectEditable);
         dynamicComposite = new DynamicComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
                 element, true, container.getBackground(), form, false);
         dynamicComposite.setLayoutData(createMainFormData(addContextFields));

@@ -517,17 +517,9 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
             if(rejectConnName != null && rejectColumnList != null && rejectColumnList.size() > 0) {
                 %>
                 <%=rejectConnName %> = new <%=rejectConnName %>Struct();
-                <%
-                for(IMetadataColumn inColumn : inputSchema) {
-                	 for(IMetadataColumn outColumn : outputSchema) {
-                	 	if (inColumn.getLabel().equals(outColumn.getLabel())) {
-                %>
-                    <%=rejectConnName%>.<%=inColumn.getLabel()%> = <%=inConnectionName%>.<%=inColumn.getLabel()%>;
-                <%
-                		}
-                	}
-                }
-                %>
+                
+                new Helper65535_<%=cid%>().propagate(<%=rejectConnName%>, <%=inConnectionName%>);
+                
                 nb_line_rejected_<%=cid%>++;
                 <%=rejectConnName%>.errorCode = ((java.sql.SQLException)e).getSQLState();
                 <%=rejectConnName%>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -30,6 +31,7 @@ import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.ComponentImageType;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.OutputComponentDefinition;
+import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.component.Trigger;
 import org.talend.components.api.component.VirtualComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
@@ -39,6 +41,8 @@ import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.PluginChecker;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
@@ -49,15 +53,20 @@ import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.temp.ECodePart;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.runtime.services.ComponentServiceWithValueEvaluator;
+import org.talend.core.runtime.util.GenericTypeUtils;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Property;
+import org.talend.daikon.properties.SchemaProperty;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.generic.constants.IGenericConstants;
@@ -67,6 +76,8 @@ import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.components.ElementParameterDefaultValue;
+import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.MultipleComponentConnection;
 import org.talend.designer.core.model.components.MultipleComponentManager;
 import org.talend.designer.core.model.components.NodeConnector;
@@ -162,12 +173,13 @@ public class Component extends AbstractBasicComponent {
         Property returns = props.returns;
         if (returns != null) {
             NodeReturn nodeRet = null;
-            for (Property children : returns.getChildren()) {
+            for (Object childObj : returns.getChildren()) {
+                Property child = (Property) childObj;
                 nodeRet = new NodeReturn();
-                nodeRet.setType(ComponentsUtils.getTalendTypeFromPropertyType(children.getType()).getId());
-                nodeRet.setDisplayName(children.getDisplayName());
-                nodeRet.setName(children.getName());
-                Object object = children.getTaggedValue(IGenericConstants.AVAILABILITY);
+                nodeRet.setType(ComponentsUtils.getTalendTypeFromProperty(child).getId());
+                nodeRet.setDisplayName(child.getDisplayName());
+                nodeRet.setName(child.getName());
+                Object object = child.getTaggedValue(IGenericConstants.AVAILABILITY);
                 if (object != null) {
                     nodeRet.setAvailability(object.toString());
                 } else {
@@ -604,6 +616,68 @@ public class Component extends AbstractBasicComponent {
         newParam.setSerialized(true);
         newParam.setParentParameter(param);
         listParam.add(param);
+
+        if (ComponentCategory.CATEGORY_4_DI.getName().equals(this.getPaletteType())) {
+            boolean isStatCatcherComponent = false;
+            /* for bug 0021961,should not show parameter TSTATCATCHER_STATS in UI on component tStatCatcher */
+            if (!isStatCatcherComponent) {
+                boolean tStatCatcherAvailable = ComponentsFactoryProvider.getInstance().get(EmfComponent.TSTATCATCHER_NAME,
+                        ComponentCategory.CATEGORY_4_DI.getName()) != null;
+                param = new ElementParameter(node);
+                param.setName(EParameterName.TSTATCATCHER_STATS.getName());
+                param.setValue(Boolean.FALSE);
+                param.setDisplayName(EParameterName.TSTATCATCHER_STATS.getDisplayName());
+                param.setFieldType(EParameterFieldType.CHECK);
+                param.setCategory(EComponentCategory.ADVANCED);
+                param.setNumRow(199);
+                param.setReadOnly(false);
+                param.setRequired(false);
+                param.setDefaultValue(param.getValue());
+                param.setShow(tStatCatcherAvailable);
+                listParam.add(param);
+            }
+        }
+        
+        // These parameters is only work when TIS is loaded
+        // GLiu Added for Task http://jira.talendforge.org/browse/TESB-4279
+        if (PluginChecker.isTeamEdition() && !ComponentCategory.CATEGORY_4_CAMEL.getName().equals(getPaletteType())) {
+            boolean defaultParalelize = Boolean.FALSE;
+            param = new ElementParameter(node);
+            param.setReadOnly(!defaultParalelize);
+            param.setName(EParameterName.PARALLELIZE.getName());
+            param.setValue(Boolean.FALSE);
+            param.setDisplayName(EParameterName.PARALLELIZE.getDisplayName());
+            param.setFieldType(EParameterFieldType.CHECK);
+            param.setCategory(EComponentCategory.ADVANCED);
+            param.setNumRow(200);
+            param.setShow(true);
+            param.setDefaultValue(param.getValue());
+            listParam.add(param);
+
+            param = new ElementParameter(node);
+            param.setReadOnly(!defaultParalelize);
+            param.setName(EParameterName.PARALLELIZE_NUMBER.getName());
+            param.setValue(2);
+            param.setDisplayName(EParameterName.PARALLELIZE_NUMBER.getDisplayName());
+            param.setFieldType(EParameterFieldType.TEXT);
+            param.setCategory(EComponentCategory.ADVANCED);
+            param.setNumRow(200);
+            param.setShowIf(EParameterName.PARALLELIZE.getName() + " == 'true'"); //$NON-NLS-1$
+            param.setDefaultValue(param.getValue());
+            listParam.add(param);
+
+            param = new ElementParameter(node);
+            param.setReadOnly(!defaultParalelize);
+            param.setName(EParameterName.PARALLELIZE_KEEP_EMPTY.getName());
+            param.setValue(Boolean.FALSE);
+            param.setDisplayName(EParameterName.PARALLELIZE_KEEP_EMPTY.getDisplayName());
+            param.setFieldType(EParameterFieldType.CHECK);
+            param.setCategory(EComponentCategory.ADVANCED);
+            param.setNumRow(200);
+            param.setShow(false);
+            param.setDefaultValue(param.getValue());
+            listParam.add(param);
+        }
     }
 
     private ComponentWizardDefinition getWizardDefinition(ComponentProperties componentProperties) {
@@ -636,10 +710,10 @@ public class Component extends AbstractBasicComponent {
             EComponentCategory category) {
         ComponentProperties props = node.getComponentProperties();
         Form form = props.getForm(formName);
-        List<ElementParameter> parameters = ComponentsUtils.getParametersFromForm(node, category, node.getComponentProperties(),
+        List<ElementParameter> parameters = ComponentsUtils.getParametersFromForm(node, this.isInitializing(), category, props,
                 form);
-        ComponentService componentService = new ComponentServiceWithValueEvaluator(ComponentsUtils.getComponentService(),
-                new ComponentContextPropertyValueEvaluator(node));
+        props.setValueEvaluator(new ComponentContextPropertyValueEvaluator(node));
+        ComponentService componentService = ComponentsUtils.getComponentService();
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
@@ -655,6 +729,19 @@ public class Component extends AbstractBasicComponent {
      *
      */
     private void initializeParametersForSchema(List<ElementParameter> listParam, final INode node) {
+        ComponentProperties rootProperty = node.getComponentProperties();
+        Map<String, SchemaProperty> listSchemaProperties = new HashMap<>();
+        findSchemaProperties(rootProperty, listParam, listSchemaProperties, null);
+        for (String paramName : listSchemaProperties.keySet()) {
+            boolean found = setupConnector(node, listParam, paramName, listSchemaProperties.get(paramName), true);
+            if (!found) {
+                // check in the input schema
+                // for now we only handle input schema named MAIN. But we will name them "FLOW" to keep
+                // compatibility.
+                setupConnector(node, listParam, paramName, listSchemaProperties.get(paramName), false);
+            }
+        }
+
         for (ElementParameter param : listParam) { // TUP-4161
             if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())) {
                 ElementParameter newParam = new ElementParameter(node);
@@ -696,6 +783,82 @@ public class Component extends AbstractBasicComponent {
         }
     }
 
+    /**
+     * DOC nrousseau Comment method "setupConnector".
+     * 
+     * @param node
+     * @param rootProperty
+     * @param paramName
+     * @param schemaProperty
+     * @param found
+     * @return
+     */
+    private boolean setupConnector(final INode node, List<ElementParameter> listParam, String paramName,
+            SchemaProperty schemaProperty, boolean isOutput) {
+        ComponentProperties rootProperty = node.getComponentProperties();
+        boolean found = false;
+        for (Connector connector : rootProperty.getAvailableConnectors(null, isOutput)) {
+            if (!(schemaProperty.getValue() instanceof Schema)) {
+                continue;
+            }
+            Schema schema = (Schema) schemaProperty.getValue();
+            if (connector instanceof PropertyPathConnector) {
+                String linkedSchema = ((PropertyPathConnector) connector).getPropertyPath() + ".schema"; //$NON-NLS-1$
+                if (paramName.equals(linkedSchema)) {
+                    found = true;
+                    ElementParameter param = new ElementParameter(node);
+                    param.setName(paramName);
+                    param.setFieldType(EParameterFieldType.SCHEMA_REFERENCE);
+                    if (!isOutput) {
+                        param.setContext(EConnectionType.FLOW_MAIN.getName());
+                    } else {
+                        param.setContext(connector.getName());
+                    }
+                    param.setCategory(EComponentCategory.TECHNICAL);
+                    IElementParameterDefaultValue defaultValue = new ElementParameterDefaultValue();
+                    defaultValue.setDefaultValue(new Schema.Parser().parse(schema.toString()));
+                    param.getDefaultValues().add(defaultValue);
+                    listParam.add(param);
+                }
+            }
+        }
+        return found;
+    }
+
+    /**
+     * DOC nrousseau Comment method "findSchemaProperties".
+     * 
+     * @param rootProperty
+     * @param listParam
+     * @return
+     */
+    private void findSchemaProperties(Properties rootProperty, List<ElementParameter> listParam,
+            Map<String, SchemaProperty> schemaProperties, String parentPropertiesPath) {
+
+        for (NamedThing nt : rootProperty.getProperties()) {
+            String path = parentPropertiesPath;
+            if (path == null) {
+                path = nt.getName();
+            } else {
+                path = parentPropertiesPath + "." + nt.getName(); //$NON-NLS-1$
+            }
+            if (nt instanceof SchemaProperty) {
+                boolean found = false;
+                for (IElementParameter param : listParam) {
+                    if (path.equals(param.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    schemaProperties.put(path, (SchemaProperty) nt);
+                }
+            } else if (nt instanceof Properties) {
+                findSchemaProperties((Properties) nt, listParam, schemaProperties, path);
+            }
+        }
+    }
+
     @Override
     public String getShortName() {
         String originalComponentName = getName();
@@ -733,16 +896,19 @@ public class Component extends AbstractBasicComponent {
             }
         }
 
-        boolean isOutputComponent = componentDefinition instanceof OutputComponentDefinition || componentDefinition instanceof VirtualComponentDefinition;
-        INodeConnector connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
+        boolean isOutputComponent = componentDefinition instanceof OutputComponentDefinition
+                || componentDefinition instanceof VirtualComponentDefinition;
         if (isOutputComponent) {
-            connector.setMaxLinkInput(1);
+            addGenericType(listConnector, EConnectionType.FLOW_MAIN, GenericNodeConnector.INPUT_CONNECTOR, parentNode, false);
         } else {
+            INodeConnector connector = null;
+            connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
             connector.setMaxLinkInput(0);
+            connector.setMaxLinkOutput(0);
         }
-        connector.setMaxLinkOutput(0);
-        addGenericType(listConnector, EConnectionType.FLOW_MAIN, Connector.MAIN_NAME, parentNode);
-        addGenericType(listConnector, EConnectionType.REJECT, Connector.REJECT_NAME, parentNode);
+
+        addGenericType(listConnector, EConnectionType.FLOW_MAIN, Connector.MAIN_NAME, parentNode, true);
+        addGenericType(listConnector, EConnectionType.REJECT, Connector.REJECT_NAME, parentNode, true);
         addStandardType(listConnector, EConnectionType.RUN_IF, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_ERROR, parentNode);
@@ -759,6 +925,13 @@ public class Component extends AbstractBasicComponent {
             for (INodeConnector curNodeConn : listConnector) {
                 if (curNodeConn.getDefaultConnectionType().equals(currentType)) {
                     exists = true;
+                    if (currentType == EConnectionType.FLOW_MAIN) {
+                        curNodeConn.addConnectionProperty(EConnectionType.FLOW_REF, EConnectionType.FLOW_REF.getRGB(),
+                                EConnectionType.FLOW_REF.getDefaultLineStyle());
+                        curNodeConn.addConnectionProperty(EConnectionType.FLOW_MERGE, EConnectionType.FLOW_MERGE.getRGB(),
+                                EConnectionType.FLOW_MERGE.getDefaultLineStyle());
+                    }
+
                 }
             }
             if (!exists) { // will add by default all connectors not defined in
@@ -777,12 +950,6 @@ public class Component extends AbstractBasicComponent {
                 nodeConnector.setMaxLinkOutput(0);
                 nodeConnector.setMinLinkInput(0);
                 nodeConnector.setMinLinkOutput(0);
-                if (currentType == EConnectionType.FLOW_MAIN) {
-                    nodeConnector.addConnectionProperty(EConnectionType.FLOW_REF, EConnectionType.FLOW_REF.getRGB(),
-                            EConnectionType.FLOW_REF.getDefaultLineStyle());
-                    nodeConnector.addConnectionProperty(EConnectionType.FLOW_MERGE, EConnectionType.FLOW_MERGE.getRGB(),
-                            EConnectionType.FLOW_MERGE.getDefaultLineStyle());
-                }
                 listConnector.add(nodeConnector);
             }
         }
@@ -810,9 +977,8 @@ public class Component extends AbstractBasicComponent {
     }
 
     private void addGenericType(List<INodeConnector> listConnector, EConnectionType type, String genericConnectorType,
-            INode parentNode) {
-        GenericNodeConnector nodeConnector = new GenericNodeConnector(parentNode);
-        nodeConnector.setMaxLinkInput(0);
+            INode parentNode, boolean isOutput) {
+        GenericNodeConnector nodeConnector = new GenericNodeConnector(parentNode, isOutput);
         nodeConnector.setDefaultConnectionType(EConnectionType.FLOW_MAIN);
         nodeConnector.setGenericConnectorType(genericConnectorType);
         nodeConnector.setLinkName(type.getDefaultLinkName());
@@ -847,6 +1013,8 @@ public class Component extends AbstractBasicComponent {
                 ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri);
                 componentImportNeedsList.add(moduleNeeded);
             }
+            ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
+            componentImportNeedsList.add(moduleNeeded);
             return componentImportNeedsList;
         }
     }
@@ -1025,14 +1193,6 @@ public class Component extends AbstractBasicComponent {
         return propsList;
     }
 
-    public Object getTableValue(Property property, String key, Object value) {
-        if (ComponentsUtils.isPrevColumnList(property.getChildMap().get(key))) {
-            return TalendQuoteUtils.addQuotes(value.toString());
-        } else {
-            return value;
-        }
-    }
-
     public String getCodegenValue(Property property, String value) {
         if (property.isFlag(Property.Flags.ENCRYPT)) {
             return ElementParameterParser.getEncryptedValue(value);
@@ -1040,16 +1200,19 @@ public class Component extends AbstractBasicComponent {
         if (Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
             return "\"" + value + "\"";//$NON-NLS-1$ //$NON-NLS-2$ 
         }
-        if (property.getType() == Property.Type.ENUM) {
-            if (value.indexOf("context.") > -1 || value.indexOf("globalMap.get") > -1) {
-                return value;//$NON-NLS-1$ //$NON-NLS-2$
+        if (GenericTypeUtils.isEnumType(property)) {
+            if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {
+                return value;
             } else {
-                return "\"" + value + "\"";//$NON-NLS-1$ //$NON-NLS-2$
+                return TalendQuoteUtils.addQuotesIfNotExist(value);
             }
         }
-        if (property.getType() == Property.Type.SCHEMA) {
+        if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
             return "\"" + value.replace("\\\"", "\\\\\"").replace("\"", "\\\"") + "\"";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        }
+        if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "Integer.valueOf(" + value + ")";
         }
         return value;
     }
@@ -1100,14 +1263,23 @@ public class Component extends AbstractBasicComponent {
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
-            node.setComponentProperties(ComponentProperties.fromSerialized(serialized, ComponentProperties.class).properties);
+            node.setComponentProperties(ComponentProperties.fromSerialized(serialized, ComponentProperties.class,
+                    new Properties.PostSerializationSetup<ComponentProperties>() {
+
+                        @Override
+                        public void setup(ComponentProperties properties) {
+                            properties.setValueEvaluator(new ComponentContextPropertyValueEvaluator(node));
+                        }
+                    }).properties);
         }
     }
 
     @Override
     public String genericToSerialized(IElementParameter param) {
         if (param instanceof GenericElementParameter) {
-            return ((Node) ((GenericElementParameter) param).getElement()).getComponentProperties().toSerialized();
+            Node node = (Node) ((GenericElementParameter) param).getElement();
+            ComponentProperties properties = node.getComponentProperties();
+            return properties.toSerialized();
         } else {
             ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
             return componentProperties.toSerialized();
@@ -1130,7 +1302,11 @@ public class Component extends AbstractBasicComponent {
                             param.setRepositoryValueUsed(true);
                         }
                     }
-                    return ComponentsUtils.getGenericPropertyValue(iNodeComponentProperties, param.getName());
+                    Object value = ComponentsUtils.getGenericPropertyValue(iNodeComponentProperties, param.getName());
+                    if (value == null && EParameterFieldType.TABLE.equals(param.getFieldType())) {
+                        value = GenericTableUtils.getTableValues(iNodeComponentProperties.getProperties(param.getName()), param);
+                    }
+                    return value;
                 }
             }
         }
@@ -1166,5 +1342,10 @@ public class Component extends AbstractBasicComponent {
      */
     public static Logger getLog() {
         return log;
+    }
+
+    @Override
+    public boolean hasConditionalOutputs() {
+        return componentDefinition.isConditionalInputs();
     }
 }

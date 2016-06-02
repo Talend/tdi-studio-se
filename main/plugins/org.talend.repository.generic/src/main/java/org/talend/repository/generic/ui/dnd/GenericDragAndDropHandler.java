@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
@@ -42,6 +43,7 @@ import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.daikon.properties.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.Component;
@@ -51,6 +53,7 @@ import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -92,10 +95,16 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 }
                 Property property = compPro.getValuedProperty(value);
                 if (property != null) {
-                    Object paramValue = property.getValue();
-                    if (Property.Type.STRING.equals(property.getType()) && paramValue != null) {
+                    Object paramValue = property.getStoredValue();
+                    if (GenericTypeUtils.isStringType(property) && paramValue != null) {
                         return getRepositoryValueOfStringType(connection, paramValue.toString());
                     }
+                    if (GenericTypeUtils.isEnumType(property) && paramValue != null) {
+                        return paramValue.toString();
+                    }
+//                    if (GenericTypeUtils.isBooleanType(property) && paramValue != null) {
+//                        return paramValue.toString();
+//                    }
                     return paramValue;
                 }
             }
@@ -170,7 +179,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
             if (canHandle(connection)) {
                 GenericConnection genericConnection = (GenericConnection) connection;
                 currentComponentProperties = ComponentsUtils.getComponentPropertiesFromSerialized(genericConnection
-                        .getCompProperties());
+                        .getCompProperties(), connection);
             }
         } else if (object instanceof MetadataTableRepositoryObject) {
             MetadataTableRepositoryObject metaTableRepObj = (MetadataTableRepositoryObject) object;

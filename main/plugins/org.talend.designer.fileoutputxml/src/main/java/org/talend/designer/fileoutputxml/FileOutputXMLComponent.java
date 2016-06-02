@@ -149,13 +149,21 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     @Override
     public void metadataInputChanged(IODataComponent dataComponent, String connectionToApply) {
-        List<Map<String, String>> listRoot = (List<Map<String, String>>) this.getElementParameter(ROOT).getValue();
+        List<Map<String, String>> listRoot = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(ROOT)!=null&&this.getElementParameter(ROOT).getValue()!=null){
+            listRoot.addAll((List<Map<String, String>>) this.getElementParameter(ROOT).getValue());
+        }
         boolean flagRoot = false;
-
-        List<Map<String, String>> listGroup = (List<Map<String, String>>) this.getElementParameter(GROUP).getValue();
+        List<Map<String, String>> listGroup = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(GROUP)!=null&&this.getElementParameter(GROUP).getValue()!=null){
+            listGroup.addAll((List<Map<String, String>>) this.getElementParameter(GROUP).getValue());
+        }
+         
         boolean flagGroup = false;
-
-        List<Map<String, String>> listLoop = (List<Map<String, String>>) this.getElementParameter(LOOP).getValue();
+        List<Map<String, String>> listLoop = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(LOOP)!=null&&this.getElementParameter(LOOP).getValue()!=null){
+            listLoop.addAll((List<Map<String, String>>) this.getElementParameter(LOOP).getValue());
+        }
         boolean flagLoop = false;
 
         // add by wzhang. column show with schema name added for mutiSchema
@@ -198,13 +206,21 @@ public class FileOutputXMLComponent extends AbstractExternalNode {
 
     @Override
     public void metadataOutputChanged(IODataComponent dataComponent, String connectionToApply) {
-        List<Map<String, String>> listRoot = (List<Map<String, String>>) this.getElementParameter(ROOT).getValue();
+        List<Map<String, String>> listRoot = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(ROOT)!=null&&this.getElementParameter(ROOT).getValue()!=null){
+            listRoot.addAll((List<Map<String, String>>) this.getElementParameter(ROOT).getValue());
+        }
         boolean flagRoot = false;
-
-        List<Map<String, String>> listGroup = (List<Map<String, String>>) this.getElementParameter(GROUP).getValue();
+        List<Map<String, String>> listGroup = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(GROUP)!=null&&this.getElementParameter(GROUP).getValue()!=null){
+            listGroup.addAll((List<Map<String, String>>) this.getElementParameter(GROUP).getValue());
+        }
+         
         boolean flagGroup = false;
-
-        List<Map<String, String>> listLoop = (List<Map<String, String>>) this.getElementParameter(LOOP).getValue();
+        List<Map<String, String>> listLoop = new ArrayList<Map<String,String>>();
+        if(this.getElementParameter(LOOP)!=null&&this.getElementParameter(LOOP).getValue()!=null){
+            listLoop.addAll((List<Map<String, String>>) this.getElementParameter(LOOP).getValue());
+        }
         boolean flagLoop = false;
 
         // add by wzhang. column show with schema name added for mutiSchema

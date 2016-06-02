@@ -32,11 +32,14 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.cwm.helper.PackageHelper;
+import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.Properties.Deserialized;
 import org.talend.designer.core.generic.model.GenericNodeConnector;
+import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
@@ -98,8 +101,9 @@ public class SchemaUtils {
      * Recreate a component schema by <code>metadataTable<code> and save it back into the <code>metadataTable<code>.
      * 
      * @param metadataTable
+     * @param connection 
      */
-    public static void updateComponentSchema(MetadataTable metadataTable) {
+    public static void updateComponentSchema(MetadataTable metadataTable, Connection connection) {
         if (metadataTable == null) {
             return;
         }
@@ -119,7 +123,7 @@ public class SchemaUtils {
         }
         if (componentPropertiesStr != null && componentPropertiesTaggedValue != null && schemaPropertyName != null) {
             ComponentProperties componentProperties = ComponentsUtils
-                    .getComponentPropertiesFromSerialized(componentPropertiesStr);
+                    .getComponentPropertiesFromSerialized(componentPropertiesStr, connection);
             componentProperties.setValue(schemaPropertyName, convertTalendSchemaIntoComponentSchema(metadataTable));
             componentPropertiesTaggedValue.setValue(componentProperties.toSerialized());
         }
@@ -148,10 +152,12 @@ public class SchemaUtils {
         }
         Schema schema = convertTalendSchemaIntoComponentSchema(ConvertionHelper.convert(metadataTable));
         INodeConnector connector = node.getConnectorFromName(metadataTable.getAttachedConnector());
-        if (connector != null && connector instanceof GenericNodeConnector) {
-            node.getComponentProperties().setConnectedSchema(((GenericNodeConnector) connector).getComponentConnector(), schema,
-                    true);
-            for (IElementParameter param : node.getElementParameters()) {
+        if (connector != null) {
+            if (connector instanceof GenericNodeConnector) {
+                node.getComponentProperties().setConnectedSchema(((GenericNodeConnector) connector).getComponentConnector(),
+                        schema, true);
+            }
+            for (IElementParameter param : new ArrayList<IElementParameter>(node.getElementParameters())) {
                 if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())
                         && connector.getName().equals(param.getContext())) {
                     param.setValue(schema);
@@ -163,6 +169,7 @@ public class SchemaUtils {
     public static ComponentProperties getCurrentComponentProperties(IMetadataTable table) {
         if (table != null) {
             String serializedProperties = null;
+            Deserialized<ComponentProperties> fromSerializedProperties = null;
             if (table instanceof MetadataTableRepositoryObject) {
                 MetadataTableRepositoryObject metaTableRepObj = (MetadataTableRepositoryObject) table;
                 MetadataTable metadataTable = metaTableRepObj.getTable();
@@ -174,17 +181,28 @@ public class SchemaUtils {
                         }
                     }
                 }
+                if (serializedProperties != null) {
+                    Connection connection = ((ConnectionItem)metaTableRepObj.getViewObject().getProperty().getItem()).getConnection();
+                    fromSerializedProperties = ComponentProperties.fromSerialized(serializedProperties,
+                            ComponentProperties.class, new Properties.PostSerializationSetup<ComponentProperties>() {
+
+                                @Override
+                                public void setup(ComponentProperties properties) {
+                                    properties.setValueEvaluator(new MetadataContextPropertyValueEvaluator(connection));
+                                }
+                            });
+                }
             } else if (table instanceof org.talend.core.model.metadata.MetadataTable) {
                 org.talend.core.model.metadata.MetadataTable metaTable = (org.talend.core.model.metadata.MetadataTable) table;
                 Map<String, String> additionalProperties = metaTable.getAdditionalProperties();
                 serializedProperties = additionalProperties.get(IComponentConstants.COMPONENT_PROPERTIES_TAG);
-            }
-            if (serializedProperties != null) {
-                Deserialized<ComponentProperties> fromSerializedProperties = ComponentProperties.fromSerialized(
-                        serializedProperties, ComponentProperties.class);
-                if (fromSerializedProperties != null) {
-                    return fromSerializedProperties.properties;
+                if (serializedProperties != null) {
+                    fromSerializedProperties = ComponentProperties
+                            .fromSerialized(serializedProperties, ComponentProperties.class);
                 }
+            }
+            if (fromSerializedProperties != null) {
+                return fromSerializedProperties.properties;
             }
         }
         return null;

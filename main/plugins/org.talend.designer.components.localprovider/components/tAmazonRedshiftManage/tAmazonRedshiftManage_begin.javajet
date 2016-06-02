@@ -198,6 +198,32 @@
     	log.info("<%=cid%> - cluster status : " + result_<%=cid%>);
     	<%}%>
 		globalMap.put("<%=cid %>_CLUSTER_FINAL_ID", result_<%=cid%>.getClusterIdentifier());
+		
+		<%
+    	if(wait_for_cluster_ready) {
+    	%>
+    		boolean clusterReady_<%=cid%> = false;
+            System.out.println("Wating for cluster to become available.");
+            while (!clusterReady_<%=cid%>) {
+                com.amazonaws.services.redshift.model.DescribeClustersResult result2_<%=cid%> = client_<%=cid%>.describeClusters(
+                	new com.amazonaws.services.redshift.model.DescribeClustersRequest()
+                   		.withClusterIdentifier(result_<%=cid%>.getClusterIdentifier())
+                );
+                com.amazonaws.services.redshift.model.Cluster cluster_<%=cid%> = result2_<%=cid%>.getClusters().get(0);
+                String status_<%=cid%> = cluster_<%=cid%>.getClusterStatus();
+                if ("available".equalsIgnoreCase(status_<%=cid%>)) {
+                    clusterReady_<%=cid%> = true;
+                    globalMap.put("<%=cid %>_ENDPOINT", cluster_<%=cid%>.getEndpoint().getAddress());
+                } else {
+                    System.out.print(".");
+                    Thread.sleep(2000);
+                }
+            }
+    	<%
+    	}
+    	%>
+		
+		
 	<%
 	} else if("RESTORE_FROM_SNAPSHOT".equals(action)) {
 	%>

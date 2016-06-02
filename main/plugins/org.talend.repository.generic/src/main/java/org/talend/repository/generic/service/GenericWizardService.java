@@ -175,11 +175,6 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public void updateComponentSchema(MetadataTable metadataTable) {
-        SchemaUtils.updateComponentSchema(metadataTable);
-    }
-
-    @Override
     public void updateComponentSchema(INode node, IMetadataTable metadataTable) {
         SchemaUtils.updateComponentSchema(node, metadataTable);
     }
@@ -190,7 +185,7 @@ public class GenericWizardService implements IGenericWizardService {
         if (isGenericConnection(connection)) {
             GenericConnection genericConnection = (GenericConnection) connection;
             String compProperties = genericConnection.getCompProperties();
-            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties);
+            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection);
             if (cp != null) {
                 componentProperties.add(cp);
             }
@@ -199,7 +194,7 @@ public class GenericWizardService implements IGenericWizardService {
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils.getComponentPropertiesFromSerialized(taggedValue
-                                .getValue());
+                                .getValue(), connection);
                         if (compPros != null && !componentProperties.contains(compPros)) {
                             componentProperties.add(compPros);
                         }

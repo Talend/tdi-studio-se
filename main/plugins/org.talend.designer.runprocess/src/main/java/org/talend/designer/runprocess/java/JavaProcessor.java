@@ -97,6 +97,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.ElementParameterParser;
@@ -1568,6 +1569,54 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         updateContextCode(codeGen);
     }
 
+    private void generateWSDL(IFolder wsdlsPackageFolder, INode node) throws CoreException, IOException {
+        // retrieve WSDL content (compressed-n-encoded) -> zip-content.-> wsdls.(first named main.wsdl)
+        String wsdlContent = node.getElementParameter("WSDL_CONTENT").getValue().toString();
+        // String wsdlContent = (String) node.getPropertyValue("WSDL_CONTENT"); //$NON-NLS-1$
+
+        String uniqueName = node.getUniqueName();
+        if (null != uniqueName && null != wsdlContent && !wsdlContent.trim().isEmpty()) {
+
+            // configure decoding and uncompressing
+            InputStream wsdlStream = new BufferedInputStream(
+                    new InflaterInputStream(new Base64InputStream(new ByteArrayInputStream(wsdlContent.getBytes()))));
+
+            if (!wsdlsPackageFolder.exists()) {
+                wsdlsPackageFolder.create(true, true, null);
+            }
+            // generate WSDL file
+            if (checkIsZipStream(wsdlStream)) {
+
+                ZipInputStream zipIn = new ZipInputStream(wsdlStream);
+                ZipEntry zipEntry = null;
+
+                while ((zipEntry = zipIn.getNextEntry()) != null) {
+                    String outputName = zipEntry.getName();
+                    if ("main.wsdl".equals(outputName)) { //$NON-NLS-1$
+                        outputName = uniqueName + ".wsdl"; //$NON-NLS-1$
+                    }
+                    IFile wsdlFile = wsdlsPackageFolder.getFile(outputName);
+                    if (!wsdlFile.exists()) {
+                        // cause create file will do a close. add a warp to ignore close.
+                        InputStream unCloseIn = new FilterInputStream(zipIn) {
+
+                            @Override
+                            public void close() throws IOException {
+                            };
+                        };
+
+                        wsdlFile.create(unCloseIn, true, null);
+                    }
+                    zipIn.closeEntry();
+                }
+                zipIn.close();
+            } else {
+                IFile wsdlFile = wsdlsPackageFolder.getFile(uniqueName + ".wsdl"); //$NON-NLS-1$
+                wsdlFile.create(wsdlStream, true, null);
+            }
+        }
+    }
+
     /*
      * (non-Javadoc) generate ESB files on classpath for jobs with ESB components
      */
@@ -1584,51 +1633,20 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             }
 
             for (INode node : graphicalNodes) {
-                if ("tESBConsumer".equals(node.getComponent().getName()) && node.isActivate()) { //$NON-NLS-1$
-                    // retrieve WSDL content (compressed-n-encoded) -> zip-content.-> wsdls.(first named main.wsdl)
-                    String wsdlContent = (String) node.getPropertyValue("WSDL_CONTENT"); //$NON-NLS-1$
-                    String uniqueName = node.getUniqueName();
-                    if (null != uniqueName && null != wsdlContent && !wsdlContent.trim().isEmpty()) {
 
-                        // configure decoding and uncompressing
-                        InputStream wsdlStream = new BufferedInputStream(new InflaterInputStream(new Base64InputStream(
-                                new ByteArrayInputStream(wsdlContent.getBytes()))));
-
-                        if (!wsdlsPackageFolder.exists()) {
-                            wsdlsPackageFolder.create(true, true, null);
-                        }
-                        // generate WSDL file
-                        if (checkIsZipStream(wsdlStream)) {
-
-                            ZipInputStream zipIn = new ZipInputStream(wsdlStream);
-                            ZipEntry zipEntry = null;
-
-                            while ((zipEntry = zipIn.getNextEntry()) != null) {
-                                String outputName = zipEntry.getName();
-                                if ("main.wsdl".equals(outputName)) { //$NON-NLS-1$
-                                    outputName = uniqueName + ".wsdl"; //$NON-NLS-1$
-                                }
-                                IFile wsdlFile = wsdlsPackageFolder.getFile(outputName);
-                                if (!wsdlFile.exists()) {
-                                    // cause create file will do a close. add a warp to ignore close.
-                                    InputStream unCloseIn = new FilterInputStream(zipIn) {
-
-                                        @Override
-                                        public void close() throws IOException {
-                                        };
-                                    };
-
-                                    wsdlFile.create(unCloseIn, true, null);
-                                }
-                                zipIn.closeEntry();
-                            }
-                            zipIn.close();
-                        } else {
-                            IFile wsdlFile = wsdlsPackageFolder.getFile(uniqueName + ".wsdl"); //$NON-NLS-1$
-                            wsdlFile.create(wsdlStream, true, null);
+                if (node.getComponent().getComponentType() == EComponentType.JOBLET) {
+                    List<? extends INode> graphicalNodesOfJoblet = node.getProcess().getGeneratingNodes();
+                    for (INode nodeOfJoblet : graphicalNodesOfJoblet) {
+                        if ("tESBConsumer".equals(nodeOfJoblet.getComponent().getName()) && nodeOfJoblet.isActivate()) { //$NON-NLS-1$
+                            generateWSDL(wsdlsPackageFolder, nodeOfJoblet);
                         }
                     }
+                } else {
+                    if ("tESBConsumer".equals(node.getComponent().getName()) && node.isActivate()) { //$NON-NLS-1$
+                        generateWSDL(wsdlsPackageFolder, node);
+                    }
                 }
+
             }
         } catch (CoreException e) {
             if (e.getStatus() != null && e.getStatus().getException() != null) {

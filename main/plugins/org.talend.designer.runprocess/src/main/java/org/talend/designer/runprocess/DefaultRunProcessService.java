@@ -190,12 +190,15 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new SparkJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
             Bundle bundle = Platform.getBundle(PluginChecker.EXPORT_ROUTE_PLUGIN_ID);
-            try {
-                Class camelJavaProcessor = bundle.loadClass("org.talend.resources.export.maven.runprocess.CamelJavaProcessor");
-                Constructor constructor = camelJavaProcessor.getConstructor(IProcess.class, Property.class, boolean.class);
-                return (MavenJavaProcessor) constructor.newInstance(process, property, filenameFromLabel);
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
+            if (bundle != null) {
+                try {
+                    Class camelJavaProcessor = bundle
+                            .loadClass("org.talend.resources.export.maven.runprocess.CamelJavaProcessor");
+                    Constructor constructor = camelJavaProcessor.getConstructor(IProcess.class, Property.class, boolean.class);
+                    return (MavenJavaProcessor) constructor.newInstance(process, property, filenameFromLabel);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
             }
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {

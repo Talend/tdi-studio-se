@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.publish.core.models;
 
-
 public class FeatureModel extends BaseModel {
 
     public FeatureModel(String artifactId, String version) {
@@ -25,6 +24,16 @@ public class FeatureModel extends BaseModel {
 
     @Override
     public String getExtension() {
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.publish.core.models.BaseModel#getClassifier()
+     */
+    @Override
+    public String getClassifier() {
         return null;
     }
 

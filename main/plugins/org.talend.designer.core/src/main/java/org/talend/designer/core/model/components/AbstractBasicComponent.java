@@ -46,6 +46,8 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
 
     private List<IMultipleComponentManager> multipleComponentManagers;
 
+    private boolean initializing;
+
     @Override
     public void setImageRegistry(Map<String, ImageDescriptor> imageRegistry) {
         this.imageRegistry = imageRegistry;
@@ -221,4 +223,13 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
     public boolean setGenericPropertyValue(IElementParameter param) {
         return false;
     }
+
+    public boolean isInitializing() {
+        return this.initializing;
+    }
+
+    public void setInitializing(boolean initializing) {
+        this.initializing = initializing;
+    }
+
 }

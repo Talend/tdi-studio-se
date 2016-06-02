@@ -2,7 +2,7 @@
 <feature
       id="org.talend.rcp.branding.tos.test.feature"
       label="Test feature for TOS"
-      version="6.2.0.qualifier">
+      version="6.2.1.qualifier">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -331,6 +331,22 @@
 
    <plugin
          id="org.talend.repository.view.di.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
+	<plugin
+         id="org.talend.designer.webservice.test"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+         
+    <plugin
+         id="org.talend.updates.runtime.test"
          download-size="0"
          install-size="0"
          version="0.0.0"
