@@ -118,7 +118,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
                             }
                             stub_<%=cid %>.setHeader(new org.apache.axis.message.SOAPHeaderElement("http://www.talend.com/mdm", "transaction-id", mdmTransaction_<%=cid%>.getId()));
                             stub_<%=cid %>._setProperty(org.apache.axis.client.Call.SESSION_MAINTAIN_PROPERTY, new Boolean(true));
-                            stub_<%=cid %>._setProperty(org.apache.axis.transport.http.HTTPConstants.HEADER_COOKIE, "JSESSIONID=" + mdmTransaction_<%=cid%>.getSessionId());
+                            stub_<%=cid %>._setProperty(org.apache.axis.transport.http.HTTPConstants.HEADER_COOKIE, com.talend.mdm.transaction.client.MDMTransaction.getStickySession() + "=" + mdmTransaction_<%=cid%>.getSessionId());
                         }
                         stub_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
                         globalMap.put("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName(), xtentisWS_<%=cid %>);
