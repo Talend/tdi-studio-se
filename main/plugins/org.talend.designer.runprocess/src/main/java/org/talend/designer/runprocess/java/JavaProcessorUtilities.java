@@ -62,6 +62,7 @@ import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -304,9 +305,11 @@ public class JavaProcessorUtilities {
 
         Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
 
-        // only for wizards or additional jars only to make the java project compile without any error.
-        for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
-            optionalJarsOnlyForRoutines.add(moduleNeeded);
+        if (!(process instanceof IProcess2)) {
+            // only for wizards or additional jars only to make the java project compile without any error.
+            for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
+                optionalJarsOnlyForRoutines.add(moduleNeeded);
+            }
         }
 
         // list contains all routines linked to job as well as routines not used in the job
