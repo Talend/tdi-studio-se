@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.talend.commons.ui.utils.PathUtils;
-import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
@@ -53,7 +52,6 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.PathExtractor;
 import org.talend.core.sqlbuilder.util.ConnectionParameters;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.core.ui.editor.connections.TracesConnectionUtils;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 
 /**
@@ -476,8 +474,8 @@ public class ConfigureConnParamDialog extends Dialog {
         hostLabel.setLayoutData(data);
         boolean isContext = ContextParameterUtils.isContainContextParam(pvValues.get(key));
         int passStyle = SWT.BORDER;
-        if((key == EConnectionParameterName.PASSWORD)&&!isContext){
-            passStyle = SWT.PASSWORD; 
+        if ((key == EConnectionParameterName.PASSWORD) && !isContext) {
+            passStyle = SWT.PASSWORD;
         }
         final Text host = new Text(hostComposite, passStyle);
         host.setText(pvValues.get(key));
@@ -488,7 +486,7 @@ public class ConfigureConnParamDialog extends Dialog {
         // GridDataFactory.swtDefaults().hint(TEXT_DEFAULT_X, DEFAULT_HEIGHT).applyTo(host);
         gridData = new GridData(GridData.FILL_HORIZONTAL);
         host.setLayoutData(gridData);
-        
+
         Composite contextComposite = new Composite(hostComposite, SWT.NULL);
         GridLayout naviCommonCompLayout = new GridLayout(2, false);
         naviCommonCompLayout.marginWidth = 0;
@@ -496,16 +494,16 @@ public class ConfigureConnParamDialog extends Dialog {
         contextComposite.setLayout(naviCommonCompLayout);
         contextComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         contextComposite.setVisible(isContext);
-        
+
         final Text hostText = new Text(contextComposite, SWT.NONE);
         hostText.setEditable(false);
         gridData = new GridData();
         hostText.setLayoutData(gridData);
         hostText.setText(CONTEXT_WITH);
-        
+
         passStyle = SWT.NONE;
-        if(key == EConnectionParameterName.PASSWORD){
-            passStyle = SWT.PASSWORD; 
+        if (key == EConnectionParameterName.PASSWORD) {
+            passStyle = SWT.PASSWORD;
         }
         final Text hostValue = new Text(contextComposite, passStyle);
         hostValue.setEditable(false);
@@ -592,7 +590,7 @@ public class ConfigureConnParamDialog extends Dialog {
     protected void okPressed() {
         for (Text text : allParamText) {
             EConnectionParameterName name = (EConnectionParameterName) text.getData();
-            String value = ((Text) text.getData(TEXT_CONTROL)).getText().substring(CONTEXT_WITH.length());
+            String value = ((Text) text.getData(TEXT_CONTROL)).getText();
             switch (name) {
             case SID:
                 parameters.setDbName(value);

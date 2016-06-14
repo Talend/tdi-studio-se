@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -485,6 +485,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         }
         tabFactory.setTitle(title, icon);
         super.setTitleImage(icon);
+        if (gitService.isProjectInGitMode())
+                return;
+
+        // This invocation below will bring in refresh issue for git.
         super.setPartName(viewName);
     }
 

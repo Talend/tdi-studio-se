@@ -136,6 +136,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils;
@@ -1646,7 +1647,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         }
                         Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y
                                 + viewOriginalPosition.y);
-
+                        point.x = (int) (point.x/AnimatableZoomManager.currentZoom);
+                        point.y = (int) (point.y/AnimatableZoomManager.currentZoom);
                         // Connection targetConnection = CreateComponentOnLinkHelper.getSelectedConnection();
                         // for (Object child : getProcessPart().getChildren()) {
                         // if (child instanceof SubjobContainerPart) {
@@ -1777,7 +1779,8 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         }
                         Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y
                                 + viewOriginalPosition.y);
-
+                        point.x = (int) (point.x/AnimatableZoomManager.currentZoom);
+                        point.y = (int) (point.y/AnimatableZoomManager.currentZoom);
                         // step 2: create node/note
                         CreateCommand createCmd = null;
                         if (isNodeInstance) {

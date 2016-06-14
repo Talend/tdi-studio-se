@@ -133,13 +133,6 @@ public class Salesforce620Migration extends AbstractJobMigrationTask {
                     moduleName = TalendQuoteUtils.addQuotes(moduleName);
                     moduleNameProperty.setStoredValue(moduleName);
                 }
-                nt = newProperties.getProperty("upsertKeyColumn");
-                if (nt != null && nt instanceof Property) {
-                    Property moduleNameProperty = (Property) nt;
-                    String key = (String) moduleNameProperty.getValue();
-                    key = TalendQuoteUtils.removeQuotes(key);
-                    moduleNameProperty.setStoredValue(key);
-                }
                 nt = newProperties.getProperty("upsertRelationTable.columnName");
                 if (nt != null && nt instanceof Property) {
                     Property moduleNameProperty = (Property) nt;

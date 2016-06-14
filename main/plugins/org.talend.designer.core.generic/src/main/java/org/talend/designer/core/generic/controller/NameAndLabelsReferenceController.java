@@ -54,6 +54,8 @@ public class NameAndLabelsReferenceController extends AbstractElementPropertySec
 
     private static final String MODULE = "MODULE"; //$NON-NLS-1$
 
+    private static final String PARAM_OBJ = "PARAM_OBJ"; //$NON-NLS-1$
+
     public NameAndLabelsReferenceController(IDynamicProperty dp) {
         super(dp);
     }
@@ -63,8 +65,9 @@ public class NameAndLabelsReferenceController extends AbstractElementPropertySec
     }
 
     public Command createCommand(Button button) {
-        if (curParameter instanceof GenericElementParameter) {
-            GenericElementParameter gParam = (GenericElementParameter) curParameter;
+        Object paramObj = button.getData(PARAM_OBJ);
+        if (paramObj instanceof GenericElementParameter) {
+            GenericElementParameter gParam = (GenericElementParameter) paramObj;
             if (gParam != null) {
                 callBeforeActive(gParam);
                 NameAndLabelsDialog nameAndLabelsDialog = new NameAndLabelsDialog(composite.getShell(),
@@ -74,7 +77,7 @@ public class NameAndLabelsReferenceController extends AbstractElementPropertySec
                     String result = TalendQuoteUtils.addQuotes(StringUtils.trimToEmpty(nameAndLabelsDialog.getResult()));
                     Text moduleText = (Text) hashCurControls.get(propertyName);
                     moduleText.setText(result);
-                    curParameter.setValue(result);
+                    gParam.setValue(result);
                 }
             }
         }
@@ -109,6 +112,7 @@ public class NameAndLabelsReferenceController extends AbstractElementPropertySec
         data.height = STANDARD_HEIGHT - 2;
         btnEdit.setLayoutData(data);
         btnEdit.setData(NAME, MODULE);
+        btnEdit.setData(PARAM_OBJ, param);
         btnEdit.setData(PARAMETER_NAME, param.getName());
         // btnEdit.setEnabled(!param.isReadOnly());
         btnEdit.addSelectionListener(new SelectionAdapter() {

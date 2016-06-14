@@ -64,6 +64,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
+import org.talend.commons.ui.gmf.draw2d.AnimatableZoomManager;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageUtils.ICON_SIZE;
 import org.talend.core.CorePlugin;
@@ -1685,7 +1686,14 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             MetadataTable table, Node node) {
         SAPFunctionUnit functionUnit = null;
         if (object instanceof MetadataTableRepositoryObject) {
-            IElementParameter schemaParam = node.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
+            IElementParameter schemaParam = null;
+            List<IElementParameter> schemaTypeList = node.getElementParametersFromField(EParameterFieldType.SCHEMA_TYPE);
+            for (IElementParameter param : schemaTypeList) {
+                if (param.getName().equals("SCHEMA")) { //$NON-NLS-1$
+                    schemaParam = param;
+                    break;
+                }
+            }
             if (table.eContainer() instanceof SAPFunctionUnit) {
                 // function parameter table
                 functionUnit = (SAPFunctionUnit) table.eContainer();
@@ -2007,7 +2015,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             viewOriginalPosition = viewport.getViewLocation();
         }
         Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y + viewOriginalPosition.y);
-
+        point.x =  (int) (point.x/AnimatableZoomManager.currentZoom);
+        point.y =  (int) (point.y/AnimatableZoomManager.currentZoom);
         org.talend.designer.core.ui.editor.connections.Connection targetConnection = null;
         if (selectedConnectionPart != null) {
             targetConnection = (org.talend.designer.core.ui.editor.connections.Connection) selectedConnectionPart.getModel();
