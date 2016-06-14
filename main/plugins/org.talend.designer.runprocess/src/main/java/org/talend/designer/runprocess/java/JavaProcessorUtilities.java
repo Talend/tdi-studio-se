@@ -305,11 +305,9 @@ public class JavaProcessorUtilities {
 
         Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
 
-        if (!(process instanceof IProcess2)) {
-            // only for wizards or additional jars only to make the java project compile without any error.
-            for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
-                optionalJarsOnlyForRoutines.add(moduleNeeded);
-            }
+        // only for wizards or additional jars only to make the java project compile without any error.
+        for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
+            optionalJarsOnlyForRoutines.add(moduleNeeded);
         }
 
         // list contains all routines linked to job as well as routines not used in the job
