@@ -1,38 +1,34 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode    
-    	org.talend.core.model.process.ElementParameterParser
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.IConnection    
-		org.talend.core.model.process.IConnectionCategory
-    	org.talend.core.model.process.EConnectionType
-		org.talend.core.model.utils.NodeUtil  		
-		" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.utils.NodeUtil
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
-	String virtualcid = cid;
-	String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
-	if(destination!=null && !"".equals(destination)){
-		cid = destination;
-	}
-	
-	boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-	
-	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-	
-	boolean isMassInsert =("true").equals(ElementParameterParser.getValue(node,"__EXTENDINSERT__"));
-	boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
-	
-	boolean addTaskID = ("true").equals(ElementParameterParser.getValue(node,"__ADD_TASKID__"));
-	String taskID = ElementParameterParser.getValue(node,"__TASKID__");
-	boolean usePartialUpdate = ("true").equals(ElementParameterParser.getValue(node,"__USE_PARTIAL_UPDATE__"));
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+String virtualcid = cid;
+String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
+if(destination!=null && !"".equals(destination)){
+    cid = destination;
+}
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+boolean isMassInsert =("true").equals(ElementParameterParser.getValue(node,"__EXTENDINSERT__"));
+boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
+boolean addTaskID = ("true").equals(ElementParameterParser.getValue(node,"__ADD_TASKID__"));
+String taskID = ElementParameterParser.getValue(node,"__TASKID__");
+boolean usePartialUpdate = ("true").equals(ElementParameterParser.getValue(node,"__USE_PARTIAL_UPDATE__"));
 %>
-	}
+    }
 }
 <%
 INode sourceNode = node.getIncomingConnections(EConnectionType.ON_COMPONENT_OK).get(0).getSource();
@@ -40,111 +36,110 @@ String virtualSourceCid = sourceNode.getUniqueName();
 INode startNode = NodeUtil.getSpecificStartNode(sourceNode);
 String startNodeCid = null; 
 if(startNode != null){
-	startNodeCid = startNode.getUniqueName();
+    startNodeCid = startNode.getUniqueName();
 } 
 IConnection nextMergeConn = NodeUtil.getNextMergeConnection(node);
 if(nextMergeConn != null && nextMergeConn.getInputId()>1 && startNodeCid != null){
 %>
-	txf_<%=cid%>.join();
-	if(txf_<%=cid%>.getLastException()!=null) {
-		currentComponent = txf_<%=cid%>.getCurrentComponent();
-		throw txf_<%=cid%>.getLastException();
-	}
-	globalMap.remove("queue_<%=virtualSourceCid%>");
+    txf_<%=cid%>.join();
+    if(txf_<%=cid%>.getLastException()!=null) {
+        currentComponent = txf_<%=cid%>.getCurrentComponent();
+        throw txf_<%=cid%>.getLastException();
+    }
+    globalMap.remove("queue_<%=virtualSourceCid%>");
 <%
 }else{
 %>
-	String readFinishWithExceptionMarkWithPipeId_<%=cid%> = "<%=cid%>_FINISH_WITH_EXCEPTION"+(queue_<%=cid%>==null?"":queue_<%=cid%>.hashCode());
-	if(globalMap.containsKey(readFinishWithExceptionMarkWithPipeId_<%=cid%>)){
-		globalMap.put(readFinishWithExceptionMarkWithPipeId_<%=cid%>, null);// syn
-		globalMap.remove(readFinishWithExceptionMarkWithPipeId_<%=cid%>);
-		return;
-	} 
-	globalMap.remove("queue_<%=node.getUniqueName()%>");
+    String readFinishWithExceptionMarkWithPipeId_<%=cid%> = "<%=cid%>_FINISH_WITH_EXCEPTION"+(queue_<%=cid%>==null?"":queue_<%=cid%>.hashCode());
+    if(globalMap.containsKey(readFinishWithExceptionMarkWithPipeId_<%=cid%>)){
+        globalMap.put(readFinishWithExceptionMarkWithPipeId_<%=cid%>, null);// syn
+        globalMap.remove(readFinishWithExceptionMarkWithPipeId_<%=cid%>);
+        return;
+    }
+    globalMap.remove("queue_<%=node.getUniqueName()%>");
 <%
 }
 %>
 globalMap.put(readFinishMarkWithPipeId_<%=cid%>,null);//syn
 globalMap.remove(readFinishMarkWithPipeId_<%=cid%>);
 <%
-if(!usePartialUpdate){%>    
+if(!usePartialUpdate){%>
 <%
-	if(isMassInsert){
-		if(!isStaging && withReport){
-%> 
+    if(isMassInsert){
+        if(!isStaging && withReport){
+%>
     <% logUtil.debug("\"Put item with report to MDM server.\"");%>
-    
-	if(miList_<%=cid %>.size() > 0){	    
-	    
-	    org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
-		wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
-		
-		<% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
-	    <% logUtil.debug("\"Put item with report array successfully.\"");%>
-	    
-		miList_<%=cid %>.clear();
-		miList_<%=cid %> = null;
-		<%if(addTaskID){%>        	
-        	
-        	int i2_<%=cid %> = 0;
-			for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
-			     
-			    String compositeId = "";
+
+    if(miList_<%=cid %>.size() > 0){
+
+        org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
+        wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
+        
+        <% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+        <% logUtil.debug("\"Put item with report array successfully.\"");%>
+        
+        miList_<%=cid %>.clear();
+        miList_<%=cid %> = null;
+        <%if(addTaskID){%>
+
+            int i2_<%=cid %> = 0;
+            for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+
+                String compositeId = "";
                 for(String id:wspk2_<%=cid %>.getIds()) {
                   compositeId += id;
-                }                
-                
-				wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
-				service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
-				i2_<%=cid %>++;
-			}
-        	
-        	<% logUtil.debug("\"Add task id successfully.\"");%>
-        	taskIDs_<%=cid%>.clear();
+                }
+
+                wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
+                service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
+                i2_<%=cid %>++;
+            }
+
+            <% logUtil.debug("\"Add task id successfully.\"");%>
+            taskIDs_<%=cid%>.clear();
         <%}%>
-	}
+    }
 <%
-		}else{%>
-		<% logUtil.debug("\"Put item with report to MDM server.\"");%>
-		
-	if(miList_<%=cid %>.size() > 0){	   
-	   
-	    org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);
-		wspks_<%=cid %> = service_<%=cid %>.putItemArray(putItemArray).getWsItemPK();
-		
-		<% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
-		<% logUtil.debug("\"Put item with report array successfully.\"");%>
-		
-		miList_<%=cid %>.clear();
-		miList_<%=cid %> = null;
-		<%if(addTaskID){%>        	
-        	
-        	int i2_<%=cid %> = 0;
-			for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
-			     
-			    String compositeId = "";
+        }else{%>
+        <% logUtil.debug("\"Put item with report to MDM server.\"");%>
+
+    if(miList_<%=cid %>.size() > 0){
+
+        org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);
+        wspks_<%=cid %> = service_<%=cid %>.putItemArray(putItemArray).getWsItemPK();
+
+        <% logUtil.debug("\"Put item size:\"+wspks_"+cid+".size()");%>
+        <% logUtil.debug("\"Put item with report array successfully.\"");%>
+
+        miList_<%=cid %>.clear();
+        miList_<%=cid %> = null;
+        <%if(addTaskID){%>
+
+            int i2_<%=cid %> = 0;
+            for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+
+                String compositeId = "";
                 for(String id:wspk2_<%=cid %>.getIds()) {
                   compositeId += id;
-                }                
-                
-				wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
-				service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
-				i2_<%=cid %>++;
-			}
-        	
-        	<% logUtil.debug("\"Add task id successfully.\"");%>
-        	taskIDs_<%=cid%>.clear();
+                }
+
+                wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
+                service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
+                i2_<%=cid %>++;
+            }
+
+            <% logUtil.debug("\"Add task id successfully.\"");%>
+            taskIDs_<%=cid%>.clear();
         <%}%>
-	}
+    }
 <%
-		}
-	}
+        }
+    }
 }%>
- 	<%if(!useExistingConn){%>
- 	    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
- 		service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout()); 	    
- 	<%}%> 	 	
- 	
- 	globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);  
- 	globalMap.put("<%=cid %>_NB_LINE_REJECTED",nb_line_rejected_<%=cid%>);           
-            
+<%if(!useExistingConn){%>
+    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
+    service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+<%}%>
+
+globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);
+globalMap.put("<%=cid %>_NB_LINE_REJECTED",nb_line_rejected_<%=cid%>);

@@ -12,10 +12,14 @@ import org.apache.commons.httpclient.methods.PostMethod;
 
 public class MDMTransaction {
 
+    public static final String JVM_STICKY_SESSION = "sticky_session"; //$NON-NLS-1$
+    public static final String DEFAULT_STICKY_SESSION = "JSESSIONID"; //$NON-NLS-1$
+
 	private String url;
 	private String id;
 	private String username;
 	private String password;
+	private String sessionId;
 	
 	public void commit() throws IOException {
 		HttpClient client = new HttpClient();
@@ -25,6 +29,7 @@ public class MDMTransaction {
 		HttpMethod method = new PostMethod(url + "/" + id);
 		method.setDoAuthentication(true);
 		try {
+		    method.setRequestHeader("Cookie", getStickySession() + "=" + sessionId); //$NON-NLS-1$ //$NON-NLS-2$
 			client.executeMethod(method);
 		} catch (HttpException e) {
 			throw e;
@@ -48,6 +53,7 @@ public class MDMTransaction {
 		HttpMethod method = new DeleteMethod(url + "/" + id);
 		method.setDoAuthentication(true);
 		try {
+		    method.setRequestHeader("Cookie", getStickySession() + "=" + sessionId); //$NON-NLS-1$ //$NON-NLS-2$
 			client.executeMethod(method);
 		} catch (HttpException e) {
 			throw e;
@@ -82,5 +88,20 @@ public class MDMTransaction {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
+	public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+	public static String getStickySession() {
+        String stickySession = System.getProperty(JVM_STICKY_SESSION);
+        if(stickySession == null) {
+            stickySession = DEFAULT_STICKY_SESSION;
+        }
+        return stickySession;
+    }
 }

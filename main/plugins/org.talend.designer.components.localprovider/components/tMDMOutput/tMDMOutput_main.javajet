@@ -1,309 +1,309 @@
 <%@ jet 
   imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.core.model.metadata.IMetadataTable 
-    org.talend.core.model.metadata.IMetadataColumn
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-    org.talend.core.model.process.IConnection
-    org.talend.core.model.process.IConnectionCategory
-    org.talend.core.model.process.EConnectionType
-    java.util.List
-    java.util.Map
-  "
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
+        java.util.List
+        java.util.Map
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    LogUtil logUtil = new LogUtil(node);
-    String cid = node.getUniqueName();
-    
-    boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-    
-    String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
-    boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
-    String needCheck = ElementParameterParser.getValue(node,"__ISINVOKE__");
-    boolean isMassInsert =("true").equals(ElementParameterParser.getValue(node,"__EXTENDINSERT__"));
-    String numMassInsert = ElementParameterParser.getValue(node,"__COMMIT_LEVEL__");
-    String sourceName = ElementParameterParser.getValue(node,"__SOURCE__");
-    boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
-    String isUpdate = ElementParameterParser.getValue(node,"__ISUPDATE__");
-    List<Map<String,String>> keysReturn = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__RETURN_IDS__");
-    
-    boolean addTaskID = ("true").equals(ElementParameterParser.getValue(node,"__ADD_TASKID__"));
-    boolean isCustom = "true".equals(ElementParameterParser.getValue(node, "__CUSTOM__")); 
-    String taskID = ElementParameterParser.getValue(node,"__TASKID__");
-    String prevColumn = ElementParameterParser.getValue(node, "__PREV_COLUMN_TASK_ID__");
-    
-    boolean usePartialUpdate = ("true").equals(ElementParameterParser.getValue(node,"__USE_PARTIAL_UPDATE__"));
-    boolean usePartialDelete = ("true").equals(ElementParameterParser.getValue(node,"__PARTIAL_DELETE__"));
-    String pivot = ElementParameterParser.getValue(node,"__PIVOT__");
-    boolean overwrite = ("true").equals(ElementParameterParser.getValue(node,"__OVERWRITE__"));
-    String key = ElementParameterParser.getValue(node,"__KEY__");
-    String position = ElementParameterParser.getValue(node,"__POSITION__");
-    String dataModel = ElementParameterParser.getValue(node, "__DATAMODEL__");
-    String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
-    
-    String doc = ElementParameterParser.getValue(node, "__DOCUMENT__");
-    
-    List<IMetadataTable> metadatas = node.getMetadataList();
-    
-    if (destination != null && !"".equals(destination)) {
-      cid = destination;
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+
+String destination = ElementParameterParser.getValue(node, "__DESTINATION__");
+boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
+String needCheck = ElementParameterParser.getValue(node,"__ISINVOKE__");
+boolean isMassInsert =("true").equals(ElementParameterParser.getValue(node,"__EXTENDINSERT__"));
+String numMassInsert = ElementParameterParser.getValue(node,"__COMMIT_LEVEL__");
+String sourceName = ElementParameterParser.getValue(node,"__SOURCE__");
+boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
+String isUpdate = ElementParameterParser.getValue(node,"__ISUPDATE__");
+List<Map<String,String>> keysReturn = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__RETURN_IDS__");
+
+boolean addTaskID = ("true").equals(ElementParameterParser.getValue(node,"__ADD_TASKID__"));
+boolean isCustom = "true".equals(ElementParameterParser.getValue(node, "__CUSTOM__")); 
+String taskID = ElementParameterParser.getValue(node,"__TASKID__");
+String prevColumn = ElementParameterParser.getValue(node, "__PREV_COLUMN_TASK_ID__");
+
+boolean usePartialUpdate = ("true").equals(ElementParameterParser.getValue(node,"__USE_PARTIAL_UPDATE__"));
+boolean usePartialDelete = ("true").equals(ElementParameterParser.getValue(node,"__PARTIAL_DELETE__"));
+String pivot = ElementParameterParser.getValue(node,"__PIVOT__");
+boolean overwrite = ("true").equals(ElementParameterParser.getValue(node,"__OVERWRITE__"));
+String key = ElementParameterParser.getValue(node,"__KEY__");
+String position = ElementParameterParser.getValue(node,"__POSITION__");
+String dataModel = ElementParameterParser.getValue(node, "__DATAMODEL__");
+String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
+
+String doc = ElementParameterParser.getValue(node, "__DOCUMENT__");
+
+List<IMetadataTable> metadatas = node.getMetadataList();
+
+if (destination != null && !"".equals(destination)) {
+  cid = destination;
+}
+
+if (metadatas != null && metadatas.size()>0) {
+  IMetadataTable metadata = metadatas.get(0);
+  if (metadata != null) {
+  
+    List<? extends IConnection> outputConns = node.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+    List<IMetadataColumn> inputColumnList = null;
+    List<IMetadataColumn> outputColumnList = null;
+    List<IMetadataColumn> columnList =metadata.getListColumns();
+
+    String rejectConnName = null;
+    List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
+    List<IMetadataColumn> rejectColumnList = null;
+    if (rejectConns != null && rejectConns.size() > 0) {
+      IConnection rejectConn = rejectConns.get(0);
+      if(rejectConn!=null){
+          rejectConnName = rejectConn.getName();
+          IMetadataTable metadataTable = rejectConn.getMetadataTable();
+          if(metadataTable!=null){
+              rejectColumnList = metadataTable.getListColumns();
+          }
+      }
     }
-    
-    if (metadatas != null && metadatas.size()>0) { 
-      IMetadataTable metadata = metadatas.get(0);
-      if (metadata != null) { 
-      
-      	List<? extends IConnection> outputConns = node.getOutgoingConnections(EConnectionType.FLOW_MAIN);
-      	List<IMetadataColumn> inputColumnList = null;
-      	List<IMetadataColumn> outputColumnList = null;
-      	List<IMetadataColumn> columnList =metadata.getListColumns();
-      	
-        String rejectConnName = null;
-        List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
-        List<IMetadataColumn> rejectColumnList = null;
-        if (rejectConns != null && rejectConns.size() > 0) {
-          IConnection rejectConn = rejectConns.get(0);
-          if(rejectConn!=null){
-          	rejectConnName = rejectConn.getName();
-          	IMetadataTable metadataTable = rejectConn.getMetadataTable();
-          	if(metadataTable!=null){
-          		rejectColumnList = metadataTable.getListColumns();
-          	}
+
+    String outConnName = null;
+    String inputConnName = null;
+    List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+    for(IConnection tmpconn : outgoingConns) {
+      if (tmpconn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+        if(rejectConnName==null || !rejectConnName.equals(tmpconn.getName())){
+          outConnName=tmpconn.getName();
+          IMetadataTable outputMetadata = tmpconn.getMetadataTable();
+          if(outputMetadata!=null){
+              outputColumnList = outputMetadata.getListColumns();
           }
-        }
-       
-        String outConnName = null;
-    	String inputConnName = null;
-        List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-    
-        for(IConnection tmpconn : outgoingConns) {
-          if (tmpconn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-            if(rejectConnName==null || !rejectConnName.equals(tmpconn.getName())){
-              outConnName=tmpconn.getName();
-    		  IMetadataTable outputMetadata = tmpconn.getMetadataTable();
-    		  if(outputMetadata!=null){
-    		      outputColumnList = outputMetadata.getListColumns();
-    		  }
-            }%>
-            <%=tmpconn.getName() %> = null;
-          <%
+        }%>
+        <%=tmpconn.getName() %> = null;
+      <%
+      }
+    }
+
+    List<? extends IConnection> inputConns = node.getIncomingConnections();
+    if (inputConns != null && inputConns.size() > 0) {
+      IConnection inputConn = inputConns.get(0);
+      if(inputConn!=null){
+          inputConnName = inputConn.getName();
+          IMetadataTable inputMetadata = inputConn.getMetadataTable();
+          if(inputMetadata!=null) {
+              inputColumnList = inputMetadata.getListColumns();
           }
-        }
-    	
-    	List<? extends IConnection> inputConns = node.getIncomingConnections();
-        if (inputConns != null && inputConns.size() > 0) {
-          IConnection inputConn = inputConns.get(0);
-          if(inputConn!=null){
-          	inputConnName = inputConn.getName();
-          	IMetadataTable inputMetadata = inputConn.getMetadataTable();
-          	if(inputMetadata!=null) {
-          		inputColumnList = inputMetadata.getListColumns();
-          	}
-    	  }
-    	}
-    
-        if (outConnName != null && inputConnName!=null) {
-        %>
-      <%=outConnName %> = new <%=outConnName %>Struct();
-    <%
-        for(IMetadataColumn outputColumn : outputColumnList) {
-        	for(IMetadataColumn inputColumn : inputColumnList) {
-        		if (outputColumn.getLabel().equals(inputColumn.getLabel())) {
-	        		if(doc!=null && doc.equals(outputColumn.getLabel())) {
-	        			if("id_Document".equals(outputColumn.getTalendType())) {
+      }
+    }
+
+    if (outConnName != null && inputConnName!=null) {
+    %>
+  <%=outConnName %> = new <%=outConnName %>Struct();
+<%
+    for(IMetadataColumn outputColumn : outputColumnList) {
+        for(IMetadataColumn inputColumn : inputColumnList) {
+            if (outputColumn.getLabel().equals(inputColumn.getLabel())) {
+                if(doc!=null && doc.equals(outputColumn.getLabel())) {
+                    if("id_Document".equals(outputColumn.getTalendType())) {
 %>
       <%=outConnName %>.<%=doc%> = <%=inputConnName%>.<%=doc%>;
 <%
-        				} else {
+                        } else {
 %>
       <%=outConnName %>.<%=doc%> = <%=inputConnName%>.<%=doc%>.toString();
 <% 
-    					}
-    				} else { // to those which do not match doc columns
+                        }
+                    } else { // to those which do not match doc columns
 %>
-	<%=outConnName %>.<%=outputColumn.getLabel()%> = <%=inputConnName%>.<%=inputColumn.getLabel()%>;
+    <%=outConnName %>.<%=outputColumn.getLabel()%> = <%=inputConnName%>.<%=inputColumn.getLabel()%>;
 <%
-    				}
-    			} // if input column matches output column
-    		} // for input column
-    	} // for output column
+                    }
+                } // if input column matches output column
+            } // for input column
+        } // for output column
     }%>
     input_<%=cid %> = <%=inputConnName%>.<%=doc%>.toString();
 
     try {
-		<%if(usePartialUpdate){ // partial%>
-		    <% logUtil.debug("\"Try to use partial update.\"");%>
+        <%if(usePartialUpdate){ // partial%>
+            <% logUtil.debug("\"Try to use partial update.\"");%>
 <%
-			String dataclusterString = "";
-    		if(isStaging){
-    			dataclusterString = dataCluster + " + \"#STAGING\"";
-    		} else {
-    			dataclusterString = dataCluster;
-    		}
+            String dataclusterString = "";
+            if(isStaging){
+                dataclusterString = dataCluster + " + \"#STAGING\"";
+            } else {
+                dataclusterString = dataCluster;
+            }
 %>
             Integer pos = null;
             if(!<%=usePartialDelete %>) {
                 pos = <%=position.equals("")?null:position%>;
-            }                        
-            
-			org.talend.mdm.webservice.WSPartialPutItem wsPartialPutItem_<%=cid%> = new org.talend.mdm.webservice.WSPartialPutItem(<%=dataclusterString %>,<%=dataModel %>,<%=usePartialDelete %>,<%=key.equals("")?null:key%>, <%=overwrite%>, <%=pivot%>,<%= true==isStaging?false:withReport%>, <%=sourceName%>, pos, input_<%=cid %>);
-			wspk_<%=cid %> = service_<%=cid %>.partialPutItem(wsPartialPutItem_<%=cid%>);			
-			
+            }
+
+            org.talend.mdm.webservice.WSPartialPutItem wsPartialPutItem_<%=cid%> = new org.talend.mdm.webservice.WSPartialPutItem(<%=dataclusterString %>,<%=dataModel %>,<%=usePartialDelete %>,<%=key.equals("")?null:key%>, <%=overwrite%>, <%=pivot%>,<%= true==isStaging?false:withReport%>, <%=sourceName%>, pos, input_<%=cid %>);
+            wspk_<%=cid %> = service_<%=cid %>.partialPutItem(wsPartialPutItem_<%=cid%>);
+
             <%
-	        if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-	        	for (int i = 0; i < keysReturn.size(); i++){
-	            	Map<String,String> map = keysReturn.get(i);
-	              	%>
-	              	<%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
-	            <%
-	            }
-	       	}
-		   	%>     
-            
-		<%}else{// not partial %>			
-			
-			org.talend.mdm.webservice.WSPutItem item_<%=cid %> = new org.talend.mdm.webservice.WSPutItem(<%=isUpdate %>, dataCluster_<%=cid %>,dataModel_<%=cid %>,input_<%=cid %>);
-	      	<%
-		    if (!isStaging && withReport) {%>
-		        <% logUtil.debug("\"Put item with report to MDM server.\"");%>
-		        
-	        	org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport(<%=needCheck %>, <%=sourceName %>, item_<%=cid %>);
-		
-		        <%if (isMassInsert) {%>
-		        	<%if(addTaskID){%>
-		        		taskIDs_<%=cid%>.add(<%=isCustom?taskID:inputConnName + "." + prevColumn%>); 
-		        	<%}%>
-		          miList_<%=cid %>.add(itemReport_<%=cid %>);
-		
-		          if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {		          		            
-		            
-		            org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
-		            wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
-		            
-		            <% logUtil.debug("\"Put items size:\"+wspks_"+cid+".size()");%>
-		            <% logUtil.debug("\"Successfully put item .\"");%>
-		            
-		            miList_<%=cid %>.clear();
-		            <%if(addTaskID){%>
-		                <% logUtil.debug("\"Attempt to add task id .\"");%>
-		                
-		            	int i2_<%=cid %> = 0;
-					    for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
-					    
-					       String compositeId = "";
-					       for(String id:wspk2_<%=cid %>.getIds()) {
-					           compositeId += id;
-					       }					       
-					       
-					    	wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
-					    	service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
-					    	i2_<%=cid %>++;
-					    }
-					    
-		                <% logUtil.debug("\"Add task id successfully.\"");%>
-		            	taskIDs_<%=cid%>.clear();
-		            <%}%>
-		          }
-		        <%} else {%>
-		          <% logUtil.debug("\"Try to put items with report.\"");%>
-		          
-		          wspk_<%=cid %> = service_<%=cid %>.putItemWithReport(itemReport_<%=cid %>);
-		          
-		          <% logUtil.debug("\"Put items successfully.\"");%>
-		          
-		          	<%if(addTaskID){%>
-		          	   <% logUtil.debug("\"Try to add task id.\"");%>
-		            	service_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:inputConnName + "." + prevColumn%>,wspk_<%=cid %>));
-		                <% logUtil.debug("\"Add task id successfully.\"");%>
-		            <%}%>
-		        <%
-		        }
-		
-		        if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-		        
-		          for (int i = 0; i < keysReturn.size(); i++){
-		            Map<String,String> map = keysReturn.get(i);
-		            %>
-		            <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
-		          <%
-		          }
-		        }
-		      } else {
-		          %>
-		          
-		          <% logUtil.debug("\"Put item to MDM server.\"");%>
-		          
-		        <%  
-		        if (isMassInsert) {
-		        	if(addTaskID){
-		        %>
-		        		taskIDs_<%=cid%>.add(<%=isCustom?taskID:inputConnName + "." + prevColumn%>); 
-		        <%}%>
-		          miList_<%=cid %>.add(item_<%=cid %>);
-		
-		          if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {		            		            
-		            
-		            org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);
-		            wspks_<%=cid %> = service_<%=cid %>.putItemArray(putItemArray).getWsItemPK();
-		            
-		            <% logUtil.debug("\"Put items size:\"+wspks_"+cid+".size()");%>
-		            <% logUtil.debug("\"Put item successfully.\"");%>
-		            
-		            miList_<%=cid %>.clear();
-		            <%if(addTaskID){%>
-		            	<% logUtil.debug("\"Attempt to add task id .\"");%>
-		            	int i2_<%=cid %> = 0;
-					    for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
-					        
-					        String compositeId = "";
-					        for(String id:wspk2_<%=cid %>.getIds()) {
-					           compositeId += id;
-					        }					        
-					        
-					    	wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
-					    	service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
-					    	i2_<%=cid %>++;
-					    }
-		            	
+            if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
+                for (int i = 0; i < keysReturn.size(); i++){
+                    Map<String,String> map = keysReturn.get(i);
+                      %>
+                      <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
+                <%
+                }
+               }
+               %>
+
+        <%}else{// not partial %>
+
+            org.talend.mdm.webservice.WSPutItem item_<%=cid %> = new org.talend.mdm.webservice.WSPutItem(<%=isUpdate %>, dataCluster_<%=cid %>,dataModel_<%=cid %>,input_<%=cid %>);
+              <%
+            if (!isStaging && withReport) {%>
+                <% logUtil.debug("\"Put item with report to MDM server.\"");%>
+                
+                org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport(<%=needCheck %>, <%=sourceName %>, item_<%=cid %>);
+
+                <%if (isMassInsert) {%>
+                    <%if(addTaskID){%>
+                        taskIDs_<%=cid%>.add(<%=isCustom?taskID:inputConnName + "." + prevColumn%>);
+                    <%}%>
+                  miList_<%=cid %>.add(itemReport_<%=cid %>);
+
+                  if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
+
+                    org.talend.mdm.webservice.WSPutItemWithReportArray putItemWithReportArray = new org.talend.mdm.webservice.WSPutItemWithReportArray(miList_<%=cid %>);
+                    wspks_<%=cid %> = service_<%=cid %>.putItemWithReportArray(putItemWithReportArray).getWsItemPK();
+
+                    <% logUtil.debug("\"Put items size:\"+wspks_"+cid+".size()");%>
+                    <% logUtil.debug("\"Successfully put item .\"");%>
+
+                    miList_<%=cid %>.clear();
+                    <%if(addTaskID){%>
+                        <% logUtil.debug("\"Attempt to add task id .\"");%>
+
+                        int i2_<%=cid %> = 0;
+                        for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+
+                           String compositeId = "";
+                           for(String id:wspk2_<%=cid %>.getIds()) {
+                               compositeId += id;
+                           }
+
+                            wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
+                            service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
+                            i2_<%=cid %>++;
+                        }
+
                         <% logUtil.debug("\"Add task id successfully.\"");%>
-		            	taskIDs_<%=cid%>.clear();
-		            <%}%>
-		          }
-		        <%
-		        } else {%>
-		          <% logUtil.debug("\"Attempt to put item .\"");%>
-		          
-		          wspk_<%=cid %> = service_<%=cid %>.putItem(item_<%=cid %>);
-		          
-		          <% logUtil.debug("\"Successfully put item .\"");%>
-		          
-					<%if(addTaskID){%>
-					   <% logUtil.debug("\"Attempt to add task id .\"");%>
-					   
-		            	service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(<%=isCustom?taskID:inputConnName + "." + prevColumn%>,wspk_<%=cid %>)); 
-		            	
-					   <% logUtil.debug("\"Add task id successfully.\"");%>
-		            <%}%>
-		          <%
-		          if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
-		            for (int i = 0; i < keysReturn.size(); i++){
-		              Map<String,String> map = keysReturn.get(i);
-		              %>
-		              <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
-		            <%
-		            }
-		          }
-		        }
-		      }
-		      %>
-	    <%}//end partial%>  
+                        taskIDs_<%=cid%>.clear();
+                    <%}%>
+                  }
+                <%} else {%>
+                  <% logUtil.debug("\"Try to put items with report.\"");%>
+                  
+                  wspk_<%=cid %> = service_<%=cid %>.putItemWithReport(itemReport_<%=cid %>);
+                  
+                  <% logUtil.debug("\"Put items successfully.\"");%>
+
+                      <%if(addTaskID){%>
+                         <% logUtil.debug("\"Try to add task id.\"");%>
+                        service_<%=cid %>.updateItemMetadata(util_<%=cid%>. makeUpdateMeteItm(<%=isCustom?taskID:inputConnName + "." + prevColumn%>,wspk_<%=cid %>));
+                        <% logUtil.debug("\"Add task id successfully.\"");%>
+                    <%}%>
+                <%
+                }
+
+                if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
+
+                  for (int i = 0; i < keysReturn.size(); i++){
+                    Map<String,String> map = keysReturn.get(i);
+                    %>
+                    <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
+                  <%
+                  }
+                }
+              } else {
+                  %>
+
+                  <% logUtil.debug("\"Put item to MDM server.\"");%>
+
+                <%  
+                if (isMassInsert) {
+                    if(addTaskID){
+                %>
+                        taskIDs_<%=cid%>.add(<%=isCustom?taskID:inputConnName + "." + prevColumn%>);
+                <%}%>
+                  miList_<%=cid %>.add(item_<%=cid %>);
+        
+                  if (miList_<%=cid %>.size() >= <%=numMassInsert %>) {
+
+                    org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);
+                    wspks_<%=cid %> = service_<%=cid %>.putItemArray(putItemArray).getWsItemPK();
+
+                    <% logUtil.debug("\"Put items size:\"+wspks_"+cid+".size()");%>
+                    <% logUtil.debug("\"Put item successfully.\"");%>
+
+                    miList_<%=cid %>.clear();
+                    <%if(addTaskID){%>
+                        <% logUtil.debug("\"Attempt to add task id .\"");%>
+                        int i2_<%=cid %> = 0;
+                        for(org.talend.mdm.webservice.WSItemPK wspk2_<%=cid %> : wspks_<%=cid %>){
+
+                            String compositeId = "";
+                            for(String id:wspk2_<%=cid %>.getIds()) {
+                               compositeId += id;
+                            }
+
+                            wspk2_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
+                            service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(taskIDs_<%=cid%>.get(i2_<%=cid %>), wspk2_<%=cid %>));
+                            i2_<%=cid %>++;
+                        }
+
+                        <% logUtil.debug("\"Add task id successfully.\"");%>
+                        taskIDs_<%=cid%>.clear();
+                    <%}%>
+                  }
+                <%
+                } else {%>
+                  <% logUtil.debug("\"Attempt to put item .\"");%>
+
+                  wspk_<%=cid %> = service_<%=cid %>.putItem(item_<%=cid %>);
+
+                  <% logUtil.debug("\"Successfully put item .\"");%>
+
+                    <%if(addTaskID){%>
+                       <% logUtil.debug("\"Attempt to add task id .\"");%>
+
+                        service_<%=cid %>.updateItemMetadata(util_<%=cid%>.makeUpdateMeteItm(<%=isCustom?taskID:inputConnName + "." + prevColumn%>,wspk_<%=cid %>));
+
+                       <% logUtil.debug("\"Add task id successfully.\"");%>
+                    <%}%>
+                  <%
+                  if (outConnName !=null && !isMassInsert && keysReturn.size() > 0) {
+                    for (int i = 0; i < keysReturn.size(); i++){
+                      Map<String,String> map = keysReturn.get(i);
+                      %>
+                      <%=outConnName %>.<%=map.get("OUTPUT_COLUMN")%>= wspk_<%=cid%>.getIds().get(<%=i %>);
+                    <%
+                    }
+                  }
+                }
+              }
+              %>
+        <%}//end partial%>
     } catch (java.lang.Exception e) {
-    	<% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
-      <%if (dieOnError) {%>        
+        <% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
+      <%if (dieOnError) {%>
         throw(e);
       <%} else {
 
@@ -312,34 +312,34 @@
             <%=outConnName %> = null;
           <%}%>
           <%=rejectConnName %> = new <%=rejectConnName %>Struct();
-          
-          	<%
+
+              <%
             for(IMetadataColumn column : columnList) {
-				if (!"xml".equals(column.getLabel()) && !"errorCode".equals(column.getLabel()) && !"errorMessage".equals(column.getLabel())) {
-					if(column.getLabel().equals(doc) && "id_String".equals(column.getTalendType())) {
-			%>
-		  <%=rejectConnName%>.<%=column.getLabel()%> = <%=inputConnName %>.<%=column.getLabel() %>.toString();
-			<%
-					} else {
-			%>
-		  <%=rejectConnName%>.<%=column.getLabel()%> = <%=inputConnName %>.<%=column.getLabel() %>;
-		   	<%
-		   			}
-		   		}
-		   		if("xml".equals(column.getLabel())){
-		   			if("id_String".equals(column.getTalendType())){
-		   			%>
-		   				<%=rejectConnName%>.xml = input_<%=cid %>;
-		   			<% 
-		   			}else{
-		   				  %>
-		   				<%=rejectConnName%>.xml = <%=inputConnName %>.xml;
-		   			<%
-		   			}
-		   		}
-			}
-			%>   
-		  nb_line_rejected_<%=cid%>++;
+                if (!"xml".equals(column.getLabel()) && !"errorCode".equals(column.getLabel()) && !"errorMessage".equals(column.getLabel())) {
+                    if(column.getLabel().equals(doc) && "id_String".equals(column.getTalendType())) {
+            %>
+          <%=rejectConnName%>.<%=column.getLabel()%> = <%=inputConnName %>.<%=column.getLabel() %>.toString();
+            <%
+                    } else {
+            %>
+          <%=rejectConnName%>.<%=column.getLabel()%> = <%=inputConnName %>.<%=column.getLabel() %>;
+               <%
+                       }
+                   }
+                   if("xml".equals(column.getLabel())){
+                       if("id_String".equals(column.getTalendType())){
+                       %>
+                           <%=rejectConnName%>.xml = input_<%=cid %>;
+                       <% 
+                       }else{
+                             %>
+                           <%=rejectConnName%>.xml = <%=inputConnName %>.xml;
+                       <%
+                       }
+                   }
+            }
+            %>
+          nb_line_rejected_<%=cid%>++;
           <%=rejectConnName %>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
         <%} else {%>
           System.err.println(e.getMessage());
