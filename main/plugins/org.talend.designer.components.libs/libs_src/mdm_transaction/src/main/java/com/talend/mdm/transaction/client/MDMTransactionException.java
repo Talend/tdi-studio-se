@@ -6,7 +6,9 @@ package com.talend.mdm.transaction.client;
  *
  */
 public class MDMTransactionException extends RuntimeException {
-    
+
+    private static final long serialVersionUID = -3468957186501089360L;
+
     public MDMTransactionException() {
         super();
     }
