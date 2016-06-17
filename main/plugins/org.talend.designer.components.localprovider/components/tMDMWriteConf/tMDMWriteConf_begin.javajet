@@ -87,7 +87,7 @@ int nb_line_rejected_<%=cid %> = 0;
     if(murl_<%=cid %>.endsWith("?wsdl")) {
        murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
     }
-    <% logUtil.debug("\"Initializing web service from URL: \" + murl_", cid);%>
+    <% logUtil.debug("\"Initializing web service from URL: \" + murl_" + cid);%>
     org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
     org.talend.mdm.webservice.TMDMService service_<%=cid %> = service_service_<%=cid %>.getTMDMPort();
     javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
