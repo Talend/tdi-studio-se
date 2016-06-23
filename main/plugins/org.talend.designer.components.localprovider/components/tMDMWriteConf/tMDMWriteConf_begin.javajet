@@ -138,11 +138,11 @@ int nb_line_rejected_<%=cid %> = 0;
         context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, password_<%=cid %>);
         <% logUtil.debug("\"Got service successfully with key=\" + connKey_" + cid);%>
 
-        if((boolean)globalMap.get("useTransaction_<%=connection %>")) {
+        if((Boolean)globalMap.get("useTransaction_<%=connection %>")) {
             String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
             com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
             if(mdmTransaction_<%=cid %> == null){
-                if((boolean)globalMap.get("useClientTranId_<%=connection %>")){
+                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
                     String sessionID_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
                     mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
                     mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
