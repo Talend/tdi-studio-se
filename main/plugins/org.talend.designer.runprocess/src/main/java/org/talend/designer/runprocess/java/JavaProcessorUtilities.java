@@ -316,7 +316,8 @@ public class JavaProcessorUtilities {
         for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
             optionalJarsOnlyForRoutines.add(moduleNeeded);
         }
-
+        
+        optionalJarsOnlyForRoutines.addAll(ModulesNeededProvider.getModulesNeededForRoutines(ERepositoryObjectType.ROUTINES));
         // list contains all routines linked to job as well as routines not used in the job
         // rebuild the list to have only the libs linked to routines "not used".
         optionalJarsOnlyForRoutines.removeAll(listModulesReallyNeeded);
