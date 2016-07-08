@@ -254,7 +254,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
                         getitems_<%=cid %>=new org.talend.mdm.webservice.WSGetItems(
                                             <%=concept%>, 
                                             readRecordsSize_<%=cid %>,
-                                            skip_<%=cid %> + retrievedCount_<%=cid %>,
+                                            skip_<%=cid %> + recordsPerPage_<%=cid %>*(pageNumber_<%=cid %>-1),
                                             <%=spellThrehold%>,  //spell Threshold
                                             true,
                                             wsItem_<%=cid %>,
