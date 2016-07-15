@@ -130,6 +130,16 @@
 	      NUM_ROW="10"
 	      SHOW_IF="USE_KERBEROS == 'true'"
 	    />
+	    
+	    <PARAMETER
+	      NAME="ENFORCE_NTLM"
+	      FIELD="CHECK"
+	      REQUIRED="true"
+	      NUM_ROW="11"
+	      SHOW_IF="USE_NTLM == 'true' and NEED_AUTH == 'true'"
+	    >
+	    	<DEFAULT>false</DEFAULT>
+	    </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>

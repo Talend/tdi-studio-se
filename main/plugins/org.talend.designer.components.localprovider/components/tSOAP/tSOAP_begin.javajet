@@ -17,6 +17,8 @@ boolean needAuth = ("true").equals(ElementParameterParser.getValue(node,"__NEED_
 String username = ElementParameterParser.getValue(node,"__AUTH_USERNAME__");
 String password = ElementParameterParser.getValue(node,"__AUTH_PASSWORD__");
 
+boolean enforceNtlm = ("true").equals(ElementParameterParser.getValue(node,"__ENFORCE_NTLM__"));
+
 boolean useProxy = ("true").equals(ElementParameterParser.getValue(node,"__USE_PROXY__"));
 String proxyHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
 String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
@@ -70,6 +72,12 @@ if(needAuth&&useNTLM){
 %>
 soapUtil_<%=cid%>.setNTLMAuth(<%=domain%>,<%=username%>,decryptedPassword_<%=cid%>);
 <%
+	if(enforceNtlm) {
+	%>
+	//Enforcing NTLM authentication credentials.
+	soapUtil_<%=cid%>.enforceNtlmCredentials();
+	<%
+	}
 }
 if(useProxy){
 %>

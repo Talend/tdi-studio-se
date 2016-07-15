@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.StringTokenizer;
@@ -36,7 +37,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.sun.xml.messaging.saaj.soap.SOAPPartImpl;
+import sun.net.www.protocol.http.ntlm.NTLMAuthenticationCallback;
 
 public class SOAPUtil {
 
@@ -76,6 +77,16 @@ public class SOAPUtil {
         setBasicAuth(domain + "\\" + username, password);
     }
 
+    public void enforceNtlmCredentials() {
+        NTLMAuthenticationCallback.setNTLMAuthenticationCallback(new NTLMAuthenticationCallback() {
+
+            @Override
+            public boolean isTrustedSite(URL arg0) {
+                return false;
+            }
+        });
+    }
+
     public void setProxy(String host, int port, String username, String password) {
         System.setProperty("proxySet", "true");
         System.setProperty("proxyHost", host);
@@ -100,7 +111,7 @@ public class SOAPUtil {
         SOAPPart soapPart = message.getSOAPPart();
 
         String encoding = getEncoding(soapMessage);
-        
+
         ByteArrayInputStream stream = new ByteArrayInputStream(soapMessage.getBytes(encoding));
         StreamSource preppedMsgSrc = new StreamSource(stream);
         soapPart.setContent(preppedMsgSrc);
@@ -115,11 +126,6 @@ public class SOAPUtil {
         SOAPMessage reply = connection.call(message, destination);
 
         SOAPPart reSoapPart = reply.getSOAPPart();
-        
-        if (reSoapPart != null && reSoapPart instanceof SOAPPartImpl) {
-			((SOAPPartImpl) reSoapPart).setSourceCharsetEncoding(encoding);
-		}
-        
         SOAPEnvelope reEnvelope = reSoapPart.getEnvelope();
 
         SOAPHeader reHeader = reEnvelope.getHeader();
@@ -160,8 +166,8 @@ public class SOAPUtil {
         return reFaultMessage;
     }
 
-    private Document extractContentAsDocument(SOAPBody body) throws SOAPException, TransformerException,
-            ParserConfigurationException {
+    private Document extractContentAsDocument(SOAPBody body)
+            throws SOAPException, TransformerException, ParserConfigurationException {
         return body.extractContentAsDocument();
     }
 
@@ -209,76 +215,72 @@ public class SOAPUtil {
         return outputter.outputString(jdomDoc.getRootElement());
     }
 
-	/**
-	 * invoke soap and return the response document
-	 */
-	public String extractContentAsDocument(String version, String destination, String soapAction, String soapMessage) throws SOAPException,
-            TransformerException, ParserConfigurationException, FileNotFoundException, UnsupportedEncodingException {
-    	MessageFactory messageFactory = null;
-    	if (version.equals(SOAP12)) {
-    		messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
-    	} else {
-    		messageFactory = MessageFactory.newInstance();
-    	}
-    	SOAPMessage message = messageFactory.createMessage();
-    	MimeHeaders mimeHeaders = message.getMimeHeaders();
-    	mimeHeaders.setHeader("SOAPAction", soapAction);
-    	SOAPPart soapPart = message.getSOAPPart();
-    	
-    	String encoding = getEncoding(soapMessage);
-    	
-    	ByteArrayInputStream stream = new ByteArrayInputStream(soapMessage.getBytes(encoding));
-    	StreamSource preppedMsgSrc = new StreamSource(stream);
-    	soapPart.setContent(preppedMsgSrc);
-    	message.saveChanges();
-    	SOAPMessage reply = connection.call(message, destination);
-    	SOAPPart reSoapPart = reply.getSOAPPart();
-    	
-    	if (reSoapPart != null && reSoapPart instanceof SOAPPartImpl) {
-			((SOAPPartImpl) reSoapPart).setSourceCharsetEncoding(encoding);
-		}
-    	
-    	try {
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer t = tf.newTransformer();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			t.transform(reSoapPart.getContent(), new StreamResult(bos));
-			return bos.toString(encoding);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+    /**
+     * invoke soap and return the response document
+     */
+    public String extractContentAsDocument(String version, String destination, String soapAction, String soapMessage)
+            throws SOAPException, TransformerException, ParserConfigurationException, FileNotFoundException,
+            UnsupportedEncodingException {
+        MessageFactory messageFactory = null;
+        if (version.equals(SOAP12)) {
+            messageFactory = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+        } else {
+            messageFactory = MessageFactory.newInstance();
+        }
+        SOAPMessage message = messageFactory.createMessage();
+        MimeHeaders mimeHeaders = message.getMimeHeaders();
+        mimeHeaders.setHeader("SOAPAction", soapAction);
+        SOAPPart soapPart = message.getSOAPPart();
+
+        String encoding = getEncoding(soapMessage);
+
+        ByteArrayInputStream stream = new ByteArrayInputStream(soapMessage.getBytes(encoding));
+        StreamSource preppedMsgSrc = new StreamSource(stream);
+        soapPart.setContent(preppedMsgSrc);
+        message.saveChanges();
+        SOAPMessage reply = connection.call(message, destination);
+        SOAPPart reSoapPart = reply.getSOAPPart();
+        try {
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer t = tf.newTransformer();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            t.transform(reSoapPart.getContent(), new StreamResult(bos));
+            return bos.toString(encoding);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-	
-	private String getEncoding(String text) {
+
+    private String getEncoding(String text) {
         String result = Charset.defaultCharset().name();
 
-        if(text == null) {
-			return result;
-		}
-        
-        char[] match = {'<','?','x','m','l'};
+        if (text == null) {
+            return result;
+        }
+
+        char[] match = { '<', '?', 'x', 'm', 'l' };
         boolean found = false;
         int i = 0;
         int j = 0;
-        for(;i<text.length();i++) {
-        	if(j==0 && text.charAt(i) <= ' ') {
-        		continue;
-        	}
-        	
-        	if(j<match.length && text.charAt(i) == match[j++]) {
-        		if(j==match.length) {
-        			found = true;
-        			break;
-        		}
-        	} else {
-        		break;
-        	}
+        for (; i < text.length(); i++) {
+            if (j == 0 && text.charAt(i) <= ' ') {
+                continue;
+            }
+
+            if (j < match.length && text.charAt(i) == match[j++]) {
+                if (j == match.length) {
+                    found = true;
+                    break;
+                }
+            } else {
+                break;
+            }
         }
-        
+
         if (found) {
             int end = text.indexOf("?>");
-            String sub = text.substring(i+1, end);
+            String sub = text.substring(i + 1, end);
             StringTokenizer tokens = new StringTokenizer(sub, " =\"\'");
 
             while (tokens.hasMoreTokens()) {
@@ -287,9 +289,9 @@ public class SOAPUtil {
                 if ("encoding".equals(token)) {
                     if (tokens.hasMoreTokens()) {
                         String encoding = tokens.nextToken();
-                        if(Charset.isSupported(encoding)) {
-                        	result = encoding;
-                        	return result;
+                        if (Charset.isSupported(encoding)) {
+                            result = encoding;
+                            return result;
                         }
                     }
 
@@ -300,5 +302,5 @@ public class SOAPUtil {
 
         return result;
     }
-	
+
 }
