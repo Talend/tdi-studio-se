@@ -183,7 +183,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {//1
 		                pageNumber_<%=cid %>++;
 		                getitems_<%=cid%>=new org.talend.mdm.webservice.WSGetItems(dataCluster_<%=cid%>, <%=concept%>, wsItem_<%=cid%>,
 									    	<%=spellThrehold%>,  //spell Threshold
-											skip_<%=cid%> + retrievedCount_<%=cid%>,
+											skip_<%=cid%> + recordsPerPage_<%=cid%>*(pageNumber_<%=cid %>-1),
 											readRecordsSize_<%=cid%>,true);
 						String[] items_<%=cid%> = {};
 						try {
