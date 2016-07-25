@@ -99,6 +99,7 @@ import org.talend.core.service.IStormProcessService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.IJobletProviderService;
+import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
@@ -4898,7 +4899,19 @@ public class Node extends Element implements IGraphicalNode {
                 isJoblet = true;
             }
         }
-        return isJoblet;
+        return true;
+    }
+    
+    public boolean isSparkJoblet() {
+        boolean isSparkJoblet = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister
+                    .getDefault().getService(ISparkJobletProviderService.class);
+            if (sparkJobletService != null) {
+                isSparkJoblet = sparkJobletService.isSparkJobletComponent(this);
+            }
+        }
+        return isSparkJoblet;
     }
 
     public boolean isMapReduceStart() {
