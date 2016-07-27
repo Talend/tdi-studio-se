@@ -67,6 +67,7 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
 import org.talend.core.ui.IJobletProviderService;
+import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.utils.TalendCacheUtils;
@@ -844,6 +845,14 @@ public class ComponentsFactory implements IComponentsFactory {
                     IJobletProviderService.class);
             if (jobletService != null) {
                 jobletService.clearJobletComponent();
+            }
+        }
+        
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+            ISparkJobletProviderService jobletService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    ISparkJobletProviderService.class);
+            if (jobletService != null) {
+                jobletService.clearSparkJobletComponent();
             }
         }
     }

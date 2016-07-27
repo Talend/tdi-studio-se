@@ -4899,7 +4899,7 @@ public class Node extends Element implements IGraphicalNode {
                 isJoblet = true;
             }
         }
-        return true;
+        return isJoblet;
     }
     
     public boolean isSparkJoblet() {
