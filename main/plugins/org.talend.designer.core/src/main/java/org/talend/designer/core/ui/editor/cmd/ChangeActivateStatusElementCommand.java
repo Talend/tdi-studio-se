@@ -31,6 +31,7 @@ import org.talend.core.service.IMRProcessService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -425,9 +426,9 @@ public class ChangeActivateStatusElementCommand extends Command {
         List<? extends INode> nodes = process.getGraphicalNodes();
         List<INode> jobletandnodeList = new ArrayList<INode>();
         for (INode node : nodes) {
-            if (((Node) node).isJoblet() && !((Node) node).getNodeContainer().isCollapsed()
-                    && (((Node) node).getNodeContainer() instanceof JobletContainer)) {
-                for (NodeContainer nc : ((JobletContainer) ((Node) node).getNodeContainer()).getNodeContainers()) {
+            if ((((Node) node).isJoblet()||((Node)node).isSparkJoblet()) && !((Node) node).getNodeContainer().isCollapsed()
+                    && (((Node) node).getNodeContainer() instanceof AbstractJobletContainer)) {
+                for (NodeContainer nc : ((AbstractJobletContainer) ((Node) node).getNodeContainer()).getNodeContainers()) {
                     jobletandnodeList.add(nc.getNode());
                 }
             } else {

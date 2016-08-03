@@ -46,7 +46,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -192,14 +192,14 @@ public class ExternalNodeChangeCommand extends Command {
     private void changeCollapsedState(boolean state, Map<String, Boolean> map, INode node) {
         if (node instanceof Node) {
             NodeContainer nc = ((Node) node).getNodeContainer();
-            if ((nc instanceof JobletContainer) && nc.getNode().isJoblet()) {
-                if (((JobletContainer) nc).isCollapsed() && !state) {
+            if ((nc instanceof AbstractJobletContainer) && nc.getNode().isJoblet()) {
+                if (((AbstractJobletContainer) nc).isCollapsed() && !state) {
                     map.put(nc.getNode().getUniqueName(), false);
-                    ((JobletContainer) nc).setCollapsed(state);
+                    ((AbstractJobletContainer) nc).setCollapsed(state);
 
-                } else if (!((JobletContainer) nc).isCollapsed() && state) {
+                } else if (!((AbstractJobletContainer) nc).isCollapsed() && state) {
                     if (map.get(nc.getNode().getUniqueName()) != null && !map.get(nc.getNode().getUniqueName())) {
-                        ((JobletContainer) nc).setCollapsed(state);
+                        ((AbstractJobletContainer) nc).setCollapsed(state);
 
                     }
                 }

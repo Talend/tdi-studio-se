@@ -165,12 +165,8 @@ public class ProcessLayoutEditPolicy extends XYLayoutEditPolicy {
             command = new CreateNoteCommand((Process) getHost().getModel(), (Note) request.getNewObject(),
                     constraint.getLocation());
         } else if (request.getNewObject() instanceof Node) {
-            NodeContainer nodeContainer = null;
-            if (((Node) request.getNewObject()).isJoblet() || ((Node) request.getNewObject()).isMapReduce()) {
-                nodeContainer = new JobletContainer((Node) request.getNewObject());
-            } else {
-                nodeContainer = new NodeContainer((Node) request.getNewObject());
-            }
+            Node node = (Node) request.getNewObject();
+            NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
             command = new CreateNodeContainerCommand((Process) getHost().getModel(), nodeContainer, constraint.getLocation());
         }
 
@@ -228,12 +224,7 @@ public class ProcessLayoutEditPolicy extends XYLayoutEditPolicy {
         }
         assist.releaseText();
         Node newNode = new Node(component);
-        NodeContainer nodeContainer = null;
-        if (newNode.isJoblet() || newNode.isMapReduce()) {
-            nodeContainer = new JobletContainer(newNode);
-        } else {
-            nodeContainer = new NodeContainer(newNode);
-        }
+        NodeContainer nodeContainer = ((Process)newNode.getProcess()).loadNodeContainer(newNode, false);
 
         CreateNodeContainerCommand command = new CreateNodeContainerCommand(
                 (org.talend.designer.core.ui.editor.process.Process) newNode.getProcess(), nodeContainer, request.getLocation());

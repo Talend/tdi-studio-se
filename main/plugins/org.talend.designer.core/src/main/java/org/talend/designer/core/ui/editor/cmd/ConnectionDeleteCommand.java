@@ -25,7 +25,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -153,13 +153,13 @@ public class ConnectionDeleteCommand extends Command {
     private void collpseJoblet(Connection conn) {
         INode source = conn.getSource();
         if ((source instanceof Node) && ((Node) source).isJoblet()
-                && (((Node) source).getNodeContainer() instanceof JobletContainer)) {
-            ((JobletContainer) ((Node) source).getNodeContainer()).setCollapsed(true);
+                && (((Node) source).getNodeContainer() instanceof AbstractJobletContainer)) {
+            ((AbstractJobletContainer) ((Node) source).getNodeContainer()).setCollapsed(true);
         }
         INode target = conn.getTarget();
         if ((target instanceof Node) && ((Node) target).isJoblet()
-                && (((Node) target).getNodeContainer() instanceof JobletContainer)) {
-            ((JobletContainer) ((Node) target).getNodeContainer()).setCollapsed(true);
+                && (((Node) target).getNodeContainer() instanceof AbstractJobletContainer)) {
+            ((AbstractJobletContainer) ((Node) target).getNodeContainer()).setCollapsed(true);
         }
     }
 

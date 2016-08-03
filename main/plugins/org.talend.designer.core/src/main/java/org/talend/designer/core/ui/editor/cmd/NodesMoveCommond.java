@@ -498,12 +498,7 @@ public class NodesMoveCommond extends Command {
                 }
             }
 
-            NodeContainer nc = null;
-            if (((Node) pastedNode).isJoblet() || ((Node) pastedNode).isMapReduce()) {
-                nc = new JobletContainer((Node) pastedNode);
-            } else {
-                nc = new NodeContainer((Node) pastedNode);
-            }
+            NodeContainer nc = ((Process)pastedNode.getProcess()).loadNodeContainer((Node)pastedNode, false);;
             nodeContainerList.add(nc);
         }
         ((Process) process).setCopyPasteSubjobMappings(mapping);

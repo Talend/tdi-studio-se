@@ -586,20 +586,11 @@ public class NodesPasteCommand extends Command {
                 }
             }
 
-            NodeContainer nc = null;
             List<Node> pastedNodeList = null;
             if (junitGroup != null) {
                 pastedNodeList = junitGroup.get(((Node) copiedNode).getNodeContainer().getSubjobContainer());
             }
-            if (((Node) copiedNode).isJunitStart() && isJunitCreate()) {
-                if (testContainerService != null) {
-                    nc = testContainerService.createJunitContainer((Node) pastedNode);
-                }
-            } else if (((Node) pastedNode).isJoblet() || ((Node) pastedNode).isMapReduce()) {
-                nc = new JobletContainer((Node) pastedNode);
-            } else {
-                nc = new NodeContainer((Node) pastedNode);
-            }
+            NodeContainer nc = ((Process)pastedNode.getProcess()).loadNodeContainer((Node)pastedNode, ((Node) copiedNode).isJunitStart() && isJunitCreate());
             if (pastedNodeList != null) {
                 pastedNodeList.remove(copiedNode);
                 pastedNodeList.add((Node) pastedNode);

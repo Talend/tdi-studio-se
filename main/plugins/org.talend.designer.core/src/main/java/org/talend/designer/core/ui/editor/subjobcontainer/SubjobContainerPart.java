@@ -54,6 +54,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.designer.core.ui.dialog.mergeorder.ErrorMessageDialog;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -238,11 +239,11 @@ public class SubjobContainerPart extends AbstractGraphicalEditPart implements Pr
                 if (nc1.getNode().isJoblet() || nc2.getNode().isJoblet()) {
                     return 0;
                 }
-                if (!(nc1 instanceof JobletContainer) && !(nc2 instanceof JobletContainer)) {
+                if (!(nc1 instanceof AbstractJobletContainer) && !(nc2 instanceof AbstractJobletContainer)) {
                     return 0;
-                } else if (nc1 instanceof JobletContainer && !(nc2 instanceof JobletContainer)) {
+                } else if (nc1 instanceof AbstractJobletContainer && !(nc2 instanceof AbstractJobletContainer)) {
                     return -1;
-                } else if (!(nc1 instanceof JobletContainer) && nc2 instanceof JobletContainer) {
+                } else if (!(nc1 instanceof AbstractJobletContainer) && nc2 instanceof AbstractJobletContainer) {
                     return 1;
                 } else if (nc1 instanceof JobletContainer && nc2 instanceof JobletContainer) {
                     if (((JobletContainer) nc1).getMrStartContainer() == nc1

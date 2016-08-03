@@ -22,12 +22,8 @@ public class JobletContainerLayoutEditPolicy extends NodeContainerLayoutEditPoli
         if (Note.class.equals(request.getNewObjectType())) {
             command = new CreateNoteCommand(linkedProcess, (Note) request.getNewObject(), constraint.getLocation());
         } else if (request.getNewObject() instanceof Node) {
-            NodeContainer nodeContainer = null;
-            if (((Node) request.getNewObject()).isJoblet() || ((Node) request.getNewObject()).isMapReduce()) {
-                nodeContainer = new JobletContainer((Node) request.getNewObject());
-            } else {
-                nodeContainer = new NodeContainer((Node) request.getNewObject());
-            }
+            Node node = (Node) request.getNewObject();
+            NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
             command = new CreateNodeContainerCommand(linkedProcess, nodeContainer, constraint.getLocation());
         }
 

@@ -159,6 +159,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.TalendJavaEditor;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -1213,15 +1214,15 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         for (INode node : nodeList) {
             if (node instanceof Node) {
                 NodeContainer nc = ((Node) node).getNodeContainer();
-                if ((nc instanceof JobletContainer) && nc.getNode().isJoblet()) {
-                    if (((JobletContainer) nc).isCollapsed() && !state) {
+                if ((nc instanceof AbstractJobletContainer) && nc.getNode().isJoblet()) {
+                    if (((AbstractJobletContainer) nc).isCollapsed() && !state) {
                         if (map.get(nc.getNode().getUniqueName()) != null && !map.get(nc.getNode().getUniqueName())) {
-                            ((JobletContainer) nc).setCollapsed(state);
+                            ((AbstractJobletContainer) nc).setCollapsed(state);
                         }
 
-                    } else if (!((JobletContainer) nc).isCollapsed() && state) {
+                    } else if (!((AbstractJobletContainer) nc).isCollapsed() && state) {
                         map.put(nc.getNode().getUniqueName(), false);
-                        ((JobletContainer) nc).setCollapsed(state);
+                        ((AbstractJobletContainer) nc).setCollapsed(state);
                     }
                 }
             }

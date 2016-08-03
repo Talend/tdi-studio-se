@@ -3065,12 +3065,7 @@ public class DataProcess implements IGeneratingProcess {
         ValidationRulesUtil.createRejectConnector(newGraphicalNode);
         ValidationRulesUtil.updateRejectMetatable(newGraphicalNode, graphicalNode);
 
-        NodeContainer nc = null;
-        if (newGraphicalNode.isJoblet() || newGraphicalNode.isMapReduce()) {
-            nc = new JobletContainer(newGraphicalNode);
-        } else {
-            nc = new NodeContainer(newGraphicalNode);
-        }
+        NodeContainer nc = ((Process) process).loadNodeContainer(newGraphicalNode, false);
 
         ((Process) process).addNodeContainer(nc);
         buildGraphicalMap.put(graphicalNode, newGraphicalNode);

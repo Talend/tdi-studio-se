@@ -38,6 +38,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.TalendEditor;
 import org.talend.designer.core.ui.editor.connections.Connection;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -278,8 +279,8 @@ public class SubjobContainer extends Element implements ISubjobContainer {
         // boolean hasJoblet = false;
         for (NodeContainer container : nodeContainers) {
             Rectangle curRect = null;
-            if (container instanceof JobletContainer) {
-                curRect = ((JobletContainer) container).getJobletContainerRectangle();
+            if (container instanceof AbstractJobletContainer) {
+                curRect = ((AbstractJobletContainer) container).getJobletContainerRectangle();
             } else if (isTestContainer && testContainerService != null) {
                 curRect = testContainerService.getJunitContainerRectangle(container);
             } else {
@@ -378,7 +379,7 @@ public class SubjobContainer extends Element implements ISubjobContainer {
         return totalRectangle;
     }
 
-    public void refreshNodesLocation(boolean jobletCollapsed, JobletContainer nc, int rightChangewidth, int downChangeheight,
+    public void refreshNodesLocation(boolean jobletCollapsed, AbstractJobletContainer nc, int rightChangewidth, int downChangeheight,
             int leftChangewidth, int upChangeheight) {
         JobletUtil util = new JobletUtil();
         Node node = nc.getNode();
