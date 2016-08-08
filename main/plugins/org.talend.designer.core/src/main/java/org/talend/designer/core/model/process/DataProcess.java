@@ -3182,7 +3182,7 @@ public class DataProcess implements IGeneratingProcess {
      * @param graphicalNodeList
      * @return
      */
-    private void replaceNodeFromProviders(List<INode> graphicalNodeList) {
+    public void replaceNodeFromProviders(List<INode> graphicalNodeList) {
         List<INode> orginalList = new ArrayList<INode>(graphicalNodeList);
         for (INode node : orginalList) {
             for (IReplaceNodeInProcess replaceProvider : ReplaceNodesInProcessProvider.findReplaceNodesProvider()) {
