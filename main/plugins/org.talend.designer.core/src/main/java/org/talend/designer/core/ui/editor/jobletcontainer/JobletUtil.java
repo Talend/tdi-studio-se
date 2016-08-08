@@ -214,7 +214,7 @@ public class JobletUtil {
             String tempComponentName = tempComponent.getName();
             if (tempComponentName != null) {
                 IComponent component = ComponentsFactoryProvider.getInstance().get(tempComponentName,
-                        ComponentCategory.CATEGORY_4_DI.getName());
+                        cloneNode.getProcess().getComponentsType());
                 if (component != null) {
                     cloneNode.setComponent(component);
                 }

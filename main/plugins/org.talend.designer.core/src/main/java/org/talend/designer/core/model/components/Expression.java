@@ -766,7 +766,9 @@ public final class Expression {
             ElementParameter currentParam) {
         INode node = retrieveNodeElementFromParameter(currentParam, listParam);
         ESparkVersion version = SparkVersionUtil.getSparkVersion(node);
-
+        if(version == null){
+            return false;
+        }
         Pattern p = java.util.regex.Pattern.compile("(lt|le|gt|ge|eq|ne)\\s*'(SPARK_.*)'"); //$NON-NLS-1$
         Matcher m = p.matcher(simpleExpression);
         if (m.find()) {
