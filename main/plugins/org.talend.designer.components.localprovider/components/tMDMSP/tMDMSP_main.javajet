@@ -1,91 +1,87 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
-    	org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         java.util.List
         java.util.Map
-		" 
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
-
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
-	String spName = ElementParameterParser.getValue(node, "__SPNAME__");
-	
-	List<Map<String, String>> spArgs = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+String spName = ElementParameterParser.getValue(node, "__SPNAME__");
 
-	List<? extends IConnection> inConnections = node.getIncomingConnections();
-	IConnection inConnection = null;
-	IMetadataTable metadata = null;
-	if (inConnections != null) {
-		for (int i = 0; i < inConnections.size(); i++) {
-			IConnection connection = inConnections.get(i);
-			if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-				inConnection = connection;
-				metadata=connection.getMetadataTable();
-				break;
-			}
-		}
-	}
+List<Map<String, String>> spArgs = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
 
+List<? extends IConnection> inConnections = node.getIncomingConnections();
+IConnection inConnection = null;
+IMetadataTable metadata = null;
+if (inConnections != null) {
+    for (int i = 0; i < inConnections.size(); i++) {
+        IConnection connection = inConnections.get(i);
+        if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+            inConnection = connection;
+            metadata=connection.getMetadataTable();
+            break;
+        }
+    }
+}
 %>
 
 List<String> params = new java.util.ArrayList<String>();
 <%
-	List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-	if(inConnection!=null){// if 1
-		if(spArgs.size()>0){ //if 2
-			for(int i=0;i<spArgs.size();i++){// for 3
-				Map<String, String> map = spArgs.get(i);
-				String clmName = map.get("COLUMN");
-				for(IMetadataColumn column:metadata.getListColumns()){ // for 4
-					if(column.getLabel().equals(clmName)){ //if 5
+    List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    if(inConnection!=null){// if 1
+        if(spArgs.size()>0){ //if 2
+            for(int i=0;i<spArgs.size();i++){// for 3
+                Map<String, String> map = spArgs.get(i);
+                String clmName = map.get("COLUMN");
+                for(IMetadataColumn column:metadata.getListColumns()){ // for 4
+                    if(column.getLabel().equals(clmName)){ //if 5
 %>
 
 params.add(<%=inConnection.getName()%>.<%=column.getLabel() %>);
 <%
-    				}//5
-    			}//4
-    		}//3
-		}//2
-	}//1
+                    }//5
+                }//4
+            }//3
+        }//2
+    }//1
 %>
 org.talend.mdm.webservice.WSExecuteStoredProcedure wsExeProc_<%=cid %> = new org.talend.mdm.webservice.WSExecuteStoredProcedure(params,dataCluster_<%=cid %>,wsStoredProcPK_<%=cid %>);
 
 <%
-	// if output columns are defined
-	if (outgoingConns != null && outgoingConns.size() > 0){
-		IConnection outgoingConn = outgoingConns.get(0);
-		String outputCol = null;
-		if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
-%>        
-		List<String> xmlFields = service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>).getStrings();
-		<% logUtil.info("\"Stored procedure executed successfully.\"");%>
-		
-			for(String xmlField_<%=cid %> : xmlFields){
-				<%=outgoingConn.getName()%>.xmlField = xmlField_<%=cid %>;
+    // if output columns are defined
+    if (outgoingConns != null && outgoingConns.size() > 0){
+        IConnection outgoingConn = outgoingConns.get(0);
+        String outputCol = null;
+        if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
+%>
+        List<String> xmlFields = service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>).getStrings();
+        <% logUtil.info("\"Stored procedure executed successfully.\"");%>
+
+            for(String xmlField_<%=cid %> : xmlFields){
+                <%=outgoingConn.getName()%>.xmlField = xmlField_<%=cid %>;
 <%
-			} else {
-%>                
-				service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
-				<% logUtil.info("\"Stored procedure executed successfully.\"");%>
+            } else {
+%>
+                service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+                <% logUtil.info("\"Stored procedure executed successfully.\"");%>
 <%
-			}
-			
-	} else {
-%>        
-		service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+            }
+
+    } else {
+%>
+        service_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
         <% logUtil.info("\"Stored procedure executed successfully.\"");%>
 <%
-	}
+    }
 %>
-          
-            

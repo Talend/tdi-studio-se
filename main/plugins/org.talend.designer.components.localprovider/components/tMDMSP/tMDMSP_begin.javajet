@@ -1,61 +1,108 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
-		"
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
-	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-	String conn = "TMDMService_" + connection;
-	String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
-	String username = ElementParameterParser.getValue(node, "__USERNAME__");
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String conn = "TMDMService_" + connection;
+String trans = "mdmTrans_" + connection;
+String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
+String username = ElementParameterParser.getValue(node, "__USERNAME__");
 
-	String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
-	boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-	String spName = ElementParameterParser.getValue(node, "__SPNAME__");
-	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-%>       
-	int nb_line_<%=cid %> = 0;
+String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+String spName = ElementParameterParser.getValue(node, "__SPNAME__");
+boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+%>
 
+int nb_line_<%=cid %> = 0;
 <%if(!useExistingConn){%>
-    <% logUtil.debug("\"Initializing web service from URL: \"", mdmUrl,"\".\"");%>
-
-	String murl = <%=mdmUrl %>;
-    if(murl.endsWith("?wsdl")) {
-       murl = murl.substring(0, murl.length() - 5);
+    String murl_<%=cid %> = <%=mdmUrl %>;
+    if(murl_<%=cid %>.endsWith("?wsdl")) {
+       murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
     }
-    
+    <% logUtil.debug("\"Initializing web service from URL: \" + murl_" + cid);%>
     org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
     org.talend.mdm.webservice.TMDMService service_<%=cid %> = service_service_<%=cid %>.getTMDMPort();
     javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
-    stub_<%=cid %>.getRequestContext().put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, false);
-    
     java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
+    context_<%=cid %>.put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, false);
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, <%=username %>);
-    context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl);
-    
-    <%
-    String passwordFieldName = "__PASSWORD__";
-    %>
-    
+    context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
+    <% String passwordFieldName = "__PASSWORD__"; %>
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-    
-    context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid%>);
-        
+    context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid %>);
 <%}else{%>
-    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
+    String connKey_<%=cid %> = "<%=conn%>_" + Thread.currentThread().getThreadGroup().getName();
+    String transKey_<%=cid %> = "<%=trans%>_" + Thread.currentThread().getThreadGroup().getName();
+    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get(connKey_<%=cid %>);
+    if(service_<%=cid %> == null){
+        String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
+        if(murl_<%=cid %>.endsWith("?wsdl")) {
+            murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
+        }
+        String username_<%=cid%> = (String)globalMap.get("username_<%=connection %>");
+        String password_<%=cid%> = (String)globalMap.get("password_<%=connection %>");
+
+        <% logUtil.debug("\"Initializing web service from URL: \" + murl_" + cid);%>
+        org.talend.mdm.webservice.TMDMService_Service service_service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null);
+        service_<%=cid %> = service_service_<%=cid %>.getTMDMPort();
+        javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
+        java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
+        context_<%=cid %>.put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
+        context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
+        context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, username_<%=cid %>);
+        context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, password_<%=cid %>);
+        <% logUtil.debug("\"Got service successfully with key=\" + connKey_" + cid);%>
+
+        if((Boolean)globalMap.get("useTransaction_<%=connection %>")) {
+            String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
+            com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
+            if(mdmTransaction_<%=cid %> == null){
+                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
+                    String sessionID_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+                    mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
+                    mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
+                    mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setSessionId(sessionID_<%=cid%>);
+                }else{
+                    <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
+                    mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+                }
+                java.util.List<org.apache.cxf.headers.Header> soapHeaders_<%=cid %> = new java.util.ArrayList<org.apache.cxf.headers.Header>();
+                javax.xml.namespace.QName qName_<%=cid %> = new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id");
+                org.apache.cxf.databinding.DataBinding dataBinding_<%=cid %> = new org.apache.cxf.jaxb.JAXBDataBinding(String.class);
+                soapHeaders_<%=cid %>.add(new org.apache.cxf.headers.Header(qName_<%=cid %>, mdmTransaction_<%=cid %>.getId(), dataBinding_<%=cid %>));
+                context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, soapHeaders_<%=cid %>);
+
+                java.util.Map<String, java.util.List<String>> httpHeaders_<%=cid %> = new java.util.HashMap<String, java.util.List<String>>();
+                String cookie_<%=cid %> = com.talend.mdm.transaction.client.MDMTransaction.getStickySession() + "=" + mdmTransaction_<%=cid%>.getSessionId();
+                httpHeaders_<%=cid %>.put("Cookie", java.util.Arrays.asList(cookie_<%=cid %>));
+                context_<%=cid %>.put(org.apache.cxf.message.Message.PROTOCOL_HEADERS, httpHeaders_<%=cid %>);
+
+                globalMap.put(transKey_<%=cid %>, mdmTransaction_<%=cid %>);
+                <% logUtil.debug("\"Got transaction successfully with key=\" + transKey_" + cid);%>
+            }
+        }
+        service_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
+        globalMap.put(connKey_<%=cid %>, service_<%=cid %>);
+    }
 <%}%>
 
-	org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
+org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
 
-	org.talend.mdm.webservice.WSStoredProcedurePK wsStoredProcPK_<%=cid %> = new org.talend.mdm.webservice.WSStoredProcedurePK();
-	wsStoredProcPK_<%=cid %>.setPk(<%=spName %>);
-	
-	<% logUtil.debug("\"Stored procedure id :\"+"+spName);%>
+org.talend.mdm.webservice.WSStoredProcedurePK wsStoredProcPK_<%=cid %> = new org.talend.mdm.webservice.WSStoredProcedurePK();
+wsStoredProcPK_<%=cid %>.setPk(<%=spName %>);
+
+<% logUtil.debug("\"Stored procedure id :\"+"+spName);%>

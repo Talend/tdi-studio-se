@@ -208,6 +208,7 @@
                     MVN="mvn:org.talend.libraries/cxf-core-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-core-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-bindings-soap-3.1.4"
@@ -215,12 +216,14 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-bindings-soap-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-bindings-soap-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-bindings-xml-3.1.4"
                     MODULE="cxf-rt-bindings-xml-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-bindings-xml-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-bindings-xml-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-databinding-jaxb-3.1.4"
@@ -228,6 +231,7 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-jaxb-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                  <IMPORT
                     NAME="xmlschema-core-2.2.1"
@@ -235,6 +239,7 @@
                     MVN="mvn:org.talend.libraries/xmlschema-core-2.2.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xmlschema-core-2.2.1.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                  <IMPORT
                     NAME="woodstox-core-asl-4.4.1"
@@ -242,6 +247,7 @@
                     MVN="mvn:org.talend.libraries/woodstox-core-asl-4.4.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/woodstox-core-asl-4.4.1.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                  <IMPORT
                     NAME="stax2-api-3.1.4"
@@ -249,6 +255,7 @@
                     MVN="mvn:org.talend.libraries/stax2-api-3.1.4/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/stax2-api-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                  <IMPORT
                     NAME="cxf-rt-transports-http-3.1.4"
@@ -256,12 +263,14 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-transports-http-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-transports-http-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-databinding-xmlbeans-3.1.4"
                     MODULE="cxf-rt-databinding-xmlbeans-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-databinding-xmlbeans-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-databinding-xmlbeans-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-frontend-jaxws-3.1.4"
@@ -269,6 +278,7 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-frontend-jaxws-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-frontend-jaxws-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-frontend-simple-3.1.4"
@@ -276,36 +286,42 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-frontend-simple-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-frontend-simple-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-security-3.1.4"
                     MODULE="cxf-rt-security-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-security-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-security-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-ws-addr-3.1.4"
                     MODULE="cxf-rt-ws-addr-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-ws-addr-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-ws-addr-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-ws-mex-3.1.4"
                     MODULE="cxf-rt-ws-mex-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-ws-mex-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-ws-mex-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-ws-policy-3.1.4"
                     MODULE="cxf-rt-ws-policy-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-ws-policy-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-ws-policy-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-ws-rm-3.1.4"
                     MODULE="cxf-rt-ws-rm-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-rt-ws-rm-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-ws-rm-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-ws-security-3.1.4"
@@ -313,6 +329,7 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-ws-security-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-ws-security-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-rt-wsdl-3.1.4"
@@ -320,12 +337,14 @@
                     MVN="mvn:org.talend.libraries/cxf-rt-wsdl-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-rt-wsdl-3.1.4.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="cxf-services-sts-core-3.1.4"
                     MODULE="cxf-services-sts-core-3.1.4.jar"
                     MVN="mvn:org.talend.libraries/cxf-services-sts-core-3.1.4/6.1.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/cxf-services-sts-core-3.1.4.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="jaxb-core-2.2.11"
@@ -333,6 +352,7 @@
                     MVN="mvn:org.talend.libraries/jaxb-core-2.2.11/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/jaxb-core-2.2.11.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="jaxb-impl-2.2.11"
@@ -340,6 +360,7 @@
                     MVN="mvn:org.talend.libraries/jaxb-impl-2.2.11/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/jaxb-impl-2.2.11.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="neethi-3.0.3"
@@ -347,42 +368,49 @@
                     MVN="mvn:org.talend.libraries/neethi-3.0.3/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/neethi-3.0.3.jar"
                     REQUIRED="true"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-bindings-2.1.1"
                     MODULE="wss4j-bindings-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-bindings-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-bindings-2.1.1.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-policy-2.1.1"
                     MODULE="wss4j-policy-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-policy-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-policy-2.1.1.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-ws-security-common-2.1.1"
                     MODULE="wss4j-ws-security-common-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-ws-security-common-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-ws-security-common-2.1.1.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-ws-security-dom-2.1.1"
                     MODULE="wss4j-ws-security-dom-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-ws-security-dom-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-ws-security-dom-2.1.1.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-ws-security-policy-stax-2.1.1"
                     MODULE="wss4j-ws-security-policy-stax-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-ws-security-policy-stax-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-ws-security-policy-stax-2.1.1.jar"
+                    BundleID=""
                     />
                 <IMPORT
                     NAME="wss4j-ws-security-stax-2.1.1"
                     MODULE="wss4j-ws-security-stax-2.1.1.jar"
                     MVN="mvn:org.talend.libraries/wss4j-ws-security-stax-2.1.1/6.0.0"
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wss4j-ws-security-stax-2.1.1.jar"
+                    BundleID=""
                     />
       <!-- Jars for cxf end -->
     </IMPORTS>

@@ -1,25 +1,29 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    LogUtil logUtil = new LogUtil(node);
-    String cid = node.getUniqueName();
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
 
-    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String conn = "TMDMService_" + connection;
 %>
-    
-    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
-    
-	<%String conn = "TMDMService_" + connection;%>
-	org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
-	if(service_<%=cid %> != null)
-	{
-		service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());        
-	}
+<% logUtil.debug("\"Closing service to MDM server.\"");%>
+java.util.Iterator it_<%=cid %> = globalMap.keySet().iterator();
+while (it_<%=cid %>.hasNext()) {
+    String key_<%=cid %> = it_<%=cid %>.next().toString();
+    if (key_<%=cid %>.startsWith("<%=conn %>_")) {
+        org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get(key_<%=cid %>);
+        if(service_<%=cid %> != null) {
+           service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+           <% logUtil.debug("\"Close service successfully with key=\" + key_" + cid);%>
+       }
+    }
+}

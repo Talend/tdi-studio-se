@@ -1,97 +1,96 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		java.util.List
-		java.util.Map
-		"
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        java.util.List
+        java.util.Map
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    LogUtil logUtil = new LogUtil(node);
-    String cid = node.getUniqueName();
-    
-    boolean isDropItem = ("true").equals(ElementParameterParser.getValue(node,"__USE_DROP_ITEM__"));
-    String partPath = ElementParameterParser.getValue(node,"__PART_PATH__");
-    
-    boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
-    
-    String dataModel = ElementParameterParser.getValue(node, "__CONCEPT__");
-    List<Map<String,String>> keyValues = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__KEYS__");
-    
-    boolean useMultConditions = ("true").equals(ElementParameterParser.getValue(node, "__USE_ITEMS__"));
-    List<Map<String, String>> operations = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OPERATIONS__");
-    String spellThrehold = ElementParameterParser.getValue(node, "__SPELLTHREHOLD__");
-    
-    boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-    boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
-    String sourceName = ElementParameterParser.getValue(node,"__SOURCE__");
-    String needCheck = ElementParameterParser.getValue(node,"__ISINVOKE__");
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
 
-    if(spellThrehold==null || ("").equals(spellThrehold)){
-    	spellThrehold = "0";
-    } 
-    List<IMetadataTable> metadatas = node.getMetadataList();
-    if ((metadatas!=null)&&(metadatas.size()>0)) {//1
-        IMetadataTable metadata = metadatas.get(0);
-        if (metadata!=null) {//2
-    
-        	List< ? extends IConnection> conns = node.getIncomingConnections();
-        	for (IConnection conn : conns) {//3
-        		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
-        			if(!useMultConditions){//5
+boolean isDropItem = ("true").equals(ElementParameterParser.getValue(node,"__USE_DROP_ITEM__"));
+String partPath = ElementParameterParser.getValue(node,"__PART_PATH__");
+
+boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
+
+String dataModel = ElementParameterParser.getValue(node, "__CONCEPT__");
+List<Map<String,String>> keyValues = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__KEYS__");
+
+boolean useMultConditions = ("true").equals(ElementParameterParser.getValue(node, "__USE_ITEMS__"));
+List<Map<String, String>> operations = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__OPERATIONS__");
+String spellThrehold = ElementParameterParser.getValue(node, "__SPELLTHREHOLD__");
+
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+boolean withReport = ("true").equals(ElementParameterParser.getValue(node,"__WITHREPORT__"));
+String sourceName = ElementParameterParser.getValue(node,"__SOURCE__");
+String needCheck = ElementParameterParser.getValue(node,"__ISINVOKE__");
+
+if(spellThrehold==null || ("").equals(spellThrehold)){
+    spellThrehold = "0";
+}
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas!=null)&&(metadatas.size()>0)) {//1
+    IMetadataTable metadata = metadatas.get(0);
+    if (metadata!=null) {//2
+        List< ? extends IConnection> conns = node.getIncomingConnections();
+        for (IConnection conn : conns) {//3
+            if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
+                if(!useMultConditions){//5
 %>
 List<String> wsIds_<%=cid %> = new java.util.ArrayList<String>();
 {
 <%
-			    for(int i=0;i<keyValues.size();i++){
-			    	String columnName=keyValues.get(i).get("KEY");
+    for(int i=0;i<keyValues.size();i++){
+        String columnName=keyValues.get(i).get("KEY");
 %>
     wsIds_<%=cid %>.add(<%=conn.getName()%>.<%=columnName %>);
 <%
 }
 %>};
 org.talend.mdm.webservice.WSItemPK wsPK_<%=cid %> = new org.talend.mdm.webservice.WSItemPK(<%=dataModel %>, wsIds_<%=cid %>, dataCluster_<%=cid %>);
-///////////////////////	
+///////////////////////
 
 try{
-	<%
-	if(isDropItem){
-	%>
-		org.talend.mdm.webservice.WSDropItem item_<%=cid %> = new org.talend.mdm.webservice.WSDropItem();
-		item_<%=cid %>.setPartPath(<%=partPath %>);
-	<%
-	}else{
-	%>
-		org.talend.mdm.webservice.WSDeleteItem item_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItem();
-	<%
-	}
-	%>
-	item_<%=cid %>.setWsItemPK(wsPK_<%=cid %>);
-	item_<%=cid %>.setOverride(false);
-	<%
-	if (!isStaging && withReport) {
-	%>
-		item_<%=cid %>.setWithReport(true);
-		item_<%=cid %>.setSource(<%=sourceName%>);
-		item_<%=cid %>.setInvokeBeforeDeleting(<%=needCheck%>);
-	<%
-	}
-	if(isDropItem){
-	%>
-		<% logUtil.debug("\"Dropping item: \"", logUtil.var("item"),"\".\"");%>
-		service_<%=cid %> .dropItem(item_<%=cid %>);		
-	<%
-	}else{
-	%>
-		<% logUtil.debug("\"Deleting item: \"", logUtil.var("item"),"\".\"");%>
-		service_<%=cid %> .deleteItem(item_<%=cid %>);		
+    <%
+    if(isDropItem){
+    %>
+        org.talend.mdm.webservice.WSDropItem item_<%=cid %> = new org.talend.mdm.webservice.WSDropItem();
+        item_<%=cid %>.setPartPath(<%=partPath %>);
+    <%
+    }else{
+    %>
+        org.talend.mdm.webservice.WSDeleteItem item_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItem();
+    <%
+    }
+    %>
+    item_<%=cid %>.setWsItemPK(wsPK_<%=cid %>);
+    item_<%=cid %>.setOverride(false);
+    <%
+    if (!isStaging && withReport) {
+    %>
+        item_<%=cid %>.setWithReport(true);
+        item_<%=cid %>.setSource(<%=sourceName%>);
+        item_<%=cid %>.setInvokeBeforeDeleting(<%=needCheck%>);
+    <%
+    }
+    if(isDropItem){
+    %>
+        <% logUtil.debug("\"Dropping item: \"", logUtil.var("item"),"\".\"");%>
+        service_<%=cid %> .dropItem(item_<%=cid %>);
+    <%
+    }else{
+    %>
+        <% logUtil.debug("\"Deleting item: \"", logUtil.var("item"),"\".\"");%>
+        service_<%=cid %> .deleteItem(item_<%=cid %>);
     <%
     }
     %>
@@ -99,85 +98,85 @@ try{
 <%
 if(dieOnError){
 %>
-	<% logUtil.error("\"Die on error:\"+e.getMessage()");%>
-	throw(e);
+    <% logUtil.error("\"Die on error:\"+e.getMessage()");%>
+    throw(e);
 <%
 }else{
 %>
-	System.err.println(e.getMessage());
+    System.err.println(e.getMessage());
 <%
 }
 %>
 }
 nb_line_<%=cid %>++; 
 
-///////////////////////    			
+///////////////////////
 <%
-				}
-    		}//4
-    	}//3
+                }
+            }//4
+        }//3
     }//2
 }//1
 %>
 <%
-	if(useMultConditions){
+    if(useMultConditions){
 %>
-	<% logUtil.debug("\"Use multi condition to delete records.\"");%>
-	org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
-	java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
+<% logUtil.debug("\"Use multi condition to delete records.\"");%>
+org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
+java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
 <%
-		boolean isOnlyOrPredicate=true;
-		for(int i=0; i < operations.size(); i++){
-			Map<String, String> map= operations.get(i);
-			String xpath=map.get("XPATH");
-			String operator=map.get("FUNCTION");
-			String value = map.get("VALUE");
-			String predicate = map.get("PREDICATE");
-			if((i < operations.size()-1) && (!"OR".equals(predicate))){
-				isOnlyOrPredicate = false;
-			}
+    boolean isOnlyOrPredicate=true;
+    for(int i=0; i < operations.size(); i++){
+        Map<String, String> map= operations.get(i);
+        String xpath=map.get("XPATH");
+        String operator=map.get("FUNCTION");
+        String value = map.get("VALUE");
+        String predicate = map.get("PREDICATE");
+        if((i < operations.size()-1) && (!"OR".equals(predicate))){
+            isOnlyOrPredicate = false;
+        }
 %>
-	       wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, false, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>);
-	       org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>_<%=cid %>=new org.talend.mdm.webservice.WSWhereItem(null,wc_<%=cid %>,null);
-	       conditions_<%=cid %>.add(wsItem_<%=i %>_<%=cid %>);
+       wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, false, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>);
+       org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>_<%=cid %>=new org.talend.mdm.webservice.WSWhereItem(null,wc_<%=cid %>,null);
+       conditions_<%=cid %>.add(wsItem_<%=i %>_<%=cid %>);
 <%
-		}//for
+        }//for
 %>
-	    org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
-	    if(conditions_<%=cid %>.size() > 0){
+        org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
+        if(conditions_<%=cid %>.size() > 0){
 <%
-		   if(!isOnlyOrPredicate){
+           if(!isOnlyOrPredicate){
 %>  
            org.talend.mdm.webservice.WSWhereAnd whereAnd_<%=cid %> = new org.talend.mdm.webservice.WSWhereAnd(conditions_<%=cid %>); 
-		   wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(whereAnd_<%=cid %>,null,null);
+           wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(whereAnd_<%=cid %>,null,null);
 <%
-		}else{
+        }else{
 %>
             org.talend.mdm.webservice.WSWhereOr whereOr_<%=cid %> = new org.talend.mdm.webservice.WSWhereOr(conditions_<%=cid %>); 
-		    wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,whereOr_<%=cid %>);
+            wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,whereOr_<%=cid %>);
 <%
-		}
+        }
 %>
-	   }
-	
-	try{
-		<% logUtil.debug("\"Deleting records.\"");%>
-		org.talend.mdm.webservice.WSDeleteItems items_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItems(<%=dataModel %>, false, <%=spellThrehold%>, dataCluster_<%=cid %>, wsItem_<%=cid %>);
-		service_<%=cid %>.deleteItems(items_<%=cid %>);		
-	}catch(java.lang.Exception e){
-	<% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
+   }
+
+try{
+    <% logUtil.debug("\"Deleting records.\"");%>
+    org.talend.mdm.webservice.WSDeleteItems items_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItems(<%=dataModel %>, false, <%=spellThrehold%>, dataCluster_<%=cid %>, wsItem_<%=cid %>);
+    service_<%=cid %>.deleteItems(items_<%=cid %>);
+}catch(java.lang.Exception e){
+    <% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
 <%
-		if(dieOnError){
-%>		
-		throw(e);
+    if(dieOnError){
+%>        
+        throw(e);
 <%
-		}else{
-%>		
-		System.err.println(e.getMessage());
-<%
-		}
+    }else{
 %>
-	}
+        System.err.println(e.getMessage());
 <%
-	}
+    }
+%>
+    }
+<%
+    }
 %>

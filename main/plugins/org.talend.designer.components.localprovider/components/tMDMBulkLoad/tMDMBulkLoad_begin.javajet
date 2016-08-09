@@ -1,53 +1,71 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
-		"
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
-	
-	String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
-	String username = ElementParameterParser.getValue(node, "__USERNAME__");
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
 
-	String dataModule = ElementParameterParser.getValue(node, "__DATAMODEL__");
-	String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
-	boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-	String dataEntity = ElementParameterParser.getValue(node, "__DATACONCEPT__");
-	String arraySize = ElementParameterParser.getValue(node,"__MASS_LEVEL__");
-	
-	boolean validate = ("true").equals(ElementParameterParser.getValue(node,"__VALIDATE__"));
-	boolean isGenerateId = ("true").equals(ElementParameterParser.getValue(node,"__GENERATE_ID__"));
-	boolean insertOnly = ("true").equals(ElementParameterParser.getValue(node,"__INSERT_ONLY__"));
-	
-	boolean useTransaction = ("true").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
-	String transactionProvider = ElementParameterParser.getValue(node,"__TRANSACTION_PROVIDER__");
-	String mdmTransaction = "mdmTransaction_" + transactionProvider;
-	
+String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
+String username = ElementParameterParser.getValue(node, "__USERNAME__");
+
+String dataModule = ElementParameterParser.getValue(node, "__DATAMODEL__");
+String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+String dataEntity = ElementParameterParser.getValue(node, "__DATACONCEPT__");
+String arraySize = ElementParameterParser.getValue(node,"__MASS_LEVEL__");
+
+boolean validate = ("true").equals(ElementParameterParser.getValue(node,"__VALIDATE__"));
+boolean isGenerateId = ("true").equals(ElementParameterParser.getValue(node,"__GENERATE_ID__"));
+boolean insertOnly = ("true").equals(ElementParameterParser.getValue(node,"__INSERT_ONLY__"));
+
+boolean useTransaction = ("true").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
+String connection = ElementParameterParser.getValue(node,"__TRANSACTION_PROVIDER__");
+String trans = "mdmTrans_" + connection;
 %>
 
-<%
-String passwordFieldName = "__PASSWORD__";
-%>
-
+<% String passwordFieldName = "__PASSWORD__"; %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
-<% logUtil.info("\"Initializing bulkload client with URL: \"", mdmUrl,"\".\"");%>
-
-org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl%>, <%=username %>, decryptedPassword_<%=cid%>, null, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule%>);
+<% logUtil.info("\"Initializing bulkload client with URL: \"", mdmUrl);%>
+org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl %>, <%=username %>, decryptedPassword_<%=cid %>, null, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule %>);
 
 <%if(useTransaction) {%>
-com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
-if(mdmTransaction_<%=cid%>!=null) {
-	bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid%>.getId());
-}
+    String transKey_<%=cid %> = "<%=trans%>_" + Thread.currentThread().getThreadGroup().getName();
+    com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
+    if(mdmTransaction_<%=cid %> == null) {
+        String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
+        if(murl_<%=cid %>.endsWith("?wsdl")) {
+            murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
+        }
+        String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
+        String username_<%=cid %> = (String)globalMap.get("username_<%=connection %>");
+        String password_<%=cid %> = (String)globalMap.get("password_<%=connection %>");
+        if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
+            String sessionID_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+            mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
+            mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
+            mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
+            mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
+            mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
+            mdmTransaction_<%=cid %>.setSessionId(sessionID_<%=cid %>);
+        } else {
+            <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
+            mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+        }
+        globalMap.put(transKey_<%=cid %>, mdmTransaction_<%=cid %>);
+        <% logUtil.debug("\"Got transaction successfully with key=\" + transKey_" + cid);%>
+    }
+    bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid %>.getId());
+    bulkloadClient_<%=cid %>.setSessionId(mdmTransaction_<%=cid%>.getSessionId());
 <%}%>
+
 bulkloadClient_<%=cid %>.startThreadCount();
-bulkloadClient_<%=cid %>.setOptions(new org.talend.mdm.bulkload.client.BulkloadOptions(<%=isGenerateId %>, <%=validate %>, <%=arraySize%>, <%=insertOnly%>));
-int count_<%=cid%> = 0;
-org.talend.mdm.bulkload.client.InputStreamMerger inputStreamMerger_<%=cid%> = null;
+bulkloadClient_<%=cid %>.setOptions(new org.talend.mdm.bulkload.client.BulkloadOptions(<%=isGenerateId %>, <%=validate %>, <%=arraySize %>, <%=insertOnly %>));
+int count_<%=cid %> = 0;
+org.talend.mdm.bulkload.client.InputStreamMerger inputStreamMerger_<%=cid %> = null;
