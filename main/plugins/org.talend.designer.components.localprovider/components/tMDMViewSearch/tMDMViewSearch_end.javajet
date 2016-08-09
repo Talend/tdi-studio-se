@@ -1,52 +1,50 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         java.util.List
-		" 
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
-	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-	
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
+boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas != null) && (metadatas.size() > 0)) {
-	IMetadataTable metadata = metadatas.get(0);
-	
-	if (metadata != null) {
-	
-		List<IMetadataColumn> columnList = metadata.getListColumns();
-		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    IMetadataTable metadata = metadatas.get(0);
 
-		// if output columns are defined
-		if (outgoingConns != null && outgoingConns.size() > 0){
-		
-			IConnection outgoingConn = outgoingConns.get(0);
-			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
-			%>				
-					}
-				}
-				<%if(!useExistingConn){%>
-				    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
-					service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());				    
-				<%}%>								
-				
-				globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);   
-			<%
-			}
-		}
-	}
+    if (metadata != null) {
+
+        List<IMetadataColumn> columnList = metadata.getListColumns();
+        List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+        // if output columns are defined
+        if (outgoingConns != null && outgoingConns.size() > 0){
+
+            IConnection outgoingConn = outgoingConns.get(0);
+            if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
+            %>
+                    }
+                }
+                <%if(!useExistingConn){%>
+                    <% logUtil.debug("\"Closing connection to MDM server.\"");%>
+                    service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
+                <%}%>
+
+                globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);
+            <%
+            }
+        }
+    }
 }
 %>
-          
-            

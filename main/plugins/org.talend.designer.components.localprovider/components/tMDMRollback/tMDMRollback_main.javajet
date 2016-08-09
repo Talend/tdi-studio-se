@@ -1,46 +1,36 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
-    LogUtil logUtil = new LogUtil(node);
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
 
-    String cid = node.getUniqueName();
-
-    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
-
-    boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
-
-	String mdmTransaction = "mdmTransaction_" + connection;
-
-	String conn = "";
+String cid = node.getUniqueName();
+String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
+String conn = "TMDMService_" + connection;
+String trans = "mdmTrans_" + connection;
 %>
 
-	<%conn = "TMDMService_" + connection;%>
-	
-    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("<%=conn%>");
+String transKey_<%=cid %> = "<%=trans%>_" + Thread.currentThread().getThreadGroup().getName();
+com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
+if(mdmTransaction_<%=cid %> != null) {
+    <% logUtil.info("\"Attempt to rollback transaction .\"");%>
+    mdmTransaction_<%=cid %>.rollback();
+    <% logUtil.info("\"Transaction rollback successfully with key=\" + transKey_" + cid);%>
+}
 
-    if(service_<%=cid %> != null)
-    {
-    	com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
-    	if(mdmTransaction_<%=cid%>!=null) {
-    	
-    	   <% logUtil.info("\"Attempt to rollback transaction .\"");%>
-    	   
-    		mdmTransaction_<%=cid%>.rollback();
-    		
-    	   <% logUtil.info("\"Transaction rollback successfully.\"");%>
-    	}
-    <%  if(close){%>
-        <% logUtil.debug("\"Closing connection to MDM server.\"");%>
-        
+<% if(close) { %>
+    String connKey_<%=cid %> = "<%=conn%>_" + Thread.currentThread().getThreadGroup().getName();
+    org.talend.mdm.webservice.TMDMService service_<%=cid %> = (org.talend.mdm.webservice.TMDMService)globalMap.get(connKey_<%=cid %>);
+    if(service_<%=cid %> != null) {
         service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
-        
-    <% }%>
+        <% logUtil.debug("\"Close service successfully with key=\" + connKey_" + cid);%>
     }
+<% } %>
