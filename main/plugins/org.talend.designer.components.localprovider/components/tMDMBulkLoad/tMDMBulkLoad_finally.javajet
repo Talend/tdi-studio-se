@@ -1,19 +1,19 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode    
-		org.talend.designer.codegen.config.CodeGeneratorArgument" 
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	LogUtil logUtil = new LogUtil(node);
-	String cid = node.getUniqueName();
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+LogUtil logUtil = new LogUtil(node);
+String cid = node.getUniqueName();
 %>
 Object o<%=cid %> = resourceMap.get("mdmBulkStream<%=cid %>");
-if(o<%=cid %> != null){
+if(o<%=cid %> != null) {
     <% logUtil.info("\"Cleaning input stream.\"");%>
-    
-	org.talend.mdm.bulkload.client.InputStreamMerger stream = (org.talend.mdm.bulkload.client.InputStreamMerger)o<%=cid %>;
-	stream.clean();
+    org.talend.mdm.bulkload.client.InputStreamMerger stream = (org.talend.mdm.bulkload.client.InputStreamMerger)o<%=cid %>;
+    stream.clean();
 }
