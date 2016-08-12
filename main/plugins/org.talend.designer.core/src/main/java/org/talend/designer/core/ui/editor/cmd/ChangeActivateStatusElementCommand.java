@@ -426,7 +426,7 @@ public class ChangeActivateStatusElementCommand extends Command {
         List<? extends INode> nodes = process.getGraphicalNodes();
         List<INode> jobletandnodeList = new ArrayList<INode>();
         for (INode node : nodes) {
-            if ((((Node) node).isJoblet()||((Node)node).isSparkJoblet()) && !((Node) node).getNodeContainer().isCollapsed()
+            if (((Node) node).isJoblet() && !((Node) node).getNodeContainer().isCollapsed()
                     && (((Node) node).getNodeContainer() instanceof AbstractJobletContainer)) {
                 for (NodeContainer nc : ((AbstractJobletContainer) ((Node) node).getNodeContainer()).getNodeContainers()) {
                     jobletandnodeList.add(nc.getNode());

@@ -160,14 +160,6 @@ public class MainComposite extends AbstractTabComposite {
                     allowEnableControl = false;
                 }
                 Item originalItem = repositoryObject.getProperty().getItem();
-                if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                            IJobletProviderService.class);
-                    if (service != null && service.isJobletItem(originalItem)) {
-                        allowEnableControl = false;
-                        enableControl = false;
-                    }
-                }
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
                     ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
                             .getService(ICamelDesignerCoreService.class);

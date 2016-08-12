@@ -521,7 +521,7 @@ public class JobletUtil {
                             if (node == currNode) {
                                 continue;
                             } else {
-                                if ((((Node) node).isJoblet() || (((Node) node).isSparkJoblet()))&& jobletItem.getProperty() != null) {
+                                if (((Node) node).isJoblet()&& jobletItem.getProperty() != null) {
                                     if (jobletItem.getProperty().getId().equals(node.getComponent().getProcess().getId())) {
                                         boolean haveOpened = !((Node) node).getNodeContainer().isCollapsed();
                                         if (haveOpened) {
@@ -537,7 +537,7 @@ public class JobletUtil {
 
                 List<? extends INode> nodeList = pro.getGraphicalNodes();
                 for (INode node : nodeList) {
-                    if ((((Node) node).isJoblet() || (((Node) node).isSparkJoblet())) && jobletItem.getProperty() != null) {
+                    if (((Node) node).isJoblet() && jobletItem.getProperty() != null) {
                         if (jobletItem.getProperty().getId().equals(node.getComponent().getProcess().getId())) {
                             boolean haveOpened = !((Node) node).getNodeContainer().isCollapsed();
                             if (haveOpened) {
