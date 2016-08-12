@@ -230,7 +230,8 @@ public class ImportTreeFromRepository extends SelectionAction {
             } else if (connection.getFileContent() != null && connection.getFileContent().length > 0) {
                 String xsdFile = initFileContent(connection);
                 if (xsdFile != null && new File(xsdFile).exists()) {
-                    list = TreeUtil.getFoxTreeNodesForXmlMap(xsdFile, rootXpath, true);
+                    String targetNameSpace = connection.getXsdFilePath();
+                    list = TreeUtil.getFoxTreeNodesForXmlMap(xsdFile, rootXpath, targetNameSpace, true);
                 } else {
                     // for manually created output
                     prepareEmfTreeFromConnection(connection);
@@ -807,6 +808,8 @@ public class ImportTreeFromRepository extends SelectionAction {
             fileName = StringUtil.TMP_XML_FILE;
         } else if (pathStr != null && XmlUtil.isXSDFile(pathStr)) {
             fileName = StringUtil.TMP_XSD_FILE;
+        } else if (pathStr != null && XmlUtil.isWSDLFile(pathStr)) {
+            fileName = StringUtil.TMP_WSDL_FILE;
         } else if (pathStr.contains(".zip")) {
             fileName = new Path(pathStr).lastSegment();
         } else {
