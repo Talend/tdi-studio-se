@@ -31,13 +31,15 @@ import org.talend.daikon.properties.property.Property;
  */
 public class TestProperties extends FixedConnectorsComponentProperties {
 
-    public Property userId = newString("userId").setRequired(); //$NON-NLS-1$
+    public Property<String> name = newString("name").setRequired(); //$NON-NLS-1$
+
+    public Property<String> userId = newString("userId").setRequired(); //$NON-NLS-1$
 
     public SchemaProperties schema = new SchemaProperties("schema"); //$NON-NLS-1$
 
     public TestNestedProperties nestedProps = new TestNestedProperties("nestedProps"); //$NON-NLS-1$
     
-    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema");
+    protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema"); //$NON-NLS-1$
     
     public TestProperties(String name) {
         super(name);
@@ -46,7 +48,8 @@ public class TestProperties extends FixedConnectorsComponentProperties {
     @Override
     public void setupLayout() {
         super.setupLayout();
-        Form form = Form.create(this, Form.MAIN); //$NON-NLS-1$
+        Form form = Form.create(this, Form.MAIN); 
+        form.addRow(name);
         form.addRow(userId);
         form.addRow(nestedProps.getForm(Form.MAIN));
     }
