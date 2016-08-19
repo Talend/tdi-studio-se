@@ -63,6 +63,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.User;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -302,7 +303,7 @@ public class MainComposite extends AbstractTabComposite {
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(authorLabel, ITabbedPropertyConstants.VSPACE);
             jobFrameworkCCombo.setLayoutData(data);
-            jobFrameworkCCombo.setItems(ConvertJobsUtil.getFrameworkItemsByJobType(jobType));
+            jobFrameworkCCombo.setItems(ConvertJobsUtil.getFrameworkItemsByJobType(jobType, (obj.getProperty().getItem() instanceof JobletProcessItem)));
             jobFrameworkCCombo.setText(framework != null ? framework : ""); //$NON-NLS-1$
             frameworkValue = jobFrameworkCCombo.getText();
             jobFrameworkCCombo.setEnabled(allowEnableControl);
@@ -468,7 +469,7 @@ public class MainComposite extends AbstractTabComposite {
 
                 @Override
                 public void modifyText(final ModifyEvent e) {
-                    ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo);
+                    ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo,(obj.getProperty().getItem() instanceof JobletProcessItem));
                     evaluateTextField();
                 }
             });

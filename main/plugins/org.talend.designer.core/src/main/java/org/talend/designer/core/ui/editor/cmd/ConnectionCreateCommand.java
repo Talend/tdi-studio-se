@@ -246,7 +246,7 @@ public class ConnectionCreateCommand extends Command {
     public boolean canExecute() {
 
         if (target != null) {
-            if (!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
+            if (source.getConnectorFromName(connectorName)!=null&&!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
                     .getDefaultConnectionType(), connectorName, connectionName)) {
                 creatingConnection = false;
                 return false;
@@ -262,8 +262,8 @@ public class ConnectionCreateCommand extends Command {
 
     public boolean canExecute(boolean refactorJoblet) {
 
-        if (target != null) {
-            if (!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
+        if (target != null ) {
+            if (source.getConnectorFromName(connectorName)!=null&&!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
                     .getDefaultConnectionType(), connectorName, connectionName, refactorJoblet)) {
                 creatingConnection = false;
                 return false;
