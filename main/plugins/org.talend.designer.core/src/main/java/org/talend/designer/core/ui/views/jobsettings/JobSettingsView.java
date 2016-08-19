@@ -54,6 +54,7 @@ import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.CoreUIPlugin;
@@ -485,8 +486,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         }
         tabFactory.setTitle(title, icon);
         super.setTitleImage(icon);
-        if (gitService!=null && gitService.isProjectInGitMode())
-                return;
+        if (gitService!=null && gitService.isProjectInGitMode()) {
+            return;
+        }
 
         // This invocation below will bring in refresh issue for git.
         super.setPartName(viewName);
@@ -741,6 +743,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     jobSettingImage = getImage(repositoryObject);
                 }
                 if (jobSettingImage == null) {
+                    jobSettingImage = getImageFromFramework(repositoryObjectType);
+                }
+                if (jobSettingImage == null) {
                     jobSettingImage = ImageProvider.getImage(repositoryNode.getIcon());
                 }
 
@@ -748,6 +753,17 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             }
         }
 
+    }
+
+    private Image getImageFromFramework(ERepositoryObjectType itemType) {
+        IGenericWizardService wizardService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+        }
+        if (wizardService != null && wizardService.isGenericType(itemType)) {
+            return wizardService.getNodeImage(itemType.getType());
+        }
+        return null;
     }
 
     private Image getImage(IRepositoryViewObject repositoryObject) {
