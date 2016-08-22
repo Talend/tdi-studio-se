@@ -12,28 +12,19 @@
 // ============================================================================
 package org.talend.repository.generic.view.content;
 
-import java.util.Collection;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
-import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.utils.io.FilesUtils;
-import org.talend.core.model.general.TalendNature;
 import org.talend.core.repository.model.ProjectRepositoryNode;
-import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.navigator.RepoViewCommonNavigator;
 import org.talend.repository.navigator.RepoViewCommonViewer;
 import org.talend.repository.tester.MetadataNodeTester;
 import org.talend.repository.viewer.content.ProjectRepoDirectChildrenNodeContentProvider;
-import org.talend.repository.viewer.content.VisitResourceHelper;
 import org.talend.repository.viewer.content.listener.ResourceCollectorVisitor;
 
 public class MetadataGenericContentProvider extends ProjectRepoDirectChildrenNodeContentProvider {
@@ -71,6 +62,7 @@ public class MetadataGenericContentProvider extends ProjectRepoDirectChildrenNod
         if (metadataNodeTester.isMetadataTopNode(repoNode)) {
             getTopLevelNodes().clear();
             getTopLevelNodes().addAll(projectRepositoryNode.getGenericTopNodesMap().values());
+            getAndStoreTopLevelNode(projectRepositoryNode); // so as to inherit common settings from parent.
             return getTopLevelNodes().toArray();
         }
         if (!repoNode.isInitialized() && getTopLevelNodes().contains(repoNode)) {
@@ -78,6 +70,12 @@ public class MetadataGenericContentProvider extends ProjectRepoDirectChildrenNod
             repoNode.setInitialized(true);
         }
         return repoNode.getChildren().toArray();
+    }
+
+    @Override
+    protected ProjectRepositoryNode getProjectRepositoryNode(RepositoryNode element) {
+        Assert.isTrue(element instanceof ProjectRepositoryNode);
+        return (ProjectRepositoryNode) element;
     }
 
     @Override
