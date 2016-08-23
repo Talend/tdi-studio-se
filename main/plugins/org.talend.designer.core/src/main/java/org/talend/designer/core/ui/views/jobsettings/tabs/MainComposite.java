@@ -70,11 +70,14 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryViewObject;
+import org.talend.core.repository.model.ItemReferenceBean;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.DeleteActionCache;
+import org.talend.core.repository.ui.dialog.ItemReferenceDialog;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ConvertJobsUtil.JobType;
 import org.talend.core.repository.utils.ConvertJobsUtil.Status;
+import org.talend.core.repository.utils.RepositoryNodeDeleteManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -86,7 +89,9 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.properties.StatusHelper;
 import org.talend.repository.ui.views.IJobSettingsView;
 
@@ -606,6 +611,14 @@ public class MainComposite extends AbstractTabComposite {
                                             .openConfirm(null, "Warning",
                                                     "Warning: You will lost all the testcases when you do converting, do you want to continue?")) {
                                 return;
+                            }
+                            final List<ItemReferenceBean> unDeleteItems = RepositoryNodeDeleteManager.getInstance().getUnDeleteItems(
+                            		repositoryObject, null, true);
+                            if(!unDeleteItems.isEmpty()){
+                            	ItemReferenceDialog dialog = new ItemReferenceDialog(PlatformUI.getWorkbench()
+                                        .getActiveWorkbenchWindow().getShell(), unDeleteItems);
+                            	dialog.open();
+                            	return;
                             }
                             // Convert
                             final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType,
