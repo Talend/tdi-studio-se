@@ -3,8 +3,7 @@ imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser 
     org.talend.designer.codegen.config.CodeGeneratorArgument
-    org.talend.core.model.metadata.IMetadataTable 
-    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.IMetadataTable
     org.talend.core.model.metadata.MetadataTalendType    
     org.talend.core.model.metadata.MappingTypeRetriever    
     java.util.List
@@ -12,7 +11,8 @@ imports="
     java.util.Map
     java.util.HashMap
 " 
-skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"%>
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
+%>
 
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
@@ -96,6 +96,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
 		 errorLimit = "null";
 	}
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	boolean testMode = "true".equals(ElementParameterParser.getValue(node, "__TEST_MODE__"));
 %>
 <%@include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jDBConnUtil.javajet"%>
 
@@ -152,6 +153,7 @@ try {
 <% } %>
 globalMap.put("<%=cid%>_NB_LINE_DELETED", deletedCount_<%=cid%>);
 org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.exasol.imp.EXABulkUtil();
+<%=cid%>.setOnlyBuildSQLCode(<%=testMode%>);
 <%=cid%>.setConnection(conn_<%=cid%>);
 <%=cid%>.setTable(tableName_<%=cid%>);
 <% if ("LOCAL_FILE".equals(source) || "REMOTE_FILE".equals(source)) { %>
@@ -234,10 +236,14 @@ org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.ex
            } // for
        } // if (columnList != null  %>
 <% } %>
+<% if (usePredefinedConnection) { %>
+<% 	if (source.equals("REMOTE_FILE")) { %>
+<%=cid%>.setRemoteExistingFileConnectionName(<%=predefinedConnName%>);
+<%    } else if (source.startsWith("REMOTE")) { // all the other remotes are DB based %>
+<%=cid%>.setRemoteExistingDBConnectionName(<%=predefinedConnName%>);
+<% 	} %>
+<% } %>
 <% if (source.startsWith("REMOTE")) { %>
-<%     if (usePredefinedConnection) { %>
-<%=cid%>.setRemoteExistingConnectionName(<%=predefinedConnName%>);
-<%     } %>
 <%     if (useRemoteUserAuthentication) { %>
 <%         if (remoteUser != null && remoteUser.trim().isEmpty() == false) { %>
 <%=cid%>.setRemoteUser(<%=remoteUser%>);
@@ -283,17 +289,17 @@ org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.ex
 <%=cid%>.setRemoteSourceSelect(<%=sourceQuery%>);
 <%     } else { %>
 <%=cid%>.setRemoteSourceTable(<%=sourceSchema%>, <%=sourceTable%>);
-<%         if (columnList != null && columnList.size() > 0) {
-               int index = 0;
-               for (IMetadataColumn column : columnList) {
-       	          String name = column.getOriginalDbColumnName();
-       	          Map<String, String> config = sourceTableColumnConfigList.get(index++);
-					    String sourceTableName = config.get("SOURCE_COLUMN_NAME");
-					    if (sourceTableName == null || sourceTableName.trim().isEmpty()) {
-						     sourceTableName = "null";
-					    } %>
+<%     } %>
+<%     if (columnList != null && columnList.size() > 0) { // build the target column list anyway
+           int index = 0;
+           for (IMetadataColumn column : columnList) {
+               String name = column.getOriginalDbColumnName();
+               Map<String, String> config = sourceTableColumnConfigList.get(index++);
+			      String sourceTableName = config.get("SOURCE_COLUMN_NAME");
+					if (sourceTableName == null || sourceTableName.trim().isEmpty()) {
+					    sourceTableName = "null";
+					} %>
 <%=cid%>.addRemoteSourceTableColumn("<%=name%>", <%=sourceTableName%>, null);
-<%             } %>
 <%         } %>
 <%     } %>
 <% } %>

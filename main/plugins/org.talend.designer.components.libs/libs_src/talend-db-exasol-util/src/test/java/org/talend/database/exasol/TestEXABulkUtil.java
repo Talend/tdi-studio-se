@@ -215,7 +215,7 @@ public class TestEXABulkUtil {
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("JDBC");
-		u.setRemoteExistingConnectionName("mysql_mysql");
+		u.setRemoteExistingDBConnectionName("mysql_mysql");
 		u.setRemoteSourceTable(null, "\"v_test_data_load\"");
 		u.addRemoteSourceTableColumn("ID", "id", null);
 		u.addRemoteSourceTableColumn("firstname", "first_name", null);
@@ -254,7 +254,7 @@ public class TestEXABulkUtil {
 		u.setConnection(connection);
 		u.setTable(table);
 		u.setDbmsSourceType("JDBC");
-		u.setRemoteExistingConnectionName("MYSQL_MYSQL");
+		u.setRemoteExistingDBConnectionName("MYSQL_MYSQL");
 		u.setRemoteSourceSelect("select\n"
 			    + "id,\n"
 			    + "firstname,\n"

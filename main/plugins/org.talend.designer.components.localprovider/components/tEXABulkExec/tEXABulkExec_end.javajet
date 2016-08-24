@@ -19,5 +19,6 @@ imports="
 	if (conn != null) {
 	    conn.close();
 	}
+	<%=cid%>.deleteErrorLogFileIfEmpty();
 }
 <%	} %>

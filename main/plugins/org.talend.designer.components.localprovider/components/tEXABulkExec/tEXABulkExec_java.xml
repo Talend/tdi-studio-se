@@ -627,12 +627,21 @@
 			<DEFAULT>false</DEFAULT>
 		</PARAMETER>
 
+		<PARAMETER 
+			NAME="TEST_MODE"
+			FIELD="CHECK" 
+			NUM_ROW="110"
+			REQUIRED="true"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
 	</ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
      <IMPORTS>
 		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-5.0.13.jar" MVN="mvn:org.talend.libraries/exajdbc-5.0.13/6.2.0"  REQUIRED="true" />
-		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-2.0.0.jar" MVN="mvn:org.talend.libraries/talend-db-exasol-2.0.0/6.2.0"  REQUIRED="true" />
+		<IMPORT NAME="Talend-DB-Exasol-Util" MODULE="talend-db-exasol-2.1.0.jar" MVN="mvn:org.talend.libraries/talend-db-exasol-2.1.0/6.2.0"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
