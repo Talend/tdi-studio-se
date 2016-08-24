@@ -144,6 +144,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             generationOption = generationOption | ProcessorUtilities.GENERATE_WITHOUT_COMPILING;
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GENERATE_OPTION, generationOption);
+        
+        //deployVersion for ci builder
+        String deployVersion = (String) exportChoice.get(ExportChoice.deployVersion);
+        if (deployVersion != null) {
+            argumentsMap.put(TalendProcessArgumentConstant.ARG_DEPLOY_VERSION, deployVersion);
+        }
 
         IProcessor processor = ProcessorUtilities.generateCode(processItem, contextName, version, argumentsMap, monitor);
         ProcessorUtilities.resetExportConfig();

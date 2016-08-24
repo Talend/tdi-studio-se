@@ -290,7 +290,9 @@ public class MavenJavaProcessor extends JavaProcessor {
             };
 
             pomManager.setUpdateModules(isStandardJob()); // won't update module for fake job.
-
+            if (getArguments() != null) {
+                pomManager.setArgumentsMap(getArguments());
+            }
             pomManager.update(monitor, this);
         } catch (Exception e) {
             ExceptionHandler.process(e);
