@@ -115,7 +115,7 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
             tmpJob = File.createTempFile("job", ".jar", null);
             jobScriptsManager = JobScriptsManagerFactory.createManagerInstance(
                     JobScriptsManagerFactory.getDefaultExportChoiceMap(), processItem.getProcess().getDefaultContext(),
-                    JobScriptsManager.LAUNCHER_ALL, IProcessor.STATES_RUNTIME, IProcessor.NO_TRACES, JobExportType.OSGI);
+                    JobScriptsManager.LAUNCHER_ALL, IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, JobExportType.OSGI);
             // generate
             jobScriptsManager.setDestinationPath(tmpJob.getAbsolutePath());
             JobExportAction action = new JobExportAction(Collections.singletonList(node), jobVersion, bundleVersion,
