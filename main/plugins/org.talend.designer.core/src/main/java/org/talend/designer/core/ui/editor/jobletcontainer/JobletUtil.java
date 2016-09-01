@@ -380,7 +380,7 @@ public class JobletUtil {
             }
         }
         cloneNode.setLabel(node.getLabel());
-        cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getLabel());
+        cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getElementParameter(EParameterName.LABEL.getName()).getValue());
         return cloneNode;
     }
 

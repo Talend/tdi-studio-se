@@ -47,7 +47,7 @@ import org.talend.designer.core.ui.editor.cmd.MultiplePasteCommand;
 import org.talend.designer.core.ui.editor.cmd.NodesPasteCommand;
 import org.talend.designer.core.ui.editor.cmd.NotesPasteCommand;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainerPart;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainerPart;
@@ -354,7 +354,7 @@ public class GEFPasteAction extends SelectionAction {
             }
         }
         Node jobletNode = (Node) copiedNode.getJobletNode();
-        JobletContainer jnc = (JobletContainer) jobletNode.getNodeContainer();
+        AbstractJobletContainer jnc = (AbstractJobletContainer) jobletNode.getNodeContainer();
         List<NodeContainer> ncs = jnc.getNodeContainers();
         if (ncs != null) {
             for (NodeContainer nc : ncs) {
