@@ -164,9 +164,12 @@ public class OpenDocumentationAction extends AContextualAction {
             //
         }
         if (node != null && node.getObject() != null) {
-            Item item = node.getObject().getProperty().getItem();
-            if (item != null && item instanceof LinkDocumentationItem) {
-                return LinkDocumentationItem.class;
+            final ERepositoryObjectType repositoryObjectType = node.getObject().getRepositoryObjectType();
+            if (repositoryObjectType != null && repositoryObjectType.equals(ERepositoryObjectType.DOCUMENTATION)) {
+                Item item = node.getObject().getProperty().getItem();
+                if (item != null && item instanceof LinkDocumentationItem) {
+                    return LinkDocumentationItem.class;
+                }
             }
         }
         // default, when init the double click action

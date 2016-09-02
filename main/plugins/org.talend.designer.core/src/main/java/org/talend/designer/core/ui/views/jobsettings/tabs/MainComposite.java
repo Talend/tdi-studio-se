@@ -280,6 +280,7 @@ public class MainComposite extends AbstractTabComposite {
             versionLabel.setLayoutData(data);
         }
 
+        final Map<String, String> statusMap = getStatusMap();
         if (allowEnableControl) {
             // Job Type
             jobTypeCCombo = widgetFactory.createCCombo(composite, SWT.READ_ONLY | SWT.DROP_DOWN);
@@ -349,7 +350,7 @@ public class MainComposite extends AbstractTabComposite {
             String status = repositoryObject.getStatusCode();
             statusText.setText(status != null ? status : ""); //$NON-NLS-1$
             statusText.setItems(Status.getStatusToDispaly());
-            statusLabelText = getStatusMap().get(status);
+            statusLabelText = statusMap.get(status);
             setStatusComboText(statusLabelText);
             statusText.setEnabled(allowEnableControl);
         } else {
@@ -379,7 +380,7 @@ public class MainComposite extends AbstractTabComposite {
             statusText.setLayoutData(data);
             String status = repositoryObject.getStatusCode();
             statusText.setText(status != null ? status : ""); //$NON-NLS-1$
-            statusLabelText = getStatusMap().get(status);
+            statusLabelText = statusMap.get(status);
             setStatusComboText(statusLabelText);
             statusText.setEnabled(enableControl);
         }
@@ -393,7 +394,7 @@ public class MainComposite extends AbstractTabComposite {
         statusLabel.setLayoutData(data);
         statusText.setItems(Status.getStatusToDispaly());
         String status = repositoryObject.getStatusCode();
-        statusLabelText = getStatusMap().get(status);
+        statusLabelText = statusMap.get(status);
         setStatusComboText(statusLabelText);
 
         descriptionText = widgetFactory.createText(composite, "", SWT.MULTI | SWT.V_SCROLL | SWT.WRAP); //$NON-NLS-1$
@@ -599,7 +600,7 @@ public class MainComposite extends AbstractTabComposite {
                             property.setPurpose(originalPurpose);
                         }
                         if (!originalStatus.equals(StringUtils.trimToEmpty(repositoryObject.getStatusCode()))) {
-                            property.setStatusCode(getStatusCode(getStatusMap(), originalStatus));
+                            property.setStatusCode(getStatusCode(statusMap, originalStatus));
                         }
                         if (!originalDescription.equals(StringUtils.trimToEmpty(repositoryObject.getDescription()))) {
                             property.setDescription(originalDescription);

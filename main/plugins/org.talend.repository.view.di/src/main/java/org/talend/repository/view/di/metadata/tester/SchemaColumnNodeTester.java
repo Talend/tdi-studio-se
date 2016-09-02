@@ -13,6 +13,8 @@
 package org.talend.repository.view.di.metadata.tester;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.tester.SubNodeTester;
 
@@ -48,11 +50,13 @@ public class SchemaColumnNodeTester extends SubNodeTester {
     public ERepositoryObjectType findParentItemType(RepositoryNode repositoryNode) {
         final ERepositoryObjectType objectType = repositoryNode.getObjectType();
         if (objectType == ERepositoryObjectType.METADATA_CON_COLUMN) {
-            if (repositoryNode.getObject() != null) {
-                // FIXME there should be a problem for the performance, when getProperty() for IRepositoryViewObject
-                ERepositoryObjectType parentType = ERepositoryObjectType.getItemType(repositoryNode.getObject().getProperty()
-                        .getItem());
-                return parentType;
+            final IRepositoryViewObject object = repositoryNode.getObject();
+            if (object != null && object instanceof MetadataColumnRepositoryObject) {
+                final MetadataColumnRepositoryObject columnObj = (MetadataColumnRepositoryObject) object;
+                final IRepositoryViewObject itemObj = columnObj.getViewObject();
+                if (itemObj != null) {
+                    return itemObj.getRepositoryObjectType();
+                }
             }
         }
         return null;

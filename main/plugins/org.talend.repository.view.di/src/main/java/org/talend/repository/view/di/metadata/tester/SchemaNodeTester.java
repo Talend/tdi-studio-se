@@ -13,6 +13,7 @@
 package org.talend.repository.view.di.metadata.tester;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.tester.SubNodeTester;
@@ -49,19 +50,13 @@ public class SchemaNodeTester extends SubNodeTester {
     public ERepositoryObjectType findParentItemType(RepositoryNode repositoryNode) {
         final ERepositoryObjectType objectType = repositoryNode.getObjectType();
         if (objectType == ERepositoryObjectType.METADATA_CON_TABLE) {
-            if (repositoryNode.getObject() != null) {
-                ERepositoryObjectType parentType = null;
-                if (repositoryNode.getObject() instanceof MetadataTableRepositoryObject) {
-                    MetadataTableRepositoryObject object = (MetadataTableRepositoryObject) repositoryNode.getObject();
-                    String itemId = object.getViewObject().getId();
-                    parentType = ERepositoryObjectType.getTypeCacheById().get(itemId);
-                    if (parentType == null) {
-                        parentType = ERepositoryObjectType.getType(object.getViewObject().getProperty());
-                    }
-                } else {
-                    parentType = ERepositoryObjectType.getType(repositoryNode.getObject().getProperty());
+            final IRepositoryViewObject object = repositoryNode.getObject();
+            if (object != null && object instanceof MetadataTableRepositoryObject) {
+                final MetadataTableRepositoryObject tableObj = (MetadataTableRepositoryObject) object;
+                final IRepositoryViewObject itemObj = tableObj.getViewObject();
+                if (itemObj != null) {
+                    return itemObj.getRepositoryObjectType();
                 }
-                return parentType;
             }
         }
         return null;
