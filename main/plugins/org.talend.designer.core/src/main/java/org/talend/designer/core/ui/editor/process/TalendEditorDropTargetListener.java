@@ -191,6 +191,7 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
@@ -1099,7 +1100,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_MR
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_STORM) { // dnd a job
                         LabelValue = DesignerUtilities.getParameterVar(EParameterName.PROCESS);
-                    } else if (CorePlugin.getDefault().getDesignerCoreService()
+                    }else if(repositoryNode.getObjectType() == ERepositoryObjectType.JOBLET
+                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_JOBLET
+                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_STREAMING_JOBLET){
+                    	LabelValue = element.getName();
+                    }else if (CorePlugin.getDefault().getDesignerCoreService()
                             .getPreferenceStore(TalendDesignerPrefConstants.DEFAULT_LABEL)
                             .equals(node.getPropertyValue(EParameterName.LABEL.getName()))) {// dnd a default
                         LabelValue = selectedNode.getObject().getLabel();
@@ -1879,8 +1884,14 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 return;
             }
         }
+        boolean isCurrentProject = true;
+        String projectName = null;
+        if(store.seletetedNode.getObject()!=null){
+        	projectName = store.seletetedNode.getObject().getProjectLabel();
+        	isCurrentProject = projectName.equals(ProjectManager.getInstance().getCurrentProject().getLabel());
+        }
 
-        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type);
+        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type, isCurrentProject, projectName);
 
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             List<IComponent> comList = handler.filterNeededComponents(item, store.seletetedNode, type);
