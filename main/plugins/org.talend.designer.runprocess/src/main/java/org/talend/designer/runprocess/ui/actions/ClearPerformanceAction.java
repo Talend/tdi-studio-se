@@ -12,10 +12,14 @@
 // ============================================================================
 package org.talend.designer.runprocess.ui.actions;
 
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.talend.core.model.process.IConnection;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IPerformance;
 import org.talend.core.model.process.IProcess;
+import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
  * Clean performance data on a process. <br/>
@@ -50,6 +54,31 @@ public class ClearPerformanceAction extends Action {
                 ((IPerformance) conns[i]).setPerformanceData(""); //$NON-NLS-1$
             }
         }
+        clearJobletPerformance();
+    }
+    
+    private void clearJobletPerformance(){
+    	for(INode inode : process.getGraphicalNodes()){
+    		if(!(inode instanceof Node)){
+    			return;
+    		}
+    		Node node = (Node) inode;
+    		if(node.isJoblet()&&!node.getNodeContainer().isCollapsed()){
+    			List list = node.getNodeContainer().getElements();
+    			for(Object obj : list){
+    				if(obj instanceof Node){
+    					for(IConnection conn:((Node)obj).getOutgoingConnections()){
+    						if(!list.contains(conn.getTarget())){
+    							continue;
+    						}
+    						if(conn instanceof IPerformance){
+    							((IPerformance) conn).setPerformanceData(""); //$NON-NLS-1$
+    						}
+    					}
+    				}
+    			}
+    		}
+    	}
     }
 
     /**
