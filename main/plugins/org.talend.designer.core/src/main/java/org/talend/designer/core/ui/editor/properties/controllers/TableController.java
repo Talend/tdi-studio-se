@@ -196,8 +196,24 @@ public class TableController extends AbstractElementPropertySectionController {
 
         this.dynamicProperty.setCurRowSize(ySize2 + ITabbedPropertyConstants.VSPACE);
 
-        top += this.dynamicProperty.getCurRowSize();
-        return null;
+        if (isInWizard()) {
+            labelLabel2.setAlignment(SWT.RIGHT);
+            if (lastControlPrm != null) {
+                formData.right = new FormAttachment(lastControlPrm, 0);
+            } else {
+                formData.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+            }
+            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
+                    currentLabelWidth2 + ITabbedPropertyConstants.HSPACE);
+
+            formData = (FormData) labelLabel2.getLayoutData();
+            formData.right = new FormAttachment(mainComposite, 0);
+            formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+
+            return labelLabel2;
+        }
+
+        return mainComposite;
     }
 
     /*

@@ -15,8 +15,13 @@ package org.talend.repository.generic.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -218,10 +223,35 @@ public class DynamicComposite extends MultipleThreadDynamicComposite implements 
             newParameters.add(currentParameter);
         }
         if (element instanceof FakeElement) {
-            newParameters.addAll(parameters);
+            newParameters.addAll(reverseParameters(parameters));
         }
         element.setElementParameters(newParameters);
         return newParameters;
+    }
+
+    private List<ElementParameter> reverseParameters(List<ElementParameter> parameters) {
+        List<ElementParameter> reversedParameters = new ArrayList<>();
+        Map<Integer, List<ElementParameter>> paramMap = new LinkedHashMap<>();
+        for (ElementParameter parameter : parameters) {
+            int numRow = parameter.getNumRow();
+            List<ElementParameter> params = paramMap.get(numRow);
+            if (params == null) {
+                params = new ArrayList<>();
+                paramMap.put(numRow, params);
+            }
+            params.add(parameter);
+        }
+        Set<Entry<Integer, List<ElementParameter>>> paramEntrySet = paramMap.entrySet();
+        Iterator<Entry<Integer, List<ElementParameter>>> paramIterator = paramEntrySet.iterator();
+        while (paramIterator.hasNext()) {
+            Entry<Integer, List<ElementParameter>> paramEntry = paramIterator.next();
+            List<ElementParameter> params = paramEntry.getValue();
+            if (params != null && params.size() > 1) {
+                Collections.reverse(params);
+            }
+            reversedParameters.addAll(params);
+        }
+        return reversedParameters;
     }
 
     private boolean isRepository(Element element) {

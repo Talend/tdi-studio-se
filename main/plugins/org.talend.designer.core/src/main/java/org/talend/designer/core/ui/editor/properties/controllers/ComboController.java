@@ -234,10 +234,24 @@ public class ComboController extends AbstractElementPropertySectionController {
         Point initialSize = dField.getLayoutControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
         if (isInWizard()) {
-            data.right = new FormAttachment(100, 0);
-            data.left = null;
+            labelLabel.setAlignment(SWT.RIGHT);
+            if (lastControl != null) {
+                data.right = new FormAttachment(lastControl, 0);
+            } else {
+                data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+            }
+            if (nbInRow == 1) {
+                data.left = new FormAttachment(100, -initialSize.x);
+            } else {
+                data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
+                        currentLabelWidth + ITabbedPropertyConstants.HSPACE);
+            }
+
             data = (FormData) labelLabel.getLayoutData();
-            data.left = new FormAttachment(cLayout, -(currentLabelWidth + 5), SWT.LEFT);
+            data.right = new FormAttachment(cLayout, 0);
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+
+            return labelLabel;
         }
         if (EnvironmentUtils.isMacOsSytem()) {
             data = (FormData) labelLabel.getLayoutData();

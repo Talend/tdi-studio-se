@@ -119,6 +119,11 @@
              name="widget.type.textArea"
              widgetType="widget.type.textArea">
        </Mapping>
+       <Mapping
+             mapFieldType="JSON_TABLE"
+             name="widget.type.jsonTable"
+             widgetType="widget.type.jsonTable">
+       </Mapping>
    </extension>
    <extension
          point="org.talend.designer.core.generators">
@@ -151,6 +156,11 @@
             class="org.talend.designer.core.generic.controller.generator.SchemaReferenceGenerator"
             mapping="SCHEMA_REFERENCE"
             name="Schema Reference">
+      </generator>
+      <generator
+            class="org.talend.designer.core.generic.controller.generator.JsonTableGenerator"
+            mapping="JSON_TABLE"
+            name="Json Table">
       </generator>
    </extension>
    <extension

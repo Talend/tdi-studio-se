@@ -247,6 +247,23 @@ public class FileController extends AbstractElementPropertySectionController {
 
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
 
+        if (isInWizard()) {
+            labelLabel.setAlignment(SWT.RIGHT);
+            if (lastControl != null) {
+                data.right = new FormAttachment(lastControl, -STANDARD_BUTTON_WIDTH);
+            } else {
+                data.right = new FormAttachment(100, -STANDARD_BUTTON_WIDTH - ITabbedPropertyConstants.HSPACE);
+            }
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
+                    currentLabelWidth + ITabbedPropertyConstants.HSPACE);
+
+            data = (FormData) labelLabel.getLayoutData();
+            data.right = new FormAttachment(cLayout, 0);
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+
+            return labelLabel;
+        }
+
         return btnEdit;
     }
 
