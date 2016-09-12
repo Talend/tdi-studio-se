@@ -293,14 +293,22 @@ public class ComponentsUtils {
                     List<String> possVals = new ArrayList<>();
                     List<String> possValsDisplay = new ArrayList<>();
                     for (Object obj : values) {
+                        String value = null;
+                        String valueDisplay = null;
                         if (obj instanceof NamedThing) {
                             NamedThing nal = (NamedThing) obj;
-                            possVals.add(nal.getName());
-                            possValsDisplay.add(nal.getDisplayName());
+                            value = nal.getName();
+                            valueDisplay = nal.getDisplayName();
                         } else {
-                            possVals.add(String.valueOf(obj));
-                            possValsDisplay.add(String.valueOf(obj));
+                            value = String.valueOf(obj);
+                            valueDisplay = String.valueOf(obj);
                         }
+                        String pvDisplayName = property.getPossibleValuesDisplayName(obj);
+                        if (StringUtils.isNotBlank(pvDisplayName) && !"null".equals(pvDisplayName)) { //$NON-NLS-1$
+                            valueDisplay = pvDisplayName;
+                        }
+                        possVals.add(value);
+                        possValsDisplay.add(valueDisplay);
                     }
                     param.setListItemsDisplayName(possValsDisplay.toArray(new String[0]));
                     param.setListItemsDisplayCodeName(possValsDisplay.toArray(new String[0]));
