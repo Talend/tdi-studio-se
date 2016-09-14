@@ -339,7 +339,8 @@ public class ComponentsUtils {
                 param.setListItemsShowIf(listItemsShowIf);
                 param.setListItemsNotShowIf(listItemsNotShowIf);
                 param.setValue(GenericTableUtils.getTableValues(table, param));
-                param.setBasedOnSchema(Boolean.valueOf(String.valueOf(widget.getConfigurationValue(Widget.HIDE_TOOLBAR))));
+                param.setBasedOnSchema(
+                        Boolean.valueOf(String.valueOf(widget.getConfigurationValue(Widget.HIDE_TOOLBAR_WIDGET_CONF))));
             }
             if (!param.isReadOnly()) {
                 param.setReadOnly(element.isReadOnly());
