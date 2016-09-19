@@ -20,16 +20,14 @@ import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.utils.ContextParameterUtils;
-import org.talend.core.runtime.util.GenericTypeUtils;
-import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.core.runtime.evaluator.AbstractPropertyValueEvaluator;
 import org.talend.daikon.properties.property.Property;
-import org.talend.daikon.properties.property.PropertyValueEvaluator;
 
 /**
  * created by ycbai on 2016年2月6日 Detailled comment
  *
  */
-public class ComponentContextPropertyValueEvaluator implements PropertyValueEvaluator {
+public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValueEvaluator {
 
     private INode node;
 
@@ -61,43 +59,6 @@ public class ComponentContextPropertyValueEvaluator implements PropertyValueEval
             stringStoredValue = ContextParameterUtils.parseScriptContextCode(stringStoredValue, context);
         }
         return getTypedValue(property, stringStoredValue);
-    }
-
-    private Object getTypedValue(Property property, String rawValue) {
-        if (GenericTypeUtils.isBooleanType(property)) {
-            return new Boolean(rawValue);
-        }
-        if (GenericTypeUtils.isIntegerType(property) && !rawValue.isEmpty()) {
-            try {
-                return Integer.valueOf(rawValue);
-            } catch (Exception e) {
-                // value not existing anymore
-                // return any value to let the component work without exception
-                return 0;
-            }
-        }
-        if (GenericTypeUtils.isEnumType(property)) {
-            List<?> possibleValues = property.getPossibleValues();
-            if (possibleValues != null) {
-                Object firstValue = null;
-                if (!possibleValues.isEmpty()) {
-                    firstValue = possibleValues.get(0);
-                }
-                String stringStoredValue = TalendQuoteUtils.removeQuotes(String.valueOf(rawValue));
-                for (Object possibleValue : possibleValues) {
-                    if (possibleValue.toString().equals(stringStoredValue)) {
-                        return possibleValue;
-                    }
-                }
-                if (firstValue != null) {
-                    return firstValue;
-                }
-            }
-        }
-        if (GenericTypeUtils.isStringType(property)) {
-            return TalendQuoteUtils.removeQuotes(String.valueOf(rawValue));
-        }
-        return rawValue;
     }
 
 }
