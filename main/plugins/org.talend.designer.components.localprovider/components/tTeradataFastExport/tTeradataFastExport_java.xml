@@ -249,7 +249,7 @@
         <LINK_TO NAME="Out" CTYPE="FLOW"/>
       </TEMPLATE>
 
-      <TEMPLATE NAME="Out" COMPONENT="tFileOutputDelimited"/>
+      <TEMPLATE NAME="Out" COMPONENT="tFileOutputDelimitedOld"/>
 
       <TEMPLATE_PARAM SOURCE="self.PROPERTIES"   TARGET="In.PROPERTIES" />
       <TEMPLATE_PARAM SOURCE="self.HOST" TARGET="In.HOST" />

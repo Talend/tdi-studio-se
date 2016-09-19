@@ -456,7 +456,7 @@
     <CODEGENERATION>
       <TEMPLATES INPUT="in" OUTPUT="out">
 
-        <TEMPLATE NAME="in" COMPONENT="tFileOutputDelimited">
+        <TEMPLATE NAME="in" COMPONENT="tFileOutputDelimitedOld">
           <LINK_TO NAME="out" CTYPE="ROWS_END"/>
         </TEMPLATE>
 
