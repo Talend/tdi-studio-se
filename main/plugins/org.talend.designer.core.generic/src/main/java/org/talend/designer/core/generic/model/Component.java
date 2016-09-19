@@ -1290,6 +1290,9 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "Integer.valueOf(" + value + ")";
         }
+        if("\"\"\"".equals(value)){
+            value = "\"\\\"\"";
+        }
         return value;
     }
 

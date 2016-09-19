@@ -27,6 +27,7 @@ imports="
         org.talend.daikon.properties.property.Property
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.utils.NodeUtil
+        org.talend.designer.core.generic.constants.IGenericConstants
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
@@ -79,7 +80,8 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
                     java.util.List<Object> <%=tmpVarName %> = new java.util.ArrayList<Object>();
                     <%
                     for (Object subPropertyValue : (java.util.List<Object>)property.getValue()) {
-                        if (property.getPossibleValues() != null && property.getPossibleValues().size() > 0) {
+                        if ((property.getPossibleValues() != null && property.getPossibleValues().size() > 0)||
+                        	Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
                             %>
                             <%=tmpVarName %>.add("<%=subPropertyValue %>");
                             <%

@@ -28,6 +28,15 @@
               id="org.talend.designer.core.generic.model.migration.Salesforce620Migration"
               name="Salesforce620Migration"
               version="6.2.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.0"
+              class="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
+              description="New file delimited migration task"
+              id="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
+              name="NewFileDelimitedMigrationTask"
+              version="6.3.0">
         </projecttask> 
    </extension>
    <extension
