@@ -266,9 +266,6 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
                         }
                         compService.afterFormFinish(form.getName(), (ComponentProperties) form.getProperties());
                     }
-                    if (!creation) {
-                        GenericUpdateManager.updateGenericConnection(connectionItem, oldMetadataTable);
-                    }
                     updateConnectionItem(factory);
                 } catch (Throwable e) {
                     throw new CoreException(new Status(IStatus.ERROR, IGenericConstants.REPOSITORY_PLUGIN_ID,
@@ -280,6 +277,10 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
         // the update the project files need to be done in the workspace runnable to avoid all
         // notification of changes before the end of the modifications.
         workspace.run(operation, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+        // Move it from WorkspaceRunnable to avoid the conflicting rules with other jobs.
+        if (!creation) {
+        	GenericUpdateManager.updateGenericConnection(connectionItem, oldMetadataTable);
+        }
     }
 
     @Override

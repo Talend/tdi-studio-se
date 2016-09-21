@@ -199,6 +199,9 @@ public class GenericWizardService implements IGenericWizardService {
                 metadataTables = Arrays.asList(SchemaUtils.getMetadataTable(genericConnection, tableLabel, SubContainer.class));
             }
             for (MetadataTable metadataTable : metadataTables) {
+            	if (metadataTable == null) {
+            		continue;
+            	}
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils.getComponentPropertiesFromSerialized(
