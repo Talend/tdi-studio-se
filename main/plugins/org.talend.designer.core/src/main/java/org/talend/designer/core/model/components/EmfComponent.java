@@ -243,7 +243,7 @@ public class EmfComponent extends AbstractBasicComponent {
             load();
             getOriginalFamilyName();
             getPluginExtension();
-            getModulesNeeded();
+            getModulesNeeded(null);
             isTechnical();
             getVersion();
             getPluginDependencies();
@@ -3004,8 +3004,16 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private static final String DB_VERSION = "DB_VERSION"; //$NON-NLS-1$
 
+    /* (non-Javadoc)
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     */
     @Override
     public List<ModuleNeeded> getModulesNeeded() {
+        return getModulesNeeded(null);
+    }
+
+    @Override
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
         if (componentImportNeedsList != null && componentImportNeedsList.size() > 0) {
             if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
                 areHadoopDistribsImported = true;
@@ -3034,7 +3042,7 @@ public class EmfComponent extends AbstractBasicComponent {
                         if (component == null) {
                             continue;
                         }
-                        for (ModuleNeeded moduleNeeded : component.getModulesNeeded()) {
+                        for (ModuleNeeded moduleNeeded : component.getModulesNeeded(node)) {
                             if (!moduleNames.contains(moduleNeeded.getModuleName())) {
                                 ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(),
                                         moduleNeeded.getModuleName(), moduleNeeded.getInformationMsg(),
@@ -3087,7 +3095,7 @@ public class EmfComponent extends AbstractBasicComponent {
                     if (component == null) {
                         continue;
                     }
-                    for (ModuleNeeded moduleNeeded : component.getModulesNeeded()) {
+                    for (ModuleNeeded moduleNeeded : component.getModulesNeeded(node)) {
                         if (!moduleNames.contains(moduleNeeded.getModuleName())) {
                             ModuleNeeded componentImportNeeds = new ModuleNeeded(this.getName(), moduleNeeded.getModuleName(),
                                     moduleNeeded.getInformationMsg(), moduleNeeded.isRequired(), moduleNeeded.getInstallURL(),
@@ -4133,4 +4141,5 @@ public class EmfComponent extends AbstractBasicComponent {
     public String toString() {
         return getName() + ":" + getLongName(); //$NON-NLS-1$
     }
+
 }

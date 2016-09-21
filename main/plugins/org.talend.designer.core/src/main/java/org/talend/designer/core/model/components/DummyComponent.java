@@ -238,11 +238,11 @@ public class DummyComponent extends AbstractComponent {
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded(INode node)
      */
     @Override
-    public List<ModuleNeeded> getModulesNeeded() {
-        return new ArrayList<ModuleNeeded>();
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
+        return getModulesNeeded();
     }
 
     /*
@@ -562,6 +562,14 @@ public class DummyComponent extends AbstractComponent {
 
     public void setOriginalFamilyName(String originalFamilyName) {
         this.originalFamilyName = originalFamilyName;
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     */
+    @Override
+    public List<ModuleNeeded> getModulesNeeded() {
+        return new ArrayList<ModuleNeeded>();
     }
 
 }

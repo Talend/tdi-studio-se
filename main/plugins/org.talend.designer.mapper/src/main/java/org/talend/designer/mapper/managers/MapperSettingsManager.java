@@ -30,7 +30,9 @@ public class MapperSettingsManager {
 
     public static final String ROWS_BUFFER_SIZE = "ROWS_BUFFER_SIZE"; //$NON-NLS-1$
 
-    public static final String LOOKUP_IN_PARALLEL = "LKUP_PARALLELIZE"; //$NON-NLS-1$
+    public static final String LOOKUP_IN_PARALLEL = "LKUP_PARALLELIZE"; //$NON-NLS-1$    
+
+    public static final String ENABLE_AUTO_CONVERT_TYPE = "ENABLE_AUTO_CONVERT_TYPE"; //$NON-NLS-1$
 
     private static MapperSettingsManager instance = null;
 
@@ -85,6 +87,7 @@ public class MapperSettingsManager {
         defaultModel.setReplicatedJoin((Boolean) manager.getDefaultSetting().get(REPLICATED_JOIN));
         defaultModel.setDieOnError((Boolean) manager.getDefaultSetting().get(DIE_ON_ERROR));
         defaultModel.setLookInParallel((Boolean) manager.getDefaultSetting().get(LOOKUP_IN_PARALLEL));
+        defaultModel.setEnableAutoConvertType((Boolean) manager.getDefaultSetting().get(ENABLE_AUTO_CONVERT_TYPE));
         defaultModel.setTempDataDir(String.valueOf(manager.getDefaultSetting().get(TEMPORARY_DATA_DIRECTORY)));
         defaultModel.setRowBufferSize(String.valueOf(manager.getDefaultSetting().get(ROWS_BUFFER_SIZE)));
     }
@@ -95,6 +98,7 @@ public class MapperSettingsManager {
         currentModel.setReplicatedJoin(defaultModel.isReplicatedJoin());
         currentModel.setDieOnError(defaultModel.isDieOnError());
         currentModel.setLookInParallel(defaultModel.isLookInParallel());
+        currentModel.setEnableAutoConvertType(defaultModel.isEnableAutoConvertType());
         currentModel.setTempDataDir(defaultModel.getTempDataDir());
         currentModel.setRowBufferSize(defaultModel.getRowBufferSize());
         AbstractMapComponent component = manager.getAbstractMapComponent();
@@ -102,10 +106,7 @@ public class MapperSettingsManager {
         if (parameter != null && parameter.getValue() != null && parameter.getValue() instanceof Boolean) {
             currentModel.setReplicatedJoin((Boolean) parameter.getValue());
         }
-        parameter = component.getElementParameter(DIE_ON_ERROR);
-        if (parameter != null && parameter.getValue() != null && parameter.getValue() instanceof Boolean) {
-            currentModel.setDieOnError((Boolean) parameter.getValue());
-        }
+
         parameter = component.getElementParameter(TEMPORARY_DATA_DIRECTORY);
         if (parameter != null && parameter.getValue() != null) {
             currentModel.setTempDataDir(String.valueOf(parameter.getValue()));
@@ -120,6 +121,11 @@ public class MapperSettingsManager {
             parallel = (Boolean) paraEle.getValue();
         }
         currentModel.setLookInParallel(parallel);
+
+        parameter = component.getElementParameter(ENABLE_AUTO_CONVERT_TYPE);
+        if (parameter != null && parameter.getValue() != null && parameter.getValue() instanceof Boolean) {
+            currentModel.setEnableAutoConvertType((Boolean) parameter.getValue());
+        }
     }
 
     private void initOriginalModel() {
@@ -167,6 +173,10 @@ public class MapperSettingsManager {
         parameter = component.getElementParameter(LOOKUP_IN_PARALLEL);
         if (parameter != null) {
             parameter.setValue(currentModel.isLookInParallel());
+        }
+        parameter = component.getElementParameter(ENABLE_AUTO_CONVERT_TYPE);
+        if (parameter != null) {
+            parameter.setValue(currentModel.isEnableAutoConvertType());
         }
     }
 

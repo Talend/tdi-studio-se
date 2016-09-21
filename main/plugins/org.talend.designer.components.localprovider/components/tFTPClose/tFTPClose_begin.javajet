@@ -1,0 +1,39 @@
+<%@ jet 
+  imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+  "
+%>
+<%
+   CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+   INode node = (INode)codeGenArgument.getArgument();  
+   String cid = node.getUniqueName();
+   String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+   boolean sftp = "true".equals(ElementParameterParser.getValue(node.getProcess(), connection, "__SFTP__"));
+   boolean ftps = "true".equals(ElementParameterParser.getValue(node.getProcess(), connection, "__FTPS__"));
+%>
+	 Object connObj = globalMap.get("conn_<%=connection%>");
+	 if (connObj != null) {
+      try {
+			
+<%        if (sftp == false && ftps == false) { %>
+              com.enterprisedt.net.ftp.FTPClient conn = (com.enterprisedt.net.ftp.FTPClient) connObj;
+              conn.executeCommand("quit");
+<%        } else if (sftp) { %>
+              com.jcraft.jsch.ChannelSftp channel = (com.jcraft.jsch.ChannelSftp) connObj; 
+              com.jcraft.jsch.Session session = channel.getSession();
+			  channel.disconnect();
+              session.disconnect();
+<%        } else if (ftps) { %>
+              it.sauronsoftware.ftp4j.FTPClient conn = (it.sauronsoftware.ftp4j.FTPClient) connObj;
+              conn.disconnect(true);
+<%        } else { %>
+              System.err.println("Invalid tFTPConnection configuration.");
+<%        } %>
+			
+      } catch (Exception e) {
+           globalMap.put("<%=cid%>_ERROR_MESSAGE", e.getMessage()); 
+           throw e;
+      }
+  }

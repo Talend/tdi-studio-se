@@ -10,6 +10,7 @@ imports="
         org.talend.core.model.process.INode
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.designer.core.generic.model.Component
+        org.talend.core.model.utils.NodeUtil
         "
 %>
 // end of generic
@@ -31,22 +32,28 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 if (metadata == null) {
     return stringBuffer.toString();
 }
+
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
+boolean hasOutputOnly = hasOutput && !hasInput;
 %>
 
 resourceMap.put("finish_<%=cid%>", Boolean.TRUE);
 
 <%
-if(def instanceof org.talend.components.api.component.InputComponentDefinition){
+if(hasOutputOnly){
 %>
     } // while
     reader_<%=cid%>.close();
     final java.util.Map<String, Object> resultMap_<%=cid%> = reader_<%=cid%>.getReturnValues();
 <%
-}else if(def instanceof org.talend.components.api.component.OutputComponentDefinition){
+}else if(hasInput){
 %>
     org.talend.components.api.component.runtime.Result resultObject_<%=cid%> = (org.talend.components.api.component.runtime.Result)writer_<%=cid%>.close();
     final java.util.Map<String, Object> resultMap_<%=cid%> = writer_<%=cid%>.getWriteOperation().finalize(java.util.Arrays.<org.talend.components.api.component.runtime.Result>asList(resultObject_<%=cid%>), container_<%=cid%>);
 <%
+} else {
+	return stringBuffer.toString();
 }
 %>
 if(resultMap_<%=cid%>!=null) {

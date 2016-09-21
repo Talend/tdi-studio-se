@@ -9,9 +9,6 @@ imports="
         java.util.Set
         java.util.Stack
         org.talend.components.api.component.ComponentDefinition
-        org.talend.components.api.component.EndpointComponentDefinition
-        org.talend.components.api.component.InputComponentDefinition
-        org.talend.components.api.component.OutputComponentDefinition
         org.talend.components.api.container.RuntimeContainer
         org.talend.components.api.properties.ComponentProperties
         org.talend.core.model.metadata.IMetadataColumn
@@ -29,6 +26,7 @@ imports="
         org.talend.daikon.NamedThing
         org.talend.daikon.properties.property.Property
         org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.utils.NodeUtil
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
@@ -151,23 +149,48 @@ org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new or
 
 int nb_line_<%=cid %> = 0;
 
+org.talend.components.api.component.ConnectorTopology topology_<%=cid%> = null;
 <%
-if (def instanceof EndpointComponentDefinition) {
-    %>
-    org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = ((org.talend.components.api.component.EndpointComponentDefinition)def_<%=cid%>).getRuntime();
-    sourceOrSink_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
-    org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
-    if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
-        throw new RuntimeException(vr_<%=cid%>.getMessage());
-    }
-    <%
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
+boolean hasOutputOnly = hasOutput && !hasInput;
+
+if (hasInput && hasOutput) {
+%>
+topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.INCOMING_AND_OUTGOING;
+<%
+} else if (hasInput) {
+%>
+topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.INCOMING;
+<%
+} else if (hasOutput) {
+%>
+topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.OUTGOING;
+<%
+} else {
+%>
+topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.NONE;
+<%
+}
+%>
+
+org.talend.components.api.component.runtime.RuntimeInfo runtime_info_<%=cid%> = def_<%=cid%>.getRuntimeInfo(props_<%=cid%>, topology_<%=cid%>);
+java.util.Set<org.talend.components.api.component.ConnectorTopology> supported_connector_topologies_<%=cid%> = def_<%=cid%>.getSupportedConnectorTopologies();
+
+org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
+sourceOrSink_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
+org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
+if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
+    throw new RuntimeException(vr_<%=cid%>.getMessage());
+}
+    
+<%
+// Return at this point if there is no metadata.
+if (metadata == null) {
+    return stringBuffer.toString();
 }
 
-// Return at this point if there is no metadata.
-if (metadata == null)
-    return stringBuffer.toString();
-
-if (def instanceof InputComponentDefinition) {
+if (hasOutputOnly) {
     %>
     org.talend.components.api.component.runtime.Source source_<%=cid%> =
             (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
@@ -295,7 +318,7 @@ if (def instanceof InputComponentDefinition) {
     // The for loop around the incoming records from the reader is left open.
 
 
-} else if (def instanceof OutputComponentDefinition) {
+} else if (hasInput) {
     %>
     org.talend.components.api.component.runtime.Sink sink_<%=cid%> =
             (org.talend.components.api.component.runtime.Sink)sourceOrSink_<%=cid%>;

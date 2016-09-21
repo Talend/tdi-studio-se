@@ -18,7 +18,6 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -67,10 +66,9 @@ public class ButtonController extends AbstractElementPropertySectionController {
         FormData data = new FormData();
         if (isInWizard()) {
             if (lastControl != null) {
-                reLayoutOtherControls(subComposite, numInRow, theBtn);
-                data.left = new FormAttachment(lastControl, 0);
+                data.right = new FormAttachment(lastControl, 0);
             } else {
-                data.right = new FormAttachment(100, -10);
+                data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
             }
         } else {
             if (lastControl != null) {
@@ -95,26 +93,6 @@ public class ButtonController extends AbstractElementPropertySectionController {
         Point initialSize = theBtn.computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
         return theBtn;
-    }
-
-    private void reLayoutOtherControls(Composite parentComposite, int numInRow, Button currentBtn) {
-        Control[] children = parentComposite.getChildren();
-        if (children.length > 0) {
-            int firstControlIndex = children.length - numInRow;
-            if (firstControlIndex >= 0) {
-                Control control = children[firstControlIndex];
-                Object layoutData = control.getLayoutData();
-                if (layoutData instanceof FormData) {
-                    FormData controlData = (FormData) control.getLayoutData();
-                    FormAttachment rightFormAttachment = controlData.right;
-                    GC gc = new GC(parentComposite);
-                    Point buttonSize = gc.stringExtent(currentBtn.getText());
-                    int currentBtnWidth = buttonSize.x + 18;
-                    gc.dispose();
-                    rightFormAttachment.offset -= currentBtnWidth;
-                }
-            }
-        }
     }
 
     @Override

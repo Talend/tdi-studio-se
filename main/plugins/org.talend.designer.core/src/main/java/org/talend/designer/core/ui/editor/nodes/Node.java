@@ -93,12 +93,15 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.IMRProcessService;
 import org.talend.core.service.IStormProcessService;
 import org.talend.core.services.ICoreTisService;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.IJobletProviderService;
+import org.talend.core.ui.ISparkJobletProviderService;
+import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
@@ -439,6 +442,10 @@ public class Node extends Element implements IGraphicalNode {
         this.oldcomponent = component;
         this.process = process;
         init(component);
+        IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
+        if (param != null) {
+            param.setValue(Boolean.TRUE);
+        }
         needlibrary = false;
     }
 
@@ -4888,6 +4895,18 @@ public class Node extends Element implements IGraphicalNode {
         // TODO Auto-generated method stub
         this.needlibrary = isNeedLib;
     }
+    
+    public boolean isStandardJoblet() {
+        boolean isJoblet = false;
+        if (PluginChecker.isJobLetPluginLoaded()) {
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService.class);
+            if (service != null && service.isStandardJobletComponent(this)) {
+                isJoblet = true;
+            }
+        }
+        return isJoblet;
+    }
 
     public boolean isJoblet() {
         boolean isJoblet = false;
@@ -4899,6 +4918,30 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
         return isJoblet;
+    }
+    
+    public boolean isSparkJoblet() {
+        boolean isSparkJoblet = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister
+                    .getDefault().getService(ISparkJobletProviderService.class);
+            if (sparkJobletService != null) {
+                isSparkJoblet = sparkJobletService.isSparkJobletComponent(this);
+            }
+        }
+        return isSparkJoblet;
+    }
+    
+    public boolean isSparkStreamingJoblet() {
+        boolean isSparkStreamingJoblet = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+            ISparkStreamingJobletProviderService sparkJobletService = (ISparkStreamingJobletProviderService) GlobalServiceRegister
+                    .getDefault().getService(ISparkStreamingJobletProviderService.class);
+            if (sparkJobletService != null) {
+                isSparkStreamingJoblet = sparkJobletService.isSparkStreamingJobletComponent(this);
+            }
+        }
+        return isSparkStreamingJoblet;
     }
 
     public boolean isMapReduceStart() {
@@ -4915,18 +4958,12 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     public boolean isMapReduce() {
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
-                    IMRProcessService.class);
-            return mrService.isMapReduceItem(process.getProperty().getItem());
-        } else {
-            if (this.getProcess().getComponentsType() == null) {
-                return false;
-            }
-            if (this.getProcess().getComponentsType().equals("MR")) { //$NON-NLS-1$
-                return true;
-            }
-
+        String sourceJobFramework = (String) ((Process)this.getProcess()).getProperty().getAdditionalProperties().get(ConvertJobsUtil.FRAMEWORK);
+        if(sourceJobFramework == null){
+            return false;
+        }
+        if(sourceJobFramework.equals(ConvertJobsUtil.MAPREDUCE_FRAMEWORK)){
+            return true;
         }
         return false;
     }
@@ -5001,7 +5038,7 @@ public class Node extends Element implements IGraphicalNode {
     @Override
     public List<ModuleNeeded> getModulesNeeded() {
         // same as the component, but an override is possible in the AbstractNode when generate the code
-        return component.getModulesNeeded();
+        return component.getModulesNeeded(this);
     }
 
     @Override

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping>
+    <conversionType function="Integer.parseInt(${0})" source="id_String" target="id_Integer"/>
+</mapping>

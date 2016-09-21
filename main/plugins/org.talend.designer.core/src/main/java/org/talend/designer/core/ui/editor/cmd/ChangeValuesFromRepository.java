@@ -464,6 +464,14 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 }
                             }
                         } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
+                                && param.getRepositoryValue().equals("DRIVER")) {
+                            String[] list = param.getListItemsDisplayCodeName();
+                            for (String element : list) {
+                                if (objectValue.toString().toUpperCase().equals(element)) {
+                                    elem.setPropertyValue(param.getName(), objectValue);
+                                }
+                            }
+                        } else if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
                                 && param.getRepositoryValue().equals("CONNECTION_MODE")) {//$NON-NLS-1$
                             if (!objectValue.equals(param.getValue())) {
                                 PropertyChangeCommand cmd = new PropertyChangeCommand(elem, "CONNECTION_MODE", objectValue);//$NON-NLS-1$

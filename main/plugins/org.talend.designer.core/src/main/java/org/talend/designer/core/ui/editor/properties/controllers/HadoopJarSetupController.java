@@ -98,6 +98,8 @@ public class HadoopJarSetupController extends AbstractElementPropertySectionCont
                         versionType = ECustomVersionType.PIG_HBASE;
                     }
                 }
+            } else if (compName.startsWith("tImpala")) {
+                versionType = ECustomVersionType.HIVE;
             } else {
                 compName = compName.substring(1).toUpperCase();
                 ECustomVersionType[] versions = ECustomVersionType.values();

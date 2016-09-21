@@ -255,6 +255,10 @@
             class="org.talend.repository.MigrationDIMetadataItemService"
             serviceId="IMigrateDIMetadataItemService">
       </Service>
+      <Service
+            class="org.talend.repository.AutoConvertTypesService"
+            serviceId="IAutoConvertTypesService">
+      </Service>
    </extension>
 
    <!--extension
@@ -2953,6 +2957,12 @@
             class="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             id="org.talend.repository.preference.MetadataTalendTypePreferencePage"
             title="%projectSetting.talendType">
+      </page>
+      <page
+            category="general"
+            class="org.talend.repository.preference.AutoConversionTypesPreferencePage"
+            id="org.talend.repository.preference.AutoConversionTypesPreferencePage"
+            title="%projectSetting.auto-ConversionTypes">
       </page>
    </extension>
    <extension

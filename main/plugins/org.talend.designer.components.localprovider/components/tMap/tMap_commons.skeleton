@@ -151,7 +151,107 @@ public class CLASS {
         return false;
     }
 
-
+	public String getExpressionWithAutoConvertFunction(
+		String expression, 
+		ExternalMapperTableEntry targetTableEntry, 
+		IMetadataColumn targetColumn,
+		DataMapExpressionParser expressionParser, 
+		Map<TableEntryLocation, ExternalMapperTableEntry> locationMap4Entry,
+		Map<TableEntryLocation, IMetadataColumn> locationMap4Column, 
+		Map<String,String> autoConverterMap, 
+		boolean enable_auto_convert_type) {
+		
+		if(!enable_auto_convert_type) {
+			return expression;
+		}
+		
+		if(expression == null || expression.isEmpty()) {
+			return expression;
+		}
+	
+		TableEntryLocation uniqueLocation = getUniqueEntryLocation(expression);
+		
+        if(uniqueLocation == null) {
+        	return expression;
+        }
+        
+    	ExternalMapperTableEntry uniqueSourceEntry = locationMap4Entry.get(uniqueLocation);
+    	
+    	if(uniqueSourceEntry == null) {
+    		return expression;
+    	}
+    	
+    	String source_talend_type = uniqueSourceEntry.getType();
+        String target_talend_type = targetTableEntry.getType();
+        
+        String convertFunction = autoConverterMap.get(contact(source_talend_type, ":", target_talend_type));
+        
+        if(convertFunction!=null && !convertFunction.isEmpty()) {
+        	StringBuilder strbuilder = new StringBuilder();
+        	
+	        if(uniqueSourceEntry.isNullable()) {
+	      		strbuilder.append("(((").append(expression).append(") == null) ? null : (");
+	        }
+        
+        	expression = convertFunction.replace("${0}", expression);
+        	
+        	String pattern = null;
+        	if(JavaTypesManager.STRING.getId().equals(source_talend_type) && JavaTypesManager.DATE.getId().equals(target_talend_type)) {
+        		if(targetColumn!=null) {
+        			pattern = targetColumn.getPattern();
+        		}
+        		
+        		if(pattern == null || pattern.isEmpty()) {
+        			pattern = "\"dd-MM-yyyy\"";
+        		}
+        		
+        	} else if(JavaTypesManager.DATE.getId().equals(source_talend_type) && JavaTypesManager.STRING.getId().equals(target_talend_type)) {
+        		IMetadataColumn sourceColumn = locationMap4Column.get(uniqueLocation);
+        		
+        		if(sourceColumn!=null) {
+        			pattern = sourceColumn.getPattern();
+        		}
+        		
+        		if(pattern == null || pattern.isEmpty()) {
+        			pattern = "\"dd-MM-yyyy\"";
+        		}
+        	}
+        	
+        	if(pattern != null) {
+        		expression = expression.replace("${1}", pattern);
+        	}
+        	
+        	strbuilder.append(expression);
+        	
+        	if(uniqueSourceEntry.isNullable()) {
+      			strbuilder.append("))");
+        	}
+        	
+        	return strbuilder.toString();
+        }
+        
+        return expression;
+	}
+	
+	java.util.regex.Pattern locationPattern = java.util.regex.Pattern.compile(LanguageProvider.getJavaLanguage().getLocationPattern());
+	
+	private TableEntryLocation getUniqueEntryLocation(String expression) {
+		java.util.regex.Matcher matcher = locationPattern.matcher(expression);
+		if(matcher.matches()) {
+			return new TableEntryLocation(matcher.group(1), matcher.group(2));
+		}
+		return null;
+	}
+	
+	StringBuilder strbuilder = new StringBuilder(20);
+	
+	private String contact(String... content) {
+		strbuilder.setLength(0);
+		for(String each : content) {
+			strbuilder.append(each);
+		}
+		return strbuilder.toString();
+	}
 
     public String generate(Object argument) {
 

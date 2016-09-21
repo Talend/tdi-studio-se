@@ -2409,7 +2409,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             newJobletName = oldjobletName;
         }
         IComponent newComponent = ComponentsFactoryProvider.getInstance().get(newJobletName,
-                ComponentCategory.CATEGORY_4_DI.getName());
+                process.getComponentsType());
         if (newComponent == null) {
             return Collections.EMPTY_LIST;
         }

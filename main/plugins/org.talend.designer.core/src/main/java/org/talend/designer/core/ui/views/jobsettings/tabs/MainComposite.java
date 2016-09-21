@@ -63,17 +63,21 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.User;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryViewObject;
+import org.talend.core.repository.model.ItemReferenceBean;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.DeleteActionCache;
+import org.talend.core.repository.ui.dialog.ItemReferenceDialog;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ConvertJobsUtil.JobType;
 import org.talend.core.repository.utils.ConvertJobsUtil.Status;
+import org.talend.core.repository.utils.RepositoryNodeDeleteManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -85,7 +89,9 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.properties.StatusHelper;
 import org.talend.repository.ui.views.IJobSettingsView;
 
@@ -160,14 +166,6 @@ public class MainComposite extends AbstractTabComposite {
                     allowEnableControl = false;
                 }
                 Item originalItem = repositoryObject.getProperty().getItem();
-                if (PluginChecker.isJobLetPluginLoaded()) {
-                    IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                            IJobletProviderService.class);
-                    if (service != null && service.isJobletItem(originalItem)) {
-                        allowEnableControl = false;
-                        enableControl = false;
-                    }
-                }
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
                     ICamelDesignerCoreService camelService = (ICamelDesignerCoreService) GlobalServiceRegister.getDefault()
                             .getService(ICamelDesignerCoreService.class);
@@ -295,8 +293,11 @@ public class MainComposite extends AbstractTabComposite {
             jobTypeValue = jobTypeCCombo.getText();
             jobTypeCCombo.setEnabled(allowEnableControl);
 
-            CLabel jobTypeLabel = widgetFactory.createCLabel(composite,
-                    Messages.getString("MainComposite.JobTypeSection.jobTypeLabel")); //$NON-NLS-1$
+            String type = Messages.getString("MainComposite.JobTypeSection.jobTypeLabel"); //$NON-NLS-1$
+            if(obj.getProperty().getItem() instanceof JobletProcessItem){
+                type = Messages.getString("MainComposite.JobTypeSection.jobletTypeLabel"); //$NON-NLS-1$
+            }
+            CLabel jobTypeLabel = widgetFactory.createCLabel(composite, type);
             data = new FormData();
             data.left = new FormAttachment(0, 0);
             data.right = new FormAttachment(jobTypeCCombo, -ITabbedPropertyConstants.HSPACE);
@@ -310,7 +311,7 @@ public class MainComposite extends AbstractTabComposite {
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(authorLabel, ITabbedPropertyConstants.VSPACE);
             jobFrameworkCCombo.setLayoutData(data);
-            jobFrameworkCCombo.setItems(ConvertJobsUtil.getFrameworkItemsByJobType(jobType));
+            jobFrameworkCCombo.setItems(ConvertJobsUtil.getFrameworkItemsByJobType(jobType, (obj.getProperty().getItem() instanceof JobletProcessItem)));
             jobFrameworkCCombo.setText(framework != null ? framework : ""); //$NON-NLS-1$
             frameworkValue = jobFrameworkCCombo.getText();
             jobFrameworkCCombo.setEnabled(allowEnableControl);
@@ -476,7 +477,7 @@ public class MainComposite extends AbstractTabComposite {
 
                 @Override
                 public void modifyText(final ModifyEvent e) {
-                    ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo);
+                    ConvertJobsUtil.updateJobFrameworkPart(jobTypeCCombo.getText(), jobFrameworkCCombo,(obj.getProperty().getItem() instanceof JobletProcessItem));
                     evaluateTextField();
                 }
             });
@@ -613,6 +614,14 @@ public class MainComposite extends AbstractTabComposite {
                                             .openConfirm(null, "Warning",
                                                     "Warning: You will lost all the testcases when you do converting, do you want to continue?")) {
                                 return;
+                            }
+                            final List<ItemReferenceBean> unDeleteItems = RepositoryNodeDeleteManager.getInstance().getUnDeleteItems(
+                            		repositoryObject, null, true);
+                            if(!unDeleteItems.isEmpty()){
+                            	ItemReferenceDialog dialog = new ItemReferenceDialog(PlatformUI.getWorkbench()
+                                        .getActiveWorkbenchWindow().getShell(), unDeleteItems);
+                            	dialog.open();
+                            	return;
                             }
                             // Convert
                             final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType,

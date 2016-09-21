@@ -214,7 +214,7 @@ public class JobletUtil {
             String tempComponentName = tempComponent.getName();
             if (tempComponentName != null) {
                 IComponent component = ComponentsFactoryProvider.getInstance().get(tempComponentName,
-                        ComponentCategory.CATEGORY_4_DI.getName());
+                        cloneNode.getProcess().getComponentsType());
                 if (component != null) {
                     cloneNode.setComponent(component);
                 }
@@ -379,8 +379,7 @@ public class JobletUtil {
                 }
             }
         }
-        cloneNode.setLabel(node.getLabel());
-        cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getLabel());
+        cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getPropertyValue(EParameterName.LABEL.getName()));
         return cloneNode;
     }
 
@@ -521,7 +520,7 @@ public class JobletUtil {
                             if (node == currNode) {
                                 continue;
                             } else {
-                                if (((Node) node).isJoblet() && jobletItem.getProperty() != null) {
+                                if (((Node) node).isJoblet()&& jobletItem.getProperty() != null) {
                                     if (jobletItem.getProperty().getId().equals(node.getComponent().getProcess().getId())) {
                                         boolean haveOpened = !((Node) node).getNodeContainer().isCollapsed();
                                         if (haveOpened) {
@@ -722,19 +721,19 @@ public class JobletUtil {
         return true;
     }
 
-    public Map<String, List<JobletContainer>> getModifyMap(List<Element> elem) {
-        Map<String, List<JobletContainer>> jobletNodeMap = new HashMap<String, List<JobletContainer>>();
+    public Map<String, List<AbstractJobletContainer>> getModifyMap(List<Element> elem) {
+        Map<String, List<AbstractJobletContainer>> jobletNodeMap = new HashMap<String, List<AbstractJobletContainer>>();
         for (Element element : elem) {
             if (element instanceof SubjobContainer) {
                 for (NodeContainer container : ((SubjobContainer) element).getNodeContainers()) {
-                    if (container instanceof JobletContainer) {
+                    if (container instanceof AbstractJobletContainer) {
                         String processID = container.getNode().getProcess().getId();
                         if (!jobletNodeMap.containsKey(processID)) {
-                            List<JobletContainer> nodeList = new ArrayList<JobletContainer>();
-                            nodeList.add((JobletContainer) container);
+                            List<AbstractJobletContainer> nodeList = new ArrayList<AbstractJobletContainer>();
+                            nodeList.add((AbstractJobletContainer) container);
                             jobletNodeMap.put(processID, nodeList);
                         } else {
-                            jobletNodeMap.get(processID).add((JobletContainer) container);
+                            jobletNodeMap.get(processID).add((AbstractJobletContainer) container);
                         }
                     }
                 }
@@ -771,7 +770,7 @@ public class JobletUtil {
         for (NodeContainer container : sub.getNodeContainers()) {
             List<IConnection> inList = new ArrayList<IConnection>();
             List<IConnection> outList = new ArrayList<IConnection>();
-            if ((container instanceof JobletContainer)) {// && ((JobletContainer) container).isCollapsed()
+            if ((container instanceof AbstractJobletContainer)) {// && ((JobletContainer) container).isCollapsed()
                 inList.addAll(((JobletContainer) container).getInputs());
                 outList.addAll(((JobletContainer) container).getOutputs());
             } else {
@@ -812,7 +811,7 @@ public class JobletUtil {
 
     }
 
-    public boolean isRed(JobletContainer jobletContainer) {
+    public boolean isRed(AbstractJobletContainer jobletContainer) {
         IProcess2 jobletProcess = (IProcess2) jobletContainer.getNode().getComponent().getProcess();
         if (jobletProcess == null) {
             return false;

@@ -47,9 +47,6 @@ public class GenericService implements IGenericService {
                 Map<String, String> componentInfo = new LinkedHashMap<>();
                 componentInfo.put("Name", definition.getName()); //$NON-NLS-1$
                 componentInfo.put("Title", definition.getTitle()); //$NON-NLS-1$
-                componentInfo.put("Partitioning", definition.getPartitioning()); //$NON-NLS-1$
-                componentInfo.put("Maven-GroupId", definition.getMavenGroupId()); //$NON-NLS-1$
-                componentInfo.put("Maven-ArtifactId", definition.getMavenArtifactId()); //$NON-NLS-1$
                 genericComponents.add(componentInfo);
             }
         }

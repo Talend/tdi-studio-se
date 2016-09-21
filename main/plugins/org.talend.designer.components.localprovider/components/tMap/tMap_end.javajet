@@ -13,6 +13,11 @@
 	org.talend.core.model.process.IConnection
 	org.talend.core.model.process.EConnectionType
     org.talend.core.model.process.ElementParameterParser
+    org.talend.designer.mapper.model.tableentry.TableEntryLocation
+	org.talend.designer.mapper.utils.DataMapExpressionParser
+	org.talend.designer.mapper.language.LanguageProvider
+	org.talend.core.model.metadata.IMetadataColumn
+	org.talend.core.model.metadata.types.JavaTypesManager
 	"
 	skeleton="tMap_commons.skeleton"
 %>

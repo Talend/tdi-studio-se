@@ -13,6 +13,7 @@
 package org.talend.designer.core.generic.model;
 
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -28,11 +29,14 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.talend.commons.exception.BusinessException;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.ComponentImageType;
 import org.talend.components.api.component.Connector;
+import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.component.VirtualComponentDefinition;
+import org.talend.components.api.component.runtime.RuntimeInfo;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.api.properties.ComponentReferenceProperties;
@@ -53,12 +57,14 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
+import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.ContextParameterUtils;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
@@ -1029,17 +1035,57 @@ public class Component extends AbstractBasicComponent {
         return componentDefinition.isDataAutoPropagate();
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     */
     @Override
     public List<ModuleNeeded> getModulesNeeded() {
+        return getModulesNeeded(null);
+    }
+
+    @Override
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
         if (componentImportNeedsList != null) {
             return componentImportNeedsList;
         } else {
-            ComponentService componentService = ComponentsUtils.getComponentService();
-            Set<String> mavenUriDependencies = componentService.getMavenUriDependencies(getName());
-            componentImportNeedsList = new ArrayList<>(mavenUriDependencies.size());
-            for (String mvnUri : mavenUriDependencies) {
-                ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri);
-                componentImportNeedsList.add(moduleNeeded);
+            componentImportNeedsList = new ArrayList<>();
+
+            ConnectorTopology topology = null;
+            if (node != null) {
+                boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+                boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
+                if (hasInput && hasOutput) {
+                    topology = ConnectorTopology.INCOMING_AND_OUTGOING;
+                } else if (hasInput) {
+                    topology = ConnectorTopology.INCOMING;
+                } else if (hasOutput) {
+                    topology = ConnectorTopology.OUTGOING;
+                } else {
+                    topology = ConnectorTopology.NONE;
+                }
+            } else {
+                Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
+                if (!topologies.isEmpty()) {
+                    topology = topologies.iterator().next();
+                }
+            }
+            RuntimeInfo ri = null;
+            try {
+                ri = componentDefinition.getRuntimeInfo(node == null ? null : node.getComponentProperties(), topology);
+            } catch (Exception e) {
+                if (node == null) {
+                    // not handled, must because the runtime info must have a node configuration (properties are null)
+                } else {
+                    ExceptionHandler.process(e);
+                }
+            }
+            if (ri != null) {
+                for (URL mvnUri : ri.getMavenUrlDependencies()) {
+                    ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri.toString()); //$NON-NLS-1$
+                    componentImportNeedsList.add(moduleNeeded);
+                }
             }
             ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true,
                     "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
@@ -1377,4 +1423,5 @@ public class Component extends AbstractBasicComponent {
     public boolean hasConditionalOutputs() {
         return componentDefinition.isConditionalInputs();
     }
+
 }

@@ -28,6 +28,7 @@ Export-Package: org.talend.designer.core.generic.constants,
  org.talend.designer.core.generic.model,
  org.talend.designer.core.generic.utils
 Import-Package: org.talend.components.api.component,
+ org.talend.components.api.component.runtime,
  org.talend.components.api.properties,
  org.talend.components.api.service,
  org.talend.components.api.wizard,

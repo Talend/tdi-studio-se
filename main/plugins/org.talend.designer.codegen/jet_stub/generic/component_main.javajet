@@ -16,6 +16,7 @@ imports="
         org.talend.core.model.process.EConnectionType
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.utils.TalendTextUtils
+        org.talend.core.model.utils.NodeUtil
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
@@ -26,7 +27,9 @@ String cid = node.getUniqueName();
 Component component = (Component)node.getComponent();
 ComponentDefinition def = component.getComponentDefinition();
 
-if(def instanceof org.talend.components.api.component.OutputComponentDefinition){
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+
+if(hasInput){
     // These will be initialized if there are outgoing connections and will be
     // null if there isn't a corresponding outgoing connection.
     IndexedRecordToRowStructGenerator mainIrToRow = null;

@@ -138,11 +138,6 @@ public class JobContextLoadComponent implements IComponent {
     }
 
     @Override
-    public List<ModuleNeeded> getModulesNeeded() {
-        return null;
-    }
-
-    @Override
     public String getPathSource() {
         return null;
     }
@@ -742,4 +737,19 @@ public class JobContextLoadComponent implements IComponent {
         // TODO Auto-generated method stub
         return false;
     }
+
+    /* (non-Javadoc)
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     */
+    @Override
+    public List<ModuleNeeded> getModulesNeeded() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
+        return null;
+    }
+
 }

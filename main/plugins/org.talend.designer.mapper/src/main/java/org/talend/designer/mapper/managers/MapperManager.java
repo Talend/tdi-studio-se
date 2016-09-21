@@ -1154,6 +1154,7 @@ public class MapperManager extends AbstractMapperManager {
             // parallel = (Boolean) paraEle.getValue();
             // }
             defaultSettingMap.put(MapperSettingsManager.LOOKUP_IN_PARALLEL, false);
+            defaultSettingMap.put(MapperSettingsManager.ENABLE_AUTO_CONVERT_TYPE, false);
             defaultSettingMap.put(MapperSettingsManager.TEMPORARY_DATA_DIRECTORY, "");
             defaultSettingMap.put(MapperSettingsManager.ROWS_BUFFER_SIZE, 2000000);
         }

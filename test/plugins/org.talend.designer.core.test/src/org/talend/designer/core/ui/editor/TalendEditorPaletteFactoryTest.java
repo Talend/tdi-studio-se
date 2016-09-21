@@ -468,5 +468,13 @@ public class TalendEditorPaletteFactoryTest {
             return false;
         }
 
+        /* (non-Javadoc)
+         * @see org.talend.core.model.components.IComponent#getModulesNeeded(org.talend.core.model.process.INode)
+         */
+        @Override
+        public List<ModuleNeeded> getModulesNeeded(INode node) {
+            return getModulesNeeded();
+        }
+
     }
 }

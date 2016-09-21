@@ -191,6 +191,7 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
@@ -202,7 +203,7 @@ import orgomg.cwm.objectmodel.core.ModelElement;
 /**
  * Performs a native Drop for the talendEditor. see feature
  *
- * $Id: TalendEditorDropTargetListener.java 1 2006-09-29 17:06:40 +0000 (Г¦В�ВџГ¦ВњВџГ¤ВєВ”, 29 Г¤В№ВќГ¦ВњВ€ 2006)
+ * $Id: TalendEditorDropTargetListener.java 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29 Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006)
  * nrousseau $
  *
  */
@@ -975,7 +976,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     /**
      * Used to store data temporarily. <br/>
      *
-     * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (Г¦В�ВџГ¦ВњВџГ¤ВєВ”, 29 Г¤В№ВќГ¦ВњВ€ 2006) nrousseau $
+     * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29 Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006) nrousseau $
      *
      */
     class TempStore {
@@ -1099,7 +1100,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_MR
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_STORM) { // dnd a job
                         LabelValue = DesignerUtilities.getParameterVar(EParameterName.PROCESS);
-                    } else if (CorePlugin.getDefault().getDesignerCoreService()
+                    }else if(repositoryNode.getObjectType() == ERepositoryObjectType.JOBLET
+                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_JOBLET
+                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_STREAMING_JOBLET){
+                    	LabelValue = element.getName();
+                    }else if (CorePlugin.getDefault().getDesignerCoreService()
                             .getPreferenceStore(TalendDesignerPrefConstants.DEFAULT_LABEL)
                             .equals(node.getPropertyValue(EParameterName.LABEL.getName()))) {// dnd a default
                         LabelValue = selectedNode.getObject().getLabel();
@@ -1109,12 +1114,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                     }
                 }
                 processSpecificDBTypeIfSameProduct(store.componentName, node);
-                NodeContainer nc = null;
-                if (node.isJoblet() || node.isMapReduce()) {
-                    nc = new JobletContainer(node);
-                } else {
-                    nc = new NodeContainer(node);
-                }
+                NodeContainer nc = ((Process)node.getProcess()).loadNodeContainer(node, false);;
 
                 // create component on link
                 boolean executed = false;
@@ -1884,8 +1884,14 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 return;
             }
         }
+        boolean isCurrentProject = true;
+        String projectName = null;
+        if(store.seletetedNode.getObject()!=null){
+        	projectName = store.seletetedNode.getObject().getProjectLabel();
+        	isCurrentProject = projectName.equals(ProjectManager.getInstance().getCurrentProject().getLabel());
+        }
 
-        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type);
+        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type, isCurrentProject, projectName);
 
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             List<IComponent> comList = handler.filterNeededComponents(item, store.seletetedNode, type);
@@ -2023,13 +2029,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         }
 
         if (targetConnection != null) {
-            NodeContainer nodeContainer = null;
-            if (node.isMapReduce()) {
-                nodeContainer = new JobletContainer(node);
-            } else {
-                nodeContainer = new NodeContainer(node);
-            }
             IProcess2 p = editor.getProcess();
+            NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
             // TDI-21099
             if (p instanceof Process) {
                 CreateNodeContainerCommand createCmd = new CreateNodeContainerCommand((Process) p, nodeContainer, point);

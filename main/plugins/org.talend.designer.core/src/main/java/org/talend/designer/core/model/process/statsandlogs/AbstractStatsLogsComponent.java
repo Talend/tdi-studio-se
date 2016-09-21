@@ -109,7 +109,16 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     // no use for virtual component ?
     @Override
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded()
+     */
+    @Override
     public List<ModuleNeeded> getModulesNeeded() {
+        // TODO Auto-generated method stub
         return null;
     }
 

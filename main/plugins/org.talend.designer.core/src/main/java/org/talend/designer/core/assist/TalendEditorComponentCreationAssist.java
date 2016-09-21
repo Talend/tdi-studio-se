@@ -306,12 +306,7 @@ public class TalendEditorComponentCreationAssist {
             return false;
         }
         if (process instanceof Process && node instanceof Node) {
-            NodeContainer nc = null;
-            if (((Node) node).isJoblet() || ((Node) node).isMapReduce()) {
-                nc = new JobletContainer(((Node) node));
-            } else {
-                nc = new NodeContainer(((Node) node));
-            }
+            NodeContainer nc = ((Process)process).loadNodeContainer((Node)node, false);
             boolean canExecute = new CreateNodeContainerCommand((Process) process, nc, location).canExecute();
             if (!canExecute) {
                 MessageDialog.openWarning(graphicControl.getShell(), "Failed", "Component can't be created here");

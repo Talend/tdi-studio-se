@@ -352,4 +352,12 @@ public abstract class AbstractFakeComponent extends AbstractComponent {
         nodeConnector.setBaseSchema(nodeConnector.getName());
         return nodeConnector;
     }
+
+    /* (non-Javadoc)
+     * @see org.talend.core.model.components.IComponent#getModulesNeeded(org.talend.core.model.process.INode)
+     */
+    @Override
+    public List<ModuleNeeded> getModulesNeeded(INode node) {
+        return getModulesNeeded();
+    }
 }

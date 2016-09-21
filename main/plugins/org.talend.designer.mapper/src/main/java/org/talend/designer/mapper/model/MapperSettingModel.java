@@ -24,6 +24,8 @@ public class MapperSettingModel implements Cloneable {
 
     private boolean isLookInParallel;
 
+    private boolean isEnableAutoConvertType;
+
     private String tempDataDir;
 
     private String rowBufferSize;
@@ -79,6 +81,14 @@ public class MapperSettingModel implements Cloneable {
         this.isLookInParallel = isLookInParallel;
     }
 
+    public boolean isEnableAutoConvertType() {
+        return this.isEnableAutoConvertType;
+    }
+
+    public void setEnableAutoConvertType(boolean isEnableAutoConvertType) {
+        this.isEnableAutoConvertType = isEnableAutoConvertType;
+    }
+
     /**
      * Getter for tempDataDir.
      * 
@@ -129,6 +139,9 @@ public class MapperSettingModel implements Cloneable {
         if (this.isLookInParallel != other.isLookInParallel) {
             num++;
         }
+        if (this.isEnableAutoConvertType != other.isEnableAutoConvertType) {
+            num++;
+        }
         if (this.tempDataDir == null) {
             if (other.tempDataDir != null) {
                 num++;
@@ -166,6 +179,9 @@ public class MapperSettingModel implements Cloneable {
             return false;
         }
         if (this.isLookInParallel != other.isLookInParallel) {
+            return false;
+        }
+        if (this.isEnableAutoConvertType != other.isEnableAutoConvertType) {
             return false;
         }
         if (this.tempDataDir == null) {

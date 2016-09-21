@@ -1,0 +1,57 @@
+<%@ jet 
+%>
+
+<%
+JavaType[] commonTypes = {
+	JavaTypesManager.STRING,
+    JavaTypesManager.INTEGER,
+    JavaTypesManager.LONG,
+    JavaTypesManager.SHORT,
+    JavaTypesManager.BOOLEAN,
+    JavaTypesManager.CHARACTER,
+    JavaTypesManager.BYTE,
+    JavaTypesManager.BYTE_ARRAY,
+    JavaTypesManager.DATE,
+    JavaTypesManager.DOUBLE,
+    JavaTypesManager.FLOAT,
+    JavaTypesManager.OBJECT,
+    JavaTypesManager.LIST,
+    JavaTypesManager.BIGDECIMAL
+};
+
+for(JavaType sourceType : commonTypes) {
+	for(JavaType targetType : commonTypes) {
+		if(sourceType == targetType) {
+			continue;
+		}
+		
+		String sourceTypeToGenerate = JavaTypesManager.getTypeToGenerate(sourceType.getId(), true);
+        sourceTypeToGenerate = sourceTypeToGenerate.contains(".") ? sourceTypeToGenerate.substring(sourceTypeToGenerate.lastIndexOf(".") + 1) : sourceTypeToGenerate;
+        if (("byte[]").equals(sourceTypeToGenerate)){
+    		sourceTypeToGenerate = "byteArray";
+        }
+		
+		String targetTypeToGenerate = JavaTypesManager.getTypeToGenerate(targetType.getId(), true);
+        targetTypeToGenerate = targetTypeToGenerate.contains(".") ? targetTypeToGenerate.substring(targetTypeToGenerate.lastIndexOf(".") + 1) : targetTypeToGenerate;
+        if (("byte[]").equals(targetTypeToGenerate)){
+    		targetTypeToGenerate = "byteArray";
+        }
+        
+        String function = null;
+        if("Date".equals(targetTypeToGenerate) && "String".equals(sourceTypeToGenerate)) {
+        	function = contact("routines.system.TypeConvert.", sourceTypeToGenerate, "2", targetTypeToGenerate, "(${0}, ${1})");
+        } else if("String".equals(targetTypeToGenerate) && "Date".equals(sourceTypeToGenerate)) {
+        	function = contact("routines.system.TypeConvert.", sourceTypeToGenerate, "2", targetTypeToGenerate, "(${0}, ${1})");
+        } else {
+        	function = contact("routines.system.TypeConvert.", sourceTypeToGenerate, "2", targetTypeToGenerate, "(${0})");
+        }
+        
+        autoConverterMap.put(contact(sourceType.getId(), ":", targetType.getId()), function);
+	}
+}
+
+autoConverterMap.put(contact(JavaTypesManager.DYNAMIC.getId(), ":", JavaTypesManager.STRING.getId()), "String.valueOf(${0})");
+autoConverterMap.put(contact("id_Document", ":", JavaTypesManager.STRING.getId()), "String.valueOf(${0})");
+autoConverterMap.put(contact(JavaTypesManager.STRING.getId(), ":", "id_Document"), "routines.system.ParserUtils.parseTo_Document(${0})");
+%>
+

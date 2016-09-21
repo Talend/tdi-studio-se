@@ -49,7 +49,7 @@ import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -110,7 +110,7 @@ public class UpdateJobletNodeCommand extends Command {
                         if (jobletNodes != null && !jobletNodes.isEmpty()) {
                             for (Node node : jobletNodes) {
                                 IComponent newComponent = ComponentsFactoryProvider.getInstance().get(
-                                        node.getComponent().getName(), ComponentCategory.CATEGORY_4_DI.getName());
+                                        node.getComponent().getName(), process.getComponentsType());
                                 if (newComponent == null) {
                                     continue;
                                 }
@@ -124,8 +124,8 @@ public class UpdateJobletNodeCommand extends Command {
                                     if (result.isNeedReloadJoblet()) {
                                         reloadNode(currentNode, newComponent);
                                     }
-                                    if (currentNode.getNodeContainer() instanceof JobletContainer) {
-                                        ((JobletContainer) currentNode.getNodeContainer()).updateJobletNodes(true);
+                                    if (currentNode.getNodeContainer() instanceof AbstractJobletContainer) {
+                                        ((AbstractJobletContainer) currentNode.getNodeContainer()).updateJobletNodes(true);
                                     }
                                 } else {
                                     reloadNode(currentNode, newComponent);
@@ -163,7 +163,7 @@ public class UpdateJobletNodeCommand extends Command {
         if (process == null || oldName == null || newName == null) {
             return;
         }
-        IComponent newComponent = ComponentsFactoryProvider.getInstance().get(newName, ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent newComponent = ComponentsFactoryProvider.getInstance().get(newName, process.getComponentsType());
         if (newComponent == null) {
             return;
         }
@@ -187,7 +187,7 @@ public class UpdateJobletNodeCommand extends Command {
 
         String componentName = currentNode.getComponent().getName();
         IComponent newComponent = ComponentsFactoryProvider.getInstance().get(componentName,
-                ComponentCategory.CATEGORY_4_DI.getName());
+                process.getComponentsType());
         if (newComponent == null) {
             return;
         }
@@ -269,7 +269,7 @@ public class UpdateJobletNodeCommand extends Command {
                 }
 
                 IComponent newComponent = ComponentsFactoryProvider.getInstance().get(node.getComponent().getName(),
-                        ComponentCategory.CATEGORY_4_DI.getName());
+                        process.getComponentsType());
                 if (newComponent == null) {
                     continue;
                 }
@@ -295,7 +295,7 @@ public class UpdateJobletNodeCommand extends Command {
 
         String componentName = sourceNode.getComponent().getName();
         IComponent newComponent = ComponentsFactoryProvider.getInstance().get(componentName,
-                ComponentCategory.CATEGORY_4_DI.getName());
+                process.getComponentsType());
         if (newComponent == null) {
             return;
         }

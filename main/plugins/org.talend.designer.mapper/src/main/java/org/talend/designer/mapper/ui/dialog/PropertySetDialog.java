@@ -37,6 +37,7 @@ import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.MapperSettingsManager;
 import org.talend.designer.mapper.model.MapperSettingModel;
@@ -54,6 +55,8 @@ public class PropertySetDialog extends Dialog {
     private Button dieOnErrorButton;
 
     private Button lookupInParallelButton;
+
+    private Button enableAutoConvertTypeBtn;
 
     private LabelledDirectoryField directoryField;
 
@@ -89,15 +92,19 @@ public class PropertySetDialog extends Dialog {
         container.setLayout(gridLayout);
 
         dieOnErrorButton = new Button(container, SWT.CHECK);
-        dieOnErrorButton.setText("Die on error");
+        dieOnErrorButton.setText("Die on error");//$NON-NLS-1$
 
         lookupInParallelButton = new Button(container, SWT.CHECK);
-        lookupInParallelButton.setText("Lookup in parallel");
+        lookupInParallelButton.setText("Lookup in parallel");//$NON-NLS-1$
         lookupInParallelButton.setEnabled(true);
-        IComponent tempNode = ComponentsFactoryProvider.getInstance().get("tParallelize",ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
+        IComponent tempNode = ComponentsFactoryProvider.getInstance().get(
+                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
         if (tempNode == null) {
             lookupInParallelButton.setVisible(false);
         }
+
+        enableAutoConvertTypeBtn = new Button(container, SWT.CHECK);
+        enableAutoConvertTypeBtn.setText(Messages.getString("PropertySetDialog.Button.enable"));//$NON-NLS-1$
 
         final Group storeOnDiskGroup = new Group(container, SWT.NONE);
         storeOnDiskGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -122,6 +129,7 @@ public class PropertySetDialog extends Dialog {
         MapperSettingModel currnentModel = settingsManager.getCurrnentModel();
         dieOnErrorButton.setSelection(currnentModel.isDieOnError());
         lookupInParallelButton.setSelection(currnentModel.isLookInParallel());
+        enableAutoConvertTypeBtn.setSelection(currnentModel.isEnableAutoConvertType());
         directoryField.setText(StringUtils.trimToEmpty(currnentModel.getTempDataDir()));
         sizeField.setText(StringUtils.trimToEmpty(currnentModel.getRowBufferSize()));
     }
@@ -129,6 +137,7 @@ public class PropertySetDialog extends Dialog {
     private void addListener() {
         dieOnErrorButton.addSelectionListener(new SelectionAdapter() {
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 updateStatus();
             }
@@ -136,6 +145,7 @@ public class PropertySetDialog extends Dialog {
 
         lookupInParallelButton.addSelectionListener(new SelectionAdapter() {
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 // shouldn't set value in here,need set value to component when close mapper ui,see TDI-17704
                 updateStatus();
@@ -172,6 +182,11 @@ public class PropertySetDialog extends Dialog {
             lookupInParallelButton.setBackground(null);
         } else {
             lookupInParallelButton.setBackground(color);
+        }
+        if (defaultModel.isEnableAutoConvertType() == enableAutoConvertTypeBtn.getSelection()) {
+            enableAutoConvertTypeBtn.setBackground(null);
+        } else {
+            enableAutoConvertTypeBtn.setBackground(color);
         }
 
         if (defaultModel.getTempDataDir().equals(directoryField.getText())) {
@@ -210,11 +225,13 @@ public class PropertySetDialog extends Dialog {
         return new Point(600, 350);
     }
 
+    @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
         newShell.setText("Property Settings");
     }
 
+    @Override
     protected void okPressed() {
         // bug TDI-19070
         if (directoryField.getText() != null && StringUtils.trimToNull(directoryField.getText()) != null
@@ -224,6 +241,7 @@ public class PropertySetDialog extends Dialog {
         MapperSettingModel currentModel = settingsManager.getCurrnentModel();
         currentModel.setDieOnError(dieOnErrorButton.getSelection());
         currentModel.setLookInParallel(lookupInParallelButton.getSelection());
+        currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
         currentModel.setTempDataDir(directoryField.getText());
         currentModel.setRowBufferSize(sizeField.getText());
 

@@ -455,6 +455,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         if (!endpointUri.isEmpty() && !endpointUri.contains("://") && !endpointUri.startsWith("/")) { //$NON-NLS-1$ //$NON-NLS-2$
             endpointUri = '/' + endpointUri;
         }
+
+        endpointInfo.put("originalAddress", endpointUri); //$NON-NLS-1$  Needed by Swagger
+
         // TESB-5916: Rest service can't be deployed in the Runtime on the port said in the studio
         // if (endpointUri.contains("://")) {
         // endpointUri = new URL(endpointUri).getPath();
@@ -506,6 +509,12 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         } else {
             endpointInfo.put("useAuthorization", false); //$NON-NLS-1$
         }
+
+
+        // expose Swagger specification
+        endpointInfo.put("exposeSwaggerSpecification", //$NON-NLS-1$
+                EmfModelUtils.computeCheckElementValue("EXPOSE_SWAGGER_SPEC", restRequestComponent)); //$NON-NLS-1$
+
 
         // Service Locator custom properties
         Map<String, String> slCustomProperties = new HashMap<String, String>();
@@ -694,6 +703,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         NodeType restRequestComponent = getRESTRequestComponent(processItem);
         if (null != restRequestComponent) {
             importPackages.add("org.apache.cxf.metrics");
+            if (EmfModelUtils.computeCheckElementValue("EXPOSE_SWAGGER_SPEC", restRequestComponent)) {
+                importPackages.add("org.apache.cxf.jaxrs.swagger");
+            }
+
 
             if (EmfModelUtils.computeCheckElementValue("NEED_AUTH", restRequestComponent)) { //$NON-NLS-1$
                 String authType = EmfModelUtils.computeTextElementValue("AUTH_TYPE", restRequestComponent); //$NON-NLS-1$

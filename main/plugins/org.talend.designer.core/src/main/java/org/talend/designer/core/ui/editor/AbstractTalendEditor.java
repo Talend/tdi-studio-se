@@ -1658,12 +1658,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                         Connection targetConnection = (Connection) selectedConnectionPart.getModel();
 
                         if (targetConnection != null) {
-                            NodeContainer nodeContainer = null;
-                            if (node.isJoblet() || node.isMapReduce()) {
-                                nodeContainer = new JobletContainer(node);
-                            } else {
-                                nodeContainer = new NodeContainer(node);
-                            }
+                            NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
                             if (getProcess() instanceof Process) {
                                 CreateNodeContainerCommand createCmd = new CreateNodeContainerCommand((Process) getProcess(),
                                         nodeContainer, point);
@@ -1787,13 +1782,7 @@ public abstract class AbstractTalendEditor extends GraphicalEditorWithFlyoutPale
                             Node node = (Node) newObject;
                             // TDI-23304 this bug is caused by TDI-23058
                             if (!node.getComponent().getComponentType().equals(EComponentType.JOBLET)) {
-                                NodeContainer nodeContainer = null;
-                                if (node.isMapReduce()) {
-                                    nodeContainer = new JobletContainer(node);
-                                } else {
-                                    nodeContainer = new NodeContainer(node);
-                                }
-
+                                NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
                                 createCmd = new CreateNodeContainerCommand((Process) getProcess(), nodeContainer, point);
                             }
                         } else if (isNoteInstance) {

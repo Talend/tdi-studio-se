@@ -86,7 +86,7 @@
           REPOSITORY_VALUE="ENDPOINT"
           SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
         >
-          <DEFAULT>"https://login.salesforce.com/services/Soap/u/34.0"</DEFAULT>
+          <DEFAULT>"https://login.salesforce.com/services/Soap/u/37.0"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER
@@ -339,16 +339,16 @@
     <CODEGENERATION>
       <IMPORTS>
         <IMPORT
-            NAME="force-wsc-33.0.0.jar"
-            MODULE="force-wsc-33.0.0.jar"
-            MVN="mvn:org.talend.libraries/force-wsc-33.0.0/6.0.0"
-            UrlPath="platform:/plugin/org.talend.libraries.salesforce/lib/force-wsc-33.0.0.jar"
+            NAME="force-wsc-38.0.1.jar"
+            MODULE="force-wsc-38.0.1.jar"
+            MVN="mvn:org.talend.libraries/force-wsc-38.0.1/6.0.0"
+            UrlPath="platform:/plugin/org.talend.libraries.salesforce/lib/force-wsc-38.0.1.jar"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT
             NAME="partner"
-            MODULE="partner-34.0.0.jar"
-            MVN="mvn:org.talend.components.salesforce/partner/34.0.0"
+            MODULE="force-partner-api-37.0.3.jar"
+            MVN="mvn:org.talend.components.salesforce/partner/37.0.3"
             REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"
         />
         <IMPORT

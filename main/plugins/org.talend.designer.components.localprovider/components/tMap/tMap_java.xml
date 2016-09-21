@@ -67,6 +67,7 @@
    		 >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
+    
     <PARAMETER
       NAME="LKUP_PARALLELIZE"
       FIELD="CHECK"
@@ -75,21 +76,16 @@
    		 >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-
+	
+	<PARAMETER
+      NAME="ENABLE_AUTO_CONVERT_TYPE"
+      FIELD="CHECK"
+      NUM_ROW="110"
+      SHOW="false"
+   		 >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
       
-      <!-- 
-      <PARAMETER NAME="MEMORY_HEAP_MAX_SIZE" FIELD="TEXT"
-			REQUIRED="false" NUM_ROW="3"
-	  >
-			<DEFAULT>1000</DEFAULT>
-      </PARAMETER>
-       -->
-      
-      <!-- 
-      <PARAMETER NAME="MAPPER_MODEL_DATA" FIELD="TEXT" SHOW="false">
-         <DEFAULT/>  
-      </PARAMETER>
-       -->
    </PARAMETERS>
 
 	<ADVANCED_PARAMETERS>

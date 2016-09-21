@@ -143,10 +143,18 @@ public class CheckController extends AbstractElementPropertySectionController {
 
         FormData data = new FormData();
         data.top = new FormAttachment(0, top);
-        if (lastControl != null) {
-            data.left = new FormAttachment(lastControl, 0);
+        if (isInWizard()) {
+            if (lastControl != null) {
+                data.right = new FormAttachment(lastControl, 0);
+            } else {
+                data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+            }
         } else {
-            data.left = new FormAttachment((((numInRow - 1) * MAX_PERCENT) / nbInRow), 0);
+            if (lastControl != null) {
+                data.left = new FormAttachment(lastControl, 0);
+            } else {
+                data.left = new FormAttachment((((numInRow - 1) * MAX_PERCENT) / nbInRow), 0);
+            }
         }
         cLayout.setLayoutData(data);
         checkBtn.setData(PARAMETER_NAME, param.getName());

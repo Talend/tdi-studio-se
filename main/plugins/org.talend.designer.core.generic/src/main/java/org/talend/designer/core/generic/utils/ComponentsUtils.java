@@ -23,6 +23,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
+import org.apache.commons.lang3.text.translate.OctalUnescaper;
+import org.apache.commons.lang3.text.translate.UnicodeUnescaper;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceReference;
@@ -293,14 +298,22 @@ public class ComponentsUtils {
                     List<String> possVals = new ArrayList<>();
                     List<String> possValsDisplay = new ArrayList<>();
                     for (Object obj : values) {
+                        String value = null;
+                        String valueDisplay = null;
                         if (obj instanceof NamedThing) {
                             NamedThing nal = (NamedThing) obj;
-                            possVals.add(nal.getName());
-                            possValsDisplay.add(nal.getDisplayName());
+                            value = nal.getName();
+                            valueDisplay = nal.getDisplayName();
                         } else {
-                            possVals.add(String.valueOf(obj));
-                            possValsDisplay.add(String.valueOf(obj));
+                            value = String.valueOf(obj);
+                            valueDisplay = String.valueOf(obj);
                         }
+                        String pvDisplayName = property.getPossibleValuesDisplayName(obj);
+                        if (StringUtils.isNotBlank(pvDisplayName) && !"null".equals(pvDisplayName)) { //$NON-NLS-1$
+                            valueDisplay = pvDisplayName;
+                        }
+                        possVals.add(value);
+                        possValsDisplay.add(valueDisplay);
                     }
                     param.setListItemsDisplayName(possValsDisplay.toArray(new String[0]));
                     param.setListItemsDisplayCodeName(possValsDisplay.toArray(new String[0]));
@@ -339,6 +352,8 @@ public class ComponentsUtils {
                 param.setListItemsShowIf(listItemsShowIf);
                 param.setListItemsNotShowIf(listItemsNotShowIf);
                 param.setValue(GenericTableUtils.getTableValues(table, param));
+                param.setBasedOnSchema(
+                        Boolean.valueOf(String.valueOf(widget.getConfigurationValue(Widget.HIDE_TOOLBAR_WIDGET_CONF))));
             }
             if (!param.isReadOnly()) {
                 param.setReadOnly(element.isReadOnly());
@@ -436,7 +451,10 @@ public class ComponentsUtils {
             String value = (String) paramValue;
             if ((isInitializing || StringUtils.isEmpty(value))
                     && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
-                paramValue = TalendQuoteUtils.addPairQuotesIfNotExist(StringUtils.trimToEmpty(value));
+                if (value == null) {
+                    value = StringUtils.EMPTY;
+                }
+                paramValue = TalendQuoteUtils.addPairQuotesIfNotExist(unescapeForJava(value));
             }
         } else if (GenericTypeUtils.isBooleanType(property)) {
             if (paramValue == null) {
@@ -445,6 +463,13 @@ public class ComponentsUtils {
             }
         }
         return paramValue;
+    }
+
+    private static String unescapeForJava(String input) {
+        CharSequenceTranslator UNESCAPE_JAVA = new AggregateTranslator(new OctalUnescaper(),
+                new UnicodeUnescaper(),
+                new LookupTranslator(new String[][] { { "\\\\", "\\" }, { "\\\"", "\"" }, { "\\'", "'" } })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        return UNESCAPE_JAVA.translate(input);
     }
 
     private static String getPropertiesPath(String parentPropertiesPath, String currentPropertiesName) {

@@ -27,6 +27,9 @@
 	org.talend.core.model.process.BlockCode
 	org.talend.core.model.process.INode
     org.talend.core.model.process.ElementParameterParser
+    org.talend.core.GlobalServiceRegister
+	org.talend.core.model.metadata.IAutoConvertTypesService
+	org.talend.core.model.metadata.types.AutoConversionType
 	" 
 
 	skeleton="tMap_commons.skeleton"

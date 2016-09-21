@@ -3065,12 +3065,7 @@ public class DataProcess implements IGeneratingProcess {
         ValidationRulesUtil.createRejectConnector(newGraphicalNode);
         ValidationRulesUtil.updateRejectMetatable(newGraphicalNode, graphicalNode);
 
-        NodeContainer nc = null;
-        if (newGraphicalNode.isJoblet() || newGraphicalNode.isMapReduce()) {
-            nc = new JobletContainer(newGraphicalNode);
-        } else {
-            nc = new NodeContainer(newGraphicalNode);
-        }
+        NodeContainer nc = ((Process) process).loadNodeContainer(newGraphicalNode, false);
 
         ((Process) process).addNodeContainer(nc);
         buildGraphicalMap.put(graphicalNode, newGraphicalNode);
@@ -3187,7 +3182,7 @@ public class DataProcess implements IGeneratingProcess {
      * @param graphicalNodeList
      * @return
      */
-    private void replaceNodeFromProviders(List<INode> graphicalNodeList) {
+    public void replaceNodeFromProviders(List<INode> graphicalNodeList) {
         List<INode> orginalList = new ArrayList<INode>(graphicalNodeList);
         for (INode node : orginalList) {
             for (IReplaceNodeInProcess replaceProvider : ReplaceNodesInProcessProvider.findReplaceNodesProvider()) {

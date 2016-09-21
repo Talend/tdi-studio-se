@@ -92,7 +92,7 @@ public class BuildJobManager {
         return value;
     }
 
-    public boolean buildJobs(String destinationPath, List<? extends IRepositoryNode> nodes, String version, String context,
+    public boolean buildJobs(String destinationPath, List<? extends IRepositoryNode> nodes, List<String> topNames, String version, String context,
             Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType, IProgressMonitor monitor) throws Exception {
         IProgressMonitor pMonitor = new NullProgressMonitor();
         if (monitor != null) {
@@ -107,14 +107,19 @@ public class BuildJobManager {
             int steps = 3;
             pMonitor.beginTask(
                     Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), steps * scale * nodes.size()); //$NON-NLS-1$
-            String projectLabel = ProjectManager.getInstance().getCurrentProject().getLabel();
+            String topName = null;
+            if(topNames!=null&&!topNames.isEmpty()){
+                topName = topNames.get(0);
+            }else{
+                topName = ProjectManager.getInstance().getCurrentProject().getLabel();
+            }
             File desFile = new File(destinationPath);
 
             File tempFolder = new File(desFile.getParent() + File.separator + File.createTempFile("building_job", "").getName()); //$NON-NLS-1$ //$NON-NLS-2$
             if (tempFolder.exists()) {
                 tempFolder.delete();
             }
-            File tempProFolder = new File(tempFolder, projectLabel);
+            File tempProFolder = new File(tempFolder, topName);
             tempProFolder.mkdirs();
             for (int i = 0; i < processes.size(); i++) {
                 ProcessItem processItem = processes.get(i);

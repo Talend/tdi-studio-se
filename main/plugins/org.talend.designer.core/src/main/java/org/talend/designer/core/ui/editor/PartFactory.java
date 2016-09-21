@@ -15,6 +15,8 @@ package org.talend.designer.core.ui.editor;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ui.ISparkJobletProviderService;
+import org.talend.core.ui.ISparkStreamingJobletProviderService;
 import org.talend.designer.core.ITestContainerGEFService;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -95,7 +97,31 @@ public class PartFactory implements EditPartFactory {
                     }
                 }
             }
-            if (((NodeContainer) model).getNode().isJoblet()) {
+            if(((NodeContainer) model).getNode().isSparkJoblet()){
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+                    ISparkJobletProviderService sparkService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISparkJobletProviderService.class);
+                    if (sparkService != null) {
+                        part = (EditPart)sparkService.createEditorPart(model);
+                        if (part != null) {
+                            part.setModel(model);
+                            return part;
+                        }
+                    }
+                }
+            }else if(((NodeContainer) model).getNode().isSparkStreamingJoblet()){
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
+                    ISparkStreamingJobletProviderService sparkService = (ISparkStreamingJobletProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ISparkStreamingJobletProviderService.class);
+                    if (sparkService != null) {
+                        part = (EditPart)sparkService.createEditorPart(model);
+                        if (part != null) {
+                            part.setModel(model);
+                            return part;
+                        }
+                    }
+                }
+            }else if (((NodeContainer) model).getNode().isStandardJoblet()) {
                 part = new JobletContainerPart();
             } else if (((NodeContainer) model).getNode().isMapReduce()) {
                 part = new JobletContainerPart();

@@ -39,21 +39,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.repository.ProjectManager;
 
-public class JobletContainer extends NodeContainer {
-
-    public static final String UPDATE_JOBLET_CONTENT = "UPDATE_JOBLET_CONTENT"; //$NON-NLS-1$
-
-    public static final String UPDATE_JOBLET_DATA = "UPDATE_JOBLET_DATA"; //$NON-NLS-1$
-
-    public static final String UPDATE_JOBLET_CONNECTIONS = "UPDATE_JOBLET_CONNECTIONS"; //$NON-NLS-1$
-
-    public static final String UPDATE_JOBLET_TITLE_COLOR = "UPDATE_JOBLET_TITLE_COLOR"; //$NON-NLS-1$
-
-    public static final String UPDATE_JOBLET_DISPLAY = "UPDATE_JOBLET_DISPLAY"; //$NON-NLS-1$
-
-    protected List<Node> nodes = new ArrayList<Node>();
-
-    private List<NodeContainer> nodeContainers = new ArrayList<NodeContainer>();
+public class JobletContainer extends AbstractJobletContainer {
 
     private IProcess2 process;
 
@@ -71,9 +57,6 @@ public class JobletContainer extends NodeContainer {
 
     private boolean hasChange;
 
-    private boolean update = false;
-
-    private boolean needchangeLock = true;
 
     protected List<IElement> jobletElements = new ArrayList<IElement>();
 

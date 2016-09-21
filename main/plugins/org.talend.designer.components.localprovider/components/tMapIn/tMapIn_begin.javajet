@@ -22,6 +22,8 @@
 	org.talend.core.model.process.EConnectionType
 	org.talend.core.model.process.INode
 	org.talend.core.model.utils.TalendTextUtils
+	org.talend.designer.mapper.model.tableentry.TableEntryLocation
+	org.talend.designer.mapper.utils.DataMapExpressionParser
 	" 
 	skeleton="../tMap/tMap_commons.skeleton"
 %>
