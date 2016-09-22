@@ -910,6 +910,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
+        Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
         if (inputConnectors.isEmpty()) {
             INodeConnector connector = null;
             connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
@@ -919,6 +920,11 @@ public class Component extends AbstractBasicComponent {
             for (Connector connector : inputConnectors) {
                 addGenericType(listConnector, EConnectionType.FLOW_MAIN, connector.getName(), parentNode, false);
             }
+        }
+        boolean hasInputIterateConnector = topologies.contains(ConnectorTopology.NONE)
+                || topologies.contains(ConnectorTopology.OUTGOING);
+        if (hasInputIterateConnector) {
+            addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, false);
         }
 
         Set<? extends Connector> outputConnectors = componentProperties.getPossibleConnectors(true);
@@ -943,6 +949,8 @@ public class Component extends AbstractBasicComponent {
             }
             addGenericType(listConnector, type, connector.getName(), parentNode, true);
         }
+        addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, true);
+        
         addStandardType(listConnector, EConnectionType.RUN_IF, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_ERROR, parentNode);
