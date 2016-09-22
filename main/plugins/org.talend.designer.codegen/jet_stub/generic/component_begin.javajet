@@ -283,9 +283,14 @@ if (hasOutputOnly) {
                 if (multi_output_is_allowed_<%=cid%>) {
                     <%=reject.getName()%> = new <%=reject.getName() %>Struct();
                 }
-
+				try{
                 <%
                 irToRow.generateConvertRecord("data_" + cid, reject.getName());
+                %>
+                }catch(java.lang.Exception e){
+                	// do nothing
+                }
+                <%
                 Set<String> commonColumns = new HashSet<String>();
 
                 for (IMetadataColumn column : columnList) {
@@ -306,6 +311,11 @@ if (hasOutputOnly) {
                         <%=reject.getName()%>.<%=columnName%> = (<%=typeToGenerate%>)info_<%=cid%>.get("<%=columnName%>");
                         <%
                     }
+                }
+                if (main != null) {
+                %>
+                    <%=main.getName()%> = null;
+                <%
                 }
             } else {
             %>

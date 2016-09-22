@@ -199,6 +199,10 @@ class IndexedRecordToRowStructGenerator {
                         %>
                         <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(<%=codeVarSchemaEnforcer%>.get(<%=i%>));
                         <%
+                    } else if (javaType == JavaTypesManager.CHARACTER) {
+                        %>
+                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(<%=codeVarSchemaEnforcer%>.get(<%=i%>)).charAt(0);
+                        <%
                     } else  {
                         %>
                         <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (<%=codeVarSchemaEnforcer%>.get(<%=i%>));
