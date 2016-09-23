@@ -138,6 +138,22 @@ if(hasInput){
 
             writer_<%=cid%>.write(data_<%=cid%>);
             
+            // retrieving flow variables from writer
+            if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.HasReturnValues) {
+                java.util.Map<String, Object> flowVariables_<%=cid%> = writer_<%=cid%>.getFlowValues();
+                for(java.util.Map.Entry<String,Object> entry_<%=cid%> : flowVariables_<%=cid%>.entrySet()) {
+                    StringBuilder studio_key_<%=cid%> = new StringBuilder();
+                    for (int i_<%=cid%> = 0; i_<%=cid%> < entry_<%=cid%>.getKey().length(); i_<%=cid%>++) {
+                        char ch_<%=cid%> = entry_<%=cid%>.getKey().charAt(i_<%=cid%>);
+                        if(Character.isUpperCase(ch_<%=cid%>) && i_<%=cid%>> 0) {
+                	        studio_key_<%=cid%>.append('_');
+                        }
+                        studio_key_<%=cid%>.append(ch_<%=cid%>);
+                    }
+			        container_<%=cid%>.setComponentData("<%=cid%>", studio_key_<%=cid%>.toString().toUpperCase(java.util.Locale.ENGLISH), entry_<%=cid%>.getValue());
+			    }
+		    }
+            
             nb_line_<%=cid %>++;
             <%
             if (mainIrToRow != null) {
