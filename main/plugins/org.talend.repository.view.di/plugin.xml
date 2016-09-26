@@ -583,7 +583,7 @@
       </navigatorContent>
       <navigatorContent
             activeByDefault="true"
-            appearsBefore="org.talend.repository.viewer.metadata.dbDelimited"
+            appearsBefore="org.talend.repository.viewer.metadata.dbPositional"
             contentProvider="org.talend.repository.view.di.metadata.content.MetadataDbConnectionsContentProvider"
             icon="icons/dbConnections.gif"
             id="org.talend.repository.viewer.metadata.dbConnections"
