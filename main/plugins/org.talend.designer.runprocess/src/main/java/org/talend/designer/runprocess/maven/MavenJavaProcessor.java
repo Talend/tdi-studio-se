@@ -319,7 +319,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             return TalendMavenConstants.GOAL_TEST_COMPILE;
         }
 
-        if (requirePackaging()) {
+        if (!ProcessorUtilities.isExportConfig() && requirePackaging()) {
             // We return the PACKAGE goal if the main job and/or one of its recursive job is a Big Data job.
             return TalendMavenConstants.GOAL_PACKAGE;
         } else {

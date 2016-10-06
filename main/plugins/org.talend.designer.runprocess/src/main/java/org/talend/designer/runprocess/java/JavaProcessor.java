@@ -456,21 +456,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     for (IResource resource : javaCodeFolder.members()) {
                         if ("java".equals(resource.getFileExtension())) {//$NON-NLS-1$
                             if (processSourceFileName != null && processSourceFileName.equals(resource.getName())) {
-                                ((IFile) resource).setContents(new ByteArrayInputStream(new byte[0]), IResource.KEEP_HISTORY,
+                                ((IFile) resource).setContents(new ByteArrayInputStream(new byte[0]), true, false,
                                         null);
                             } else {
-                                try {
-                                    org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, resource, true, true);
-                                } catch (Exception e) {
-                                    throw new ProcessorException(e);
-                                }
+                                resource.delete(true, null);
                             }
                         } else {
-                            try {
-                                org.talend.commons.utils.io.FilesUtils.removeExistedResources(null, resource, true, true);
-                            } catch (Exception e) {
-                                throw new ProcessorException(e);
-                            }
+                            resource.delete(true, null);
                         }
                     }
                 }
