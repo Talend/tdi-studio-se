@@ -63,7 +63,7 @@ if(!usePartialUpdate){%>
 <%
         }else{%>
     if(miList_<%=cid %>.size() > 0){
-	    org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);        
+        org.talend.mdm.webservice.WSPutItemArray putItemArray = new org.talend.mdm.webservice.WSPutItemArray(miList_<%=cid %>);        
 
         <% logUtil.debug("\"Try to put item array.\"");%>
 
