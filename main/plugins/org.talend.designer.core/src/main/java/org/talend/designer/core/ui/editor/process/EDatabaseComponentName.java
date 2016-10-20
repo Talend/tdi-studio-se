@@ -122,6 +122,7 @@ public enum EDatabaseComponentName implements IComponentName {
     // Changed by Marvin Wang on Sep. 3, 2012 for bug TDI-22566.
     HIVE(DatabaseConnectionItem.class, EDatabaseTypeName.HIVE, "tHiveInput", "tHiveOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     HBASE(DatabaseConnectionItem.class, EDatabaseTypeName.HBASE, "tHBaseInput", "tHBaseOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
+    MAPRDB(DatabaseConnectionItem.class, EDatabaseTypeName.MAPRDB, "tMapRDBInput", "tMapRDBOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
     IMPALA(DatabaseConnectionItem.class, EDatabaseTypeName.IMPALA, "tImpalaInput", "tImpalaOutput", true), //$NON-NLS-1$ //$NON-NLS-2$
 
     // FILES

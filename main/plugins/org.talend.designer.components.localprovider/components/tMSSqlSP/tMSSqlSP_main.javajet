@@ -134,6 +134,8 @@ if (canGenerate) {
 		List<IMetadataColumn> columnList = metadata.getListColumns();
 		
 		// Note: first argument in JDBC is arg #1, and for functions, arg #1 is return value
+		// Why not to use a i+1 value instead of adding new field? new fields are very confusing,
+		// and the next cycle(getting parameters from result) are a great example of it.
 		int argIndex = 1;
 		boolean hasOutput = false;
 		// Iterate over procedure arguments
@@ -252,6 +254,9 @@ if (canGenerate) {
 			
 			if (firstOutConnection != null) {
 				// Note: first argument in JDBC is arg #1, and for functions, arg #1 is return value
+				// If the return parameter IS NOT on the first place in output schema we have a huge problem -
+				// We can never get the return value, and all the INOUT values are mixed. We MUST use the same
+				// numeration as we do in registering and setting parameters.
 				argIndex = 1;
 				columns:for (IMetadataColumn column : columnList) {
 					// Retrieve OUT arguments value, and copy IN arguments from input flow
@@ -260,6 +265,7 @@ if (canGenerate) {
 						String argName = spArg.get("COLUMN");
 						
 						if (column.getLabel().equals(argName)) {
+							argIndex = i + 1;
 							String argType = spArg.get("TYPE");
 							String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
 							boolean nullable = column.isNullable();
@@ -313,7 +319,7 @@ if (canGenerate) {
 									<%
 								}
 							}
-                            argIndex++;							
+                            // argIndex++;							
 							for (int j = connectionIndex + 1; j < outConnections.size(); j++) {
 								IConnection connection = outConnections.get(j);
 		    					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {

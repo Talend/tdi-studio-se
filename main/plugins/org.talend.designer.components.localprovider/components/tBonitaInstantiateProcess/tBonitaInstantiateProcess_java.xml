@@ -55,6 +55,7 @@
 			<ITEM NAME="BONITA_561" VALUE="BONITA_561" />
 			<ITEM NAME="BONITA_5101" VALUE="BONITA_5101" />
 			<ITEM NAME="BONITA_652" VALUE="BONITA_652" />
+			<ITEM NAME="BONITA_724" VALUE="BONITA_724" />
 		</ITEMS>
 	</PARAMETER>
 	
@@ -72,15 +73,15 @@
       REQUIRED="true"
       SHOW_IF="CLIENT_MODE=='HTTP_CLIENT'"
     >
-    	<DEFAULT IF="DB_VERSION!='BONITA_652'">"http://localhost:9090/bonita-server-rest/"</DEFAULT>
-    	<DEFAULT IF="DB_VERSION=='BONITA_652'">"http://localhost:8080/bonita"</DEFAULT>
+    	<DEFAULT IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')">"http://localhost:9090/bonita-server-rest/"</DEFAULT>
+    	<DEFAULT IF="(DB_VERSION=='BONITA_652') OR (DB_VERSION=='BONITA_724')">"http://localhost:8080/bonita"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="AUTH_USERNAME" FIELD="TEXT" NUM_ROW="12" REQUIRED="true" SHOW_IF="(DB_VERSION!='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" GROUP="AUTHORIZATION">
+    <PARAMETER NAME="AUTH_USERNAME" FIELD="TEXT" NUM_ROW="12" REQUIRED="true" SHOW_IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" GROUP="AUTHORIZATION">
     	<DEFAULT>"restuser"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="AUTH_PASSWD" FIELD="PASSWORD" NUM_ROW="12" REQUIRED="true" SHOW_IF="(DB_VERSION!='BONITA_652') AND (CLIENT_MODE=='HTTP_CLIENT')" GROUP="AUTHORIZATION">
+    <PARAMETER NAME="AUTH_PASSWD" FIELD="PASSWORD" NUM_ROW="12" REQUIRED="true" SHOW_IF="isShow[AUTH_USERNAME]" GROUP="AUTHORIZATION">
     	<DEFAULT>"restbpm"</DEFAULT>
     </PARAMETER>
 
@@ -114,7 +115,7 @@
       FIELD="FILE"
       NUM_ROW="25"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION!='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')"
+      SHOW_IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')"
       GROUP="CONFIGURATION"
     >
     	<DEFAULT>"external/security/jaas-standard.cfg"</DEFAULT>
@@ -126,7 +127,7 @@
       FIELD="FILE"
       NUM_ROW="30"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION!='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')"
+      SHOW_IF="isShow[JASS_STANDARD_FILE]"
       GROUP="CONFIGURATION"
     >
     	<DEFAULT>"external/logging/logging.properties"</DEFAULT>
@@ -138,13 +139,13 @@
       FIELD="TEXT"
       NUM_ROW="40"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION!='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')"
+      SHOW_IF="isShow[JASS_STANDARD_FILE]"
       GROUP="CONFIGURATION"
     >
     	<DEFAULT>"BonitaStore"</DEFAULT>
     </PARAMETER>
 
-	<PARAMETER NAME="USE_PROCESS_ID" FIELD="CHECK" NUM_ROW="45" SHOW_IF="(DB_VERSION=='BONITA_652') OR (CLIENT_MODE=='JAVA_CLIENT')">
+	<PARAMETER NAME="USE_PROCESS_ID" FIELD="CHECK" NUM_ROW="45" SHOW_IF="(DB_VERSION=='BONITA_652') OR (DB_VERSION=='BONITA_724') OR (CLIENT_MODE=='JAVA_CLIENT')">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
 
@@ -173,7 +174,7 @@
       FIELD="TEXT"
       NUM_ROW="50"
       REQUIRED="true"
-      SHOW_IF="((DB_VERSION=='BONITA_652') OR (CLIENT_MODE=='JAVA_CLIENT')) AND (USE_PROCESS_ID=='true')"
+      SHOW_IF="isShow[USE_PROCESS_ID] AND (USE_PROCESS_ID=='true')"
     >
     <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -184,8 +185,8 @@
       NUM_ROW="60"
       REQUIRED="true"
     >
-    	<DEFAULT IF="DB_VERSION!='BONITA_652'">"admin"</DEFAULT>
-   		<DEFAULT IF="DB_VERSION=='BONITA_652'">""</DEFAULT>
+    	<DEFAULT IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')">"admin"</DEFAULT>
+   		<DEFAULT IF="(DB_VERSION=='BONITA_652') OR (DB_VERSION=='BONITA_724')">""</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -193,7 +194,7 @@
       FIELD="PASSWORD"
       NUM_ROW="60"
       REQUIRED="true"
-      SHOW_IF="(CLIENT_MODE=='JAVA_CLIENT') OR (DB_VERSION=='BONITA_652')"
+      SHOW_IF="isShow[USE_PROCESS_ID]"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -213,7 +214,7 @@
 
    	<CODEGENERATION>
 	   <IMPORTS>
-	   		<IMPORT NAME="xstream_122" MODULE="xstream-1.2.2.jar" MVN="mvn:org.talend.libraries/xstream-1.2.2/6.0.0" REQUIRED_IF="DB_VERSION!='BONITA_652'" />
+	   		<IMPORT NAME="xstream_122" MODULE="xstream-1.2.2.jar" MVN="mvn:org.talend.libraries/xstream-1.2.2/6.0.0" REQUIRED_IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')" />
 			<!-- Bonita 5.2.3 -->
 			<IMPORT NAME="bonita_client_523" MODULE="bonita-client-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-client-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-client-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
 			<IMPORT NAME="bonita_server_523" MODULE="bonita-server-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-server-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-server-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
@@ -291,6 +292,32 @@
 			<IMPORT NAME="httpcore-4.2.5.jar" MODULE="httpcore-4.2.5.jar" MVN="mvn:org.talend.libraries/httpcore-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-logging-1.1.1.jar" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0" UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="commons-codec-1.7.jar" MODULE="commons-codec-1.7.jar" MVN="mvn:org.talend.libraries/commons-codec-1.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			
+			<!-- Bonita 7.2.4 HTTP API -->
+			<IMPORT NAME="talend-bonita-client-1.0.0.jar" MODULE="talend-bonita-client-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-bonita-client-1.0.0/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="bonita-client-7.2.4.jar" MODULE="bonita-client-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-client-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="bonita-common-7.2.4.jar" MODULE="bonita-common-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-common-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			
+			<IMPORT NAME="httpmime-4.2.5.jar" MODULE="httpmime-4.2.5.jar" MVN="mvn:org.talend.libraries/httpmime-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="httpclient-4.2.5.jar" MODULE="httpclient-4.2.5.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="httpcore-4.2.5.jar" MODULE="httpcore-4.2.5.jar" MVN="mvn:org.talend.libraries/httpcore-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="commons-logging-1.1.1.jar" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0" UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			<IMPORT NAME="commons-lang3-3.3.2.jar" MODULE="commons-lang3-3.3.2.jar" MVN="mvn:org.talend.libraries/commons-lang3-3.3.2/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.3.2.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='HTTP_CLIENT')" />
+			
+			<!-- Bonita 7.2.4 JAVA API -->
+			<IMPORT NAME="talend-bonita-client-1.0.0.jar" MODULE="talend-bonita-client-1.0.0.jar" MVN="mvn:org.talend.libraries/talend-bonita-client-1.0.0/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="bonita-client-7.2.4.jar" MODULE="bonita-client-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-client-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="bonita-common-7.2.4.jar" MODULE="bonita-common-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-common-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="bonita-server-7.2.4.jar" MODULE="bonita-server-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-server-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="xstream-1.4.7.jar" MODULE="xstream-1.4.7.jar" MVN="mvn:org.talend.libraries/xstream-1.4.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xstream-1.4.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="xpp3-1.1.6.jar" MODULE="xpp3-1.1.6.jar" MVN="mvn:org.talend.libraries/xpp3-1.1.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xpp3-1.1.6.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			
+			<IMPORT NAME="httpmime-4.2.5.jar" MODULE="httpmime-4.2.5.jar" MVN="mvn:org.talend.libraries/httpmime-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="httpclient-4.2.5.jar" MODULE="httpclient-4.2.5.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="httpcore-4.2.5.jar" MODULE="httpcore-4.2.5.jar" MVN="mvn:org.talend.libraries/httpcore-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-logging-1.1.1.jar" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0" UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-codec-1.7.jar" MODULE="commons-codec-1.7.jar" MVN="mvn:org.talend.libraries/commons-codec-1.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
+			<IMPORT NAME="commons-io-2.1.jar" MODULE="commons-io-2.1.jar" MVN="mvn:org.talend.libraries/commons-io-2.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.1.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<!-- Bonita Http Client -->
 			<IMPORT NAME="apache_commons_codec_1_7" MODULE="commons-codec-1.7.jar" MVN="mvn:org.talend.libraries/commons-codec-1.7/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.7.jar" REQUIRED_IF="CLIENT_MODE=='HTTP_CLIENT'" />

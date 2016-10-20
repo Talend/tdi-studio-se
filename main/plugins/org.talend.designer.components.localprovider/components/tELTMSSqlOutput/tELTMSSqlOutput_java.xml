@@ -109,9 +109,6 @@
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
-  		<IMPORTS>
-			<IMPORT NAME="Driver-jTDS" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED="true" />
-		</IMPORTS>
   </CODEGENERATION>
 
   <RETURNS>

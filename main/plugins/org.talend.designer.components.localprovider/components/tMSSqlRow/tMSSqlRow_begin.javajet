@@ -10,28 +10,69 @@ imports="
 
 	class DBRowBeginUtil extends DefaultDBRowUtil{
 	
+		private String driver;
+	
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
 			cid = node.getUniqueName();
+			this.driver = ElementParameterParser.getValue(node, "__DRIVER__");
+	    }
+	    
+	    public void afterUseExistConnection(INode node) {
+	    	super.afterUseExistConnection(node);
+	    	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+			String conn = "conn_" + connection;
+			String schema = "dbschema_" + connection;
+			INode connectionNode = null; 
+			for (INode processNode : node.getProcess().getGeneratingNodes()) { 
+				if(connection.equals(processNode.getUniqueName())) { 
+					connectionNode = processNode; 
+					break; 
+				} 
+			}
+			driver = ElementParameterParser.getValue(connectionNode,"__DRIVER__");
 	    }
 	    
 		public void setURL(INode node) {
 		%>
 			String port_<%=cid%> = <%=dbport%>;
 		    String dbname_<%=cid%> = <%=dbname%> ;
-		    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ; 
+		    <%
+			if(driver.equals("JTDS")) {
+			%>
+			String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+			<%
+			} else {
+			%>		    
+		    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+			<%
+			}
+			%>
 		    if (!"".equals(port_<%=cid%>)) {
 		    	url_<%=cid %> += ":" + <%=dbport%>;
 		    }
 		    if (!"".equals(dbname_<%=cid%>)) {
-		    	url_<%=cid%> += "//" + <%=dbname%>; 
+		   	<%
+				if(driver.equals("JTDS")) {
+			%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+			<%
+				} else {
+			%>		    
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+			<%
+				}
+			%>
 		    }
 		    url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
 		<%
 		}
 		
 		public String getDirverClassName(INode node){
-			return "net.sourceforge.jtds.jdbc.Driver";
+			if(driver.equals("JTDS")) {
+				return "net.sourceforge.jtds.jdbc.Driver";
+			}
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		}
 		
 		public void afterConnection(INode node){

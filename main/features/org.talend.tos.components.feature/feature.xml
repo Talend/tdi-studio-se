@@ -271,7 +271,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.talend.components.api.service"
+         id="org.talend.components.api.service.osgi"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -324,6 +324,12 @@
          
    <plugin
          id="org.talend.components.jira"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+   <plugin
+         id="org.talend.components.filedelimited"
          download-size="0"
          install-size="0"
          version="0.0.0"

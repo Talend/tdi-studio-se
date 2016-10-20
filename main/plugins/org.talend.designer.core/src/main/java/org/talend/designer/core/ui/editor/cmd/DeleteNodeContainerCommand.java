@@ -28,7 +28,7 @@ import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
+import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -83,7 +83,7 @@ public class DeleteNodeContainerCommand extends Command {
                 INode prevNode = connection.getSource();
                 if ((prevNode instanceof Node) && ((Node) prevNode).getJobletNode() != null) {
                     Node jobletnode = (Node) prevNode.getJobletNode();
-                    ((JobletContainer) jobletnode.getNodeContainer()).getOutputs().remove(connection);
+                    ((AbstractJobletContainer) jobletnode.getNodeContainer()).getOutputs().remove(connection);
                     if (!nodeList.contains(jobletnode)) {
                         boolean builtInJobletNode = jobletnode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
                                 | node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
@@ -108,7 +108,7 @@ public class DeleteNodeContainerCommand extends Command {
                 INode nextNode = connection.getTarget();
                 if ((nextNode instanceof Node) && ((Node) nextNode).getJobletNode() != null) {
                     Node jobletnode = (Node) nextNode.getJobletNode();
-                    ((JobletContainer) jobletnode.getNodeContainer()).getInputs().remove(connection);
+                    ((AbstractJobletContainer) jobletnode.getNodeContainer()).getInputs().remove(connection);
                     if (!nodeList.contains(jobletnode)) {
                         jobletnode.removeInput(connection);
                         boolean builtInJobletNode = jobletnode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
@@ -186,7 +186,7 @@ public class DeleteNodeContainerCommand extends Command {
                 INode prevNode = connection.getSource();
                 if ((prevNode instanceof Node) && ((Node) prevNode).getJobletNode() != null) {
                     Node jobletnode = (Node) prevNode.getJobletNode();
-                    ((JobletContainer) jobletnode.getNodeContainer()).getOutputs().add(connection);
+                    ((AbstractJobletContainer) jobletnode.getNodeContainer()).getOutputs().add(connection);
                     restoreMetadata(connection, jobletnode);
                 }
                 if (!nodeList.contains(prevNode)) {
@@ -216,7 +216,7 @@ public class DeleteNodeContainerCommand extends Command {
                 INode nextNode = connection.getTarget();
                 if ((nextNode instanceof Node) && ((Node) nextNode).getJobletNode() != null) {
                     Node jobletnode = (Node) nextNode.getJobletNode();
-                    ((JobletContainer) jobletnode.getNodeContainer()).getInputs().add(connection);
+                    ((AbstractJobletContainer) jobletnode.getNodeContainer()).getInputs().add(connection);
                 }
                 if (!nodeList.contains(nextNode)) {
                     if (!nextNode.getIncomingConnections().contains(connection)) {

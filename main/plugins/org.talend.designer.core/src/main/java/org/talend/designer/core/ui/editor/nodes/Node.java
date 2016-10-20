@@ -137,7 +137,9 @@ import org.talend.designer.core.utils.UpgradeElementHelper;
 import org.talend.designer.joblet.model.JobletNode;
 import org.talend.designer.joblet.model.JobletProcess;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.utils.AutoConvertTypesUtils;
 
 /**
  * Object that describes the node. All informations on nodes are stored in this class. <br/>
@@ -413,6 +415,7 @@ public class Node extends Element implements IGraphicalNode {
         currentStatus = 0;
 
         init(component);
+        initDefaultElementParameters();
         IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
         if (param != null) {
             param.setValue(Boolean.TRUE);
@@ -682,6 +685,15 @@ public class Node extends Element implements IGraphicalNode {
     private void updateComponentStatusIfNeeded(boolean isInitializing) {
         if (component instanceof AbstractBasicComponent) {
             ((AbstractBasicComponent) component).setInitializing(isInitializing);
+        }
+    }
+
+    public void initDefaultElementParameters() {
+        boolean enable = RepositoryPlugin.getDefault().getPreferenceStore()
+                .getBoolean(AutoConvertTypesUtils.ENABLE_AUTO_CONVERSION);
+        IElementParameter convertElemParam = getElementParameter(AutoConvertTypesUtils.ENABLE_AUTO_CONVERT_TYPE);
+        if (enable && convertElemParam != null) {
+            convertElemParam.setValue(enable);
         }
     }
 
@@ -3376,6 +3388,11 @@ public class Node extends Element implements IGraphicalNode {
                     }
                 }
             }
+            // check if we have circle for current node
+            if (checkNodeCircle(this)) {
+                String errorMessage = Messages.getString("Node.notFormedLoop"); //$NON-NLS-1$
+                Problems.add(ProblemStatus.ERROR, this, errorMessage);
+            }
         }
         int tableOutLinkNum = 0;
         int tableRefOutLinkNum = 0;
@@ -3542,6 +3559,24 @@ public class Node extends Element implements IGraphicalNode {
         }
     }
 
+    private static boolean checkNodeCircle(INode currentNode) {
+        List<INode> nodeList = new ArrayList<INode>();
+        Set<INode> nodeSet = new HashSet<INode>();
+        getAllSourceNode(currentNode, nodeList);
+        for (INode node : nodeList) {
+            nodeSet.add(node);
+        }
+        return !(nodeSet.size() == nodeList.size());
+    }
+
+    private static void getAllSourceNode(INode source, List<INode> list) {
+        List<? extends IConnection> connections = source.getIncomingConnections();
+        for (IConnection connection : connections) {
+            INode node = connection.getSource();
+            list.add(node);
+            getAllSourceNode(node, list);
+        }
+    }
     public boolean isSchemaSynchronized() {
         return schemaSynchronized;
     }
@@ -4896,7 +4931,7 @@ public class Node extends Element implements IGraphicalNode {
         // TODO Auto-generated method stub
         this.needlibrary = isNeedLib;
     }
-    
+
     public boolean isStandardJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
@@ -4920,22 +4955,22 @@ public class Node extends Element implements IGraphicalNode {
         }
         return isJoblet;
     }
-    
+
     public boolean isSparkJoblet() {
         boolean isSparkJoblet = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
-            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister
-                    .getDefault().getService(ISparkJobletProviderService.class);
+            ISparkJobletProviderService sparkJobletService = (ISparkJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(ISparkJobletProviderService.class);
             if (sparkJobletService != null) {
                 isSparkJoblet = sparkJobletService.isSparkJobletComponent(this);
             }
         }
         return isSparkJoblet;
     }
-    
+
     public boolean isSparkStreamingJoblet() {
         boolean isSparkStreamingJoblet = false;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkJobletProviderService.class)) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ISparkStreamingJobletProviderService.class)) {
             ISparkStreamingJobletProviderService sparkJobletService = (ISparkStreamingJobletProviderService) GlobalServiceRegister
                     .getDefault().getService(ISparkStreamingJobletProviderService.class);
             if (sparkJobletService != null) {
@@ -4959,11 +4994,12 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     public boolean isMapReduce() {
-        String sourceJobFramework = (String) ((Process)this.getProcess()).getProperty().getAdditionalProperties().get(ConvertJobsUtil.FRAMEWORK);
-        if(sourceJobFramework == null){
+        String sourceJobFramework = (String) ((Process) this.getProcess()).getProperty().getAdditionalProperties()
+                .get(ConvertJobsUtil.FRAMEWORK);
+        if (sourceJobFramework == null) {
             return false;
         }
-        if(sourceJobFramework.equals(ConvertJobsUtil.MAPREDUCE_FRAMEWORK)){
+        if (sourceJobFramework.equals(ConvertJobsUtil.MAPREDUCE_FRAMEWORK)) {
             return true;
         }
         return false;

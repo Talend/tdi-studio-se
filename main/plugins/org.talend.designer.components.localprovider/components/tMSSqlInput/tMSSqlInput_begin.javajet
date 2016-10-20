@@ -17,6 +17,7 @@ imports="
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
 	
+		private String driver;
 	
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
@@ -33,23 +34,55 @@ imports="
 			String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 			String conn = "conn_" + connection;
 			String schema = "dbschema_" + connection;
+			INode connectionNode = null; 
+			for (INode processNode : node.getProcess().getGeneratingNodes()) { 
+				if(connection.equals(processNode.getUniqueName())) { 
+					connectionNode = processNode; 
+					break; 
+				} 
+			}
+			driver = ElementParameterParser.getValue(connectionNode,"__DRIVER__");
 %>
 			String dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
 <%
 	    }
+	    
+	    public void createConnection(INode node, boolean needUserAndPassword) {
+	    	this.driver = ElementParameterParser.getValue(node,"__DRIVER__");
+	    	super.createConnection(node, needUserAndPassword);
+	    }
 	
 		public void setURL(INode node) {
-			
 			String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
 %>
 		    String port_<%=cid%> = <%=dbport%>;
 		    String dbname_<%=cid%> = <%=dbname%> ;
-		    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ; 
+<%
+			if(driver.equals("JTDS")) {
+%>
+			String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+<%
+			} else {
+%>		    
+		    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+<%
+			}
+%>
 		    if (!"".equals(port_<%=cid%>)) {
 		    	url_<%=cid %> += ":" + <%=dbport%>;
 		    }
 		    if (!"".equals(dbname_<%=cid%>)) {
-		    	url_<%=cid%> += "//" + <%=dbname%>; 
+<%
+			if(driver.equals("JTDS")) {
+%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+<%
+			} else {
+%>		    
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+<%
+			}
+%>
 		    }
 		    url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
 		    String dbschema_<%=cid%> = <%=dbschema%>;
@@ -57,7 +90,10 @@ imports="
 		}
 		
 		public String getDirverClassName(INode node){
-			return "net.sourceforge.jtds.jdbc.Driver";
+			if(driver.equals("JTDS")) {
+				return "net.sourceforge.jtds.jdbc.Driver";
+			}
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		}
 		//-----------according schema type to generate ResultSet
 	    
@@ -80,7 +116,7 @@ imports="
 	    }
 	    
 		public void generateStringResultSet(String firstConnName, IMetadataColumn column, int currentColNo, String trimMethod) {
-			if("NTEXT".equalsIgnoreCase(column.getType())){
+			if("NTEXT".equalsIgnoreCase(column.getType()) && driver.equals("JTDS")){
 %>
 				net.sourceforge.jtds.jdbc.ClobImpl clob_<%=cid %> = (net.sourceforge.jtds.jdbc.ClobImpl) rs_<%=cid %>.getClob(<%=currentColNo %>);
 				if(clob_<%=cid %>!=null){

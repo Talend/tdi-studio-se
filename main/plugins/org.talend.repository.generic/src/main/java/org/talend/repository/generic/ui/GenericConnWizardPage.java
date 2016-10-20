@@ -39,7 +39,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
-import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -138,6 +137,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         if (visible) {
             parameters = dynamicComposite.resetParameters();
             dynamicComposite.refresh();
+            dynamicComposite.setMinHeight(dynamicComposite.getMinHeight());
             updateContextFields();
             if (getNameParameter() != null) {
                 getNameParameter().addPropertyChangeListener(this);
@@ -212,6 +212,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         return list;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public boolean isValid(String itemName) {
 

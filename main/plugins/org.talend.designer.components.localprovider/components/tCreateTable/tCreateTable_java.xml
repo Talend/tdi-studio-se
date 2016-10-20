@@ -406,6 +406,18 @@
       NUM_ROW="30"
       SHOW_IF="(DBTYPE=='MSSQL') and (USE_EXISTING_CONNECTION == 'true')"
     />
+    
+    <PARAMETER 
+		NAME="MSSQL_DRIVER" 
+		FIELD="CLOSED_LIST" 
+		NUM_ROW="50"
+		REPOSITORY_VALUE="DRIVER"
+		SHOW_IF="(DBTYPE=='MSSQL') and (USE_EXISTING_CONNECTION == 'false')">
+		<ITEMS DEFAULT="JTDS">
+			<ITEM NAME="JTDS" VALUE="JTDS" />
+			<ITEM NAME="MSSQL_PROP" VALUE="MSSQL_PROP"/>
+		</ITEMS>
+	</PARAMETER>
 	<!--MSSQL configuration end-->
 
 	<!--Mysql configuration start-->
@@ -712,7 +724,8 @@
 		<IMPORT NAME="Driver-DB2-LICENSE-CISUZ" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CU" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver_MaxDB" MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED_IF="DBTYPE=='MAXDB'" />
-		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL')" />
+		<IMPORT NAME="Driver-MSSQL" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='JTDS')" />
+		<IMPORT NAME="Driver-MSSQL-prop" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='MSSQL') AND (MSSQL_DRIVER=='MSSQL_PROP')" />
 		<IMPORT NAME="Driver-MYSQL4" MODULE="mysql-connector-java-3.1.14-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-3.1.14-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_4')"/>
 		<IMPORT NAME="Driver-MYSQL5" MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MYSQL_5')"/>
 		<IMPORT NAME="Driver-MARIADB"  MODULE="mariadb-java-client-1.1.7.jar" MVN="mvn:org.talend.libraries/mariadb-java-client-1.1.7/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='MYSQL') and (DB_MYSQL_VERSION=='MARIADB')" />

@@ -50,7 +50,7 @@ for(JavaType sourceType : commonTypes) {
 	}
 }
 
-autoConverterMap.put(contact(JavaTypesManager.DYNAMIC.getId(), ":", JavaTypesManager.STRING.getId()), "String.valueOf(${0})");
+autoConverterMap.put(contact("id_Dynamic", ":", JavaTypesManager.STRING.getId()), "String.valueOf(${0})");
 autoConverterMap.put(contact("id_Document", ":", JavaTypesManager.STRING.getId()), "String.valueOf(${0})");
 autoConverterMap.put(contact(JavaTypesManager.STRING.getId(), ":", "id_Document"), "routines.system.ParserUtils.parseTo_Document(${0})");
 %>

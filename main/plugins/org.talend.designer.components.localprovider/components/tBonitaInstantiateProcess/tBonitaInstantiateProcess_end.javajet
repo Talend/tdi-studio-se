@@ -16,7 +16,7 @@ imports="
 	String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 	
 	if ("HTTP_CLIENT".equals(clientMode)) {
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 		if (client_<%=cid %> != null) {
 			client_<%=cid%>.logout();
@@ -31,7 +31,7 @@ imports="
 <%
 		}
 	} else {
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 		if (client_<%=cid %> != null) {
 			client_<%=cid%>.logout();

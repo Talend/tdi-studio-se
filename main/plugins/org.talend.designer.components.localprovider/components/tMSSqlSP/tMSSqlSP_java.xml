@@ -60,11 +60,23 @@
       SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
       DYNAMIC_SETTINGS="true"
     />
+    
+    <PARAMETER 
+		NAME="DRIVER" 
+		FIELD="CLOSED_LIST" 
+		NUM_ROW="3"
+		REPOSITORY_VALUE="DRIVER"
+		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
+		<ITEMS DEFAULT="JTDS">
+			<ITEM NAME="JTDS" VALUE="JTDS" />
+			<ITEM NAME="MSSQL_PROP" VALUE="MSSQL_PROP"/>
+		</ITEMS>
+	</PARAMETER>
 
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REPOSITORY_VALUE="SERVER_NAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -74,7 +86,7 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REPOSITORY_VALUE="PORT"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -84,7 +96,7 @@
 	<PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REPOSITORY_VALUE="SCHEMA"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -95,17 +107,17 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="5"
       REPOSITORY_VALUE="SID"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-
+    
 	<PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="5"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -118,7 +130,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="5"
+      NUM_ROW="6"
       REPOSITORY_VALUE="USERNAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -128,7 +140,7 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="5"
+      NUM_ROW="6"
       REPOSITORY_VALUE="PASSWORD"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -138,7 +150,7 @@
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="6"
+      NUM_ROW="7"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -146,7 +158,7 @@
     <PARAMETER
       NAME="SP_NAME"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="9"
       REQUIRED="true"
     >
       <DEFAULT>"myfunction"</DEFAULT>
@@ -155,7 +167,7 @@
     <PARAMETER
       NAME="IS_FUNCTION"
       FIELD="CHECK"
-      NUM_ROW="9"
+      NUM_ROW="10"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -163,7 +175,7 @@
     <PARAMETER
       NAME="RETURN"
       FIELD="COLUMN_LIST"
-      NUM_ROW="9"
+      NUM_ROW="10"
       SHOW_IF="IS_FUNCTION == 'true'"
     >
     </PARAMETER>
@@ -172,7 +184,7 @@
       NAME="SP_ARGS"
       FIELD="TABLE"
       REQUIRED="false"
-      NUM_ROW="10"
+      NUM_ROW="11"
       NB_LINES="3"
     >
       <ITEMS>
@@ -242,7 +254,8 @@
 
   <CODEGENERATION>
     <IMPORTS>
-    	<IMPORT NAME="Driver-jTDS" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED="true" />
+    	<IMPORT NAME="Driver-jTDS" MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED_IF="(DRIVER == 'JTDS') AND (USE_EXISTING_CONNECTION == 'false')" />
+    	<IMPORT NAME="Driver-mssql-jdbc" MODULE="mssql-jdbc.jar" MVN="mvn:org.talend.libraries/mssql-jdbc/6.0.0"  REQUIRED_IF="(DRIVER == 'MSSQL_PROP') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>
   </CODEGENERATION>
 

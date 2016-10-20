@@ -64,6 +64,14 @@ public class JobSettingVersionUtil {
             }
             elementParameter.setListItemsDisplayName(StatsAndLogsConstants.MYSQL_VERSION_DISPLAY);
             elementParameter.setListItemsValue(StatsAndLogsConstants.MYSQL_VERSION_CODE);
+        } else if (dbType.toUpperCase().indexOf("MSSQL") != -1) {//$NON-NLS-1$
+            if (withInitialValue) {
+                elementParameter.setValue(StatsAndLogsConstants.MSSQL_VERSION_CODE[0]);
+            } else {
+                elementParameter.setValue(dbVersion);
+            }
+            elementParameter.setListItemsDisplayName(StatsAndLogsConstants.MSSQL_VERSION_DISPLAY);
+            elementParameter.setListItemsValue(StatsAndLogsConstants.MSSQL_VERSION_CODE);
         } else if (dbType.toUpperCase().indexOf("POSTGRESQL") != -1) {//$NON-NLS-1$
             if (withInitialValue) {
                 elementParameter.setValue(StatsAndLogsConstants.PSQL_VERSION_CODE[0]);

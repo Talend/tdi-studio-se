@@ -21,7 +21,7 @@ imports="
 		
 		String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 		
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 			String processInstanceUUID_<%=cid%> = null;
 			java.util.Map<String,String> vars_<%=cid%> = new java.util.HashMap<String,String>();
@@ -93,7 +93,7 @@ imports="
 		String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 		String bonitaHome = ElementParameterParser.getValue(node, "__BONITA_HOME__");
 		
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 			String processInstanceUUID_<%=cid%> = null;
 			java.util.Map<String, Object> parameters_<%=cid%>=new java.util.HashMap<String, Object>();

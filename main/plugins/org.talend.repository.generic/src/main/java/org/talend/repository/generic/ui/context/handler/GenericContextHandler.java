@@ -23,7 +23,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.core.model.context.JobContextManager;
-import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
@@ -105,10 +104,6 @@ public class GenericContextHandler implements IContextHandler {
             for (IElementParameter param : parameters) {
                 if (param instanceof GenericElementParameter) {
                     GenericElementParameter genericElementParameter = (GenericElementParameter) param;
-                    if (genericElementParameter.getFieldType() == EParameterFieldType.CLOSED_LIST
-                            || genericElementParameter.getFieldType() == EParameterFieldType.CHECK) {
-                        continue;
-                    }
                     if (genericElementParameter.isSupportContext()) {
                         GenericConnParamName connParamName = new GenericConnParamName();
                         String paramName = genericElementParameter.getName();

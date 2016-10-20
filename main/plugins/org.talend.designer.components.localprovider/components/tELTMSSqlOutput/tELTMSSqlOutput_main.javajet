@@ -65,6 +65,7 @@ imports="
         String dbuser = null;
 	    boolean useExistingConn = false;
 	    String dbproperties = null;
+	    String driver = "JTDS";
         if(previousNode != null) {
 	        dbhost = ElementParameterParser.getValue(previousNode, "__HOST__");
 	        dbport = ElementParameterParser.getValue(previousNode, "__PORT__");
@@ -72,6 +73,7 @@ imports="
 	        dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
 	    	useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
 	    	dbproperties = ElementParameterParser.getValue(previousNode, "__PROPERTIES__");
+	    	driver = ElementParameterParser.getValue(previousNode, "__DRIVER__");
         }
 
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
@@ -88,17 +90,33 @@ if(useExistingConn) {
     <%
     log4jCodeGenerateUtil.useExistConnection(node);
 } else {
+	if("JTDS".equals(driver)) {
     %>
     String driverClass_<%=cid%> = "net.sourceforge.jtds.jdbc.Driver";
+    <%} else {%>
+    String driverClass_<%=cid%> = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    <%}%>
     java.lang.Class.forName(driverClass_<%=cid%>);
     String port_<%=cid%> = <%=dbport%>;
     String dbname_<%=cid%> = <%=dbname%> ;
-    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ; 
+    <%
+    if("JTDS".equals(driver)) {
+    %>
+    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+    <%} else {%>
+    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+    <%}%>
     if (!"".equals(port_<%=cid%>)) {
     	url_<%=cid %> += ":" + <%=dbport%>;
     }
     if (!"".equals(dbname_<%=cid%>)) {
+    	<%
+    	if("JTDS".equals(driver)) {
+    	%>
     	url_<%=cid%> += "//" + <%=dbname%>; 
+    	<%} else {%>
+    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+    	<%}%>
     }
     url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
     String dbUser_<%=cid %> = <%=dbuser%>;

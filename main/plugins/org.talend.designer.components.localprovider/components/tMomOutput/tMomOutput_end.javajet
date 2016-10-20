@@ -68,19 +68,6 @@ if(("JBoss").equals(serverType) || ("ActiveMQ").equals(serverType)){
 			<%
 			}
 		}
-		if (isLog4jEnabled) {
-		%>
-			log.info("<%=cid%> - Closing producer...");
-		<%
-		}
-		%>
-		producer_<%=cid %>.close();
-		<%
-		if (isLog4jEnabled) {
-		%>
-			log.info("<%=cid%> - Closed successfully.");
-		<%
-		}
         if (!isCommitRollback && !isUseExistConnection) {
         	if (isLog4jEnabled) {
 			%>
@@ -97,6 +84,19 @@ if(("JBoss").equals(serverType) || ("ActiveMQ").equals(serverType)){
 				log.info("<%=cid%> - Closed successfully.");
 			<%
 			}
+            if (isLog4jEnabled) {
+            %>
+                log.info("<%=cid%> - Closing producer...");
+            <%
+            }
+            %>
+            producer_<%=cid %>.close();
+            <%
+            if (isLog4jEnabled) {
+            %>
+                log.info("<%=cid%> - Closed successfully.");
+            <%
+            }
 		}
 	}
 	if(("ActiveMQ").equals(serverType) && !isCommitRollback && transacted){

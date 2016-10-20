@@ -39,7 +39,7 @@ imports="
 						
 						for (int i = 0; i < sizeColumns; i++) {
 							if ("HTTP_CLIENT".equals(clientMode)) {
-								if("BONITA_652".equals(dbVersion)) {
+								if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 									if(!JavaTypesManager.isJavaPrimitiveType(columns.get(i).getTalendType(), columns.get(i).isNullable())) {
 									%>
 										if(<%=conn.getName()%>.<%=(columns.get(i)).getLabel()%> != null) {//}
@@ -123,7 +123,7 @@ imports="
 	try{
 		<%
 		if ("HTTP_CLIENT".equals(clientMode)) {
-			if("BONITA_652".equals(dbVersion)) {
+			if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 		%>
 				processInstanceUUID_<%=cid%> = client_<%=cid%>.startProcess(processID_<%=cid%>,vars_<%=cid%>);
 		<%
@@ -154,7 +154,7 @@ imports="
 		<%
 			}
 		} else { // Java Client
-			if("BONITA_652".equals(dbVersion)) {
+			if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 				boolean use_process_id = "true".equals(ElementParameterParser.getValue(node, "__USE_PROCESS_ID__"));
 				if(use_process_id) {
 		%>

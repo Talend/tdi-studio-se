@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.context.ContextUtils;
@@ -33,7 +34,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
-import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -73,7 +73,8 @@ public class GenericContextUtil {
                     if (GenericTypeUtils.isIntegerType(property)) {
                         type = JavaTypesManager.INTEGER;
                     }
-                    String value = property == null || property.getValue() == null ? null : String.valueOf(property.getValue());
+                    String value = property == null || property.getValue() == null ? null
+                            : StringEscapeUtils.escapeJava(String.valueOf(property.getValue()));
                     ConnectionContextHelper.createParameters(varList, paramName, value, type);
                 }
             }

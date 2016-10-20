@@ -66,75 +66,84 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
                 String propsKey = (String) element;
                 String propsValue = props.getProperty(propsKey);
                 if (propsValue != null && !"".equals(propsValue.trim())) { //$NON-NLS-1$
-                    try {
-                        String methodName = propsValue.substring(0, 1).toUpperCase() + propsValue.substring(1);
-                        Object value = ReflectionUtils.invokeMethod(oldConnection, "get" + methodName, new Object[0]); //$NON-NLS-1$
-                        if (value != null) {
-                            NamedThing namedThing = componentProperties.getProperty(propsKey);
-                            if (namedThing != null && namedThing instanceof org.talend.daikon.properties.property.Property) {
-                                org.talend.daikon.properties.property.Property<?> property = (org.talend.daikon.properties.property.Property<?>) namedThing;
-                                if (GenericTypeUtils.isEnumType(property)) {
-                                    Object obj = props.get(propsKey + "." + value);//$NON-NLS-1$
-                                    if (obj != null) {
-                                        List<?> propertyPossibleValues = property.getPossibleValues();
-                                        Object newValue = null;
-                                        if (propertyPossibleValues != null) {
-                                            for (Object possibleValue : propertyPossibleValues) {
-                                                if (possibleValue.toString().equals(obj)) {
-                                                    newValue = possibleValue;
-                                                    break;
-                                                }
+                    Object value = getValueFromOldConnection(oldConnection, propsValue);
+                    if (value != null) {
+                        NamedThing namedThing = componentProperties.getProperty(propsKey);
+                        if (namedThing != null && namedThing instanceof org.talend.daikon.properties.property.Property) {
+                            org.talend.daikon.properties.property.Property<?> property = (org.talend.daikon.properties.property.Property<?>) namedThing;
+                            if (GenericTypeUtils.isEnumType(property)) {
+                                Object obj = props.get(propsKey + "." + value);//$NON-NLS-1$
+                                if (obj != null) {
+                                    List<?> propertyPossibleValues = property.getPossibleValues();
+                                    Object newValue = null;
+                                    if (propertyPossibleValues != null) {
+                                        for (Object possibleValue : propertyPossibleValues) {
+                                            if (possibleValue.toString().equals(obj)) {
+                                                newValue = possibleValue;
+                                                break;
                                             }
                                         }
-                                        if (newValue == null) {
-                                            // set default value
-                                            newValue = propertyPossibleValues.get(0);
-                                        }
-                                        componentProperties.setValue(propsKey, newValue);
-                                        property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
-                                        changed = true;
                                     }
-                                }
-                                if (GenericTypeUtils.isBooleanType(property)) {
-                                    if (value != null && value instanceof String) {
-                                        try {
-                                            value = new Boolean((String) value);
-                                        } catch (Exception e) {
-                                            value = Boolean.FALSE;
-                                        }
+                                    if (newValue == null) {
+                                        // set default value
+                                        newValue = propertyPossibleValues.get(0);
                                     }
-                                }
-                                if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
-                                    if (value != null && value instanceof String) {
-                                        try {
-                                            value = new Integer((String) value);
-                                        } catch (Exception e) {
-                                            value = 0;
-                                        }
-                                    }
-                                }
-                                if (property.isFlag(org.talend.daikon.properties.property.Property.Flags.ENCRYPT)
-                                        && !oldConnection.isContextMode()) {
-                                    componentProperties.setValue(propsKey,
-                                            CryptoHelper.getDefault().decrypt(String.valueOf(value)));
+                                    componentProperties.setValue(propsKey, newValue);
                                     property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
-                                    modified = true;
                                     changed = true;
                                 }
-                                if (!changed) {
-                                    property.setStoredValue(value);
-                                    property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
-                                    modified = true;
+                            }
+                            if (GenericTypeUtils.isBooleanType(property)) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Boolean((String) value);
+                                    } catch (Exception e) {
+                                        value = Boolean.FALSE;
+                                    }
                                 }
                             }
+                            if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Integer((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            }
+                            if (property.isFlag(org.talend.daikon.properties.property.Property.Flags.ENCRYPT)
+                                    && !oldConnection.isContextMode()) {
+                                componentProperties.setValue(propsKey, CryptoHelper.getDefault().decrypt(String.valueOf(value)));
+                                property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
+                                modified = true;
+                                changed = true;
+                            }
+                            if (!changed) {
+                                property.setStoredValue(value);
+                                property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
+                                modified = true;
+                            }
                         }
-                    } catch (Exception e) {
-                        // Do nothing
                     }
                 }
             }
         }
         return modified;
+    }
+
+    protected Object getValueFromOldConnection(Connection oldConnection, String parameterName) {
+        String methodName = parameterName.substring(0, 1).toUpperCase() + parameterName.substring(1);
+        Object value = null;
+        try {
+            value = ReflectionUtils.invokeMethod(oldConnection, "get" + methodName, new Object[0]); //$NON-NLS-1$
+        } catch (Exception e) {
+            try {
+                value = ReflectionUtils.invokeMethod(oldConnection, "is" + methodName, new Object[0]); //$NON-NLS-1$
+            } catch (Exception ex) {
+                // do nothing.
+            }
+        }
+        return value;
     }
 
     protected boolean updateMetadataTable(Connection oldConnection, Connection genericConnection,

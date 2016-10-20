@@ -109,6 +109,9 @@ public class ComponentsUtils {
     }
 
     public static void loadComponents(ComponentService service) {
+        if(service == null){
+            return;
+        }
         IComponentsFactory componentsFactory = null;
         if (componentsFactory == null) {
             componentsFactory = ComponentsFactoryProvider.getInstance();
@@ -278,8 +281,10 @@ public class ComponentsUtils {
                 param.setRequired(property.isRequired());
                 param.setValue(getParameterValue(element, property, fieldType, isInitializing));
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
-                if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || isNameProperty) {
-                    // Disable context support for this filed type.
+                if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
+                        || EParameterFieldType.CLOSED_LIST.equals(fieldType) || EParameterFieldType.CHECK.equals(fieldType)
+                        || isNameProperty) {
+                    // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {
                     param.setSupportContext(isSupportContext(property));
@@ -356,7 +361,7 @@ public class ComponentsUtils {
                         Boolean.valueOf(String.valueOf(widget.getConfigurationValue(Widget.HIDE_TOOLBAR_WIDGET_CONF))));
             }
             if (!param.isReadOnly()) {
-                param.setReadOnly(element.isReadOnly());
+                param.setReadOnly(widget.isReadonly() || element.isReadOnly());
             }
             param.setSerialized(true);
             param.setDynamicSettings(true);

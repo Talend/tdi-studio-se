@@ -748,11 +748,13 @@ public class ProcessController extends AbstractElementPropertySectionController 
                     // label = path.toString() + IPath.SEPARATOR + label;
                     // }
                 } else {
-                    final String parentName = processParam.getName() + ":"; //$NON-NLS-1$
-                    if (elem != null) {
-                        // can be called in multi-thread, dispose method may be already called before executing this method
-                        elem.setPropertyValue(parentName + jobNameParam.getName(), ""); //$NON-NLS-1$
-                    }
+                    // FIXME TUP-5524, don't set empty, keep the id value instead.
+                    // final String parentName = processParam.getName() + ":"; //$NON-NLS-1$
+                    // if (elem != null) {
+                    // // can be called in multi-thread, dispose method may be already called before executing this
+                    // method
+                    //elem.setPropertyValue(parentName + jobNameParam.getName(), ""); //$NON-NLS-1$
+                    // }
                 }
             }
         }

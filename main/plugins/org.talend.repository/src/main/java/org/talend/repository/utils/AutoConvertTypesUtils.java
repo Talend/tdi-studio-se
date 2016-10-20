@@ -58,6 +58,8 @@ public class AutoConvertTypesUtils {
 
     public static final String ENABLE_AUTO_CONVERSION = "ENABLE_AUTO_CONVERSION";//$NON-NLS-1$
 
+    public static final String ENABLE_AUTO_CONVERT_TYPE = "ENABLE_AUTO_CONVERT_TYPE"; //$NON-NLS-1$
+
     private static List<AutoConversionType> beanList = null;
 
     public static List<AutoConversionType> getAllAutoConversionTypes() {

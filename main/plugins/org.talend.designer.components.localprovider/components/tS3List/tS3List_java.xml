@@ -75,11 +75,55 @@
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     
+    <PARAMETER
+      NAME="ASSUME_ROLE"
+      FIELD="CHECK"
+      NUM_ROW="22"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false')" 
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ARN"
+      FIELD="TEXT"
+      NUM_ROW="23"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ROLE_SESSION_NAME"
+      FIELD="TEXT"
+      NUM_ROW="24"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SESSION_DURATION"
+      FIELD="TEXT"
+      NUM_ROW="25"
+      REQUIRED="true"
+      GROUP="CONNECTION_CONFIG"
+      SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    >
+      <DEFAULT>15</DEFAULT>
+    </PARAMETER>
+    
     <PARAMETER 
 	    NAME="REGION" 
 	    FIELD="OPENED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="22" 
+	    NUM_ROW="26" 
 	    REQUIRED="true" 
 	    SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
 	 >
@@ -102,7 +146,7 @@
     <PARAMETER
       NAME="LISTALL"
       FIELD="CHECK"
-      NUM_ROW="25"
+      NUM_ROW="27"
       REQUIRED="true"
     >
         <DEFAULT>true</DEFAULT>
@@ -111,7 +155,7 @@
     <PARAMETER
       NAME="OBJECTS_PREFIX"
       FIELD="TEXT"
-      NUM_ROW="25"
+      NUM_ROW="27"
       REQUIRED="false"
       SHOW_IF="LISTALL == 'true'"
     >
@@ -181,6 +225,23 @@
             <ITEM NAME="VALUE" />
           </ITEMS>
         </PARAMETER>
+        
+        <PARAMETER
+    	  NAME="SET_STS_ENDPOINT"
+    	  FIELD="CHECK"
+    	  NUM_ROW="35"
+    	  SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+    	>
+    	</PARAMETER>
+		<PARAMETER
+    	  NAME="STS_ENDPOINT"
+    	  FIELD="TEXT"
+    	  NUM_ROW="35"
+    	  REQUIRED="true"
+    	  SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+    	>
+    	  <DEFAULT>""</DEFAULT>
+    	</PARAMETER>
 
     </ADVANCED_PARAMETERS>
 

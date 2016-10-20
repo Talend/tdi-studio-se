@@ -70,11 +70,23 @@
 	  SHOW_IF="(USE_EXISTING_CONNECTION == 'true')"
 	  DYNAMIC_SETTINGS="true"
 	/>
+	
+	<PARAMETER 
+		NAME="DRIVER" 
+		FIELD="CLOSED_LIST" 
+		NUM_ROW="3"
+		REPOSITORY_VALUE="DRIVER"
+		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
+		<ITEMS DEFAULT="JTDS">
+			<ITEM NAME="JTDS" VALUE="JTDS" />
+			<ITEM NAME="MSSQL_PROP" VALUE="MSSQL_PROP"/>
+		</ITEMS>
+	</PARAMETER>
     
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REQUIRED="true" 
       REPOSITORY_VALUE="SERVER_NAME"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"          
@@ -85,7 +97,7 @@
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -95,7 +107,7 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REQUIRED="true" 
       REPOSITORY_VALUE="PORT"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
@@ -106,7 +118,7 @@
     <PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="4"
       REPOSITORY_VALUE="SCHEMA"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
     >
@@ -117,7 +129,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="5"
       REQUIRED="true" 
       REPOSITORY_VALUE="SID"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
@@ -128,7 +140,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="5"
+      NUM_ROW="6"
       REQUIRED="true" 
       REPOSITORY_VALUE="USERNAME"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
@@ -139,7 +151,7 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="5"
+      NUM_ROW="6"
       REQUIRED="true" 
       REPOSITORY_VALUE="PASSWORD"
 	  SHOW_IF="(USE_EXISTING_CONNECTION == 'false')"
@@ -150,7 +162,7 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="6"
+      NUM_ROW="7"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -158,7 +170,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="7"
+      NUM_ROW="8"
       NOT_SHOW_IF="PARALLELIZE == 'true'"
     >
       <ITEMS DEFAULT="NONE">
@@ -174,7 +186,7 @@
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="7"
+      NUM_ROW="8"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -182,7 +194,7 @@
     <PARAMETER
       NAME="FILENAME"
       FIELD="FILE"
-      NUM_ROW="8"
+      NUM_ROW="9"
       REQUIRED="true"
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/mssql_data.txt"</DEFAULT>
@@ -192,7 +204,7 @@
     	NAME="APPEND"
         FIELD="CHECK" 
         REQUIRED="true" 
-        NUM_ROW="9" 
+        NUM_ROW="10" 
         REPOSITORY_VALUE="APPEND">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -200,7 +212,7 @@
 	<PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
-      NUM_ROW="11"
+      NUM_ROW="12"
       SHOW="false"
     >       
       <DEFAULT>id_MSSQL</DEFAULT>
@@ -298,6 +310,7 @@
       <TEMPLATE_PARAM SOURCE="self.SCHEMA"   TARGET="tMOB.SCHEMA" />
       <TEMPLATE_PARAM SOURCE="self.ACTION"   TARGET="tMBE.ACTION" />
       <TEMPLATE_PARAM SOURCE="self.BCP_UTILITY"   TARGET="tMBE.BCP_UTILITY" />
+      <TEMPLATE_PARAM SOURCE="self.DRIVER"   TARGET="tMBE.DRIVER" />
       <TEMPLATE_PARAM SOURCE="self.HOST"   TARGET="tMBE.HOST" />
       <TEMPLATE_PARAM SOURCE="self.PORT"   TARGET="tMBE.PORT" />
       <TEMPLATE_PARAM SOURCE="self.DBNAME"   TARGET="tMBE.DBNAME" />

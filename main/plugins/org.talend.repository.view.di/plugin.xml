@@ -583,7 +583,7 @@
       </navigatorContent>
       <navigatorContent
             activeByDefault="true"
-            appearsBefore="org.talend.repository.viewer.metadata.dbDelimited"
+            appearsBefore="org.talend.repository.viewer.metadata.dbPositional"
             contentProvider="org.talend.repository.view.di.metadata.content.MetadataDbConnectionsContentProvider"
             icon="icons/dbConnections.gif"
             id="org.talend.repository.viewer.metadata.dbConnections"
@@ -649,71 +649,6 @@
             </enablement>
          </actionProvider>
       </navigatorContent>
-      <navigatorContent
-            activeByDefault="true"
-            appearsBefore="org.talend.repository.viewer.metadata.dbPositional"
-            contentProvider="org.talend.repository.view.di.metadata.content.MetadataFileDelimitedContentProvider"
-            icon="icons/fileDelimited.gif"
-            id="org.talend.repository.viewer.metadata.dbDelimited"
-            labelProvider="org.talend.repository.viewer.label.RepositoryViewLabelProvider"
-            name="File delimited"
-            priority="higher">
-         <triggerPoints>
-            <and>
-               <instanceof
-                     value="org.talend.repository.model.RepositoryNode">
-               </instanceof>
-               <or>
-                  <test
-                        forcePluginActivation="true"
-                        property="org.talend.repository.node.isMetadataTopNode">
-                  </test>
-                  <test
-                        property="org.talend.repository.node.metadata.isFileDelimited">
-                  </test></or>
-            </and>
-         </triggerPoints>
-         <possibleChildren>
-            <and>
-               <instanceof
-                     value="org.talend.repository.model.RepositoryNode">
-               </instanceof>
-               <or>
-                  <test
-                        property="org.talend.repository.node.metadata.isSchema">
-                  </test>
-                  <test
-                        property="org.talend.repository.node.metadata.isSchemaColumn">
-                  </test>
-                  <test
-                        property="org.talend.repository.node.metadata.isFileDelimited">
-                  </test>
-               </or>
-            </and>
-         </possibleChildren>
-         <actionProvider
-               class="org.talend.repository.view.di.metadata.action.MetedataNodeActionProvier"
-               id="org.talend.repository.metadata.file.delimited.action.provider.id">
-            <enablement>
-               <and>
-                  <instanceof
-                        value="org.talend.repository.model.RepositoryNode">
-                  </instanceof>
-                  <test
-                        forcePluginActivation="true"
-                        property="org.talend.repository.node.metadata.isFileDelimited">
-                  </test>
-                  <not>
-                     <test
-                           forcePluginActivation="true"
-                           property="org.talend.repository.node.isDeleted">
-                     </test>
-                  </not>
-               </and>
-            </enablement>
-         </actionProvider>
-      </navigatorContent>
-      
       
       <navigatorContent
             activeByDefault="true"

@@ -34,6 +34,7 @@ if(useExistingConnection) {
 <%
 } else {
 	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));   
+	String driver = ElementParameterParser.getValue(node, "__DRIVER__");
 	if(isEnableDatasource && specify_alias){
 		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
 		%>
@@ -45,17 +46,47 @@ if(useExistingConnection) {
 	}
     %>
     dbschema_<%=cid%> = <%=dbschema%>;
+    <%
+    if(driver.equals("JTDS")) {
+    %>
     String driverClass_<%=cid%> = "net.sourceforge.jtds.jdbc.Driver";
+    <%
+    } else {
+    %>
+    String driverClass_<%=cid%> = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    <% 
+    }
+    %>
 	<%dbLog.conn().logJDBCDriver(dbLog.var("driverClass"));%>
     java.lang.Class.forName(driverClass_<%=cid%>);
     String port_<%=cid%> = <%=dbport%>;
     String dbname_<%=cid%> = <%=dbname%> ;
-    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ; 
+    <%
+    if(driver.equals("JTDS")) {
+    %>
+    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+    <%
+    } else {
+    %>
+    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+    <%
+    }
+    %> 
     if (!"".equals(port_<%=cid%>)) {
     	url_<%=cid %> += ":" + <%=dbport%>;
     }
     if (!"".equals(dbname_<%=cid%>)) {
-    	url_<%=cid%> += "//" + <%=dbname%>; 
+    <%
+			if(driver.equals("JTDS")) {
+	%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+	<%
+			} else {
+	%>		    
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+	<%
+			}
+	%>
     }
     url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
     dbUser_<%=cid %> = <%=dbuser%>;

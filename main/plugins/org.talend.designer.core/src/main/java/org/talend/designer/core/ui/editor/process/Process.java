@@ -2162,6 +2162,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             nc = loadNode(nType, component, nodesHashtable, listParamType);
 
         }
+        
+        if(!unloadedNode.isEmpty()){
+            List<NodeType> tempNodes = new ArrayList<NodeType>(unloadedNode);
+            for(NodeType unNode:tempNodes){
+                listParamType = unNode.getElementParameter();
+                boolean isCurrentProject = ProjectManager.getInstance().isInCurrentMainProject(this.getProperty());
+                String componentName = unNode.getComponentName();
+                if(!isCurrentProject){
+                    componentName = componentName +"_"+ProjectManager.getInstance().getProject(this.getProperty()).getLabel();
+                }
+                IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
+                if(component!=null){
+                    unloadedNode.remove(unNode);
+                    nc = loadNode(unNode, component, nodesHashtable, listParamType);
+                }
+            }
+        }
 
         if (!unloadedNode.isEmpty()) {
             for (int i = 0; i < unloadedNode.size(); i++) {

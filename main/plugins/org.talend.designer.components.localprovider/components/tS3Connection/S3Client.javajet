@@ -10,6 +10,18 @@
 	List<Map<String,String>> clientConfiguration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CLIENT_CONFIGURATION__");
 	String region = ElementParameterParser.getValue(node,"__REGION__");
 	
+	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
+	String arn = ElementParameterParser.getValue(node,"__ARN__");
+	String roleSessionName = ElementParameterParser.getValue(node,"__ROLE_SESSION_NAME__");
+	
+	boolean setStsEndpoint = "true".equals(ElementParameterParser.getValue(node,"__SET_STS_ENDPOINT__"));
+	String stsEndpoint = ElementParameterParser.getValue(node,"__STS_ENDPOINT__");
+	
+	String sessionDuration = ElementParameterParser.getValue(node,"__SESSION_DURATION__");
+	if(sessionDuration == null || sessionDuration.isEmpty()) {
+		sessionDuration = "15";
+	}
+	
 	boolean set_region = (region!=null && !region.isEmpty() && !"DEFAULT".equalsIgnoreCase(region));
 	
 	if(("true").equals(useExistingConn)) {
@@ -40,6 +52,7 @@
     		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 			com.amazonaws.auth.AWSCredentials credentials_<%=cid%> = new com.amazonaws.auth.BasicAWSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
+			com.amazonaws.auth.AWSCredentialsProvider credentialsProvider_<%=cid%> = new com.amazonaws.internal.StaticCredentialsProvider(credentials_<%=cid%>);
 		<%
 		} else {
 		%>
@@ -155,11 +168,12 @@
 			com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider encryptionMaterialsProvider_<%=cid%> = new com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider(encryptionMaterials_<%=cid%>);
 		<%
 		}
-		
-		if(configClient && clientConfiguration.size()>0){
 		%>
-			com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
-			<%
+		com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
+		<%
+		boolean configClientPresent = false;
+		if(configClient && clientConfiguration.size()>0){
+			configClientPresent = true;
 			boolean setBuffer = false;
 			for(Map<String,String> map :clientConfiguration){
 				String client_parameter = map.get("CLIENT_PARAMETER");
@@ -195,10 +209,37 @@
 			<%
 			}
 			
+		}
+		
+		if(assumeRole) {
+		%>
+			int sessionDurationSeconds_<%=cid%> = <%=sessionDuration%> * 60;
+			com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider.Builder stsBuilder_<%=cid%> = 
+					new com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider.Builder(<%=arn%>, <%=roleSessionName%>).withLongLivedCredentialsProvider(credentialsProvider_<%=cid%>)
+					.withRoleSessionDurationSeconds(sessionDurationSeconds_<%=cid%>);
+					
+			<%
+			if(setStsEndpoint) {
+			%>
+				stsBuilder_<%=cid%>.withServiceEndpoint(<%=stsEndpoint%>);
+			<%
+			}
+			
+			if(configClientPresent) {
+			%>
+				stsBuilder_<%=cid%>.withClientConfiguration(cc_<%=cid%>);
+			<%
+			}
+			%>
+			
+			credentialsProvider_<%=cid%> = stsBuilder_<%=cid%>.build();
+			
+		<%
+		}
 			if(encrypt) {
 			%>
 				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3EncryptionClient(
-					<%if(!inherit_credentials) {%>credentials_<%=cid%><%} else {%>credentialsProvider_<%=cid%><%}%>,
+					credentialsProvider_<%=cid%>,
 					encryptionMaterialsProvider_<%=cid%>, 
 					cc_<%=cid%>,
 					new com.amazonaws.services.s3.model.CryptoConfiguration()
@@ -210,31 +251,11 @@
 			} else {
 			%>
 				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3Client(
-					<%if(!inherit_credentials) {%>credentials_<%=cid%><%} else {%>credentialsProvider_<%=cid%><%}%>,
+					credentialsProvider_<%=cid%>,
 					cc_<%=cid%>
 				);
 			<%
 			}
-		}else{
-			if(encrypt) {
-			%>
-				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3EncryptionClient(
-					<%if(!inherit_credentials) {%>credentials_<%=cid%><%} else {%>credentialsProvider_<%=cid%><%}%>, 
-					encryptionMaterialsProvider_<%=cid%>,
-					new com.amazonaws.services.s3.model.CryptoConfiguration()
-						<%if("KMS_CMK".equals(key_type) && set_region) {%>
-						.withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>))
-						<%}%>
-				);
-			<%
-			} else {
-			%>
-				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3Client(
-					<%if(!inherit_credentials) {%>credentials_<%=cid%><%} else {%>credentialsProvider_<%=cid%><%}%>
-				);
-			<%
-			}
-		}
 		if(set_region){
 		%>
 			conn_<%=cid%>.setRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>));

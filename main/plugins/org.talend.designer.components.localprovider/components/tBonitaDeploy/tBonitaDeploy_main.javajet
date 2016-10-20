@@ -24,7 +24,7 @@ imports="
 	String bonitaHome = ElementParameterParser.getValue(node, "__BONITA_HOME__");
 	
 	String clientMode = ElementParameterParser.getValue(node, "__CLIENT_MODE__");
-	if("BONITA_652".equals(dbVersion)) {
+	if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 		String passwordFieldName = "__PASSWORD__";
 %>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>

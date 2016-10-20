@@ -54,7 +54,7 @@ public class FileInputDelimitedNode extends FileInputNode {
     public FileInputDelimitedNode(String filename, String rowSep, String fieldSep, int limitRows, int headerRows, int footerRows,
             String escapeChar, String textEnclosure, boolean removeEmptyRow, boolean spitRecord, String encoding,
             EShadowProcessType fileType) {
-        super("tFileInputDelimited"); //$NON-NLS-1$
+        super("tFileInputDelimitedOld"); //$NON-NLS-1$
 
         boolean csvoption = false;
         String languageName = LanguageManager.getCurrentLanguage().getName();
@@ -133,7 +133,7 @@ public class FileInputDelimitedNode extends FileInputNode {
                 Integer.toString(headerRows), Integer.toString(footerRows), escapeChar, textEnclosure,
                 Boolean.toString(removeEmptyRow), encoding, Boolean.toString(csvoption), Boolean.toString(spitRecord) };
 
-        IComponent component = ComponentsFactoryProvider.getInstance().get("tFileInputDelimited", //$NON-NLS-1$
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tFileInputDelimitedOld", //$NON-NLS-1$
                 ComponentCategory.CATEGORY_4_DI.getName());
         this.setElementParameters(component.createElementParameters(this));
         for (int i = 0; i < paramNames.length; i++) {

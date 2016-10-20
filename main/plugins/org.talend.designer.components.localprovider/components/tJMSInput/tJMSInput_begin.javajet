@@ -69,9 +69,9 @@ if(advProps.size() > 0){
 	javax.jms.Connection connection_<%=cid%> = factory_<%=cid%>.createConnection(<%if("true".equals(userIdentity)){%><%=user %>, decryptedPassword_<%=cid%><%}%>);
 	
 	<%
-	if(enableSubscription){
+	if(enableSubscription && clientID != null && clientID.length() > 0){
 	%>
-	((javax.jms.TopicConnection)connection_<%=cid%>).setClientID(<%=clientID%>);
+	connection_<%=cid%>.setClientID(<%=clientID%>);
 	<%
 	}
 	%>
@@ -82,7 +82,7 @@ if(advProps.size() > 0){
 	<%
 	if(enableSubscription){
 	%>
-	javax.jms.MessageConsumer consumer_<%=cid%> = ((javax.jms.TopicSession) session_<%=cid%>).createDurableSubscriber((javax.jms.Topic)dest_<%=cid%>,<%=subscriberName%>,<%=messageSelector%>,false);
+	javax.jms.MessageConsumer consumer_<%=cid%> = session_<%=cid%>.createDurableSubscriber((javax.jms.Topic)dest_<%=cid%>,<%=subscriberName%>,<%=messageSelector%>,false);
 	<%
 	} else {
 	%>

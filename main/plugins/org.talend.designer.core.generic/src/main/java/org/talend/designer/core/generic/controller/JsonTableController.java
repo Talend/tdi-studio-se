@@ -20,6 +20,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -85,14 +86,18 @@ public class JsonTableController extends AbstractElementPropertySectionControlle
         label.setLayoutData(formData);
         formData = new FormData();
 
-        Point labelSize = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        int labelWidth = labelSize.x;
-
+        int currentLabelWidth = STANDARD_LABEL_WIDTH;
+        GC gc = new GC(label);
+        Point labelSize = gc.stringExtent(param.getDisplayName());
+        gc.dispose();
+        if ((labelSize.x + (ITabbedPropertyConstants.HSPACE * 2)) > currentLabelWidth) {
+            currentLabelWidth = labelSize.x + (ITabbedPropertyConstants.HSPACE * 2);
+        }
         if (numInRow == 1) {
             if (lastControl != null) {
-                formData.left = new FormAttachment(lastControl, labelWidth);
+                formData.left = new FormAttachment(lastControl, currentLabelWidth);
             } else {
-                formData.left = new FormAttachment(0, labelWidth);
+                formData.left = new FormAttachment(0, currentLabelWidth);
             }
         } else {
             formData.left = new FormAttachment(label, 0, SWT.RIGHT);
@@ -115,7 +120,7 @@ public class JsonTableController extends AbstractElementPropertySectionControlle
                 formData.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
             }
             formData.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
-                    labelWidth + ITabbedPropertyConstants.HSPACE);
+                    currentLabelWidth + ITabbedPropertyConstants.HSPACE);
 
             formData = (FormData) label.getLayoutData();
             formData.right = new FormAttachment(mainComposite, 0);

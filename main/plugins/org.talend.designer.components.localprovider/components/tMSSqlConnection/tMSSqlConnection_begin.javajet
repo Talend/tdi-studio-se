@@ -11,22 +11,47 @@ imports="
 	
 		public void createURL(INode node) {
 			super.createURL(node);
+			String driver = ElementParameterParser.getValue(node, "__DRIVER__");
 %>
-		String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+<%
+			if(driver.equals("JTDS")) {
+%>
+			String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+<%
+			} else {
+%>		    
+		    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+<%
+			}
+%>
 		String port_<%=cid%> = <%=dbport%>;
 		String dbname_<%=cid%> = <%=dbname%> ;
     	if (!"".equals(port_<%=cid%>)) {
     		url_<%=cid %> += ":" + <%=dbport%>;
     	}
     	if (!"".equals(dbname_<%=cid%>)) {
-    		url_<%=cid%> += "//" + <%=dbname%>; 
+    		<%
+			if(driver.equals("JTDS")) {
+%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+<%
+			} else {
+%>		    
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+<%
+			}
+%>
     	}
 		url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;  
 <%	
 		}
 	
 		public String getDirverClassName(INode node){
-			return "net.sourceforge.jtds.jdbc.Driver";
+			String driver = ElementParameterParser.getValue(node, "__DRIVER__");
+			if(driver.equals("JTDS")) {
+				return "net.sourceforge.jtds.jdbc.Driver";
+			}
+			return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		}
 		
 	}//end class

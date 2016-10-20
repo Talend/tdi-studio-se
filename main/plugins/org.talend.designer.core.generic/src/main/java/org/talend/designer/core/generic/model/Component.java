@@ -36,7 +36,6 @@ import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.component.VirtualComponentDefinition;
-import org.talend.components.api.component.runtime.RuntimeInfo;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.api.properties.ComponentReferenceProperties;
@@ -76,6 +75,7 @@ import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.SchemaProperty;
+import org.talend.daikon.runtime.RuntimeInfo;
 import org.talend.daikon.serialize.PostDeserializeSetup;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.generic.constants.IGenericConstants;
@@ -822,7 +822,7 @@ public class Component extends AbstractBasicComponent {
             if (!(schemaProperty.getValue() instanceof Schema)) {
                 continue;
             }
-            Schema schema = (Schema) schemaProperty.getValue();
+            Schema schema = schemaProperty.getValue();
             if (connector instanceof PropertyPathConnector) {
                 String linkedSchema = ((PropertyPathConnector) connector).getPropertyPath() + ".schema"; //$NON-NLS-1$
                 if (paramName.equals(linkedSchema)) {
@@ -830,6 +830,7 @@ public class Component extends AbstractBasicComponent {
                     ElementParameter param = new ElementParameter(node);
                     param.setName(paramName);
                     param.setFieldType(EParameterFieldType.SCHEMA_REFERENCE);
+                    param.setShow(false);
                     if (!isOutput) {
                         param.setContext(EConnectionType.FLOW_MAIN.getName());
                     } else {
@@ -918,13 +919,14 @@ public class Component extends AbstractBasicComponent {
             connector.setMaxLinkOutput(0);
         } else {
             for (Connector connector : inputConnectors) {
-                addGenericType(listConnector, EConnectionType.FLOW_MAIN, connector.getName(), parentNode, false);
+                addGenericType(listConnector, EConnectionType.FLOW_MAIN, connector.getName(), parentNode, componentProperties,
+                        false);
             }
         }
         boolean hasInputIterateConnector = topologies.contains(ConnectorTopology.NONE)
                 || topologies.contains(ConnectorTopology.OUTGOING);
         if (hasInputIterateConnector) {
-            addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, false);
+            addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, componentProperties, false);
         }
 
         Set<? extends Connector> outputConnectors = componentProperties.getPossibleConnectors(true);
@@ -947,9 +949,9 @@ public class Component extends AbstractBasicComponent {
             if (Connector.REJECT_NAME.equals(connector.getName())) {
                 type = EConnectionType.REJECT;
             }
-            addGenericType(listConnector, type, connector.getName(), parentNode, true);
+            addGenericType(listConnector, type, connector.getName(), parentNode, componentProperties, true);
         }
-        addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, true);
+        addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, componentProperties, true);
         
         addStandardType(listConnector, EConnectionType.RUN_IF, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_OK, parentNode);
@@ -1019,8 +1021,9 @@ public class Component extends AbstractBasicComponent {
     }
 
     private void addGenericType(List<INodeConnector> listConnector, EConnectionType type, String genericConnectorType,
-            INode parentNode, boolean isOutput) {
+            INode parentNode, ComponentProperties componentProperties, boolean isOutput) {
         GenericNodeConnector nodeConnector = new GenericNodeConnector(parentNode, isOutput);
+        nodeConnector.setComponentProperties(componentProperties);
         nodeConnector.setDefaultConnectionType(EConnectionType.FLOW_MAIN);
         nodeConnector.setGenericConnectorType(genericConnectorType);
         nodeConnector.setLinkName(type.getDefaultLinkName());
@@ -1297,6 +1300,9 @@ public class Component extends AbstractBasicComponent {
         }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "Integer.valueOf(" + value + ")";
+        }
+        if ("\"\"\"".equals(value)) {
+            value = "\"\\\"\"";
         }
         return value;
     }

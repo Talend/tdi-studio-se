@@ -46,8 +46,10 @@ import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DynamicComposite;
+import org.talend.repository.generic.util.RepTypeMappingManager;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
@@ -215,6 +217,10 @@ public class GenericWizardService implements IGenericWizardService {
             }
         }
         return componentProperties;
+    }
+
+    public ERepositoryObjectType getNewRepType(String oldRepTypeName) {
+        return RepTypeMappingManager.getInstance().getNewRepType(oldRepTypeName);
     }
 
 }

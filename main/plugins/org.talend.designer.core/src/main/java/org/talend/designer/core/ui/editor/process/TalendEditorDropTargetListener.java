@@ -625,6 +625,9 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 && !ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
             return;
         }
+        if((process instanceof IProcess2) &&(((IProcess2)process).getProperty().getItem() instanceof JobletProcessItem)){
+            return;
+        }
 
         Item subItem = repositoryNode.getObject().getProperty().getItem();
         Item hadoopClusterItem = hadoopClusterService.getHadoopClusterBySubitemId(subItem.getProperty().getId());

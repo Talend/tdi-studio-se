@@ -297,7 +297,10 @@ public class DynamicComposite extends MultipleThreadDynamicComposite implements 
         String validationMessage = validationResult.getMessage();
         Result validationStatus = validationResult.getStatus();
         if (validationMessage == null) {
-            if (validationStatus == Result.ERROR) {
+            if (validationStatus == Result.OK) {
+                checker.updateStatus(IStatus.OK, null);
+                return;
+            } else if (validationStatus == Result.ERROR) {
                 validationMessage = Messages.getString("DynamicComposite.defaultErrorMessage"); //$NON-NLS-1$
             } else {
                 // skip every empty messages
@@ -309,17 +312,17 @@ public class DynamicComposite extends MultipleThreadDynamicComposite implements 
         case WARNING:
             checker.updateStatus(IStatus.WARNING, null);
             DisplayUtils.getDisplay().syncExec(new Runnable() {
-                
+
                 @Override
                 public void run() {
-                    MessageDialog.openWarning(getShell(), elem.getElementName(), message);                    
+                    MessageDialog.openWarning(getShell(), elem.getElementName(), message);
                 }
             });
             break;
         case ERROR:
             checker.updateStatus(IStatus.ERROR, null);
             DisplayUtils.getDisplay().syncExec(new Runnable() {
-                
+
                 @Override
                 public void run() {
                     MessageDialog.openError(getShell(), elem.getElementName(), message);
@@ -329,7 +332,7 @@ public class DynamicComposite extends MultipleThreadDynamicComposite implements 
         default:
             checker.updateStatus(IStatus.OK, null);
             DisplayUtils.getDisplay().syncExec(new Runnable() {
-                
+
                 @Override
                 public void run() {
                     MessageDialog.openInformation(getShell(), elem.getElementName(), message);
@@ -383,6 +386,31 @@ public class DynamicComposite extends MultipleThreadDynamicComposite implements 
                 }
             });
         }
+    }
+
+    @Override
+    public void refresh() {
+        if (element instanceof FakeElement) {
+            DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    operationInThread();
+                }
+            });
+        } else {
+            super.refresh();
+        }
+    }
+
+    @Override
+    public int getMinHeight() {
+        if (minHeight < 200) {
+            return 200;
+        } else if (minHeight > 700) {
+            return 700;
+        }
+        return minHeight;
     }
 
     @Override

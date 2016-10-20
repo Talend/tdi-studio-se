@@ -42,7 +42,6 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.utils.CsvArray;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.EDatabaseComponentName;
@@ -162,8 +161,8 @@ public class GuessSchemaProcess {
             IElementParameter connector = node.getElementParameter("CONNECTION");
             if (connector != null) {
                 String connectorValue = connector.getValue().toString();
-                List<? extends INode> graphicalNodes = originalProcess.getGraphicalNodes();
-                for (INode node : graphicalNodes) {
+                List<? extends INode> generatingNodes = originalProcess.getGeneratingNodes();
+                for (INode node : generatingNodes) {
                     if (node.getUniqueName().equals(connectorValue)) {
                         connectionNode = node;
                         break;
@@ -234,6 +233,11 @@ public class GuessSchemaProcess {
         }
         // the VERTICA
         if (ConnectionUtils.isVertica(info.getUrl())) {
+            createStatament = "conn.createStatement()";
+        }
+        if (EDatabaseTypeName.GENERAL_JDBC.getXmlName().equals(info.getDbType())
+                && "com.sap.db.jdbc.Driver".equals(info.getDriverClassName())
+                || EDatabaseTypeName.SAPHana.getXmlName().equals(info.getDbType())) {
             createStatament = "conn.createStatement()";
         }
         codeStart = systemProperty

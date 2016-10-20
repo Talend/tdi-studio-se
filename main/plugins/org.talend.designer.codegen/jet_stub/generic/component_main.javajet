@@ -142,44 +142,54 @@ if(hasInput){
             <%
             if (mainIrToRow != null) {
                 %>
-                java.util.Iterator<?> outgoingMainRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getSuccessfulWrites().iterator();
-                Object outgoingMain_<%=cid%> = null;
-                if (outgoingMainRecords_<%=cid%>.hasNext()) {
-                    outgoingMain_<%=cid%> = outgoingMainRecords_<%=cid%>.next();
-                    if(outgoingMainRecords_<%=cid%>.hasNext()){
-                    	outgoingMain_<%=cid%> = data_<%=cid%>;
+            	if(writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>){
+                    java.util.Iterator<?> outgoingMainRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getSuccessfulWrites().iterator();
+                    Object outgoingMain_<%=cid%> = null;
+                    if (outgoingMainRecords_<%=cid%>.hasNext()) {
+                        outgoingMain_<%=cid%> = outgoingMainRecords_<%=cid%>.next();
+                        if(outgoingMainRecords_<%=cid%>.hasNext()){
+                        	outgoingMain_<%=cid%> = data_<%=cid%>;
+                        }
                     }
-                }
-                <%
-                if (rejectIrToRow == null) {
-                %>
-                else{
-                	if (!((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator().hasNext()) {
-                		outgoingMain_<%=cid%> = data_<%=cid%>;
-                	}
-                }
-                <%
-                }
-                %>
-                if(outgoingMain_<%=cid%>!=null){
-                	<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
-                	<%
-                    mainIrToRow.generateConvertRecord("outgoingMain_" + cid, mainIrToRow.getConnection().getName());
+                    <%
+                    if (rejectIrToRow == null) {
                     %>
-                }
+                    else{
+                    	if (!((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator().hasNext()) {
+                    		outgoingMain_<%=cid%> = data_<%=cid%>;
+                    	}
+                    }
+                    <%
+                    }
+                    %>
+                    if(outgoingMain_<%=cid%>!=null){
+                    	<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
+                    	<%
+                        mainIrToRow.generateConvertRecord("outgoingMain_" + cid, mainIrToRow.getConnection().getName());
+                        %>
+                    }
+              	}else{
+              		// For no feedback writer,just pass the input record to the output
+              		if(data_<%=cid%>!=null){
+                  		<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
+                		<%
+                        mainIrToRow.generateConvertRecord("data_" + cid, mainIrToRow.getConnection().getName());
+                        %>
+                  	}
+            	}
             <%
             }
             if (rejectIrToRow != null) {
                 %>
-                java.util.Iterator<?> outgoingRejectRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator();
-                if (outgoingRejectRecords_<%=cid%>.hasNext()) {
-                    <%=rejectIrToRow.getConnection().getName()%> = new <%=rejectIrToRow.getConnection().getName() %>Struct();
-                    Object outgoingReject_<%=cid%> = outgoingRejectRecords_<%=cid%>.next();
-                    <%
-                    rejectIrToRow.generateConvertRecord("outgoingReject_" + cid, rejectIrToRow.getConnection().getName());
-                    %>
-                }
-                <%
+                    java.util.Iterator<?> outgoingRejectRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator();
+                    if (outgoingRejectRecords_<%=cid%>.hasNext()) {
+                        <%=rejectIrToRow.getConnection().getName()%> = new <%=rejectIrToRow.getConnection().getName() %>Struct();
+                        Object outgoingReject_<%=cid%> = outgoingRejectRecords_<%=cid%>.next();
+                        <%
+                        rejectIrToRow.generateConvertRecord("outgoingReject_" + cid, rejectIrToRow.getConnection().getName());
+                        %>
+                    }
+            <%
             }
         }
     }

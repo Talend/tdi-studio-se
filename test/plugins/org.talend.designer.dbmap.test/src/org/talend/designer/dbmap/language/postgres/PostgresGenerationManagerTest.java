@@ -1,7 +1,9 @@
 package org.talend.designer.dbmap.language.postgres;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +149,7 @@ public class PostgresGenerationManagerTest {
         assertNotNull(query);
         query = query.replaceAll("[\\s]", "");
         String expectedQuery = "\"SELECT"
-                + "\\\"school\\\".\\\"classInfo\\\".\\\"id\\\"AS\\\"id\\\",\\\"school\\\".\\\"classInfo\\\".\\\"name\\\"AS\\\"name\\\",\\\"school\\\".\\\"classInfo\\\".\\\"classNum\\\"AS\\\"classNum\\\",\\\"school\\\".\\\"scoreInfo\\\".\\\"score\\\"AS\\\"score\\\""
+                + "\\\"school\\\".\\\"classInfo\\\".\\\"id\\\",\\\"school\\\".\\\"classInfo\\\".\\\"name\\\",\\\"school\\\".\\\"classInfo\\\".\\\"classNum\\\",\\\"school\\\".\\\"scoreInfo\\\".\\\"score\\\""
                 + "FROM\\\"school\\\".\\\"classInfo\\\",\\\"school\\\".\\\"scoreInfo\\\""
                 + "WHERE\\\"school\\\".\\\"classInfo\\\".\\\"id\\\"=3\"";
         assertEquals(expectedQuery, query);
@@ -172,9 +174,9 @@ public class PostgresGenerationManagerTest {
         component.getProcess().getContextManager().setDefaultContext(newContext);
         query = manager.buildSqlSelect(component, "grade");
         query = query.replaceAll("[\\s]", "");
-        expectedQuery = "\"SELECT\"+context.schema+\".\"+context.main_table+\".\\\"id\\\"AS\\\"id\\\",\"+context.schema+\".\"+"
-                + "context.main_table+\".\\\"name\\\"AS\\\"name\\\",\"+context.schema+\".\"+context.main_table+\".\\\"classNum\\\"AS\\\"classNum\\\",\"+"
-                + "context.schema+\".\"+context.lookup+\".\\\"score\\\"AS\\\"score\\\"FROM\"+context.schema+\".\"+"
+        expectedQuery = "\"SELECT\"+context.schema+\".\"+context.main_table+\".\\\"id\\\",\"+context.schema+\".\"+"
+                + "context.main_table+\".\\\"name\\\",\"+context.schema+\".\"+context.main_table+\".\\\"classNum\\\",\"+"
+                + "context.schema+\".\"+context.lookup+\".\\\"score\\\"FROM\"+context.schema+\".\"+"
                 + "context.main_table+\",\"+context.schema+\".\"+context.lookup+\"WHERE\"+context.schema+\".\"+"
                 + "context.main_table+\".\\\"id\\\"=3\"";
         assertEquals(expectedQuery, query);

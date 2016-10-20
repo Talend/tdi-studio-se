@@ -27,7 +27,7 @@ public class FileOutputDelimitedNode extends ShadowNode {
      * Constructs a new FileOutputXmlNode.
      */
     public FileOutputDelimitedNode(String filename, String encoding) {
-        super("tFileOutputDelimited"); //$NON-NLS-1$
+        super("tFileOutputDelimitedOld"); //$NON-NLS-1$
 
         TextElementParameter param0 = new TextElementParameter("CSV_OPTION", "true"); //$NON-NLS-1$ //$NON-NLS-2$
         TextElementParameter param1 = new TextElementParameter("FILENAME", filename); //$NON-NLS-1$

@@ -27,6 +27,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
@@ -277,7 +278,13 @@ public class GenericElementParameter extends ElementParameter {
                 @Override
                 protected void doWork() throws Throwable {
                     componentService.afterProperty(getParameterName(), getSubProperties());
-                    fireValidateStatusEvent();
+                    DisplayUtils.getDisplay().asyncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            fireValidateStatusEvent();
+                        }
+                    });
                     updateSchema();
                 }
             }.call();
@@ -296,10 +303,10 @@ public class GenericElementParameter extends ElementParameter {
                     Schema schema = null;
                     schema = getRootProperties().getSchema(componentConnector, ((GenericNodeConnector) connector).isOutput());
                     IMetadataTable mainTable = node.getMetadataFromConnector(connector.getName());
-                    if (schema != null) {
+                    if (schema != null && mainTable != null) {
                         MetadataTable metadataTable = MetadataToolAvroHelper.convertFromAvro(schema);
                         IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
-                        if ((!mainTable.sameMetadataAs(newTable) || !newTable.sameMetadataAs(mainTable))) {
+                        if (!mainTable.sameMetadataAs(newTable) || !newTable.sameMetadataAs(mainTable)) {
                             mainTable.setListColumns(newTable.getListColumns());
                             if (this.askPropagate == null && node.getOutgoingConnections().size() != 0) {
                                 Display.getDefault().syncExec(new Runnable() {

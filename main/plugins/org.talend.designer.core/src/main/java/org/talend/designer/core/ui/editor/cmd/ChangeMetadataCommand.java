@@ -743,7 +743,8 @@ public class ChangeMetadataCommand extends Command {
                                 parameter.setRepositoryValueUsed(true);
                             }
                         }
-                    } else if (componentName != null && componentName.startsWith("tHBase") //$NON-NLS-1$
+                    } else if (componentName != null
+                            && (componentName.startsWith("tHBase") || componentName.startsWith("tMapRDB"))//$NON-NLS-1$//$NON-NLS-2$
                             && ("MAPPING".equals(parameter.getName()) || "FAMILIES".equals(parameter.getName()))) {//$NON-NLS-1$//$NON-NLS-2$
                         Object value = RepositoryToComponentProperty.getColumnMappingValue(connection, newOutputMetadata);
                         if (value != null) {

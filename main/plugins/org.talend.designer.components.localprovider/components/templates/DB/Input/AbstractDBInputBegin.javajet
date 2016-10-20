@@ -309,9 +309,24 @@ imports="
 <% //for bug TDI-20886
 									boolean trim = whetherTrimAllCol || whetherTrimCol;
 									if ("id_MSSQL".equalsIgnoreCase(dbms)) {
+										String driver = "";
+										if(("true").equals(useExistingConn)) {
+											String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+											INode connectionNode = null; 
+											for (INode processNode : node.getProcess().getGeneratingNodes()) { 
+												if(connection.equals(processNode.getUniqueName())) { 
+													connectionNode = processNode; 
+													break; 
+												} 
+											}
+											driver = ElementParameterParser.getValue(connectionNode,"__DRIVER__");
+										} else {
+											driver = ElementParameterParser.getValue(node,"__DRIVER__");
+										}
 %>
 										List<String> list_<%=cid %> = new java.util.ArrayList<String>();
 					    				for(int i_<%=cid %> = <%=metadata.getListColumns().size()%>; i_<%=cid %>  <= rsmd_<%=cid%>.getColumnCount(); i_<%=cid %> ++){
+					    					<% if("JTDS".equals(driver)) { %>
 						 					if ("NTEXT".equals(rsmd_<%=cid%>.getColumnTypeName(i_<%=cid %> ).toUpperCase())) {
 												net.sourceforge.jtds.jdbc.ClobImpl clob_<%=cid %> = (net.sourceforge.jtds.jdbc.ClobImpl) rs_<%=cid%>.getClob(i_<%=cid %>);
 												if(clob_<%=cid %>!=null){
@@ -321,6 +336,11 @@ imports="
 													list_<%=cid %>.add(null);
 												}
 						   					}
+						   					<% } else {%> 
+						   					if("NTEXT".equals(rsmd_<%=cid%>.getColumnTypeName(i_<%=cid %> ).toUpperCase())) {
+						   						list_<%=cid %>.add(rs_<%=cid%>.getString(i_<%=cid %>));
+						   					}
+						   					<% } %>
    	 				    				}
                                  		 routines.system.DynamicUtils.readColumnsFromDatabase_Mssql(<%=firstConnName%>.<%=column.getLabel()%>, rs_<%=cid%>, fixedColumnCount_<%=cid%>,list_<%=cid %>,<%=trim%>);
 <%

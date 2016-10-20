@@ -126,6 +126,8 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
 
     private boolean propertyResized;
 
+    protected int minHeight;
+
     protected Composite composite;
 
     private final String updataComponentParamName;
@@ -487,7 +489,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         if (synchronizeSchemaParam != null) {
             synchronizeSchemaParam.setShow(false);
         }
-
+        minHeight = heightSize;
         resizeScrolledComposite();
     }
 
@@ -635,7 +637,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     // refactore to be synchonized with the dispose() method because of TDI-24184
     // the synchronized methodis a quick fix but not the ideal one because this method is accessing many attributes
     // of the current class that may be modified by other thread (just like "elem" modified by the dispose() method.
-    synchronized private void operationInThread() {
+    synchronized protected void operationInThread() {
         if (elem == null) {
             return;
         }

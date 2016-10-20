@@ -247,7 +247,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
                     MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), tempMetatable, node, getCommandStack());
                     if (metaDialog != null) {
-                        metaDialog.setText(Messages.getString("SchemaController.schemaOf") + node.getLabel());
+                        metaDialog.setText(Messages.getString("GuessSchemaController.schemaOf") + node.getLabel());
 
                         if (metaDialog.open() == MetadataDialog.OK) {
                             outputMetaCopy = metaDialog.getOutputMetaData();
@@ -476,7 +476,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 tempMetatable.setDbms(dbmsId);
                 MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), tempMetatable, inputNode, getCommandStack());
                 if (metaDialog != null) {
-                    metaDialog.setText(Messages.getString("SchemaController.schemaOf") + inputNode.getLabel()); //$NON-NLS-1$
+                    metaDialog.setText(Messages.getString("GuessSchemaController.schemaOf") + inputNode.getLabel()); //$NON-NLS-1$
                 }
 
                 // ok pressed

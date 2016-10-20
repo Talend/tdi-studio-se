@@ -15,6 +15,7 @@ package org.talend.designer.core.generic.model;
 import java.util.Set;
 
 import org.talend.components.api.component.Connector;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
 import org.talend.designer.core.model.components.NodeConnector;
@@ -32,6 +33,8 @@ public class GenericNodeConnector extends NodeConnector {
     private Connector myConnector;
     
     private boolean output;
+
+    private ComponentProperties componentProperties;
 
     /**
      * DOC nrousseau GenericNodeConnector constructor comment.
@@ -98,7 +101,7 @@ public class GenericNodeConnector extends NodeConnector {
 
     private Connector getConnector() {
         if (myConnector == null) {
-            Set<? extends Connector> connectors = getParentNode().getComponentProperties().getAvailableConnectors(null, output);
+            Set<? extends Connector> connectors = getComponentProperties().getAvailableConnectors(null, output);
             if (connectors != null) {
                 for (Connector connector : connectors) {
                     if (connector.getName().equals(genericConnectorType)) {
@@ -149,7 +152,7 @@ public class GenericNodeConnector extends NodeConnector {
     }
 
     public Connector getComponentConnector() {
-        Set<? extends Connector> connectors = getParentNode().getComponentProperties().getPossibleConnectors(output);
+        Set<? extends Connector> connectors = getComponentProperties().getPossibleConnectors(output);
         if (connectors != null) {
             for (Connector connector : connectors) {
                 if (connector.getName().equals(genericConnectorType)) {
@@ -167,6 +170,18 @@ public class GenericNodeConnector extends NodeConnector {
      */
     protected boolean isOutput() {
         return this.output;
+    }
+
+    public ComponentProperties getComponentProperties() {
+        INode parentNode = getParentNode();
+        if (parentNode != null) {
+            return parentNode.getComponentProperties();
+        }
+        return this.componentProperties;
+    }
+
+    public void setComponentProperties(ComponentProperties componentProperties) {
+        this.componentProperties = componentProperties;
     }
 
 }

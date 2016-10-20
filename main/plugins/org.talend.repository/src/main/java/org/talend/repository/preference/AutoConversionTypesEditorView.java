@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +30,7 @@ import org.talend.commons.ui.swt.advanced.dataeditor.button.PastePushButton;
 import org.talend.commons.ui.swt.advanced.dataeditor.button.PastePushButtonForExtendedTable;
 import org.talend.commons.ui.swt.advanced.dataeditor.commands.ExtendedTablePasteCommand;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
+import org.talend.commons.ui.swt.proposal.TextCellEditorWithProposal;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
@@ -39,6 +39,7 @@ import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.types.AutoConversionType;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.ui.metadata.celleditor.JavaTypeComboValueAdapter;
+import org.talend.core.ui.proposal.AutoConversionProposalProvider;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.AutoConversionTypeModel;
 
@@ -175,12 +176,16 @@ public class AutoConversionTypesEditorView extends AbstractDataTableEditorView<A
             }
 
         });
-        column.setCellEditor(new TextCellEditor(tableViewerCreator.getTable()));
 
         column.setModifiable(true);
         column.setWeight(60);
         column.setMinimumWidth(50);
         column.setDefaultInternalValue(""); //$NON-NLS-1$
+
+        AutoConversionProposalProvider functionProposalProvider = new AutoConversionProposalProvider();
+        TextCellEditorWithProposal textCellEditor = new TextCellEditorWithProposal(tableViewerCreator.getTable(), column);
+        textCellEditor.setContentProposalProvider(functionProposalProvider);
+        column.setCellEditor(textCellEditor);
         return column;
     }
 

@@ -199,6 +199,14 @@ class IndexedRecordToRowStructGenerator {
                         %>
                         <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(<%=codeVarSchemaEnforcer%>.get(<%=i%>));
                         <%
+                    } else if (javaType == JavaTypesManager.CHARACTER) {
+                        %>
+                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(<%=codeVarSchemaEnforcer%>.get(<%=i%>)).charAt(0);
+                        <%
+                    } else if("id_Document".equals(column.getTalendType())){
+                    	%>
+                    	<%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(<%=codeVarSchemaEnforcer%>.get(<%=i%>)));
+                    	<%
                     } else  {
                         %>
                         <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (<%=codeVarSchemaEnforcer%>.get(<%=i%>));

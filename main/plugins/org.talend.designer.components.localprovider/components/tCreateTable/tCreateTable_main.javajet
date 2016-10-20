@@ -818,7 +818,8 @@ class MSSQLManager extends Manager {
     private boolean useExistingConnection;
     private String connection;
     private String dbproperty;
-    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String dbproperty) {
+    private String driver;
+    public MSSQLManager(String host, String port, String dbName, String dbSchema, String tableName, String userName, boolean useExistingConnection, String connection, String cid, String dbproperty, String driver) {
         super(dbName, tableName, userName, cid);
         this.host = host;
         this.port = port;
@@ -826,16 +827,34 @@ class MSSQLManager extends Manager {
         this.useExistingConnection = useExistingConnection;
         this.connection = connection;
         this.dbproperty = dbproperty;
+        this.driver = driver;
     }
     protected String getDriver() {
-        return "net.sourceforge.jtds.jdbc.Driver";
+    	if("JTDS".equals(driver)) {
+        	return "net.sourceforge.jtds.jdbc.Driver";
+        } else {
+        	return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        }
     }
     public String getConnectionURL() {
-        if(dbproperty == null || dbproperty.equals("\"\"") || dbproperty.equals("")){
-            return "\"jdbc:jtds:sqlserver://\" + " + host + " + \":\" + " + port + " + \"//\" + " + dbName;
-        }
-        
-        return "\"jdbc:jtds:sqlserver://\" + " + host + " + \":\" + " + port + " + \"//\" + " + dbName + "+\";\"+"+ dbproperty;
+    	StringBuilder connectionUrl = new StringBuilder();
+    	if("JTDS".equals(driver)) {
+    		connectionUrl.append("\"jdbc:jtds:sqlserver://\" + ");
+    	} else {
+    		connectionUrl.append("\"jdbc:sqlserver://\" + ");
+    	}
+    	connectionUrl.append(host).append(" + \":\" + ").append(port);
+    	if("JTDS".equals(driver)) {
+    		connectionUrl.append(" + \"//\" + ");
+    	} else {
+    		connectionUrl.append(" + \";databaseName=\" + ");
+    	}
+    	connectionUrl.append(dbName);
+    	if(dbproperty != null && !dbproperty.equals("\"\"") && !dbproperty.equals("")) {
+    		connectionUrl.append("+\";\"+").append(dbproperty);
+    	}
+    	
+    	return connectionUrl.toString();
     }
     public String getConnection() {
         StringBuilder javaCode = new StringBuilder();
@@ -1844,7 +1863,8 @@ class ManagerFactory {
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_MSSQL__"));
             String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
-            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, dbproperties);
+            String driver = ElementParameterParser.getValue(node, "__MSSQL_DRIVER__");
+            manager = new MSSQLManager(host, port, dbName,dbSchema, tableName, userName, useExistingConnection, connection, cid, dbproperties, driver);
         } else if(("MYSQL").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");

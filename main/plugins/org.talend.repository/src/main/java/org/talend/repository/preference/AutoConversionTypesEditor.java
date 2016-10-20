@@ -82,7 +82,7 @@ public class AutoConversionTypesEditor extends FieldEditor {
         enableBtn.setText(Messages.getString("AutoConversionTypesEditor.Button.enable"));//$NON-NLS-1$
 
         Label noteLabel = new Label(parentComposite, SWT.NONE);
-        noteLabel.setText(Messages.getString("AutoConversionTypesEditor.Label.note"));//$NON-NLS-1$
+        noteLabel.setText(Messages.getString("AutoConversionTypesEditor.Label.messages"));//$NON-NLS-1$
 
         typeModel = new AutoConversionTypeModel();
         tableEditorView = new AutoConversionTypesEditorView(parentComposite, typeModel);

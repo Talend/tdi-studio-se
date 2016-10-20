@@ -39,7 +39,7 @@
     <PARAMETER
       NAME="ACCESS_KEY"
       FIELD="TEXT"
-      NUM_ROW="20"
+      NUM_ROW="15"
       REQUIRED="true"
       SHOW_IF="INHERIT_CREDENTIALS == 'false'"
     >
@@ -49,7 +49,7 @@
     <PARAMETER
       NAME="SECRET_KEY"
       FIELD="PASSWORD"
-      NUM_ROW="20"
+      NUM_ROW="15"
       REQUIRED="true"
       SHOW_IF="INHERIT_CREDENTIALS == 'false'"
     >
@@ -59,10 +59,49 @@
     <PARAMETER
       NAME="INHERIT_CREDENTIALS"
       FIELD="CHECK"
-      NUM_ROW="21"
+      NUM_ROW="16"
       REQUIRED="true"
     >
       <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ASSUME_ROLE"
+      FIELD="CHECK"
+      NUM_ROW="17"
+      REQUIRED="true"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ARN"
+      FIELD="TEXT"
+      NUM_ROW="18"
+      REQUIRED="true"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="ROLE_SESSION_NAME"
+      FIELD="TEXT"
+      NUM_ROW="19"
+      REQUIRED="true"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SESSION_DURATION"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REQUIRED="true"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+      <DEFAULT>15</DEFAULT>
     </PARAMETER>
     
     <PARAMETER 
@@ -220,6 +259,24 @@
         <ITEM NAME="VALUE" />
       </ITEMS>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="SET_STS_ENDPOINT"
+      FIELD="CHECK"
+      NUM_ROW="30"
+      NB_LINES="5"
+      SHOW_IF="ASSUME_ROLE == 'true'"
+    >
+    </PARAMETER>
+	<PARAMETER
+      NAME="STS_ENDPOINT"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      REQUIRED="true"
+      SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>    	
 
     </ADVANCED_PARAMETERS>
 

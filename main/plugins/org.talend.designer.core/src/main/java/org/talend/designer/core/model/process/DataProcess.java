@@ -34,6 +34,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IMultipleComponentConnection;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
@@ -87,7 +88,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -814,8 +814,12 @@ public class DataProcess implements IGeneratingProcess {
 
         for (IMultipleComponentItem curItem : itemList) {
             String uniqueName = graphicalNode.getUniqueName() + "_" + curItem.getName(); //$NON-NLS-1$
-            IComponent component = ComponentsFactoryProvider.getInstance().get(curItem.getComponent(),
-                    ComponentCategory.CATEGORY_4_DI.getName());
+            IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
+            String currentComponent = curItem.getComponent();
+            IComponent component = componentsFactory.get(currentComponent, process.getComponentsType());
+            if (component == null) { // If cannot find the component then find it by default DI category by default.
+                component = componentsFactory.get(currentComponent, ComponentCategory.CATEGORY_4_DI.getName());
+            }
             if (component == null) {
                 continue;
             }
@@ -2330,10 +2334,10 @@ public class DataProcess implements IGeneratingProcess {
         DataConnection dataConnection = null;
         if (isOutput) {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getIncomingConnections();
-            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);//$NON-NLS-1$
+            mainConnections = nodeUseValidationRule.getIncomingConnections(EConnectionType.FLOW_MAIN);
         } else {
             validRuleConnections = (List<IConnection>) nodeUseValidationRule.getOutgoingConnections();
-            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);//$NON-NLS-1$
+            mainConnections = nodeUseValidationRule.getOutgoingConnections(EConnectionType.FLOW_MAIN);
         }
 
         if (validRuleConnections == null || validRuleConnections.size() == 0) {

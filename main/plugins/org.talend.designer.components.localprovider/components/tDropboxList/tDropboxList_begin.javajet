@@ -14,91 +14,92 @@ imports="
 %>
 
 <%
-		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-		INode node = (INode)codeGenArgument.getArgument();
-		String cid = node.getUniqueName();
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
 		
-		String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
-		String accessToken = ElementParameterParser.getValue(node,"__ACCESS_TOKEN__");
-	    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-	    String connectionKey = "\"conn_" + connection+"\"";
-		String path = ElementParameterParser.getValue(node, "__PATH__");
-		String includeSubDir = ElementParameterParser.getValue(node, "__INCLUDSUBDIR__");
-		String listMode = ElementParameterParser.getValue(node, "__LIST_MODE__");
+	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+	String accessToken = ElementParameterParser.getValue(node,"__ACCESS_TOKEN__");
+    String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+    String connectionKey = "conn_" + connection;
+	String path = ElementParameterParser.getValue(node, "__PATH__");
+	String includeSubDir = ElementParameterParser.getValue(node, "__INCLUDSUBDIR__");
+	String listMode = ElementParameterParser.getValue(node, "__LIST_MODE__");
 %>
+
 <%
-if(!"true".equals(useExistingConn)){
-	String clientIdentifier = "\""+cid+"\"";
-	String localeName = "\""+java.util.Locale.getDefault().toString()+"\"";
-	
-	String useProxy = ElementParameterParser.getValue(node,"__USE_PROXY__");
-	if("true".equals(useProxy)){
-		String proxyHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
-		String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
+	if (!"true".equals(useExistingConn)) {
 %>
-		com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>
-			,new com.dropbox.core.http.StandardHttpRequestor(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>))));
-		com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
+		com.dropbox.core.DbxRequestConfig.Builder configBuilder_<%=cid%> = com.dropbox.core.DbxRequestConfig.newBuilder("<%=cid%>");
+		String localeName_<%=cid%> = java.util.Locale.getDefault().toString();
+		configBuilder_<%=cid%>.withUserLocale(localeName_<%=cid%>);
 <%
-	}else{
+		String useProxy = ElementParameterParser.getValue(node,"__USE_PROXY__");
+		if ("true".equals(useProxy)) {
+			String proxyHost = ElementParameterParser.getValue(node,"__PROXY_HOST__");
+			String proxyPort = ElementParameterParser.getValue(node,"__PROXY_PORT__");
 %>
-		com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>);
-		com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
+			java.net.InetSocketAddress socketAddress_<%=cid%> = new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>);
+			java.net.Proxy proxy_<%=cid%> = new java.net.Proxy(java.net.Proxy.Type.HTTP, socketAddress_<%=cid%>);
+			com.dropbox.core.http.StandardHttpRequestor.Config config_<%=cid%> = com.dropbox.core.http.StandardHttpRequestor.Config.builder().withNoConnectTimeout().withProxy(proxy_<%=cid%>).build();
+			com.dropbox.core.http.HttpRequestor httpRequestor_<%=cid%> = new com.dropbox.core.http.StandardHttpRequestor(config_<%=cid%>);
+			configBuilder_<%=cid%>.withHttpRequestor(httpRequestor_<%=cid%>);
+<%
+		}
+%>
+		com.dropbox.core.DbxRequestConfig dbxConfig_<%=cid%> = configBuilder_<%=cid%>.build();
+		com.dropbox.core.v2.DbxClientV2 client_<%=cid%> = new com.dropbox.core.v2.DbxClientV2(dbxConfig_<%=cid%>, <%=accessToken%>);
+<%
+	} else {
+%>
+		com.dropbox.core.v2.DbxClientV2 client_<%=cid%> = (com.dropbox.core.v2.DbxClientV2) globalMap.get("<%=connectionKey%>");
 <%
 	}
-}else{
 %>
-	com.dropbox.core.DbxClient <%=cid%>_client = (com.dropbox.core.DbxClient)globalMap.get(<%=connectionKey%>);
-<%}%>
-	com.dropbox.core.DbxEntry.WithChildren <%=cid%>_entries = <%=cid%>_client
-			.getMetadataWithChildren(<%=path%>);
-	if (<%=cid%>_entries == null) {
+	String dropboxPath_<%=cid%> = <%=path%>;
+	// new API v2 expects root folder to be "", not "/" as was before in v1 API
+	if ("/".equals(dropboxPath_<%=cid%>)) {
+		dropboxPath_<%=cid%> = "";
+	}
+
+	com.dropbox.core.v2.files.DbxUserFilesRequests filesClient_<%=cid%> = client_<%=cid%>.files();
+	com.dropbox.core.v2.files.ListFolderBuilder listBuilder_<%=cid%> = filesClient_<%=cid%>.listFolderBuilder(dropboxPath_<%=cid%>).withRecursive(<%=includeSubDir%>);
+	com.dropbox.core.v2.files.ListFolderResult listResult_<%=cid%> = null;
+	try {
+		listResult_<%=cid%> = listBuilder_<%=cid%>.start();
+	} catch (com.dropbox.core.v2.files.ListFolderErrorException e_<%=cid%>) {
 		throw new Exception("No File or Directory found at " + <%=path%>);
 	}
-	java.util.Deque<com.dropbox.core.DbxEntry> <%=cid%>_files = new java.util.ArrayDeque<com.dropbox.core.DbxEntry>();
-	if (<%=cid%>_entries.entry.isFile()) {
-		<%=cid%>_files.add(<%=cid%>_entries.entry);
-	} else if (<%=cid%>_entries.children != null) {
-		<%=cid%>_files.addAll(<%=cid%>_entries.children);
-	}
-	if (!<%=cid%>_files.isEmpty()) {
-		com.dropbox.core.DbxEntry <%=cid%>_child = null;
-		while( (<%=cid%>_child = <%=cid%>_files.poll()) != null) {
-			<%if("true".equals(includeSubDir)){%>
-				if (!<%=cid%>_child.isFile()) {
-						com.dropbox.core.DbxEntry.WithChildren tmp = <%=cid%>_client.getMetadataWithChildren(<%=cid%>_child.path);
-						if(tmp != null && tmp.children != null){
-							<%=cid%>_files.addAll(tmp.children);
-						}
-				}
-			<%}%>
-			com.dropbox.core.DbxClient.Downloader <%=cid%>_downloader = null;
-			<%if("FILES".equals(listMode)){%>
-				if (!<%=cid%>_child.isFile()) {
-					continue;
-				}
-				<%=cid%>_downloader = <%=cid%>_client.startGetFile(<%=cid%>_child.path, null);
-				globalMap.put("<%=cid%>_LAST_MODIFIED",<%=cid%>_child.asFile().lastModified.getTime());
-				globalMap.put("<%=cid%>_SIZE",<%=cid%>_child.asFile().numBytes);
-				if (<%=cid%>_downloader != null) {
-					globalMap.put("<%=cid%>_CONTENT",<%=cid%>_downloader.body);
-				}
-			<%}else if("DIRECTORIES".equals(listMode)){%>
-				if (<%=cid%>_child.isFile()) {
-					continue;
-				}
-			<%}else{%>
-				if(<%=cid%>_child.isFile()){
-					<%=cid%>_downloader = <%=cid%>_client.startGetFile(<%=cid%>_child.path, null);
-					globalMap.put("<%=cid%>_LAST_MODIFIED",<%=cid%>_child.asFile().lastModified.getTime());
-					globalMap.put("<%=cid%>_SIZE",<%=cid%>_child.asFile().numBytes);
-					if (<%=cid%>_downloader != null) {
-						globalMap.put("<%=cid%>_CONTENT",<%=cid%>_downloader.body);
-					}
-				}
-			<%}%>
-			globalMap.put("<%=cid%>_NAME",<%=cid%>_child.name);
-			globalMap.put("<%=cid%>_PATH",<%=cid%>_child.path);
-			globalMap.put("<%=cid%>_IS_FILE",<%=cid%>_child.isFile());
-			
-			try{
+	
+	for (com.dropbox.core.v2.files.Metadata metadata_<%=cid%> : listResult_<%=cid%>.getEntries()) {
+		if (metadata_<%=cid%> instanceof com.dropbox.core.v2.files.FolderMetadata) {
+<%
+			if("FILES".equals(listMode)) {
+%>
+				continue;
+<%
+			} else {
+%>					
+				globalMap.put("<%=cid%>_IS_FILE", false);
+<%
+			}
+%>
+        }
+		if (metadata_<%=cid%> instanceof com.dropbox.core.v2.files.FileMetadata) {
+<%
+			if("DIRECTORIES".equals(listMode)) {
+%>
+				continue;
+<%
+			} else {
+%>
+				com.dropbox.core.v2.files.FileMetadata file_<%=cid%> = (com.dropbox.core.v2.files.FileMetadata) metadata_<%=cid%>;
+				globalMap.put("<%=cid%>_LAST_MODIFIED", file_<%=cid%>.getServerModified().getTime());
+				globalMap.put("<%=cid%>_SIZE", file_<%=cid%>.getSize());
+				globalMap.put("<%=cid%>_IS_FILE", true);
+<%
+			}
+%>			
+        }
+		globalMap.put("<%=cid%>_NAME", metadata_<%=cid%>.getName());
+		globalMap.put("<%=cid%>_PATH", metadata_<%=cid%>.getPathDisplay());

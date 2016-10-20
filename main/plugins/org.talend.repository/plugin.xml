@@ -2808,6 +2808,15 @@
               name="UpdateELTComponentMigrationTask"
               version="6.1.2">
         </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="6.2.1"
+              class="org.talend.repository.model.migration.ChangeMappingFileMigrationTask"
+              description="Change mapping file"
+              id="org.talend.repository.model.migration.ChangeMappingFileMigrationTask"
+              name="ChangeMappingFileMigrationTask"
+              version="6.2.2">
+        </projecttask>
    </extension>
 
    <extension

@@ -18,7 +18,7 @@ imports="
 if(resourceMap.get("finish_<%=cid%>") == null){
 <%
 	if ("HTTP_CLIENT".equals(clientMode)) {
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 		if (resourceMap.get("client_<%=cid %>") != null) {
 			((org.talend.bonita.RestClient)resourceMap.get("client_<%=cid %>")).logout();
@@ -33,7 +33,7 @@ if(resourceMap.get("finish_<%=cid%>") == null){
 <%
 		}
 	} else {
-		if("BONITA_652".equals(dbVersion)) {
+		if("BONITA_652".equals(dbVersion) || "BONITA_724".equals(dbVersion)) {
 %>
 		if (resourceMap.get("client_<%=cid %>") != null) {
 			((org.talend.bonita.RestClient)resourceMap.get("client_<%=cid %>")).logout();

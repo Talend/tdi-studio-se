@@ -105,6 +105,11 @@ public class CheckController extends AbstractElementPropertySectionController {
                 nodeList.add((Node) elem);
                 List<Connection> connList = new ArrayList<Connection>();
                 cmd = new ChangeActivateStatusElementCommand(value, nodeList, connList);
+            } else if (elem instanceof Connection) {
+                List<Node> nodeList = new ArrayList<Node>();
+                List<Connection> connList = new ArrayList<Connection>();
+                connList.add((Connection) elem);
+                cmd = new ChangeActivateStatusElementCommand(value, nodeList, connList);
             }
         } else {
             cmd = new PropertyChangeCommand(elem, paramName, value);

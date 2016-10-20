@@ -11,13 +11,6 @@ imports="
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 %>
-		}finally{
-			if(<%=cid%>_downloader != null){
-				if(<%=cid%>_downloader.body != null){
-					<%=cid%>_downloader.body.close();
-				}
-				<%=cid%>_downloader.close();
-			}
-		}
+
 	}
-}
+	

@@ -23,12 +23,15 @@ imports="
 		
 %>
 
-<%if("true".equals(useProxy)){%>
-	com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>,
-				new com.dropbox.core.http.StandardHttpRequestor(new java.net.Proxy(java.net.Proxy.Type.HTTP, new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>))));
-<%}else{%>
-	com.dropbox.core.DbxRequestConfig <%=cid%>_config = new com.dropbox.core.DbxRequestConfig(<%=clientIdentifier%>, <%=localeName%>);
+	com.dropbox.core.DbxRequestConfig.Builder configBuilder_<%=cid%> = com.dropbox.core.DbxRequestConfig.newBuilder(<%=clientIdentifier%>);
+	configBuilder_<%=cid%>.withUserLocale(<%=localeName%>);
+<%if ("true".equals(useProxy)) {%>
+	java.net.InetSocketAddress socketAddress_<%=cid%> = new java.net.InetSocketAddress(<%=proxyHost%>, <%=proxyPort%>);
+	java.net.Proxy proxy_<%=cid%> = new java.net.Proxy(java.net.Proxy.Type.HTTP, socketAddress_<%=cid%>);
+	com.dropbox.core.http.StandardHttpRequestor.Config config_<%=cid%> = com.dropbox.core.http.StandardHttpRequestor.Config.builder().withNoConnectTimeout().withProxy(proxy_<%=cid%>).build();
+	com.dropbox.core.http.HttpRequestor httpRequestor_<%=cid%> = new com.dropbox.core.http.StandardHttpRequestor(config_<%=cid%>);
+	configBuilder_<%=cid%>.withHttpRequestor(httpRequestor_<%=cid%>);
 <%}%>
-	com.dropbox.core.DbxClient <%=cid%>_client = new com.dropbox.core.DbxClient(<%=cid%>_config, <%=accessToken%>);
-	
-	globalMap.put("conn_<%=cid%>",  <%=cid%>_client);
+	com.dropbox.core.DbxRequestConfig dbxConfig_<%=cid%> = configBuilder_<%=cid%>.build();
+	com.dropbox.core.v2.DbxClientV2 client_<%=cid%> = new com.dropbox.core.v2.DbxClientV2(dbxConfig_<%=cid%>, <%=accessToken%>);
+	globalMap.put("conn_<%=cid%>", client_<%=cid%>);

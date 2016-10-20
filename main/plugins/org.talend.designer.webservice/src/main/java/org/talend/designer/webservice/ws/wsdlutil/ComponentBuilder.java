@@ -799,7 +799,9 @@ public class ComponentBuilder {
                 ParameterInfo parameterSon = new ParameterInfo();
                 parameterSon.setName(elementName);
                 parameterSon.setParent(parameter);
-                parameterSon.setNameSpace(((XmlSchemaElement) xmlSchemaObject).getQName().getNamespaceURI());
+                if (((XmlSchemaElement) xmlSchemaObject).getQName() != null) {
+                    parameterSon.setNameSpace(((XmlSchemaElement) xmlSchemaObject).getQName().getNamespaceURI());
+                }
                 Long min = xmlSchemaElement.getMinOccurs();
                 Long max = xmlSchemaElement.getMaxOccurs();
                 if (max - min > 1) {
