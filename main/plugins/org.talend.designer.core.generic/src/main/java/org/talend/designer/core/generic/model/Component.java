@@ -911,7 +911,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
-        Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
+        
         if (inputConnectors.isEmpty()) {
             INodeConnector connector = null;
             connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
@@ -922,11 +922,6 @@ public class Component extends AbstractBasicComponent {
                 addGenericType(listConnector, EConnectionType.FLOW_MAIN, connector.getName(), parentNode, componentProperties,
                         false);
             }
-        }
-        boolean hasInputIterateConnector = topologies.contains(ConnectorTopology.NONE)
-                || topologies.contains(ConnectorTopology.OUTGOING);
-        if (hasInputIterateConnector) {
-            addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, componentProperties, false);
         }
 
         Set<? extends Connector> outputConnectors = componentProperties.getPossibleConnectors(true);
@@ -950,14 +945,15 @@ public class Component extends AbstractBasicComponent {
                 type = EConnectionType.REJECT;
             }
             addGenericType(listConnector, type, connector.getName(), parentNode, componentProperties, true);
-        }
-        addGenericType(listConnector, EConnectionType.ITERATE, EConnectionType.ITERATE.getName(), parentNode, componentProperties, true);
-        
+        }       
         addStandardType(listConnector, EConnectionType.RUN_IF, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_ERROR, parentNode);
         addStandardType(listConnector, EConnectionType.ON_SUBJOB_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_SUBJOB_ERROR, parentNode);
+        
+        Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
+        createIterateConnectors(topologies, listConnector, parentNode);
 
         for (int i = 0; i < EConnectionType.values().length; i++) {
             EConnectionType currentType = EConnectionType.values()[i];
@@ -998,6 +994,37 @@ public class Component extends AbstractBasicComponent {
             }
         }
         return listConnector;
+    }
+    
+    /**
+     * Create iterate connector for this {@link Component}
+     * There are 4 types of components (depending on what main connections allowed):
+     * 1. StandAlone component (can't have main connections at all)
+     * 2. Input component (can have outgoing main connection)
+     * 3. Output component (can have incoming main connection)
+     * 4. Intermediate component (can have both incoming and outgoing main connections)
+     * 
+     * Iterate connector is created by default for TCOMP component with following rules:
+     * Outgoing iterate: all types of components can have infinite outgoing iterate connections
+     * Incoming iterate: StandAlone, Input components (also called startable components) can have 1 incoming iterate flow;
+     * Output, Intermediate components can't have incoming iterate flow (because they are not startable)
+     * 
+     * Note: infinite value is defined by -1 int value
+     * 
+     * @param topologies connection topologies supported by this {@link Component}. Component could support several topologies. 
+     * Such component is called hybrid
+     * @param listConnector list of all {@link Component} connectors
+     * @param parentNode parent node
+     */
+    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector, INode parentNode) {
+        boolean inputOrNone = topologies.contains(ConnectorTopology.NONE) || topologies.contains(ConnectorTopology.OUTGOING);
+        INodeConnector iterateConnector = addStandardType(listConnector, EConnectionType.ITERATE, parentNode);
+        iterateConnector.setMaxLinkOutput(-1);
+        if (inputOrNone) {
+            iterateConnector.setMaxLinkInput(1);
+        } else {
+            iterateConnector.setMaxLinkInput(0);
+        }   
     }
 
     /**
