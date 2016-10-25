@@ -2,6 +2,7 @@
 imports="
         java.util.List
         org.talend.components.api.component.ComponentDefinition
+        org.talend.components.api.component.InputComponentDefinition
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.process.ElementParameterParser
@@ -40,7 +41,7 @@ boolean hasOutputOnly = hasOutput && !hasInput;
 
 if(resourceMap.get("finish_<%=cid%>")==null){
 <%
-if(hasOutputOnly){
+if(hasOutputOnly || (def instanceof InputComponentDefinition)){
 %>
     if(resourceMap.get("reader_<%=cid%>")!=null){
 		try {

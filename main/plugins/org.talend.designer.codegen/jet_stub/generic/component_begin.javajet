@@ -9,6 +9,7 @@ imports="
         java.util.Set
         java.util.Stack
         org.talend.components.api.component.ComponentDefinition
+        org.talend.components.api.component.InputComponentDefinition
         org.talend.components.api.container.RuntimeContainer
         org.talend.components.api.properties.ComponentProperties
         org.talend.core.model.metadata.IMetadataColumn
@@ -192,7 +193,7 @@ if (metadata == null) {
     return stringBuffer.toString();
 }
 
-if (hasOutputOnly) {
+if (hasOutputOnly || (def instanceof InputComponentDefinition)) {
     %>
     org.talend.components.api.component.runtime.Source source_<%=cid%> =
             (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
