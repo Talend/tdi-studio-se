@@ -309,18 +309,33 @@ public class GenericElementParameter extends ElementParameter {
                         if (!mainTable.sameMetadataAs(newTable) || !newTable.sameMetadataAs(mainTable)) {
                             mainTable.setListColumns(newTable.getListColumns());
                             if (this.askPropagate == null && node.getOutgoingConnections().size() != 0) {
-                                Display.getDefault().syncExec(new Runnable() {
-                                    
-                                    @Override
-                                    public void run() {
-                                        askPropagate = ChangeMetadataCommand.askPropagate();
+                                boolean hasPropagation = false;
+                                for (IConnection connection : node.getOutgoingConnections()) {
+                                    if (connector.getName().equals(connection.getConnectorName())) {
+                                        if (isSchemaPropagated(connection.getTarget())) {
+                                            hasPropagation = true;
+                                            break;
+                                        }
                                     }
-                                });
+                                }
+                                if (hasPropagation) {
+                                    Display.getDefault().syncExec(new Runnable() {
+
+                                        @Override
+                                        public void run() {
+                                            askPropagate = ChangeMetadataCommand.askPropagate();
+                                        }
+                                    });
+                                }
                             }
                             if (this.askPropagate != null && this.askPropagate) {
                                 for (IConnection connection : node.getOutgoingConnections()) {
                                     if (connector.getName().equals(connection.getConnectorName())) {
-                                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(connection.getTarget(), null, null,
+                                        INode target = connection.getTarget();
+                                        if (!isSchemaPropagated(target)) {
+                                            continue;
+                                        }
+                                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(target, null, null,
                                                 newTable, null);
                                         cmd.setPropagate(true);
                                         IProcess process = node.getProcess();
@@ -338,6 +353,10 @@ public class GenericElementParameter extends ElementParameter {
             }
             this.askPropagate = null;
         }
+    }
+
+    private boolean isSchemaPropagated(INode node) {
+        return node != null && node.getComponent() != null && node.getComponent().isSchemaAutoPropagated();
     }
 
     public String getParameterName() {
