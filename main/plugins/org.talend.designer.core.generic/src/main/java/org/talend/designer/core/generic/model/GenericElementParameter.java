@@ -31,6 +31,8 @@ import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
@@ -356,7 +358,18 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private boolean isSchemaPropagated(INode node) {
-        return node != null && node.getComponent() != null && node.getComponent().isSchemaAutoPropagated();
+        if (node == null) {
+            return false;
+        }
+        IComponent component = node.getComponent();
+        if (component == null) {
+            return false;
+        }
+        // Always consider it is true for the new component.
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            return true;
+        }
+        return component.isSchemaAutoPropagated();
     }
 
     public String getParameterName() {
