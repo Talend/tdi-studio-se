@@ -477,6 +477,8 @@ public class LoginHelper {
     public void saveUpdateStatus(Project project) throws JSONException {
         Context ctx = CoreRuntimePlugin.getInstance().getContext();
         RepositoryContext repositoryContext = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+        // reset repositoryContext first, in case switch branch
+        repositoryContext.setNoUpdateWhenLogon(false);
         PreferenceManipulator prefManipulator = new PreferenceManipulator();
         if (CommonsPlugin.isHeadless()) {
             repositoryContext.setNoUpdateWhenLogon(false);
@@ -506,6 +508,7 @@ public class LoginHelper {
         JSONObject json = prefManipulator.getLogonLocalBranchStatus(location, projectName);
         if (json != null) {
             if (!json.has(branch)) {
+                // if not store yet, should be remote branch, so keep false value
                 return;
             }
             Object noUpdateWhenLogon = json.get(branch);
