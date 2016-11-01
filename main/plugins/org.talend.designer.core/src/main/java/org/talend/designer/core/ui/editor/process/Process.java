@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -65,6 +66,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.EmfHelper;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.image.ImageUtils;
+import org.talend.commons.utils.Hex;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -190,7 +192,9 @@ import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
  * 
  */
 public class Process extends Element implements IProcess2, IGEFProcess, ILastVersionChecker {
-
+   
+    private static String UTF8 = "UTF-8";
+    
     protected List<INode> nodes = new ArrayList<INode>();
 
     protected List<Element> elem = new ArrayList<Element>();
@@ -1136,6 +1140,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             List<Map<String, Object>> tableValues = (List<Map<String, Object>>) value;
             for (Map<String, Object> currentLine : tableValues) {
                 for (int i = 0; i < param.getListItemsDisplayCodeName().length; i++) {
+                    boolean isHexValue = false;
                     ElementValueType elementValue = fileFact.createElementValueType();
                     elementValue.setElementRef(param.getListItemsDisplayCodeName()[i]);
                     Object o = currentLine.get(param.getListItemsDisplayCodeName()[i]);
@@ -1154,6 +1159,14 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     } else {
                         if (o instanceof String) {
                             strValue = (String) o;
+                            isHexValue = isNeedConvertToHex(strValue);
+                            if (isHexValue) {
+                                try {
+                                    strValue = Hex.encodeHexString(strValue.getBytes(UTF8));
+                                } catch (UnsupportedEncodingException e) {
+                                    ExceptionHandler.process(e);
+                                }
+                            }
                         } else {
                             if (o instanceof Boolean) {
                                 strValue = ((Boolean) o).toString();
@@ -1165,7 +1178,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     } else {
                         elementValue.setValue(strValue);
                     }
-                    //
+                    if (isHexValue) {
+                    	elementValue.setHexValue(true);
+                    }
                     Object object = currentLine.get(param.getListItemsDisplayCodeName()[i] + IEbcdicConstant.REF_TYPE);
                     if (object != null) {
                         elementValue.setType((String) object);
@@ -1208,6 +1223,19 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         pType.setShow(param.isShow(paramList));
         listParamType.add(pType);
     }
+
+	protected boolean isNeedConvertToHex(String value) {
+		if (value == null || "".equals(value.trim())) {
+			return false;
+		}
+		for (int i = 0; i < value.length(); i++) {
+			int ch = (int) value.charAt(i);
+			if (ch < 32) {
+				return true;
+			}
+		}
+		return false;
+	}
 
     private void loadElementParameters(Element elemParam, EList listParamType) {
         loadElementParameters(elemParam, listParamType, false);
@@ -1389,16 +1417,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                 }
                             }
                         }
-
+                        
                         String elemValue = elementValue.getValue();
                         if (tmpParam != null && EParameterFieldType.PASSWORD.equals(tmpParam.getFieldType())) {
                             elemValue = elementValue.getRawValue();
-                        }
+                        }                       
+                        if (elementValue.isHexValue() && elemValue != null) {
+                            byte[] decodeBytes = Hex.decodeHex(elemValue.toCharArray());
+                            try {
+                                elemValue = new String(decodeBytes, UTF8);
+                            } catch (UnsupportedEncodingException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }             
                         if (needRemoveQuotes) {
-                            lineValues.put(elementValue.getElementRef(), TalendTextUtils.removeQuotes(elemValue));
-                        } else {
-                            lineValues.put(elementValue.getElementRef(), elemValue);
-                        }
+                        	elemValue = TalendTextUtils.removeQuotes(elemValue);
+                        }                   
+                        lineValues.put(elementValue.getElementRef(), elemValue);
                         if (elementValue.getType() != null) {
                             lineValues.put(elementValue.getElementRef() + IEbcdicConstant.REF_TYPE, elementValue.getType());
                         }
