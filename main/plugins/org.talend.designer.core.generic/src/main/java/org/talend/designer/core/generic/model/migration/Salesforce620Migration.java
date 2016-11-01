@@ -37,7 +37,6 @@ import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.property.EnumProperty;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
@@ -82,6 +81,7 @@ public class Salesforce620Migration extends AbstractJobMigrationTask {
                 "tSalesforceInput", "tSalesforceOutput", "tSalesforceOutputBulk", "tSalesforceOutputBulkExec" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         IComponentConversion changeJDBCDriverJarType = new IComponentConversion() {
 
+            @Override
             public void transform(NodeType node) {
                 ElementParameterType elemParamType = ComponentUtilities.getNodeProperty(node, "PROPERTIES");
                 String propertiesString = elemParamType.getValue();
@@ -130,8 +130,11 @@ public class Salesforce620Migration extends AbstractJobMigrationTask {
                 if (nt != null && nt instanceof Property) {
                     Property moduleNameProperty = (Property) nt;
                     String moduleName = (String) moduleNameProperty.getValue();
-                    moduleName = TalendQuoteUtils.removeQuotes(moduleName);
-                    moduleName = TalendQuoteUtils.addQuotes(moduleName);
+                    if (ContextParameterUtils.isContainContextParam(moduleName)) {
+                        moduleName = TalendQuoteUtils.removeQuotes(moduleName);
+                    } else {
+                        moduleName = TalendQuoteUtils.addPairQuotesIfNotExist(moduleName);
+                    }
                     moduleNameProperty.setStoredValue(moduleName);
                 }
                 nt = newProperties.getProperty("upsertRelationTable.columnName");
