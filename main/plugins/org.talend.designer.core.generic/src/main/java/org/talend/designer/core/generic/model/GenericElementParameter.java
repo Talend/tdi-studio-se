@@ -27,7 +27,6 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
@@ -280,13 +279,6 @@ public class GenericElementParameter extends ElementParameter {
                 @Override
                 protected void doWork() throws Throwable {
                     componentService.afterProperty(getParameterName(), getSubProperties());
-                    DisplayUtils.getDisplay().asyncExec(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            fireValidateStatusEvent();
-                        }
-                    });
                     updateSchema();
                 }
             }.call();
