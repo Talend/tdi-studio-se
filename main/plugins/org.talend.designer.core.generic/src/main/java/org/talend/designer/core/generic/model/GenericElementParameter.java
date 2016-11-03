@@ -47,6 +47,8 @@ import org.talend.core.model.process.IProcess;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ValidationResult;
+import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -280,13 +282,16 @@ public class GenericElementParameter extends ElementParameter {
                 @Override
                 protected void doWork() throws Throwable {
                     componentService.afterProperty(getParameterName(), getSubProperties());
-                    DisplayUtils.getDisplay().asyncExec(new Runnable() {
+                    ValidationResult validationResult = getSubProperties().getValidationResult();
+                    if (validationResult != null && Result.ERROR == validationResult.getStatus()) {
+                        DisplayUtils.getDisplay().asyncExec(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            fireValidateStatusEvent();
-                        }
-                    });
+                            @Override
+                            public void run() {
+                                fireValidateStatusEvent();
+                            }
+                        });
+                    }
                     updateSchema();
                 }
             }.call();
