@@ -764,6 +764,7 @@ public class Component extends AbstractBasicComponent {
             }
         }
 
+        ElementParameter autoSwitchParam = null;
         for (ElementParameter param : listParam) { // TUP-4161
             if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())) {
                 ElementParameter newParam = new ElementParameter(node);
@@ -801,7 +802,23 @@ public class Component extends AbstractBasicComponent {
                 newParam.setContext(IGenericConstants.CONTEXT);
                 newParam.setSerialized(true);
                 newParam.setParentParameter(param);
+
+                if (autoSwitchParam == null) {
+                    autoSwitchParam = new ElementParameter(node);
+                    autoSwitchParam.setCategory(EComponentCategory.TECHNICAL);
+                    autoSwitchParam.setName(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
+                    autoSwitchParam.setDisplayName(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getDisplayName());
+                    autoSwitchParam.setNumRow(param.getNumRow());
+                    autoSwitchParam.setFieldType(EParameterFieldType.CHECK);
+                    autoSwitchParam.setValue(Boolean.FALSE);
+                    autoSwitchParam.setShow(false);
+                    autoSwitchParam.setRequired(true);
+                    autoSwitchParam.setReadOnly(true);
+                }
             }
+        }
+        if (autoSwitchParam != null) {
+            listParam.add(autoSwitchParam);
         }
     }
 
