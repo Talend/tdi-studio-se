@@ -41,6 +41,7 @@ import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -315,6 +316,9 @@ public class GenericElementParameter extends ElementParameter {
                         IMetadataTable newTable = MetadataToolHelper.convert(metadataTable);
                         if (!mainTable.sameMetadataAs(newTable) || !newTable.sameMetadataAs(mainTable)) {
                             mainTable.setListColumns(newTable.getListColumns());
+                            List<IElementParameter> schemaParameters = node
+                                    .getElementParametersFromField(EParameterFieldType.SCHEMA_REFERENCE);
+                            updateSchemaParameters(schemaParameters, connector.getName(), schema);
                             if (this.askPropagate == null && node.getOutgoingConnections().size() != 0) {
                                 boolean hasPropagation = false;
                                 for (IConnection connection : node.getOutgoingConnections()) {
@@ -359,6 +363,24 @@ public class GenericElementParameter extends ElementParameter {
                 }
             }
             this.askPropagate = null;
+        }
+    }
+
+    /**
+     * Update schema parameters according the <code>currentContext</code>. Here will update UI at the same time.
+     * 
+     * @param schemaParameters
+     * @param currentContext
+     * @param newSchema
+     */
+    private void updateSchemaParameters(List<IElementParameter> schemaParameters, String currentContext, Schema newSchema) {
+        if (schemaParameters == null || currentContext == null) {
+            return;
+        }
+        for (IElementParameter parameter : schemaParameters) {
+            if (currentContext.equals(parameter.getContext())) {
+                parameter.setValue(newSchema);
+            }
         }
     }
 
