@@ -1230,7 +1230,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 			return false;
 		}
 		for (int i = 0; i < value.length(); i++) {
-			int ch = (int) value.charAt(i);
+			int ch = value.charAt(i);
 			if (ch < 32) {
 				return true;
 			}
@@ -1270,11 +1270,6 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                                 for (int m = 0; m < paramList.size(); m++) {
                                     IElementParameter param = paramList.get(m);
                                     if (!param.isSerialized()) {
-                                        continue;
-                                    }
-                                    if ((param.isReadOnly() && !isJunitLoad)
-                                            && !(param.getName().equals(EParameterName.UNIQUE_NAME.getName()) || param.getName()
-                                                    .equals(EParameterName.VERSION.getName()))) {
                                         continue;
                                     }
                                     Object object = comp
