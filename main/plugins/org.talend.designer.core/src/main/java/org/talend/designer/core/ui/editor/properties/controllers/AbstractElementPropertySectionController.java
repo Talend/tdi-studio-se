@@ -1304,7 +1304,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             Object control = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getActiveControl();
             if (param.getName().equals(control) && valueChanged && !param.isRepositoryValueUsed()) {
                 String previousText = editionControlHelper.undoRedoHelper.typedTextCommandExecutor.getPreviousText2();
-                String currentText = (String) value;
+                String currentText = String.valueOf(value);
                 labelText.setFocus();
                 ControlUtils.setCursorPosition(labelText, getcursorPosition(previousText, currentText));
             }
