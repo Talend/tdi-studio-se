@@ -13,7 +13,6 @@
 package org.talend.designer.codegen.model;
 
 import java.beans.PropertyChangeEvent;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -293,8 +294,7 @@ public final class CodeGeneratorEmittersPoolFactory {
             IProject project = workspace.getRoot().getProject(JET_PROJECT);
             progressMonitor.subTask(CodeGenPlugin.getPlugin().getString("_UI_JETPreparingProject_message", //$NON-NLS-1$
                     new Object[] { project.getName() }));
-            File file = new File(workspace.getRoot().getLocation().append(JET_PROJECT).toPortableString());
-            if (file.exists() && !project.isAccessible()) {
+            if (project.exists() && !project.isAccessible()) {
                 // .metadata missing, so need to reimport project to add it in the metadata.
                 progressMonitor.subTask("Reinitilializing project " + project.getName()); //$NON-NLS-1$
                 project.create(new SubProgressMonitor(progressMonitor, 1));
@@ -723,9 +723,10 @@ public final class CodeGeneratorEmittersPoolFactory {
         List<JetBean> toReturn = new ArrayList<JetBean>();
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         IProject project = workspace.getRoot().getProject(".JETEmitters"); //$NON-NLS-1$
-        URL url;
+        URL url = null;
         try {
-            url = new File(project.getLocation() + "/runtime").toURL(); //$NON-NLS-1$
+            IFile file = project.getFile(Path.fromOSString("runtime"));
+            url = file.getLocationURI().toURL();
             int lightBeanIndex = 0;
             LightJetBean lightBean = null;
             LightJetBean myLightJetBean = null;
