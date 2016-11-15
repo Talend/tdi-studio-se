@@ -53,14 +53,8 @@ public class JobDesignImportHandler extends ImportRepTypeHandler {
         return new TalendXMIResource(pathUri);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.repository.items.importexport.handlers.imports.ImportRepTypeHandler#beforeCreatingItem(org.talend
-     * .repository.items.importexport.ui.wizard.imports.models.ItemRecord)
-     */
     @Override
-    protected void beforeCreatingItem(ImportItem importItem) {
+    protected void afterApplyMigrationTasks(ImportItem importItem) throws Exception {
         Item tmpItem = importItem.getItem();
         if (tmpItem instanceof ProcessItem) {
             ProcessItem processItem = (ProcessItem) tmpItem;
@@ -116,9 +110,7 @@ public class JobDesignImportHandler extends ImportRepTypeHandler {
 
                 }
             }
-
         }
-
     }
 
     /*
