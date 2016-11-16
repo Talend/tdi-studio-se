@@ -138,7 +138,7 @@ public class RunProcessContext {
     private boolean selectAllTrace = false;
 
     /** Is process running. */
-    private boolean running;
+    private volatile boolean running;
 
     /** Is process monitoring */
     private boolean monitoring;

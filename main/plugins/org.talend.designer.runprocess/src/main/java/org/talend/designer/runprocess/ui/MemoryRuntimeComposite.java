@@ -131,6 +131,8 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     private String remoteHost = null;
     
     private int remotePort = -1;
+    
+	private boolean isReadyToStart = false;
 
     public MemoryRuntimeComposite(ProcessView viewPart, Composite parent, RunProcessContext processContext, int style) {
         super(parent, style);
@@ -339,56 +341,60 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 
             @Override
             public void widgetSelected(SelectionEvent event) {
-            	
-            	getRemoteStatus();
-            	
-            	if (lock && runtimeButton.getText().equals(Messages.getString("ProcessComposite.exec"))) { //$NON-NLS-1$
-            		MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.anotherJobMonitoring"));	//$NON-NLS-1$ //$NON-NLS-2$
-            		return;
-            	}
-            	
-            	if (isCommandlineRun) {
-            		MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.commandlineForbidden"));	//$NON-NLS-1$ //$NON-NLS-2$
-            		return;
-				}
-            	
-            	if (isRemoteRun && !isRemoteMonitoring) {
-            		MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.remoteMonitoringUnavailable"));	//$NON-NLS-1$ //$NON-NLS-2$
-            		return;
-				}
-            	
-            	if (processContext != null && !processContext.isRunning() && runtimeButton.getText().equals(Messages.getString("ProcessComposite.exec"))){	//$NON-NLS-1$
-            		runtimeButton.setEnabled(false);
-            		exec();
-            	}
-            	if (processContext != null && processContext.isRunning()) {
-            		if(runtimeButton.getText().equals(Messages.getString("ProcessComposite.exec"))){//$NON-NLS-1$
-						if (!acquireJVM()) {
-							runtimeButton.setEnabled(true);
-							MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.noJobRunning"));	//$NON-NLS-1$ //$NON-NLS-2$
-							return;
-						}
-            			initMonitoringModel();
-            			refreshMonitorComposite();
-            			processContext.setMonitoring(true);
-            			AbstractRuntimeGraphcsComposite.setMonitoring(true);
-            			setRuntimeButtonByStatus(false);
-            			
-            			if(periodCombo.isEnabled() && periodCombo.getSelectionIndex()!=0){
-            				startCustomerGCSchedule();
-            			}
-            			String content = getExecutionInfo("Start");	//$NON-NLS-1$
-            			messageManager.setStartMessage(content, getDisplay().getSystemColor(SWT.COLOR_BLUE), getDisplay().getSystemColor(SWT.COLOR_WHITE));
-            			((RuntimeGraphcsComposite)chartComposite).displayReportField();
-            			lock = true;
-            			
-            		}else if(runtimeButton.getText().equals(Messages.getString("ProcessComposite.kill"))){	//$NON-NLS-1$
-            			processContext.kill();
-            		}
-            	} else {
-            		MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.noJobRunning")); //$NON-NLS-1$	//$NON-NLS-2$
-            	}
-            	runtimeButton.setEnabled(true);
+                getRemoteStatus();
+
+                boolean isRunButtonPressed = runtimeButton.getText().equals(Messages.getString("ProcessComposite.exec"));
+                boolean isKillButtonPressed = runtimeButton.getText().equals(Messages.getString("ProcessComposite.kill"));
+
+                if (lock && isRunButtonPressed) { // $NON-NLS-1$
+                    MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.anotherJobMonitoring")); //$NON-NLS-1$ //$NON-NLS-2$
+                    return;
+                }
+                if (isCommandlineRun) {
+                    MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.commandlineForbidden"));   //$NON-NLS-1$ //$NON-NLS-2$
+                    return;
+                }
+                
+                if (isRemoteRun && !isRemoteMonitoring) {
+                    MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.remoteMonitoringUnavailable"));    //$NON-NLS-1$ //$NON-NLS-2$
+                    return;
+                }
+                if (processContext != null && !processContext.isRunning() && isRunButtonPressed) { // $NON-NLS-1$
+                    runtimeButton.setEnabled(false);
+                    isReadyToStart = true;
+                    exec();
+                }
+                if (processContext != null && (processContext.isRunning() || isReadyToStart)) {
+                    if (isRunButtonPressed) {
+                        if (!acquireJVM()) {
+                            isReadyToStart = false;
+                            runtimeButton.setEnabled(true);
+                            MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
+                                    Messages.getString("ProcessView.connectToMonitorServerFailed")); //$NON-NLS-1$
+                            return;
+                        }
+                        initMonitoringModel();
+                        refreshMonitorComposite();
+                        processContext.setMonitoring(true);
+                        AbstractRuntimeGraphcsComposite.setMonitoring(true);
+                        setRuntimeButtonByStatus(false);
+                        isReadyToStart = false;
+
+                        if (periodCombo.isEnabled() && periodCombo.getSelectionIndex() != 0) {
+                            startCustomerGCSchedule();
+                        }
+                        String content = getExecutionInfo("Start"); //$NON-NLS-1$
+                        messageManager.setStartMessage(content, getDisplay().getSystemColor(SWT.COLOR_BLUE),
+                                getDisplay().getSystemColor(SWT.COLOR_WHITE));
+                        ((RuntimeGraphcsComposite) chartComposite).displayReportField();
+                        lock = true;
+                    } else if (isKillButtonPressed) { // $NON-NLS-1$
+                        processContext.kill();
+                    }
+                } else {
+                    MessageDialog.openWarning(getShell(), "Warning", Messages.getString("ProcessView.noJobRunning")); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                runtimeButton.setEnabled(true);
             }
         });
         
@@ -472,9 +478,9 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 		long endTime;
 		
 		while(true){
-			if(processContext != null && !processContext.isRunning()) {
-       			return false;
-       	 }
+			if ((processContext != null && !processContext.isRunning()) && !isReadyToStart) {
+				return false;
+			}
 			System.out.println("background thread searching..."); //$NON-NLS-1$
 			if(initCurrentActiveJobJvm()){
 				return true;
