@@ -59,5 +59,12 @@ public interface IGenericConstants {
     public static final String IS_CONTEXT_MODE = "IS_CONTEXT_MODE"; //$NON-NLS-1$
 
     public static final String IS_DYNAMIC = "IS_DYNAMIC"; //$NON-NLS-1$
+    
+    /**
+     * Tag key estimates what would line separator in property would be replaced with.
+     * The property is which value can include line separator
+     */
+    public static final String LINE_SEPARATOR_REPLACED_TO = "LINE_SEPARATOR_REPLACED_TO";//$NON-NLS-1$
+
 
 }

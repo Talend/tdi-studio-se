@@ -1338,6 +1338,12 @@ public class Component extends AbstractBasicComponent {
                 return TalendQuoteUtils.addQuotesIfNotExist(value);
             }
         }
+        if (GenericTypeUtils.isStringType(property)
+                && property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO) != null) {
+            String replacedTo = String.valueOf(property.getTaggedValue(IGenericConstants.LINE_SEPARATOR_REPLACED_TO));
+            // "Win", "Linux/Unix", "Mac"
+            return value.replaceAll("\r\n", replacedTo).replaceAll("\n", replacedTo).replaceAll("\r", replacedTo);
+        }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
             return "\"" + value.replace("\\\"", "\\\\\"").replace("\"", "\\\"") + "\"";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
