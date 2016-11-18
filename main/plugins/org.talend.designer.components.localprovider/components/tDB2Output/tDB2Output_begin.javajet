@@ -43,7 +43,40 @@ boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node,"__
 boolean useBatchSize = ("true").equals(ElementParameterParser.getValue(node,"__USE_BATCH_SIZE__"));
 String batchSize=ElementParameterParser.getValue(node,"__BATCH_SIZE__");
 %>
-
+class PrintSQLException_<%=cid%>{
+	public String getSQLException(java.sql.SQLException ex,boolean skipFirst) {
+		StringBuilder fullErrorMessage = new java.lang.StringBuilder();
+    	for (Throwable e : ex) {
+    		if(skipFirst){
+    		    skipFirst=false;
+    		    continue;
+    		}
+        	if (e instanceof java.sql.SQLException) {
+                fullErrorMessage.append("SQLState: " +((java.sql.SQLException)e).getSQLState()+'\n');
+                fullErrorMessage.append("Error Code: " +((java.sql.SQLException)e).getErrorCode()+'\n');
+                fullErrorMessage.append("Message: " + e.getMessage());
+                Throwable t = ex.getCause();
+                while(t != null) {
+                    System.err.println("Cause: " + t);
+                    fullErrorMessage .append("Cause: " + t);
+                    t = t.getCause();
+                }
+        	}
+    	}
+    	return fullErrorMessage.toString();
+	}
+}
+PrintSQLException_<%=cid%> printSQLException_<%=cid%> = new PrintSQLException_<%=cid%>();
+int nb_line_<%=cid%> = 0;
+int nb_line_update_<%=cid%> = 0;
+int nb_line_inserted_<%=cid%> = 0;
+int nb_line_deleted_<%=cid%> = 0;
+int nb_line_rejected_<%=cid%> = 0;
+int deletedCount_<%=cid%> = 0;
+int updatedCount_<%=cid%> = 0;
+int insertedCount_<%=cid%> = 0;
+int rejectedCount_<%=cid%> = 0;
+try{
 <%
 getManager(dbmsId, cid, node);
 
@@ -124,15 +157,7 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
 }
 %>
 
-int nb_line_<%=cid%> = 0;
-int nb_line_update_<%=cid%> = 0;
-int nb_line_inserted_<%=cid%> = 0;
-int nb_line_deleted_<%=cid%> = 0;
-int nb_line_rejected_<%=cid%> = 0;
-int deletedCount_<%=cid%> = 0;
-int updatedCount_<%=cid%> = 0;
-int insertedCount_<%=cid%> = 0;
-int rejectedCount_<%=cid%> = 0;
+
 boolean whetherReject_<%=cid%> = false;
 <%
 String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
@@ -475,6 +500,5 @@ class DataPropagateUtil_<%=cid%> {
 }
 
 DataPropagateUtil_<%=cid%> dataPropagateUtil_<%=cid%> = new DataPropagateUtil_<%=cid%>();
-
 
 

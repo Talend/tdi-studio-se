@@ -1208,6 +1208,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 	<%
                 	}else {
                 	%>
+                	String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
                 	int countSum_<%=cid%> = 0;
 					for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 						countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
@@ -1225,10 +1226,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 			    	    deletedCount_<%=cid%> += countSum_<%=cid%>;
 			    	<%
 			    	}
-			    	dbLog.logPrintedException("e.getMessage()");
-			    	%> 
-                	System.err.println(e.getMessage());
-                	<%
+
+			    	dbLog.logPrintedException("errormessage_"+cid);
                 	}%>
                 }
                 <%
@@ -1277,6 +1276,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 	<%
                 	}else {
                 	%>
+                		String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
                 		int countSum_<%=cid%> = 0;
 						for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 							countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
@@ -1294,10 +1294,7 @@ skeleton="../templates/db_output_bulk.skeleton"
             	    	    deletedCount_<%=cid%> += countSum_<%=cid%>;
             	    	<%
             	    	}
-            	    	dbLog.logPrintedException("e.getMessage()");
-            	    	%>
-                        System.err.println(e.getMessage());
-                	<%
+            	    	dbLog.logPrintedException("errormessage_"+cid);
                 	}%>
                 
                 }            	                              
