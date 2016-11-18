@@ -92,6 +92,7 @@ imports="
     	<%
     	}else {
     	%>
+    	String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
     	int countSum_<%=cid%> = 0;
 		for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 			countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
@@ -108,11 +109,10 @@ imports="
     	%>
     	    deletedCount_<%=cid%> += countSum_<%=cid%>;
     	<%
-    	}%> 
-    	System.out.println(e.getMessage());
-    	<%
-    	}%>                	
-	}                                  
+    	}
+    	dbLog.logPrintedException("errormessage_"+cid);
+    	}%>
+	}
     <%
     }%>   
                 
@@ -135,6 +135,24 @@ imports="
     <%
 	}
     %>
+        } catch (java.sql.SQLException e) {
+       
+       
+       <%
+       		if(("true").equals(dieOnError)) {
+       %>
+           String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
+           <%dbLog.logPrintedException("errormessage_"+cid);%>
+           throw(e);
+       <%
+            }else{
+       %>
+            String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
+       <%
+            dbLog.logPrintedException("errormessage_"+cid);
+            }
+       %>
+   }
     
 	nb_line_deleted_<%=cid%>=nb_line_deleted_<%=cid%>+ deletedCount_<%=cid%>;
 	nb_line_update_<%=cid%>=nb_line_update_<%=cid%> + updatedCount_<%=cid%>;
