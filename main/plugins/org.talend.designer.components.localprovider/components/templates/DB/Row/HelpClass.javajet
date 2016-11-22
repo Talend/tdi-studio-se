@@ -60,39 +60,22 @@
 				%>
 				conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 			<%	
-				INode connectionNode = null; 
-				for (INode processNode : node.getProcess().getGeneratingNodes()) { 
-					if(connection.equals(processNode.getUniqueName())) { 
-						connectionNode = processNode; 
-						break; 
-					} 
-				} 
-				boolean specify_alias = "true".equals(ElementParameterParser.getValue(connectionNode, "__SPECIFY_DATASOURCE_ALIAS__"));
-				if(specify_alias){ 
-					String alias = ElementParameterParser.getValue(connectionNode, "__DATASOURCE_ALIAS__"); 
-					String autoCommit = "true".equals(ElementParameterParser.getValue(connectionNode, "__AUTO_COMMIT__"))?"true":"false";
-				%> 
-					if (null == conn_<%=cid%>) {
-						java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES); 
-						conn_<%=cid%> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
-						if (conn_<%=cid%> != null) { 
-							conn_<%=cid%>.setAutoCommit(<%=autoCommit%>);
-						}
-					}
-				<%
-				}
 				this.afterUseExistConnection(node);
 			} else {
 	 			boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));
 		 		if(specify_alias){
 				%>
-		            java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
-		            if (null != dataSources_<%=cid%>) {
-						<%
-		                String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
-						%>
-		                conn_<%=cid%> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
-		            } else {
+            java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
+            if (dataSources_<%=cid%> != null) {
+					String dsAlias_<%=cid%> = <%=(null != alias && !("".equals(alias)))?alias:"\"\""%>;
+					if (dataSources_<%=cid%>.get(dsAlias_<%=cid%>) == null) {
+						throw new Exception("No data source with alias: " + dsAlias_<%=cid%> + " available!");
+					}
+					conn_<%=cid%> = dataSources_<%=cid%>.get(dsAlias_<%=cid%>).getRawDataSource().getConnection();
+					if (conn_<%=cid%> == null) {
+				   	throw new Exception("Unable to get a pooled database connection from pool: " + dsAlias_<%=cid%>);
+					}
+            } else {
 				<%
 				}
 				this.classForName(node);

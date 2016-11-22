@@ -62,11 +62,18 @@ imports="
  		if(specify_alias){
 %>
             java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
-            if (null != dataSources_<%=cid%>) {
+            if (dataSources_<%=cid%> != null) {
 <%
                 String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
 %>
-                conn_<%=cid%> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
+					 String dsAlias_<%=cid%> = <%=(null != alias && !("".equals(alias)))?alias:"\"\""%>;
+                if (dataSources_<%=cid%>.get(dsAlias_<%=cid%>) == null) {
+                	throw new Exception("No data source with alias: " + dsAlias_<%=cid%> + " available!");
+                }
+                conn_<%=cid%> = dataSources_<%=cid%>.get(dsAlias_<%=cid%>).getRawDataSource().getConnection();
+                if (conn_<%=cid%> == null) {
+				   	throw new Exception("Unable to get a pooled database connection from pool: " + dsAlias_<%=cid%>);
+                }
             } else {
 <%
 		}

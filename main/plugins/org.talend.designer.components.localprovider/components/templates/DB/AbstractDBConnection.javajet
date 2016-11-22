@@ -19,6 +19,7 @@ imports="
     String dbuser = ElementParameterParser.getValue(node, "__USER__");
     String dbpass = ElementParameterParser.getValue(node, "__PASS__");
     String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
+	String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
     
 	boolean isUseSharedConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_SHARED_CONNECTION__"));
 %>
@@ -48,12 +49,11 @@ imports="
 	} else {
 		boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));
 		if(specify_alias){
-			String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
 %>
-
-	if ((null == globalMap.get(KEY_DB_DATASOURCES)) || "".equals(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>)) {
+	java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
+	if (dataSources_<%=cid%> == null) {
 <%
-		}
+		} // if(specify_alias)
 %>
 		<%connUtil.classForName(node);%>
 		<%
@@ -63,17 +63,26 @@ imports="
 		log4jCodeGenerateUtil.connect_end();
 		%>
 
-		globalMap.put("conn_<%=cid%>", conn_<%=cid%>);
 <%
 		if(specify_alias){
 %>
+	} else {
+    	String dsAlias_<%=cid%> = <%=(null != alias && !("".equals(alias)))?alias:"\"\""%>;
+      if (dataSources_<%=cid%>.get(dsAlias_<%=cid%>) == null) {
+       	throw new Exception("No DataSource with alias: " + dsAlias_<%=cid%> + " available!");
+      }
+	   conn_<%=cid%> = dataSources_<%=cid%>.get(dsAlias_<%=cid%>).getRawDataSource().getConnection();
+	   if (conn_<%=cid%> == null) {
+	   	throw new Exception("Unable to get a pooled database connection from pool: " + dsAlias_<%=cid%>);
+	   }
 	}
 <%
-		}
-	}
+		} // if(specify_alias)
+	} // else if(isUseSharedConnection)
 %>
 	if (null != conn_<%=cid%>) {
 		<%connUtil.setAutoCommit(node);%>
+		globalMap.put("conn_<%=cid%>", conn_<%=cid%>);
 	}
 <%
 	connUtil.afterComponentProcess(node);

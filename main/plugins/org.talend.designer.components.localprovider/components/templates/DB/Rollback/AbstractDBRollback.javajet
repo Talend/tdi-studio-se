@@ -19,24 +19,7 @@ imports="
 
     String conn = "conn_" + connection;
 %>
-	java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-    <%
-	INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(),connection);
-	boolean specify_alias = "true".equals(ElementParameterParser.getValue(connectionNode, "__SPECIFY_DATASOURCE_ALIAS__"));
-	if(specify_alias){
-		String alias = ElementParameterParser.getValue(connectionNode, "__DATASOURCE_ALIAS__");
-		%>
-		if (null == conn_<%=cid%>) {
-			java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES); 
-			if(dataSources_<%=cid%>!=null) {
-				if(dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>)!=null) {
-					conn_<%=cid%> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
-				}
-			}
-		}
-	<%
-	}
-	%>
+	java.sql.Connection conn_<%=cid%> = (java.sql.Connection) globalMap.get("<%=conn%>");
 	if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
 		<%
 		if(close){
