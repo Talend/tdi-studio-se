@@ -332,7 +332,7 @@
 		<IMPORT NAME="commons-httpclient"   MODULE="commons-httpclient-3.0.1.jar" MVN="mvn:org.talend.libraries/commons-httpclient-3.0.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.0.1.jar" REQUIRED="true" />
 		<IMPORT NAME="commons-codec"        MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar" REQUIRED="true" />
 		<IMPORT NAME="Driver-MySql"         MODULE="mysql-connector-java-5.1.30-bin.jar" MVN="mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0"  REQUIRED="true" />
-		<IMPORT NAME="Driver-DB2" 			MODULE="db2jcc.jar" MVN="mvn:org.talend.libraries/db2jcc/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="Driver-DB2" 			MODULE="db2jcc4.jar" MVN="mvn:org.talend.libraries/db2jcc4/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CISUZ" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CU" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver_MaxDB" 		MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED="true" />

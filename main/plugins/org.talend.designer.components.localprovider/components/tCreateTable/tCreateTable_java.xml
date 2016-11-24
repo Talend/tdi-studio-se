@@ -720,7 +720,7 @@
         <IMPORT NAME="Driver-V5R2_V5R4" MODULE="jt400_V5R2.jar" MVN="mvn:org.talend.libraries/jt400_V5R2/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V5R2.jar')"/>
         <IMPORT NAME="Driver-V5R3_V6R1" MODULE="jt400_V5R3.jar" MVN="mvn:org.talend.libraries/jt400_V5R3/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V5R3.jar')"/>
         <IMPORT NAME="Driver-V6R1_V7R2" MODULE="jt400_V6R1.jar" MVN="mvn:org.talend.libraries/jt400_V6R1/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DBTYPE=='AS400') and (DB_AS400_VERSION=='jt400_V6R1.jar')" />
-		<IMPORT NAME="Driver-DB2" MODULE="db2jcc.jar" MVN="mvn:org.talend.libraries/db2jcc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
+		<IMPORT NAME="Driver-DB2" MODULE="db2jcc4.jar" MVN="mvn:org.talend.libraries/db2jcc4/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CISUZ" MODULE="db2jcc_license_cisuz.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cisuz/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver-DB2-LICENSE-CU" MODULE="db2jcc_license_cu.jar" MVN="mvn:org.talend.libraries/db2jcc_license_cu/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='DB2')" />
 		<IMPORT NAME="Driver_MaxDB" MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED_IF="DBTYPE=='MAXDB'" />
