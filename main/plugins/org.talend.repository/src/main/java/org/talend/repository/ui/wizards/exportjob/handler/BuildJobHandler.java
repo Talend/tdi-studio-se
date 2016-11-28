@@ -237,6 +237,9 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
             tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(ITransformService.class);
         }
+        if (tdmService == null) {
+            return;
+        }
         try {
             // add __tdm dependencies
             ExportFileResource resouece = new ExportFileResource();
@@ -268,7 +271,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             // add .settings/com.oaklandsw.base.projectProps for tdm, it should be added via ExportItemUtil, here just
             // make sure to export again.
             for (Item item : items) {
-                if (tdmService != null && tdmService.isTransformItem(item)) {
+                if (tdmService.isTransformItem(item)) {
                     setNeedItemDependencies(true);
                     String itemProjectFolder = getProject(item).getTechnicalLabel();
                     if (isProjectNameLowerCase()) {// should be same as ExportItemUtil.getProjectOutputPath
