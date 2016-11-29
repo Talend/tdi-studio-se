@@ -136,38 +136,30 @@ public class MarketoRestClient {
 
     public RequestResult executePostRequest(Class<?> resultClass,
             JsonObject inputJson) throws Exception {
-
-        Response response = webClient.post(inputJson.toString());
-        if (response.getStatus() == 200 && response.hasEntity()) {
-
-            InputStream inStream = response.readEntity(InputStream.class);
-            Reader reader = new InputStreamReader(inStream);
-            Gson gson = new Gson();
-            return (RequestResult) gson.fromJson(reader, resultClass);
-        } else {
-            throw new Exception(
-                    "Reauest failed! Please check your request ssetting!");
-        }
-
+    	
+    	return doPost(resultClass,inputJson.toString());
     }
     
     public RequestResult executePostRequest(Class<?> resultClass,
             String postContent) throws Exception {
     	
     	webClient.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
-        Response response = webClient.post(postContent);
-        
-        if (response.getStatus() == 200 && response.hasEntity()) {
-        	
-            InputStream inStream = response.readEntity(InputStream.class);
-            Reader reader = new InputStreamReader(inStream);
-            Gson gson = new Gson();
-            return (RequestResult) gson.fromJson(reader, resultClass);
-        } else {
-            throw new Exception(
-                    "Reauest failed! Please check your request ssetting!");
-        }
-
+    	return doPost(resultClass,postContent);
+    }
+    
+    public RequestResult doPost(Class<?> resultClass,String postContent) throws Exception{
+    	
+    	 Response response = webClient.post(postContent);
+         
+         if (response.getStatus() == 200 && response.hasEntity()) {
+         	
+             InputStream inStream = response.readEntity(InputStream.class);
+             Reader reader = new InputStreamReader(inStream);
+             Gson gson = new Gson();
+             return (RequestResult) gson.fromJson(reader, resultClass);
+         } 
+             throw new Exception( "Reauest failed! Please check your request ssetting!");
+    	
     }
 
     public String getPageToken(String sinceDatetime) throws Exception {
