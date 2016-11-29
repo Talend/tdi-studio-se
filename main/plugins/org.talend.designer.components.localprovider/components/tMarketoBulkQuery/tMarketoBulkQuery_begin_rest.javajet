@@ -105,7 +105,7 @@
 				if("StaticListSelector".equals(leadSelector)){
 					if("STATIC_LIST_NAME".equals(listParam)){
 				%>
-						int listId_<%=cid%> =  client_<%=cid%>.getListIdByName(<%=listParamValue%>);
+						Integer listId_<%=cid%> =  client_<%=cid%>.getListIdByName(<%=listParamValue%>);
 					<%
 					}else{
 					%>
