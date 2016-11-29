@@ -150,6 +150,25 @@ public class MarketoRestClient {
         }
 
     }
+    
+    public RequestResult executePostRequest(Class<?> resultClass,
+            String postContent) throws Exception {
+    	
+    	webClient.type(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+        Response response = webClient.post(postContent);
+        
+        if (response.getStatus() == 200 && response.hasEntity()) {
+        	
+            InputStream inStream = response.readEntity(InputStream.class);
+            Reader reader = new InputStreamReader(inStream);
+            Gson gson = new Gson();
+            return (RequestResult) gson.fromJson(reader, resultClass);
+        } else {
+            throw new Exception(
+                    "Reauest failed! Please check your request ssetting!");
+        }
+
+    }
 
     public String getPageToken(String sinceDatetime) throws Exception {
 
@@ -177,24 +196,34 @@ public class MarketoRestClient {
             throws Exception {
 
         webClient.resetQuery();
-        webClient.replacePath(basicPath + "/v1/leads.json").query(
-                "access_token", accessToken);
+        webClient.replacePath(basicPath + "/v1/leads.json");
+        webClient.query("_method", "GET");
+        webClient.query("access_token", accessToken);
+        
+        String postContent ="filterType="+filterType;
         if (fields != null && fields.length > 0) {
-            webClient.query("fields", MarketoUtils.unionString(",", fields));
+        	postContent+="&fields="+MarketoUtils.unionString(",", fields);
         }
-        webClient.query("filterType", filterType);
+        
         if (filterValues != null && filterValues.length > 0) {
-            webClient.query("filterValues",
-                    MarketoUtils.unionString(",", filterValues));
+        	postContent+="&filterValues="+MarketoUtils.unionString(",", filterValues);
         }
+        
         if (batchSize != null) {
-            webClient.query("batchSize", batchSize);
+            postContent+="&batchSize="+batchSize;
         }
+        
+        
         if (nextPageToken != null && nextPageToken.length() > 0) {
-            webClient.query("nextPageToken", nextPageToken);
+            postContent+="&nextPageToken="+nextPageToken;
         }
+        ResultBasic rb = (ResultBasic)executePostRequest(ResultBasic.class,postContent);
+        if(rb.isSuccess()){
+        	return rb;
+        }
+        throw new Exception(rb.getErrors().toString());
 
-        return (ResultBasic) executeGetRequest(ResultBasic.class);
+        
     }
 
     public ResultBasic getLeadsByListId(String[] fields, Integer batchSize,
