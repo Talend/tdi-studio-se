@@ -707,6 +707,8 @@ this.globalResumeTicket = true;//to run tPreJob
 
 this.globalResumeTicket = false;//to run others jobs
 
+final Thread launchingThread = Thread.currentThread();
+
 <%
 
     //5. all others sub-job (MultiThread mode)
@@ -748,6 +750,10 @@ this.globalResumeTicket = false;//to run others jobs
                         status = localStatus;
                     }
 
+                    if ("true".equals(((java.util.Map) threadLocal.get()).get("ESBJobInterruptedException"))) {
+                        launchingThread.interrupt();
+                    }
+
                     runningThreadCount.add(-1);
                 }
             }
@@ -757,13 +763,20 @@ this.globalResumeTicket = false;//to run others jobs
             }
         }
 %>
+    boolean interrupted = false;
     while (runningThreadCount.getCount() > 0) {
         try {
             Thread.sleep(10);
-        } catch (java.lang.Exception e) {
-            e.printStackTrace();
+        } catch (java.lang.InterruptedException e) {
+            interrupted = true;
         }
     }
+
+    if (interrupted) {
+        Thread.currentThread().interrupt();
+    }
+
+
 <%
     } else { // isRunInMultiThread  //5. all others sub-job (SingleThread  mode)
         for (INode rootNode : rootNodes) {
