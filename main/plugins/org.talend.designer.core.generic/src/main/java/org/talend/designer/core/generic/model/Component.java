@@ -1351,7 +1351,7 @@ public class Component extends AbstractBasicComponent {
             return "\"" + value.replace("\\\"", "\\\\\"").replace("\"", "\\\"") + "\"";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
-            value = "routines.system.IntegerUtil.valueOf(" + value + ")";
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";
         }
         if ("\"\"\"".equals(value)) {
             value = "\"\\\"\"";
