@@ -357,7 +357,7 @@
 		    <IMPORT 
 		        NAME="TALEND-MARKETO-REST" 
 		        MODULE="talend-marketo-rest-2.1-20161125.jar" 
-		        MVN="mvn:org.talend.libraries/talend-marketo-rest/2.1-20161125"  
+		        MVN="mvn:org.talend.libraries/talend-marketo-rest-2.1-20161125/6.2.1"  
 		        REQUIRED_IF="(USE_REST_API == 'true')" />
 
 		</IMPORTS>
