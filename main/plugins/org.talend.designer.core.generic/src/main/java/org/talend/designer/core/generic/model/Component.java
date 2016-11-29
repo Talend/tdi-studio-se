@@ -197,7 +197,8 @@ public class Component extends AbstractBasicComponent {
         for (Property<?> child : componentDefinition.getReturnProperties()) {
             nodeRet = new NodeReturn();
             nodeRet.setType(ComponentsUtils.getTalendTypeFromProperty(child).getId());
-            nodeRet.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
+            nodeRet.setDisplayName(
+                    ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
             nodeRet.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(child.getName()));
             if (nodeRet.getName().equals(ERROR_MESSAGE)) {
                 continue;
@@ -929,7 +930,7 @@ public class Component extends AbstractBasicComponent {
 
         ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
-        
+
         if (inputConnectors.isEmpty()) {
             INodeConnector connector = null;
             connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
@@ -963,13 +964,13 @@ public class Component extends AbstractBasicComponent {
                 type = EConnectionType.REJECT;
             }
             addGenericType(listConnector, type, connector.getName(), parentNode, componentProperties, true);
-        }       
+        }
         addStandardType(listConnector, EConnectionType.RUN_IF, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_COMPONENT_ERROR, parentNode);
         addStandardType(listConnector, EConnectionType.ON_SUBJOB_OK, parentNode);
         addStandardType(listConnector, EConnectionType.ON_SUBJOB_ERROR, parentNode);
-        
+
         Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
         createIterateConnectors(topologies, listConnector, parentNode);
 
@@ -1013,7 +1014,7 @@ public class Component extends AbstractBasicComponent {
         }
         return listConnector;
     }
-    
+
     /**
      * Create iterate connector for this {@link Component}
      * There are 4 types of components (depending on what main connections allowed):
@@ -1029,12 +1030,13 @@ public class Component extends AbstractBasicComponent {
      * 
      * Note: infinite value is defined by -1 int value
      * 
-     * @param topologies connection topologies supported by this {@link Component}. Component could support several topologies. 
+     * @param topologies connection topologies supported by this {@link Component}. Component could support several topologies.
      * Such component is called hybrid
      * @param listConnector list of all {@link Component} connectors
      * @param parentNode parent node
      */
-    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector, INode parentNode) {
+    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector,
+            INode parentNode) {
         boolean inputOrNone = topologies.contains(ConnectorTopology.NONE) || topologies.contains(ConnectorTopology.OUTGOING);
         INodeConnector iterateConnector = addStandardType(listConnector, EConnectionType.ITERATE, parentNode);
         iterateConnector.setMaxLinkOutput(-1);
@@ -1042,7 +1044,7 @@ public class Component extends AbstractBasicComponent {
             iterateConnector.setMaxLinkInput(1);
         } else {
             iterateConnector.setMaxLinkInput(0);
-        }   
+        }
     }
 
     /**
@@ -1349,7 +1351,7 @@ public class Component extends AbstractBasicComponent {
             return "\"" + value.replace("\\\"", "\\\\\"").replace("\"", "\\\"") + "\"";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
-            value = "Integer.valueOf(" + value + ")";
+            value = "routines.system.IntegerUtil.valueOf(" + value + ")";
         }
         if ("\"\"\"".equals(value)) {
             value = "\"\\\"\"";
@@ -1403,8 +1405,8 @@ public class Component extends AbstractBasicComponent {
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
-            node.setComponentProperties(Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class,
-                    new PostDeserializeSetup() {
+            node.setComponentProperties(
+                    Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class, new PostDeserializeSetup() {
 
                         @Override
                         public void setup(Object properties) {
