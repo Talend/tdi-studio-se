@@ -707,12 +707,11 @@ this.globalResumeTicket = true;//to run tPreJob
 
 this.globalResumeTicket = false;//to run others jobs
 
-final Thread launchingThread = Thread.currentThread();
-
 <%
 
     //5. all others sub-job (MultiThread mode)
     if(isRunInMultiThread){
+        %>final Thread launchingThread = Thread.currentThread();<%
         for (INode rootNode : rootNodes) {
             String componentName = rootNode.getComponent().getName();
             String uniqueName = rootNode.getUniqueName();
