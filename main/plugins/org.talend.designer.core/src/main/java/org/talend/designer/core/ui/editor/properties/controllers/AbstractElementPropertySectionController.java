@@ -534,9 +534,12 @@ public abstract class AbstractElementPropertySectionController implements Proper
          * DOC amaumont EditionListenerManager constructor comment.
          */
         public EditionControlHelper() {
-            super();
-            this.checkErrorsHelper = new CheckErrorsHelper();
-            this.undoRedoHelper = new UndoRedoHelper();
+            this(new CheckErrorsHelper(), new UndoRedoHelper());
+        }
+
+        public EditionControlHelper(CheckErrorsHelper checkErrorsHelper, UndoRedoHelper undoRedoHelper) {
+            this.checkErrorsHelper = checkErrorsHelper;
+            this.undoRedoHelper = undoRedoHelper;
         }
 
         /**
@@ -618,7 +621,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      * smallet $
      * 
      */
-    class CheckErrorsHelper {
+    public class CheckErrorsHelper {
 
         /**
          * DOC amaumont CheckSyntaxHelper constructor comment.
@@ -1041,7 +1044,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
      * $Id: DynamicTabbedPropertySection.java 865 2006-12-06 06:14:57 +0000 (鏄熸湡涓�, 06 鍗佷簩鏈� 2006) bqian $
      * 
      */
-    class UndoRedoHelper {
+    public class UndoRedoHelper {
 
         protected TypedTextCommandExecutor typedTextCommandExecutor;
 
