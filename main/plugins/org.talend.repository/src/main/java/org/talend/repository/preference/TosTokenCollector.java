@@ -52,6 +52,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
+import us.monoid.json.JSONArray;
 import us.monoid.json.JSONException;
 import us.monoid.json.JSONObject;
 
@@ -221,7 +222,7 @@ public class TosTokenCollector extends AbstractTokenCollector {
             idsOpened.add(process.getId());
         }
 
-        JSONObject components = new JSONObject();
+        JSONArray components = new JSONArray();
 
         int contextVarsNum = 0;
         int nbComponentsUsed = 0;
@@ -231,12 +232,24 @@ public class TosTokenCollector extends AbstractTokenCollector {
                 ProcessType processType = ((ProcessItem) item).getProcess();
 
                 for (NodeType node : (List<NodeType>) processType.getNode()) {
+                    JSONObject component_names = null;
                     String componentName = node.getComponentName();
                     int nbComp = 0;
-                    if (components.has(componentName)) {
-                        nbComp = components.getInt(componentName);
+                    for(int i = 0;i<components.length();i++){
+                        JSONObject temp = components.getJSONObject(i);
+                        if(temp.get("component_name").equals(componentName)){//$NON-NLS-1$
+                            nbComp = temp.getInt("count");//$NON-NLS-1$
+                            component_names = temp;
+                            break;
+                        }
                     }
-                    components.put(componentName, nbComp + 1);
+                    if(component_names == null){
+                        component_names = new JSONObject(); 
+                        components.put(component_names);
+                    }
+                    component_names.put("component_name", componentName);
+                    component_names.put("count", nbComp + 1);
+                    
                     nbComponentsUsed++;
                 }
                 // context variable per job
