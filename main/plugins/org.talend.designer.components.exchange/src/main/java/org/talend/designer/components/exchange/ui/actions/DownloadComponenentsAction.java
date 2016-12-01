@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -65,8 +66,8 @@ import org.talend.designer.components.exchange.util.ExchangeWebService;
 import org.talend.designer.components.exchange.util.WebserviceStatus;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
+import org.talend.updates.runtime.engine.InstalledUnit;
 import org.talend.updates.runtime.engine.P2Installer;
-import org.talend.utils.io.FilesUtils;
 
 /**
  * 
@@ -312,9 +313,22 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
         protected void afterDownload(IProgressMonitor monitor, ComponentExtension extension, File localZipFile) throws Exception {
             if (UpdatesHelper.isUpdateSite(localZipFile)) {
-                boolean success = installUpdateSiteComponent(localZipFile);
-                if (success) {
-                    askReboot();
+                try {
+                    P2Installer installer = new P2Installer();
+                    final Set<InstalledUnit> installed = installer.installPatchFile(localZipFile, true);
+                    if (installed != null && !installed.isEmpty()) {
+                        askReboot();
+                    }
+                } catch (Exception e) {
+                    // Popup dialog to user to waring install failed.
+                    Display.getDefault().syncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            MessageDialog.openError(new Shell(), "Error", "Install failed for " + extension.getLabel());
+                        }
+                    });
+                    throw e;
                 }
                 monitor.done();
                 extensionDownloadCompleted(extension);
@@ -326,30 +340,6 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
                     monitor.done();
                     extensionDownloadCompleted(extension);
                 }
-            }
-        }
-
-        protected boolean installUpdateSiteComponent(File localZipFile) throws Exception {
-            final File tmpFolder = org.talend.utils.files.FileUtils.createTmpFolder("components", "updatesite"); //$NON-NLS-1$ //$NON-NLS-2$
-            try {
-                boolean success = false;
-                FilesUtils.unzip(localZipFile.getAbsolutePath(), tmpFolder.getAbsolutePath());
-
-                final File[] updateFiles = UpdatesHelper.findUpdateFiles(tmpFolder);
-                if (updateFiles != null && updateFiles.length > 0) {
-                    P2Installer installer = new P2Installer();
-                    for (File f : updateFiles) {
-                        if (UpdatesHelper.isUpdateSite(f)) {
-                            String version = installer.installPatchesByP2(f, false);
-                            if (version != null) {
-                                success = true;
-                            }
-                        }
-                    }
-                }
-                return success;
-            } finally {
-                FilesUtils.deleteFolder(tmpFolder, true);
             }
         }
 
