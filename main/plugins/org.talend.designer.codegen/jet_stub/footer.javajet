@@ -749,7 +749,7 @@ this.globalResumeTicket = false;//to run others jobs
                         status = localStatus;
                     }
 
-                    if ("true".equals(((java.util.Map) threadLocal.get()).get("ESBJobInterruptedException"))) {
+                    if ("true".equals(((java.util.Map) threadLocal.get()).get("JobInterrupted"))) {
                         launchingThread.interrupt();
                     }
 
