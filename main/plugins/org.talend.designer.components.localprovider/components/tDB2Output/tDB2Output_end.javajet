@@ -118,8 +118,11 @@ imports="
     	    deletedCount_<%=cid%> += countSum_<%=cid%>;
     	<%
     	}
-    	dbLog.logPrintedException("errormessage_"+cid);
-    	}%>
+    	%>
+    	System.err.println(errormessage_<%=cid%>);
+    	<%
+    	}
+    	%>
 	}
     <%
     }%>   
@@ -150,14 +153,14 @@ imports="
        		if(("true").equals(dieOnError)) {
        %>
            String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-           <%dbLog.logPrintedException("errormessage_"+cid);%>
+    	   System.err.println(errormessage_<%=cid%>);
            throw(e);
        <%
             }else{
        %>
             String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
-       <%
-            dbLog.logPrintedException("errormessage_"+cid);
+    	    System.err.println(errormessage_<%=cid%>);
+    	<%
             }
        %>
    }

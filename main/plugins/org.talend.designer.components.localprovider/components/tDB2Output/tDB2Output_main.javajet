@@ -1192,8 +1192,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 			    	<%
 			    	}
 
-			    	dbLog.logPrintedException("errormessage_"+cid);
-                	}%>
+			    	%>
+    	             System.err.println(errormessage_<%=cid%>);
+    	            <%
+                	}
+                	%>
                 }
                 <%
                 }%>    			
@@ -1265,8 +1268,11 @@ skeleton="../templates/db_output_bulk.skeleton"
             	    	    deletedCount_<%=cid%> += countSum_<%=cid%>;
             	    	<%
             	    	}
-            	    	dbLog.logPrintedException("errormessage_"+cid);
-                	}%>
+            	    	%>
+    	                System.err.println(errormessage_<%=cid%>);
+    	            <%
+                	}
+                	%>
                 
                 }            	                              
                 <%
