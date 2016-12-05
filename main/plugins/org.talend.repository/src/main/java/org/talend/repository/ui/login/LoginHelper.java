@@ -119,6 +119,7 @@ public class LoginHelper {
     protected PreferenceManipulator prefManipulator;
 
     public static boolean isRestart;
+    public static boolean isAutoLogonFailed;
 
     private IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
             IBrandingService.class);
