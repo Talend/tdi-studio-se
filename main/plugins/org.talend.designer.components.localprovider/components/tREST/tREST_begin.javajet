@@ -129,8 +129,10 @@ imports="
 				%>		
 				<%=conn.getName() %> = new <%=conn.getName() %>Struct();
 				if(errorResponse_<%=cid%>!=null){
-					<%=conn.getName() %>.Body = errorResponse_<%=cid%>.getEntity(String.class);
 					<%=conn.getName() %>.ERROR_CODE = errorResponse_<%=cid%>.getStatus();
+					if(<%=conn.getName() %>.ERROR_CODE!=204){
+					<%=conn.getName() %>.Body = errorResponse_<%=cid%>.getEntity(String.class);
+					}
 				}else{
 					<%=conn.getName() %>.Body = restResponse_<%=cid%>;
 				}
