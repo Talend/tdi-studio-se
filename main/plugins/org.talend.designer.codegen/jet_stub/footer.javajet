@@ -768,6 +768,8 @@ this.globalResumeTicket = false;//to run others jobs
             Thread.sleep(10);
         } catch (java.lang.InterruptedException e) {
             interrupted = true;
+        } catch (java.lang.Exception e) {
+            e.printStackTrace();
         }
     }
 
