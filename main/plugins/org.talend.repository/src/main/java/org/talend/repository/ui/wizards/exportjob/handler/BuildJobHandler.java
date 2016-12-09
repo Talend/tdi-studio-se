@@ -13,7 +13,6 @@
 package org.talend.repository.ui.wizards.exportjob.handler;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -315,7 +314,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         return null;
     }
 
-    private void addDQDependencies(IFolder parentFolder, List<Item> items) throws IOException {
+    private void addDQDependencies(IFolder parentFolder, List<Item> items) throws Exception {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
             ITDQItemService tdqItemService = (ITDQItemService) GlobalServiceRegister.getDefault().getService(
                     ITDQItemService.class);
@@ -349,6 +348,39 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                         FilesUtils.copyDirectory(templateFolder, itemsFolderDir);
                     }
                 }
+            }
+            // TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java.src.main.resources". so that it will be used by
+            // maven command 'include-survivorship-rules' to export.
+            if (!isOptionChoosed(ExportChoice.needJobItem)) {
+                ExportFileResource resouece = new ExportFileResource();
+                BuildExportManager.getInstance().exportDependencies(resouece, processItem);
+                if (!resouece.getAllResources().isEmpty()) {
+                    final Iterator<String> relativepath = resouece.getRelativePathList().iterator();
+                    String pathStr = "metadata/survivorship"; //$NON-NLS-1$
+                    IFolder targetFolder = talendProcessJavaProject.getResourcesFolder();
+                    if (targetFolder.exists()) {
+                        IFolder survFolder = targetFolder.getFolder(new Path(pathStr));
+                        // only copy self job rules, clear the 'survivorship' folder before copy.
+                        if (survFolder.exists()) {
+                            survFolder.delete(true, null);
+                        }
+                        while (relativepath.hasNext()) {
+                            String relativePath = relativepath.next();
+                            Set<URL> sources = resouece.getResourcesByRelativePath(relativePath);
+                            for (URL sourceUrl : sources) {
+                                File currentResource = new File(org.talend.commons.utils.io.FilesUtils.getFileRealPath(sourceUrl
+                                        .getPath()));
+                                if (currentResource.exists()) {
+                                    FilesUtils.copyDirectory(currentResource, new File(targetFolder.getLocation()
+                                            .toPortableString() + File.separator + pathStr));
+                                }
+                            }
+                        }
+
+                    }
+                }
+                parentFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
+
             }
         }
     }

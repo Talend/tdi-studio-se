@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.handler;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,16 +31,16 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
-import org.talend.core.model.properties.Property;
-import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
+import org.talend.repository.utils.EmfModelUtils;
 
 /**
  * created by ycbai on 2015年5月13日 Detailled comment
@@ -143,6 +144,18 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         return LastGenerationInfo.getInstance().isUsePigUDFs(processItem.getProperty().getId(), this.version);
     }
 
+    protected boolean needDQSurvivorshipRules() {
+        // when needJobItem or itemDependencies is true, the survivorship rules will be included.so return false here.
+        if (isOptionChoosed(ExportChoice.needJobItem) || itemDependencies) {
+            return false;
+        }
+        Collection<NodeType> survivorshipNodes = EmfModelUtils.getComponentsByName(processItem, "tRuleSurvivorship");
+        if (!survivorshipNodes.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
         StringBuffer profileArgs = getProfileArgs();
@@ -169,6 +182,10 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         // if not binaries, need add maven resources
         boolean isBinaries = isOptionChoosed(ExportChoice.binaries);
         addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_MAVEN_RESOURCES);
+        // DQ survivorship rules when items not exported.
+        if (needDQSurvivorshipRules()) {
+            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_INCLUDE_SURVIVORSHIP_RULES);
+        }
         addArg(profileBuffer, isOptionChoosed(ExportChoice.needJobItem) || itemDependencies,
                 TalendMavenConstants.PROFILE_INCLUDE_ITEMS);
 
