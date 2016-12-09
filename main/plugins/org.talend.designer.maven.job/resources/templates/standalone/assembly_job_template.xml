@@ -179,6 +179,12 @@
                 <include>config/**</include>
             </includes>
         </fileSet>
+       <fileSet><!-- survivorship rules -->
+			<directory>${survivorship.rules.dir}</directory>
+			<outputDirectory>${talend.job.name}/items/${talend.project.name.lowercase}/metadata/survivorship/</outputDirectory>
+			<includes>
+			</includes>
+		</fileSet>
 	</fileSets>
 	<dependencySets>
 		<dependencySet>
