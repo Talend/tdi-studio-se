@@ -360,4 +360,9 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         this.synchronizer.cleanMavenFiles(monitor);
     }
 
+    @Override
+    public void regenerateMainProjectPom(IProgressMonitor monitor) throws Exception {
+        this.synchronizer.regenerateMainProjectPom(monitor, null);
+    }
+
 }
