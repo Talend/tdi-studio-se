@@ -876,8 +876,7 @@ public abstract class DbGenerationManager {
                     Entry<String, String> entry = ite.next();
                     String columnValue = entry.getKey();
                     String tableValue = entry.getValue();
-                    
-                    String tempTable = tableValue;                    
+
                     // find original table name if tableValue is alias
                     String originaltableName = tableValue;
                     ExternalDbMapData externalData = (ExternalDbMapData) component.getExternalData();
@@ -885,7 +884,6 @@ public abstract class DbGenerationManager {
                     for (ExternalDbMapTable inputTable : inputTables) {
                         if (inputTable.getAlias() != null && inputTable.getAlias().equals(tableValue)) {
                             originaltableName = inputTable.getTableName();
-                            tempTable = originaltableName;
                         }
                     }
 
@@ -941,10 +939,6 @@ public abstract class DbGenerationManager {
                                     }
                                     // if it is temp delived table, use label to generate sql
                                     if (iconn.getLineStyle() == EConnectionType.TABLE_REF) {
-                                        continue;
-                                    }
-                                    if (oriName.trim().startsWith("\\\"") && oriName.trim().endsWith("\\\"")) {
-                                        expression = language.getLocation(tempTable, getHandledField(oriName));
                                         continue;
                                     }
                                     oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$

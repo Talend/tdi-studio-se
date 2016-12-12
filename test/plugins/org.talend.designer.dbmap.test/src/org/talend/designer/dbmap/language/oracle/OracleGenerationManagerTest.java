@@ -12,8 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.oracle;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,30 +116,6 @@ public class OracleGenerationManagerTest {
 
         testMore();
         //
-    }
-
-    @Test
-    public void testAddQuoteForSpecialChar_Escape5() throws Exception {
-        when(conn.getMetadataTable())
-                .thenReturn(createMetadataTable(new String[] { "\\\"id\\\"", "\\\"name\\\"", "$acount", "_age", "email" }));
-
-        testEscape();
-        //
-    }
-
-    public void testEscape() throws Exception {
-
-        checkValue("A.\\\"id\\\"", "A.\\\"id\\\"");
-        checkValue("A.\\\"name\\\"", "A.\\\"name\\\"");
-        checkValue("A.$acount", "A.\\\"$acount\\\"");
-        checkValue("A.\\\"_age\\\"", "A.\\\"_age\\\"");
-        checkValue("A.email", "A.email");
-        // context
-        checkValue("context.schema.\\\"id\\\"", "context.schema.\\\"id\\\"");
-        checkValue("context.schema.\\\"name\\\"", "context.schema.\\\"name\\\"");
-        checkValue("context.schema.$acount", "context.schema.\\\"$acount\\\"");
-        checkValue("context.schema._age", "context.schema._age");
-        checkValue("context.schema.email", "context.schema.email");
     }
 
     private void testMore() throws Exception {
