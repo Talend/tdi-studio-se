@@ -51,15 +51,16 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.ColumnListController;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
+import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.UpdateRepositoryUtils;
 import org.talend.repository.model.IRepositoryNode;
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (ven., 29 sept. 2006) nrousseau $
- * 
+ *
  */
 public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
 
@@ -102,7 +103,8 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
     @Override
     public void execute() {
         node.setPropertyValue(propName, newPropValue);
-        if ((EParameterName.SCHEMA + ":" + EParameterName.REPOSITORY_SCHEMA_TYPE).equals(propName)) { //$NON-NLS-1$
+        String mainSchemaParamName = DesignerUtilities.getMainSchemaParameterName(node);
+        if (mainSchemaParamName.equals(propName)) {
             IElementParameter elementParameter = node.getElementParameter(propName);
             if (elementParameter != null) {
                 IElementParameter schemaTypeParam = elementParameter.getParentParameter().getChildParameters()

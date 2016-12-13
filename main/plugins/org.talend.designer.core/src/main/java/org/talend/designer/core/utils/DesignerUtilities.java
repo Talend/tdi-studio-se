@@ -21,9 +21,12 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.PlatformUI;
 import org.talend.core.CorePlugin;
+import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
@@ -87,7 +90,7 @@ public class DesignerUtilities {
 
     /**
      * DOC bqian Comment method "findProcessFromEditors".
-     * 
+     *
      * @param jobName
      * @param jobVersion
      */
@@ -96,6 +99,7 @@ public class DesignerUtilities {
 
         Display.getDefault().syncExec(new Runnable() {
 
+            @Override
             public void run() {
                 IEditorReference[] editors = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
                         .getEditorReferences();
@@ -135,10 +139,10 @@ public class DesignerUtilities {
     public static void setSchemaDB(IElementParameter schemaDB, Object value) {
         if (schemaDB != null) {
             if (value instanceof String) {
-                if (JobSettingsConstants.ORACLE_OUTPUT_SID_ALIAS.equals((String) value)
-                        || JobSettingsConstants.ORACLE_OUTPUT_SN_ALIAS.equals((String) value)
-                        || JobSettingsConstants.ORACLE_INOUT_SN_ALIAS.equals((String) value)
-                        || JobSettingsConstants.ORACLE_INPUT_SID_ALIAS.equals((String) value)) {
+                if (JobSettingsConstants.ORACLE_OUTPUT_SID_ALIAS.equals(value)
+                        || JobSettingsConstants.ORACLE_OUTPUT_SN_ALIAS.equals(value)
+                        || JobSettingsConstants.ORACLE_INOUT_SN_ALIAS.equals(value)
+                        || JobSettingsConstants.ORACLE_INPUT_SID_ALIAS.equals(value)) {
                     schemaDB.setRequired(true);
                 } else {
                     schemaDB.setRequired(false);
@@ -158,4 +162,26 @@ public class DesignerUtilities {
         }
         return aliasName;
     }
+
+    public static String getMainSchemaParameterName(Node node) {
+        String mainSchemaParamName = null;
+        if (node != null) {
+            IComponent component = node.getComponent();
+            if (component != null && component.getComponentType() == EComponentType.GENERIC) {
+                List<IElementParameter> schemaParameters = node
+                        .getElementParametersFromField(EParameterFieldType.SCHEMA_REFERENCE);
+                for (IElementParameter parameter : schemaParameters) {
+                    if ("MAIN".equals(parameter.getContext()) || "FLOW".equals(parameter.getContext())) { //$NON-NLS-1$ //$NON-NLS-2$
+                        mainSchemaParamName = parameter.getName() + ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName(); //$NON-NLS-1$
+                        break;
+                    }
+                }
+            }
+        }
+        if (mainSchemaParamName == null) {
+            mainSchemaParamName = "SCHEMA:" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName(); //$NON-NLS-1$
+        }
+        return mainSchemaParamName;
+    }
+
 }
