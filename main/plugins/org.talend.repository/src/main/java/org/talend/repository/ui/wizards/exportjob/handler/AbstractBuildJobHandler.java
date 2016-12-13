@@ -27,6 +27,7 @@ import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ICoreService;
+import org.talend.core.ITDQSurvivorshipService;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -40,7 +41,6 @@ import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
-import org.talend.repository.utils.EmfModelUtils;
 
 /**
  * created by ycbai on 2015年5月13日 Detailled comment
@@ -149,12 +149,22 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         if (isOptionChoosed(ExportChoice.needJobItem) || itemDependencies) {
             return false;
         }
-        Collection<NodeType> survivorshipNodes = EmfModelUtils.getComponentsByName(processItem, "tRuleSurvivorship");
-        if (!survivorshipNodes.isEmpty()) {
+
+        Collection<NodeType> survivorshipNodes = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQSurvivorshipService.class)) {
+            ITDQSurvivorshipService tdqSurvShipService = (ITDQSurvivorshipService) GlobalServiceRegister.getDefault().getService(
+                    ITDQSurvivorshipService.class);
+            if (tdqSurvShipService != null) {
+                survivorshipNodes = tdqSurvShipService.getSurvivorshipNodesOfProcess(processItem);
+            }
+        }
+        if (survivorshipNodes != null && !survivorshipNodes.isEmpty()) {
             return true;
         }
         return false;
     }
+
+
 
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
