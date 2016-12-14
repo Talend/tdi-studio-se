@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.process.EComponentCategory;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.repository.FakePropertyImpl;
@@ -91,7 +93,13 @@ public class ComponentsUtilsTest {
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
+                if (EParameterFieldType.COMPONENT_REFERENCE.equals(genericElementParameter.getFieldType())
+                        && EComponentCategory.BASIC.equals(genericElementParameter.getCategory())) {
+                    int numRow = genericElementParameter.getNumRow();
+                    assertEquals(1, numRow);
+                }
                 Property property = genericElementParameter.getProperty();
+                
                 if (property != null) {
                     if (GenericTypeUtils.isStringType(property)) {
                         String propertyValue = (String) property.getValue();
