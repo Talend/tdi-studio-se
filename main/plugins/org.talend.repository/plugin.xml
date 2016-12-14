@@ -2833,6 +2833,15 @@
               name="ChangeTypeMappingForRedshift"
               version="6.3.1">
         </projecttask>
+        <projecttask
+            beforeLogon="false"
+            breaks="6.0.1"
+            class="org.talend.repository.model.migration.UncheckEnableStreamForMysqlInputMigrationTask"
+            description="TDI-37961 Uncheck EnableStream For MysqlInput when DB version is mariadb MigrationTask"
+            id="org.talend.repository.model.migration.UncheckEnableStreamForMysqlInputMigrationTask"
+            name="UncheckEnableStreamForMysqlInputMigrationTask"
+            version="6.4.1">
+        </projecttask>
    </extension>
 
    <extension
