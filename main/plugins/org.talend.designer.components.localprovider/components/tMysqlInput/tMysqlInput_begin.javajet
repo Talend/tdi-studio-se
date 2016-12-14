@@ -56,7 +56,8 @@ imports="
 		public void createStatement(INode node) {
 			super.createStatement(node);
 			String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
-		    if(("true").equals(enableStream)) {
+			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
+		    if(("true").equals(enableStream)&&(!"MARIADB".equals(dbVersion))) {
 %>
 		        ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
 <%
