@@ -440,6 +440,9 @@ public class OracleGenerationManager extends DbGenerationManager {
                 int begin = expression.indexOf(specialColumn);
                 int length = specialColumn.length();
                 int allLength = expression.length();
+                if (specialColumn.trim().startsWith("\\\"") && specialColumn.trim().endsWith("\\\"")) {
+                    return expression;
+                }
                 expression = expression.substring(0, begin) + "\\\"" + expression.substring(begin, begin + length) + "\\\""
                         + expression.substring(begin + length, allLength);
                 return expression;
