@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
@@ -246,6 +248,22 @@ public class PropertyChangeCommand extends Command {
 
         oldValue = elem.getPropertyValue(propName);
         elem.setPropertyValue(propName, newValue);
+        if (currentParam.getFieldType().equals(EParameterFieldType.CONNECTION_LIST) && 
+                currentParam.getContext()!=null && (elem instanceof Node)) {
+            String connParaname = currentParam.getContext() +":"+currentParam.getName();
+            if(connParaname.equals(propName)){
+                IConnection selectedConn = null;
+                for(IConnection conn : ((Node)elem).getIncomingConnections()){
+                    if(conn.getUniqueName().equals(newValue)){
+                        selectedConn = conn;
+                        break;
+                    }
+                }
+                if(selectedConn!=null && getTakeSchema()){
+                    ((Node) selectedConn.getSource()).takeSchemaFrom((Node)elem, currentParam.getContext());
+                }
+            }
+        }
         if ("ELT_TABLE_NAME".equals(propName) || "ELT_SCHEMA_NAME".equals(propName)) { //$NON-NLS-1$ //$NON-NLS-2$
             String oldELTValue = ""; //$NON-NLS-1$
             String newELTValue = ""; //$NON-NLS-1$
@@ -1005,6 +1023,10 @@ public class PropertyChangeCommand extends Command {
             }
         }
 
+    }
+    
+    private boolean getTakeSchema() {
+        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }
