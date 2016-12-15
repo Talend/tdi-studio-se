@@ -186,12 +186,8 @@ if("FLOW_MODE".equals(mode)){
 								System.err.println("<%=column.getLabel()%>: "+errorMessage_<%=cid%>);
 <%
 							}
-							if(!outConnName.equals(rejectConnName)){
 %>
 								<%=outConnName%> = null;
-<%
-							}
-%>
 						}
 <%
 		    		}else{
