@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.gef.commands.CompoundCommand;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.ConnParameterKeys;
 import org.talend.core.model.components.ComponentCategory;
@@ -25,6 +26,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.connection.hive.HiveModeInfo;
+import org.talend.core.model.metadata.connection.hive.HiveServerVersionInfo;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
@@ -86,6 +88,14 @@ public class ConvertRepositoryNodeToProcessNode {
             info = new DbInfo(iMetadataConnection.getDbType(), iMetadataConnection.getUsername(),
                     iMetadataConnection.getPassword(), iMetadataConnection.getDbVersionString(), iMetadataConnection.getUrl(),
                     jobTracker, nameNode, thrifturi, iMetadataConnection.getDriverJarPath());
+            String hiveServerVersion = String.valueOf(iMetadataConnection.getParameter(ConnParameterKeys.HIVE_SERVER_VERSION));
+            String driverClass = ""; //$NON-NLS-1$
+            if (HiveServerVersionInfo.HIVE_SERVER_2.getKey().equals(hiveServerVersion)) {
+                driverClass = EDatabase4DriverClassName.HIVE2.getDriverClass();
+            } else {
+                driverClass = EDatabase4DriverClassName.HIVE.getDriverClass();
+            }
+            info.setDriverClassName(driverClass);
         } else {
             info = new DbInfo(dbType, username, pwd, dbVersion, url, additionalParams);
         }
