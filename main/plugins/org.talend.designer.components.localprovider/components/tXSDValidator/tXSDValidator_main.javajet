@@ -137,6 +137,9 @@ if("FLOW_MODE".equals(mode)){
 					<%=rejectConnName %> = new <%=rejectConnName %>Struct();
 <%
 				}
+%>
+				String errorMessageRow_<%=cid%> = "";
+<%
 				for(IMetadataColumn column : columns){
 					String outLabel = column.getLabel();
 		    		if(allocateMap.containsKey(outLabel)){
@@ -175,6 +178,7 @@ if("FLOW_MODE".equals(mode)){
 							}
 %>
 						} else {
+						    errorMessageRow_<%=cid%> = errorMessageRow_<%=cid%> + "<%=column.getLabel()%>: "+errorMessage_<%=cid%>+'\n';
 <%
 							if(rejectConnName != null){
 %>
@@ -186,8 +190,12 @@ if("FLOW_MODE".equals(mode)){
 								System.err.println("<%=column.getLabel()%>: "+errorMessage_<%=cid%>);
 <%
 							}
+							if(!outConnName.equals(rejectConnName)){
 %>
 								<%=outConnName%> = null;
+<%
+                            }
+%>
 						}
 <%
 		    		}else{
@@ -205,6 +213,9 @@ if("FLOW_MODE".equals(mode)){
                     }
 	    		}
 	    	}
+%>
+	    	globalMap.put("<%=cid %>_XSD_ERROR_MESSAGE", errorMessageRow_<%=cid%>);
+<%
 	    }
 	}
 }else{
