@@ -131,7 +131,6 @@ if("FLOW_MODE".equals(mode)){
 		    }
 %>
 				<%=outConnName%> = new <%=outConnName%>Struct();
-				nb_line_<%=cid%>++;
 <%
 				if(rejectConnName != null){
 %>
@@ -176,7 +175,6 @@ if("FLOW_MODE".equals(mode)){
 							}
 %>
 						} else {
-						        fullErrorMessage_<%=cid%>.append("For Row "+nb_line_<%=cid%>+" <%=column.getLabel()%>: "+errorMessage_<%=cid%>+'\n');
 <%
 							if(rejectConnName != null){
 %>
@@ -207,9 +205,6 @@ if("FLOW_MODE".equals(mode)){
                     }
 	    		}
 	    	}
-%>
-	    	globalMap.put("<%=cid %>_XSD_ERROR_MESSAGE", fullErrorMessage_<%=cid%>.toString());
-<%
 	    }
 	}
 }else{
