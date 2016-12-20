@@ -106,7 +106,7 @@ public class ChangeXmiSerialization extends AbstractProjectMigrationTask {
                 }
             }
 
-            xmiResourceManager.deleteResource(projectResource, false);
+            xmiResourceManager.deleteResource(projectResource);
 
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
