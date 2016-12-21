@@ -1813,14 +1813,14 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String useSSL = getValueFromRepositoryName(elem, "USE_SSL"); //$NON-NLS-1$
         connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_USE_SSL, useSSL);
 
-        String trustStorePath = getValueFromRepositoryName(elem, "SSL_TRUST_STORE"); //$NON-NLS-1$
+        String trustStorePath = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "SSL_TRUST_STORE")); //$NON-NLS-1$
         connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PATH, trustStorePath);
 
-        String trustStorePassword = getValueFromRepositoryName(elem, "SSL_TRUST_STORE_PASSWORD"); //$NON-NLS-1$
+        String trustStorePassword = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "SSL_TRUST_STORE_PASSWORD")); //$NON-NLS-1$
         connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_SSL_TRUST_STORE_PASSWORD, trustStorePassword);
 
-        String additionalJDBCSetting = getValueFromRepositoryName(elem, "HIVE_ADDITIONAL_JDBC"); //$NON-NLS-1$
-        if (StringUtils.isNotEmpty(TalendQuoteUtils.removeQuotes(additionalJDBCSetting))) {
+        String additionalJDBCSetting = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "HIVE_ADDITIONAL_JDBC")); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(additionalJDBCSetting)) {
             connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ADDITIONAL_JDBC_SETTINGS,
                     additionalJDBCSetting);
         }
