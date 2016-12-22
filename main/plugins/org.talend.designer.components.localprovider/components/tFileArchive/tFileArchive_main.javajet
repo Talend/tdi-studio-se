@@ -122,8 +122,7 @@
   
    globalMap.put("<%=cid %>_ARCHIVE_FILEPATH",zipFile_<%=cid %>);
    
-   globalMap.put("<%=cid %>_ARCHIVE_FILENAME", zipFile_<%=cid%>.contains("\\") ?
-    zipFile_<%=cid%>.substring((zipFile_<%=cid%>.lastIndexOf("\\")+1)) : zipFile_<%=cid%>.substring((zipFile_<%=cid%>.lastIndexOf("/"))+1));
+   globalMap.put("<%=cid %>_ARCHIVE_FILENAME", new java.io.File(zipFile_<%=cid%>).getName());
 
    zip_<%=cid%>.doZip();
 
