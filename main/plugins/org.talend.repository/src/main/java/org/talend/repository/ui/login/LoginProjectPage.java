@@ -185,6 +185,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     protected Job backgroundGUIUpdate;
 
+    private String selectedProjectBeforeRefresh;
+    
     // protected ConnectionBean beforeConnBean;
 
     protected String finishButtonAction;
@@ -887,6 +889,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
+                LoginProjectPage.this.selectedProjectBeforeRefresh = getProject() == null ? null : getProject().getLabel();
                 // Validate data
                 if (validateFields()) {
                     fillUIProjectListWithBusyCursor();
@@ -901,6 +904,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     CommonExceptionHandler.process(e1);
                 }
                 setRepositoryContextInContext();
+                LoginProjectPage.this.selectedProjectBeforeRefresh = null;
             }
         });
 
@@ -1745,7 +1749,18 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     protected void selectLastUsedProject() {
         if (projectViewer != null) {
             Project[] projects = (Project[]) projectViewer.getInput();
-            Project project = loginHelper.getLastUsedProject(projects);
+            Project project = null;
+            if (selectedProjectBeforeRefresh != null) {
+                for (Project p : projects) {
+                    if (selectedProjectBeforeRefresh.equals(p.getLabel())) {
+                        project = p;
+                        break;
+                    }
+                }
+            }
+            if (project == null) {
+                project = loginHelper.getLastUsedProject(projects);
+            }
             if (project == null && projects.length > 0) {
                 project = projects[0];
             }
