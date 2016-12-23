@@ -439,12 +439,18 @@ public final class TalendEditorPaletteFactory {
                     if (componentNames != null && 0 < componentNames.size()) {
                         int limit = PaletteSettingsPreferencePage.getPaletteSearchResultLimitFromHelp();
                         int i = 0;
+                        String regex = getFilterRegex(helpKeyword);
+                        Pattern pattern = Pattern.compile(regex);
                         Iterator<String> nameIter = componentNames.iterator();
                         while (nameIter.hasNext()) {
                             if (limit <= i) {
                                 break;
                             }
                             String componentName = nameIter.next();
+                            Matcher matcher = pattern.matcher(componentName.toLowerCase());
+                            if (!matcher.find()) {
+                                continue;
+                            }
                             Map<String, Set<IComponent>> map = componentNameMap.get(componentName.toLowerCase());
                             if (map == null) {
                                 continue;
