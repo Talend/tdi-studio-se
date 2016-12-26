@@ -15,8 +15,7 @@ String cid = node.getUniqueName();
 String needAuth = ElementParameterParser.getValue(node, "__NEED_AUTH__");
 String authUsername = ElementParameterParser.getValue(node, "__AUTH_USERNAME__");
 String authPassword = ElementParameterParser.getValue(node, "__AUTH_PASSWORD__");
-String lineSeparator = (String) java.security.AccessController.doPrivileged(new sun.security.action.GetPropertyAction("line.separator"));
-String message = ElementParameterParser.getValue(node, "__MESSAGE__").replaceAll("(\r\n|\r|\n)",lineSeparator);
+String message = ElementParameterParser.getValue(node, "__MESSAGE__");
 String importance = ElementParameterParser.getValue(node, "__IMPORTANCE__");
 String priority = "Normal".equals(importance) ? "3" : (("High").equals(importance) ? "1" : "5");
 boolean ifSSL = "true".equals(ElementParameterParser.getValue(node, "__SSL__"));
@@ -44,6 +43,22 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 	
 	// component id
 	to = to.replace(";",",");
+
+    //Replace the line separator in message.
+    String[] small=message.split("\"");
+    StringBuffer sb = new StringBuffer();
+    for(int i=0;i<small.length;i++){
+        if(i%2==1){
+            sb.append(small[i].replaceAll("(\r\n|\r|\n)","\\\\n")).append('\"');
+        }else{
+             sb.append(small[i]).append('\"');
+        }
+    }
+    message=sb.toString();
+
+
+
+    
 	
 	//in order to be compatible with TOS 2.4.1, @see:issue:6282
 	if(cc == null || cc.trim().length()==0){
