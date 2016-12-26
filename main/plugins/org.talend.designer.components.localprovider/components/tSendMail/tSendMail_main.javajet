@@ -56,10 +56,6 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
     }
     message=sb.toString();
 
-
-
-    
-	
 	//in order to be compatible with TOS 2.4.1, @see:issue:6282
 	if(cc == null || cc.trim().length()==0){
 		cc = "\"\"";
