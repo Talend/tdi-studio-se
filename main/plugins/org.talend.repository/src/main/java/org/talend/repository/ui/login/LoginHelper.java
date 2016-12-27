@@ -119,6 +119,7 @@ public class LoginHelper {
     protected PreferenceManipulator prefManipulator;
 
     public static boolean isRestart;
+
     public static boolean isAutoLogonFailed;
 
     private IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
@@ -458,6 +459,7 @@ public class LoginHelper {
             } else {
                 MessageBoxExceptionHandler.process(e.getTargetException(), getUsableShell());
             }
+            factory.getRepositoryContext().setProject(null);
             // } else {
             // fillUIProjectList();
             // MessageBoxExceptionHandler.process(e.getTargetException(), getShell());
