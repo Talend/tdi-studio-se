@@ -209,6 +209,8 @@ if (hasOutputOnly || asInputComponent) {
             (org.talend.components.api.component.runtime.Source)sourceOrSink_<%=cid%>;
     org.talend.components.api.component.runtime.Reader reader_<%=cid%> =
             source_<%=cid%>.createReader(container_<%=cid%>);
+			
+	reader_<%=cid%> = new FlowVariablesReader(reader_<%=cid%>, container_<%=cid%>);
 
     <%
     IConnection main = null;
