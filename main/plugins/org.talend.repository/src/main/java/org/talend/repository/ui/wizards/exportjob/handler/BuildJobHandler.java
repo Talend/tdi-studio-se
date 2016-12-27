@@ -247,6 +247,10 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 final Iterator<String> relativepath = resouece.getRelativePathList().iterator();
                 while (relativepath.hasNext()) {
                     String relativePath = relativepath.next();
+                    // TDQ-12852 do nothing if it is DQ resources.
+                    if (relativePath == null || relativePath.contains("metadata/survivorship")) { //$NON-NLS-1$
+                        continue;
+                    }
                     Set<URL> sources = resouece.getResourcesByRelativePath(relativePath);
                     for (URL sourceUrl : sources) {
                         File currentResource = new File(org.talend.commons.utils.io.FilesUtils.getFileRealPath(sourceUrl
