@@ -10,7 +10,7 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.codegen.additionaljet;
+package org.talend.designer.core.generic.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,8 +23,6 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.designer.codegen.components.model.IComponentFactoryFilter;
-import org.talend.designer.codegen.i18n.Messages;
 
 /**
  * DOC zwzhao class global comment. Detailled comment
@@ -55,7 +53,7 @@ public class ComponentsFactoryProviderManager {
         filters = new ArrayList<IComponentFactoryFilter>();
 
         IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
-        IExtensionPoint extensionPoint = extensionRegistry.getExtensionPoint("org.talend.designer.codegen.componentFilter"); //$NON-NLS-1$
+        IExtensionPoint extensionPoint = extensionRegistry.getExtensionPoint("org.talend.designer.core.generic.componentFilter"); //$NON-NLS-1$
         IExtension[] extensions = extensionPoint.getExtensions();
         for (IExtension extension : extensions) {
             IConfigurationElement[] configurationElements = extension.getConfigurationElements();

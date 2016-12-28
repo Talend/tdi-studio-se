@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="fieldType_mapping" name="FieldType Mapping" schema="schema/fieldType_mapping.exsd"/>
+   <extension-point id="componentFilter" name="Component filter" schema="schema/componentFilter.exsd"/>
    <extension
          point="org.talend.designer.core.process_provider">
       <ProcessProvider

@@ -133,7 +133,33 @@ public class ComponentsUtils {
         for (ComponentDefinition componentDefinition : componentDefinitions) {
             try {
                 Component currentComponent = new Component(componentDefinition);
+                
+                Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
+                        .getProviders();
+                boolean hiddenComponent = false;
+                for (IComponentFactoryFilter filter : filters) {
+                    if (!filter.isAvailable(currentComponent.getName())) {
+                        hiddenComponent = true;
+                        break;
+                    }
+                }
+                
+                // if the component is not needed in the current branding,
+                // and that this one IS NOT a specific component for code generation
+                // just don't load it
+                if (hiddenComponent
+                        && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                    continue;
+                }
                 componentsList.add(currentComponent);
+                // if the component is not needed in the current branding,
+                // and that this one IS a specific component for code generation,
+                // hide it
+                if (hiddenComponent
+                        && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                    currentComponent.setVisible(false);
+                    currentComponent.setTechnical(true);
+                }
             } catch (BusinessException e) {
                 ExceptionHandler.process(e);
             }
