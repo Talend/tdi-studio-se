@@ -24,7 +24,10 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.jdt.core.JavaConventions;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -634,8 +637,8 @@ public class MainComposite extends AbstractTabComposite {
                             // Convert
                             final Item newItem = ConvertJobsUtil.createOperation(originalName, originalJobType,
                                     originalFramework, repositoryObject);
-                            if(newItem!=null){
-                                ConvertJobsUtil.convertTestcases(newItem,repositoryObject,originalJobType);
+                            if (newItem != null) {
+                                ConvertJobsUtil.convertTestcases(newItem, repositoryObject, originalJobType);
                             }
                             RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit("Convert job") { //$NON-NLS-1$
 
@@ -896,7 +899,9 @@ public class MainComposite extends AbstractTabComposite {
                             nameText.getText()) || nameText.getText().trim().contains(" ")) { //$NON-NLS-1$
                 errorMessage = Messages.getString("MainComposite.NameFormatError"); //$NON-NLS-1$
                 isValid = false;
-            } else if (KeywordsValidator.isKeyword(nameText.getText()) || "java".equalsIgnoreCase(nameText.getText())) {//$NON-NLS-1$
+            } else if (JavaConventions.validateClassFileName(nameText.getText() + ".class",//$NON-NLS-1$
+                    JavaCore.getOption(JavaCore.COMPILER_SOURCE), JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE)).getSeverity() == IStatus.ERROR
+                    || KeywordsValidator.isKeyword(nameText.getText())) {
                 errorMessage = Messages.getString("MainComposite.KeywordsError"); //$NON-NLS-1$
                 isValid = false;
             } else if (nameText.getText().equalsIgnoreCase(ProjectManager.getInstance().getCurrentProject().getLabel())) {
