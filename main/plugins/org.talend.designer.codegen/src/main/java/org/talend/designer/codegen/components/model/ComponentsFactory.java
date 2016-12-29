@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -101,7 +102,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static Logger log = Logger.getLogger(ComponentsFactory.class);
 
-    private static HashSet<IComponent> componentList = null;
+    private static Set<IComponent> componentList = null;
 
     private static HashSet<IComponent> customComponentList = null;
 
@@ -147,7 +148,7 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.measureActive = true;
         // TimeMeasure.begin("initComponents");
 
-        componentList = new HashSet<IComponent>();
+        componentList = Collections.synchronizedSet(new HashSet<IComponent>());
         customComponentList = new HashSet<IComponent>();
         skeletonList = new ArrayList<String>();
         userComponentList = new HashSet<IComponent>();
