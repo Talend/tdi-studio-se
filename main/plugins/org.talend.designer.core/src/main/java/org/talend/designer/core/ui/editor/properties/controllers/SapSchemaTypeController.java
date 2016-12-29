@@ -92,7 +92,7 @@ import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
-     * 
+     *
      */
     private static final String FORCE_READ_ONLY = "FORCE_READ_ONLY"; //$NON-NLS-1$
 
@@ -137,7 +137,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -156,10 +156,9 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
-     * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
+     *
+     * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#
+     * estimateRowSize (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
@@ -350,7 +349,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
      * DOC hcw Comment method "copySchemaFromChildJob".
-     * 
+     *
      * @param runJobNode
      * @param item
      */
@@ -386,7 +385,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)
@@ -454,7 +453,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -465,7 +464,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
      * Find the IRepositoryObject of metadata connection thats contains current schema.
-     * 
+     *
      * @param schemaId
      * @return
      */
@@ -483,7 +482,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
      * Use the database table wizard to update the schema in the repository.
-     * 
+     *
      * @param button
      */
     private void updateRepositorySchema(Button button) {
@@ -518,7 +517,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
      * yzhang Comment method "findRepositoryNode".
-     * 
+     *
      * @param label
      * @param root
      * @return
@@ -543,7 +542,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
     /**
      * If schema type is repository, display a dialog to ask the user to change to built-in mode or update the schema in
      * the repository. Return true to stop the process.
-     * 
+     *
      * @param button
      */
     private boolean checkForRepositoryShema(Button button) {
@@ -587,7 +586,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createButtonCommand(org
      * .eclipse.swt.widgets.Button)
@@ -831,7 +830,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
             }
 
             if (metaDialog != null) {
-                metaDialog.setText(Messages.getString("SchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+                metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
                 metaDialog.setInputReadOnly(inputReadOnly);
                 metaDialog.setOutputReadOnly(outputReadOnly);
 
@@ -1096,7 +1095,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createComboCommand(org
      * .eclipse.swt.custom.CCombo)
@@ -1286,7 +1285,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /**
      * Created by Marvin Wang on Jun. 19, 2012 for getting metadatatable only for SAP.
-     * 
+     *
      * @param connectionId
      * @param functionId
      * @param tableName
@@ -1304,10 +1303,9 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#getRepositoryChoiceParamName
-     * ()
+     *
+     * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#
+     * getRepositoryChoiceParamName ()
      */
     @Override
     protected String getRepositoryChoiceParamName() {
@@ -1316,7 +1314,7 @@ public class SapSchemaTypeController extends AbstractRepositoryController {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#getRepositoryTypeParamName
      * ()

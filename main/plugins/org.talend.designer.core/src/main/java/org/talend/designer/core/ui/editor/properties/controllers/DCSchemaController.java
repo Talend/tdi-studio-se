@@ -65,11 +65,13 @@ public class DCSchemaController extends AbstractElementPropertySectionController
 
     SelectionListener schemaListener = new SelectionListener() {
 
+        @Override
         public void widgetSelected(SelectionEvent e) {
             Command cmd = createButtonCommand((Button) e.getSource());
             executeCommand(cmd);
         }
 
+        @Override
         public void widgetDefaultSelected(SelectionEvent e) {
             widgetSelected(e);
         }
@@ -182,6 +184,7 @@ public class DCSchemaController extends AbstractElementPropertySectionController
         fixedCursorPosition(param, labelText, value, valueChanged);
     }
 
+    @Override
     public void propertyChange(PropertyChangeEvent arg0) {
         // TODO Auto-generated method stub
 
@@ -206,7 +209,7 @@ public class DCSchemaController extends AbstractElementPropertySectionController
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#createButtonCommand(org
      * .eclipse.swt.widgets.Button)
@@ -367,11 +370,11 @@ public class DCSchemaController extends AbstractElementPropertySectionController
                                 Map<IMetadataTable, Boolean> oneInput = inputInfos.get(inputNode);
                                 inputMetaCopy = (IMetadataTable) oneInput.keySet().toArray()[0];
                                 if (count == 0) {
-                                    changeMetadataCommand = new ChangeMetadataCommand(node, param, (Node) inputNode, inputNode
+                                    changeMetadataCommand = new ChangeMetadataCommand(node, param, inputNode, inputNode
                                             .getMetadataList().get(0), inputMetaCopy, originaleOutputTable, outputMetaCopy);
                                 } else {
                                     changeMetadataCommand = changeMetadataCommand.chain(new ChangeMetadataCommand(node, param,
-                                            (Node) inputNode, inputNode.getMetadataList().get(0), inputMetaCopy,
+                                            inputNode, inputNode.getMetadataList().get(0), inputMetaCopy,
                                             originaleOutputTable, outputMetaCopy));
                                 }
                                 count++;
@@ -402,7 +405,7 @@ public class DCSchemaController extends AbstractElementPropertySectionController
 
         /*
          * Datacert: Populating data in the edit schema dialog
-         * 
+         *
          * @author : virtusa
          */
         List<IMetadataColumn> columnList = new ArrayList<IMetadataColumn>();
@@ -433,7 +436,7 @@ public class DCSchemaController extends AbstractElementPropertySectionController
         outputMetaCopy.setLabel("Attribute Metadata");
         outputMetaCopy.setTableName(entityName);
         if (metaDialog != null) {
-            metaDialog.setText(Messages.getString("SchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+            metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
             metaDialog.setInputReadOnly(false);
             metaDialog.setOutputReadOnly(false);
             if (metaDialog.open() == MetadataDialog.OK) {
