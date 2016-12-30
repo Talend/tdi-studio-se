@@ -489,7 +489,7 @@ public class JobVMArgumentsComposite {
             public String getColumnText(Object element, int columnIndex) {
                 String value = ((String) element);
                 if (columnIndex == 0) {
-                    return value.replace(" ", "");
+                    return value;
                 }
                 throw new IllegalStateException();
             }
@@ -559,7 +559,7 @@ public class JobVMArgumentsComposite {
         StringBuffer buf = new StringBuffer(size * 50);
         buf.append(" ");
         for (int i = 0; i < size; i++) {
-            buf.append(items.get(i).trim().replaceAll(" ", ""));
+            buf.append(items.get(i).trim());
             buf.append(" "); //$NON-NLS-1$
         }
         return buf.toString();
