@@ -78,7 +78,7 @@
                         },
                         "onNext": null,
 						"title": "<internationalization id='onboarding.page4.title'/>",
-						"content": "<internationalization id='onboarding.page4.content'/><br/><internationalization id='onboarding.page4_1.content'/><a href='http://org.eclipse.ui.intro/runAction?pluginId=org.talend.rcp&amp;class=org.talend.rcp.intro.starting.ShowViewsAction&amp;id=org.talend.rcp.intro.starting.ShowViewsAction&amp;type=SHOW_RUN_JOB' ><internationalization id='onboarding.page4_2.content'/></a><internationalization id='onboarding.page4_3.content'/>"
+						"content": "<internationalization id='onboarding.page4.content'/><br/><internationalization id='onboarding.page4_1.content'/><a href='http://org.eclipse.ui.intro/runAction?pluginId=org.talend.rcp&amp;class=org.talend.rcp.intro.starting.ShowViewsAction&amp;id=org.talend.rcp.intro.starting.ShowViewsAction&amp;type=SHOW_RUN_JOB' ><internationalization id='onboarding.page4_2.content'/> </a><internationalization id='onboarding.page4_3.content'/>"
 					},
 					{
 						"size": "570,355",
