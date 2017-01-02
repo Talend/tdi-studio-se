@@ -116,27 +116,35 @@ public class ComponentsUtils {
         if (componentsFactory == null) {
             componentsFactory = ComponentsFactoryProvider.getInstance();
         }
-        Set<IComponent> componentsList = componentsFactory.getComponents();
         if (components == null) {
             components = new ArrayList<IComponent>();
         } else {
-            componentsList.removeAll(components);
+            componentsFactory.removeStdComponents(components);
         }
         Map<String, IComponent> existComponents = new HashMap<String, IComponent>();
 
+        Set<IComponent> componentsList = componentsFactory.getComponents();
         for (IComponent component : componentsList) {
             existComponents.put(component.getName(), component);
         }
 
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
-        for (ComponentDefinition componentDefinition : componentDefinitions) {
-            try {
-                Component currentComponent = new Component(componentDefinition);
-                componentsList.add(currentComponent);
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
+        if (componentDefinitions == null) {
+            return;
+        }
+        int size = componentDefinitions.size();
+        if (0 < size) {
+            List<IComponent> componentList = new ArrayList<IComponent>(size);
+            for (ComponentDefinition componentDefinition : componentDefinitions) {
+                try {
+                    Component currentComponent = new Component(componentDefinition);
+                    componentList.add(currentComponent);
+                } catch (BusinessException e) {
+                    ExceptionHandler.process(e);
+                }
             }
+            componentsFactory.addStdComponents(componentList);
         }
     }
 

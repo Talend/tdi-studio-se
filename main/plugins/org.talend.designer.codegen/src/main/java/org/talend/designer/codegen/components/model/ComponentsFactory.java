@@ -103,6 +103,8 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static HashSet<IComponent> componentList = null;
 
+    private static HashSet<IComponent> componentLetList = new HashSet<IComponent>();
+
     private static HashSet<IComponent> customComponentList = null;
 
     private HashSet<IComponent> userComponentList = null;
@@ -135,10 +137,33 @@ public class ComponentsFactory implements IComponentsFactory {
 
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
+    private Boolean initialised = false;
+
+    private final Object initialiseLock = new Object();
+
+    private final Object componentListLock = new Object();
+
+    private final Object componentLetListLock = new Object();
+
     public ComponentsFactory() {
     }
 
-    private void init(boolean duringLogon) {
+    private void initIfNeeded() {
+        synchronized (initialiseLock) {
+            if (!initialised) {
+                init(false);
+            }
+        }
+    }
+
+    private synchronized void init(boolean duringLogon) {
+        if (isInitialised()) {
+            return;
+        }
+        /**
+         * Set to initialised immediately in case to be called again in the following codes
+         */
+        initialised = true;
         removeOldComponentsUserFolder(); // not used anymore
         long startTime = System.currentTimeMillis();
 
@@ -148,6 +173,7 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.begin("initComponents");
 
         componentList = new HashSet<IComponent>();
+        componentLetList.clear();
         customComponentList = new HashSet<IComponent>();
         skeletonList = new ArrayList<String>();
         userComponentList = new HashSet<IComponent>();
@@ -198,7 +224,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     protected void initComponentNameMap() {
-        if (componentList == null) {
+        if (!isInitialised()) {
             return;
         }
         /**
@@ -210,7 +236,7 @@ public class ComponentsFactory implements IComponentsFactory {
          * 5. xmlMapComponent (for BD) <br>
          */
         componentNameMap = new HashMap<String, Map<String, Set<IComponent>>>();
-        Iterator<IComponent> componentIter = componentList.iterator();
+        Iterator<IComponent> componentIter = getComponents().iterator();
         while (componentIter.hasNext()) {
             IComponent component = componentIter.next();
             String componentName = component.getName();
@@ -730,17 +756,13 @@ public class ComponentsFactory implements IComponentsFactory {
 
     @Override
     public synchronized int size() {
-        if (componentList == null) {
-            init(false);
-        }
+        initIfNeeded();
         return componentList.size();
     }
 
     @Override
     public synchronized IComponent get(String name) {
-        if (componentList == null) {
-            init(false);
-        }
+        initIfNeeded();
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name)
@@ -758,9 +780,7 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public synchronized IComponent get(String name, String paletteType) {
-        if (componentList == null) {
-            init(false);
-        }
+        initIfNeeded();
 
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
@@ -773,9 +793,7 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor) {
         this.monitor = monitor;
-        if (componentList == null) {
-            init(false);
-        }
+        initIfNeeded();
         this.monitor = null;
         this.subMonitor = null;
     }
@@ -783,8 +801,10 @@ public class ComponentsFactory implements IComponentsFactory {
     @Override
     public void initializeComponents(IProgressMonitor monitor, boolean duringLogon) {
         this.monitor = monitor;
-        if (componentList == null) {
-            init(duringLogon);
+        synchronized (initialiseLock) {
+            if (!initialised) {
+                init(duringLogon);
+            }
         }
         this.monitor = null;
         this.subMonitor = null;
@@ -796,26 +816,84 @@ public class ComponentsFactory implements IComponentsFactory {
      * @see org.talend.core.model.components.IComponentsFactory#getComponents()
      */
     @Override
-    public synchronized Set<IComponent> getComponents() {
-        if (componentList == null) {
-            init(false);
+    public Set<IComponent> getComponents() {
+        initIfNeeded();
+        Set<IComponent> components = null;
+        synchronized (componentListLock) {
+            components = new HashSet<IComponent>(componentList.size() + componentLetList.size());
+            components.addAll(componentList);
         }
-        return componentList;
+        synchronized (componentLetListLock) {
+            components.addAll(componentLetList);
+        }
+        return components;
+    }
+
+    @Override
+    public Set<IComponent> getStdComponents() {
+        initIfNeeded();
+        Set<IComponent> components = null;
+        synchronized (componentListLock) {
+            components = new HashSet<IComponent>(componentList.size());
+            components.addAll(componentList);
+        }
+        return components;
+    }
+
+    @Override
+    public void addStdComponents(Collection<IComponent> components) {
+        synchronized (componentListLock) {
+            componentList.addAll(components);
+        }
+    }
+
+    @Override
+    public void removeStdComponents(Collection<IComponent> components) {
+        synchronized (componentListLock) {
+            componentList.removeAll(components);
+        }
+    }
+
+    @Override
+    public Set<IComponent> getComponentLets() {
+        initIfNeeded();
+        Set<IComponent> componentLets = new HashSet<IComponent>(componentLetList.size());
+        synchronized (componentLetListLock) {
+            componentLets.addAll(componentLetList);
+        }
+        return componentLets;
+    }
+
+    @Override
+    public boolean containsComponentlet(IComponent component) {
+        synchronized (componentLetListLock) {
+            return componentLetList.contains(component);
+        }
+    }
+
+    @Override
+    public void addComponentlets(Collection<IComponent> components) {
+        synchronized (componentLetListLock) {
+            componentLetList.addAll(components);
+        }
+    }
+
+    @Override
+    public void removeComponentlets(Collection<IComponent> components) {
+        synchronized (componentLetListLock) {
+            componentLetList.removeAll(components);
+        }
     }
 
     @Override
     public synchronized Map<String, Map<String, Set<IComponent>>> getComponentNameMap() {
-        if (componentNameMap == null) {
-            init(false);
-        }
+        initIfNeeded();
         return componentNameMap;
     }
 
     @Override
     public synchronized List<IComponent> getCustomComponents() {
-        if (customComponentList == null) {
-            init(false);
-        }
+        initIfNeeded();
         return new ArrayList<IComponent>(customComponentList);
     }
 
@@ -826,15 +904,15 @@ public class ComponentsFactory implements IComponentsFactory {
      */
     @Override
     public List<String> getSkeletons() {
-        if (skeletonList == null) {
-            init(false);
-        }
+        initIfNeeded();
         return skeletonList;
     }
 
     @Override
     public void reset() {
+        initialised = false;
         componentList = null;
+        componentLetList.clear();
         skeletonList = null;
         customComponentList = null;
         Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
@@ -973,4 +1051,9 @@ public class ComponentsFactory implements IComponentsFactory {
         this.componentsHandler = componentsHandler;
     }
 
+    private boolean isInitialised() {
+        synchronized (initialiseLock) {
+            return initialised;
+        }
+    }
 }
