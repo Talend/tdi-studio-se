@@ -133,6 +133,11 @@
              name="widget.type.jsonTable"
              widgetType="widget.type.jsonTable">
        </Mapping>
+       <Mapping
+             mapFieldType="DIRECTORY"
+             name="widget.type.directory"
+             widgetType="widget.type.directory">
+       </Mapping>
    </extension>
    <extension
          point="org.talend.designer.core.generators">
