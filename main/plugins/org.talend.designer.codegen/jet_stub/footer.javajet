@@ -1131,13 +1131,16 @@ if (execStat) {
 <%  if(exist_tMDM) { %>
     private void closeMDMConnections() {
         try {
-<%    for (INode mdmComponent : mdmComponentsList) { %>
-        org.talend.mdm.webservice.TMDMService service_<%=mdmComponent.getUniqueName() %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("TMDMService_<%=mdmComponent.getUniqueName() %>");
-		if(service_<%=mdmComponent.getUniqueName() %> != null)
-		{
-			service_<%=mdmComponent.getUniqueName() %>.logout(new org.talend.mdm.webservice.WSLogout());
-		}
-<%    } %>
+            java.util.Iterator keySets = globalMap.keySet().iterator();
+            while (keySets.hasNext()) {
+                String key = keySets.next().toString();
+                if (key.startsWith("TMDMService_tMDMConnection_")) {
+                    org.talend.mdm.webservice.TMDMService service = (org.talend.mdm.webservice.TMDMService)globalMap.get(key);
+                    if (service != null) {
+                        service.logout(new org.talend.mdm.webservice.WSLogout());
+                    }
+                }
+            }
         } catch (java.lang.Exception e) {
         }
     }
@@ -1249,12 +1252,14 @@ if (execStat) {
             connections.put("connBaseDN_<%=ldapNode.getUniqueName() %>", globalMap.get("connBaseDN_<%=ldapNode.getUniqueName() %>"));
 <%      } %>
 
-<%        for (INode mdmNode : mdmComponentsList) {%>
-            connections.put("TMDMService_<%=mdmNode.getUniqueName() %>", globalMap.get("TMDMService_<%=mdmNode.getUniqueName() %>"));
-<%          if( "false".equals(ElementParameterParser.getValue(mdmNode, "__AUTO_COMMIT__"))) {%>
-	            connections.put("mdmTransaction_<%=mdmNode.getUniqueName() %>", globalMap.get("mdmTransaction_<%=mdmNode.getUniqueName() %>"));
-<%            }
-        } %>
+<%      for (INode mdmNode : mdmComponentsList) {%>
+            connections.put("mdmUrl_<%=mdmNode.getUniqueName() %>", globalMap.get("mdmUrl_<%=mdmNode.getUniqueName() %>"));
+            connections.put("username_<%=mdmNode.getUniqueName() %>", globalMap.get("username_<%=mdmNode.getUniqueName() %>"));
+            connections.put("password_<%=mdmNode.getUniqueName() %>", globalMap.get("password_<%=mdmNode.getUniqueName() %>"));
+            connections.put("useTransaction_<%=mdmNode.getUniqueName() %>", globalMap.get("useTransaction_<%=mdmNode.getUniqueName() %>"));
+            connections.put("useClientTranId_<%=mdmNode.getUniqueName() %>", globalMap.get("useClientTranId_<%=mdmNode.getUniqueName() %>"));
+<%      } %>
+
 <%      for (INode paloNode : paloComponentsList) { %>
             connections.put("p_<%=paloNode.getUniqueName() %>", globalMap.get("p_<%=paloNode.getUniqueName() %>"));
             connections.put("pConn_<%=paloNode.getUniqueName() %>", globalMap.get("pConn_<%=paloNode.getUniqueName() %>"));
