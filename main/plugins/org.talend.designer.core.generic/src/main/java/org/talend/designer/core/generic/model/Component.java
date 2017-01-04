@@ -118,12 +118,6 @@ public class Component extends AbstractBasicComponent {
 
     private RuntimeInfo runtimeInfo;
     
-    private Boolean visible = null;
-    
-    private Boolean technical = null;
-    
-    private Boolean visibleFromComponentDefinition = null;
-
     private List<ModuleNeeded> componentImportNeedsList;
 
     private ComponentsProvider provider;

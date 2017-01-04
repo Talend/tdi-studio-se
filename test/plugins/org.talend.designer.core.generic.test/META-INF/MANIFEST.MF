@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test of component
-Bundle-SymbolicName: org.talend.designer.core.generic.test
+Bundle-SymbolicName: org.talend.designer.core.generic.test;singleton:=true
 Bundle-Version: 6.4.0.qualifier
 Fragment-Host: org.talend.designer.core.generic
 Require-Bundle: org.junit,

@@ -18,9 +18,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
@@ -46,6 +50,11 @@ import org.talend.designer.core.ui.editor.process.Process;
  *
  */
 public class ComponentsUtilsTest {
+    
+    @Before
+    public void before() {
+        System.setProperty("talend.test.component.filter", "true");
+    }
 
     @Test
     public void testGetParametersFromForm() {
@@ -204,4 +213,41 @@ public class ComponentsUtilsTest {
         assertTrue(properties.contains(props.contactProps.email));
     }
 
+    
+    @Test
+    public void testLoadComponents() {
+        ComponentService componentService = ComponentsUtils.getComponentService();
+        Set<ComponentDefinition> componentDefinitions = componentService.getAllComponents();
+        Set<IComponent> coms = ComponentsFactoryProvider.getInstance().getComponents();
+        List<IComponent> comList = new ArrayList<IComponent>();
+        for (ComponentDefinition componentDefinition : componentDefinitions) {
+            for(IComponent com : coms){
+                if(com.getName().equals(componentDefinition.getName())){
+                    comList.add(com);
+                    break;
+                }
+            }
+        }
+        coms.removeAll(comList);
+        ComponentsUtils.loadComponents(componentService);
+        coms = ComponentsFactoryProvider.getInstance().getComponents();
+        for (ComponentDefinition componentDefinition : componentDefinitions) {
+            boolean foundCom = false;
+            if(componentDefinition.getName().equals("tSalesforceInput")){
+                continue;
+            }
+            for(IComponent com : coms){
+                if(com.getName().equals(componentDefinition.getName())){
+                    foundCom = true;
+                    break;
+                }
+            }
+            assertFalse(foundCom);
+        }
+    }
+    
+    @After
+    public void after() {
+        System.setProperty("talend.test.component.filter", "false");
+    }
 }
