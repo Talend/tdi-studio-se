@@ -58,18 +58,13 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
-
-import us.monoid.json.JSONArray;
-import us.monoid.json.JSONException;
-import us.monoid.json.JSONObject;
+import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 /**
  * gcui class global comment. Detailled comment <br/>
  * 
  */
 public class JobVMArgumentsComposite {
-
-    private static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
 
     protected TableViewer viewer;
 
@@ -547,53 +542,12 @@ public class JobVMArgumentsComposite {
     }
 
     protected List<String> readString(String stringList) {
-        if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$        
-            return EMPTY_STRING_LIST;
-        }
-        ArrayList<String> result = new ArrayList<String>(50);
-        if(!isJson(stringList)){
-            return result;
-        }
-        try {
-            JSONObject root = new JSONObject(stringList);
-            Object obj =  root.get("JOB_RUN_VM_ARGUMENTS");//$NON-NLS-1$
-            if(obj != null && (obj instanceof JSONArray)){
-                JSONArray array = (JSONArray) obj;
-                for(int i=0;i<array.length();i++){
-                    result.add((String) array.get(i));
-                }
-            }
-        } catch (JSONException e) {
-            ExceptionHandler.process(e);
-        }
-        return result;
+        return new JobVMArgumentsUtil().readString(stringList);
     }
     
-    private boolean isJson(String jsonString){
-        try {
-            new JSONObject(jsonString);
-        } catch (JSONException e) {
-            return false;
-        } 
-        return true;
-    }
-
     protected String writeString(List<String> items) {
-        JSONObject root = new JSONObject();
-        JSONArray args = new JSONArray();
-        int size = items.size();
-        for (int i = 0; i < size; i++) {
-            String vm = items.get(i).trim();
-            args.put(vm);
-        }
-        try {
-            root.put("JOB_RUN_VM_ARGUMENTS", args); //$NON-NLS-1$
-        } catch (JSONException e) {
-            ExceptionHandler.process(e);
-        }
-        return root.toString();
+        return new JobVMArgumentsUtil().writeString(items);
     }
-    
 
     protected String getArgumentsString() {
         String argumentsString = writeString(getList());
