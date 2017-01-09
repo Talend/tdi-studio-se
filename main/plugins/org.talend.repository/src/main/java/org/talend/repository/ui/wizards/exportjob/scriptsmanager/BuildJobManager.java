@@ -32,7 +32,9 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.FrameworkUtil;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
@@ -115,7 +117,7 @@ public class BuildJobManager {
             }
             File desFile = new File(destinationPath);
 
-            File createTempFile = File.createTempFile("building_job", "");
+            File createTempFile = File.createTempFile("building_job", ""); //$NON-NLS-1$ //$NON-NLS-2$
             createTempFile.delete();
             File tempFolder = new File(desFile.getParent() + File.separator + createTempFile.getName());
             if (tempFolder.exists()) {
@@ -167,95 +169,120 @@ public class BuildJobManager {
         if (monitor != null) {
             pMonitor = monitor;
         }
-        final int scale = 1000;
-        int total = 3;
-        pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * total); //$NON-NLS-1$
-        ProcessItem processItem = itemToExport;
-        // get correct version
-        if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version)
-                && !version.equals(processItem.getProperty().getVersion())) {
-            processItem = ItemCacheManager.getProcessItem(processItem.getProperty().getId(), version);
+        final boolean oldMeasureActived = TimeMeasure.measureActive;
+        if (!oldMeasureActived) { // not active before.
+            TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin.isDebugMode();
         }
-        final String label = processItem.getProperty().getLabel();
-        final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
-                exportChoiceMap, jobExportType);
-        ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist(processItem));
-        final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+        final String timeMeasureId = "Build job for " + itemToExport.getProperty().getLabel() + ' ' + version;
+        TimeMeasure.begin(timeMeasureId);
 
-            @Override
-            public void run(IProgressMonitor wrMonitor) throws CoreException {
-                try {
-                    buildJobHandler.generateItemFiles(true, new SubProgressMonitor(wrMonitor, scale));
-                    buildJobHandler.generateJobFiles(new SubProgressMonitor(wrMonitor, scale));
-                    wrMonitor.setTaskName(Messages.getString("BuildJobManager.building", label));//$NON-NLS-1$
-                    buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
-                } catch (Exception e) {
-                    throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
-                            this.getClass()).getSymbolicName(), "Error", e));
-                }
-            };
-
-        };
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
         try {
-            ISchedulingRule schedulingRule = workspace.getRoot();
-            // the update the project files need to be done in the workspace runnable to avoid all
-            // notification
-            // of changes before the end of the modifications.
-            workspace.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, pMonitor);
-        } catch (CoreException e) {
-            Throwable cause = e.getCause();
-            if (cause == null) {
-                throw new PersistenceException(e);
+            final int scale = 1000;
+            int total = 3;
+            pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * total); //$NON-NLS-1$
+            ProcessItem processItem = itemToExport;
+            // get correct version
+            if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version)
+                    && !version.equals(processItem.getProperty().getVersion())) {
+                processItem = ItemCacheManager.getProcessItem(processItem.getProperty().getId(), version);
             }
-            throw new PersistenceException(cause);
+            final String label = processItem.getProperty().getLabel();
+            final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
+                    exportChoiceMap, jobExportType);
+            ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist(processItem));
+            final IWorkspaceRunnable op = new IWorkspaceRunnable() {
+
+                @Override
+                public void run(IProgressMonitor wrMonitor) throws CoreException {
+                    try {
+                        TimeMeasure.step(timeMeasureId, "prepare to build job");
+
+                        buildJobHandler.generateItemFiles(true, new SubProgressMonitor(wrMonitor, scale));
+                        TimeMeasure.step(timeMeasureId, "generateItemFiles");
+
+                        buildJobHandler.generateJobFiles(new SubProgressMonitor(wrMonitor, scale));
+                        TimeMeasure.step(timeMeasureId, "generateJobFiles");
+
+                        wrMonitor.setTaskName(Messages.getString("BuildJobManager.building", label));//$NON-NLS-1$
+                        buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
+                        TimeMeasure.step(timeMeasureId, "build and package");
+                    } catch (Exception e) {
+                        throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
+                                this.getClass()).getSymbolicName(), "Error", e));
+                    }
+                };
+
+            };
+            IWorkspace workspace = ResourcesPlugin.getWorkspace();
+            try {
+                ISchedulingRule schedulingRule = workspace.getRoot();
+                // the update the project files need to be done in the workspace runnable to avoid all
+                // notification
+                // of changes before the end of the modifications.
+                workspace.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, pMonitor);
+            } catch (CoreException e) {
+                Throwable cause = e.getCause();
+                if (cause == null) {
+                    throw new PersistenceException(e);
+                }
+                throw new PersistenceException(cause);
+            }
+            ProcessUtils.setHDInsight(false);
+            IFile jobTargetFile = buildJobHandler.getJobTargetFile();
+            if (jobTargetFile != null && jobTargetFile.exists()) {
+                IPath jobZipLocation = jobTargetFile.getLocation();
+                File jobZipFile = jobZipLocation.toFile();
+                String jobZip = jobZipLocation.toString();
+
+                if (needClasspathJar(exportChoiceMap)) {
+                    ExportJobUtil.deleteTempFiles();
+                    JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(jobZip, label);
+                    FilesUtils.unzip(jobZip, creator.getTmpFolder() + File.separator + label + "_" + version);
+                    creator.buildNewJar();
+                    ZipToFile.zipFile(creator.getTmpFolder(), jobZip);
+                    creator.deleteTempFiles();
+                    TimeMeasure.step(timeMeasureId, "Recreate job jar for classpath");
+                }
+                // TBD-2500
+                Set<ProcessItem> processItems = new HashSet<ProcessItem>();
+                processItems.add(processItem);
+                // We get the father job childs.
+                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(processItem);
+                Iterator<JobInfo> infoIterator = infos.iterator();
+                while (infoIterator.hasNext()) {
+                    processItems.add(infoIterator.next().getProcessItem());
+                }
+                TimeMeasure.step(timeMeasureId, "getChildrenJobInfo");
+
+                // We iterate over the job and its childs in order to re-archive them if needed.
+                for (ProcessItem pi : processItems) {
+                    BDJobReArchieveCreator bdRecreator = new BDJobReArchieveCreator(pi, processItem);
+                    bdRecreator.create(jobZipFile);
+                }
+                TimeMeasure.step(timeMeasureId, "BDJobReArchieveCreator");
+
+                File jobFileTarget = new File(destinationPath);
+                if (jobFileTarget.isDirectory()) {
+                    jobFileTarget = new File(destinationPath, jobZipFile.getName());
+                }
+                FilesUtils.copyFile(jobZipFile, jobFileTarget);
+                TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
+            } else if (jobTargetFile != null) {
+                throw new Exception(
+                        "Job was not built successfully, please check the logs for more details available on the workspace/.Java/lastGenerated.log");
+            }
+            if (checkCompilationError) {
+                CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);
+            }
+            pMonitor.worked(scale);
+            pMonitor.done();
+        } finally {
+            TimeMeasure.end(timeMeasureId);
+            // if active before, not disable and active still.
+            if (!oldMeasureActived) {
+                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
+            }
         }
-        ProcessUtils.setHDInsight(false);
-        IFile jobTargetFile = buildJobHandler.getJobTargetFile();
-        if (jobTargetFile != null && jobTargetFile.exists()) {
-            IPath jobZipLocation = jobTargetFile.getLocation();
-            File jobZipFile = jobZipLocation.toFile();
-            String jobZip = jobZipLocation.toString();
-
-            if (needClasspathJar(exportChoiceMap)) {
-                ExportJobUtil.deleteTempFiles();
-                JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(jobZip, label);
-                FilesUtils.unzip(jobZip, creator.getTmpFolder() + File.separator + label + "_" + version);
-                creator.buildNewJar();
-                ZipToFile.zipFile(creator.getTmpFolder(), jobZip);
-                creator.deleteTempFiles();
-            }
-            // TBD-2500
-            Set<ProcessItem> processItems = new HashSet<ProcessItem>();
-            processItems.add(processItem);
-            // We get the father job childs.
-            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(processItem);
-            Iterator<JobInfo> infoIterator = infos.iterator();
-            while (infoIterator.hasNext()) {
-                processItems.add(infoIterator.next().getProcessItem());
-            }
-
-            // We iterate over the job and its childs in order to re-archive them if needed.
-            for (ProcessItem pi : processItems) {
-                BDJobReArchieveCreator bdRecreator = new BDJobReArchieveCreator(pi, processItem);
-                bdRecreator.create(jobZipFile);
-            }
-
-            File jobFileTarget = new File(destinationPath);
-            if (jobFileTarget.isDirectory()) {
-                jobFileTarget = new File(destinationPath, jobZipFile.getName());
-            }
-            FilesUtils.copyFile(jobZipFile, jobFileTarget);
-        } else if (jobTargetFile != null) {
-            throw new Exception(
-                    "Job was not built successfully, please check the logs for more details available on the workspace/.Java/lastGenerated.log");
-        }
-        if (checkCompilationError) {
-            CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);
-        }
-        pMonitor.worked(scale);
-        pMonitor.done();
-
     }
 
     private boolean needClasspathJar(Map<ExportChoice, Object> exportChoiceMap) {
