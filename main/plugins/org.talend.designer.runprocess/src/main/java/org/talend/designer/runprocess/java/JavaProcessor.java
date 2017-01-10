@@ -129,6 +129,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.ModuleNeededComparator;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
@@ -1278,10 +1279,19 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<ModuleNeeded> neededModules = getNeededModules();
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
+        // Create a consistent, reliable order for dependencies to appear in the classpath.
+        List<ModuleNeeded> neededModulesInOrder = new ArrayList<>(neededModules);
+        // Note: see TBD-4268 for a use case where a job runs correctly in the Studio but fails when running an exported
+        // job. There's no particular reason to have chosen this comparator over any other, but it does provide a
+        // deterministic classpath that resolves the problem in that bug (that commons-lang3 must appear before
+        // hive-exec).
+        neededModulesInOrder.sort(new ModuleNeededComparator());
+
         StringBuffer libPath = new StringBuffer();
         if (isExportConfig() || isRunAsExport()) {
             boolean hasLibPrefix = libPrefixPath.length() > 0;
-            for (ModuleNeeded neededModule : neededModules) {
+            // Generate the classpath in the consistent order.
+            for (ModuleNeeded neededModule : neededModulesInOrder) {
                 if (hasLibPrefix) {
                     libPath.append(libPrefixPath);
                 }
@@ -1291,25 +1301,28 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 libPath.append(classPathSeparator);
             }
         } else {
-            Set<String> neededLibraries = new HashSet<String>();
-            for (ModuleNeeded neededModule : neededModules) {
-                neededLibraries.add(neededModule.getModuleName());
-            }
-
+            // Get the list of jar files available for the project.
             final File libDir = JavaProcessorUtilities.getJavaProjectLibFolder();
             if (libDir == null) {
                 return ""; //$NON-NLS-1$
             }
-            File[] jarFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
 
+            File[] jarFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
+            Map<String, String> fileNameToPath = new HashMap<>();
             if (jarFiles != null && jarFiles.length > 0) {
                 for (File jarFile : jarFiles) {
-                    if (jarFile.isFile() && neededLibraries.contains(jarFile.getName())) {
-                        String singleLibPath = new Path(jarFile.getAbsolutePath()).toPortableString();
-                        libPath.append(singleLibPath).append(classPathSeparator);
-                    }
+                    fileNameToPath.put(jarFile.getName(), new Path(jarFile.getAbsolutePath()).toPortableString());
                 }
             }
+
+            // Generate the classpath in the consistent order.
+            for (ModuleNeeded neededModule : neededModulesInOrder) {
+                String singleLibPath = fileNameToPath.get(neededModule.getModuleName());
+                if (singleLibPath != null) {
+                    libPath.append(singleLibPath).append(classPathSeparator);
+                }
+            }
+
         }
 
         final int lastSep = libPath.length() - 1;
