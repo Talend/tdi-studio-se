@@ -1302,8 +1302,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 return ""; //$NON-NLS-1$
             }
             File[] jarFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
-            List<File> lit = Arrays.asList(jarFiles);
-            Collections.sort(lit);
+            List<File> listFile = Arrays.asList(jarFiles);
+            Collections.sort(listFile);
 
             if (jarFiles != null && jarFiles.length > 0) {
                 for (File jarFile : jarFiles) {
