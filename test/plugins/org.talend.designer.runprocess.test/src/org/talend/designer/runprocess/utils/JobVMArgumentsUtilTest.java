@@ -10,33 +10,19 @@
 // 9 rue Pages 92150 Suresnes, France
 //
 // ============================================================================
-package org.talend.designer.runprocess.ui;
+package org.talend.designer.runprocess.utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Test;
-import org.talend.core.model.components.ComponentCategory;
-import org.talend.core.model.components.IComponent;
-import org.talend.core.model.properties.PropertiesFactory;
-import org.talend.core.model.properties.Property;
-import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
-import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.runprocess.ProcessMessage;
-import org.talend.designer.runprocess.ProcessMessage.MsgType;
-import org.talend.designer.runprocess.RunProcessContext;
 
 /**
  * created by hwang on Dec 27, 2017 Detailled comment
  *
  */
-public class JobVMArgumentsCompositeTest {
+public class JobVMArgumentsUtilTest {
 
     /**
      * Test method for
@@ -45,7 +31,7 @@ public class JobVMArgumentsCompositeTest {
      */
     @Test
     public void testReadString() {
-        JobVMArgumentsComposite jobVM = new JobVMArgumentsComposite("VM", "VM", new Composite(new Shell(), SWT.NONE));
+        JobVMArgumentsUtil jobVM = new JobVMArgumentsUtil();
         String vm = null;
         Assert.assertTrue(jobVM.readString(vm).isEmpty());
         vm = "";
@@ -65,7 +51,7 @@ public class JobVMArgumentsCompositeTest {
      */
     @Test
     public void testWriteString() {
-        JobVMArgumentsComposite jobVM = new JobVMArgumentsComposite("VM", "VM", new Composite(new Shell(), SWT.NONE));
+        JobVMArgumentsUtil jobVM = new JobVMArgumentsUtil();
         List<String> list = new ArrayList<String>();
         String srg0 = "{[<,>]};:' \"/\\+\t+\b+\f+\n=\r|";
         list.add(srg0);
