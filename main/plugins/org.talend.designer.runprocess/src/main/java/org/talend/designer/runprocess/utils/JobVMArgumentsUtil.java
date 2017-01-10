@@ -34,9 +34,6 @@ public class JobVMArgumentsUtil {
             return EMPTY_STRING_LIST;
         }
         ArrayList<String> result = new ArrayList<String>(50);
-        if(!isJson(stringList)){
-            return result;
-        }
         try {
             JSONObject root = new JSONObject(stringList);
             Object obj =  root.get("JOB_RUN_VM_ARGUMENTS");//$NON-NLS-1$
@@ -52,14 +49,6 @@ public class JobVMArgumentsUtil {
         return result;
     }
     
-    private boolean isJson(String jsonString){
-        try {
-            new JSONObject(jsonString);
-        } catch (JSONException e) {
-            return false;
-        } 
-        return true;
-    }
     
     public String writeString(List<String> items) {
         JSONObject root = new JSONObject();
