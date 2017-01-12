@@ -9,4 +9,39 @@
   </parent>
   <artifactId>org.talend.libraries.custom</artifactId>
   <packaging>eclipse-plugin</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.8</version>
+        <executions>
+          <execution>
+            <id>copy-maven-repository</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <stripVersion>true</stripVersion>
+              <outputDirectory>${project.basedir}/lib</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.talend.libraries</groupId>
+                  <artifactId>talend-codegen-utils</artifactId>
+                  <version>0.17.0-SNAPSHOT</version>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>talend_nexus</id>
+      <url>https://talend-update.talend.com/nexus/content/repositories/libraries</url>
+    </repository>
+  </repositories>
 </project>
