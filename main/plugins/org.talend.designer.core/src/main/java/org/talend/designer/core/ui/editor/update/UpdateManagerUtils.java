@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.update;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -439,15 +440,16 @@ public final class UpdateManagerUtils {
                     // update joblet reference
                     upadateJobletReferenceInfor();
 
+                    final List<UpdateResult> tempResults = new ArrayList<UpdateResult>(results);
                     // refresh
                     Display.getDefault().asyncExec(new Runnable() {
                         
                         @Override
                         public void run() {
-                            refreshRelatedViewers(results);
+                            refreshRelatedViewers(tempResults);
                             
                             // hyWang add method checkandRefreshProcess for bug7248
-                            checkandRefreshProcess(results);
+                            checkandRefreshProcess(tempResults);
                         }
                     });
 

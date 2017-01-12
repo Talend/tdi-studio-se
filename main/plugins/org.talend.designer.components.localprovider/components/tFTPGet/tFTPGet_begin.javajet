@@ -729,6 +729,7 @@ if (sftp) { // *** sftp *** //
 				sslSocketFactory_<%=cid%> = sslContext_<%=cid%>.getSocketFactory();
 				ftp_<%=cid %> = new it.sauronsoftware.ftp4j.FTPClient();
 				ftp_<%=cid %>.setSSLSocketFactory(sslSocketFactory_<%=cid%>);
+				ftp_<%=cid %>.setCharset(<%=encoding%>);
 <%
 				if("IMPLICIT".equals(securityMode)){
 %>

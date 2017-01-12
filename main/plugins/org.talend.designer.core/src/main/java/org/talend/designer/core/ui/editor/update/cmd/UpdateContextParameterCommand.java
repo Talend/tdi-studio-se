@@ -43,6 +43,7 @@ import org.talend.core.ui.process.UpdateRunJobComponentContextHelper;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.RepositoryPlugin;
 
 /**
@@ -70,7 +71,7 @@ public class UpdateContextParameterCommand extends Command {
     @Override
     public void execute() {
         Display.getDefault().syncExec(new Runnable() {
-            
+
             @Override
             public void run() {
                 doExecute();
@@ -291,6 +292,8 @@ public class UpdateContextParameterCommand extends Command {
                 // }
             }
         }
+
+        ConnectionContextHelper.showContextGroupDialog(process, item, process.getContextManager(), names);
     }
 
     /**

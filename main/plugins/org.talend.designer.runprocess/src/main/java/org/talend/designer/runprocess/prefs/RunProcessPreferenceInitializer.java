@@ -29,6 +29,10 @@ import org.talend.designer.maven.template.MavenTemplateManager;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.RunProcessPlugin;
 
+import us.monoid.json.JSONArray;
+import us.monoid.json.JSONException;
+import us.monoid.json.JSONObject;
+
 /**
  * 
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -45,6 +49,19 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
     public RunProcessPreferenceInitializer() {
         super();
     }
+    
+    private String defaultVM(){
+        JSONObject root = new JSONObject();
+        try {
+            JSONArray args = new JSONArray();
+            args.put("-Xms256M");//$NON-NLS-1$
+            args.put("-Xmx1024M");//$NON-NLS-1$
+            root.put("JOB_RUN_VM_ARGUMENTS", args);//$NON-NLS-1$
+        } catch (JSONException e) {
+            ExceptionHandler.process(e);
+        }
+        return root.toString();
+    }
 
     @Override
     public void initializeDefaultPreferences() {
@@ -59,7 +76,8 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
         prefs.setDefault(RunProcessPrefsConstants.ISSAVEBEFORERUN, true);
         prefs.setDefault(RunProcessPrefsConstants.ISSTATISTICSRUN, true);
         prefs.setDefault(RunProcessPrefsConstants.STRACESTIME, 1000);
-        prefs.setDefault(RunProcessPrefsConstants.VMARGUMENTS, " -Xms256M -Xmx1024M"); //$NON-NLS-1$
+        prefs.setDefault(RunProcessPrefsConstants.VMARGUMENTS, defaultVM()); //$NON-NLS-1$
+        
 
         // for logs
         prefs.setDefault(RunProcessPrefsConstants.COMMON_LOGGING_PROPERTIES_TEMPLATE, getLogTemplate(commonLogFilePath));

@@ -78,6 +78,7 @@ import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
@@ -116,7 +117,7 @@ public class Component extends AbstractBasicComponent {
     private ComponentDefinition componentDefinition;
 
     private RuntimeInfo runtimeInfo;
-
+    
     private List<ModuleNeeded> componentImportNeedsList;
 
     private ComponentsProvider provider;
@@ -1536,6 +1537,63 @@ public class Component extends AbstractBasicComponent {
             }
         }
         return null;
+    }
+    
+    /**
+     * Sets the visible.
+     * 
+     * @param visible the visible to set
+     */
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#isVisible()
+     */
+    @Override
+    public boolean isVisible() {
+        return isVisible(null);
+    }
+
+    @Override
+    public boolean isVisible(String family) {
+        if (visible != null) {
+            return visible;
+        }
+        return ComponentsSettingsHelper.isComponentVisible(this, family);
+    }
+
+    @Override
+    public boolean isVisibleInComponentDefinition() {
+        if (visible != null) {
+            return visible;
+        }
+        return false;
+    }
+
+    /**
+     * Sets the technical.
+     * 
+     * @param technical the technical to set
+     */
+    public void setTechnical(Boolean technical) {
+        this.technical = technical;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#isTechnical()
+     */
+    @Override
+    public boolean isTechnical() {
+        if(technical!=null){
+            return technical;
+        }
+        return false;
     }
 
 }

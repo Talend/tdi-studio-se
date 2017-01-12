@@ -41,6 +41,8 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
+import org.talend.core.model.components.filters.IComponentFactoryFilter;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.types.JavaType;
 import org.talend.core.model.metadata.types.JavaTypesManager;
@@ -133,7 +135,33 @@ public class ComponentsUtils {
         for (ComponentDefinition componentDefinition : componentDefinitions) {
             try {
                 Component currentComponent = new Component(componentDefinition);
+                
+                Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
+                        .getProviders();
+                boolean hiddenComponent = false;
+                for (IComponentFactoryFilter filter : filters) {
+                    if (!filter.isAvailable(currentComponent.getName())) {
+                        hiddenComponent = true;
+                        break;
+                    }
+                }
+                
+                // if the component is not needed in the current branding,
+                // and that this one IS NOT a specific component for code generation
+                // just don't load it
+                if (hiddenComponent
+                        && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                    continue;
+                }
                 componentsList.add(currentComponent);
+                // if the component is not needed in the current branding,
+                // and that this one IS a specific component for code generation,
+                // hide it
+                if (hiddenComponent
+                        && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                    currentComponent.setVisible(false);
+                    currentComponent.setTechnical(true);
+                }
             } catch (BusinessException e) {
                 ExceptionHandler.process(e);
             }

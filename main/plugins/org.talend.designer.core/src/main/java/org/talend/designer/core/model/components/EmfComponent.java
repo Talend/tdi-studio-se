@@ -208,12 +208,6 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private Boolean useImport = null;
 
-    private Boolean visible = null;
-
-    private Boolean visibleFromComponentDefinition = null;
-
-    private Boolean technical = null;
-
     private Map<String, String> translatedMap = new HashMap<>();
 
     private String translatedFamilyName;

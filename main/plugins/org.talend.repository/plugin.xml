@@ -2833,6 +2833,15 @@
               name="ChangeTypeMappingForRedshift"
               version="6.3.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.2"
+              class="org.talend.repository.model.migration.ResetVMArgumentMigrationTask"
+              description="ResetVMArgumentMigrationTask"
+              id="org.talend.repository.model.migration.ResetVMArgumentMigrationTask"
+              name="ResetVMArgumentMigrationTask"
+              version="6.4.1">
+        </projecttask>
    </extension>
 
    <extension
