@@ -2,7 +2,6 @@
 <?eclipse version="3.2"?>
 <plugin>
    <extension-point id="additional_jetfile" name="Additional Jet File to generate" schema="schema/additional_jetfile.exsd"/>
-   <extension-point id="componentFilter" name="Component filter" schema="schema/componentFilter.exsd"/>
    <extension
          point="org.eclipse.ui.commands">
       <command

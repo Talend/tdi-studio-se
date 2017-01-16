@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: org.talend.designer.codegen Nl Fragment
 Bundle-SymbolicName: org.talend.designer.codegen.nl
-Bundle-Version: 6.3.1.qualifier
+Bundle-Version: 6.4.0.qualifier
 Fragment-Host: org.talend.designer.codegen
 Bundle-Localization: plugin
 Bundle-Vendor: .Talend SA.

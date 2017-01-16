@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -66,6 +67,8 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
+import org.talend.core.model.components.filters.ComponentsFactoryProviderManager;
+import org.talend.core.model.components.filters.IComponentFactoryFilter;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ISparkJobletProviderService;
 import org.talend.core.ui.ISparkStreamingJobletProviderService;
@@ -73,7 +76,6 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.utils.TalendCacheUtils;
 import org.talend.designer.codegen.CodeGeneratorActivator;
-import org.talend.designer.codegen.additionaljet.ComponentsFactoryProviderManager;
 import org.talend.designer.codegen.i18n.Messages;
 import org.talend.designer.core.ITisLocalProviderService;
 import org.talend.designer.core.ITisLocalProviderService.ResClassLoader;
@@ -101,7 +103,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private static Logger log = Logger.getLogger(ComponentsFactory.class);
 
-    private static HashSet<IComponent> componentList = null;
+    private static Set<IComponent> componentList = null;
 
     private static HashSet<IComponent> customComponentList = null;
 
@@ -147,7 +149,7 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.measureActive = true;
         // TimeMeasure.begin("initComponents");
 
-        componentList = new HashSet<IComponent>();
+        componentList = Collections.synchronizedSet(new HashSet<IComponent>());
         customComponentList = new HashSet<IComponent>();
         skeletonList = new ArrayList<String>();
         userComponentList = new HashSet<IComponent>();

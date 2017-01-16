@@ -2709,8 +2709,13 @@ public class CLASS {
             } else if(actionType == UPDATE_TYPE) {
                 prefix = "pstmtUpdate_";
             }
+            String dbType = column.getColumn().getType();
             StringBuilder setStmt = new StringBuilder();
-            if(typeToGenerate.equals("Character")) {
+            if(dbType.equals("UUID") && (typeToGenerate.equals("String") || typeToGenerate.equals("Object"))) {
+                isObject = true;
+                setStmt.append("if(" + incomingConnName + "." + column.getName() + " == null) {\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.OTHER);\r\n");
+            } else if(typeToGenerate.equals("Character")) {
                 isObject = true;
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " == null) {\r\n");
                 setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.CHAR);\r\n");                
@@ -2793,6 +2798,8 @@ public class CLASS {
                 setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.VARCHAR);\r\n");
                 setStmt.append(prefix + cid + ".setNull(" + index + " + 1 , java.sql.Types.INTEGER);\r\n");
                 setStmt.append("}\r\n");    
+            } else if(dbType.equals("UUID") && (typeToGenerate.equals("String") || typeToGenerate.equals("Object"))) {
+                setStmt.append(prefix + cid + ".setObject(" + index + ", " + incomingConnName + "." + column.getName() + ", java.sql.Types.OTHER);\r\n");
             } else {
                 setStmt.append(prefix + cid + ".set" + typeToGenerate + "(" + index + ", " + incomingConnName + "." + column.getName() + ");\r\n");
             }

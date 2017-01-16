@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -33,8 +34,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.jboss.serial.io.JBossObjectOutputStream;
-import org.talend.designer.components.lookup.common.ILookupManagerUnit;
 import org.talend.designer.components.lookup.common.ICommonLookup.MATCHING_MODE;
+import org.talend.designer.components.lookup.common.ILookupManagerUnit;
 import org.talend.designer.components.persistent.IRowCreator;
 import org.talend.designer.components.persistent.utils.FileUtils;
 
@@ -362,7 +363,8 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
         }
 
         BufferedOutputStream valuesBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(valuesDataFile));
-        DataOutputStream valuesDataOutputStream = new DataOutputStream(valuesBufferedOutputStream);
+        final LongLengthOutputStream valuesLongOutputStream = new LongLengthOutputStream(valuesBufferedOutputStream);
+        DataOutputStream valuesDataOutputStream = new DataOutputStream(valuesLongOutputStream);
         ObjectOutputStream valuesObjectOutputStream = null;
         if (USE_JBOSS_IMPLEMENTATION) {
             valuesObjectOutputStream = new JBossObjectOutputStream(valuesDataOutputStream);
@@ -372,21 +374,21 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
 
         // System.out.println("Writing LOOKUP buffer " + fileIndex + "... ");
 
-        int previousSize = valuesDataOutputStream.size();
+        long previousSize = valuesLongOutputStream.size();
         int writtenValuesDataSize = 0;
-        int newSize = 0;
+        long newSize = 0;
 
         // writeDescriptors(valuesDataOutputStream, valuesObjectOutputStream);
 
-        previousSize = valuesDataOutputStream.size();
+        previousSize = valuesLongOutputStream.size();
 
         for (int i = 0; i < bufferBeanIndex; i++) {
 
             IPersistableLookupRow<B> curBean = buffer[i];
 
             curBean.writeValuesData(valuesDataOutputStream, valuesObjectOutputStream);
-            newSize = valuesDataOutputStream.size();
-            writtenValuesDataSize = newSize - previousSize;
+            newSize = valuesLongOutputStream.size();
+            writtenValuesDataSize = (int) (newSize - previousSize);
             curBean.writeKeysData(keysDataOutputStream);
             keysDataOutputStream.writeInt(writtenValuesDataSize);
             previousSize = newSize;
@@ -622,6 +624,41 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
      */
     public void setSortEnabled(boolean sortEnabled) {
         this.sortEnabled = sortEnabled;
+    }
+
+    private static class LongLengthOutputStream extends OutputStream {
+
+        private long size = 0;
+
+        private final OutputStream out;
+
+        public LongLengthOutputStream(OutputStream out) {
+            this.out = out;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            out.write(b);
+            incLength(1);
+        }
+
+        private void incLength(int length) {
+            long tempLength = this.size + length;
+            if (tempLength < 0) {
+                tempLength = Long.MAX_VALUE;
+            }
+            this.size = tempLength;
+        }
+
+        public long size() {
+            return size;
+        }
+
+        public void close() throws IOException {
+            out.close();
+            size = 0;
+        }
+
     }
 
 }

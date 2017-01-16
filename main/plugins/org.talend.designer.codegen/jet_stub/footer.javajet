@@ -300,6 +300,7 @@
             <%
         for(String testData : ProcessUtils.getTestData(process,instance)){
             String path =  ProcessUtils.getTestDataValue(process, instance, testData);
+            String paramemterName = ProcessUtils.getTestDataParamemter(process, instance, testData);
             if(path!=null&&path.length()>0){
             %>
             
@@ -326,6 +327,12 @@
                     e.printStackTrace();
                 }
                 
+            <%
+            }else if(paramemterName!=null){
+            %>
+                java.net.URL url_<%=testData%> = getClass().getResource("<%=path%>");
+                instance_<%=testData%>="<%=paramemterName%>=" + java.net.URLDecoder.decode(url_<%=testData%>.getPath(), "<%=encoding%>");
+            
             <%
             }else{
             %>
@@ -711,6 +718,7 @@ this.globalResumeTicket = false;//to run others jobs
 
     //5. all others sub-job (MultiThread mode)
     if(isRunInMultiThread){
+        %>final Thread launchingThread = Thread.currentThread();<%
         for (INode rootNode : rootNodes) {
             String componentName = rootNode.getComponent().getName();
             String uniqueName = rootNode.getUniqueName();
@@ -748,6 +756,10 @@ this.globalResumeTicket = false;//to run others jobs
                         status = localStatus;
                     }
 
+                    if ("true".equals(((java.util.Map) threadLocal.get()).get("JobInterrupted"))) {
+                        launchingThread.interrupt();
+                    }
+
                     runningThreadCount.add(-1);
                 }
             }
@@ -757,13 +769,22 @@ this.globalResumeTicket = false;//to run others jobs
             }
         }
 %>
+    boolean interrupted = false;
     while (runningThreadCount.getCount() > 0) {
         try {
             Thread.sleep(10);
+        } catch (java.lang.InterruptedException e) {
+            interrupted = true;
         } catch (java.lang.Exception e) {
             e.printStackTrace();
         }
     }
+
+    if (interrupted) {
+        Thread.currentThread().interrupt();
+    }
+
+
 <%
     } else { // isRunInMultiThread  //5. all others sub-job (SingleThread  mode)
         for (INode rootNode : rootNodes) {
@@ -1110,13 +1131,16 @@ if (execStat) {
 <%  if(exist_tMDM) { %>
     private void closeMDMConnections() {
         try {
-<%    for (INode mdmComponent : mdmComponentsList) { %>
-        org.talend.mdm.webservice.TMDMService service_<%=mdmComponent.getUniqueName() %> = (org.talend.mdm.webservice.TMDMService)globalMap.get("TMDMService_<%=mdmComponent.getUniqueName() %>");
-		if(service_<%=mdmComponent.getUniqueName() %> != null)
-		{
-			service_<%=mdmComponent.getUniqueName() %>.logout(new org.talend.mdm.webservice.WSLogout());
-		}
-<%    } %>
+            java.util.Iterator keySets = globalMap.keySet().iterator();
+            while (keySets.hasNext()) {
+                String key = keySets.next().toString();
+                if (key.startsWith("TMDMService_tMDMConnection_")) {
+                    org.talend.mdm.webservice.TMDMService service = (org.talend.mdm.webservice.TMDMService)globalMap.get(key);
+                    if (service != null) {
+                        service.logout(new org.talend.mdm.webservice.WSLogout());
+                    }
+                }
+            }
         } catch (java.lang.Exception e) {
         }
     }
@@ -1228,12 +1252,14 @@ if (execStat) {
             connections.put("connBaseDN_<%=ldapNode.getUniqueName() %>", globalMap.get("connBaseDN_<%=ldapNode.getUniqueName() %>"));
 <%      } %>
 
-<%        for (INode mdmNode : mdmComponentsList) {%>
-            connections.put("TMDMService_<%=mdmNode.getUniqueName() %>", globalMap.get("TMDMService_<%=mdmNode.getUniqueName() %>"));
-<%          if( "false".equals(ElementParameterParser.getValue(mdmNode, "__AUTO_COMMIT__"))) {%>
-	            connections.put("mdmTransaction_<%=mdmNode.getUniqueName() %>", globalMap.get("mdmTransaction_<%=mdmNode.getUniqueName() %>"));
-<%            }
-        } %>
+<%      for (INode mdmNode : mdmComponentsList) {%>
+            connections.put("mdmUrl_<%=mdmNode.getUniqueName() %>", globalMap.get("mdmUrl_<%=mdmNode.getUniqueName() %>"));
+            connections.put("username_<%=mdmNode.getUniqueName() %>", globalMap.get("username_<%=mdmNode.getUniqueName() %>"));
+            connections.put("password_<%=mdmNode.getUniqueName() %>", globalMap.get("password_<%=mdmNode.getUniqueName() %>"));
+            connections.put("useTransaction_<%=mdmNode.getUniqueName() %>", globalMap.get("useTransaction_<%=mdmNode.getUniqueName() %>"));
+            connections.put("useClientTranId_<%=mdmNode.getUniqueName() %>", globalMap.get("useClientTranId_<%=mdmNode.getUniqueName() %>"));
+<%      } %>
+
 <%      for (INode paloNode : paloComponentsList) { %>
             connections.put("p_<%=paloNode.getUniqueName() %>", globalMap.get("p_<%=paloNode.getUniqueName() %>"));
             connections.put("pConn_<%=paloNode.getUniqueName() %>", globalMap.get("pConn_<%=paloNode.getUniqueName() %>"));

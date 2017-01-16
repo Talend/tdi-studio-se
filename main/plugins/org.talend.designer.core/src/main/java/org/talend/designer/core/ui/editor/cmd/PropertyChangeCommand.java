@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.commons.utils.threading.ExecutionLimiterImproved;
 import org.talend.core.GlobalServiceRegister;
@@ -84,7 +86,7 @@ public class PropertyChangeCommand extends Command {
 
     // private ChangeMetadataCommand changeMetadataCommand;
     private List<ChangeMetadataCommand> changeMetadataCommands;
-    
+
     private Command updateELTMapComponentCommand;
 
     private String propertyTypeName;
@@ -246,6 +248,22 @@ public class PropertyChangeCommand extends Command {
 
         oldValue = elem.getPropertyValue(propName);
         elem.setPropertyValue(propName, newValue);
+        if (currentParam.getFieldType().equals(EParameterFieldType.CONNECTION_LIST) && currentParam.getContext() != null
+                && (elem instanceof Node)) {
+            String connParaname = currentParam.getContext() + ":" + currentParam.getName();
+            if (connParaname.equals(propName)) {
+                IConnection selectedConn = null;
+                for (IConnection conn : ((Node) elem).getIncomingConnections()) {
+                    if (conn.getUniqueName().equals(newValue)) {
+                        selectedConn = conn;
+                        break;
+                    }
+                }
+                if (selectedConn != null && getTakeSchema()) {
+                    ((Node) selectedConn.getSource()).takeSchemaFrom((Node) elem, currentParam.getContext());
+                }
+            }
+        }
         if ("ELT_TABLE_NAME".equals(propName) || "ELT_SCHEMA_NAME".equals(propName)) { //$NON-NLS-1$ //$NON-NLS-2$
             String oldELTValue = ""; //$NON-NLS-1$
             String newELTValue = ""; //$NON-NLS-1$
@@ -264,12 +282,12 @@ public class PropertyChangeCommand extends Command {
                 String tableName = TalendQuoteUtils.removeQuotes((String) elem.getPropertyValue("ELT_TABLE_NAME")); //$NON-NLS-1$
                 if (oldParamValue != null && !"".equals(oldParamValue.trim())) {
                     oldELTValue = oldParamValue + "."; //$NON-NLS-1$
-                } 
+                }
                 if (newParamValue != null && !"".equals(newParamValue.trim())) {
                     newELTValue = newParamValue + "."; //$NON-NLS-1$
                 }
-                oldELTValue = oldELTValue + tableName; //$NON-NLS-1$
-                newELTValue = newELTValue + tableName; //$NON-NLS-1$
+                oldELTValue = oldELTValue + tableName; // $NON-NLS-1$
+                newELTValue = newELTValue + tableName; // $NON-NLS-1$
             }
             List<? extends IConnection> connections = ((Node) elem).getOutgoingConnections();
             for (IConnection connection : connections) {
@@ -279,7 +297,8 @@ public class PropertyChangeCommand extends Command {
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapDesignerService.class)) {
                         IDbMapDesignerService service = (IDbMapDesignerService) GlobalServiceRegister.getDefault()
                                 .getService(IDbMapDesignerService.class);
-                        updateELTMapComponentCommand = service.getUpdateELTMapComponentCommand(targetNode, connection, oldELTValue, newELTValue);
+                        updateELTMapComponentCommand = service.getUpdateELTMapComponentCommand(targetNode, connection,
+                                oldELTValue, newELTValue);
                         updateELTMapComponentCommand.execute();
                     }
                 }
@@ -295,13 +314,12 @@ public class PropertyChangeCommand extends Command {
             Node node = (Node) elem;
             for (IElementParameter param : node.getElementParameters()) {
                 String repositoryValue = param.getRepositoryValue();
-                if ((repositoryValue != null)
-                        && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
+                if ((repositoryValue != null) && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                         && param.getFieldType() != EParameterFieldType.MEMO_SQL
                         && !("tMDMReceive".equals(node.getComponent().getName()) && "XPATH_PREFIX".equals(param //$NON-NLS-1$ //$NON-NLS-2$
                                 .getRepositoryValue()))
-                        && !("tSAPOutput".equals(node.getComponent().getName()) && param.getName().equals(
-                                UpdatesConstants.MAPPING))
+                        && !("tSAPOutput".equals(node.getComponent().getName())
+                                && param.getName().equals(UpdatesConstants.MAPPING))
                         && !("tFileInputEBCDIC".equals(node.getComponent().getName()) && "DATA_FILE".equals(repositoryValue))) {
                     param.setRepositoryValueUsed(true);
                     if (!(EParameterName.DB_VERSION.getName()).equals(param.getName())) {
@@ -423,10 +441,10 @@ public class PropertyChangeCommand extends Command {
             JobSettingVersionUtil.setDbVersion(elementParameter, dbType, true);
             DesignerUtilities.setSchemaDB(schemaParameter, newValue);
         } else if (propName.equals(JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE.getName()))) {
-            IElementParameter elementParameter = elem.getElementParameter(JobSettingsConstants
-                    .getExtraParameterName(EParameterName.DB_VERSION.getName()));
-            schemaParameter = elem.getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB
-                    .getName()));
+            IElementParameter elementParameter = elem
+                    .getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.DB_VERSION.getName()));
+            schemaParameter = elem
+                    .getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
             JobSettingVersionUtil.setDbVersion(elementParameter, dbType, true);
             DesignerUtilities.setSchemaDB(schemaParameter, newValue);
         }
@@ -435,13 +453,12 @@ public class PropertyChangeCommand extends Command {
                 && !schemaParameter.getValue().equals("")) {
             schemaParameter.setValue("");
         }
-        if (!toUpdate
-                && (currentParam.getFieldType().equals(EParameterFieldType.RADIO)
-                        || currentParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
-                        || currentParam.getFieldType().equals(EParameterFieldType.OPENED_LIST)
-                        || currentParam.getFieldType().equals(EParameterFieldType.CHECK)
-                        || currentParam.getFieldType().equals(EParameterFieldType.AS400_CHECK) || currentParam.getFieldType()
-                        .equals(EParameterFieldType.COMPONENT_LIST))) {
+        if (!toUpdate && (currentParam.getFieldType().equals(EParameterFieldType.RADIO)
+                || currentParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
+                || currentParam.getFieldType().equals(EParameterFieldType.OPENED_LIST)
+                || currentParam.getFieldType().equals(EParameterFieldType.CHECK)
+                || currentParam.getFieldType().equals(EParameterFieldType.AS400_CHECK)
+                || currentParam.getFieldType().equals(EParameterFieldType.COMPONENT_LIST))) {
             toUpdate = false;
             setDefaultValues(currentParam, elem);
         }
@@ -700,8 +717,8 @@ public class PropertyChangeCommand extends Command {
             oldElementValues.put(testedParam, testedParam.getValue());
 
             // if the field is not a schema type, then use standard "set value".
-            if (!(testedParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || testedParam.getFieldType().equals(
-                    EParameterFieldType.SCHEMA_REFERENCE))) {
+            if (!(testedParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                    || testedParam.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE))) {
                 String oldMapping = ""; //$NON-NLS-1$
                 if (!testedParam.getFieldType().equals(EParameterFieldType.CHECK)
                         && !testedParam.getFieldType().equals(EParameterFieldType.RADIO)) {
@@ -729,8 +746,8 @@ public class PropertyChangeCommand extends Command {
                     // for feature 0014652
                     boolean isBuiltIn = false;
 
-                    final IElementParameter elementParameter = testedParam.getChildParameters().get(
-                            EParameterFieldType.SCHEMA_TYPE.getName());
+                    final IElementParameter elementParameter = testedParam.getChildParameters()
+                            .get(EParameterFieldType.SCHEMA_TYPE.getName());
                     if (elementParameter != null) {
                         Object value = elementParameter.getValue();
                         if ("BUILT_IN".equals(value.toString())) {//$NON-NLS-1$
@@ -844,7 +861,7 @@ public class PropertyChangeCommand extends Command {
         }
         if (updateELTMapComponentCommand != null) {
             updateELTMapComponentCommand.undo();
-        } 
+        }
         CodeView.refreshCodeView(elem);
         ComponentSettings.switchToCurComponentSettingsView();
         JobSettings.switchToCurJobSettingsView();
@@ -905,7 +922,7 @@ public class PropertyChangeCommand extends Command {
         }
         if (updateELTMapComponentCommand != null) {
             updateELTMapComponentCommand.redo();
-        } 
+        }
         CodeView.refreshCodeView(elem);
         ComponentSettings.switchToCurComponentSettingsView();
         JobSettings.switchToCurJobSettingsView();
@@ -929,8 +946,8 @@ public class PropertyChangeCommand extends Command {
     private void refreshResumingConnections() {
         if (propName.equals(EParameterName.RESUMING_CHECKPOINT.getName()) && this.elem instanceof Connection) {
             if (((Connection) this.elem).getConnectionTrace() != null && !propName.equals(EParameterName.CONDITION)) {
-                ((Connection) this.elem).getConnectionTrace()
-                        .setPropertyValue(EParameterName.RESUMING_CHECKPOINT.getName(), true);
+                ((Connection) this.elem).getConnectionTrace().setPropertyValue(EParameterName.RESUMING_CHECKPOINT.getName(),
+                        true);
             }
         }
     }
@@ -1005,6 +1022,10 @@ public class PropertyChangeCommand extends Command {
             }
         }
 
+    }
+
+    private boolean getTakeSchema() {
+        return MessageDialog.openQuestion(new Shell(), "", Messages.getString("Node.getSchemaOrNot")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

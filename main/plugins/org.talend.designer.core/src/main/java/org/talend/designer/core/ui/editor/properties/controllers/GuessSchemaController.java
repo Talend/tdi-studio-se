@@ -123,7 +123,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /*
      * DOC zqin GuessSchemaController constructor comment.
-     * 
+     *
      * @param dp
      */
     public GuessSchemaController(IDynamicProperty dp) {
@@ -132,7 +132,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#createControl
      * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
@@ -183,7 +183,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
          */
         @Override
@@ -204,7 +204,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /**
      * This method is used for "Guess Query" button.
-     * 
+     *
      * @return
      */
 
@@ -247,7 +247,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
                     MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), tempMetatable, node, getCommandStack());
                     if (metaDialog != null) {
-                        metaDialog.setText(Messages.getString("GuessSchemaController.schemaOf") + node.getLabel());
+                        metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
 
                         if (metaDialog.open() == MetadataDialog.OK) {
                             outputMetaCopy = metaDialog.getOutputMetaData();
@@ -476,7 +476,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
                 tempMetatable.setDbms(dbmsId);
                 MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), tempMetatable, inputNode, getCommandStack());
                 if (metaDialog != null) {
-                    metaDialog.setText(Messages.getString("GuessSchemaController.schemaOf") + inputNode.getLabel()); //$NON-NLS-1$
+                    metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", inputNode.getLabel())); //$NON-NLS-1$
                 }
 
                 // ok pressed
@@ -558,7 +558,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /**
      * DOC ocarbone Comment method "refreshMetaData".
-     * 
+     *
      * @param csvArray
      */
     public void refreshMetaDataTable(ResultSetMetaData rsmd, final List<String[]> csvRows) throws SQLException {
@@ -701,7 +701,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.talend.commons.utils.data.list.UniqueStringGenerator#getBeanString(java.lang.Object)
              */
             @Override
@@ -889,7 +889,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /**
      * qzhang Comment method "checkConnection".
-     * 
+     *
      * @param metadataConnection
      */
     protected boolean checkConnection(IMetadataConnection metadataConnection) {
@@ -911,7 +911,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
             if (EDatabaseTypeName.IMPALA.getDisplayName().equals(metadataConnection.getDbType())) {
                 ConnectionStatus connectionStatus = new ConnectionStatus();
                 connectionStatus.setResult(false);
-                try {   
+                try {
                     ImpalaConnectionManager.getInstance().checkConnection(metadataConnection);
                     connectionStatus.setResult(true);
                 } catch (Exception e) {
@@ -934,10 +934,9 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
-     * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
+     *
+     * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#
+     * estimateRowSize (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
@@ -946,7 +945,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#refresh(org
      * .talend.core.model.process.IElementParameter, boolean)
@@ -959,7 +958,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override

@@ -86,6 +86,8 @@ public class FTPForm extends AbstractForm {
 
     private Text customText;
 
+    private Button fnEncodingBtn;
+
     private Button sftpSuppBut;
 
     private Button ftpsSuppBut;
@@ -93,6 +95,8 @@ public class FTPForm extends AbstractForm {
     private Button useSocksBut;
 
     private Group buildGroup;
+
+    private Composite encodingComp;
 
     private Composite sftpChildCom;
 
@@ -108,9 +112,11 @@ public class FTPForm extends AbstractForm {
 
     private GridData proxyChildComGridData;
 
+    private GridData fnEncodingBtnGD;
+
     /**
      * DOC Administrator FTPForm constructor comment.
-     * 
+     *
      * @param parent
      * @param style
      */
@@ -131,7 +137,7 @@ public class FTPForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#adaptFormToReadOnly()
      */
 
@@ -143,7 +149,7 @@ public class FTPForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#addFields()
      */
 
@@ -151,9 +157,9 @@ public class FTPForm extends AbstractForm {
     protected void addFields() {
         Group ftpParameterGroup = new Group(this, SWT.NULL);
         ftpParameterGroup.setText("Server"); //$NON-NLS-1$
-        GridLayout layoutGroup = new GridLayout();
-        layoutGroup.numColumns = 2;
-        ftpParameterGroup.setLayout(layoutGroup);
+        GridLayout ftpParameterLayout = new GridLayout();
+        ftpParameterLayout.numColumns = 2;
+        ftpParameterGroup.setLayout(ftpParameterLayout);
 
         GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
         ftpParameterGroup.setLayoutData(gridData);
@@ -167,20 +173,28 @@ public class FTPForm extends AbstractForm {
 
         ftpPortText = new LabelledText(ftpParameterGroup, Messages.getString("FTPForm_ftpPortText"), true); //$NON-NLS-1$
 
-        Composite com = new Composite(ftpParameterGroup, SWT.NONE);
-        layoutGroup = new GridLayout(2, false);
-        com.setLayout(layoutGroup);
+        encodingComp = new Composite(ftpParameterGroup, SWT.NONE);
+        GridData encodingCompGD = new GridData(SWT.FILL, SWT.CENTER, true, false);
+        encodingCompGD.horizontalSpan = 2;
+        encodingComp.setLayoutData(encodingCompGD);
+        GridLayout encodingCompLayout = new GridLayout(4, false);
+        encodingCompLayout.marginWidth = 0;
+        encodingComp.setLayout(encodingCompLayout);
+        fnEncodingBtn = new Button(encodingComp, SWT.CHECK);
+        fnEncodingBtn.setText("Filename encoding"); //$NON-NLS-1$
+        fnEncodingBtnGD = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
+        fnEncodingBtn.setLayoutData(fnEncodingBtnGD);
         List<String> codeList = new ArrayList<String>();
         codeList.add(ENCODING);
         codeList.add("UTF-8"); //$NON-NLS-1$
         codeList.add(CUSTOM);
-        encodeCombo = new LabelledCombo(com, "Encoding", "", codeList); //$NON-NLS-1$ //$NON-NLS-2$
+        encodeCombo = new LabelledCombo(encodingComp, "Encoding", "", codeList); //$NON-NLS-1$ //$NON-NLS-2$
         if (getConnection().getEcoding() == null || "".equals(getConnection().getEcoding())) { //$NON-NLS-1$
             encodeCombo.setText(ENCODING);
             getConnection().setEcoding(encodeCombo.getText());
         }
 
-        customText = new Text(ftpParameterGroup, SWT.BORDER | SWT.SINGLE);
+        customText = new Text(encodingComp, SWT.BORDER | SWT.SINGLE);
         GridData gd = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gridData.horizontalSpan = 1;
         customText.setLayoutData(gd);
@@ -196,7 +210,7 @@ public class FTPForm extends AbstractForm {
 
         buildGroup = new Group(this, SWT.NULL);
         buildGroup.setText("Parameter"); //$NON-NLS-1$
-        layoutGroup = new GridLayout(1, false);
+        GridLayout layoutGroup = new GridLayout(1, false);
         buildGroup.setLayout(layoutGroup);
         gridData = new GridData(GridData.FILL_HORIZONTAL);
         buildGroup.setLayoutData(gridData);
@@ -276,7 +290,7 @@ public class FTPForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#addFieldsListeners()
      */
 
@@ -433,7 +447,7 @@ public class FTPForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#addUtilsButtonListeners()
      */
 
@@ -443,7 +457,7 @@ public class FTPForm extends AbstractForm {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
 
@@ -452,9 +466,15 @@ public class FTPForm extends AbstractForm {
                 boolean show = sftpSuppBut.getSelection();
                 if (show) {
                     sftpChildComGridData.exclude = false;
+                    fnEncodingBtnGD.exclude = false;
                     ftpsChildComGridData.exclude = true;
+                    encodeCombo.setHideWidgets(!fnEncodingBtn.getSelection());
+                    customText.setVisible(fnEncodingBtn.getSelection() && CUSTOM.equals(getConnection().getEcoding()));
                 } else {
                     sftpChildComGridData.exclude = true;
+                    fnEncodingBtnGD.exclude = true;
+                    encodeCombo.setHideWidgets(false);
+                    customText.setVisible(CUSTOM.equals(getConnection().getEcoding()));
                 }
                 if (show && ftpsSuppBut.getSelection()) {
                     getConnection().setFTPS(!show);
@@ -472,6 +492,9 @@ public class FTPForm extends AbstractForm {
                 checkFieldsValue();
                 sftpChildCom.setVisible(show);
                 ftpsChildCom.setVisible(!show && ftpsSuppBut.getSelection());
+                fnEncodingBtn.setVisible(show);
+                encodingComp.layout();
+                encodingComp.getParent().layout();
                 sftpChildCom.layout();
                 ftpsChildCom.layout();
                 tetsCom.layout();
@@ -484,7 +507,7 @@ public class FTPForm extends AbstractForm {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
 
@@ -518,7 +541,7 @@ public class FTPForm extends AbstractForm {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.swt.events.SelectionAdapter#widgetSelected(org.eclipse.swt.events.SelectionEvent)
              */
 
@@ -539,11 +562,23 @@ public class FTPForm extends AbstractForm {
                 layout();
             }
         });
+
+        fnEncodingBtn.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                boolean show = fnEncodingBtn.getSelection();
+                encodeCombo.setHideWidgets(!show);
+                customText.setVisible(show && CUSTOM.equals(getConnection().getEcoding()));
+                encodingComp.layout();
+                getConnection().setUseFileNameEncoding(show && getConnection().isSFTP());
+            }
+        });
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#checkFieldsValue()
      */
 
@@ -589,7 +624,7 @@ public class FTPForm extends AbstractForm {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.repository.ui.swt.utils.AbstractForm#initialize()
      */
 
@@ -614,10 +649,15 @@ public class FTPForm extends AbstractForm {
         }
         connModelCombo.setText(conn.getMode());
         if (conn.isSFTP()) {
+            fnEncodingBtn.setSelection(conn.isUseFileNameEncoding());
             sftpChildComGridData.exclude = false;
             ftpsChildComGridData.exclude = true;
+            fnEncodingBtnGD.exclude = false;
+            fnEncodingBtn.setVisible(true);
             sftpChildCom.setVisible(true);
             ftpsChildCom.setVisible(false);
+            encodeCombo.setHideWidgets(!fnEncodingBtn.getSelection());
+            encodingComp.layout();
             sftpChildCom.layout();
             ftpsChildCom.layout();
             tetsCom.layout();
@@ -637,8 +677,12 @@ public class FTPForm extends AbstractForm {
             }
         } else {
             sftpChildComGridData.exclude = true;
+            fnEncodingBtnGD.exclude = true;
+            encodeCombo.setHideWidgets(false);
+            fnEncodingBtn.setVisible(false);
             sftpChildCom.setVisible(false);
             sftpChildCom.layout();
+            encodingComp.layout();
             tetsCom.layout();
             buildGroup.layout();
         }
@@ -699,6 +743,9 @@ public class FTPForm extends AbstractForm {
         }
         if (!useSocksBut.isVisible()) {
             conn.setUsesocks(false);
+        }
+        if (!fnEncodingBtn.isVisible()) {
+            conn.setUseFileNameEncoding(false);
         }
         if (!methodCombo.getCombo().isVisible()) {
             conn.setMethod(""); //$NON-NLS-1$

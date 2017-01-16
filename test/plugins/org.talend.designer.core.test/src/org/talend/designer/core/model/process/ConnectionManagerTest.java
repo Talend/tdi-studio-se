@@ -168,6 +168,88 @@ public class ConnectionManagerTest {
      * .
      */
     @Test
+    public void testCanConnectToTargetWithLoop1() {
+        try {
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tJava",
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            Node source1 = new Node(component, sourceProcess);
+            Node middle1 = new Node(component, sourceProcess);
+            Node target1 = new Node(component, sourceProcess);
+            
+            Connection connection1 = new Connection(source1, middle1, EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test3",
+                    "test3", "test3", false);
+            Connection connection2 = new Connection( middle1, target1, EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test4",
+                    "test4", "test4", false);
+            
+            boolean canConnect = ConnectionManager.canConnectToTarget(target1, null, source1, EConnectionType.FLOW_MAIN,
+                    EConnectionType.FLOW_MAIN.getName(), "test_3_4");
+            assertTrue(!canConnect);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Test CanConnectToSource() method failure.");
+        }
+    }
+    
+    /**
+     * Test method for
+     * {@link org.talend.designer.core.model.process.ConnectionManager#canConnectToTarget(org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.core.model.process.EConnectionType, java.lang.String, java.lang.String)}
+     * .
+     */
+    @Test
+    public void testCanConnectToTargetWithLoop2() {
+        try {
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tJava",
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            Node source2 = new Node(component, sourceProcess);
+            Node middle2 = new Node(component, sourceProcess);
+            Node target2 = new Node(component, sourceProcess);
+            Connection connection3 = new Connection(source2, middle2, EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_OK.getName(), "test5",
+                    "test5", "test5", false);
+            Connection connection4 = new Connection( middle2, target2, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.ON_SUBJOB_ERROR.getName(), "test6",
+                    "test6", "test6", false);
+            boolean canConnect = ConnectionManager.canConnectToTarget(target2, null, source2, EConnectionType.RUN_IF,
+                    EConnectionType.RUN_IF.getName(), "test_5_6");
+            assertTrue(!canConnect);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Test CanConnectToSource() method failure.");
+        }
+    }
+    
+    
+    /**
+     * Test method for
+     * {@link org.talend.designer.core.model.process.ConnectionManager#canConnectToTarget(org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.core.model.process.EConnectionType, java.lang.String, java.lang.String)}
+     * .
+     */
+    @Test
+    public void testCanConnectToTargetWithLoop3() {
+        try {
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tJava",
+                    ComponentCategory.CATEGORY_4_DI.getName());
+            Node source2 = new Node(component, sourceProcess);
+            Node middle2 = new Node(component, sourceProcess);
+            Node target2 = new Node(component, sourceProcess);
+            Connection connection3 = new Connection(middle2, source2, EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_OK.getName(), "test5",
+                    "test5", "test5", false);
+            Connection connection4 = new Connection( middle2, target2, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.ON_SUBJOB_ERROR.getName(), "test6",
+                    "test6", "test6", false);
+            boolean canConnect = ConnectionManager.canConnectToTarget(target2, null, source2, EConnectionType.RUN_IF,
+                    EConnectionType.RUN_IF.getName(), "test_5_6");
+            assertTrue(canConnect);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail("Test CanConnectToSource() method failure.");
+        }
+    }
+    
+    
+    /**
+     * Test method for
+     * {@link org.talend.designer.core.model.process.ConnectionManager#canConnectToTarget(org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.designer.core.ui.editor.nodes.Node, org.talend.core.model.process.EConnectionType, java.lang.String, java.lang.String)}
+     * .
+     */
+    @Test
     public void testCanConnectToTargetELTMap() {
         try {
             IComponent component = ComponentsFactoryProvider.getInstance().get("tELTMysqlMap",

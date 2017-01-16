@@ -14,10 +14,12 @@ package org.talend.designer.runprocess.java;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -157,7 +159,13 @@ public class JavaProcessorUtilities {
     }
 
     public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process) {
-        Set<ModuleNeeded> neededLibraries = new HashSet<ModuleNeeded>();
+        Set<ModuleNeeded> neededLibraries = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
+            @Override
+            public int compare(ModuleNeeded m1, ModuleNeeded m2) {
+                return m1.toString().compareTo(m2.toString());
+            }
+        });
+
         Set<ModuleNeeded> neededModules = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                 process.getVersion());
         neededLibraries.addAll(neededModules);

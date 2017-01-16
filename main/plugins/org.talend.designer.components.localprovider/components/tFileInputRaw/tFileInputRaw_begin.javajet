@@ -34,57 +34,56 @@
 	}
 	java.util.List< ? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
 	if(columnList!=null && outgoingConns!=null && outgoingConns.size()>0) {
-		for(IConnection outgoingConn : outgoingConns) {
-			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		IConnection outgoingConn = outgoingConns.get(0);// only have one flow output
+		if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		
+			final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+			log4jFileUtil.componentStartInfo(node);
 			
-				final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-				log4jFileUtil.componentStartInfo(node);
-				
-				if(asInputstream) {
+			if(asInputstream) {
 %>
-					java.io.FileInputStream fis_<%=cid%> = null;
+				java.io.FileInputStream fis_<%=cid%> = null;
 <%
-				}
+			}
 %>
 
 				try {
 <%
-					if(asString) {
+			if(asString) {
 %>					
-						String content_<%=cid %> = org.apache.commons.io.FileUtils.readFileToString(new java.io.File(<%=filename %>), <%=encoding%>);
-						<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = content_<%=cid%>;
+					String content_<%=cid %> = org.apache.commons.io.FileUtils.readFileToString(new java.io.File(<%=filename %>), <%=encoding%>);
+					<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = content_<%=cid%>;
 <%
-					} else if(asInputstream) {
+			} else if(asInputstream) {
 %>
-						fis_<%=cid%> = org.apache.commons.io.FileUtils.openInputStream(new java.io.File(<%=filename%>));
-						<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = fis_<%=cid%>;
+					fis_<%=cid%> = org.apache.commons.io.FileUtils.openInputStream(new java.io.File(<%=filename%>));
+					<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = fis_<%=cid%>;
 <%
-					} else if(asBytearray) {
+			} else if(asBytearray) {
 %>
-						byte[] content_<%=cid%> = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(<%=filename %>));
-						<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = content_<%=cid%>;
+					byte[] content_<%=cid%> = org.apache.commons.io.FileUtils.readFileToByteArray(new java.io.File(<%=filename %>));
+					<%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = content_<%=cid%>;
 <%
-					}
+			}
 %>					
 					globalMap.put("<%=cid %>_FILENAME_PATH", <%=filename%>);
 				} catch (java.io.IOException e_<%=cid%>) {
 <%
-					if(dieOnError) {
+			if(dieOnError) {
 %>
-						throw e_<%=cid%>;
+					throw e_<%=cid%>;
 <%
-					} else {
+			} else {
 %>
-						<%if(isLog4jEnabled){%>
-						log.error("<%=cid%> - " +e_<%=cid%>.getMessage());
-						<%}%>
-						System.err.println(e_<%=cid%>);
+					<%if(isLog4jEnabled){%>
+					log.error("<%=cid%> - " +e_<%=cid%>.getMessage());
+					<%}%>
+					System.err.println(e_<%=cid%>);
 <%
-					}
+			}
 %>
 				}
 <%
-			}
 		}
 	}
 %>

@@ -12,7 +12,7 @@ imports="
 		public void createURL(INode node) {
 			super.createURL(node);
 %>
-				String url_<%=cid %> = "jdbc:ucanaccess://" + <%=dbname%>;
+				String url_<%=cid %> = "jdbc:ucanaccess://" + <%=dbname%> + ";jackcessOpener=org.talend.ucanaccess.encrypt.CryptCodecOpener;singleConnection=true";
 <%
 		}
 		

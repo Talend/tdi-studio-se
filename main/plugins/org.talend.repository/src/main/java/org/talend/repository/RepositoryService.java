@@ -378,6 +378,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                 ExceptionHandler.process(e);
             }
 
+            LoginHelper.isAutoLogonFailed = false;
             try {
                 ConnectionBean bean = null;
 
@@ -480,22 +481,26 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                     MessageBoxExceptionHandler.process(e, new Shell());
                 }
                 repositoryFactory.logOffProject();
-                return false;
+                LoginHelper.isAutoLogonFailed = true;
             } catch (LoginException e) {
                 MessageBoxExceptionHandler.process(e, new Shell());
                 repositoryFactory.logOffProject();
-                return false;
+                LoginHelper.isAutoLogonFailed = true;
             } catch (BusinessException e) {
                 MessageBoxExceptionHandler.process(e, new Shell());
                 repositoryFactory.logOffProject();
-                return false;
+                LoginHelper.isAutoLogonFailed = true;
             } catch (CoreException e) {
                 MessageBoxExceptionHandler.process(e, new Shell());
                 repositoryFactory.logOffProject();
-                return false;
+                LoginHelper.isAutoLogonFailed = true;
             } catch (JSONException e) {
-                // TODO Auto-generated catch block
                 ExceptionHandler.process(e);
+                LoginHelper.isAutoLogonFailed = true;
+            }
+            
+            if (LoginHelper.isAutoLogonFailed) {
+                LoginHelper.isRestart=true;
             }
 
             return true;

@@ -140,24 +140,11 @@ public class TalendEditorPaletteFactoryTest {
         IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
 
         /**
-         * Result without RecentlyUsed
-         */
-        List<IComponent> componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keywords1);
-        assert (componentHits.get(0).getName().equals(TJAVA));
-
-        componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keywords2);
-        assert (componentHits.get(0).getName().equals(TJAVA));
-
-        componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keywords3);
-        assert (componentHits.get(0).getName().equals(TROWGENERATOR));
-
-
-        /**
          * Result with RecentlyUsed
          */
         storeRecentlyUsed();
 
-        componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keywords1);
+        List<IComponent> componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keywords1);
         assert (componentHits.get(0).getName().equals(TJAVAROW));
 
         // won't sort result from help

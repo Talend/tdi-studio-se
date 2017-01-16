@@ -30,6 +30,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizardPage;
 import org.talend.repository.ProjectManager;
@@ -101,7 +102,7 @@ public class NewProcessWizardPage extends PropertiesWizardPage {
             nameStatus = createStatus(IStatus.ERROR, Messages.getString("PropertiesWizardPage.NameFormatError")); //$NON-NLS-1$
         } else if (JavaConventions.validateClassFileName(nameText.getText() + CLASS,
                 JavaCore.getOption(JavaCore.COMPILER_SOURCE), JavaCore.getOption(JavaCore.COMPILER_COMPLIANCE)).getSeverity() == IStatus.ERROR
-                || "java".equalsIgnoreCase(nameText.getText())) {//$NON-NLS-1$
+                || KeywordsValidator.isKeyword(nameText.getText())) {
             nameStatus = createStatus(IStatus.ERROR, Messages.getString("PropertiesWizardPage.KeywordsError")); //$NON-NLS-1$
         } else if (nameText.getText().equalsIgnoreCase(ProjectManager.getInstance().getCurrentProject().getLabel())) {
             nameStatus = createStatus(IStatus.ERROR, Messages.getString("PropertiesWizardPage.SameAsProjectname")); //$NON-NLS-1$

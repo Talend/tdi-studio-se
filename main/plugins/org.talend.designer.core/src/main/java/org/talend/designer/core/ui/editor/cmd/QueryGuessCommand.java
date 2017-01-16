@@ -32,10 +32,12 @@ import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -178,11 +180,52 @@ public class QueryGuessCommand extends Command {
             // nothing to do
         }
         if (rulerService != null) {
-            IElementParameter typeParam = node.getElementParameter("TYPE");
+            IElementParameter existConnection = node.getElementParameter("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
+            boolean useExistConnection = (existConnection == null ? false : (Boolean) existConnection.getValue());
+            INode connectionNode = null;
+            if (node != null && node instanceof INode) {
+                process = ((INode) node).getProcess();
+            }
+            if (useExistConnection && process != null) {
+                IElementParameter connector = node.getElementParameter("CONNECTION");
+                if (connector != null) {
+                    String connectorValue = connector.getValue().toString();
+                    List<? extends INode> graphicalNodes = process.getGeneratingNodes();
+                    for (INode node : graphicalNodes) {
+                        if (node.getUniqueName().equals(connectorValue)) {
+                            connectionNode = node;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
             IElementParameter dbParam = node.getElementParameter(EParameterName.DBNAME.getName());
+            IContext lastRunContext = ((IProcess2) process).getLastRunContext();
+            String dbName = JavaProcessUtil.getRealParamValue(process, dbParam.getValue().toString(), lastRunContext);
             IElementParameter schemaParam = node.getElementParameter(EParameterName.SCHEMA_DB.getName());
+            String schemaName = JavaProcessUtil.getRealParamValue(process,
+                    schemaParam == null ? org.apache.commons.lang.StringUtils.EMPTY : schemaParam.getValue().toString(),
+                    lastRunContext);
             IElementParameter tableParam = node.getElementParameterFromField(EParameterFieldType.DBTABLE);
-            IElementParameter whereClause = node.getElementParameter("WHERE_CLAUSE");
+            String tableName = JavaProcessUtil.getRealParamValue(process, tableParam.getValue().toString(), lastRunContext);
+            IElementParameter whereClause = node.getElementParameter("WHERE_CLAUSE"); //$NON-NLS-1$
+            String whereStr = org.apache.commons.lang.StringUtils.EMPTY;
+            if (whereClause.getValue() != null) {
+                whereStr = JavaProcessUtil.getRealParamValue(process, whereClause.getValue().toString(), lastRunContext);
+            }
+
+            if (connectionNode != null) {
+                typeParam = connectionNode.getElementParameter("TYPE"); //$NON-NLS-1$
+                dbParam = connectionNode.getElementParameter(EParameterName.DBNAME.getName());
+                dbName = JavaProcessUtil.getRealParamValue(process, dbParam.getValue().toString(), lastRunContext);
+                schemaParam = connectionNode.getElementParameter(EParameterName.SCHEMA_DB.getName());
+                schemaName = JavaProcessUtil.getRealParamValue(process,
+                        schemaParam == null ? org.apache.commons.lang.StringUtils.EMPTY : schemaParam.getValue().toString(),
+                        lastRunContext);
+
+            }
 
             List<IMetadataTable> metadataList = null;
             IMetadataTable metadataTable = null;
@@ -192,12 +235,12 @@ public class QueryGuessCommand extends Command {
                     metadataTable = metadataList.get(0);
                 }
             }
-            return rulerService.getQueryByRule(dqRulerParam, typeParam, dbParam, schemaParam, tableParam, metadataTable, node
-                    .getElementName().contains("Invalid"), whereClause);
+            return rulerService.getQueryByRule(dqRulerParam, typeParam, dbName, schemaName, tableName, metadataTable, node
+                    .getElementName().contains("Invalid"), whereStr); //$NON-NLS-1$
         }
-        return "";
+        return org.apache.commons.lang.StringUtils.EMPTY;
     }
-    
+
     private String generateNewQuery() {
         // used for generating new Query.
         ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
@@ -231,10 +274,10 @@ public class QueryGuessCommand extends Command {
                 String connectorValue = connector.getValue().toString();
                 List<? extends INode> graphicalNodes = process.getGeneratingNodes();
                 for (INode node : graphicalNodes) {
-                      if (node.getUniqueName().equals(connectorValue)) {
-                           connectionNode = node;
-                           break;
-                      }
+                    if (node.getUniqueName().equals(connectorValue)) {
+                        connectionNode = node;
+                        break;
+                    }
                 }
             }
         }

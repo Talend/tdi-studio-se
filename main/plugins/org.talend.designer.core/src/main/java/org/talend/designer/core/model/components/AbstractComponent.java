@@ -18,6 +18,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.metadata.builder.connection.Connection;
 
 /**
  * ggu class global comment. Detailled comment
@@ -80,11 +81,15 @@ public abstract class AbstractComponent implements IComponent {
         return null;
     }
 
+    public String getRepositoryType(Connection connection) {
+        return null;
+    }
+
     /**
      * This is just added in <code>HEADER</code>, it is used to present the component belongs to common process, M/R
      * process and etc. The {@link ComponentCategory#CATEGORY_4_DI} is as the default value. Added by Marvin Wang on Jan
      * 11, 2013.
-     * 
+     *
      */
     @Override
     public String getType() {
@@ -103,7 +108,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -113,7 +118,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -123,7 +128,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -148,7 +153,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override

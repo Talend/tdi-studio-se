@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -92,8 +91,9 @@ public class BuildJobManager {
         return value;
     }
 
-    public boolean buildJobs(String destinationPath, List<? extends IRepositoryNode> nodes, List<String> topNames, String version, String context,
-            Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType, IProgressMonitor monitor) throws Exception {
+    public boolean buildJobs(String destinationPath, List<? extends IRepositoryNode> nodes, List<String> topNames,
+            String version, String context, Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType,
+            IProgressMonitor monitor) throws Exception {
         IProgressMonitor pMonitor = new NullProgressMonitor();
         if (monitor != null) {
             pMonitor = monitor;
@@ -108,14 +108,16 @@ public class BuildJobManager {
             pMonitor.beginTask(
                     Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), steps * scale * nodes.size()); //$NON-NLS-1$
             String topName = null;
-            if(topNames!=null&&!topNames.isEmpty()){
+            if (topNames != null && !topNames.isEmpty()) {
                 topName = topNames.get(0);
-            }else{
+            } else {
                 topName = ProjectManager.getInstance().getCurrentProject().getLabel();
             }
             File desFile = new File(destinationPath);
 
-            File tempFolder = new File(desFile.getParent() + File.separator + File.createTempFile("building_job", "").getName()); //$NON-NLS-1$ //$NON-NLS-2$
+            File createTempFile = File.createTempFile("building_job", "");
+            createTempFile.delete();
+            File tempFolder = new File(desFile.getParent() + File.separator + createTempFile.getName());
             if (tempFolder.exists()) {
                 tempFolder.delete();
             }
@@ -245,7 +247,8 @@ public class BuildJobManager {
             }
             FilesUtils.copyFile(jobZipFile, jobFileTarget);
         } else if (jobTargetFile != null) {
-            throw new Exception("Job was not built successfully, please check the logs for more details available on the workspace/.Java/lastGenerated.log");
+            throw new Exception(
+                    "Job was not built successfully, please check the logs for more details available on the workspace/.Java/lastGenerated.log");
         }
         if (checkCompilationError) {
             CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);

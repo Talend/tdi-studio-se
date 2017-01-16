@@ -479,7 +479,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
 
     /**
      * Find the IRepositoryObject of metadata connection thats contains current schema.
-     * 
+     *
      * @param schemaId
      * @return
      */
@@ -497,7 +497,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
 
     /**
      * Use the database table wizard to update the schema in the repository.
-     * 
+     *
      * @param button
      */
     public void updateRepositorySchema(Button button) {
@@ -555,7 +555,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
     /**
      * If schema type is repository, display a dialog to ask the user to change to built-in mode or update the schema in
      * the repository. Return true to stop the process.
-     * 
+     *
      * @param button
      */
     public boolean checkForRepositoryShema(Button button) {
@@ -855,7 +855,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             }
 
             if (metaDialog != null) {
-                metaDialog.setText(Messages.getString("AbstractSchemaController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+                metaDialog.setText(Messages.getString("AbstractSchemaController.schema.title", node.getLabel())); //$NON-NLS-1$
                 metaDialog.setInputReadOnly(inputReadOnly);
                 metaDialog.setOutputReadOnly(outputReadOnly);
 

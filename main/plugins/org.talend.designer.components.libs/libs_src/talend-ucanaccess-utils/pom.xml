@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.talend.libraries</groupId>
+	<artifactId>talend-ucanaccess-utils</artifactId>
+	<name>talend-ucanaccess-utils</name>
+	<version>1.0.0</version>
+	
+	<properties>
+		<talend.nexus.url>http://newbuild.talend.com:8081</talend.nexus.url>
+	</properties>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</snapshotRepository>
+		<repository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</distributionManagement>
+
+	<dependencies>
+		<!-- only use it to do the package, at the runtime, use another version : ucanaccess-2.0.9.5.jar which doesn't exist in the maven center repository -->
+		<dependency>
+			<groupId>net.sf.ucanaccess</groupId>
+			<artifactId>ucanaccess</artifactId>
+			<version>3.0.7</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.healthmarketscience.jackcess</groupId>
+			<artifactId>jackcess</artifactId>
+			<version>2.1.0</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>com.healthmarketscience.jackcess</groupId>
+			<artifactId>jackcess-encrypt</artifactId>
+			<version>2.1.0</version>
+			<type>jar</type>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+			<!-- if you want to do the local deploy for test, uncomment it
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>../../../../../../tcommon-studio-se/main/plugins/org.talend.libraries.jdbc.access/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+		</plugins>
+		
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+		</resources>
+	</build>
+</project>

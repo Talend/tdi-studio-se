@@ -149,7 +149,7 @@
 		String jobName = codeGenArgument.getJobName();
     	if(release_cache){
 		%>	
-    		memoryCaches_<%=cid %>.clearCache("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
+    		mf_<%=cid %>.clearCache("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
     	<%	
     	}
     	%>

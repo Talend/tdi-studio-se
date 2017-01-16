@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Advanced Mapper component Plug-in
 Bundle-SymbolicName: org.talend.designer.mapper.advanced;singleton:=true
-Bundle-Version: 6.3.1.qualifier
+Bundle-Version: 6.4.0.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.talend.model,

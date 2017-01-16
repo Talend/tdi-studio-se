@@ -61,12 +61,13 @@
 			<DEFAULT>2</DEFAULT>
 		</PARAMETER>
 
+		<!-- todo: support KEEP_FIRST/KEEP_LAST -->		
 		<PARAMETER NAME="KEYS_MANAGEMENT" FIELD="CLOSED_LIST"
 			NUM_ROW="10"
 			SHOW_IF="(LINK_WITH =='false')">
 			<ITEMS DEFAULT="KEEP_ALL">
 				<ITEM NAME="KEEP_FIRST" VALUE="KEEP_FIRST" />
-				<ITEM NAME="KEEP_LAST" VALUE="KEEP_LAST" />
+				<!--  <ITEM NAME="KEEP_LAST" VALUE="KEEP_LAST" />  -->
 				<ITEM NAME="KEEP_ALL" VALUE="KEEP_ALL" />
 			</ITEMS>
 		</PARAMETER>
@@ -82,7 +83,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="thashfile" MODULE="thashfile-1.0-20160718.jar" MVN="mvn:org.talend.libraries/thashfile-1.0-20160718/6.0.0"  REQUIRED="true" />
+		<IMPORT NAME="thashfile" MODULE="thashfile.jar" MVN="mvn:org.talend.libraries/thashfile/6.0.0"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    

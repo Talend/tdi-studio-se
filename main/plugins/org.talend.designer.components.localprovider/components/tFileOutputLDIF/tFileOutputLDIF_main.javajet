@@ -169,7 +169,6 @@ if ("modify".equals(changetype)) {
 		String separator = null;
 		boolean isBinary = false;
 		boolean isBase64 = false;
-		boolean isBinaryTransfer = false;
 		for(Map<String, String> line:modifyColumns){// search in the configuration table
 				String columnName = line.get("SCHEMA_COLUMN");
 				if(column.getLabel().equals(columnName)){
@@ -178,7 +177,6 @@ if ("modify".equals(changetype)) {
 					separator = line.get("SEPARATOR");
 					isBinary = "true".equals(line.get("BINARY"));
 					isBase64 = "true".equals(line.get("BASE64"));
-					isBinaryTransfer = isBinary && "true".equals(line.get("BINARY_TRANSFER_REQUIRED")) && !"none".equals(operation);
 					// Binary content --> always Base64 encoded
 					// Explicit base64 encoding : base64 checkbox checked for this column
 					if(isBinary && !isBase64){
@@ -200,7 +198,7 @@ Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
 %>
 
 <%if(!"none".equals(operation)){%>
-	util_<%=cid %>.breakString(sb_<%=cid %>, "<%=operation %>: " + "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinaryTransfer).replaceAll(":","") %>", wrap_<%=cid %>);
+	util_<%=cid %>.breakString(sb_<%=cid %>, "<%=operation %>: " + "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinary).replaceAll(":","") %>", wrap_<%=cid %>);
 	<%if(isMultiValue){%>
 		String[] values_<%=column.getLabel() %>_<%=cid %> = value_<%=column.getLabel() %>_<%=cid %>.split(<%=separator %>);
 		for(String item_<%=cid %> : values_<%=column.getLabel() %>_<%=cid %>){

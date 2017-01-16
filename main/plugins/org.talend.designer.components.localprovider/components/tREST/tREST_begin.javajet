@@ -74,6 +74,22 @@ imports="
                 }, ctx_<%=cid%>));
 
 	com.sun.jersey.api.client.Client restClient_<%=cid%> = com.sun.jersey.api.client.Client.create(config_<%=cid%>);
+	
+	java.util.Map<String, Object> headers_<%=cid%> = new java.util.HashMap<String, Object>();
+	<%
+    for (int i = 0; i < headers.size(); i++) {
+        Map<String, String> line = headers.get(i);
+		%>
+    	headers_<%=cid%>.put(<%= line.get("NAME") %>,<%= line.get("VALUE") %>);
+	<%
+    }
+    %>
+	
+	Object transfer_encoding_<%=cid%> = headers_<%=cid%>.get("Transfer-Encoding");
+	if(transfer_encoding_<%=cid%>!=null && "chunked".equals(transfer_encoding_<%=cid%>)) {
+		restClient_<%=cid%>.setChunkedEncodingSize(4096);
+	}
+	
 	com.sun.jersey.api.client.WebResource restResource_<%=cid%>;
 	if(endpoint_<%=cid%>!=null && !("").equals(endpoint_<%=cid%>)){
 		restResource_<%=cid%> = restClient_<%=cid%>.resource(endpoint_<%=cid%>);
@@ -85,33 +101,50 @@ imports="
 	String restResponse_<%=cid%> = "";
 	try{
 		<%log.info(log.str("Prepare to send request to rest server."));%>
-		restResponse_<%=cid%> = restResource_<%=cid%>
-		<%
-        for (int i = 0; i < headers.size(); i++) {
-            Map<String, String> line = headers.get(i);
-			%>
-        	.header(<%= line.get("NAME") %>,<%= line.get("VALUE") %>)
-		<%
-        }
-		%>  
+		com.sun.jersey.api.client.WebResource.Builder builder_<%=cid%> = null;
+		for(java.util.Map.Entry<String, Object> header_<%=cid%> : headers_<%=cid%>.entrySet()) {
+			if(builder_<%=cid%> == null) {
+				builder_<%=cid%> = restResource_<%=cid%>.header(header_<%=cid%>.getKey(), header_<%=cid%>.getValue());
+			} else {
+				builder_<%=cid%>.header(header_<%=cid%>.getKey(), header_<%=cid%>.getValue());
+			}
+		}
+		
 		<%
 		if("GET".equals(method)){
 		%>
-			.get(String.class);
+			if(builder_<%=cid%>!=null) {
+				restResponse_<%=cid%> = builder_<%=cid%>.get(String.class);
+			} else {
+				restResponse_<%=cid%> = restResource_<%=cid%>.get(String.class);
+			} 
+			
 		<%
 		}else if("POST".equals(method)){
 		%>
-			.post(String.class,<%=body%>);
-		<%		
+			if(builder_<%=cid%>!=null) {
+				restResponse_<%=cid%> = builder_<%=cid%>.post(String.class,<%=body%>);
+			} else {
+				restResponse_<%=cid%> = restResource_<%=cid%>.post(String.class,<%=body%>);
+			}
+		<%
 		}else if("PUT".equals(method)){
 		%>
-			.put(String.class,<%=body%>);
+			if(builder_<%=cid%>!=null) {
+				restResponse_<%=cid%> = builder_<%=cid%>.put(String.class,<%=body%>);
+			} else {
+				restResponse_<%=cid%> = restResource_<%=cid%>.put(String.class,<%=body%>);
+			}
 		<%
 		}else if("DELETE".equals(method)){
 		%>
-			.delete(String.class);
+			if(builder_<%=cid%>!=null) {
+				restResponse_<%=cid%> = builder_<%=cid%>.delete(String.class);
+			} else {
+				restResponse_<%=cid%> = restResource_<%=cid%>.delete(String.class);
+			}
 		<%
-		}	
+		}
 		%>
 	}catch (com.sun.jersey.api.client.UniformInterfaceException ue) {
         errorResponse_<%=cid%> = ue.getResponse();
@@ -129,8 +162,10 @@ imports="
 				%>		
 				<%=conn.getName() %> = new <%=conn.getName() %>Struct();
 				if(errorResponse_<%=cid%>!=null){
-					<%=conn.getName() %>.Body = errorResponse_<%=cid%>.getEntity(String.class);
 					<%=conn.getName() %>.ERROR_CODE = errorResponse_<%=cid%>.getStatus();
+					if(<%=conn.getName() %>.ERROR_CODE!=204){
+					    <%=conn.getName() %>.Body = errorResponse_<%=cid%>.getEntity(String.class);
+					}
 				}else{
 					<%=conn.getName() %>.Body = restResponse_<%=cid%>;
 				}

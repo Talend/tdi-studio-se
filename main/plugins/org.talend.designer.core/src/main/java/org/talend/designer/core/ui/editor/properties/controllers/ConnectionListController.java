@@ -369,6 +369,12 @@ public class ConnectionListController extends AbstractElementPropertySectionCont
                     }
                     curLine.put(newConnectionName, newValue);
                 }
+            }else if(curParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)){
+                Map<String, IElementParameter> children = curParam.getChildParameters();
+                IElementParameter ele = children.get(EParameterName.CONNECTION.getName());
+                if(ele!=null && ele.getFieldType().equals(EParameterFieldType.CONNECTION_LIST) && ele.getValue().equals(oldConnectionName)){
+                    ele.setValue(newConnectionName);
+                }
             }
         }
     }

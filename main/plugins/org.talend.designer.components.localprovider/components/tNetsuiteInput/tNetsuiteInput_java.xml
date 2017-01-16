@@ -466,7 +466,7 @@
             </TABLE>
             <TABLE IF="MODULENAME=='ContactCategory'">
                 <COLUMN KEY="false" NAME="Name" LENGTH="200" TYPE="id_String"  />
-                <COLUMN KEY="false" NAME="_private" LENGTH="0" TYPE="id_Boolean"  />
+                <COLUMN KEY="false" NAME="Private" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="Sync" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="IsInactive" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="true" NAME="InternalId" LENGTH="200" TYPE="id_String"  />
@@ -743,7 +743,7 @@
                 <COLUMN KEY="false" NAME="Password2" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="RequirePwdChange" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="InheritIPRules" LENGTH="0" TYPE="id_Boolean"  />
-                <COLUMN KEY="false" NAME="IpAddressRule" LENGTH="200" TYPE="id_String"  />
+                <COLUMN KEY="false" NAME="IPAddressRule" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="CommissionPaymentPreference" LENGTH="0" TYPE="id_Object"  />
                 <COLUMN KEY="false" NAME="BillPay" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="EligibleForCommission" LENGTH="0" TYPE="id_Boolean"  />
@@ -3925,7 +3925,7 @@
                         <ITEM NAME="internalIdNumber" VALUE="InternalIdNumber" SHOW_IF="MODULENAME=='ContactCategory'"/>
                         <ITEM NAME="isInactive" VALUE="IsInactive" SHOW_IF="MODULENAME=='ContactCategory'"/>
                         <ITEM NAME="name" VALUE="Name" SHOW_IF="MODULENAME=='ContactCategory'"/>
-                        <ITEM NAME="_private" VALUE="_private" SHOW_IF="MODULENAME=='ContactCategory'"/>
+                        <ITEM NAME="private" VALUE="Private" SHOW_IF="MODULENAME=='ContactCategory'"/>
                         <ITEM NAME="sync" VALUE="Sync" SHOW_IF="MODULENAME=='ContactCategory'"/>
                         <ITEM NAME="description" VALUE="Description" SHOW_IF="MODULENAME=='ContactRole'"/>
                         <ITEM NAME="externalId" VALUE="ExternalId" SHOW_IF="MODULENAME=='ContactRole'"/>
@@ -4317,7 +4317,7 @@
                         <ITEM NAME="owner" VALUE="Owner" SHOW_IF="MODULENAME=='Folder'"/>
                         <ITEM NAME="parent" VALUE="Parent" SHOW_IF="MODULENAME=='Folder'"/>
                         <ITEM NAME="predecessor" VALUE="Predecessor" SHOW_IF="MODULENAME=='Folder'"/>
-                        <ITEM NAME="_private" VALUE="_private" SHOW_IF="MODULENAME=='Folder'"/>
+                        <ITEM NAME="private" VALUE="Private" SHOW_IF="MODULENAME=='Folder'"/>
                         <ITEM NAME="size" VALUE="Size" SHOW_IF="MODULENAME=='Folder'"/>
                         <ITEM NAME="subsidiary" VALUE="Subsidiary" SHOW_IF="MODULENAME=='Folder'"/>
                         <ITEM NAME="amountAvailableBilled" VALUE="AmountAvailableBilled" SHOW_IF="MODULENAME=='GiftCertificate'"/>

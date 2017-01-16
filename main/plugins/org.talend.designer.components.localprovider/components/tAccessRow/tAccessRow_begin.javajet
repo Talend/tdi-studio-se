@@ -17,7 +17,7 @@ imports="
 	    
 		public void setURL(INode node) {
 %>
-		String url_<%=cid %> = "jdbc:ucanaccess://" + <%=dbname%>;           
+		String url_<%=cid %> = "jdbc:ucanaccess://" + <%=dbname%> + ";jackcessOpener=org.talend.ucanaccess.encrypt.CryptCodecOpener;singleConnection=true";
 <%
 		}
 		

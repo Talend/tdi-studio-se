@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Excel
 Bundle-SymbolicName: org.talend.libraries.excel
-Bundle-Version: 6.3.1.qualifier
+Bundle-Version: 6.4.0.qualifier
 Bundle-ClassPath: .,
  lib/poi-3.11-20141221_modified_talend.jar,
  lib/poi-ooxml-3.11-20141221_modified_talend.jar,

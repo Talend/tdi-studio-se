@@ -244,15 +244,18 @@ public class DbInfo {
             } else {
                 driverClassName = EDatabase4DriverClassName.HIVE.getDriverClass();
             }
-        }
-        driverClassName = ExtractMetaDataUtils.getInstance().getDriverClassByDbType(dbType);
-        if (dbType.equals(EDatabaseTypeName.VERTICA.getXmlName())) {
+        } else if (EDatabaseTypeName.MYSQL.getDisplayName().equals(dbType)
+                && EDatabaseVersion4Drivers.MARIADB.getVersionValue().equals(dbVersion)) {
+            driverClassName = EDatabase4DriverClassName.MARIADB.getDriverClass();
+        } else if (dbType.equals(EDatabaseTypeName.VERTICA.getXmlName())) {
             if (EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }
+        } else {
+            driverClassName = ExtractMetaDataUtils.getInstance().getDriverClassByDbType(dbType);
         }
     }
 

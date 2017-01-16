@@ -88,7 +88,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 public class JobSettingsView extends ViewPart implements IJobSettingsView, ISelectionChangedListener {
 
     /**
-     * 
+     *
      */
     private static final String SEPARATOR = "->"; //$NON-NLS-1$
 
@@ -284,7 +284,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             // dynamicComposite = new ContextDynamicComposite(parent, style, category, element);
 
         } else if (EComponentCategory.MAIN.equals(category)) {
-            dynamicComposite = new MainComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(), (IRepositoryViewObject) data);
+            dynamicComposite = new MainComposite(parent, SWT.NONE, tabFactory, (IRepositoryViewObject) data);
         } else if (EComponentCategory.VERSIONS.equals(category)) {
             if (allowVerchange) {
                 dynamicComposite = new ProcessVersionComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(),
@@ -324,9 +324,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "setElement".
-     * 
+     *
      * @param obj
      */
 
@@ -424,7 +424,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.ViewPart#setPartName(java.lang.String)
      */
     @Override
@@ -433,9 +433,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     }
 
     /**
-     * 
+     *
      * DOC ggu Comment method "setPartName".
-     * 
+     *
      * set title
      */
     public void setPartName(String typeTitle, Image icon) {
@@ -671,7 +671,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
@@ -688,7 +688,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
      * SelectionChangedEvent )
      */
@@ -783,7 +783,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.views.properties.IJobSettingsView#getSelection()
      */
     @Override
@@ -813,7 +813,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.views.properties.IJobSettingsView#refreshCurrentViewTab()
      */
     @Override

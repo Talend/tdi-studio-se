@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RowGenerator Component Plug-in
 Bundle-SymbolicName: org.talend.designer.rowgenerator;singleton:=true
-Bundle-Version: 6.3.1.qualifier
+Bundle-Version: 6.4.0.qualifier
 Bundle-Vendor: .Talend SA.
 Eclipse-LazyStart: true
 Export-Package: org.talend.designer.rowgenerator,

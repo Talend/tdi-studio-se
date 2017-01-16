@@ -61,7 +61,7 @@ class BasicLogUtil{
             <%
             }
             %>
-            log.<%=level%>("<%=logID%> - " <%for(String message : messages){%> + <%=message%> <%}%>);
+            log.<%=level%>("<%=logID%> - " <%for(String message : messages){%> + (<%=message%>) <%}%>);
         <%
         }
     }

@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
@@ -57,14 +58,13 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
+import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 /**
  * gcui class global comment. Detailled comment <br/>
  * 
  */
 public class JobVMArgumentsComposite {
-
-    private static final List<String> EMPTY_STRING_LIST = Collections.unmodifiableList(new ArrayList<String>());
 
     protected TableViewer viewer;
 
@@ -489,7 +489,7 @@ public class JobVMArgumentsComposite {
             public String getColumnText(Object element, int columnIndex) {
                 String value = ((String) element);
                 if (columnIndex == 0) {
-                    return value.replace(" ", "");
+                    return value;
                 }
                 throw new IllegalStateException();
             }
@@ -542,27 +542,11 @@ public class JobVMArgumentsComposite {
     }
 
     protected List<String> readString(String stringList) {
-        if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$        
-            return EMPTY_STRING_LIST;
-        }
-        ArrayList<String> result = new ArrayList<String>(50);
-        for (String tmp : stringList.split(" ")) {
-            if (tmp != null && !"".equals(tmp)) { //$NON-NLS-1$
-                result.add(tmp);
-            }
-        }
-        return result;
+        return new JobVMArgumentsUtil().readString(stringList);
     }
-
+    
     protected String writeString(List<String> items) {
-        int size = items.size();
-        StringBuffer buf = new StringBuffer(size * 50);
-        buf.append(" ");
-        for (int i = 0; i < size; i++) {
-            buf.append(items.get(i).trim().replaceAll(" ", ""));
-            buf.append(" "); //$NON-NLS-1$
-        }
-        return buf.toString();
+        return new JobVMArgumentsUtil().writeString(items);
     }
 
     protected String getArgumentsString() {

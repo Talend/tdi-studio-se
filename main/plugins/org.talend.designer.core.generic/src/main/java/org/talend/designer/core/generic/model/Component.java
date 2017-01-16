@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.generic.model;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,14 +30,18 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.utils.resource.BundleFileUtil;
 import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.component.ComponentImageType;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.ConnectorTopology;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.component.VirtualComponentDefinition;
+import org.talend.components.api.component.runtime.ExecutionEngine;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentPropertiesImpl;
 import org.talend.components.api.properties.ComponentReferenceProperties;
@@ -50,6 +56,7 @@ import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IMultipleComponentItem;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
@@ -65,9 +72,13 @@ import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
@@ -93,6 +104,7 @@ import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
+import org.talend.librariesmanager.model.ExtensionModuleManager;
 
 /**
  * created by hcyi on Sep 10, 2015 Detailled comment
@@ -197,8 +209,7 @@ public class Component extends AbstractBasicComponent {
         for (Property<?> child : componentDefinition.getReturnProperties()) {
             nodeRet = new NodeReturn();
             nodeRet.setType(ComponentsUtils.getTalendTypeFromProperty(child).getId());
-            nodeRet.setDisplayName(
-                    ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
+            nodeRet.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
             nodeRet.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(child.getName()));
             if (nodeRet.getName().equals(ERROR_MESSAGE)) {
                 continue;
@@ -825,7 +836,7 @@ public class Component extends AbstractBasicComponent {
 
     /**
      * DOC nrousseau Comment method "setupConnector".
-     * 
+     *
      * @param node
      * @param rootProperty
      * @param paramName
@@ -868,7 +879,7 @@ public class Component extends AbstractBasicComponent {
 
     /**
      * DOC nrousseau Comment method "findSchemaProperties".
-     * 
+     *
      * @param rootProperty
      * @param listParam
      * @return
@@ -1016,27 +1027,24 @@ public class Component extends AbstractBasicComponent {
     }
 
     /**
-     * Create iterate connector for this {@link Component}
-     * There are 4 types of components (depending on what main connections allowed):
-     * 1. StandAlone component (can't have main connections at all)
-     * 2. Input component (can have outgoing main connection)
-     * 3. Output component (can have incoming main connection)
-     * 4. Intermediate component (can have both incoming and outgoing main connections)
-     * 
-     * Iterate connector is created by default for TCOMP component with following rules:
-     * Outgoing iterate: all types of components can have infinite outgoing iterate connections
-     * Incoming iterate: StandAlone, Input components (also called startable components) can have 1 incoming iterate flow;
-     * Output, Intermediate components can't have incoming iterate flow (because they are not startable)
-     * 
+     * Create iterate connector for this {@link Component} There are 4 types of components (depending on what main
+     * connections allowed): 1. StandAlone component (can't have main connections at all) 2. Input component (can have
+     * outgoing main connection) 3. Output component (can have incoming main connection) 4. Intermediate component (can
+     * have both incoming and outgoing main connections)
+     *
+     * Iterate connector is created by default for TCOMP component with following rules: Outgoing iterate: all types of
+     * components can have infinite outgoing iterate connections Incoming iterate: StandAlone, Input components (also
+     * called startable components) can have 1 incoming iterate flow; Output, Intermediate components can't have
+     * incoming iterate flow (because they are not startable)
+     *
      * Note: infinite value is defined by -1 int value
-     * 
-     * @param topologies connection topologies supported by this {@link Component}. Component could support several topologies.
-     * Such component is called hybrid
+     *
+     * @param topologies connection topologies supported by this {@link Component}. Component could support several
+     * topologies. Such component is called hybrid
      * @param listConnector list of all {@link Component} connectors
      * @param parentNode parent node
      */
-    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector,
-            INode parentNode) {
+    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector, INode parentNode) {
         boolean inputOrNone = topologies.contains(ConnectorTopology.NONE) || topologies.contains(ConnectorTopology.OUTGOING);
         INodeConnector iterateConnector = addStandardType(listConnector, EConnectionType.ITERATE, parentNode);
         iterateConnector.setMaxLinkOutput(-1);
@@ -1049,7 +1057,7 @@ public class Component extends AbstractBasicComponent {
 
     /**
      * Add default connector type, if not already defined by component.
-     * 
+     *
      * @param listConnector
      * @param type
      * @param parentNode
@@ -1095,7 +1103,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -1130,7 +1138,8 @@ public class Component extends AbstractBasicComponent {
                 }
             }
             try {
-                runtimeInfo = componentDefinition.getRuntimeInfo(node == null ? null : node.getComponentProperties(), topology);
+                runtimeInfo = componentDefinition.getRuntimeInfo(ExecutionEngine.DI,
+                        node == null ? null : node.getComponentProperties(), topology);
             } catch (Exception e) {
                 if (node == null) {
                     // not handled, must because the runtime info must have a node configuration (properties are null)
@@ -1139,13 +1148,33 @@ public class Component extends AbstractBasicComponent {
                 }
             }
             if (runtimeInfo != null) {
+                final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
                 for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
                     ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri.toString()); //$NON-NLS-1$
                     componentImportNeedsList.add(moduleNeeded);
+
+                    if (bundle != null) { // update module location
+                        try {
+                            final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getMavenUri());
+                            final String moduleFileName = artifact.getFileName();
+                            final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
+                            if (bundleFile != null && bundleFile.exists()) {
+                                // FIXME, better install the embed jars from bundle directly in this way.
+                                moduleNeeded.setModuleLocaion(ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName()
+                                        + '/' + moduleFileName);
+                            }
+                        } catch (IOException e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
                 }
+
             }
             ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true,
                     "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
+            componentImportNeedsList.add(moduleNeeded);
+            moduleNeeded = new ModuleNeeded(getName(), "", true,
+                    "mvn:org.talend.libraries/talend-codegen-utils/0.17.0-SNAPSHOT");
             componentImportNeedsList.add(moduleNeeded);
             return componentImportNeedsList;
         }
@@ -1370,7 +1399,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -1405,8 +1434,8 @@ public class Component extends AbstractBasicComponent {
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
-            node.setComponentProperties(
-                    Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class, new PostDeserializeSetup() {
+            node.setComponentProperties(Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class,
+                    new PostDeserializeSetup() {
 
                         @Override
                         public void setup(Object properties) {
@@ -1488,6 +1517,80 @@ public class Component extends AbstractBasicComponent {
     @Override
     public boolean hasConditionalOutputs() {
         return componentDefinition.isConditionalInputs();
+    }
+
+    @Override
+    public String getRepositoryType(Connection connection) {
+        String propertiesStr = null;
+        IGenericWizardService wizardService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+        }
+        if (wizardService != null) {
+            propertiesStr = wizardService.getConnectionProperties(connection);
+        }
+        ComponentProperties properties = ComponentsUtils.getComponentPropertiesFromSerialized(propertiesStr, connection, false);
+        if (properties != null) {
+            ComponentWizardDefinition wizardDefinition = getWizardDefinition(properties);
+            if (wizardDefinition != null) {
+                return wizardDefinition.getName();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets the visible.
+     *
+     * @param visible the visible to set
+     */
+    public void setVisible(Boolean visible) {
+        this.visible = visible;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.core.model.components.IComponent#isVisible()
+     */
+    @Override
+    public boolean isVisible() {
+        return isVisible(null);
+    }
+
+    @Override
+    public boolean isVisible(String family) {
+        if (visible != null) {
+            return visible;
+        }
+        return ComponentsSettingsHelper.isComponentVisible(this, family);
+    }
+
+    @Override
+    public boolean isVisibleInComponentDefinition() {
+        return true;
+    }
+
+    /**
+     * Sets the technical.
+     *
+     * @param technical the technical to set
+     */
+    public void setTechnical(Boolean technical) {
+        this.technical = technical;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.talend.core.model.components.IComponent#isTechnical()
+     */
+    @Override
+    public boolean isTechnical() {
+        if(technical!=null){
+            return technical;
+        }
+        return false;
     }
 
 }

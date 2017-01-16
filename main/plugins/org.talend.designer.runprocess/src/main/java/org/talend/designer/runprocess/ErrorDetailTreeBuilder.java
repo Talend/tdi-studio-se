@@ -27,6 +27,7 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IContainerEntry;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.Problem;
+import org.talend.core.model.process.Problem.ProblemType;
 import org.talend.core.model.process.TalendProblem;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.images.CoreImageProvider;
@@ -38,6 +39,8 @@ import org.talend.designer.core.DesignerPlugin;
 public class ErrorDetailTreeBuilder {
 
     private static final String GENERAL_ERROR = "General"; //$NON-NLS-1$
+
+    private static final String ROUTINE_ERROR = "Routine Dependencies"; //$NON-NLS-1$
 
     Map<String, JobErrorEntry> jobs = new HashMap<String, JobErrorEntry>();
 
@@ -53,24 +56,19 @@ public class ErrorDetailTreeBuilder {
             if (error instanceof TalendProblem) {
                 TalendProblem talendProblem = (TalendProblem) error;
                 if (talendProblem != null && talendProblem.getJobInfo() != null) {
-                    String jobId = talendProblem.getJobInfo().getJobId();
-                    if (!jobIds.contains(jobId)) {
-                        continue;
+                    if (talendProblem.getType() == ProblemType.ROUTINE) {
+                        JobErrorEntry routineEntry = getJobEntry(ROUTINE_ERROR);
+                        routineEntry.addItem(talendProblem.getJavaUnitName(), talendProblem);
+                    } else {
+                        String jobId = talendProblem.getJobInfo().getJobId();
+                        if (!jobIds.contains(jobId)) {
+                            continue;
+                        }
+                        String componentName = GENERAL_ERROR;
+                        JobErrorEntry jobEntry = getJobEntry(talendProblem.getJavaUnitName());
+                        jobEntry.addItem(componentName, talendProblem);
                     }
-                    String componentName = GENERAL_ERROR;
-                    // System.out.println("tp----" + talendProblem.getElement().getClass());
-                    JobErrorEntry jobEntry = getJobEntry(talendProblem.getJavaUnitName());
-                    jobEntry.addItem(componentName, talendProblem);
-
-                    /*
-                     * ignore the routine errors.
-                     */
-                    // } else if (talendProblem.getType() == ProblemType.ROUTINE) { // should add the routine always for
-                    // job.
-                    // JobErrorEntry routineEntry = getJobEntry(talendProblem.getJavaUnitName());
-                    // routineEntry.addItem(ProblemType.ROUTINE.getTypeName(), talendProblem);
                 }
-
             } else {
                 if (error != null && error.getJobInfo() != null) {
                     String jobId = error.getJobInfo().getJobId();
@@ -90,7 +88,11 @@ public class ErrorDetailTreeBuilder {
     private JobErrorEntry getJobEntry(String name) {
         JobErrorEntry entry = jobs.get(name);
         if (entry == null) {
-            entry = new JobErrorEntry();
+            if (ROUTINE_ERROR.equals(name)) {
+                entry = new RoutineErrorEntry();
+            } else {
+                entry = new JobErrorEntry();
+            }
             jobs.put(name, entry);
             entry.setLabel(name);
         }
@@ -185,6 +187,9 @@ public class ErrorDetailTreeBuilder {
                 IComponent component = ComponentsFactoryProvider.getInstance().get(problem.getComponentName());
                 icon = CoreImageProvider.getComponentIcon(component, ICON_SIZE.ICON_16);
             }
+            if (icon == null && problem.getType() == ProblemType.ROUTINE) {
+                icon = ImageProvider.getImage(ECoreImage.ROUTINE_ICON);
+            }
         }
 
         @Override
@@ -217,6 +222,15 @@ public class ErrorDetailTreeBuilder {
             return errors.size() > 0;
         }
 
+    }
+    
+    class RoutineErrorEntry extends JobErrorEntry {
+
+        @Override
+        public Image getImage() {
+            return ImageProvider.getImage(ECoreImage.ROUTINE_ICON);
+        }
+        
     }
 
 }

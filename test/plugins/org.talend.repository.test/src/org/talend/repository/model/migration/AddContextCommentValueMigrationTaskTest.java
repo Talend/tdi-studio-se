@@ -1,16 +1,8 @@
-// ============================================================================
-//
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
-//
-// This source code is available under agreement available at
-// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
-//
-// You should have received a copy of the agreement
-// along with this program; if not, write to Talend SA
-// 9 rue Pages 92150 Suresnes, France
-//
-// ============================================================================
 package org.talend.repository.model.migration;
+
+import static org.junit.Assert.*;
+
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -23,7 +15,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,8 +27,8 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.general.TalendNature;
+import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.ItemState;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.User;
@@ -50,17 +41,13 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
 
-/**
- * created by wchen on Jun 20, 2016 Detailled comment
- *
- */
 public class AddContextCommentValueMigrationTaskTest {
-
+    
     private static Project originalProject;
 
     private static Project sampleProject;
 
-    private ProcessItem testItem;
+    private ContextItem testItem;
 
     @BeforeClass
     public static void beforeAllTests() throws PersistenceException, LoginException, CoreException {
@@ -83,7 +70,7 @@ public class AddContextCommentValueMigrationTaskTest {
 
     @Before
     public void testBefore() throws PersistenceException {
-        testItem = createTempProcessItem();
+        testItem = createTempContextItem();
     }
 
     @After
@@ -92,102 +79,64 @@ public class AddContextCommentValueMigrationTaskTest {
         ProxyRepositoryFactory.getInstance().deleteObjectPhysical(objToDelete);
         testItem = null;
     }
-
+    
     @Test
-    public void testChangeTypeComment() {
-        testItem.getProcess().setDefaultContext("Default");
-        String[] paramNames = new String[] { "new1", "new2", "new3" };
-        // default
-        ContextType defaultGroup = createContextType("Default", paramNames);
-        testItem.getProcess().getContext().add(defaultGroup);
-        ((ContextParameterType) defaultGroup.getContextParameter().get(0)).setType("id_Date");
-        ((ContextParameterType) defaultGroup.getContextParameter().get(0)).setComment("Test Date");
-        // group1
-        ContextType group1 = createContextType("group1", paramNames);
-        testItem.getProcess().getContext().add(group1);
-
-        AddContextCommentValueMigrationTask migration = new AddContextCommentValueMigrationTask();
-        migration.execute(testItem);
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(0)).getType(), "id_Date");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(0)).getComment(), "Test Date");
-
+    public void testAddContextCommentValue() {
+        testItem.setDefaultContext("Default");
+        String[] paramNames = new String[]{"p1","p2","p3"};
+        String[] comments = new String[]{"c1","c2","c3"};
+        // context item before 5.6.1
+        // comments always in the first group of context no matter it's default group or not.
+        testItem.getContext().add(createContextType("DEV", paramNames, comments));
+        testItem.getContext().add(createContextType("PROD", paramNames, null));
+        testItem.getContext().add(createContextType("Default", paramNames, null));
+        AddContextCommentValueMigrationTask task = new AddContextCommentValueMigrationTask();
+        task.execute(testItem);
+        List<ContextType> contexts = testItem.getContext();
+        for(ContextType context : contexts) {
+            List<ContextParameterType> params = context.getContextParameter();
+            for (ContextParameterType param : params) {
+                if (param.getName().equals("p1")) {
+                    assertEquals("c1", param.getComment());
+                } else if (param.getName().equals("p2")) {
+                    assertEquals("c2", param.getComment());
+                } else if (param.getName().equals("p3")) {
+                    assertEquals("c3", param.getComment());
+                }
+            }
+        }
     }
-
-    @Test
-    public void testChangeParamOrder() {
-        testItem.getProcess().setDefaultContext("Default");
-        String[] paramNames = new String[] { "new1", "new2", "new3" };
-        // default
-        ContextType defaultGroup = createContextType("Default", paramNames);
-        testItem.getProcess().getContext().add(defaultGroup);
-        // group1
-        paramNames = new String[] { "new3", "new2", "new1" };
-        ContextType group1 = createContextType("group1", paramNames);
-        testItem.getProcess().getContext().add(group1);
-
-        AddContextCommentValueMigrationTask migration = new AddContextCommentValueMigrationTask();
-        migration.execute(testItem);
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(0)).getName(), "new1");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(1)).getName(), "new2");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(2)).getName(), "new3");
-    }
-
-    @Test
-    public void testChangeParamList() {
-
-        testItem.getProcess().setDefaultContext("Default");
-        String[] paramNames = new String[] { "new4", "new2", "new3" };
-        // default
-        ContextType defaultGroup = createContextType("Default", paramNames);
-        testItem.getProcess().getContext().add(defaultGroup);
-        // group1
-        paramNames = new String[] { "new5", "new2", "new1" };
-        ContextType group1 = createContextType("group1", paramNames);
-        testItem.getProcess().getContext().add(group1);
-
-        AddContextCommentValueMigrationTask migration = new AddContextCommentValueMigrationTask();
-        migration.execute(testItem);
-
-        Assert.assertEquals(((ContextParameterType) defaultGroup.getContextParameter().get(0)).getName(), "new4");
-        Assert.assertEquals(((ContextParameterType) defaultGroup.getContextParameter().get(1)).getName(), "new2");
-        Assert.assertEquals(((ContextParameterType) defaultGroup.getContextParameter().get(2)).getName(), "new3");
-        Assert.assertEquals(((ContextParameterType) defaultGroup.getContextParameter().get(3)).getName(), "new5");
-        Assert.assertEquals(((ContextParameterType) defaultGroup.getContextParameter().get(4)).getName(), "new1");
-
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(0)).getName(), "new4");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(1)).getName(), "new2");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(2)).getName(), "new3");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(3)).getName(), "new5");
-        Assert.assertEquals(((ContextParameterType) group1.getContextParameter().get(4)).getName(), "new1");
-
-    }
-
-    private ContextType createContextType(String contextName, String[] paramNames) {
+    
+    private ContextType createContextType(String contextName, String[] paramNames, String[] comments) {
         ContextType context = TalendFileFactory.eINSTANCE.createContextType();
         context.setName(contextName);
-        for (String paramName : paramNames) {
+        for (int i = 0; i<paramNames.length; i++) {
             ContextParameterType param = TalendFileFactory.eINSTANCE.createContextParameterType();
-            param.setName(paramName);
+            param.setName(paramNames[i]);
             param.setType("id_String");
+            if (comments != null) {
+                param.setComment(comments[i]);
+            } else {
+                param.setComment("");
+            }
             context.getContextParameter().add(param);
         }
         return context;
     }
 
-    private ProcessItem createTempProcessItem() throws PersistenceException {
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
+    private ContextItem createTempContextItem() throws PersistenceException {
+        ContextItem contextItem = PropertiesFactory.eINSTANCE.createContextItem();
         Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
         myProperty.setId(ProxyRepositoryFactory.getInstance().getNextId());
         ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
         itemState.setDeleted(false);
         itemState.setPath("");
-        processItem.setState(itemState);
-        processItem.setProperty(myProperty);
-        myProperty.setLabel("myJob");
+        contextItem.setState(itemState);
+        contextItem.setProperty(myProperty);
+        myProperty.setLabel("context1");
         myProperty.setVersion("0.1");
-        processItem.setProcess(TalendFileFactory.eINSTANCE.createProcessType());
-        ProxyRepositoryFactory.getInstance().create(processItem, new Path(""));
-        return processItem;
+        ProxyRepositoryFactory.getInstance().create(contextItem, new Path(""));
+        return contextItem;
     }
 
     private static void createTempProject() throws CoreException, PersistenceException, LoginException {

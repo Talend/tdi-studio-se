@@ -145,25 +145,25 @@
 int nb_line_<%=cid%> = 0;
 
 <%
-if (outputDataConnName != null && tHashOutput_incommingDataConnName != null) {
+ if(outputDataConnName != null && tHashOutput_incommingDataConnName != null){
 //fix bug 21630,use method getAdvancedMemoryHashFile to get a exist AdvancedMemoryHashFile
 %>	
-org.talend.designer.components.hashfile.common.MemoryCaches memoryCaches_<%=cid %> = org.talend.designer.components.hashfile.common.MemoryCaches.getInstance();
-org.talend.designer.components.hashfile.common.Cache<<%=tHashOutput_incommingDataConnName %>Struct> cache_<%=cid %> = memoryCaches_<%=cid %>.getMemoryCache("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
-if (cache_<%=cid %> == null) {
+org.talend.designer.components.hashfile.common.MapHashFile mf_<%=cid %>=org.talend.designer.components.hashfile.common.MapHashFile.getMapHashFile();
+org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=tHashOutput_incommingDataConnName %>Struct> tHashFile_<%=cid %> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
+if(tHashFile_<%=cid %>==null) {
 	throw new RuntimeException("The hash is not initialized : The hash must exist before you read from it");
 }
-java.util.Iterator<<%=tHashOutput_incommingDataConnName %>Struct> iterator_<%=cid %> = cache_<%=cid %>.iterator();
+java.util.Iterator<<%=tHashOutput_incommingDataConnName %>Struct> iterator_<%=cid %> = tHashFile_<%=cid %>.iterator();
 while (iterator_<%=cid %>.hasNext()) {
     <%=tHashOutput_incommingDataConnName %>Struct next_<%=cid %> = iterator_<%=cid %>.next();
 
 <%
     List<IMetadataColumn> columns = metadata.getListColumns();
-    List<IMetadataColumn> tHashOutputcolumns = tHashOutput_metadata.getListColumns();
+    List<IMetadataColumn>  tHashOutputcolumns = tHashOutput_metadata.getListColumns();
     
     //min
     int size = Math.min(columns.size(), tHashOutputcolumns.size());
-    for(int i=0; i<size; i++) {
+    for(int i=0; i<size; i++){
 %>
 	<%=outputDataConnName %>.<%=columns.get(i).getLabel() %> = next_<%=cid %>.<%=tHashOutputcolumns.get(i).getLabel() %>;
 <%

@@ -145,7 +145,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         // store.setDefault(ITalendCorePrefConstants.ITEM_INDEX, false);
 
         // Add dependencies routines for job
-        store.setDefault(ITalendCorePrefConstants.ADD_USER_ROUTINES, true);
+        store.setDefault(ITalendCorePrefConstants.ADD_USER_ROUTINES, false);
         store.setDefault(ITalendCorePrefConstants.ADD_SYSTEM_ROUTINES, true);
 
         // have removed this function

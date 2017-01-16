@@ -130,7 +130,7 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
                     <%
                 }
             }
-            
+
             if("java.lang.Integer".equals(property.getType()) && (value == null || ((value instanceof String) && ((String)value).isEmpty()))) {//need to overwrite the default value when the passed value is null or empty string from the model
         	%>
                 props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>", null);
@@ -152,7 +152,7 @@ org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new or
     public String getCurrentComponentId() {
         return "<%=cid%>";
     }
-    
+
     public Object getGlobalData(String key) {
     	return globalMap.get(key);
     }
@@ -185,7 +185,8 @@ topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.NONE;
 }
 %>
 
-org.talend.daikon.runtime.RuntimeInfo runtime_info_<%=cid%> = def_<%=cid%>.getRuntimeInfo(props_<%=cid%>, topology_<%=cid%>);
+org.talend.daikon.runtime.RuntimeInfo runtime_info_<%=cid%> = def_<%=cid%>.getRuntimeInfo(
+    org.talend.components.api.component.runtime.ExecutionEngine.DI, props_<%=cid%>, topology_<%=cid%>);
 java.util.Set<org.talend.components.api.component.ConnectorTopology> supported_connector_topologies_<%=cid%> = def_<%=cid%>.getSupportedConnectorTopologies();
 
 org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
@@ -194,7 +195,7 @@ org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%
 if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
     throw new RuntimeException(vr_<%=cid%>.getMessage());
 }
-    
+
 <%
 // Return at this point if there is no metadata.
 if (metadata == null) {
@@ -223,10 +224,10 @@ if (hasOutputOnly || asInputComponent) {
     if (rejects != null && !rejects.isEmpty()) {
         reject = rejects.get(0);
     }
-    
+
 	boolean hasDataOutput = (main != null || reject != null);
 	IndexedRecordToRowStructGenerator irToRow = null;
-	
+
 	if(hasDataOutput) {
     	IConnection schemaSourceConnector = (main!=null ? main : reject);
     	String schemaSourceConnectorName = schemaSourceConnector.getMetadataTable().getAttachedConnector();
@@ -238,7 +239,7 @@ if (hasOutputOnly || asInputComponent) {
             if (currentConnector.getName().equals("<%=schemaSourceConnectorName%>")) {
                 c_<%=cid%> = currentConnector;
             }
-    
+
             if (currentConnector.getName().equals("REJECT")) {//it's better to move the code to javajet
                 multi_output_is_allowed_<%=cid%> = true;
             }
@@ -250,15 +251,15 @@ if (hasOutputOnly || asInputComponent) {
     	irToRow.generateInitialVariables("schema_" + cid, false);
     }
     %>
-	
+
     // Iterate through the incoming data.
     boolean available_<%=cid%> = reader_<%=cid%>.start();
-    
+
     resourceMap.put("reader_<%=cid%>", reader_<%=cid%>);
-    
+
     for (; available_<%=cid%>; available_<%=cid%> = reader_<%=cid%>.advance()) {
     	nb_line_<%=cid %>++;
-    	
+
     	<%if(hasDataOutput) {%>
         if (multi_output_is_allowed_<%=cid%>) {
             <%if(main!=null){%>
@@ -359,9 +360,9 @@ if (hasOutputOnly || asInputComponent) {
     writeOperation_<%=cid%>.initialize(container_<%=cid%>);
     org.talend.components.api.component.runtime.Writer writer_<%=cid%> = writeOperation_<%=cid%>.createWriter(container_<%=cid%>);
     writer_<%=cid%>.open("<%=cid%>");
-    
+
     resourceMap.put("writer_<%=cid%>", writer_<%=cid%>);
-    
+
     org.talend.components.api.component.Connector c_<%=cid%> = null;
     for (org.talend.components.api.component.Connector currentConnector : props_<%=cid %>.getAvailableConnectors(null, false)) {
         if (currentConnector.getName().equals("MAIN")) {

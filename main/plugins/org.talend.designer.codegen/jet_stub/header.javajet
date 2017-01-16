@@ -457,8 +457,8 @@ private class TalendException extends Exception {
 			if(virtualComponentName!=null && currentComponent.indexOf(virtualComponentName+"_")==0){
 				globalMap.put(virtualComponentName+"_ERROR_MESSAGE",getExceptionCauseMessage(e));
 			}
-			 globalMap.put(currentComponent+"_ERROR_MESSAGE",getExceptionCauseMessage(e));
-			System.err.println("Exception in component " + currentComponent);
+			globalMap.put(currentComponent+"_ERROR_MESSAGE",getExceptionCauseMessage(e));
+			System.err.println("Exception in component " + currentComponent + " (" + jobName + ")");
 		}
 		if (!(e instanceof TDieException)) {
 			if(e instanceof TalendException){

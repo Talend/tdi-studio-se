@@ -488,7 +488,7 @@
             </TABLE>
             <TABLE IF="(MODULENAME=='ContactCategory') and (ACTION != 'delete') and (ACTION != 'insert')">
                 <COLUMN KEY="false" NAME="Name" LENGTH="200" TYPE="id_String"  />
-                <COLUMN KEY="false" NAME="_private" LENGTH="0" TYPE="id_Boolean"  />
+                <COLUMN KEY="false" NAME="Private" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="Sync" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="IsInactive" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="true" NAME="InternalId" LENGTH="200" TYPE="id_String"  />
@@ -765,7 +765,7 @@
                 <COLUMN KEY="false" NAME="Password2" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="RequirePwdChange" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="InheritIPRules" LENGTH="0" TYPE="id_Boolean"  />
-                <COLUMN KEY="false" NAME="IpAddressRule" LENGTH="200" TYPE="id_String"  />
+                <COLUMN KEY="false" NAME="IPAddressRule" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="CommissionPaymentPreference" LENGTH="0" TYPE="id_Object"  />
                 <COLUMN KEY="false" NAME="BillPay" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="EligibleForCommission" LENGTH="0" TYPE="id_Boolean"  />
@@ -3985,7 +3985,7 @@
             </TABLE>
             <TABLE IF="(MODULENAME=='ContactCategory') and (ACTION != 'delete') and (ACTION == 'insert')">
                 <COLUMN KEY="false" NAME="Name" LENGTH="200" TYPE="id_String"  />
-                <COLUMN KEY="false" NAME="_private" LENGTH="0" TYPE="id_Boolean"  />
+                <COLUMN KEY="false" NAME="Private" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="Sync" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="IsInactive" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="true" NAME="ExternalId" LENGTH="200" TYPE="id_String"  />
@@ -4252,7 +4252,7 @@
                 <COLUMN KEY="false" NAME="Password2" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="RequirePwdChange" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="InheritIPRules" LENGTH="0" TYPE="id_Boolean"  />
-                <COLUMN KEY="false" NAME="IpAddressRule" LENGTH="200" TYPE="id_String"  />
+                <COLUMN KEY="false" NAME="IPAddressRule" LENGTH="200" TYPE="id_String"  />
                 <COLUMN KEY="false" NAME="CommissionPaymentPreference" LENGTH="0" TYPE="id_Object"  />
                 <COLUMN KEY="false" NAME="BillPay" LENGTH="0" TYPE="id_Boolean"  />
                 <COLUMN KEY="false" NAME="EligibleForCommission" LENGTH="0" TYPE="id_Boolean"  />

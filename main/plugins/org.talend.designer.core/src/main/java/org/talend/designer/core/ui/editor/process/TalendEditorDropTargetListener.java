@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.PolylineConnection;
@@ -287,7 +288,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDragOver()
      */
     @Override
@@ -458,7 +459,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDrop()
      */
     @Override
@@ -631,13 +632,25 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         }
 
         Item subItem = repositoryNode.getObject().getProperty().getItem();
-        Item hadoopClusterItem = hadoopClusterService.getHadoopClusterBySubitemId(
-                new Project(ProjectManager.getInstance().getProject(subItem)), subItem.getProperty().getId());
-        String hadoopClusterId = hadoopClusterItem.getProperty().getId();
-
         String propertyParamName = MR_PROPERTY_PREFIX + EParameterName.PROPERTY_TYPE.getName();
         String propertyRepTypeParamName = MR_PROPERTY_PREFIX + EParameterName.REPOSITORY_PROPERTY_TYPE.getName();
         IElementParameter propertyParam = process.getElementParameter(propertyParamName);
+        if (propertyParam == null) {
+            return;
+        }
+        String repositoryValue = propertyParam.getRepositoryValue();
+        if (repositoryValue == null) {
+            return;
+        }
+        String[] supportedRepositoryTypes = repositoryValue.split("\\|"); //$NON-NLS-1$
+        String repositoryType = hadoopClusterService.getRepositoryTypeOfHadoopSubItem(subItem);
+        if (!ArrayUtils.contains(supportedRepositoryTypes, repositoryType)) {
+            return;
+        }
+
+        Item hadoopClusterItem = hadoopClusterService.getHadoopClusterBySubitemId(
+                new Project(ProjectManager.getInstance().getProject(subItem)), subItem.getProperty().getId());
+        String hadoopClusterId = hadoopClusterItem.getProperty().getId();
         if (EmfComponent.REPOSITORY.equals(propertyParam.getValue())) {
             // do nothing when select the same hadoop cluster.
             String propertyId = (String) process.getElementParameter(propertyRepTypeParamName).getValue();
@@ -646,9 +659,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             }
         }
 
-        Connection hcConnection = ((ConnectionItem) hadoopClusterItem).getConnection();
         Connection connection = ((ConnectionItem) subItem).getConnection();
-        IElementParameter elementParameter = process.getElementParameter(propertyParamName);
         if (hadoopClusterService.hasDiffsFromClusterToProcess(subItem, process)) {
             boolean confirmUpdate = MessageDialog.openConfirm(editor.getSite().getShell(),
                     Messages.getString("TalendEditorDropTargetListener.updateHadoopCfgDialog.title"), //$NON-NLS-1$
@@ -2254,7 +2265,7 @@ class ComponentChooseDialog extends ListDialog {
 
             /*
              * (non-Javadoc)
-             * 
+             *
              * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
              */
             @Override

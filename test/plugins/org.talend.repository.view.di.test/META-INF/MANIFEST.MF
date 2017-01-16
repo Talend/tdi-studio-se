@@ -2,6 +2,6 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: View DI test
 Bundle-SymbolicName: org.talend.repository.view.di.test
-Bundle-Version: 6.3.1.qualifier
+Bundle-Version: 6.4.0.qualifier
 Fragment-Host: org.talend.repository.view.di
 Require-Bundle: org.talend.testutils

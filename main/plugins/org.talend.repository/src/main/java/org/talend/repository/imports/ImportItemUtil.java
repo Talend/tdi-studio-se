@@ -711,8 +711,10 @@ public class ImportItemUtil {
                             // TDI-19535 (check if exists, delete all items with same id)
                             List<IRepositoryViewObject> allVersionToDelete = repFactory.getAllVersion(ProjectManager
                                     .getInstance().getCurrentProject(), lastVersion.getId(), false);
+                            String importingLabel = itemRecord.getProperty().getLabel();
+                            String existLabel = lastVersion.getProperty().getLabel();
                             for (IRepositoryViewObject currentVersion : allVersionToDelete) {
-                                repFactory.forceDeleteObjectPhysical(lastVersion, currentVersion.getVersion());
+                                repFactory.forceDeleteObjectPhysical(lastVersion, currentVersion.getVersion(), isNeedDeleteOnRemote(importingLabel, existLabel));
                             }
                             idDeletedBeforeImport.add(id);
                         }
@@ -918,6 +920,13 @@ public class ImportItemUtil {
 
         applyMigrationTasks(itemRecord, monitor);
         TimeMeasure.step("importItemRecords", "applyMigrationTasks: " + label);
+    }
+    
+    private boolean isNeedDeleteOnRemote(String importingLabel, String existLabel) {
+        if (importingLabel != null && importingLabel.equalsIgnoreCase(importingLabel) && !importingLabel.equals(existLabel)) {
+            return true;
+        }
+        return false;
     }
 
     // added by dlin 2011-7-25 don't like .item and .property ,just copy .screenshot file will be ok

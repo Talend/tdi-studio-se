@@ -28,11 +28,11 @@
 	}
 	java.util.List< ? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
 	if(columnList!=null && outgoingConns!=null && outgoingConns.size()>0) {
-		for(IConnection outgoingConn : outgoingConns) {
-			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+		IConnection outgoingConn = outgoingConns.get(0);// only have one flow output
+		if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 			
-				final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-				if(asInputstream) {
+			final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+			if(asInputstream) {
 %>
 
 					try {
@@ -40,22 +40,21 @@
 							fis_<%=cid%>.close();
 					} catch (java.io.IOException e_<%=cid%>) {
 <%
-						if(dieOnError) {
+				if(dieOnError) {
 %>
-							throw e_<%=cid%>;
+						throw e_<%=cid%>;
 <%
-						} else {
+				} else {
 %>
-    						<%if(isLog4jEnabled){%>
-    						log.error("<%=cid%> - " +e_<%=cid%>.getMessage());
-    						<%}%>
-							System.err.println(e_<%=cid%>);
+						<%if(isLog4jEnabled){%>
+						log.error("<%=cid%> - " +e_<%=cid%>.getMessage());
+						<%}%>
+						System.err.println(e_<%=cid%>);
 <%
-						}
+				}
 %>
 					}
 <%
-				}
 				
 			}
 		}

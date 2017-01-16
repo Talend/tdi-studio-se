@@ -15,12 +15,9 @@ package org.talend.repository.model.migration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
@@ -45,131 +42,79 @@ public class AddContextCommentValueMigrationTask extends AbstractItemMigrationTa
     @Override
     public ExecutionResult execute(Item item) {
         EList<ContextType> contexts = null;
-        String defualtGroupName = null;
         if (item instanceof ProcessItem) {
             // process, process_mr, process_storm, route, routelet.
             ProcessItem processItem = (ProcessItem) item;
             contexts = processItem.getProcess().getContext();
-            defualtGroupName = processItem.getProcess().getDefaultContext();
         } else if (item instanceof JobletProcessItem) {
             JobletProcessItem jobletItem = (JobletProcessItem) item;
             contexts = jobletItem.getJobletProcess().getContext();
-            defualtGroupName = jobletItem.getJobletProcess().getDefaultContext();
         } else if (item instanceof ContextItem) {
             ContextItem contextItem = (ContextItem) item;
             contexts = contextItem.getContext();
-            defualtGroupName = contextItem.getDefaultContext();
         }
-        try {
-            ContextType defaultGroup = null;
-            for (ContextType context : contexts) {
-                if (context.getName().equals(defualtGroupName)) {
-                    defaultGroup = context;
-                    break;
-                }
-            }
-            if (defaultGroup == null && contexts.size() > 0) {
-                defaultGroup = contexts.get(0);
-            }
-
-            boolean contextChanged = false;
-            if (defaultGroup != null) {
-                Map<String, ContextParameterType> paramMap = new HashMap<String, ContextParameterType>();
-                List<String> paramNameList = new ArrayList<String>();
-                paramMap.putAll(collectDefaultGroupParams(defaultGroup, paramNameList));
-                for (ContextType context : contexts) {
-                    if (context == defaultGroup) {
+        // 2 kinds of situation should be excluded before doing migration to the old context:
+        // 1.has null, 2.all same comment values;
+        // 1 is from 6.1.0 release and 5.6.2 patched TPS-1109, all null comment value will set to "".
+        // for repository context in job, won't change anything because the repository context has been fixed
+        // the update action will execute when opening job.
+        boolean hasNull = false, isSame = true;
+        if (contexts != null && contexts.size() > 1) {
+            List<String> firstComments = new ArrayList<String>();
+            for (int x = 0; x < contexts.size(); x++) {
+                List<ContextParameterType> contextParams = contexts.get(x).getContextParameter();
+                for (int y = 0; y < contextParams.size(); y++) {
+                    ContextParameterType param = contextParams.get(y);
+                    boolean isBuiltin = param.getRepositoryContextId() == null;
+                    String comment = param.getComment();
+                    if (comment == null) {
+                        if (isBuiltin) {
+                            param.setComment(""); //$NON-NLS-1$
+                            hasNull = true;
+                        }
                         continue;
                     }
-
-                    Map<String, ContextParameterType> otherGroupParam = collectDefaultGroupParams(context, paramNameList);
-                    for (String paramName : otherGroupParam.keySet()) {
-                        if (!paramMap.containsKey(paramName)) {
-                            paramMap.put(paramName, otherGroupParam.get(paramName));
+                    // comments to show in old item before 5.6.1 are always in the first group.
+                    if (x == 0) {
+                        if (!isBuiltin) {
+                            firstComments.add("NOT_BUILTIN"); //$NON-NLS-1$
+                        } else {
+                            firstComments.add(comment);
                         }
+                        continue;
+                    }
+                    if (isBuiltin && !comment.equals(firstComments.get(y))) {
+                        isSame = false;
                     }
                 }
-                // make sure all groups have the same param list
-                for (ContextType context : contexts) {
-                    EList<ContextParameterType> params = context.getContextParameter();
-                    List<String> paramNames = new ArrayList<String>(paramNameList);
-                    for (ContextParameterType param : params) {
-                        if (paramNames.contains(param.getName())) {
-                            paramNames.remove(param.getName());
-                        }
-                    }
-                    if (!paramNames.isEmpty()) {
-                        contextChanged = true;
-                        for (String paramToAdd : paramNames) {
-                            ContextParameterType toAdd = paramMap.get(paramToAdd);
-                            context.getContextParameter().add(EcoreUtil.copy(toAdd));
-                        }
-                    }
-                }
-                // change param order if needed
-                for (ContextType context : contexts) {
-                    EList<ContextParameterType> params = context.getContextParameter();
-                    List<ContextParameterType> copyOfParam = new ArrayList<ContextParameterType>(params);
-                    for (int i = 0; i < copyOfParam.size(); i++) {
-                        ContextParameterType param = copyOfParam.get(i);
-                        int indexOf = paramNameList.indexOf(param.getName());
-                        if (i != indexOf) {
-                            contextChanged = true;
-                            params.remove(param);
-                            params.add(indexOf, param);
-                        }
-                    }
-
-                }
-
-                // make sure params in diffrent groups have the same repositoryid,type,comment as default group
-                for (ContextType context : contexts) {
-                    EList<ContextParameterType> params = context.getContextParameter();
-                    for (ContextParameterType param : params) {
-                        ContextParameterType paramDefault = paramMap.get(param.getName());
-                        if (!paramDefault.getType().equals(param.getType())) {
-                            contextChanged = true;
-                            param.setType(paramDefault.getType());
-                        }
-                        if (paramDefault.getComment() == null && param.getComment() != null
-                                || (paramDefault.getComment() != null && !paramDefault.getComment().equals(param.getComment()))) {
-                            contextChanged = true;
-                            param.setComment(paramDefault.getComment());
-                        }
-                        if (paramDefault.getRepositoryContextId() == null
-                                && param.getRepositoryContextId() != null
-                                || (paramDefault.getRepositoryContextId() != null && !paramDefault.getRepositoryContextId()
-                                        .equals(param.getRepositoryContextId()))) {
-                            contextChanged = true;
-                            param.setRepositoryContextId(paramDefault.getRepositoryContextId());
-                        }
-                    }
-                }
-
             }
-            if (contextChanged) {
-                ProxyRepositoryFactory.getInstance().save(item, true);
-                return ExecutionResult.SUCCESS_NO_ALERT;
+            try {
+                if (hasNull) {
+                    ProxyRepositoryFactory.getInstance().save(item, true);
+                    return ExecutionResult.SUCCESS_NO_ALERT;
+                }
+                if (!isSame) {
+                    for (int x = 1; x < contexts.size(); x++) {
+                        List<ContextParameterType> contextParams = contexts.get(x).getContextParameter();
+                        for (int y = 0; y < contextParams.size(); y++) {
+                            ContextParameterType param = contextParams.get(y);
+                            String comment = param.getComment();
+                            if (param.getRepositoryContextId() == null && !firstComments.get(y).equals(comment)) {
+                                if (!firstComments.get(y).equals("NOT_BUILTIN")) { //$NON-NLS-1$
+                                    param.setComment(firstComments.get(y));
+                                }
+                            }
+                        }
+                    }
+                    ProxyRepositoryFactory.getInstance().save(item, true);
+                    return ExecutionResult.SUCCESS_NO_ALERT;
+                }
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+                return ExecutionResult.FAILURE;
             }
-
-        } catch (PersistenceException e) {
-            ExceptionHandler.process(e);
-            return ExecutionResult.FAILURE;
         }
         return ExecutionResult.NOTHING_TO_DO;
-    }
-
-    private Map<String, ContextParameterType> collectDefaultGroupParams(ContextType contextType, List<String> paramNames) {
-        EList<ContextParameterType> params = contextType.getContextParameter();
-        Map<String, ContextParameterType> paramMap = new HashMap<String, ContextParameterType>();
-        for (ContextParameterType param : params) {
-            paramMap.put(param.getName(), param);
-            if (!paramNames.contains(param.getName())) {
-                paramNames.add(param.getName());
-            }
-        }
-        return paramMap;
-
     }
 
     @Override

@@ -166,8 +166,6 @@
                     <ITEM NAME="NONE" VALUE="NONE" />
                     <ITEM NAME="OR" VALUE="OR" />
                     <ITEM NAME="AND" VALUE="AND" />                 
-                    <ITEM NAME="STRICTAND" VALUE="STRICTAND" />
-                    <ITEM NAME="EXACTLY" VALUE="EXACTLY" />
                     <ITEM NAME="NOT" VALUE="NOT" />
                 </ITEMS>
             </ITEM>

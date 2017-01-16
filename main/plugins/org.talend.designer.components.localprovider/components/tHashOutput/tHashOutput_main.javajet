@@ -160,60 +160,69 @@
 %>
 
 <%	
-if (!isLinked) {
-	if (incommingDataConn != null) {
+if(!isLinked){//111
+	//////////////////////////////////////////////////////////////
+	//it doesn't link to another tHashOutput, it is a new HashFile.
+	if(incommingDataConn != null){//222
 		String connectionName = incommingDataConn.getName();
+		
 		IMetadataTable metadataTable = incommingDataConn.getMetadataTable();
 		List<IMetadataColumn> listColumns = metadataTable.getListColumns();		
 %>    
 		<%=connectionName %>Struct oneRow_<%=cid %> = new <%=connectionName %>Struct();
+				
 <%
-        for (IMetadataColumn column : listColumns) {
-            String columnName = column.getLabel();
-			if("id_Dynamic".equals(column.getTalendType())) {
+            for (IMetadataColumn column : listColumns) {
+                String columnName = column.getLabel();
+				if("id_Dynamic".equals(column.getTalendType())) {
 %>
-				oneRow_<%=cid %>.<%=columnName %> = <%=connectionName %>.<%=columnName %>.clone();
+					oneRow_<%=cid %>.<%=columnName %> = <%=connectionName %>.<%=columnName %>.clone();
 <%
-			} else {
+				} else {
 %>
-				oneRow_<%=cid %>.<%=columnName %> = <%=connectionName %>.<%=columnName %>;
+					oneRow_<%=cid %>.<%=columnName %> = <%=connectionName %>.<%=columnName %>;
 <%
-			}
-        }
+				}
+        	}
 %>
-        cache_<%=cid %>.put(oneRow_<%=cid %>);
+		
+        tHashFile_<%=cid %>.put(oneRow_<%=cid %>);
         nb_line_<%=cid %> ++;
 <%	
-	}
-} else {
-	if (incommingDataConn != null && tHashOutput_metadata != null) {
+	}//222
+}else{//111
+	//////////////////////////////////////////////////////////////
+	//it link to another tHashOutput, it works in append model. 
+	if(incommingDataConn != null && tHashOutput_metadata != null){//333
 		String connectionName = incommingDataConn.getName();	
         List<IMetadataColumn> columns = metadata.getListColumns();
         List<IMetadataColumn>  tHashOutputcolumns = tHashOutput_metadata.getListColumns();
-		//fix bug 21630,use method getAdvancedMemoryHashFile to get a exist AdvancedMemoryHashFile
+//fix bug 21630,use method getAdvancedMemoryHashFile to get a exist AdvancedMemoryHashFile
 %>
-		if (cache_<%=cid %> == null) {
-			cache_<%=cid %> = memoryCaches_<%=cid %>.getMemoryCache("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
-			memoryCaches_<%=cid %>.addMemoryCache("tHashFile_<%=jobName %>_" + pid + "_<%=cid %>", cache_<%=cid %>);
+		if(tHashFile_<%=cid %> == null){
+			tHashFile_<%=cid %> = mf_<%=cid %>.getAdvancedMemoryHashFile("tHashFile_<%=jobName %>_" + pid +"_<%=tHashOutputName %>");
+			mf_<%=cid %>.getResourceMap().put("tHashFile_<%=jobName %>_" + pid +"_<%=cid %>", tHashFile_<%=cid %>);
 		}
 		<%=tHashOutput_incommingDataConnName %>Struct oneRow_<%=cid %> = new <%=tHashOutput_incommingDataConnName %>Struct();
 <%      
-		int size = Math.min(columns.size(), tHashOutputcolumns.size());
-		for (int i=0; i<size; i++) {
-			if("id_Dynamic".equals(tHashOutputcolumns.get(i).getTalendType())) {
+    //min
+    int size = Math.min(columns.size(), tHashOutputcolumns.size());
+    for(int i=0; i<size; i++){//444
+		if("id_Dynamic".equals(tHashOutputcolumns.get(i).getTalendType())) {
 %>
-				oneRow_<%=cid %>.<%=tHashOutputcolumns.get(i).getLabel() %> = <%=connectionName %>.<%=columns.get(i).getLabel() %>.clone();
+			oneRow_<%=cid %>.<%=tHashOutputcolumns.get(i).getLabel() %> = <%=connectionName %>.<%=columns.get(i).getLabel() %>.clone();
 <%
-			} else {
+		} else {
 %>
-				oneRow_<%=cid %>.<%=tHashOutputcolumns.get(i).getLabel() %> = <%=connectionName %>.<%=columns.get(i).getLabel() %>;
+			oneRow_<%=cid %>.<%=tHashOutputcolumns.get(i).getLabel() %> = <%=connectionName %>.<%=columns.get(i).getLabel() %>;
 <%
-			}
 		}
+	}//444
 %>
-        cache_<%=cid %>.put(oneRow_<%=cid %>);
+        tHashFile_<%=cid %>.put(oneRow_<%=cid %>);
         nb_line_<%=cid%> ++;	
 <%	
-	}
-}
+  }//333
+
+}//111
 %>

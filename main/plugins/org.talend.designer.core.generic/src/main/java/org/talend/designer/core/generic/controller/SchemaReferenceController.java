@@ -287,7 +287,7 @@ public class SchemaReferenceController extends AbstractSchemaController {
             }
 
             if (metaDialog != null) {
-                metaDialog.setText(Messages.getString("SchemaReferenceController.schemaOf") + node.getLabel()); //$NON-NLS-1$
+                metaDialog.setText(Messages.getString("SchemaReferenceController.schema.title", node.getLabel())); //$NON-NLS-1$
                 metaDialog.setInputReadOnly(inputReadOnly);
                 metaDialog.setOutputReadOnly(outputReadOnly);
 

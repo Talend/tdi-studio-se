@@ -159,46 +159,48 @@
 <%
 //fix bug 21630,add a class MapHashFile,when the AdvancedMemoryHashFile of the linked tHashOutput is null,use method getAdvancedMemoryHashFile to get previous AdvancedMemoryHashFile.
 %>
-org.talend.designer.components.hashfile.common.MemoryCaches memoryCaches_<%=cid %> = org.talend.designer.components.hashfile.common.MemoryCaches.getInstance();
+org.talend.designer.components.hashfile.common.MapHashFile mf_<%=cid %>=org.talend.designer.components.hashfile.common.MapHashFile.getMapHashFile();
 <%	
-if (!isLinked) {
+if(!isLinked){//111
+	//////////////////////////////////////////////////////////////
+	//it doesn't link to another tHashOutput, it is a new HashFile.
+	
 	boolean isAppend = "true".equals(ElementParameterParser.getValue(node, "__APPEND__"));
-	if (incommingDataConn != null) {
+	
+	if(incommingDataConn != null){//222
 		String connectionName = incommingDataConn.getName();
 %>    
-		org.talend.designer.components.hashfile.common.Cache<<%=connectionName %>Struct> cache_<%=cid %> = null;
-		String hashKey_<%=cid %> = "tHashFile_<%=jobName %>_" + pid + "_<%=cid %>";
+		org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName %>Struct> tHashFile_<%=cid %> = null;
+		String hashKey_<%=cid%> = "tHashFile_<%=jobName%>_" + pid + "_<%=cid%>";
 <%
-		// It is used when Iterator exists in the same job
 		if (isAppend) {
 %>
-			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid %>)) {
-				// if first iteration
-			    if (memoryCaches_<%=cid %>.getMemoryCache(hashKey_<%=cid %>) == null) {
-					cache_<%=cid %> = org.talend.designer.components.hashfile.memory.MemoryCacheFactory.createMemoryCache("<%=matchingMode %>");
-	      		    memoryCaches_<%=cid %>.addMemoryCache(hashKey_<%=cid %>, cache_<%=cid %>);
-				// if not first iteration
+			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid%>)){
+			    if(mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>) == null){
+	      		    mf_<%=cid%>.getResourceMap().put(hashKey_<%=cid%>, new org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName%>Struct>(org.talend.designer.components.hashfile.common.MATCHING_MODE.<%=matchingMode%>));
+	      		    tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
 			    }else{
-			    	cache_<%=cid %> = memoryCaches_<%=cid %>.getMemoryCache(hashKey_<%=cid %>);
+			    	tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
 			    }
 			}
 <%
 		} else {
 %>
-			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid %>)) {
-				cache_<%=cid %> = org.talend.designer.components.hashfile.memory.MemoryCacheFactory.createMemoryCache(<%=matchingMode %>);
-				memoryCaches_<%=cid %>.addMemoryCache(hashKey_<%=cid %>, keepCache_<%=cid %>);
+			synchronized(org.talend.designer.components.hashfile.common.MapHashFile.resourceLockMap.get(hashKey_<%=cid%>)){
+				mf_<%=cid%>.getResourceMap().put(hashKey_<%=cid%>, new org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=connectionName%>Struct>(org.talend.designer.components.hashfile.common.MATCHING_MODE.<%=matchingMode%>));
+				tHashFile_<%=cid%> = mf_<%=cid%>.getResourceMap().get(hashKey_<%=cid%>);
 			}
 <%
 		}
-	}
-} else {
-	// tHashOutput component is linked to another tHashOutput, so it works in append model.
+	}//222
+}else{//111
+	//////////////////////////////////////////////////////////////
+	//it link to another tHashOutput, it works in append model.
 %>
-	org.talend.designer.components.hashfile.common.Cache<<%=tHashOutput_incommingDataConnName %>Struct> cache_<%=cid %> = memoryCaches_<%=cid %>.getMemoryCache("tHashFile_<%=jobName %>_" + pid + "_<%=tHashOutputName %>");
-	// Associate linked key with the same cache object
-	memoryCaches_<%=cid %>.addMemoryCache("tHashFile_<%=jobName %>_" + pid + "_<%=cid %>", cache_<%=cid %>);
+		org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile<<%=tHashOutput_incommingDataConnName %>Struct> tHashFile_<%=cid %> = null; 
+		//use this map to keep the present key and the previous key of AdvancedMemoryHashFile
+		mf_<%=cid %>.getKeyMap().put("tHashFile_<%=jobName %>_" +pid + "_<%=cid %>", "tHashFile_<%=jobName %>_" + pid + "_<%=tHashOutputName %>");
 <%
-}
+}//111
 %>
-    int nb_line_<%=cid %> = 0;
+        int nb_line_<%=cid%> = 0;

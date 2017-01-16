@@ -89,6 +89,22 @@ public class JobErrorsChecker {
                 // Property property = process.getProperty();
                 Problems.addJobRoutineFile(sourceFile, ProblemType.JOB, item, true);
             }
+            if (!CommonsPlugin.isHeadless()) {
+                List<IRepositoryViewObject> routinesObjects = proxyRepositoryFactory.getAll(ERepositoryObjectType.ROUTINES, false);
+                Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
+                        LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
+                        LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+                if (routinesObjects != null) {
+                    for (IRepositoryViewObject obj : routinesObjects) {
+                        Property property = obj.getProperty();
+                        if (dependentRoutines.contains(property.getLabel())) {
+                            Item routinesitem = property.getItem();
+                            IFile routineFile = synchronizer.getFile(routinesitem);
+                            Problems.addJobRoutineFile(routineFile, ProblemType.ROUTINE, routinesitem, true);
+                        }
+                    }
+                }
+            }
             Problems.refreshProblemTreeView();
 
             // collect error

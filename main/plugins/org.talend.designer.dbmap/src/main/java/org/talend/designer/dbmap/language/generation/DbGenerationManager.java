@@ -51,9 +51,9 @@ import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public abstract class DbGenerationManager {
 
@@ -73,7 +73,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont GenerationManager constructor comment.
-     * 
+     *
      * @param language2
      */
     public DbGenerationManager(IDbLanguage language) {
@@ -83,7 +83,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "setInputTables".
-     * 
+     *
      * @param inputTables
      */
     public void setInputTables(List<ExternalDbMapTable> inputTables) {
@@ -96,7 +96,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "setInputTables".
-     * 
+     *
      * @param varsTables
      */
     public void setVarsTables(List<ExternalDbMapTable> varsTables) {
@@ -150,7 +150,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "ckeckConstraintsAreEmpty".
-     * 
+     *
      * @param ExternalDbMapTable
      * @return
      */
@@ -174,7 +174,7 @@ public abstract class DbGenerationManager {
 
     /**
      * Getter for language.
-     * 
+     *
      * @return the language
      */
     public IDbLanguage getLanguage() {
@@ -187,7 +187,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "removeUnmatchingEntriesWithColumnsOfMetadataTable".
-     * 
+     *
      * @param outputTable
      * @param metadataTable
      */
@@ -225,9 +225,9 @@ public abstract class DbGenerationManager {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "buildSqlSelect".
-     * 
+     *
      * @param component
      * @param outputTableName
      * @return
@@ -241,9 +241,9 @@ public abstract class DbGenerationManager {
     }
 
     /**
-     * 
+     *
      * ggu Comment method "buildSqlSelect".
-     * 
+     *
      * @param component
      * @param outputTableName
      * @param tabSpaceString
@@ -581,7 +581,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "buildConditions".
-     * 
+     *
      * @param sb
      * @param inputTable
      * @param writeForJoin TODO
@@ -609,7 +609,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "buildCondition".
-     * 
+     *
      * @param sbWhere
      * @param table
      * @param isFirstClause
@@ -643,7 +643,7 @@ public abstract class DbGenerationManager {
             if (table.getAlias() == null) {
                 tableName = getHandledTableName(component, table.getName());
             } else {
-                tableName = getHandledField(table.getName());
+                tableName = getHandledField(table.getAlias());
             }
             String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
             sbWhere.append(DbMapSqlConstants.SPACE);
@@ -688,7 +688,7 @@ public abstract class DbGenerationManager {
 
     /**
      * DOC amaumont Comment method "buildFromTableDeclaration".
-     * 
+     *
      * @param sb
      * @param inputTable
      * @param commaCouldBeAdded
@@ -876,8 +876,8 @@ public abstract class DbGenerationManager {
                     Entry<String, String> entry = ite.next();
                     String columnValue = entry.getKey();
                     String tableValue = entry.getValue();
-                    
-                    String tempTable = tableValue;                    
+
+                    String tableNameValue = tableValue;
                     // find original table name if tableValue is alias
                     String originaltableName = tableValue;
                     ExternalDbMapData externalData = (ExternalDbMapData) component.getExternalData();
@@ -885,7 +885,7 @@ public abstract class DbGenerationManager {
                     for (ExternalDbMapTable inputTable : inputTables) {
                         if (inputTable.getAlias() != null && inputTable.getAlias().equals(tableValue)) {
                             originaltableName = inputTable.getTableName();
-                            tempTable = originaltableName;
+                            tableNameValue = inputTable.getAlias();
                         }
                     }
 
@@ -944,7 +944,7 @@ public abstract class DbGenerationManager {
                                         continue;
                                     }
                                     if (oriName.trim().startsWith("\\\"") && oriName.trim().endsWith("\\\"")) {
-                                        expression = language.getLocation(tempTable, getHandledField(oriName));
+                                        expression = language.getLocation(tableNameValue, getHandledField(oriName));
                                         continue;
                                     }
                                     oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$

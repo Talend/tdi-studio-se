@@ -20,10 +20,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
@@ -34,11 +33,14 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.ui.editor.IJobEditorHandler;
+import org.talend.core.ui.editor.JobEditorHandlerManager;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.dialog.JobSearchResultProcessor;
 import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 
@@ -81,23 +83,10 @@ public class ComponentSearcher {
                     final RepositoryReviewDialog dialog = new RepositoryReviewDialog(shell, new JobSearchResultProcessor(found),
                             ERepositoryObjectType.PROCESS);
                     if (dialog.open() == RepositoryReviewDialog.OK) {
-                        EditProcess editProcess = new EditProcess() {
-
-                            /*
-                             * (non-Javadoc)
-                             * 
-                             * @see org.talend.repository.ui.actions.AContextualAction#getSelection()
-                             */
-                            @Override
-                            public ISelection getSelection() {
-                                return new StructuredSelection(dialog.getResult());
-                            }
-
-                        };
-                        editProcess.run();
+                        RepositoryNode result = dialog.getResult();
+                        openEditorOperation(result);
                     }
                 }
-
             });
         } else {
             MessageDialog
@@ -107,6 +96,23 @@ public class ComponentSearcher {
         }
     }
 
+    public void openEditorOperation(RepositoryNode repositoryNode) {
+        if (repositoryNode != null && repositoryNode.getObject() != null && repositoryNode.getObject().getProperty() != null
+                && repositoryNode.getObject().getProperty().getItem() != null) {
+            Item item = repositoryNode.getObject().getProperty().getItem();
+            try {
+                ERepositoryObjectType repObjType = ERepositoryObjectType.getItemType(item);
+                IJobEditorHandler editorInputFactory = JobEditorHandlerManager.getInstance()
+                        .extractEditorInputFactory(repObjType.getType());
+                editorInputFactory.openJobEditor(editorInputFactory.createJobEditorInput(item, true));
+            } catch (PartInitException e) {
+                ExceptionHandler.process(e);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+    }
+    
     /**
      * DOC hcw Comment method "search".
      * 
