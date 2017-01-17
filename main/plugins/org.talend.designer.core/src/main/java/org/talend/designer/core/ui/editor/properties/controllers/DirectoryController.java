@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.beans.PropertyChangeEvent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.fieldassist.DecoratedField;
@@ -45,9 +46,9 @@ import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectA
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
- * 
+ *
  * $Id: talend-code-templates.xml 1 2006-09-29 17:06:40 +0000 (星期五, 29 九月 2006) nrousseau $
- * 
+ *
  */
 public class DirectoryController extends AbstractElementPropertySectionController {
 
@@ -55,7 +56,7 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
 
     /**
      * DOC yzhang DirectoryController constructor comment.
-     * 
+     *
      * @param parameterBean
      */
     public DirectoryController(IDynamicProperty dp) {
@@ -65,7 +66,7 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
     @Override
@@ -75,7 +76,7 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
 
     /**
      * DOC yzhang Comment method "setCommand".
-     * 
+     *
      * @param propertyName
      */
     private Command createCommand(SelectionEvent event) {
@@ -84,23 +85,20 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
         String propertyName = (String) btn.getData(PARAMETER_NAME);
         Text dirPathText = (Text) hashCurControls.get(propertyName);
         String directory = dial.open();
-        if (directory != null) {
-            if (!directory.equals("")) { //$NON-NLS-1$
-                if (!elem.getPropertyValue(propertyName).equals(directory)) {
-                    String portableValue = Path.fromOSString(directory).toPortableString();
-                    dirPathText.setText(TalendTextUtils.addQuotes(portableValue));
-                    return new PropertyChangeCommand(elem, propertyName, TalendTextUtils.addQuotes(portableValue));
-
-                }
+        if (StringUtils.isNotBlank(directory) && !directory.equals(elem.getPropertyValue(propertyName))) {
+            String portableValue = Path.fromOSString(directory).toPortableString();
+            if (!isInWizard()) {
+                portableValue = TalendTextUtils.addQuotes(portableValue);
             }
+            dirPathText.setText(portableValue);
+            return new PropertyChangeCommand(elem, propertyName, portableValue);
         }
         return null;
-
     }
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#
      * createControl( org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter, int, int, int,
      * org.eclipse.swt.widgets.Control)
@@ -202,10 +200,9 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
 
     /*
      * (non-Javadoc)
-     * 
-     * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
-     * (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
+     *
+     * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#
+     * estimateRowSize (org.eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
