@@ -303,7 +303,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
         for (int i = 0; i < valuesList.length; i++) {
             if (valuesList[i].equals(value)) {
                 if ("DB_VERSION".equals(repositoryName) || HiveConstant.DISTRIBUTION_PARAMETER.equals(repositoryName)
-                        || HiveConstant.VERSION_PARAMETER.equals(repositoryName) || ImpalaConstant.DISTRIBUTION_PARAMETER.equals(repositoryName)
+                        || HiveConstant.VERSION_PARAMETER.equals(repositoryName)
+                        || ImpalaConstant.DISTRIBUTION_PARAMETER.equals(repositoryName)
                         || ImpalaConstant.VERSION_PARAMETER.equals(repositoryName)) {
                     return valuesList[i].toString();
                 }
@@ -1481,11 +1482,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String driverClass = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_CLASS.getName(),
                 basePropertyParameter);
         String dbVersion = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter);
+        connParameters.setDbVersion(dbVersion);
         if (EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
                 || EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
                 || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
                 || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
-            connParameters.setDbVersion(dbVersion);
             driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
         }
 
@@ -1858,7 +1859,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
             // elem.getElementParameter("CONNECTION_MODE").getValue())) {
             setHiveRelatedParams(elem);
             // }
-        }else if (EDatabaseTypeName.IMPALA.getProduct().equalsIgnoreCase(type)) {
+        } else if (EDatabaseTypeName.IMPALA.getProduct().equalsIgnoreCase(type)) {
             String distroKey = getValueFromRepositoryName(elem, "DISTRIBUTION");
             connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_IMPALA_DISTRIBUTION, distroKey);
 
@@ -1913,7 +1914,7 @@ public abstract class AbstractElementPropertySectionController implements Proper
         Object value = elem.getPropertyValue("USE_EXISTING_CONNECTION"); //$NON-NLS-1$
 
         IElementParameter compList = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_LIST);
-        if (value != null && (value instanceof Boolean) && ((Boolean) value) && compList != null && !isConnectionExist()) {
+        if (value != null && (value instanceof Boolean) && ((Boolean) value) && compList != null) {
             Object compValue = compList.getValue();
 
             if (compValue != null && !compValue.equals("")) { //$NON-NLS-1$
@@ -1971,7 +1972,6 @@ public abstract class AbstractElementPropertySectionController implements Proper
     }
 
     protected boolean isConnectionExist() {
-        setAllConnectionParameters(null, elem);
 
         ISQLBuilderService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ISQLBuilderService.class)) {
