@@ -27,7 +27,9 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.Viewer;
@@ -58,6 +60,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
+import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -198,6 +202,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
         // event
         treeViewer.addCheckStateListener(new ICheckStateListener() {
 
+            @Override
             public void checkStateChanged(CheckStateChangedEvent event) {
                 RepositoryNode node = (RepositoryNode) event.getElement();
                 List<RepositoryObject> objects = new ArrayList<RepositoryObject>();
@@ -216,10 +221,12 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
         });
         treeViewer.addTreeListener(new ITreeViewerListener() {
 
+            @Override
             public void treeCollapsed(TreeExpansionEvent event) {
                 //
             }
 
+            @Override
             public void treeExpanded(TreeExpansionEvent event) {
                 // refreshCheckedTreeView();
             }
@@ -330,8 +337,19 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
                 }
             }
         } else {
-            for (IRepositoryNode child : node.getChildren()) {
-                processItems(objects, child);
+            IContentProvider contentProvider = treeViewer.getContentProvider();
+            if (contentProvider instanceof NavigatorContentServiceContentProvider) {
+                NavigatorContentServiceContentProvider navigatorProvider = (NavigatorContentServiceContentProvider) contentProvider;
+                Object[] children = navigatorProvider.getChildren(node);
+                for (Object child : children) {
+                    if (child instanceof RepositoryNode) {
+                        processItems(objects, (RepositoryNode) child);
+                    }
+                }
+            } else {
+                for (IRepositoryNode child : node.getChildren()) {
+                    processItems(objects, child);
+                }
             }
         }
     }
@@ -398,10 +416,12 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
 
         versionColumn.addControlListener(new ControlListener() {
 
+            @Override
             public void controlMoved(ControlEvent e) {
                 //
             }
 
+            @Override
             public void controlResized(ControlEvent e) {
                 if (!isFixedstatus()) {
                     refreshTableItems();
@@ -741,8 +761,16 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
                     // TODO Auto-generated catch block
                 }
                 object.getProperty().setOldStatusCode(statusHelper.getStatusCode(object.getStatusCode()));
-                ERepositoryObjectType itemType = object.getRepositoryObjectType();
-                tableItem.setImage(getItemsImage(CoreImageProvider.getIcon(itemType)));
+                Image itemsImage = null;
+                IBaseLabelProvider labelProvider = treeViewer.getLabelProvider();
+                if (labelProvider instanceof NavigatorDecoratingLabelProvider) {
+                    NavigatorDecoratingLabelProvider navigatorProvider = (NavigatorDecoratingLabelProvider) labelProvider;
+                    itemsImage = navigatorProvider.getImage(object.getRepositoryNode());
+                } else {
+                    ERepositoryObjectType itemType = object.getRepositoryObjectType();
+                    itemsImage = getItemsImage(CoreImageProvider.getIcon(itemType));
+                }
+                tableItem.setImage(itemsImage);
                 tableItem.setText(object.getLabel());
                 // old version
                 tableItem.setText(1, statusHelper.getStatusLabel(object.getStatusCode()));
@@ -936,6 +964,7 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
     private void updateItemsVersion() {
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
+            @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 monitor.beginTask("", getModifiedVersionItems().size() * 100); //$NON-NLS-1$
                 Set<ERepositoryObjectType> types = new HashSet<ERepositoryObjectType>();

@@ -31,7 +31,9 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.ITreeViewerListener;
 import org.eclipse.jface.viewers.TreeExpansionEvent;
 import org.eclipse.jface.viewers.Viewer;
@@ -60,6 +62,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
+import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
@@ -352,8 +356,19 @@ public class VersionManagementPage extends ProjectSettingPage {
                 }
             }
         } else {
-            for (IRepositoryNode child : node.getChildren()) {
-                processItems(objects, (RepositoryNode) child);
+            IContentProvider contentProvider = treeViewer.getContentProvider();
+            if (contentProvider instanceof NavigatorContentServiceContentProvider) {
+                NavigatorContentServiceContentProvider navigatorProvider = (NavigatorContentServiceContentProvider) contentProvider;
+                Object[] children = navigatorProvider.getChildren(node);
+                for (Object child : children) {
+                    if (child instanceof RepositoryNode) {
+                        processItems(objects, (RepositoryNode) child);
+                    }
+                }
+            } else {
+                for (IRepositoryNode child : node.getChildren()) {
+                    processItems(objects, (RepositoryNode) child);
+                }
             }
         }
     }
@@ -867,9 +882,16 @@ public class VersionManagementPage extends ProjectSettingPage {
             final TableItem tableItem = new TableItem(itemTable, SWT.NONE);
             tableItem.setData(object);
             Item item = object.getItem();
-            ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
-
-            tableItem.setImage(getItemsImage(CoreImageProvider.getIcon(itemType)));
+            IBaseLabelProvider labelProvider = treeViewer.getLabelProvider();
+            Image itemsImage = null;
+            if (labelProvider instanceof NavigatorDecoratingLabelProvider) {
+                NavigatorDecoratingLabelProvider navigatorProvider = (NavigatorDecoratingLabelProvider) labelProvider;
+                itemsImage = navigatorProvider.getImage(object.getRepositoryNode());
+            } else {
+                ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
+                itemsImage = getItemsImage(CoreImageProvider.getIcon(itemType));
+            }
+            tableItem.setImage(itemsImage);
             tableItem.setText(item.getProperty().getLabel());
             // old version
             tableItem.setText(1, object.getOldVersion());
