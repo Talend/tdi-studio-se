@@ -15,7 +15,7 @@ String cid = node.getUniqueName();
 String needAuth = ElementParameterParser.getValue(node, "__NEED_AUTH__");
 String authUsername = ElementParameterParser.getValue(node, "__AUTH_USERNAME__");
 String authPassword = ElementParameterParser.getValue(node, "__AUTH_PASSWORD__");
-String message = ElementParameterParser.getValue(node, "__MESSAGE__");
+String message = org.talend.core.model.utils.NodeUtil.replaceLineSeparatorInMEMO(ElementParameterParser.getValue(node, "__MESSAGE__"),"(\r\n|\r|\n)","\\\\n");
 String importance = ElementParameterParser.getValue(node, "__IMPORTANCE__");
 String priority = "Normal".equals(importance) ? "3" : (("High").equals(importance) ? "1" : "5");
 boolean ifSSL = "true".equals(ElementParameterParser.getValue(node, "__SSL__"));
@@ -43,39 +43,6 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 	
 	// component id
 	to = to.replace(";",",");
-
-    //Replace the line separator in message.
-	if (message == null || message.trim().length() == 0) {
-	     return message;
-	}
-	String result = "";
-	int leftQuotes = message.indexOf("\"");
-	int rightQuotes = message.indexOf("\"", leftQuotes + 1);
-	int fakeRightQuotes = message.indexOf("\\\"", leftQuotes + 1);
-	while (rightQuotes == fakeRightQuotes + 1) {
-	      rightQuotes = message.indexOf("\"", rightQuotes + 1);
-	      fakeRightQuotes = message.indexOf("\\\"", fakeRightQuotes + 1);
-	      }
-	int leftPrev = 0;
-	while (leftQuotes >= 0 && rightQuotes > leftQuotes) {
-	      if (leftQuotes > leftPrev) {
-	             result += message.substring(leftPrev, leftQuotes);
-	      }
-	      if (leftQuotes < rightQuotes) {
-	            result += message.substring(leftQuotes, rightQuotes + 1).replaceAll("(\r\n|\r|\n)","\\\\n");
-	      }
-
-	      leftQuotes = message.indexOf("\"", rightQuotes + 1);
-	      leftPrev = rightQuotes + 1;
-	      rightQuotes = message.indexOf("\"", leftQuotes + 1);
-	      fakeRightQuotes = message.indexOf("\\\"", leftQuotes + 1);
-	 while (rightQuotes == fakeRightQuotes + 1) {
-	      rightQuotes = message.indexOf("\"", rightQuotes + 1);
-	      fakeRightQuotes = message.indexOf("\\\"", fakeRightQuotes + 1);
-	    }
-	}
-	result += message.substring(leftPrev);
-    message = result;
 
 	//in order to be compatible with TOS 2.4.1, @see:issue:6282
 	if(cc == null || cc.trim().length()==0){
