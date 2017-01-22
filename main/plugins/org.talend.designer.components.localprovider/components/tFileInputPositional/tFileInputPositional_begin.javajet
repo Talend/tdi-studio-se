@@ -600,8 +600,17 @@
 			%>
             Object filename_<%=cid %> = <%=filename %>;
             java.io.BufferedReader in_<%=cid %> = null;
+            <%
+            if(!useByte){
+            %>
             org.talend.fileprocess.delimited.RowParser reader_<%=cid %> = null; 
+            <%
+            }else{
+            %>
             org.talend.fileprocess.delimited.RowParserByByte byteReader_<%=cid %> = null; 
+            <%
+            }
+            %>
 
 			<%log4jFileUtil.startRetriveDataInfo();%>
 
