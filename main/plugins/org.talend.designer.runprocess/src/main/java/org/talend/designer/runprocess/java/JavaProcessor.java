@@ -1197,14 +1197,48 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // for -cp libs str
         final String neededModulesJarStr = getNeededModulesJarStr();
         String libsStr = basePathClasspath + classPathSeparator + neededModulesJarStr.toString();
-        if (isExportConfig() || isRunAsExport()) {
+        boolean runAsExport = isExportConfig() || isRunAsExport();
+        boolean isForTRunJobGenerate = false;
+        JobInfo currentBuildJobInfo = LastGenerationInfo.getInstance().getCurrentBuildJob();
+        if (!currentBuildJobInfo.getJobName().equals(process.getName())) {
+            for (JobInfo subJobInfo : currentBuildJobInfo.getSubJobInfos()) {
+                if (subJobInfo.getJobName().equals(process.getName())) {
+                    isForTRunJobGenerate = true;
+                    break;
+                }
+            }
+        }
+        if (isForTRunJobGenerate) {
+            // for generate independent tRunjob code
             libsStr += classPathSeparator + getExportJarsStr();
+            if (!runAsExport) {
+                libsStr += classPathSeparator + getOutputPath();
+            }
+        } else {
+            boolean isMainJob = LastGenerationInfo.getInstance().isCurrentMainJob();
+            boolean hasIndependentSubJobs = LastGenerationInfo.getInstance().hasIndependentSubJobs();
+            boolean isIndependentSubJob = LastGenerationInfo.getInstance().getCurrentBuildJob().isIndependentOrDynamic();
+            if (runAsExport || (!runAsExport && ((isMainJob && hasIndependentSubJobs) || (!isMainJob && isIndependentSubJob)))) {
+                libsStr += classPathSeparator + getExportJarsStr();
+            } 
+            if (!runAsExport) {
+                // for independent sub jobs,context files in output path are still needed.
+                libsStr += classPathSeparator + getOutputPath();
+            }
         }
         // no classPathSeparator in the end.
         if (libsStr.lastIndexOf(classPathSeparator) != libsStr.length() - 1) {
             libsStr += classPathSeparator;
         }
+        System.out.println(">>>>>>>>>" + libsStr);
         return libsStr;
+    }
+
+    protected String getOutputPath() {
+        ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
+        IFolder classesFolder = tProcessJvaProject.getOutputFolder();
+        String outputPath = classesFolder.getLocation().toPortableString();
+        return outputPath;
     }
 
     protected String getBasePathClasspath() throws ProcessorException {
@@ -1212,10 +1246,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         final String rootWorkingDir = getRootWorkingDir(false);
 
         StringBuffer basePath = new StringBuffer(50);
+        // current path.
+        basePath.append('.');
         if (isExportConfig() || isRunAsExport()) {
-            // current path.
-            basePath.append('.');
-
             if (rootWorkingDir.length() > 0) {
                 basePath.append(classPathSeparator);
                 // $ROOT_PATH
@@ -1262,12 +1295,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 codeLocation = codeLocation.replace(ProcessorUtilities.TEMP_JAVA_CLASSPATH_SEPARATOR, classPathSeparator);
                 basePath.append(codeLocation);
             }
-        } else {
-            ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
-            IFolder classesFolder = tProcessJvaProject.getOutputFolder();
-            String outputPath = classesFolder.getLocation().toPortableString();
-            outputPath += classPathSeparator + '.'; // add current path
-            basePath.append(outputPath);
         }
 
         return basePath.toString();

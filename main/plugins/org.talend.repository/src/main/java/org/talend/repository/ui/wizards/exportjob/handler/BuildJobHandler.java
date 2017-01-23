@@ -154,7 +154,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         if (deployVersion != null) {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_DEPLOY_VERSION, deployVersion);
         }
-
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_EXECUTE_TESTS, isOptionChoosed(ExportChoice.executeTests));
         IProcessor processor = ProcessorUtilities.generateCode(processItem, contextName, version, argumentsMap, monitor);
         ProcessorUtilities.resetExportConfig();
         return processor;
@@ -416,7 +416,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         final Map<String, Object> argumentsMap = new HashMap<String, Object>();
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_PACKAGE);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, getProgramArgs());
-
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_BUILD_LAST_STEP, true);
         talendProcessJavaProject.buildModules(monitor, null, argumentsMap);
     }
 }

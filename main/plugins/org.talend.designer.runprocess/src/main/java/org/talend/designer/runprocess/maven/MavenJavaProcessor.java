@@ -37,6 +37,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
@@ -178,7 +179,7 @@ public class MavenJavaProcessor extends JavaProcessor {
 
         Set<JobInfo> infos = getBuildChildrenJobs();
         for (JobInfo jobInfo : infos) {
-            if (jobInfo.isTestContainer()) {
+            if (jobInfo.isTestContainer() || jobInfo.isIndependentOrDynamic()) {
                 continue;
             }
             String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
@@ -303,28 +304,59 @@ public class MavenJavaProcessor extends JavaProcessor {
     public void build(IProgressMonitor monitor) throws Exception {
         final ITalendProcessJavaProject talendJavaProject = getTalendJavaProject();
         // compile with JDT first in order to make the maven packaging work with a JRE.
-        if (TalendMavenConstants.GOAL_PACKAGE.equals(getGoals())) {
-            talendJavaProject.buildModules(monitor, null, null);
-        }
-
         final Map<String, Object> argumentsMap = new HashMap<>();
-        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, getGoals());
+        String goals = getGoals();
+        
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, goals);
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-Dmaven.main.skip=true -P !" //$NON-NLS-1$
                 + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
+        
+        String args = (String) argumentsMap.get(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS);
+        if (TalendMavenConstants.GOAL_PACKAGE.equals(goals)) {
+            args = args + " " + TalendMavenConstants.ARG_SKIPTESTS2; //$NON-NLS-1$
+        } else if (TalendMavenConstants.GOAL_INSTALL.equals(goals)) {
+            Map<String, Object> argMap = LastGenerationInfo.getInstance().getCurrentBuildJob().getArgumentsMap();
+            if (argMap != null) {
+                Boolean executeTest = (Boolean) argumentsMap.get(TalendProcessArgumentConstant.ARG_EXECUTE_TESTS);
+                if (executeTest != null && !executeTest) {
+                    args = args + " " + TalendMavenConstants.ARG_SKIPTESTS; //$NON-NLS-1$
+                }
+            }
+        }
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, args);
+        
         talendJavaProject.buildModules(monitor, null, argumentsMap);
     }
 
     protected String getGoals() {
+        boolean isMainJob = LastGenerationInfo.getInstance().isCurrentMainJob();
+        boolean isIndependentSubJob = LastGenerationInfo.getInstance().getCurrentBuildJob().isIndependentOrDynamic();
+        boolean hasIndependentSubJobs = LastGenerationInfo.getInstance().hasIndependentSubJobs();
         if (isTestJob) {
             return TalendMavenConstants.GOAL_TEST_COMPILE;
         }
-
-        if (!ProcessorUtilities.isExportConfig() && requirePackaging()) {
-            // We return the PACKAGE goal if the main job and/or one of its recursive job is a Big Data job.
-            return TalendMavenConstants.GOAL_PACKAGE;
-        } else {
-            // Else, a simple compilation is needed.
-            return TalendMavenConstants.GOAL_COMPILE;
+        // the current job is main or independent sub job.
+        if (isExportConfig()) {
+            if (isMainJob) {
+                return TalendMavenConstants.GOAL_PACKAGE;
+            }
+            if (isIndependentSubJob) {
+                return TalendMavenConstants.GOAL_INSTALL;
+            }
         }
+        
+        if (!isExportConfig()) {
+            if (isMainJob) {
+                if (hasIndependentSubJobs) {
+                    return TalendMavenConstants.GOAL_PACKAGE;
+                }
+                return TalendMavenConstants.GOAL_COMPILE;
+            }
+            if (isIndependentSubJob) {
+                return TalendMavenConstants.GOAL_PACKAGE;
+            }
+        }
+        
+        return TalendMavenConstants.GOAL_COMPILE;
     }
 }

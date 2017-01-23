@@ -13,8 +13,9 @@
 package org.talend.designer.runprocess;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -65,8 +66,18 @@ public class JobErrorsChecker {
                     .getProxyRepositoryFactory();
             ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
 
-            Set<String> jobIds = new HashSet<String>();
-            for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
+            Map<String, Boolean> jobIds = new HashMap<String, Boolean>();
+            Set<JobInfo> toBeCheckedJobs;
+            if (LastGenerationInfo.getInstance().getCurrentBuildJob() != null) {
+                toBeCheckedJobs = LastGenerationInfo.getInstance().getHaveGeneratedJobs();
+            } else {
+                toBeCheckedJobs = LastGenerationInfo.getInstance().getLastGeneratedjobs();
+            }
+            for (JobInfo jobInfo : toBeCheckedJobs) {
+                boolean checkedNoError = false;
+                if (LastGenerationInfo.getInstance().getNoCompileErrorJobs().contains(jobInfo)) {
+                    checkedNoError = true;               
+                }
                 // TDI-28198:get right process item no matter the job open or close
                 List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
                 for (IRepositoryViewObject repositoryObject2 : allVersions) {
@@ -84,7 +95,7 @@ public class JobErrorsChecker {
                 if (sourceFile == null) {
                     continue;
                 }
-                jobIds.add(item.getProperty().getId());
+                jobIds.put(item.getProperty().getId(), checkedNoError);
 
                 // Property property = process.getProperty();
                 Problems.addJobRoutineFile(sourceFile, ProblemType.JOB, item, true);
@@ -145,7 +156,7 @@ public class JobErrorsChecker {
         if (!selection.isEmpty()) {
             final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService()
                     .createRoutineSynchronizer();
-            Set<String> jobIds = new HashSet<String>();
+            Map<String, Boolean> jobIds = new HashMap<String, Boolean>();
 
             List<RepositoryNode> nodes = selection.toList();
             if (nodes.size() > 1) {
@@ -188,8 +199,15 @@ public class JobErrorsChecker {
                                                 .getLabel()) + '\n' + message);
                             }
                         }
-
-                        jobIds.add(item.getProperty().getId());
+                        boolean checkedNoError = false;
+                        String jobId = item.getProperty().getId();
+                        for (JobInfo jobInfo : LastGenerationInfo.getInstance().getNoCompileErrorJobs()) {
+                            if (jobInfo.getJobId().equals(jobId)) {
+                                checkedNoError = true;
+                                break;
+                            }
+                        }
+                        jobIds.put(jobId, checkedNoError);
 
                         Problems.addRoutineFile(sourceFile, ProblemType.JOB, item.getProperty().getLabel(), item.getProperty()
                                 .getVersion(), true);
@@ -247,100 +265,120 @@ public class JobErrorsChecker {
         return false;
     }
 
-    public static void checkLastGenerationHasCompilationError(boolean updateProblemsView) throws ProcessorException {
+    public static void checkLastGenerationHasCompilationError(boolean updateProblemsView) {
         if (updateProblemsView && CommonsPlugin.isHeadless()) {
             updateProblemsView = false;
         }
-        boolean hasError = false;
-        boolean isJob = true;
-        Item item = null;
-        final IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
-                .getProxyRepositoryFactory();
-        final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
-        Integer line = null;
-        String errorMessage = null;
-        try {
+        JobInfo currentBuildJob = LastGenerationInfo.getInstance().getCurrentBuildJob();
+        if (currentBuildJob != null) {
+            if (currentBuildJob.isTestContainer()) {
+                return;
+            }
+            if (!checkCompilationErrors(currentBuildJob, updateProblemsView)) {
+                LastGenerationInfo.getInstance().getNoCompileErrorJobs().add(currentBuildJob);
+            }
+            checkDependentSubJobError(currentBuildJob.getSubJobInfos(), updateProblemsView);
+        } else {
             for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
                 if (jobInfo.isTestContainer()) {
                     continue;
                 }
-                item = null;
-                List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
-                for (IRepositoryViewObject repositoryObject2 : allVersions) {
-                    Property property2 = repositoryObject2.getProperty();
-                    if (jobInfo.getJobVersion().equals(property2.getVersion())) {
-                        item = property2.getItem();
-                        break;
-                    }
-                }
-                if (item == null) {
-                    continue;
-                }
+                checkCompilationErrors(jobInfo, updateProblemsView);
+            }
+        }
 
-                IFile file = synchronizer.getFile(item);
-                if (file == null) {
-                    return;
+    }
+    
+    private static void checkDependentSubJobError(Set<JobInfo> jobInfos, boolean updateProblemsView) {
+        for (JobInfo subJob : jobInfos) {
+            if (!subJob.isIndependentOrDynamic()) {
+                checkDependentSubJobError(subJob.getSubJobInfos(), updateProblemsView);
+                if (!checkCompilationErrors(subJob, updateProblemsView)) {
+                    LastGenerationInfo.getInstance().getNoCompileErrorJobs().add(subJob);
                 }
-                // check other java files related to the job . example : spark job will generate several java file for
-                // one job
-                final IResource[] members = file.getParent().members();
-                for (IResource member : members) {
-                    if (member instanceof IFile && "java".equals(member.getFileExtension())) {
-                        IMarker[] markers = ((IFile) member).findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
-                        for (IMarker marker : markers) {
-                            Integer lineNr = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
-                            String message = (String) marker.getAttribute(IMarker.MESSAGE);
-                            Integer severity = (Integer) marker.getAttribute(IMarker.SEVERITY);
-                            Integer start = (Integer) marker.getAttribute(IMarker.CHAR_START);
-                            Integer end = (Integer) marker.getAttribute(IMarker.CHAR_END);
-                            if (lineNr != null && message != null && severity != null && start != null && end != null) {
-                                switch (severity) {
-                                case IMarker.SEVERITY_ERROR:
-                                    hasError = true;
-                                    line = lineNr;
-                                    errorMessage = message;
-                                    break;
-                                default:
-                                    break;
-                                }
+            }
+        }
+    }
+
+    private static boolean checkCompilationErrors(JobInfo jobInfo, boolean updateProblemsView) {
+        final IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
+                .getProxyRepositoryFactory();
+        final ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
+        boolean isJob = true;
+        boolean hasError = false;
+        Item item = null;
+        Integer line = null;
+        String errorMessage = null;
+        try {
+            List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
+            for (IRepositoryViewObject repositoryObject2 : allVersions) {
+                Property property2 = repositoryObject2.getProperty();
+                if (jobInfo.getJobVersion().equals(property2.getVersion())) {
+                    item = property2.getItem();
+                    break;
+                }
+            }
+            if (item == null) {
+                return hasError;
+            }
+            
+            IFile file = synchronizer.getFile(item);
+            if (file == null) {
+                return hasError;
+            }
+            // check other java files related to the job . example : spark job will generate several java file for
+            // one job
+            final IResource[] members = file.getParent().members();
+            for (IResource member : members) {
+                if (member instanceof IFile && "java".equals(member.getFileExtension())) {
+                    IMarker[] markers = ((IFile) member).findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
+                    for (IMarker marker : markers) {
+                        Integer lineNr = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
+                        String message = (String) marker.getAttribute(IMarker.MESSAGE);
+                        Integer severity = (Integer) marker.getAttribute(IMarker.SEVERITY);
+                        Integer start = (Integer) marker.getAttribute(IMarker.CHAR_START);
+                        Integer end = (Integer) marker.getAttribute(IMarker.CHAR_END);
+                        if (lineNr != null && message != null && severity != null && start != null && end != null) {
+                            switch (severity) {
+                            case IMarker.SEVERITY_ERROR:
+                                line = lineNr;
+                                errorMessage = message;
+                                break;
+                            default:
+                                break;
                             }
                         }
                     }
                 }
-                if (updateProblemsView) {
-                    Problems.addRoutineFile(file, ProblemType.JOB, item.getProperty().getLabel(),
-                            item.getProperty().getVersion(), true);
-                }
-                if (hasError) {
-                    break;
+            }
+            if (updateProblemsView) {
+                Problems.addRoutineFile(file, ProblemType.JOB, item.getProperty().getLabel(),
+                        item.getProperty().getVersion(), true);
+            }
+            hasError = errorMessage != null;
+            if (hasError && item != null) {
+                if (isJob) {
+                    throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
+                            Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
+                } else {
+                    throw new ProcessorException(Messages.getString("CamelJobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
+                            Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
+                            + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
                 }
             }
 
+            // ignore the routine errors.
+            // if no error for job, check codes.
+            // checkRoutinesCompilationError();
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        if (hasError && item != null) {
-            if (isJob) {
-                throw new ProcessorException(Messages.getString("JobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
-                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
-            } else {
-                throw new ProcessorException(Messages.getString("CamelJobErrorsChecker_compile_errors") + " " + '\n' + //$NON-NLS-1$
-                        Messages.getString("JobErrorsChecker_compile_error_message", item.getProperty().getLabel()) + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage + '\n' //$NON-NLS-1$
-                        + Messages.getString("JobErrorsChecker_compile_error_jvmmessage")); //$NON-NLS-1$
-            }
-        }
-
-        /*
-         * ignore the routine errors.
-         */
-        // if no error for job, check codes.
-        // checkRoutinesCompilationError();
-
+        return hasError;
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {

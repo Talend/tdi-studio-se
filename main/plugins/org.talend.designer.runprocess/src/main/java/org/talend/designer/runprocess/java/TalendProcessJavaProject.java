@@ -13,8 +13,13 @@
 package org.talend.designer.runprocess.java;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -29,14 +34,19 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.m2e.core.MavenPlugin;
+import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -254,11 +264,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
             goals = (String) argumentsMap.get(TalendProcessArgumentConstant.ARG_GOAL);
         }
         if (childrenModules == null) {
-            if (goals != null && goals.trim().length() > 0) {
-                mavenBuildCodeProjectPom(goals, TalendMavenConstants.CURRENT_PATH, argumentsMap, monitor);
-            } else { // JDT build
-                buildWholeCodeProject();
-            }
+            mavenBuildCodeProjectPom(goals, TalendMavenConstants.CURRENT_PATH, argumentsMap, monitor);
         } else if (childrenModules.length > 0) {
             for (String module : childrenModules) {
 
@@ -287,23 +293,128 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         } else {
             IFolder moduleFolder = this.getProject().getFolder(module);
             childModulePomFile = moduleFolder.getFile(TalendMavenConstants.POM_FILE_NAME);
-
         }
         if (childModulePomFile.getLocation().toFile().exists()) { // existed
-            MavenPomCommandLauncher mavenLauncher = null;
-            // by default is compile
-            if (goals == null || goals.trim().length() == 0 || goals.equals(TalendMavenConstants.GOAL_COMPILE)) {
-//                mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, TalendMavenConstants.GOAL_REFRESH);
-//                mavenLauncher.setArgumentsMap(argumentsMap);
-//                mavenLauncher.execute(monitor);
-                buildWholeCodeProject();
+            Boolean lastStep = null;
+            if (argumentsMap != null) {
+                lastStep = (Boolean) argumentsMap.get(TalendProcessArgumentConstant.ARG_BUILD_LAST_STEP);
+            }
+            if (lastStep == null || !lastStep) {
+                if (LastGenerationInfo.getInstance().isCurrentMainJob()
+                        && !LastGenerationInfo.getInstance().hasIndependentSubJobs()) {
+                    buildWholeCodeProject();
+                } else {
+                    buildWholeProjectWithCurrentJobDependencies(argumentsMap, goals, monitor);
+                }
             } else {
-                mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, goals);
+                // called by BuildJobHandler, only do assembly when there're independent sub jobs.
+                MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, goals);
                 mavenLauncher.setArgumentsMap(argumentsMap);
                 mavenLauncher.execute(monitor);
             }
         } else {
             throw new RuntimeException("The pom.xml is not existed. Can't build the job: " + module); //$NON-NLS-1$
+        }
+    }
+
+    private void buildWholeProjectWithCurrentJobDependencies(Map<String, Object> argumentsMap, String goals, IProgressMonitor monitor) throws Exception {
+        IFile childModulePomFile = this.getProject().getFile(TalendMavenConstants.POM_FILE_NAME);
+        final MavenModelManager mavenModelManager = MavenPlugin.getMavenModelManager();
+        List<Dependency> oldProjectDependencies = new ArrayList<Dependency>();
+        List<String> oldModules = new ArrayList<String>();
+        List<String> currentDependentModules = new ArrayList<String>();
+        String currentPomFileName = null;
+        boolean isMainJob = LastGenerationInfo.getInstance().isCurrentMainJob(); 
+        try {
+            Model model = mavenModelManager.readMavenModel(childModulePomFile);
+            
+            JobInfo currentJobInfo = LastGenerationInfo.getInstance().getCurrentBuildJob();
+            List<Dependency> dependencies = model.getDependencies();
+            if (currentJobInfo != null) {
+                currentPomFileName = PomUtil.getPomFileName(currentJobInfo.getJobName(), currentJobInfo.getJobVersion());
+            }
+            // clean all dependencies from pom.xml, then add current pom dependencies
+            if (currentPomFileName != null) {
+                IFile currentModuleFile = getProject().getFile(currentPomFileName);
+                Model currentModule = mavenModelManager.readMavenModel(currentModuleFile);
+                oldProjectDependencies.addAll(dependencies);
+                dependencies.clear();
+                dependencies.addAll(currentModule.getDependencies());
+                
+                // remove all independent modules.
+                List<String> modules = model.getModules();
+                if (modules != null && !modules.isEmpty()) {
+                    currentDependentModules.addAll(modules);
+                    
+                    removeAllIndependentModules(currentJobInfo.getSubJobInfos(), currentDependentModules);
+                    if (!currentDependentModules.isEmpty() && currentDependentModules.size() < modules.size()) {
+                        oldModules.addAll(modules);
+                        modules.clear();
+                        modules.addAll(currentDependentModules);
+                    }
+                }
+                
+                PomUtil.savePom(monitor, model, childModulePomFile);
+            }
+            // non-pom file
+            if (!TalendMavenConstants.POM_FILE_NAME.equals(childModulePomFile.getName())) {
+                return;
+            }
+            if (isMainJob) {
+                Thread.sleep(800);
+            }
+            buildWholeCodeProject();
+            
+            if (TalendMavenConstants.GOAL_COMPILE.equals(goals)) {
+                return;
+            }
+            
+            MavenPomCommandLauncher mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, goals);
+            mavenLauncher.setArgumentsMap(argumentsMap);
+            mavenLauncher.execute(monitor);
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        } finally {
+            try {
+                if(currentPomFileName != null) {
+                    Model model = mavenModelManager.readMavenModel(childModulePomFile);
+                    List<Dependency> dependencies = model.getDependencies();
+                    // because remove the dependencies, so need add back to make sure .Java project without compile errors.
+                    dependencies.clear();
+                    dependencies.addAll(oldProjectDependencies);
+                    
+                    // add all modules back except main job.
+                    if (!isMainJob && !currentDependentModules.isEmpty() && currentDependentModules.size() < oldModules.size()) {
+                        model.getModules().clear();
+                        model.getModules().addAll(oldModules);
+                    }
+                    
+                    PomUtil.savePom(monitor, model, childModulePomFile);
+                }
+            } catch (CoreException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+    }
+
+    void removeAllIndependentModules(Set<JobInfo> jobInfos, List<String> moduleList) {
+        // remove independent job and all sub jobs.
+        for (JobInfo jobInfo : jobInfos) {
+            if (jobInfo.isIndependentOrDynamic()) {
+                removeFromModuleList(jobInfo, moduleList);
+            } else {
+                removeAllIndependentModules(jobInfo.getSubJobInfos(), moduleList);
+            }
+        }
+    }
+    
+    private void removeFromModuleList(JobInfo jobInfo, List<String> moduleList) {
+        String moduleName = PomUtil.getPomFileName(jobInfo.getJobName(), jobInfo.getJobVersion());
+        if (moduleList.contains(moduleName)) {
+            moduleList.remove(moduleName);
+        }
+        for (JobInfo subJobInfo : jobInfo.getSubJobInfos()) {
+            removeFromModuleList(subJobInfo, moduleList);
         }
     }
 
