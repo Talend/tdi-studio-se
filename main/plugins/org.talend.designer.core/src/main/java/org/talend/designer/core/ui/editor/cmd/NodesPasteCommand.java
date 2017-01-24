@@ -59,7 +59,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.TalendEditor;
 import org.talend.designer.core.ui.editor.connections.Connection;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainerPart;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -81,6 +80,10 @@ public class NodesPasteCommand extends Command {
     private IProcess2 process;
 
     private List<NodeContainer> nodeContainerList;
+
+    private List<NodeContainer> jobletNodeToExpand;
+
+    private List<NodePart> selectedExpandedJoblet;
 
     private List<EditPart> oldSelection;
 
@@ -275,13 +278,13 @@ public class NodesPasteCommand extends Command {
      */
     private Point findLocationForNode(final Point location, final Dimension size, int index, int firstIndex,
             NodePart copiedNodePart) {
-        Point newLocation = findLocationForNodeInProcess(location, size);
+        Point newLocation = findLocationForNodeInProcess(location, size, copiedNodePart);
         newLocation = findLocationForNodeInContainerList(newLocation, size, index, firstIndex, copiedNodePart);
         return newLocation;
     }
 
     @SuppressWarnings("unchecked")
-    private Point findLocationForNodeInProcess(final Point location, Dimension size) {
+    private Point findLocationForNodeInProcess(final Point location, Dimension size, NodePart copiedNodePart) {
         Rectangle copiedRect = new Rectangle(location, size);
         Point newLocation = new Point(location);
         for (IGraphicalNode node : (List<IGraphicalNode>) process.getGraphicalNodes()) {
@@ -289,7 +292,7 @@ public class NodesPasteCommand extends Command {
             if (currentRect.intersects(copiedRect)) {
                 newLocation.x += size.width;
                 newLocation.y += size.height;
-                return findLocationForNodeInProcess(newLocation, size);
+                return findLocationForNodeInProcess(newLocation, size, copiedNodePart);
             }
         }
         return newLocation;
@@ -307,7 +310,7 @@ public class NodesPasteCommand extends Command {
                     newLocation.x += size.width;
                     newLocation.y += size.height;
                     // newLocation = computeTheDistance(index, firstIndex, newLocation);
-                    Point tmpPoint = findLocationForNodeInProcess(newLocation, size);
+                    Point tmpPoint = findLocationForNodeInProcess(newLocation, size, copiedNodePart);
                     return findLocationForNodeInContainerList(tmpPoint, size, index, firstIndex, copiedNodePart);
                 }
             }
@@ -356,6 +359,7 @@ public class NodesPasteCommand extends Command {
         int firstIndex = 0;
         int index = 0;
         nodeContainerList = new ArrayList<NodeContainer>();
+        jobletNodeToExpand = new ArrayList<NodeContainer>();
         connections = new ArrayList<IConnection>();
         createdNames = new ArrayList<String>();
         Map<String, String> oldNameTonewNameMap = new HashMap<String, String>();
@@ -590,12 +594,16 @@ public class NodesPasteCommand extends Command {
             if (junitGroup != null) {
                 pastedNodeList = junitGroup.get(((Node) copiedNode).getNodeContainer().getSubjobContainer());
             }
-            NodeContainer nc = ((Process)pastedNode.getProcess()).loadNodeContainer((Node)pastedNode, ((Node) copiedNode).isJunitStart() && isJunitCreate());
+            NodeContainer nc = ((Process) pastedNode.getProcess()).loadNodeContainer((Node) pastedNode,
+                    ((Node) copiedNode).isJunitStart() && isJunitCreate());
             if (pastedNodeList != null) {
                 pastedNodeList.remove(copiedNode);
                 pastedNodeList.add((Node) pastedNode);
             }
             nodeContainerList.add(nc);
+            if (selectedExpandedJoblet.contains(copiedNodePart)) {
+                jobletNodeToExpand.add(nc);
+            }
         }
         ((Process) process).setCopyPasteSubjobMappings(mapping);
         Map<String, String> oldToNewConnVarMap = new HashMap<String, String>();
@@ -877,7 +885,17 @@ public class NodesPasteCommand extends Command {
                             if (subjobChildsPart instanceof NodeContainerPart) {
                                 if (nodeContainerList.contains(((NodeContainerPart) subjobChildsPart).getModel())) {
                                     NodePart nodePart = ((NodeContainerPart) subjobChildsPart).getNodePart();
-                                    if (nodePart != null) {
+                                    if (jobletNodeToExpand.contains(((Node) nodePart.getModel()).getNodeContainer())) {
+                                        PropertyChangeCommand ppc = new PropertyChangeCommand(
+                                                ((Node) nodePart.getModel()).getNodeContainer(),
+                                                EParameterName.COLLAPSED.getName(), false);
+                                        ppc.execute();
+                                        for (EditPart jobletChildren : (List<EditPart>) subjobChildsPart.getChildren()) {
+                                            if (jobletChildren instanceof NodePart) {
+                                                sel.add(jobletChildren);
+                                            }
+                                        }
+                                    } else if (nodePart != null) {
                                         sel.add(nodePart);
                                     }
                                 }
@@ -897,6 +915,7 @@ public class NodesPasteCommand extends Command {
                 }
             }
         }
+
     }
 
     @SuppressWarnings("unchecked")
@@ -980,4 +999,12 @@ public class NodesPasteCommand extends Command {
         this.nodeMap = nodeMap;
     }
 
+    /**
+     * Sets the selectedExpandedJoblet.
+     * 
+     * @param selectedExpandedJoblet the selectedExpandedJoblet to set
+     */
+    public void setSelectedExpandedJoblet(List<NodePart> selectedExpandedJoblet) {
+        this.selectedExpandedJoblet = selectedExpandedJoblet;
+    }
 }

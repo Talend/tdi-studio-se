@@ -141,4 +141,13 @@ public class MultiplePasteCommand extends CompoundCommand {
         nodeCmd.setSelectedSubjobs(subjobParts);
     }
 
+    /**
+     * Sets the selectedExpandedJoblet.
+     * 
+     * @param selectedExpandedJoblet the selectedExpandedJoblet to set
+     */
+    public void setSelectedExpandedJoblet(List<NodePart> selectedExpandedJoblet) {
+        nodeCmd.setSelectedExpandedJoblet(selectedExpandedJoblet);
+    }
+
 }
