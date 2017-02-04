@@ -16,7 +16,6 @@
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 		IMetadataTable metadata = metadatas.get(0);
 		if (metadata!=null) {
-		    boolean useByte = ("true").equals(ElementParameterParser.getValue(node, "__USE_BYTE__"));
 			boolean uncompress = ("true").equals(ElementParameterParser.getValue(node,"__UNCOMPRESS__"));
 %>	nb_line_<%=cid %>++;
 	if ( nb_limit_<%=cid %> > 0 && nb_line_<%=cid %> >= nb_limit_<%=cid %> ){
@@ -28,21 +27,14 @@
 			<%log4jFileUtil.retrievedDataNumberInfo(node);%>
 			
 if(!(filename_<%=cid %> instanceof java.io.InputStream)){
-<%
-if(!useByte){
-%>
+
 	if(reader_<%=cid %>!=null) {
 		reader_<%=cid %>.close();
 	}
-<%
-}else{
-%>
+
 	if(byteReader_<%=cid %>!=null) {
 		byteReader_<%=cid %>.close();
 	}
-<%
-}
-%>
 }
 globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);
 <%
