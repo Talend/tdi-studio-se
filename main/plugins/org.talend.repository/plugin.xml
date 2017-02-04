@@ -2853,9 +2853,9 @@
         <projecttask
               beforeLogon="false"
               breaks="6.4.0"
-              class="org.talend.repository.model.migration.UncheckExceptionOnEileExistMigrationTask"
-              id="org.talend.repository.model.migration.UncheckExceptionOnEileExistMigrationTask"
-              name="UncheckExceptionOnEileExistMigrationTask"
+              class="org.talend.repository.model.migration.UncheckExceptionOnFileExistMigrationTask"
+              id="org.talend.repository.model.migration.UncheckExceptionOnFileExistMigrationTask"
+              name="UncheckExceptionOnFileExistMigrationTask"
               version="6.4.1">
         </projecttask>
    </extension>
