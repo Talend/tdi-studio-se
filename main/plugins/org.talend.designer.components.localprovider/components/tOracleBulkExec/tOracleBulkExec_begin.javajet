@@ -282,14 +282,15 @@ if(columnList != null && columnList.size() > 0) {
             } else if(advancedSeparator && JavaTypesManager.isNumberType(javaType)) {//add for issue
             	String format = "";
                 if(noThousandsSeparator){
-                	format = "999999999999D999999999999";
+                	format = "'999999999999D999999999999'";
                 } else if(column.getPrecision() != null) {
-                	format = "999G999G999G999D";
+                	format = "'999G999G999G999D";
 					for(int i = 0; i < column.getPrecision(); i++) {
 						format = format + "9";
 					}
+					format = format + "'";
                 } else {
-                	format = "999G999G999G999D999999999999";
+                	format = "'999G999G999G999D999999999999'";
                 }
                 columns += (" \\\"TO_NUMBER(ltrim(rtrim(:" + column.getOriginalDbColumnName() + ")), " + format + ", 'NLS_NUMERIC_CHARACTERS=''" + decimalSeparator + thousandsSeparator + "''')\\\"");
             }
