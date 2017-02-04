@@ -2850,6 +2850,14 @@
               name="FixUnevenItemContextParametersMigrationTask"
               version="6.4.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.0"
+              class="org.talend.repository.model.migration.UncheckExceptionOnEileExistMigrationTask"
+              id="org.talend.repository.model.migration.UncheckExceptionOnEileExistMigrationTask"
+              name="UncheckExceptionOnEileExistMigrationTask"
+              version="6.4.1">
+        </projecttask>
    </extension>
 
    <extension

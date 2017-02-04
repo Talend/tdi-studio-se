@@ -53,6 +53,7 @@ String parallelize = ElementParameterParser.getValue(node,"__PARALLELIZE__");
 boolean isParallelize = (parallelize!=null&&!("").equals(parallelize))?("true").equals(parallelize):false;
 IProcess process = node.getProcess();
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+boolean exceptionOnFileExist = !useStream&&!isAppend&&(("true").equals(ElementParameterParser.getValue(node, "__FILE_EXIST_EXCEPTION__")));
 %>
 String fileName_<%=cid%> = "";
 <%
@@ -343,6 +344,17 @@ if(!useStream){
     boolean isFileGenerated_<%=cid%> = true;
     java.io.File file<%=cid%> = new java.io.File(fileName_<%=cid%>);
     globalMap.put("<%=cid%>_FILE_NAME",fileName_<%=cid%>);
+    <%
+    if(exceptionOnFileExist){
+    %>
+    if(file<%=cid%>.exists()){
+            throw new RuntimeException("The particular file \""+file<%=cid%>.getAbsoluteFile() +
+            "\" already exist. If you want to overwrite the file, please check the" + 
+            " \"Throw an error if the file already exist\" option in Advanced settings.");
+        }
+    <%
+    }
+    %>
     <%
     if(isAppend){
     %>
