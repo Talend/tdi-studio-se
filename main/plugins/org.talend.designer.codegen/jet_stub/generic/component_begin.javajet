@@ -114,7 +114,7 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
                 } else if (property instanceof org.talend.daikon.properties.property.EnumProperty) {
                     %>
                     props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                        <%=property.getType()%>.<%=property.getValue()%>);
+                        <%=property.getType().replaceAll("<.*>", "")%>.<%=property.getValue()%>);
                     <%
                 } else if (property instanceof org.talend.daikon.properties.property.SchemaProperty) {
                     %>
