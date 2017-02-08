@@ -25,6 +25,7 @@ String folderID = helper.getStringParam("__FOLDERID__");
 boolean useProxy = helper.getBoolParam("__USE_PROXY__");
 boolean useSSL = helper.getBoolParam("__USE_SSL__");
 boolean isFile = helper.getBoolParam("__FILE_MODE__");
+boolean partnerReporting = helper.getBoolParam("__PARTNER_REPORTING__");
 
 String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 String connectionKey = "\"conn_" + connection+"\"";
@@ -95,8 +96,19 @@ com.google.api.client.http.HttpTransport httpTransport = new com.google.api.clie
 	.build();
 
 	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=accessToken%>);
-	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
-	.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>).build();
+	 	<%
+		if(partnerReporting){
+		%>
+	    <%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+	    .setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" "+jobName+"/"+jobVersion+" (GPN:Talend)").build();
+	    <%
+		}else{
+		%>
+		<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+	    .setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>).build();
+		<%
+		}
+		%>
 }	
 <%
 } else {
