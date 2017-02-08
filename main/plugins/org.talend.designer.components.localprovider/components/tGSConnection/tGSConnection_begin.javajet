@@ -11,6 +11,7 @@
 	
     String cid = node.getUniqueName();
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
+    boolean partnerReporting = "true".equals(ElementParameterParser.getValue(node, "__PARTNER_REPORTING__"));
 
 	%>
 
@@ -21,8 +22,18 @@
    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	   
 	org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = 
-		new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>);
+
+	    <%
+		if(partnerReporting){
+		%>
+	    org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
+	    <%
+		}else{
+		%>
+		org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>);
+		<%
+		}
+		%>
 	service_<%=cid%>.getAccountOwner();
 	globalMap.put("service_" + "<%=cid%>",service_<%=cid%>);
 	

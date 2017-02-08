@@ -56,7 +56,16 @@
     	
 	</PARAMETERS>
 
-	<ADVANCED_PARAMETERS/>
+	<ADVANCED_PARAMETERS>
+	    <PARAMETER
+	      	NAME="PARTNER_REPORTING"
+	      	FIELD="CHECK"
+	      	NUM_ROW="20"
+	      	REQUIRED="false"
+		>
+      	<DEFAULT>true</DEFAULT>
+        </PARAMETER>
+     </ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>
 	    <IMPORTS>
