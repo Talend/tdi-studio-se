@@ -349,7 +349,7 @@ if(!useStream){
     %>
     if(file<%=cid%>.exists()){
             throw new RuntimeException("The particular file \""+file<%=cid%>.getAbsoluteFile() +
-            "\" already exist. If you want to overwrite the file, please check the" + 
+            "\" already exist. If you want to overwrite the file, please uncheck the" + 
             " \"Throw an error if the file already exist\" option in Advanced settings.");
         }
     <%
