@@ -1,1 +1,22 @@
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Row/AbstractDBRowEnd.javajet"%>
+<%
+	String use_NB_Line = ElementParameterParser.getValue(node, "__USE_NB_LINE__");
+	//feature 0010425
+	// TDI-38122 jlolling
+	if ("NB_LINE_INSERTED".equals(use_NB_Line)) {
+		log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Has inserted \"+nb_line_inserted_"+cid + "+\" records.");
+%>
+    globalMap.put("<%=cid %>_NB_LINE_INSERTED",nb_line_inserted_<%=cid%>);
+<%
+	} else if ("NB_LINE_UPDATED".equals(use_NB_Line)) {
+		log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Has updated \"+nb_line_update_"+cid + "+\" records.");
+%>
+    globalMap.put("<%=cid %>_NB_LINE_UPDATED",nb_line_update_<%=cid%>);
+<%
+	} else if ("NB_LINE_DELETED".equals(use_NB_Line)) {
+		log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Has deleted \"+nb_line_deleted_"+cid + "+\" records.");
+%>
+    globalMap.put("<%=cid %>_NB_LINE_DELETED",nb_line_deleted_<%=cid%>);
+<%
+	}//end feature 0010425
+%>

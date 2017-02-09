@@ -417,7 +417,7 @@ String inputConnName = null;
 	  
 			<%if (dieOnError) { %> 
 				if (childJob_<%=cid %>.getErrorCode() != null || ("failure").equals(childJob_<%=cid %>.getStatus())) {
-	        		throw new RuntimeException("Child job running failed");
+	        		throw new RuntimeException("Child job running failed.\n"+childJob_<%=cid %>.getExceptionStackTrace());
 				}
 			<%}
 		}%>

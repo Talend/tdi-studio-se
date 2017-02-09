@@ -108,7 +108,7 @@ public class EditRoutineAction extends AbstractRoutineAction {
         try {
             openRoutineEditor(routineItem, false);
             refresh(repositoryNode);
-            CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
+            // CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
             CorePlugin.getDefault().getRunProcessService().updateLibraries(new HashSet<ModuleNeeded>(), null);
         } catch (PartInitException e) {
             MessageBoxExceptionHandler.process(e);

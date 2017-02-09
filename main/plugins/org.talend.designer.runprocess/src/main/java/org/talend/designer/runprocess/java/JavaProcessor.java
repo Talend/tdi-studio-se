@@ -1666,14 +1666,14 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 if ("tESBConsumer".equals(nodeName) //$NON-NLS-1$
                         || "tRESTClient".equals(nodeName) //$NON-NLS-1$
                         || "tRESTRequest".equals(nodeName) //$NON-NLS-1$
-                        || "cCXFRS".equals(nodeName)) { //$NON-NLS-1$
+                        || "cREST".equals(nodeName)) { //$NON-NLS-1$
                     if (!slEnabled) {
                         slValue = node.getPropertyValue("SERVICE_LOCATOR"); //$NON-NLS-1$
                     }
                     if (!samEnabled) {
                         samValue = node.getPropertyValue("SERVICE_ACTIVITY_MONITOR"); //$NON-NLS-1$
                     }
-                } else if ("cCXF".equals(nodeName)) { //$NON-NLS-1$
+                } else if ("cSOAP".equals(nodeName)) { //$NON-NLS-1$
                     if (!slEnabled) {
                         slValue = node.getPropertyValue("ENABLE_SL"); //$NON-NLS-1$
                     }

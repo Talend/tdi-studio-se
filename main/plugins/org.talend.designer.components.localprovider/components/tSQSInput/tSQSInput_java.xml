@@ -246,6 +246,16 @@
 		>
 			<DEFAULT>true</DEFAULT>
 		</PARAMETER>
+		
+		<PARAMETER 
+			NAME="MAX_NUMBER_MESSAGES" 
+			FIELD="TEXT" 
+			NUM_ROW="105"
+			REQUIRED="true" 
+			SHOW_IF="(READ_ALL_MESSAGE == 'false' OR DELETE_MESSAGE == 'false')"
+		>
+			<DEFAULT>1</DEFAULT>
+		</PARAMETER>
 	
 		<PARAMETER
 			NAME="DIE_ON_ERROR"
@@ -264,7 +274,6 @@
 	      NUM_ROW="10"
 	      NB_LINES="5"
 	      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-	      GROUP="CLIENT_CONFIG"
 	    >
 	    </PARAMETER>
 	
@@ -274,7 +283,6 @@
 	      NUM_ROW="30"
 	      NB_LINES="5"
 	      REQUIRED="true"
-	      GROUP="CLIENT_CONFIG"
 	      SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
 	    >
 	      <ITEMS>

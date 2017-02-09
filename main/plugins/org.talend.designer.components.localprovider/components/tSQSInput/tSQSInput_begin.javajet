@@ -22,6 +22,7 @@ imports="
     
     String visibilityTimeoutValue = ElementParameterParser.getValue(node,"__VISIBILITY_TIMEOUT_VALUE__");
     String waitTime = ElementParameterParser.getValue(node,"__WAIT_TIME__");
+    String maxNumerMessages = ElementParameterParser.getValue(node,"__MAX_NUMBER_MESSAGES__");
 	%>
 	<%@ include file="../tSQSConnection/SQSClient.javajet" %>
 	
@@ -39,7 +40,7 @@ imports="
 		<% if (visibilityTimeout){ %>.withVisibilityTimeout(<%=visibilityTimeoutValue%>)<% } %>
 		<% if (isCustomeWaitTime){ %>.withWaitTimeSeconds(<%=waitTime%>)<% } %>
 		<% if (getAttributes){ %>.withAttributeNames("All")<% } %>
-		<% if (getMessageAttributes){ %>.withMessageAttributeNames("All")<% } %>.withMaxNumberOfMessages(10);
+		<% if (getMessageAttributes){ %>.withMessageAttributeNames("All")<% } %>.withMaxNumberOfMessages(<%=maxNumerMessages%>);
 		
 		List<com.amazonaws.services.sqs.model.Message> <%=cid%>_messages = null;
 		boolean isContinueReceive_<%=cid%> = true;

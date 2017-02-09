@@ -210,7 +210,7 @@ public class ShadowProcess<T extends IProcessDescription> {
             // hywang add for excel 2007
             String versionCheck = "false";
             String afterRemoveQuotesPath = TalendTextUtils.removeQuotes(inPath);
-            if (afterRemoveQuotesPath.endsWith(".xlsx")) {
+            if (afterRemoveQuotesPath.toLowerCase().endsWith(".xlsx")) {
                 versionCheck = "true";
             }
 

@@ -135,7 +135,6 @@
       FIELD="CHECK"
       NUM_ROW="10"
       NB_LINES="5"
-      GROUP="CLIENT_CONFIG"
     >
     </PARAMETER>
     
@@ -146,7 +145,6 @@
       NB_LINES="5"
       REQUIRED="true"
       SHOW_IF="CONFIG_CLIENT=='true'"
-      GROUP="CLIENT_CONFIG"
     >
       <ITEMS>
         <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">

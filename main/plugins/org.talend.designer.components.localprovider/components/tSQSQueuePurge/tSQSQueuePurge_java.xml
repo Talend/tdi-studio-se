@@ -169,7 +169,6 @@
       NUM_ROW="10"
       NB_LINES="5"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-      GROUP="CLIENT_CONFIG"
     >
     </PARAMETER>
 
@@ -178,7 +177,6 @@
       FIELD="TABLE"
       NUM_ROW="30"
       NB_LINES="5"
-      GROUP="CLIENT_CONFIG"
       REQUIRED="true"
       SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
     >

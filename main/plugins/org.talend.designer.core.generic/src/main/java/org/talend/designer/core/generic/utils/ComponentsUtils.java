@@ -135,7 +135,7 @@ public class ComponentsUtils {
         for (ComponentDefinition componentDefinition : componentDefinitions) {
             try {
                 Component currentComponent = new Component(componentDefinition);
-                
+
                 Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
                         .getProviders();
                 boolean hiddenComponent = false;
@@ -145,7 +145,7 @@ public class ComponentsUtils {
                         break;
                     }
                 }
-                
+
                 // if the component is not needed in the current branding,
                 // and that this one IS NOT a specific component for code generation
                 // just don't load it
@@ -181,7 +181,7 @@ public class ComponentsUtils {
      * DOC ycbai Comment method "loadParametersFromForm".
      * <p>
      * Get element parameters of <code>element</code> from <code>form</code>.
-     * 
+     *
      * @param node optional, used if there is a component setting up the properties
      * @param element
      * @param category
@@ -431,7 +431,7 @@ public class ComponentsUtils {
 
     /**
      * DOC nrousseau Comment method "getNameFromConnector".
-     * 
+     *
      * @param connector
      * @return
      */
@@ -446,9 +446,9 @@ public class ComponentsUtils {
     /**
      * DOC ycbai Comment method "getRelatedParameters".
      * <p>
-     * Get all element parameters related to the <code>parameter<code>.
-     * For example the paramters from the form associated with PresentationItem type.
-     * 
+     * Get all element parameters related to the <code>parameter<code>. For example the paramters from the form
+     * associated with PresentationItem type.
+     *
      * @param parameters
      * @return
      */
@@ -524,7 +524,7 @@ public class ComponentsUtils {
 
     /**
      * DOC ycbai Comment method "getFieldType".
-     * 
+     *
      * @param widget
      * @param widgetProperty
      * @param param
@@ -712,7 +712,7 @@ public class ComponentsUtils {
 
     /**
      * Get formal possible values of the <code>param</code>. Every possible value will be {@link NamedThing} type.
-     * 
+     *
      * @param param
      * @return
      */

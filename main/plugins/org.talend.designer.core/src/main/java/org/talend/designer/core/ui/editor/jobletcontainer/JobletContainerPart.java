@@ -228,10 +228,15 @@ public class JobletContainerPart extends NodeContainerPart {
                     int leftChangewidth = nc.getLeftChangeWidth();
                     int upChangeheight = nc.getUpChangeHeight();
                     if (nc.getNode().isJoblet()) {
-                        for (ISubjobContainer sb : proSubList) {
-                            ((SubjobContainer) sb).refreshNodesLocation(isCollapse, nc, rightChangewidth, downChangeheight,
-                                    leftChangewidth, upChangeheight);
+                        if (editPart instanceof SubjobContainerPart) {
+                            ((SubjobContainer) ((SubjobContainerPart) editPart).getModel()).refreshNodesLocation(isCollapse, nc,
+                                    rightChangewidth, downChangeheight, leftChangewidth, upChangeheight);
                         }
+                        // for (ISubjobContainer sb : proSubList) {
+                        // ((SubjobContainer) sb).refreshNodesLocation(isCollapse, nc, rightChangewidth,
+                        // downChangeheight,
+                        // leftChangewidth, upChangeheight);
+                        // }
                     }
 
                     editPart.refresh();

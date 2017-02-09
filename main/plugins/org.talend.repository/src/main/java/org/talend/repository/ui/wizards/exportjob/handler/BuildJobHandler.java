@@ -155,9 +155,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_DEPLOY_VERSION, deployVersion);
         }
 
-        IProcessor processor = ProcessorUtilities.generateCode(processItem, contextName, version, argumentsMap, monitor);
-        ProcessorUtilities.resetExportConfig();
-        return processor;
+        try {
+            IProcessor processor = ProcessorUtilities.generateCode(processItem, contextName, version, argumentsMap, monitor);
+            return processor;
+        } finally {
+            ProcessorUtilities.resetExportConfig();
+        }
     }
 
     @Override

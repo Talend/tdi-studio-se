@@ -943,13 +943,10 @@ public abstract class DbGenerationManager {
                                     if (iconn.getLineStyle() == EConnectionType.TABLE_REF) {
                                         continue;
                                     }
-                                    if (oriName.trim().startsWith("\\\"") && oriName.trim().endsWith("\\\"")) {
-                                        expression = language.getLocation(tableNameValue, getHandledField(oriName));
-                                        continue;
-                                    }
                                     oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                     expression = expression.replaceFirst("\\." + co.getLabel(), //$NON-NLS-1$
                                             "\\." + oriName); //$NON-NLS-1$
+                                    expression = expression.replace("\"", "\\\"");
                                 }
                             }
 
@@ -974,7 +971,7 @@ public abstract class DbGenerationManager {
                     for (IMetadataColumn colu : lColumn) {
                         if (colu.getLabel().equals(entryName)) {
                             String tempName = colu.getOriginalDbColumnName();
-                            if(tempName!=null&&tempName.length()>0){
+                            if (tempName != null && tempName.length() > 0) {
                                 entryName = tempName;
                                 return entryName;
                             }

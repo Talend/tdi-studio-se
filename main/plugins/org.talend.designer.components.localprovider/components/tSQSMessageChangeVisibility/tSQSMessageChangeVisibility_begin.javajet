@@ -1,0 +1,62 @@
+<%@ jet 
+imports="
+	org.talend.core.model.process.INode 
+	org.talend.core.model.process.ElementParameterParser 
+	org.talend.designer.codegen.config.CodeGeneratorArgument
+	java.util.List
+	java.util.Map
+" 
+%>
+	<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	String queue = ElementParameterParser.getValue(node,"__QUEUE__");
+	String recipethandle = ElementParameterParser.getValue(node,"__RECEIPT_HANDLE__");
+	String visibilityTimeoutValue = ElementParameterParser.getValue(node,"__VISIBILITY_TIMEOUT_VALUE__");
+	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+	%>
+	<%@ include file="../tSQSConnection/SQSClient.javajet" %>
+	try{
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Change message visibility recipet handle:" + <%=recipethandle%>);
+		<%
+		}
+		%>
+		conn_<%=cid%>.changeMessageVisibility(new com.amazonaws.services.sqs.model.ChangeMessageVisibilityRequest(<%=queue%>,<%=recipethandle%>,<%=visibilityTimeoutValue%>));
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Change message visibility successfully.");
+		<%
+		}
+		%>
+	}catch(java.lang.Exception e_<%=cid%>){
+		<%
+		if (("true").equals(dieOnError)) {
+		%>
+			throw(e_<%=cid%>);
+		<%
+		} else {
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+			System.err.println(e_<%=cid%>.getMessage());
+		<%
+		}
+		if(!("true").equals(useExistingConn)) {
+		%>
+	}finally{
+		if(conn_<%=cid%> !=null){
+			conn_<%=cid%>.shutdown();
+		}
+		<%
+		}
+		%>
+	}
+	

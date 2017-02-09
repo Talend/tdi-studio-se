@@ -173,6 +173,25 @@
       <DEFAULT>"select * from sys.exa_all_objects"</DEFAULT>
     </PARAMETER>
     
+	<PARAMETER
+      NAME="USE_NB_LINE"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="95"
+    >
+		<ITEMS DEFAULT="NONE">
+			<ITEM NAME="NONE" VALUE="NONE" />
+	        <ITEM NAME="NB_LINE_INSERTED" VALUE="NB_LINE_INSERTED" />
+	        <ITEM NAME="NB_LINE_UPDATED" VALUE="NB_LINE_UPDATED"/>
+	        <ITEM NAME="NB_LINE_DELETED" VALUE="NB_LINE_DELETED"/>
+		</ITEMS>
+    </PARAMETER>
+	<PARAMETER
+		NAME="USE_NB_LINE_NOTE"
+		FIELD="LABEL"
+		NUM_ROW="96">
+		<DEFAULT>* Returns the changed rows of a statement in case of it is not a select.</DEFAULT>
+	</PARAMETER>
+
     <PARAMETER
       NAME="DIE_ON_ERROR"
       FIELD="CHECK"
@@ -283,5 +302,8 @@
 
   <RETURNS>
     <RETURN NAME="QUERY" TYPE="id_String" AVAILABILITY="FLOW"/>
+	<RETURN NAME="NB_LINE_UPDATED"  TYPE="id_Integer" AVAILABILITY="FLOW"/>
+    <RETURN NAME="NB_LINE_INSERTED" TYPE="id_Integer" AVAILABILITY="FLOW"/>
+    <RETURN NAME="NB_LINE_DELETED"  TYPE="id_Integer" AVAILABILITY="FLOW"/>
   </RETURNS>
 </COMPONENT>

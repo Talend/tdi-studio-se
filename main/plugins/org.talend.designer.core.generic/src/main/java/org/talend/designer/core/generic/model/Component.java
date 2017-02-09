@@ -1328,7 +1328,10 @@ public class Component extends AbstractBasicComponent {
         for (NamedThing prop : props.getProperties()) {
             if (prop instanceof Properties) {
                 if (prop instanceof ComponentReferenceProperties) {
-                    ((ComponentReferenceProperties) prop).componentProperties = null;
+                    ComponentReferenceProperties crp = (ComponentReferenceProperties) prop;
+                    crp.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                    crp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                    crp.setReference(null);
                 }
                 CodegenPropInfo childPropInfo = new CodegenPropInfo();
                 if (fieldString.equals("")) {//$NON-NLS-1$

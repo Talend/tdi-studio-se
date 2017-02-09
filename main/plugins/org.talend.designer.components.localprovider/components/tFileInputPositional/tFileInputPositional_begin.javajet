@@ -600,7 +600,10 @@
 			%>
             Object filename_<%=cid %> = <%=filename %>;
             java.io.BufferedReader in_<%=cid %> = null;
+
             org.talend.fileprocess.delimited.RowParser reader_<%=cid %> = null; 
+            org.talend.fileprocess.delimited.RowParserByByte byteReader_<%=cid %> = null; 
+
 
 			<%log4jFileUtil.startRetriveDataInfo();%>
 
@@ -724,37 +727,88 @@
 					}
 					<%
 				}
+				if(useByte){
+						if(uncompress){
+				%>
+                              byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(zis_<%=cid %>, rowLength_<%=cid %>);
+				<%
+                        }else{
+				%>
+				
+                              byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(String.valueOf(filename_<%=cid %>), rowLength_<%=cid %>);
+				<%
+                        }
+                }else{	
 				%>
 				reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, rowLength_<%=cid %>);
 			<%
+				}
 			}else{
 			%>
 				reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, <%=rowSeparator %>, <%=removeEmptyRow %>);
 			<%
 			}
 			%>
-            reader_<%=cid %>.setSafetySwitch(<%=bSafetySwitch%>);
-            reader_<%=cid %>.skipHeaders(<%=header %>);
+				<%
+            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+                %>
+                    byteReader_<%=cid %>.setSafetySwitch(<%=bSafetySwitch%>);
+                    byteReader_<%=cid %>.skipHeaders(<%=header %>);
+                <%
+            	}else{
+            	%>
+            		reader_<%=cid %>.setSafetySwitch(<%=bSafetySwitch%>);
+            		reader_<%=cid %>.skipHeaders(<%=header %>);
+            	<%
+            	}
+            	%>
             if(footer_<%=cid %> > 0){
+            	<%
+            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+            	%>
+            	int available_<%=cid %> = (int)byteReader_<%=cid %>.getAvailableRowCount(footer_<%=cid %>);
+            	byteReader_<%=cid %>.close();
+            	<%
+            	}else{
+            	%>
             	int available_<%=cid %> = (int)reader_<%=cid %>.getAvailableRowCount(footer_<%=cid %>);
             	reader_<%=cid %>.close();
+            	<%
+            	}
+            	%>
             	if(filename_<%=cid %> instanceof java.io.InputStream){
             		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>, <%=encoding %>));
             	}else{
             		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
             	}
 				<%
-				if(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator) ){
+				if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+						if(uncompress){
 				%>
-					reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, rowLength_<%=cid %>);
+                               byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(zis_<%=cid %>, rowLength_<%=cid %>);
 				<%
+                        }else{
+				%>
+                              byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(String.valueOf(filename_<%=cid %>), rowLength_<%=cid %>);
+				<%
+                        }
 				}else{
 				%>
 					reader_<%=cid %> = new org.talend.fileprocess.delimited.RowParser(in_<%=cid %>, <%=rowSeparator %>, <%=removeEmptyRow %>);
 				<%
 				}
 				%>	
-				reader_<%=cid %>.skipHeaders(<%=header %>);
+                <%
+            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator)) ){
+                %>
+                      byteReader_<%=cid %>.skipHeaders(<%=header %>);
+                <%
+            	}else{
+            	%>
+                	reader_<%=cid %>.skipHeaders(<%=header %>);
+            	<%
+            	}
+            	%>
 	
             	if ( nb_limit_<%=cid %> >= 0 ){
             		nb_limit_<%=cid %> = ( nb_limit_<%=cid %> > available_<%=cid %>) ? available_<%=cid %> : nb_limit_<%=cid %>;
@@ -773,9 +827,20 @@
     			System.err.println(e.getMessage());
         	<% } %>
         }
-		
-        while (nb_limit_<%=cid %> != 0 && reader_<%=cid %>!=null && reader_<%=cid %>.readRecord()) {
-        	row_<%=cid %> = reader_<%=cid %>.getRowRecord();
+                <%
+            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+                %>
+                    while (nb_limit_<%=cid %> != 0 && byteReader_<%=cid %>!=null && byteReader_<%=cid %>.readRecord()) {
+        	            row_<%=cid %> = new String(byteReader_<%=cid %>.getBuffer(),<%=encoding %>);
+				<%
+            	}else{
+            	%>
+                    while (nb_limit_<%=cid %> != 0 && reader_<%=cid %>!=null && reader_<%=cid %>.readRecord()) {
+        	            row_<%=cid %> = reader_<%=cid %>.getRowRecord();
+            	<%
+            	}
+            	%>
+
 			<%
 			if(useByte){
 			%>

@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Custom
-Bundle-SymbolicName: org.talend.libraries.custom
+Bundle-SymbolicName: org.talend.libraries.custom;singleton:=true
 Bundle-Version: 6.4.0.qualifier
 Bundle-ClassPath: .,
  lib/talend_file_enhanced_20070724.jar

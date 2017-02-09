@@ -292,11 +292,13 @@ public class ExportItemUtil {
 
         progressMonitor.beginTask("Export Items", items.size() + 1); //$NON-NLS-1$
 
-        TimeMeasure.display = CommonsPlugin.isDebugMode();
-        TimeMeasure.displaySteps = CommonsPlugin.isDebugMode();
-        TimeMeasure.measureActive = CommonsPlugin.isDebugMode();
+        final boolean oldMeasureActived = TimeMeasure.measureActive;
+        if (!oldMeasureActived) { // not active before.
+            TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin.isDebugMode();
+        }
 
-        TimeMeasure.begin("exportItems");
+        final String idTimer = "exportItems"; //$NON-NLS-1$
+        TimeMeasure.begin(idTimer);
         try {
 
             // store item and its corresponding project
@@ -434,7 +436,7 @@ public class ExportItemUtil {
                 }
 
                 iterator.remove();
-                TimeMeasure.step("exportItems", "export item: " + label);
+                TimeMeasure.step(idTimer, "export item: " + label);
                 progressMonitor.worked(1);
             }
 
@@ -455,10 +457,11 @@ public class ExportItemUtil {
         }
 
         finally {
-            TimeMeasure.end("exportItems");
-            TimeMeasure.display = false;
-            TimeMeasure.displaySteps = false;
-            TimeMeasure.measureActive = false;
+            TimeMeasure.end(idTimer);
+            // if active before, not disable and active still.
+            if (!oldMeasureActived) {
+                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
+            }
         }
 
         return toExport;

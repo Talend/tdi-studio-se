@@ -11,11 +11,13 @@ imports="
 
 	class DBRowBeginUtil extends DefaultDBRowUtil{
 	
+		@Override
 		public void beforeComponentProcess(INode node){
 			super.beforeComponentProcess(node);
 			cid = node.getUniqueName();
 	   }
 	    
+		@Override
 		public void setURL(INode node) {
 			String dbSchema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
 		%>
@@ -29,9 +31,31 @@ imports="
 		<%
 		}
 		
-		public String getDirverClassName(INode node){
+		@Override
+		public String getDirverClassName(INode node) {
 			return "com.exasol.jdbc.EXADriver";
 		}
+
+		@Override
+		public void afterConnection(INode node) {
+			// TDI-38122 jlolling
+			String use_NB_Line = ElementParameterParser.getValue(node, "__USE_NB_LINE__");
+			//feature 0010425
+			if ("NB_LINE_INSERTED".equals(use_NB_Line)) {
+			%>
+				int nb_line_inserted_<%=cid%> = 0;
+			<%
+			} else if ("NB_LINE_UPDATED".equals(use_NB_Line)) {
+			%>
+				int nb_line_update_<%=cid%> = 0;
+			<%
+			} else if ("NB_LINE_DELETED".equals(use_NB_Line)) {
+			%>
+				int nb_line_deleted_<%=cid%> = 0;
+			<%
+			}//end feature 0010425
+		}
+
 	}
 	dbRowBeginUtil = new DBRowBeginUtil();
 %>

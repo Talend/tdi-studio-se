@@ -409,7 +409,7 @@ public class ConcurrentAdvancedMemoryLookup<V> extends AdvancedMemoryLookup<V> i
      * @param value
      * @param previousValue
      */
-    private void incrementCountValues(V value, V previousValue) {
+    protected void incrementCountValues(V value, V previousValue) {
         if (countValuesForEachKey) {
             Integer count;
             if (previousValue == null) {

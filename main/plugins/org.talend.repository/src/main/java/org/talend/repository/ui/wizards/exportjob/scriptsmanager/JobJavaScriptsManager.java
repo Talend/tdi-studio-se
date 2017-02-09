@@ -331,10 +331,10 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 if ("tESBConsumer".equals(componentName) //$NON-NLS-1$
                         || "tRESTClient".equals(componentName) //$NON-NLS-1$
                         || "tRESTRequest".equals(componentName) //$NON-NLS-1$
-                        || "cCXFRS".equals(componentName)) { //$NON-NLS-1$
+                        || "cREST".equals(componentName)) { //$NON-NLS-1$
                     slEnabled |= EmfModelUtils.computeCheckElementValue("SERVICE_LOCATOR", nodeType); //$NON-NLS-1$
                     samEnabled |= EmfModelUtils.computeCheckElementValue("SERVICE_ACTIVITY_MONITOR", nodeType); //$NON-NLS-1$
-                } else if ("cCXF".equals(componentName)) { //$NON-NLS-1$
+                } else if ("cSOAP".equals(componentName)) { //$NON-NLS-1$
                     slEnabled |= EmfModelUtils.computeCheckElementValue("ENABLE_SL", nodeType); //$NON-NLS-1$
                     samEnabled |= EmfModelUtils.computeCheckElementValue("ENABLE_SAM", nodeType); //$NON-NLS-1$
                 }

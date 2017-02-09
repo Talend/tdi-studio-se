@@ -29,7 +29,7 @@ import org.talend.commons.utils.data.map.MultiLazyValuesMap;
  */
 public class AdvancedMemoryLookup<V> implements IMemoryLookup<V, V>, Cloneable {
 
-    private MultiLazyValuesMap mapOfCol;
+    protected MultiLazyValuesMap mapOfCol;
 
     private Map<V, V> uniqueHash;
 
@@ -41,7 +41,7 @@ public class AdvancedMemoryLookup<V> implements IMemoryLookup<V, V>, Cloneable {
 
     private Object[] arrayValues;
 
-    private boolean arrayIsDirty = true;
+    protected boolean arrayIsDirty = true;
 
     private List<V> listResult;
 
@@ -235,7 +235,7 @@ public class AdvancedMemoryLookup<V> implements IMemoryLookup<V, V>, Cloneable {
      * @param value
      * @param previousValue
      */
-    private void incrementCountValues(V value, V previousValue) {
+    protected void incrementCountValues(V value, V previousValue) {
         if (countValuesForEachKey) {
             Integer count;
             if (previousValue == null) {

@@ -42,8 +42,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
+import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
 import org.talend.core.model.components.ComponentCategory;
@@ -558,9 +560,23 @@ public class RunProcessContext {
                             processor.setContext(context);
                             ((IEclipseProcessor) processor).setTargetExecutionConfig(getSelectedTargetExecutionConfig());
 
+                            final boolean oldMeasureActived = TimeMeasure.measureActive;
+                            if (!oldMeasureActived) { // not active before.
+                                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin
+                                        .isDebugMode();
+                            }
+                            final String generateCodeId = "Generate job source codes and compile before run"; //$NON-NLS-1$
+                            TimeMeasure.begin(generateCodeId);
+
                             ProcessorUtilities.generateCode(processor, process, context,
                                     getStatisticsPort() != IProcessor.NO_STATISTICS, getTracesPort() != IProcessor.NO_TRACES
                                             && hasConnectionTrace(), true, progressMonitor);
+
+                            TimeMeasure.end(generateCodeId);
+                            // if active before, not disable and active still.
+                            if (!oldMeasureActived) {
+                                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
+                            }
                             final boolean[] refreshUiAndWait = new boolean[1];
                             refreshUiAndWait[0] = true;
                             final Display display = shell.getDisplay();

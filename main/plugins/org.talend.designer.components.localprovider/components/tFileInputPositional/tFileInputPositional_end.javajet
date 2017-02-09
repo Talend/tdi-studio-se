@@ -27,8 +27,13 @@
 			<%log4jFileUtil.retrievedDataNumberInfo(node);%>
 			
 if(!(filename_<%=cid %> instanceof java.io.InputStream)){
+
 	if(reader_<%=cid %>!=null) {
 		reader_<%=cid %>.close();
+	}
+
+	if(byteReader_<%=cid %>!=null) {
+		byteReader_<%=cid %>.close();
 	}
 }
 globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid %>);

@@ -13,10 +13,13 @@
 package org.talend.designer.core.ui.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.gef.EditPart;
+import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -34,6 +37,8 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
+import org.talend.designer.core.ui.editor.AbstractTalendEditor;
+import org.talend.designer.core.ui.editor.PartFactory;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionLabel;
@@ -44,6 +49,7 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainerPart;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainerPart;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.nodes.NodeEditPolicy;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.notes.Note;
 import org.talend.designer.core.ui.editor.notes.NoteEditPart;
@@ -60,13 +66,17 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
  */
 public class GEFDeleteAction extends DeleteAction {
 
+    List objectsToDelete;
+
     public GEFDeleteAction(IWorkbenchPart part) {
         super(part);
     }
 
     @Override
     protected boolean calculateEnabled() {
+        objectsToDelete = new ArrayList();
         List objects = getSelectedObjects();
+        objectsToDelete.addAll(objects);
         if (objects.isEmpty() || (objects.size() == 1 && objects.get(0) instanceof ProcessPart)) {
             return false;
         }
@@ -74,15 +84,18 @@ public class GEFDeleteAction extends DeleteAction {
         if (!(objects.get(0) instanceof EditPart)) {
             return false;
         }
+        AbstractTalendEditor editor = (AbstractTalendEditor) this.getWorkbenchPart();
         AbstractProcessProvider pProvider = AbstractProcessProvider.findProcessProviderFromPID(IComponent.JOBLET_PID);
         if (pProvider != null) {
-            boolean allJobletnode = true;
+            Map<JobletContainerPart, List<NodePart>> jobletMap = new HashMap<JobletContainerPart, List<NodePart>>();
+            boolean nodeInJoblet = false;
             boolean allJunitnode = true;
             boolean hasNode = false;
             int i = 0;
             for (Object o : objects) {
                 if (o instanceof NodePart) {
                     hasNode = true;
+                    NodePart nodePart = (NodePart) o;
                     Node no = (Node) ((NodePart) o).getModel();
                     if (no.getProcess().isReadOnly()) {
                         return false;
@@ -90,14 +103,25 @@ public class GEFDeleteAction extends DeleteAction {
                     if (no.isReadOnly()) {
                         i++;
                     }
-                    if (no.getJobletNode() == null) {
-                        allJobletnode = false;
-                    }
                     if (no.getJunitNode() == null) {
                         allJunitnode = false;
                     }
                     if (!pProvider.canDeleteNode(no)) {
                         return false;
+                    }
+
+                    boolean isCollapsedNode = false;
+                    if (editor.getProcess().getGraphicalNodes().contains(nodePart.getModel())) {
+                        isCollapsedNode = true;
+                    }
+                    if (!isCollapsedNode && nodePart.getParent() instanceof JobletContainerPart) {
+                        JobletContainerPart jobletContainer = (JobletContainerPart) nodePart.getParent();
+                        List<NodePart> jobletNodeParts = jobletMap.get(jobletContainer);
+                        if (jobletNodeParts == null) {
+                            jobletNodeParts = new ArrayList<NodePart>();
+                            jobletMap.put(jobletContainer, jobletNodeParts);
+                        }
+                        jobletNodeParts.add(nodePart);
                     }
                 } else if (o instanceof ConnectionPart) {
                     Connection conn = (Connection) ((ConnectionPart) o).getModel();
@@ -117,7 +141,6 @@ public class GEFDeleteAction extends DeleteAction {
                         i++;
                     }
                 } else if (o instanceof NoteEditPart) {
-                    allJobletnode = false;
                     allJunitnode = false;
                     Note note = (Note) ((NoteEditPart) o).getModel();
                     if (note.isReadOnly()) {
@@ -148,7 +171,33 @@ public class GEFDeleteAction extends DeleteAction {
                     }
                 }
             }
-            if (((allJobletnode || allJunitnode) && hasNode) || i == objects.size()) {
+
+            for (JobletContainerPart jobletContainer : jobletMap.keySet()) {
+                boolean copyJobletNode = true;
+                List<NodePart> list = jobletMap.get(jobletContainer);
+                for (Object obj : jobletContainer.getChildren()) {
+                    if (obj instanceof NodePart) {
+                        if (!list.contains(obj)) {
+                            copyJobletNode = false;
+                            break;
+                        }
+
+                    }
+                }
+                if (copyJobletNode) {
+                    objectsToDelete.removeAll(list);
+                    PartFactory factory = new PartFactory();
+                    NodePart createEditPart = (NodePart) factory.createEditPart(jobletContainer,
+                            ((NodeContainer) jobletContainer.getModel()).getNode());
+                    createEditPart.setParent(jobletContainer);
+                    createEditPart.installEditPolicy(EditPolicy.COMPONENT_ROLE, new NodeEditPolicy());
+                    objectsToDelete.add(createEditPart);
+                } else {
+                    nodeInJoblet = true;
+                }
+            }
+
+            if (((nodeInJoblet || allJunitnode) && hasNode) || i == objects.size()) {
                 return false;
             }
         }
@@ -169,7 +218,7 @@ public class GEFDeleteAction extends DeleteAction {
 
     @Override
     public Command createDeleteCommand(List objects) {
-        objects = filterSameObject(objects);
+        objects = filterSameObject(objectsToDelete);
         if (objects.isEmpty()) {
             return null;
         }
