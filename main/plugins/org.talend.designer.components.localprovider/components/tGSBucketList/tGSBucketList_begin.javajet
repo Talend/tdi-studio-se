@@ -11,7 +11,6 @@ imports="
     String cid = node.getUniqueName();
     
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
-    boolean partnerReporting = "true".equals(ElementParameterParser.getValue(node, "__PARTNER_REPORTING__"));
 
 	String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 	boolean isSpecifyprojectID=("true").equals(ElementParameterParser.getValue(node,"__SPECIFY_PROJECT__"));
@@ -45,17 +44,7 @@ imports="
 	   
 		org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 	
-		<%
-		if(partnerReporting){
-		%>
-		service_<%=cid%> = 	new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
-	    <%
-		}else{
-		%>
-		service_<%=cid%> = 	new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>);
-		<%
-		}
-		%>
+		service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>);
 		service_<%=cid%>.getAccountOwner();
 	<%		
 	}
