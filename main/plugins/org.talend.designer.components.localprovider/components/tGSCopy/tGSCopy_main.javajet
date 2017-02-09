@@ -49,7 +49,7 @@
 		   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	
 			org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
-			service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>);
+			service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
 			service_<%=cid%>.getAccountOwner();
 		<%		
 		}
