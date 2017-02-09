@@ -180,7 +180,6 @@
 	String secretKey = ElementParameterParser.getValue(node, "__GS_SECRET_KEY__");
 	String localFilename = ElementParameterParser.getValue(node, "__GS_LOCAL_FILE__");
 	String bucketName = ElementParameterParser.getValue(node, "__BUCKET_NAME__");
-	boolean partnerReporting = "true".equals(ElementParameterParser.getValue(node, "__PARTNER_REPORTING__"));
 	if(!bulkFileAlreadyExists) {
 	%>
 
@@ -197,17 +196,8 @@
 
 		org.jets3t.service.security.GSCredentials gsCredentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPwd_<%=cid%>);
 		
-	    <%
-		if(partnerReporting){
-		%>
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
-	    <%
-		}else{
-		%>
 		org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>);
-		<%
-		}
-		%>
+
 		java.io.File fileData_<%=cid%> = new java.io.File(<%=localFilename%>);
 		org.jets3t.service.model.GSObject fileObject_<%=cid%> = new org.jets3t.service.model.GSObject(fileData_<%=cid%>);
 		<%
