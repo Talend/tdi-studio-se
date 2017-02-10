@@ -381,7 +381,13 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
             }
             %>
             int nb_line_<%=cid%> = 0;
+            <%
+            if(split){
+            %>
             int splitEvery_<%=cid%> = <%=splitEvery %>;
+            <%
+            }
+            %>
             int splitedFileNo_<%=cid%> = 0;
             int currentRow_<%=cid%> = 0;
 
@@ -729,7 +735,13 @@ if(("false").equals(ElementParameterParser.getValue(node,"__CSV_OPTION__"))) {
             }
 
             int nb_line_<%=cid%> = 0;
+            <%
+            if(split){
+            %>
             int splitEvery_<%=cid%> = <%=splitEvery %>;
+            <%
+            }
+            %>
             int splitedFileNo_<%=cid%> =0;
             int currentRow_<%=cid%> = 0;
 
