@@ -27,7 +27,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.utils.MavenVersionUtils;
+import org.talend.repository.utils.MavenVersionUtils;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
@@ -44,12 +44,6 @@ public class DeploymentComposite extends AbstractTabComposite {
     private Label versionWarningLabel;
 
     private CCombo exportTypeCombo;
-
-    private String groupId;
-
-    private String userVersion;
-
-    private String exportType;
 
     private String defaultVersion;
 
@@ -101,8 +95,7 @@ public class DeploymentComposite extends AbstractTabComposite {
         data.top = new FormAttachment(groupIdText, 0, SWT.CENTER);
         groupIdLabel.setLayoutData(data);
 
-        versionWarningLabel = widgetFactory.createLabel(composite,
-                Messages.getString("DeploymentComposite.versionWarning")); //$NON-NLS-1$
+        versionWarningLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.versionWarning")); //$NON-NLS-1$
         versionWarningLabel.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
         data = new FormData();
         data.left = new FormAttachment(50, 10);
@@ -149,14 +142,15 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void initialize() {
         EMap<?, ?> properties = repositoryObject.getProperty().getAdditionalProperties();
         if (properties != null) {
-            groupId = (String) properties.get(MavenConstants.NAME_GROUP_ID);
+            String groupId = (String) properties.get(MavenConstants.NAME_GROUP_ID);
             if (groupId != null) {
                 groupIdText.setText(groupId);
             } else {
-                String defaultGroupId = "org.talend"; // TODO get from preference store.
+                // TODO get from PublishPlugin.getDefault().getPreferenceStore();
+                String defaultGroupId = "org.example"; // $NON-NLS-1$
                 groupIdText.setText(defaultGroupId);
             }
-            userVersion = (String) properties.get(MavenConstants.NAME_USER_VERSION);
+            String userVersion = (String) properties.get(MavenConstants.NAME_USER_VERSION);
             if (userVersion != null) {
                 boolean isDefaultVersion = userVersion.equals(defaultVersion);
                 versionCheckbox.setSelection(!isDefaultVersion);
@@ -171,7 +165,8 @@ public class DeploymentComposite extends AbstractTabComposite {
             }
             // TODO setup exportType.
             exportTypeCombo.setItems(new String[] { "a", "b", "c" });
-            exportType = (String) properties.get(MavenConstants.NAME_EXPORT_TYPE);
+            exportTypeCombo.setEnabled(false);
+            String exportType = (String) properties.get(MavenConstants.NAME_EXPORT_TYPE);
             if (exportType != null) {
                 exportTypeCombo.select(exportTypeCombo.indexOf(exportType));
             } else {
@@ -214,7 +209,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             public void modifyText(ModifyEvent e) {
                 String version = versionText.getText();
                 if (!StringUtils.isEmpty(version)) {
-                    versionWarningLabel.setVisible(!MavenVersionUtils.isValidMavenVersion(userVersion));
+                    versionWarningLabel.setVisible(!MavenVersionUtils.isValidMavenVersion(version));
                     Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION, version);
                     getCommandStack().execute(cmd);
                 }

@@ -71,7 +71,7 @@ public class ItemVersionObject {
         if (obj instanceof ItemVersionObject) {
             ItemVersionObject tObj = (ItemVersionObject) obj;
             if (tObj.getRepositoryNode().getId().equals(getRepositoryNode().getId())
-                    && tObj.getOldVersion().equals(getOldVersion())) {
+                    && tObj.getItem().getProperty().getVersion().equals(property.getVersion())) {
                 return true;
             }
         }

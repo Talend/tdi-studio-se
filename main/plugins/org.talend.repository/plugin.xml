@@ -3022,6 +3022,12 @@
             id="org.talend.repository.preference.AutoConversionTypesPreferencePage"
             title="%projectSetting.auto-ConversionTypes">
       </page>
+      <page
+            category="projectsetting.Maven"
+            class="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
+            id="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
+            title="%projectSetting.versioning">
+      </page>
    </extension>
    <extension
          id="CreateAutomaticConnectionApplication"
