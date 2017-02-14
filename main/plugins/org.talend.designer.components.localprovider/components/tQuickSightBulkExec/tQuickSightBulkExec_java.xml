@@ -345,6 +345,7 @@
         RAW="true"
         NUM_ROW="20"
         REQUIRED="true"
+        SHOW="false"
         GROUP="MANIFEST"
     >
         <ITEMS DEFAULT="CSV">

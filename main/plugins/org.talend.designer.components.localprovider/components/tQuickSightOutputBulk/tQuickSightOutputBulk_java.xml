@@ -388,9 +388,54 @@
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
+  
+    <!-- tS3Put parameters begin -->
+
+	<PARAMETER
+		NAME="CONFIG_CLIENT"
+		FIELD="CHECK"
+		NUM_ROW="10"
+		NB_LINES="5"
+		SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+	>
+	</PARAMETER>
+
+	<PARAMETER
+		NAME="CLIENT_CONFIGURATION"
+		FIELD="TABLE"
+		NUM_ROW="15"
+		NB_LINES="5"
+		REQUIRED="true"
+		SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
+	>
+       <ITEMS>
+           <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">
+               <ITEMS DEFAULT="CONNECTIONTIMEOUT">
+                   <ITEM NAME="CONNECTIONTIMEOUT" VALUE="ConnectionTimeout"/>
+                   <ITEM NAME="MAXCONNECTIONS" VALUE="MaxConnections"/>
+                   <ITEM NAME="MAXERRORRETRY" VALUE="MaxErrorRetry"/>
+                   <ITEM NAME="PROTOCOL" VALUE="Protocol"/>
+                   <ITEM NAME="PROXYDOMAIN" VALUE="ProxyDomain"/>
+                   <ITEM NAME="PROXYHOST" VALUE="ProxyHost"/>
+                   <ITEM NAME="PROXYPASSWORD" VALUE="ProxyPassword"/>
+                   <ITEM NAME="PROXYPORT" VALUE="ProxyPort"/>
+                   <ITEM NAME="PROXYUSERNAME" VALUE="ProxyUsername"/>
+                   <ITEM NAME="PROXYWORKSTATION" VALUE="ProxyWorkstation"/>
+                   <ITEM NAME="SOCKETTIMEOUT" VALUE="SocketTimeout"/>
+                   <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
+                   <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
+                   <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
+                </ITEMS>
+            </ITEM>
+            <ITEM NAME="VALUE" />
+        </ITEMS>
+    </PARAMETER>
+
+    <!-- tS3Put parameters end -->
+  
     <PARAMETER
         NAME="CHARSET"
-        FIELD="TEXT"
+        FIELD="ENCODING_TYPE"
         NUM_ROW="20"
         REQUIRED="true"
         SHOW="true"
@@ -582,6 +627,17 @@
     >
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
+
+	<PARAMETER
+		NAME="FILE_EXIST_EXCEPTION"
+		FIELD="CHECK"
+		REQUIRED="true"
+		NUM_ROW="90"
+		SHOW_IF="(APPEND == 'false') AND (USESTREAM=='false')"
+	>
+		<DEFAULT>true</DEFAULT>
+	</PARAMETER>
+    
     <PARAMETER
         NAME="SCHEMA_OPT_NUM"
         FIELD="TEXT"
@@ -593,51 +649,6 @@
     </PARAMETER>
 
     <!-- tFileOutputDelimited parameters end -->
-    <!-- tS3Put parameters begin -->
-
-	<PARAMETER
-		NAME="CONFIG_CLIENT"
-		FIELD="CHECK"
-		NUM_ROW="10"
-		NB_LINES="5"
-		SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
-		GROUP="CLIENT_CONFIG"
-	>
-	</PARAMETER>
-
-	<PARAMETER
-		NAME="CLIENT_CONFIGURATION"
-		FIELD="TABLE"
-		NUM_ROW="30"
-		NB_LINES="5"
-		REQUIRED="true"
-		GROUP="CLIENT_CONFIG"
-		SHOW_IF="(CONFIG_CLIENT =='true') AND (USE_EXISTING_CONNECTION == 'false')"
-	>
-        <ITEMS>
-            <ITEM NAME="CLIENT_PARAMETER" FIELD="CLOSED_LIST">
-                <ITEMS DEFAULT="CONNECTIONTIMEOUT">
-                    <ITEM NAME="CONNECTIONTIMEOUT" VALUE="ConnectionTimeout"/>
-                    <ITEM NAME="MAXCONNECTIONS" VALUE="MaxConnections"/>
-                    <ITEM NAME="MAXERRORRETRY" VALUE="MaxErrorRetry"/>
-                    <ITEM NAME="PROTOCOL" VALUE="Protocol"/>
-                    <ITEM NAME="PROXYDOMAIN" VALUE="ProxyDomain"/>
-                    <ITEM NAME="PROXYHOST" VALUE="ProxyHost"/>
-                    <ITEM NAME="PROXYPASSWORD" VALUE="ProxyPassword"/>
-                    <ITEM NAME="PROXYPORT" VALUE="ProxyPort"/>
-                    <ITEM NAME="PROXYUSERNAME" VALUE="ProxyUsername"/>
-                    <ITEM NAME="PROXYWORKSTATION" VALUE="ProxyWorkstation"/>
-                    <ITEM NAME="SOCKETTIMEOUT" VALUE="SocketTimeout"/>
-                    <ITEM NAME="USERAGENT" VALUE="UserAgent"/>
-                    <ITEM NAME="SOCKETRECEIVEBUFFERSIZEHINT" VALUE="SocketReceiveBufferSizeHints"/>
-                    <ITEM NAME="SOCKETSENDBUFFERSIZEHINT" VALUE="SocketSendBufferSizeHints"/>
-              </ITEMS>
-          </ITEM>
-          <ITEM NAME="VALUE" />
-        </ITEMS>
-      </PARAMETER>
-
-      <!-- tS3Put parameters end -->
 
   </ADVANCED_PARAMETERS>
 
@@ -679,6 +690,7 @@
         <TEMPLATE_PARAM SOURCE="self.ROW_MODE"   TARGET="in.ROW_MODE" />
         <TEMPLATE_PARAM SOURCE="self.CHARSET"   TARGET="in.ENCODING" />
         <TEMPLATE_PARAM SOURCE="self.DELETE_EMPTYFILE"   TARGET="in.DELETE_EMPTYFILE" />
+        <TEMPLATE_PARAM SOURCE="self.FILE_EXIST_EXCEPTION"   TARGET="in.FILE_EXIST_EXCEPTION" />
         <TEMPLATE_PARAM SOURCE="self.SCHEMA_OPT_NUM"   TARGET="in.SCHEMA_OPT_NUM" />
         <TEMPLATE_PARAM SOURCE="self.Talend_CSV"   TARGET="in.Talend_CSV" />
         <TEMPLATE_PARAM SOURCE="self.NB_LINE"   TARGET="in.NB_LINE" />
@@ -690,8 +702,22 @@
         <TEMPLATE_PARAM SOURCE="self.DIE_ON_ERROR"   TARGET="out.DIE_ON_ERROR" />
         <TEMPLATE_PARAM SOURCE="self.BUCKET"   TARGET="out.BUCKET" />
         <TEMPLATE_PARAM SOURCE="self.FILE_NAME_DATA"   TARGET="out.KEY" />
-
-
+        <TEMPLATE_PARAM SOURCE="self.ACCESS_KEY"   TARGET="out.ACCESS_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.SECRET_KEY"   TARGET="out.SECRET_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.INHERIT_CREDENTIALS"   TARGET="out.INHERIT_CREDENTIALS" />
+        <TEMPLATE_PARAM SOURCE="self.REGION"   TARGET="out.REGION" />
+        <TEMPLATE_PARAM SOURCE="self.ENCRYPT"   TARGET="out.ENCRYPT" />
+        <TEMPLATE_PARAM SOURCE="self.KEY_TYPE"   TARGET="out.KEY_TYPE" />
+        <TEMPLATE_PARAM SOURCE="self.ALGORITHM_SYMMETRIC_MASTER_KEY"   TARGET="out.ALGORITHM_SYMMETRIC_MASTER_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.ALGORITHM_ASYMMETRIC_MASTER_KEY"   TARGET="out.ALGORITHM_ASYMMETRIC_MASTER_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.KEY_ENCODING"   TARGET="out.ENCODING" />
+        <TEMPLATE_PARAM SOURCE="self.ENCRYPTED_KEY_CMK"   TARGET="out.ENCRYPTED_KEY_CMK" />
+        <TEMPLATE_PARAM SOURCE="self.ENCRYPTED_KEY_BASE64"   TARGET="out.ENCRYPTED_KEY_BASE64" />
+        <TEMPLATE_PARAM SOURCE="self.ENCRYPTED_KEY_X509"   TARGET="out.ENCRYPTED_KEY_X509" />
+        <TEMPLATE_PARAM SOURCE="self.PUBLIC_KEY"   TARGET="out.PUBLIC_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.PRIVATE_KEY"   TARGET="out.PRIVATE_KEY" />
+        <TEMPLATE_PARAM SOURCE="self.CONFIG_CLIENT"   TARGET="out.CONFIG_CLIENT" />
+        <TEMPLATE_PARAM SOURCE="self.CLIENT_CONFIGURATION"   TARGET="out.CLIENT_CONFIGURATION" />
       </TEMPLATES>
     </CODEGENERATION>
     <RETURNS/>
