@@ -48,7 +48,7 @@ public class NameAndLabelsDialog extends Dialog {
     private ElementsSelectionComposite<NamedThing> selectionComposite;
 
     private LabelledText customObjNameText;
-    
+
     boolean isInWizard;
 
     public NameAndLabelsDialog(Shell parentShell, List<NamedThing> nameAndLabels, boolean isInWizard) {
@@ -71,7 +71,7 @@ public class NameAndLabelsDialog extends Dialog {
         comp.setLayoutData(new GridData(GridData.FILL_BOTH));
         comp.setLayout(new GridLayout());
 
-        selectionComposite = new ElementsSelectionComposite<NamedThing>(comp, false) {
+        selectionComposite = new ElementsSelectionComposite<NamedThing>(comp) {
 
             @Override
             protected IBaseLabelProvider getLabelProvider() {
@@ -89,7 +89,7 @@ public class NameAndLabelsDialog extends Dialog {
                     }
                 };
             };
-        };
+        }.setMultipleSelection(false).create();
         selectionComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         selectionComposite.setViewerData(nameAndLabels);
 
@@ -141,7 +141,7 @@ public class NameAndLabelsDialog extends Dialog {
                 if (!isInWizard) {
                     return TalendQuoteUtils.addQuotes(selectedElements.get(0).getName());
                 } else {
-                    return selectedElements.get(0).getName();    
+                    return selectedElements.get(0).getName();
                 }
             }
         } else { // Custom object

@@ -35,7 +35,7 @@ import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 
 /**
- * 
+ *
  * created by ycbai on 2015年10月9日 Detailled comment
  *
  */
@@ -108,7 +108,7 @@ public class NameAndLabelsTreeController extends AbstractElementPropertySectionC
                 return selectedElements;
             }
 
-        };
+        }.setShowToolbar(true).create();
         selectionComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         if (param instanceof GenericElementParameter) {
             selectionComposite.setViewerData(ComponentsUtils.getFormalPossibleValues((GenericElementParameter) param));
