@@ -17,14 +17,24 @@ imports="
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.utils.TalendTextUtils
         org.talend.core.model.utils.NodeUtil
+        org.talend.designer.core.generic.model.Component
+        java.util.ArrayList
+        java.util.HashMap
+        java.util.Map
+        org.talend.components.api.properties.ComponentProperties
+        org.talend.daikon.NamedThing
+        org.talend.daikon.properties.property.Property
+        org.talend.designer.core.generic.constants.IGenericConstants
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
+<%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_process_properties.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 Component component = (Component)node.getComponent();
+ComponentProperties componentProps = node.getComponentProperties();
 ComponentDefinition def = component.getComponentDefinition();
 
 boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
@@ -133,7 +143,11 @@ if(hasInput){
             // not implement WriterWithFeedback, but permits outgoing
             // connections.
 
+			ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component, componentProps);
+            
+			generator.setPropertyValues(true);
             %>
+                                              						
             Object data_<%=cid%> = current_<%=cid%>.createIndexedRecord();
 
             writer_<%=cid%>.write(data_<%=cid%>);
