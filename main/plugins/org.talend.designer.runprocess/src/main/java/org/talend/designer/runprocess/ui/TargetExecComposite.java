@@ -28,12 +28,14 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
 import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
 import org.talend.commons.utils.workbench.extensions.IExtensionPointLimiter;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.IMultiPageTalendEditor;
+import org.talend.designer.runprocess.IESBRunContainerService;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.ui.views.DefaultProcessViewHelper;
@@ -86,6 +88,14 @@ public class TargetExecComposite extends ScrolledComposite implements IDynamicPr
         panel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
 
         jobComposite = this.processViewHelper.getProcessComposite(panel);
+
+        //add ESB runtime container
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
+            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
+                    .getService(IESBRunContainerService.class);
+            runContainerService.addRuntimeServer(this, jobComposite);
+        }
+
         // CSS
         CoreUIPlugin.setCSSClass(this, this.getClass().getSimpleName());
     }
