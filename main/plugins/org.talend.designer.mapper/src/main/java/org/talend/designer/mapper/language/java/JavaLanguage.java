@@ -63,8 +63,8 @@ public class JavaLanguage extends AbstractLanguage {
     /**
      * {0} and {1} must be replaced respectively by the table name and the column name.
      */
-    private static final String SUBST_PATTERN_FOR_REPLACE_LOCATION = PREFIX_TABLE_NAME_REGEXP + "(\\s*){0}(\\s*)" //$NON-NLS-1$
-            + SUFFIX_TABLE_NAME_REGEXP + "(\\s*)" + PREFIX_FIELD_NAME_REGEXP + "(\\s*){1}(\\s*)" + SUFFIX_FIELD_NAME_REGEXP; //$NON-NLS-1$ //$NON-NLS-2$
+    private static final String SUBST_PATTERN_FOR_REPLACE_LOCATION = PREFIX_TABLE_NAME_REGEXP + "(\\s*)\\b{0}\\b(\\s*)" //$NON-NLS-1$
+            + SUFFIX_TABLE_NAME_REGEXP + "(\\s*)" + PREFIX_FIELD_NAME_REGEXP + "(\\s*)\\b{1}\\b(\\s*)" + SUFFIX_FIELD_NAME_REGEXP; //$NON-NLS-1$ //$NON-NLS-2$
 
     /**
      * {0} and {1} must be replaced respectively by the table name and the column name.

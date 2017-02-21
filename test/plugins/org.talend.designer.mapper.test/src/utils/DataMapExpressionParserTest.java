@@ -14,14 +14,10 @@ package utils;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.talend.designer.mapper.language.ILanguage;
-import org.talend.designer.mapper.language.generation.GenerationManagerFactory;
-import org.talend.designer.mapper.language.generation.PerlGenerationManager;
-import org.talend.designer.mapper.language.perl.PerlLanguage;
+import org.talend.designer.mapper.language.java.JavaLanguage;
 import org.talend.designer.mapper.model.tableentry.TableEntryLocation;
 import org.talend.designer.mapper.utils.DataMapExpressionParser;
 
@@ -33,109 +29,229 @@ import org.talend.designer.mapper.utils.DataMapExpressionParser;
  */
 public class DataMapExpressionParserTest {
 
-    /**
-     * Test method for
-     * {@link org.talend.designer.mapper.utils.DataMapExpressionParser#parseTableEntryLocations(java.lang.String)}.
-     */
-    @Test
-    public void testParse() {
-        ILanguage language = new PerlLanguage();
-        DataMapExpressionParser expressionParser = new DataMapExpressionParser(language);
-        PerlGenerationManager gen = (PerlGenerationManager) GenerationManagerFactory.getInstance().getGenerationManager(language);
-        TableEntryLocation[] stringCouples = expressionParser.parseTableEntryLocations("abc * " //$NON-NLS-1$
-                + gen.getTableColumnVariable("table1", "col1") + " + " + gen.getTableColumnVariable("ta_ble2", "co_l2") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-                + " - " + gen.getTableColumnVariable("$table1", "col2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        assertEquals(stringCouples[0].tableName, "table1"); //$NON-NLS-1$
-        assertEquals(stringCouples[0].columnName, "col1"); //$NON-NLS-1$
+    DataMapExpressionParser expressionParser;
 
-        assertEquals(stringCouples[1].tableName, "ta_ble2"); //$NON-NLS-1$
-        assertEquals(stringCouples[1].columnName, "co_l2"); //$NON-NLS-1$
-
-        assertEquals(stringCouples[2].tableName, "table1"); //$NON-NLS-1$
-        assertEquals(stringCouples[2].columnName, "col2"); //$NON-NLS-1$
-
+    @Before
+    public void setup() {
+        expressionParser = new DataMapExpressionParser(new JavaLanguage());
     }
 
-    // @Test
-    // public void retrieveCurrentSource() {
-    // String expression = "abc * $table1{col1} + $ta_ble2{co_l2} - $table1{col2}";
-    // StringMetadataCouple metadataCouple = DataMapExpressionParser.retrieveCurrentSource(expression, 7); // "abc *
-    // $^table1{col1} + $ta_ble2{co_l2} - $table1{col2}";
-    // assertEquals(metadataCouple.tableName, "table1");
-    // assertEquals(metadataCouple.columnName, "col1");
-    //        
-    // metadataCouple = DataMapExpressionParser.retrieveCurrentSource(expression, 7); // "abc * $^table1{col1} +
-    // $ta_ble2{co_l2} - $table1{col2}";
-    // assertEquals(metadataCouple.tableName, "ta_ble2");
-    // assertEquals(metadataCouple.columnName, "co_l2");
-    //        
-    // metadataCouple = DataMapExpressionParser.retrieveCurrentSource(expression, 7); // "abc * $^table1{col1} +
-    // $ta_ble2{co_l2} - $table1{col2}";
-    // assertEquals(metadataCouple.tableName, "table1");
-    // assertEquals(metadataCouple.columnName, "col2");
-    //        
-    // }
-
-    /**
-     * Test method for
-     * {@link org.talend.designer.mapper.utils.DataMapExpressionParser#addTablePrefixToColumnName(String, TableEntryLocation[])}
-     * .
-     */
-    @Test
-    public void testaddTablePrefixToColumnNameString() {
-        ILanguage language = new PerlLanguage();
-        DataMapExpressionParser expressionParser = new DataMapExpressionParser(language);
-        PerlGenerationManager gen = (PerlGenerationManager) GenerationManagerFactory.getInstance().getGenerationManager(language);
-
-        TableEntryLocation[] locations = new TableEntryLocation[] { new TableEntryLocation("page", "content"), //$NON-NLS-1$ //$NON-NLS-2$
-                new TableEntryLocation("book", "id_book"), }; //$NON-NLS-1$ //$NON-NLS-2$
-
-        HashSet<TableEntryLocation> validLocations = new HashSet<TableEntryLocation>();
-        validLocations.addAll(Arrays.asList(locations));
-
-        String result = expressionParser.addTablePrefixToColumnName("UNIQUE_COMPONENT_NAME", "uc " //$NON-NLS-1$ //$NON-NLS-2$
-                + gen.getTableColumnVariable("page", "content") + " + " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                + gen.getTableColumnVariable("book", "id_book") + " - 2 * " + language.getPrefixTable() //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                + " book " + language.getSuffixTable() + language.getPrefixField() + "  id_book " //$NON-NLS-1$ //$NON-NLS-2$
-                + language.getSuffixField(), locations, true, validLocations);
-        assertEquals("uc " + gen.getTableColumnVariable("page", "page__content") + " + " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                + gen.getTableColumnVariable("book", "book__id_book") + " - 2 * " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                + gen.getTableColumnVariable("book", "book__id_book"), result); //$NON-NLS-1$ //$NON-NLS-2$
-
-        locations = new TableEntryLocation[] { new TableEntryLocation("book", "id_book"), }; //$NON-NLS-1$ //$NON-NLS-2$
-
-        // result = expressionParser.addTablePrefixToColumnName("uc $page{content} + $book{id_book} - 2 * $ book {
-        // id_book }", locations);
-        // assertEquals("uc $page{content} + $book{book__id_book} - 2 * $book{book__id_book}", result);
-
+    @After
+    public void clean() {
+        expressionParser = null;
     }
 
-    /**
-     * Test method for
-     * {@link org.talend.designer.mapper.utils.DataMapExpressionParser#testreplaceLocationString(String, TableEntryLocation, TableEntryLocation)}
-     * .
-     */
     @Test
-    public void testreplaceLocationString() {
-        ILanguage language = new PerlLanguage();
-        DataMapExpressionParser expressionParser = new DataMapExpressionParser(language);
-        // GenerationManager gen = new GenerationManager(language);
+    public void testReplaceLocation_renamingTable_sameSuffix() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA == XXXYYY.columnA", result);
 
-        String result = expressionParser.replaceLocation(" $ book [ id_book ] ", new TableEntryLocation("book", //$NON-NLS-1$ //$NON-NLS-2$
-                "id_book"), new TableEntryLocation("book", "id_book_changed")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        System.out.println(result);
-        assertEquals(" $ book [ id_book_changed ] ", result); //$NON-NLS-1$
-
-        // String result = expressionParser.replaceLocation("uc "
-        // + "$page[content] + $book[id_book] - 2 * $ book [ id_book ]", new TableEntryLocation("book", "id_book"),
-        // new TableEntryLocation("book", "id_book_changed"));
-        // assertEquals("uc $page[content] + $book[id_book_changed] - 2 * $book[id_book_changed]", result);
-        //
-        // result = expressionParser.replaceLocation("uc $page[content] + $book[id_book] - 2 * $ book [ id_book ]",
-        // new TableEntryLocation("page", "content"),
-        // new TableEntryLocation("page", "content_changed"));
-        // assertEquals("uc $page[content_changed] + $book[id_book] - 2 * $book[id_book]", result);
-
+        // underline
+        result = expressionParser.replaceLocation("YYY.columnA == XXX_YYY.columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA == XXX_YYY.columnA", result);
     }
 
+    @Test
+    public void testReplaceLocation_renamingTable_samePreffix() {
+        String result = expressionParser.replaceLocation("YYY.columnA == YYYZZZ.columnA",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == YYYZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == YYY_ZZZ.columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == YYY_ZZZ.columnA", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingTable_middle() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYYZZZ.columnA", new TableEntryLocation("YYY",
+                "columnA"), new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == XXXYYYZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXX_YYY_ZZZ.columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == XXX_YYY_ZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY_ZZZ.columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == XXXYYY_ZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXX_YYYZZZ.columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("XXXYYY", "columnA"));
+        assertEquals("XXXYYY.columnA == XXX_YYYZZZ.columnA", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingTable_underlineInTable() {
+        String result = expressionParser.replaceLocation("YY_Y.columnA == XXXYY_Y.columnA", new TableEntryLocation("YY_Y",
+                "columnA"), new TableEntryLocation("YY_YZ", "columnA"));
+        assertEquals("YY_YZ.columnA == XXXYY_Y.columnA", result);
+
+        result = expressionParser.replaceLocation("YY_Y.columnA == XXX_YY_Y.columnA", new TableEntryLocation("YY_Y", "columnA"),
+                new TableEntryLocation("YY_YZ", "columnA"));
+        assertEquals("YY_YZ.columnA == XXX_YY_Y.columnA", result);
+
+        result = expressionParser.replaceLocation("Y_Y_Y.columnA == Y_Y_YZZZ.columnA",
+                new TableEntryLocation("Y_Y_Y", "columnA"), new TableEntryLocation("XY_Y_Y", "columnA"));
+        assertEquals("XY_Y_Y.columnA == Y_Y_YZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("Y_Y_Y.columnA == Y_Y_Y_ZZZ.columnA",
+                new TableEntryLocation("Y_Y_Y", "columnA"), new TableEntryLocation("XY_Y_Y", "columnA"));
+        assertEquals("XY_Y_Y.columnA == Y_Y_Y_ZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("Y_Y_Y.columnA == XXXY_Y_YZZZ.columnA", new TableEntryLocation("Y_Y_Y",
+                "columnA"), new TableEntryLocation("XY_Y_Y", "columnA"));
+        assertEquals("XY_Y_Y.columnA == XXXY_Y_YZZZ.columnA", result);
+
+        result = expressionParser.replaceLocation("Y_Y_Y.columnA == XXX_Y_Y_Y_ZZZ.columnA", new TableEntryLocation("Y_Y_Y",
+                "columnA"), new TableEntryLocation("XY_Y_Y", "columnA"));
+        assertEquals("XY_Y_Y.columnA == XXX_Y_Y_Y_ZZZ.columnA", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingTable_multiExpresions() {
+        String result = expressionParser.replaceLocation("YYY.columnA != null && YYY.columnA == XXXYYY.columnA",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA != null && YYYZZZ.columnA == XXXYYY.columnA", result);
+
+        // no space
+        result = expressionParser.replaceLocation("YYY.columnA!=null && YYY.columnA == XXXYYY.columnA", new TableEntryLocation(
+                "YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA!=null && YYYZZZ.columnA == XXXYYY.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA!=null&&YYY.columnA == XXXYYY.columnA", new TableEntryLocation(
+                "YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA!=null&&YYYZZZ.columnA == XXXYYY.columnA", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingTable_multiExpresions_diffColumns() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA && YYY.columnB == XXXYYY.columnB",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA == XXXYYY.columnA && YYY.columnB == XXXYYY.columnB", result);
+
+        // no space
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA &&YYY.columnB == XXXYYY.columnB",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA == XXXYYY.columnA &&YYY.columnB == XXXYYY.columnB", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA&&YYY.columnB == XXXYYY.columnB",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals("YYYZZZ.columnA == XXXYYY.columnA&&YYY.columnB == XXXYYY.columnB", result);
+
+        // replace again for renaming table
+        result = expressionParser.replaceLocation(result, new TableEntryLocation("YYY", "columnB"), new TableEntryLocation(
+                "YYYZZZ", "columnB"));
+        assertEquals("YYYZZZ.columnA == XXXYYY.columnA&&YYYZZZ.columnB == XXXYYY.columnB", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingTable_none() {
+        // there is no table to be existed in expression
+        final String expression = "YYYZ.columnA == XXXYYY.columnA";
+        String result = expressionParser.replaceLocation(expression, new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYYZZZ", "columnA"));
+        assertEquals(expression, result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_same() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA",
+                new TableEntryLocation("YYY", "columnA"), new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.columnA", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.column_A", new TableEntryLocation("YYY", "column_A"),
+                new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.column_A", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_sameSuffix() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.mycolumnA", new TableEntryLocation("YYY",
+                "columnA"), new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.mycolumnA", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.my_columnA", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.my_columnA", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_samePreffix() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnAB", new TableEntryLocation("YYY",
+                "columnA"), new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.columnAB", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.columnA_B", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.columnA_B", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_middle() {
+        String result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.mycolumnAB", new TableEntryLocation("YYY",
+                "columnA"), new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.mycolumnAB", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.my_columnAB", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.my_columnAB", result);
+
+        result = expressionParser.replaceLocation("YYY.columnA == XXXYYY.my_columnA_B", new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYY", "columnB"));
+        assertEquals("YYY.columnB == XXXYYY.my_columnA_B", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_underlineInColumn() {
+        String result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.column_A", new TableEntryLocation("YYY",
+                "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.column_A", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.mycolumn_A", new TableEntryLocation("YYY", "column_A"),
+                new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.mycolumn_A", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.my_column_A",
+                new TableEntryLocation("YYY", "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.my_column_A", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.column_AB", new TableEntryLocation("YYY", "column_A"),
+                new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.column_AB", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.column_A_B", new TableEntryLocation("YYY", "column_A"),
+                new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.column_A_B", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.mycolumn_AB",
+                new TableEntryLocation("YYY", "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.mycolumn_AB", result);
+
+        result = expressionParser.replaceLocation("YYY.column_A == XXXYYY.my_column_A_B", new TableEntryLocation("YYY",
+                "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B == XXXYYY.my_column_A_B", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_multExpresions() {
+        String result = expressionParser.replaceLocation("YYY.column_A != null && YYY.column_A == XXXYYY.column_A",
+                new TableEntryLocation("YYY", "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B != null && YYY.column_B == XXXYYY.column_A", result);
+
+        // no space
+        result = expressionParser.replaceLocation("YYY.column_A!=null&&YYY.column_A == XXXYYY.column_A", new TableEntryLocation(
+                "YYY", "column_A"), new TableEntryLocation("YYY", "column_B"));
+        assertEquals("YYY.column_B!=null&&YYY.column_B == XXXYYY.column_A", result);
+    }
+
+    @Test
+    public void testReplaceLocation_renamingColumn_none() {
+        final String expression = "YYY.columnC == XXXYYY.mycolumnAB";
+        String result = expressionParser.replaceLocation(expression, new TableEntryLocation("YYY", "columnA"),
+                new TableEntryLocation("YYY", "columnB"));
+        assertEquals(expression, result);
+    }
 }
