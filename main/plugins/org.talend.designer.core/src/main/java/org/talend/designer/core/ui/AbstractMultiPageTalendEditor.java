@@ -1193,6 +1193,9 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             }
         }
 
+        if(repFactory.getRepositoryContext().isOffline()){
+            repFactory.notifyModified(curItem); 
+        }
         if (isCheckout) {
             CommandStack stack = (CommandStack) getAdapter(CommandStack.class);
             stack.flush();
