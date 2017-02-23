@@ -830,8 +830,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
 
                                     } else {
                                         // check the value
-                                        if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
-                                                || param.getName().equals("SPARK_ADVANCED_PROPERTIES")) {
+                                        if (param.getName().equals(EParameterName.HADOOP_ADVANCED_PROPERTIES.getName())
+                                                || param.getName().equals(EParameterName.SPARK_ADVANCED_PROPERTIES.getName())) {
                                             if (param.getValue() instanceof List && repValue instanceof List) {
                                                 // TDI-29719: since the feature TDI-27468 added.we must check for the
                                                 // property/value for the list
@@ -876,8 +876,10 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             if (param.isShow(getProcess().getElementParameters()) && (repositoryValue != null)
                                     && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                                     && param.getCategory() == category) {
-                                param.setRepositoryValueUsed(true);
-                                param.setReadOnly(true);
+                                if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(param.getName())) {
+                                    param.setRepositoryValueUsed(true);
+                                    param.setReadOnly(true);
+                                }
                             }
                         }
                         // for context mode(bug 5198)

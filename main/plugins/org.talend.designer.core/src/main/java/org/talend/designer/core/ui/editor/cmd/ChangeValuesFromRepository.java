@@ -549,7 +549,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             }
                             elem.setPropertyValue(param.getName(), objectValue);
                         }
-                        param.setRepositoryValueUsed(true);
+                        if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(param.getName())) {
+                            param.setRepositoryValueUsed(true);
+                        }
                     } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
                             && param.getRepositoryValue().equals("XML_MAPPING")) { //$NON-NLS-1$
 

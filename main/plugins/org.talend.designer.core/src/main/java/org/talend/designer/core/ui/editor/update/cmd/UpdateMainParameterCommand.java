@@ -213,8 +213,11 @@ public class UpdateMainParameterCommand extends Command {
                                                     } else {
                                                         process.setPropertyValue(param.getName(), objectValue);
                                                     }
-                                                    param.setRepositoryValueUsed(true);
-                                                    param.setReadOnly(true);
+                                                    if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(
+                                                            param.getName())) {
+                                                        param.setRepositoryValueUsed(true);
+                                                        param.setReadOnly(true);
+                                                    }
                                                     repository = true;
                                                 }
                                             }
