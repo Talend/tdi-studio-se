@@ -22,16 +22,14 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -43,16 +41,12 @@ import org.talend.repository.utils.MavenVersionUtils;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
-    private final int SPACE_LABEL_TEXT = 180;
-
-    private final int SPACE_TO_LEFT = 23;
-
     private Text groupIdText;
 
     private Button versionCheckbox;
 
     private Text versionText;
-    
+
     private Label versionWarningLabel;
 
     private CCombo exportTypeCombo;
@@ -74,81 +68,55 @@ public class DeploymentComposite extends AbstractTabComposite {
     }
 
     private void createControl() {
-        FormLayout layout = new FormLayout();
-        setLayout(layout);
+        setLayout(new GridLayout());
+        setBackground(getParent().getBackground());
+        
+        Composite composite = new Composite(this, SWT.NONE);
+        GridLayout layout = new GridLayout(4, false);
+        layout.horizontalSpacing = 10;
+        layout.verticalSpacing = 10;
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        composite.setLayout(layout);
+        composite.setLayoutData(gridData);
 
-        FormData thisFormData = new FormData();
-        thisFormData.left = new FormAttachment(0, 0);
-        thisFormData.right = new FormAttachment(100, 0);
-        thisFormData.top = new FormAttachment(0, 0);
-        thisFormData.bottom = new FormAttachment(100, 0);
-        setLayoutData(thisFormData);
-
-        Composite composite = widgetFactory.createFlatFormComposite(this);
-
-        FormData compositeData = new FormData();
-        compositeData.left = new FormAttachment(0, 0);
-        compositeData.right = new FormAttachment(100, 0);
-        compositeData.top = new FormAttachment(0, 0);
-        compositeData.bottom = new FormAttachment(100, 0);
-        composite.setLayoutData(compositeData);
+        new Label(composite, SWT.NONE);
+        
+        Label groupIdLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.gourpIdLabel")); //$NON-NLS-1$
+        GridData groupIdLabelData = new GridData(GridData.FILL_HORIZONTAL);
+        groupIdLabel.setLayoutData(groupIdLabelData);
 
         groupIdText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
-        FormData data = new FormData();
-        data.left = new FormAttachment(0, SPACE_LABEL_TEXT);
-        data.right = new FormAttachment(50, 0);
-        data.top = new FormAttachment(0, ITabbedPropertyConstants.VSPACE);
-        groupIdText.setLayoutData(data);
+        GridData groupIdTextData = new GridData(GridData.FILL_HORIZONTAL);
+        groupIdTextData.widthHint = 200;
+        groupIdText.setLayoutData(groupIdTextData);
 
-        Label groupIdLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.gourpIdLabel")); //$NON-NLS-1$
-        data = new FormData();
-        data.left = new FormAttachment(0, SPACE_TO_LEFT);
-        data.right = new FormAttachment(groupIdText, -ITabbedPropertyConstants.HSPACE);
-        data.top = new FormAttachment(groupIdText, 0, SWT.CENTER);
-        groupIdLabel.setLayoutData(data);
+        new Label(composite, SWT.NONE);
+
+        versionCheckbox = widgetFactory.createButton(composite, "", SWT.CHECK); //$NON-NLS-1$
+        GridData versionCheckBoxData = new GridData(GridData.FILL_HORIZONTAL);
+        versionCheckbox.setLayoutData(versionCheckBoxData);
+        Label versionLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.versionLabel")); //$NON-NLS-1$
+        GridData versionLabelData = new GridData(GridData.FILL_HORIZONTAL);
+        versionLabel.setLayoutData(versionLabelData);
+
+        versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
+        GridData versionTextData = new GridData(GridData.FILL_HORIZONTAL);
+        versionTextData.widthHint = 200;
+        versionText.setLayoutData(versionTextData);
 
         versionWarningLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.versionWarning")); //$NON-NLS-1$
         versionWarningLabel.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-        data = new FormData();
-        data.left = new FormAttachment(50, 10);
-        data.right = new FormAttachment(80, 10);
-        data.top = new FormAttachment(groupIdLabel, ITabbedPropertyConstants.VSPACE);
-        versionWarningLabel.setLayoutData(data);
 
-        versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
-        data = new FormData();
-        data.left = new FormAttachment(0, SPACE_LABEL_TEXT);
-        data.right = new FormAttachment(50, 0);
-        data.top = new FormAttachment(groupIdLabel, ITabbedPropertyConstants.VSPACE);
-        versionText.setLayoutData(data);
-
-        Label versionLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.versionLabel")); //$NON-NLS-1$
-        data = new FormData();
-        data.left = new FormAttachment(0, SPACE_TO_LEFT);
-        data.right = new FormAttachment(versionText, -ITabbedPropertyConstants.HSPACE);
-        data.top = new FormAttachment(versionText, 0, SWT.CENTER);
-        versionLabel.setLayoutData(data);
-
-        versionCheckbox = widgetFactory.createButton(composite, "", SWT.CHECK);
-        data = new FormData();
-        data.left = new FormAttachment(0, 0);
-        data.right = new FormAttachment(versionLabel, 0);
-        data.top = new FormAttachment(versionLabel, 0, SWT.CENTER);
-        versionCheckbox.setLayoutData(data);
+        new Label(composite, SWT.NONE);
+        
+        Label exportTypeLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.exportTypeLabel")); //$NON-NLS-1$
+        GridData exportTypeLabelData = new GridData(GridData.FILL_HORIZONTAL);
+        exportTypeLabel.setLayoutData(exportTypeLabelData);
 
         exportTypeCombo = widgetFactory.createCCombo(composite);
-        data = new FormData();
-        data.left = new FormAttachment(0, SPACE_LABEL_TEXT);
-        data.right = new FormAttachment(50, 0);
-        data.top = new FormAttachment(versionText, ITabbedPropertyConstants.VSPACE);
-        exportTypeCombo.setLayoutData(data);
-
-        Label exportTypeLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.exportTypeLabel")); //$NON-NLS-1$
-        data = new FormData();
-        data.left = new FormAttachment(0, SPACE_TO_LEFT);
-        data.right = new FormAttachment(exportTypeCombo, -ITabbedPropertyConstants.HSPACE);
-        data.top = new FormAttachment(exportTypeCombo, 0, SWT.CENTER);
-        exportTypeLabel.setLayoutData(data);
+        GridData exportTypeComboData = new GridData(GridData.FILL_HORIZONTAL);
+        exportTypeComboData.widthHint = 200;
+        exportTypeCombo.setLayoutData(exportTypeComboData);
     }
 
     private void initialize() {
