@@ -22,8 +22,6 @@
 		// Retrieve storage account from connection-string
 		com.microsoft.windowsazure.services.core.storage.CloudStorageAccount myAzureStorageAccount_<%=cid%> = com.microsoft.windowsazure.services.core.storage.CloudStorageAccount.parse(myAzureStorageConn_<%=cid%>);
 		globalMap.put("connection_" + "<%=cid%>", myAzureStorageAccount_<%=cid%>);
-		globalMap.put("<%=cid%>_ACCOUNT_NAME", <%=accountName%>);
-		globalMap.put("<%=cid%>_ACCOUNT_KEY", <%=accountSecret%>);
 <%
 	if(isLog4jEnabled) {
 %>

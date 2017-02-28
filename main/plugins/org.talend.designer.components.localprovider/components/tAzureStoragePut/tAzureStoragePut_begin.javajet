@@ -53,10 +53,6 @@
 			log.info("<%=cid%> - Create the cloud storage account object successfully.");
 <%
 			}
-%>
-			globalMap.put("<%=cid%>_ACCOUNT_NAME", <%=accountName%>);
-			globalMap.put("<%=cid%>_ACCOUNT_KEY", <%=accountSecret%>);
-<%
 		}
 %>
 		// Create the blob client
