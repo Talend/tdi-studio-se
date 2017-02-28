@@ -7,7 +7,7 @@
 	<version>1.0.1</version>
 
 	<properties>
-		<talend.nexus.url>http://newbuild.talend.com:8081</talend.nexus.url>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
 	</properties>
 	
 	<distributionManagement>
