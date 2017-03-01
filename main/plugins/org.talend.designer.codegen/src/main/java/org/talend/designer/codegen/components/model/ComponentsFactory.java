@@ -84,6 +84,7 @@ import org.talend.designer.core.model.components.ComponentFilesNaming;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.process.GenericProcessProvider;
+import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
 
 /**
  * Component factory that look for each component and load their information. <br/>
@@ -765,9 +766,18 @@ public class ComponentsFactory implements IComponentsFactory {
         }
 
         for (IComponent comp : componentList) {
-            if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
-                return comp;
-            }// else keep looking
+            String comName = comp.getName();
+            if(comp != null && paletteType.equals(comp.getPaletteType())){
+                if (comName.equals(name)) {
+                    return comp;
+                }else if(new JobletUtil().matchExpression(comName)){
+                    String[] names = comName.split(":"); //$NON-NLS-1$
+                    comName = names[1];
+                    if (comName.equals(name)) {
+                        return comp;
+                    }
+                }
+            }
         }
         return null;
     }
