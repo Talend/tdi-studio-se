@@ -19,7 +19,9 @@ import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.axis2.transport.http.HTTPTransportConstants;
+import org.apache.axis2.transport.http.HttpTransportProperties;
+import org.apache.axis2.transport.http.HttpTransportProperties.ProxyProperties;
 import org.apache.log4j.Logger;
 import org.datacontract.schemas._2004._07.system_collections_generic.KeyValuePairOfEndpointTypestringztYlk6OT;
 import org.talend.ms.crm.sdk.OnlineAuthenticationPolicy;
@@ -186,6 +188,10 @@ public class MSCRMClient {
 
         sc.setOptions(options);
         sc.addHeader(createCRMSecurityHeaderBlock(securityData));
+        HttpTransportProperties.ProxyProperties proxyProps = getProxyProperties();
+        if (proxyProps != null) {
+            sc.getOptions().setProperty(HTTPConstants.PROXY, proxyProps);
+        }
         try {
             sc.engageModule("addressing");
         } catch (AxisFault e) {
@@ -274,7 +280,6 @@ public class MSCRMClient {
             // pathToAxis2File);
             ctx = ConfigurationContextFactory.createConfigurationContextFromURIs(
                     MSCRMClient.class.getClassLoader().getResource("org/talend/ms/crm/sdk/axis2_mscrm.xml"), null);
-            ctx.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, new SystemDefaultHttpClient());
         } catch (AxisFault e) {
             logger.error(e.getMessage());
             throw e;
@@ -319,6 +324,40 @@ public class MSCRMClient {
             throw e;
         }
         return null;
+    }
+
+    private static HttpTransportProperties.ProxyProperties getProxyProperties() {
+        String proxyHost = null;
+        String proxyPort = null;
+        String proxyUser = "";
+        String proxyPwd = "";
+        HttpTransportProperties.ProxyProperties proxyProps = null;
+        if (System.getProperty("https.proxyHost") != null) {// set by other components like tSetProxy
+            proxyHost = System.getProperty("https.proxyHost");
+            proxyPort = System.getProperty("https.proxyPort");
+            proxyUser = System.getProperty("https.proxyUser");
+            proxyPwd = System.getProperty("https.proxyPassword");
+        } else if (System.getProperty("http.proxyHost") != null) {
+            proxyHost = System.getProperty("http.proxyHost");
+            proxyPort = System.getProperty("http.proxyPort");
+            proxyUser = System.getProperty("http.proxyUser");
+            proxyPwd = System.getProperty("http.proxyPassword");
+        } else if (System.getProperty("socksProxyHost") != null) {
+            proxyHost = System.getProperty("socksProxyHost");
+            proxyPort = System.getProperty("socksProxyPort");
+            proxyUser = System.getProperty("java.net.socks.username");
+            proxyPwd = System.getProperty("java.net.socks.password");
+        }
+
+        if (proxyHost != null || proxyPort != null) {
+            System.setProperty(HTTPTransportConstants.HTTP_PROXY_HOST, proxyHost);
+            System.setProperty(HTTPTransportConstants.HTTP_PROXY_PORT, proxyPort);
+            proxyProps = new ProxyProperties();
+            proxyProps.setUserName(proxyUser);
+            proxyProps.setPassWord(proxyPwd);
+            proxyProps.setProxyName(proxyHost);
+        }
+        return proxyProps;
     }
 
 }

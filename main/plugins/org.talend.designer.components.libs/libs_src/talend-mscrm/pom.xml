@@ -53,6 +53,12 @@
     		<artifactId>httpclient</artifactId>
     		<version>4.2.1</version>
 		</dependency>
+		<dependency>
+    		<groupId>org.apache.axis2</groupId>
+    		<artifactId>axis2-transport-http</artifactId>
+    		<version>1.7.0</version>
+		</dependency>
+		
 	</dependencies>
 	<build>
 		<resources>
