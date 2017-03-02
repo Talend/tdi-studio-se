@@ -227,6 +227,7 @@ public class LoginHelper {
         if (connectionsBeans != storedConnections) {
             setStoredConnections(connectionsBeans);
         }
+        init();
     }
 
     public void saveLastConnectionBean(ConnectionBean connBean) {
@@ -234,6 +235,7 @@ public class LoginHelper {
         if (connBean != null) {
             lastConnection = connBean.getName();
         }
+        init();
     }
 
     public ConnectionBean getCurrentSelectedConnBean() {
@@ -249,6 +251,10 @@ public class LoginHelper {
 
     protected static ConnectionBean getConnection() {
         return LoginHelper.getInstance().getFirstConnBean();
+    }
+
+    public static boolean isRemoteConnection() {
+        return isRemoteConnection(getConnection());
     }
 
     protected static boolean needRestartForLocal(ConnectionBean curConnection) {

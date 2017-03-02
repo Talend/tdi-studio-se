@@ -100,9 +100,12 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
 
     private boolean enableSandboxProject;
 
+    private RepositoryContext originRepCtx;
+
     /**
      * @deprecated should be no used after bug 15815.
      */
+    @Deprecated
     private final ConnectionBean currentConnBean;
 
     public CreateSandboxProjectDialog(Shell parentShell, ConnectionBean currentConnBean) {
@@ -115,6 +118,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
             setTitleImage(ImageProvider.getImage(imgDesc));
         }
 
+        originRepCtx = ProxyRepositoryFactory.getInstance().getRepositoryContext();
         initProjectList();
     }
 
@@ -215,6 +219,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
 
         ModifyListener listener = new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 if (e.widget == urlText.getTextControl()) {
                     enableSandboxProject = false;
@@ -226,6 +231,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
         projectLabelText.addModifyListener(listener);
         checkBtn.addSelectionListener(new SelectionAdapter() {
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 if (urlText.getText().trim().length() > 0) {
                     Context ctx = CorePlugin.getContext();
@@ -244,6 +250,8 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
                             // set url for
                             RepositoryContext repositoryContext = new RepositoryContext();
                             repositoryContext.setFields(new HashMap<String, String>());
+                            repositoryContext.setClearPassword(originRepCtx.getClearPassword());
+                            repositoryContext.setUser(originRepCtx.getUser());
                             repositoryContext.getFields().put(RepositoryConstants.REPOSITORY_URL, urlText.getText());
                             ctx.putProperty(Context.REPOSITORY_CONTEXT_KEY, repositoryContext);
                             //
@@ -289,6 +297,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
     private void addUserListeners() {
         ModifyListener listener = new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 if (e.widget == userLoginText.getTextControl()) {
                     String generateProjectName = ProjectHelper.generateSandbocProjectName(userLoginText.getText());
@@ -340,6 +349,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
         checkProjectLabel(enableProjectLabel);
     }
 
+    @Override
     public void setErrorMessage(String newErrorMessage) {
         super.setErrorMessage(newErrorMessage);
         Button button = getButton(IDialogConstants.OK_ID);
@@ -451,6 +461,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
         //
         IRunnableWithProgress runnable = new IRunnableWithProgress() {
 
+            @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 Display disp = Display.getCurrent();
                 if (disp == null) {
@@ -458,6 +469,7 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
                 }
                 disp.syncExec(new Runnable() {
 
+                    @Override
                     public void run() {
                         monitor.beginTask("Creating...", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
                         Project projectInfor = ProjectHelper.createProject(projectName, projectName, projectLanguage,
@@ -466,8 +478,10 @@ public class CreateSandboxProjectDialog extends TitleAreaDialog {
 
                         boolean ok = false;
                         try {
+                            User authUser = originRepCtx.getUser();
+                            String authPassword = originRepCtx.getClearPassword();
                             Project createProject = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory()
-                                    .createProject(projectInfor);
+                                    .createProject(authUser, authPassword, projectInfor);
                             ok = (createProject != null);
                         } catch (PersistenceException e) {
                             ExceptionHandler.process(e);
