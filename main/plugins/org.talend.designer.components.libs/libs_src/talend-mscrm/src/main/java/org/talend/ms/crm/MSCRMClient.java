@@ -329,33 +329,25 @@ public class MSCRMClient {
     private static HttpTransportProperties.ProxyProperties getProxyProperties() {
         String proxyHost = null;
         String proxyPort = null;
-        String proxyUser = "";
-        String proxyPwd = "";
+        String proxyUser = null;
+        String proxyPwd = null;
         HttpTransportProperties.ProxyProperties proxyProps = null;
-        if (System.getProperty("https.proxyHost") != null) {// set by other components like tSetProxy
+        // set by other components like tSetProxy
+        if (System.getProperty("https.proxyHost") != null) {
             proxyHost = System.getProperty("https.proxyHost");
             proxyPort = System.getProperty("https.proxyPort");
             proxyUser = System.getProperty("https.proxyUser");
             proxyPwd = System.getProperty("https.proxyPassword");
-        } else if (System.getProperty("http.proxyHost") != null) {
-            proxyHost = System.getProperty("http.proxyHost");
-            proxyPort = System.getProperty("http.proxyPort");
-            proxyUser = System.getProperty("http.proxyUser");
-            proxyPwd = System.getProperty("http.proxyPassword");
-        } else if (System.getProperty("socksProxyHost") != null) {
-            proxyHost = System.getProperty("socksProxyHost");
-            proxyPort = System.getProperty("socksProxyPort");
-            proxyUser = System.getProperty("java.net.socks.username");
-            proxyPwd = System.getProperty("java.net.socks.password");
         }
 
         if (proxyHost != null || proxyPort != null) {
-            System.setProperty(HTTPTransportConstants.HTTP_PROXY_HOST, proxyHost);
-            System.setProperty(HTTPTransportConstants.HTTP_PROXY_PORT, proxyPort);
             proxyProps = new ProxyProperties();
-            proxyProps.setUserName(proxyUser);
-            proxyProps.setPassWord(proxyPwd);
+            proxyProps.setUserName((proxyUser == null ? "" : proxyUser));
+            proxyProps.setPassWord((proxyPwd == null ? "" : proxyPwd));
             proxyProps.setProxyName(proxyHost);
+            if (proxyPort != null && proxyPort.length() > 0) {
+                proxyProps.setProxyPort(Integer.parseInt(proxyPort));
+            }
         }
         return proxyProps;
     }
