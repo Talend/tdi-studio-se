@@ -340,10 +340,10 @@ public class MSCRMClient {
             proxyPwd = System.getProperty("https.proxyPassword");
         }
 
-        if (proxyHost != null || proxyPort != null) {
+        if (proxyHost != null) {
             proxyProps = new ProxyProperties();
             proxyProps.setUserName((proxyUser == null ? "" : proxyUser));
-            proxyProps.setPassWord((proxyPwd == null ? "" : proxyPwd));
+            proxyProps.setPassWord(proxyPwd);
             proxyProps.setProxyName(proxyHost);
             if (proxyPort != null && proxyPort.length() > 0) {
                 proxyProps.setProxyPort(Integer.parseInt(proxyPort));
