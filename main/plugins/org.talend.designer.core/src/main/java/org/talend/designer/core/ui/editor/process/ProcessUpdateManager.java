@@ -34,6 +34,7 @@ import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
+import org.talend.core.ITDQPatternService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -2164,7 +2165,18 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             propertiesResults.addAll(contextResults);
                         }
 
-                    } else {
+                    } else if(item!=null && "pattern".equalsIgnoreCase(item.getFileExtension())){
+                        //Added TDQ-11688, check pattern update
+                        ITDQPatternService service = null;
+                        try {
+                            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+                        } catch (RuntimeException e) {
+                            // nothing to do
+                        }
+                        if (service != null) {
+                            service.updateJobForPattern(node,item);
+                        } 
+                    }else{
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
                     }

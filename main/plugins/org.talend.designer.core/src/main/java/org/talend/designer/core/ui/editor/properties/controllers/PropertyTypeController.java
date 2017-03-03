@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.internal.ide.dialogs.FileFolderSelectionDialog;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -37,6 +39,7 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
+import org.talend.core.ITDQPatternService;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.builder.connection.CDCConnection;
 import org.talend.core.model.metadata.builder.connection.CDCType;
@@ -46,6 +49,7 @@ import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.designerproperties.PropertyConstants.CDCTypeMode;
 import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
@@ -72,6 +76,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
 import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
+import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -306,7 +311,9 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     String[] listRepositoryItems = dbTypeParam.getListRepositoryItems();
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
                             param.getRepositoryValue(), listRepositoryItems);
-                } else {
+                }else if(elem.getElementName().startsWith("tPattern")){
+                    return processPattern(elem);
+                }else {
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
                             elem, param);
                 }
@@ -567,6 +574,36 @@ public class PropertyTypeController extends AbstractRepositoryController {
             }
         }
         return null;
+    }
+
+    //Added TDQ-13192 20170222
+    private Command processPattern(IElement elem) {
+        CompoundCommand compoundCommand = new CompoundCommand();
+        ITDQPatternService service = null;
+        try {
+            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+        } catch (RuntimeException e) {
+            // nothing to do
+        }
+        if (service != null && elem instanceof Node) {
+            Node node = (Node) elem;
+            IElementParameter typeParam = node.getElementParameter("TYPE");
+            service.selectPattern(typeParam,elem);
+            
+            //create the command
+            final String showId = (String) node.getElementParameter("PATTERN_ID").getValue();
+            Command command = new PropertyChangeCommand(elem, EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), showId);
+            compoundCommand.add(command);
+            
+            IElementParameter elementParameter = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+            String[] displayName = new String[1];
+            displayName[0]=(String) node.getElementParameter("PATTERN_NAME").getValue();
+            elementParameter.setListItemsDisplayName(displayName);
+            elementParameter.setListItemsValue(new String[] { showId });
+
+        }      
+        return compoundCommand;
+        
     }
 
     // see bug 0004305
