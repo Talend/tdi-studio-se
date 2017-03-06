@@ -162,7 +162,7 @@ public class RunProcessContext {
 
     private boolean lastIsRow = false;
 
-    private final IProcessMessageManager processMessageManager;
+    protected final IProcessMessageManager processMessageManager;
 
     private int statsPort = IProcessor.NO_STATISTICS;
 
@@ -538,13 +538,13 @@ public class RunProcessContext {
                                 if (traceConnectionsManager != null) {
                                     traceConnectionsManager.clear();
                                 }
-                                traceConnectionsManager = new TraceConnectionsManager(process);
+                                traceConnectionsManager = getTraceConnectionsManager(process);
                                 traceConnectionsManager.init();
                             }
                             final IContext context = getSelectedContext();
                             if (monitorPerf) {
                                 clearThreads();
-                                perfMonitor = new PerformanceMonitor();
+                                perfMonitor = getPerformanceMonitor();
                                 new Thread(perfMonitor, "PerfMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
                                 perMonitorList.add(perfMonitor);
                             }
@@ -682,6 +682,14 @@ public class RunProcessContext {
             this.running = true;
             setRunning(false);
         }
+    }
+
+    protected PerformanceMonitor getPerformanceMonitor() {
+        return new PerformanceMonitor();
+    }
+
+    protected TraceConnectionsManager getTraceConnectionsManager(IProcess2 process) {
+        return new TraceConnectionsManager(process);
     }
 
     public void cleanWorkingDirectory() {
@@ -1017,7 +1025,7 @@ public class RunProcessContext {
      * $Id$
      * 
      */
-    private class PerformanceMonitor implements Runnable {
+    public class PerformanceMonitor implements Runnable {
 
         private volatile boolean stopThread;
 
@@ -1127,7 +1135,7 @@ public class RunProcessContext {
             }
         }
 
-        private void processPerformances(final String data, final PerformanceData perfData, final IConnection conn) {
+        protected void processPerformances(final String data, final PerformanceData perfData, final IConnection conn) {
             if (conn == null) {
                 return;
             }
