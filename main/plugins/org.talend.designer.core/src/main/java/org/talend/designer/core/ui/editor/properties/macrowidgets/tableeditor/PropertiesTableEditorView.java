@@ -536,7 +536,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             || (param.isRepositoryValueUsed()) || (param.isReadOnly()) || currentParam.isReadOnly()) {
                         // read only cell
                         if (!param.getElement().isReadOnly()
-                                && (param.getName().equals("HADOOP_ADVANCED_PROPERTIES") || param.getName().equals(
+                                && (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                        || param.getName().equals("SPARK_ADVANCED_PROPERTIES") || param.getName().equals(
                                         "HBASE_PARAMETERS"))) {
                             if (currentParam.isNoContextAssist()) {
                                 tcEditor = new TextCellEditor(table);
@@ -567,7 +568,9 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
 
                     @Override
                     public boolean canModify(Object bean) {
-                        if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES") || param.getName().equals("HBASE_PARAMETERS")) {
+                        if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                || param.getName().equals("SPARK_ADVANCED_PROPERTIES")
+                                || param.getName().equals("HBASE_PARAMETERS")) {
                             boolean canModify = super.canModify(bean);
                             if (canModify) {
                                 Map<String, Object> valueMap = (Map<String, Object>) bean;
@@ -614,7 +617,9 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 return AbstractMetadataTableEditorView.READONLY_CELL_BG_COLOR;
                             }
                         }
-                        if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES") || param.getName().equals("HBASE_PARAMETERS")) {
+                        if (param.getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                || param.getName().equals("SPARK_ADVANCED_PROPERTIES")
+                                || param.getName().equals("HBASE_PARAMETERS")) {
                             if (valueMap.get("BUILDIN") == null || valueMap.get("BUILDIN") != null
                                     && valueMap.get("BUILDIN").equals("")) {
                                 return Display.getCurrent().getSystemColor(SWT.COLOR_GRAY);
@@ -625,8 +630,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                             Object value = ((Map<String, Object>) bean).get(items[curCol]);
                             boolean found = false;
                             Object[] items = currentParam.getListItemsValue();
-                            for (int j = 0; j < items.length; j++) {
-                                if (items[j].equals(value)) {
+                            for (Object item : items) {
+                                if (item.equals(value)) {
                                     found = true;
                                     break;
                                 }
@@ -852,8 +857,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                          */
                         if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
                             element.setPropertyValue(param.getName(), param.getValue());
-                        } 
-                        
+                        }
+
                         if (isNeedReCheck && element instanceof Node) {
                             IProcess process = ((Node) element).getProcess();
                             if (process instanceof IProcess2) {
@@ -870,7 +875,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 }
                             }
                         }
-                   }
+                    }
                 });
             }
         }

@@ -11,19 +11,31 @@ import org.dom4j.XPath;
 public class DocumentExtractor {
 	
 	Document doc = null;
-	String function = null;
+	final String finalFunction;
 	StringBuilder sb = new StringBuilder();
 	
 	public DocumentExtractor(Document doc,String function) {
 		this.doc = doc;
-		this.function = function;
+		this.finalFunction = replaceNamespace(function);
 	}
 	
+	/**
+	 * the xml document which come from the cimt sap api will change the element name which contains "/" and convert "/" to "_-", 
+	 * we need to do the same thing for finding the element by the xpath
+	 * @param name
+	 * @return
+	 */
+    private String replaceNamespace(String name) {
+        return name.replace("/", "_-");
+    }
+	
 	public String getSingleResult(String name) {
+	    final String finalName = replaceNamespace(name);
+	    
 		XPath xpath = org.dom4j.DocumentHelper.createXPath(
-			sb.append("/").append(function).append("/OUTPUT/").append(name)
+			sb.append("/").append(finalFunction).append("/OUTPUT/").append(finalName)
 			.append("|")
-			.append("/").append(function).append("/CHANGING/").append(name)
+			.append("/").append(finalFunction).append("/CHANGING/").append(finalName)
 			.toString()
 		);
 		sb.setLength(0);
@@ -35,10 +47,12 @@ public class DocumentExtractor {
 	}
 	
 	public List<String> getStructureResult(String structureName,List<String> names) {
+	    final String finalStructureName = replaceNamespace(structureName);
+	    
 		XPath xpath = org.dom4j.DocumentHelper.createXPath(
-			sb.append("/").append(function).append("/OUTPUT/").append(structureName)
+			sb.append("/").append(finalFunction).append("/OUTPUT/").append(finalStructureName)
 			.append("|")
-			.append("/").append(function).append("/CHANGING/").append(structureName)
+			.append("/").append(finalFunction).append("/CHANGING/").append(finalStructureName)
 			.toString()
 		);
 		sb.setLength(0);
@@ -51,7 +65,8 @@ public class DocumentExtractor {
 		List<String> result = new ArrayList<String>();
 		
 		for(String name : names) {
-			Node subNode = node.selectSingleNode(name);
+		    final String finalName = replaceNamespace(name);
+			Node subNode = node.selectSingleNode(finalName);
 			if(subNode == null) {
 				result.add(null);
 			} else {
@@ -63,6 +78,8 @@ public class DocumentExtractor {
 	}
 	
 	public List<List<String>> getTableResult(String tableName,List<String> names) {
+	    final String finalTableName = replaceNamespace(tableName);
+	    
 		List<List<String>> result = new ArrayList<List<String>>();
 		
 		Element functionElement = doc.getRootElement();
@@ -79,7 +96,7 @@ public class DocumentExtractor {
 				continue;
 			}
 			
-			Element tableElement = tablesOrChangingElement.element(tableName);
+			Element tableElement = tablesOrChangingElement.element(finalTableName);
 		
 			if (tableElement == null) {
 				continue;
@@ -94,7 +111,8 @@ public class DocumentExtractor {
 			for(Element element : elements) {
 				List<String> row = new ArrayList<String>();
 				for(String name : names) {
-					Element subElement = element.element(name);
+				    final String finalName = replaceNamespace(name);
+					Element subElement = element.element(finalName);
 					if(subElement == null) {
 						row.add(null);
 					} else {

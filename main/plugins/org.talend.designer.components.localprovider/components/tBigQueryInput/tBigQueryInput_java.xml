@@ -79,6 +79,24 @@
     >
       <DEFAULT>"select id, name from employee"</DEFAULT>
     </PARAMETER>
+    <!-- 
+    https://cloud.google.com/bigquery/querying-data#large-results 
+    SMALL: allowLargeResult is false
+    LARGE: allowLargeResult is true and auto create/clean temp dataset/table
+    AUTO: try SMALL first, if get responseTooLarge error then try LARGE
+    -->
+    <PARAMETER 
+   		NAME="RESULT_SIZE"
+   		FIELD="CLOSED_LIST"
+		NUM_ROW="60"
+		REQUIRED="true"
+    >
+      	<ITEMS DEFAULT="SMALL">
+			<ITEM NAME="SMALL" VALUE="SMALL" />
+			<ITEM NAME="LARGE" VALUE="LARGE" />
+			<ITEM NAME="AUTO" VALUE="AUTO" />
+		</ITEMS>
+    </PARAMETER>
    </PARAMETERS>
    <ADVANCED_PARAMETERS>
     <PARAMETER NAME="TOKEN_NAME" FIELD="FILE" NUM_ROW="5"

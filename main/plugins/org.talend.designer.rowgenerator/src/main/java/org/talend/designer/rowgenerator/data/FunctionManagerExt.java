@@ -270,6 +270,11 @@ public class FunctionManagerExt extends FunctionManager {
 
     @SuppressWarnings("unchecked")
     public static String getOneColData(MetadataColumnExt bean) {
+        return getOneColData(bean, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String getOneColData(MetadataColumnExt bean, boolean replace) {
         if (bean != null && bean.getFunction() != null) {
             String newValue = addPreSuffix ? PERL_FUN_PREFIX : ""; //$NON-NLS-1$
             String name = bean.getFunction().getName();
@@ -286,7 +291,12 @@ public class FunctionManagerExt extends FunctionManager {
                     //                    String fullName = RoutineFunctionParser.getTypeMethods().get(bean.getTalendType() + "." + name); //$NON-NLS-1$
                     newValue = fullName + "("; //$NON-NLS-1$
                     for (Parameter pa : parameters) {
-                        newValue += pa.getValue() + FUN_PARAM_SEPARATED;
+                        if (replace) {
+                            newValue += "${0}" + FUN_PARAM_SEPARATED;
+                            replace = false;
+                        } else {
+                            newValue += pa.getValue() + FUN_PARAM_SEPARATED;
+                        }
                     }
                     if (!parameters.isEmpty()) {
                         newValue = newValue.substring(0, newValue.length() - 1);
@@ -309,16 +319,9 @@ public class FunctionManagerExt extends FunctionManager {
         return null;
     }
 
-    /**
-     * yzhang Comment method "getOneColData".
-     * 
-     * @param bean
-     * @param f
-     * @return
-     */
-    public static String getOneColData(MetadataColumnExt bean, boolean f) {
+    public static String getOneColData(MetadataColumnExt bean, boolean f, boolean replace) {
         addPreSuffix = f;
-        String str = getOneColData(bean);
+        String str = getOneColData(bean, replace);
         addPreSuffix = true;
         return str;
     }

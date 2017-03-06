@@ -178,7 +178,7 @@ public class CategoryComposite extends Composite {
                     column.setTalendType(function.getTalendType().getName());
                     column.setFunction(function);
 
-                    event.data = (FunctionManagerExt.getOneColData(column, false));
+                    event.data = (FunctionManagerExt.getOneColData(column, false, false));
                 }
             }
 
@@ -315,21 +315,25 @@ public class CategoryComposite extends Composite {
                             column.setFunction(function);
 
                             ExpressionComposite expressionComposite = ExpressionBuilderDialog.getExpressionComposite();
-                            if (expressionComposite != null && expressionComposite instanceof PigExpressionComposite) {
-                                if (function.isUserDefined()) {
-                                    expressionComposite.setExpression(JavaUtils.JAVA_PIGUDF_DIRECTORY
-                                            + FunctionManager.JAVA_METHOD_SEPARATED + function.getName()
-                                            + FunctionManager.FUN_PREFIX + FunctionManager.FUN_SUFFIX, true);
-                                } else if ("Pig DataFu Functions".equals(function.getCategory())) {//$NON-NLS-1$
-                                    expressionComposite.setExpression(function.getClassName() + FunctionManager.FUN_PREFIX
-                                            + FunctionManager.FUN_SUFFIX, true);
+                            if (expressionComposite != null) {
+                                if (expressionComposite instanceof PigExpressionComposite) {
+                                    if (function.isUserDefined()) {
+                                        expressionComposite.setExpression(JavaUtils.JAVA_PIGUDF_DIRECTORY
+                                                + FunctionManager.JAVA_METHOD_SEPARATED + function.getName()
+                                                + FunctionManager.FUN_PREFIX + FunctionManager.FUN_SUFFIX, true);
+                                    } else if ("Pig DataFu Functions".equals(function.getCategory())) {//$NON-NLS-1$
+                                        expressionComposite.setExpression(function.getClassName() + FunctionManager.FUN_PREFIX
+                                                + FunctionManager.FUN_SUFFIX, true);
+                                    } else {
+                                        expressionComposite.setExpression(function.getName() + FunctionManager.FUN_PREFIX
+                                                + FunctionManager.FUN_SUFFIX, true);
+                                    }
+                                } else if (expressionComposite instanceof BatchExpressionComposite) {
+                                    expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false, true), true);
                                 } else {
-                                    expressionComposite.setExpression(function.getName() + FunctionManager.FUN_PREFIX
-                                            + FunctionManager.FUN_SUFFIX, true);
+                                    expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false), true);
+                                    expressionComposite.modificationRecord.pushRecored(expressionComposite.getExpression());
                                 }
-                            } else {
-                                expressionComposite.setExpression(FunctionManagerExt.getOneColData(column, false), true);
-                                expressionComposite.modificationRecord.pushRecored(expressionComposite.getExpression());
                             }
                         } else {
                             if (docDisplayer instanceof Text) {

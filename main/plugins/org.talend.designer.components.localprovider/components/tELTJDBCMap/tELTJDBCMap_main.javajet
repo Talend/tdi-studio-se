@@ -1,6 +1,5 @@
 <%@ jet 
 	imports="
-	
 	org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
 	org.talend.core.model.process.IConnection
@@ -8,12 +7,10 @@
 	org.talend.designer.dbmap.external.data.ExternalDbMapTable
 	org.talend.designer.dbmap.language.IDbLanguage
 	org.talend.designer.dbmap.DbMapComponent
-
 	java.util.HashMap
 	java.util.Map
-
-		java.util.Set
-		java.util.HashSet
+	java.util.Set
+	java.util.HashSet
 	" 
 %>
 <%
@@ -46,32 +43,30 @@
     for (int i = 0; i < lstOutputTablesSize; i++) {
         ExternalDbMapTable outputTable = outputTables.get(i);
         String outputTableName = outputTable.getName();
-
-			IConnection connection = nameToOutputConnection.get(outputTableName);
-
+        
+		IConnection connection = nameToOutputConnection.get(outputTableName);
+		
         if (connection == null) {
         	continue;
         }
-
-        String sqlQuery = gm.buildSqlSelect((DbMapComponent) node, outputTable.getName());
         
+        String sqlQuery = gm.buildSqlSelect((DbMapComponent) node, outputTable.getName());
 	%>
-
-			globalMap.put(
-				"<%=uniqueNameComponent %>"+"QUERY" + "<%= connection.getUniqueName() %>",
-				<%= sqlQuery.replaceAll("[\r\n]", " ") %>
-			);
-			globalMap.put(
-					"<%=uniqueNameComponent %>"+"QUERY_COLUMNS_NAME" + "<%= connection.getUniqueName() %>",
-					<%= gm.getQueryColumnsName() %>
-			);
-			<%
-			if(!tablesProcessed.contains(outputTable.getTableName())) {
-			%>
-				Object <%= outputTable.getTableName() %> = new Object();
-			<%
-			}
-			tablesProcessed.add(outputTable.getTableName());
+		globalMap.put(
+			"<%=uniqueNameComponent %>"+"QUERY" + "<%= connection.getUniqueName() %>",
+			<%= sqlQuery.replaceAll("[\r\n]", " ") %>
+		);
+		globalMap.put(
+				"<%=uniqueNameComponent %>"+"QUERY_COLUMNS_NAME" + "<%= connection.getUniqueName() %>",
+				<%= gm.getQueryColumnsName() %>
+		);
+		<%
+		if(!tablesProcessed.contains(outputTable.getTableName())) {
+		%>
+			Object <%= outputTable.getTableName() %> = new Object();
+		<%
+		}
+		tablesProcessed.add(outputTable.getTableName());
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

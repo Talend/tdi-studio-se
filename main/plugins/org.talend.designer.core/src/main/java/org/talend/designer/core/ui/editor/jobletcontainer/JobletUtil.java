@@ -85,6 +85,17 @@ public class JobletUtil {
         }
         return false;
     }
+    
+    public boolean isJoblet(NodeType node){
+        EList listParamType = node.getElementParameter();
+        for(Object o : listParamType){
+            ElementParameterType ele = ((ElementParameterType)o);
+            if(ele.getName()!=null && ele.getName().equals(EParameterName.FAMILY.getName()) && ele.getValue()!=null){
+               return  ele.getValue().equals(IComponent.JOBLET_FAMILY);
+            }
+        }
+        return false;
+    }
 
     public List<INodeConnector> createConnectors(INode node, IProcess2 process) {
         List<INodeConnector> listConnector = new ArrayList<INodeConnector>();
@@ -242,13 +253,8 @@ public class JobletUtil {
         if (service != null) {
             isInOut = service.isJobletInOutComponent(node);
         }
-        Node cloneNode = null;
-        if (isInOut) {
-            cloneNode = new Node(node.getComponent(), (IProcess2) process, node.getUniqueName());
-        } else {
-            cloneNode = new Node(node.getComponent(), (IProcess2) process);
-        }
-
+        Node cloneNode = new Node(node.getComponent(), (IProcess2) process, node.getUniqueName());;
+        
         nodePart.setModel(cloneNode);
         // if (lock == null) {
         // cloneNode.setReadOnly(true);
@@ -290,15 +296,6 @@ public class JobletUtil {
                     cloneElement.setValue(elementPara.getValue());
                 }
 
-                // if (lock == null) {
-                // cloneElement.setReadOnly(true);
-                // } else {
-                // if (lock) {
-                // cloneElement.setReadOnly(false);
-                // } else {
-                // cloneElement.setReadOnly(true);
-                // }
-                // }
                 if (lockByOther) {
                     cloneElement.setReadOnly(true);
                 } else {
@@ -317,15 +314,6 @@ public class JobletUtil {
                             IElementParameter cloneC = cloneElementChild.get(key);
                             if (cloneC != null) {
                                 cloneC.setValue(c.getValue());
-                                // if (lock == null) {
-                                // cloneC.setReadOnly(true);
-                                // } else {
-                                // if (lock) {
-                                // cloneC.setReadOnly(false);
-                                // } else {
-                                // cloneC.setReadOnly(true);
-                                // }
-                                // }
                                 if (lockByOther) {
                                     cloneC.setReadOnly(true);
                                 } else {
@@ -350,7 +338,6 @@ public class JobletUtil {
         }
 
         cloneNode.setMetadataList(node.getMetadataList());
-        // cloneNode.setExternalNode(node.getExternalNode());
         cloneNode.setListConnector(node.getListConnector());
         cloneNode.setConnectionName(node.getConnectionName());
         cloneNode.setLocation(node.getLocation());
@@ -369,13 +356,6 @@ public class JobletUtil {
                 externalNode.setExternalEmfData(EcoreUtil.copy(node.getExternalNode().getExternalEmfData()));
             }
 
-            // for (IMetadataTable metaTable : node.getMetadataList()) {
-            // String oldName = metaTable.getTableName();
-            //                String newName = oldMetaToNewMeta.get(cloneNode.getUniqueName() + ":" + metaTable.getTableName()); //$NON-NLS-1$
-            // externalNode.renameOutputConnection(oldName, newName);
-            // CorePlugin.getDefault().getMapperService()
-            // .renameJoinTable(process, externalNode.getExternalData(), createdNames);
-            // }
             // when copy a external node, should also copy screeshot
             if (node.getExternalNode() != null) {
                 ImageDescriptor screenshot = node.getExternalNode().getScreenshot();
@@ -388,6 +368,15 @@ public class JobletUtil {
             cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getElementParameter(EParameterName.LABEL.getName()).getValue());
         }else{
             cloneNode.setPropertyValue(EParameterName.LABEL.getName(), node.getLabel());
+        }
+        boolean found = false;
+        for(INode inode:process.getGraphicalNodes()){
+            if(inode.getUniqueName().equals(cloneNode.getUniqueName())){
+                found = true;
+            }
+        }
+        if(!found){
+            ((IProcess2)process).removeUniqueNodeName(cloneNode.getUniqueName());
         }
         return cloneNode;
     }

@@ -45,6 +45,12 @@ imports="
                                 IMetadataColumn column = columns.get(i);
                                 String columnName = column.getLabel();
                                 JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+                                boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, column.isNullable());
+ 								if(!isPrimitive && ignoreNull) { //begin of skipping null values.
+ 								%>
+ 			    					if(<%=conn.getName() %>.<%=column.getLabel() %> != null ) { //
+ 								<%
+ 								}
                                 String crmType = column.getType();
                                 String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
                             %>
@@ -328,6 +334,11 @@ imports="
                                                   map_<%= cid %>.put("<%= columnName %>", null);
                                                <%
                                   }
+                                  if(!isPrimitive && ignoreNull) {//end of skipping null values.
+ 								  %>
+ 			    					} //
+ 								  <%
+ 								  }
                         }
                             %>
                                   <%

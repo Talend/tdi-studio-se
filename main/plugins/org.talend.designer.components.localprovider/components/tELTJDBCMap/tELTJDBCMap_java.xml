@@ -159,9 +159,17 @@
       <DEFAULT>"ISO-8859-15"</DEFAULT>
     </PARAMETER>
  
-      <PARAMETER NAME="PREVIEW" FIELD="IMAGE" SHOW="true" NUM_ROW="80">
-         <DEFAULT/>
-      </PARAMETER>
+    <PARAMETER NAME="PREVIEW" FIELD="IMAGE" SHOW="true" NUM_ROW="80">
+       <DEFAULT/>
+    </PARAMETER>
+      
+    <PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="99"
+    >
+      <DEFAULT>mysql_id</DEFAULT>
+    </PARAMETER>
 
    </PARAMETERS>
     

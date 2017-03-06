@@ -42,6 +42,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.intro.IIntroSite;
 import org.eclipse.ui.intro.config.IIntroAction;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.utils.resource.UpdatesHelper;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -281,10 +282,9 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
                         monitor.setTaskName(ExchangeConstants.getDownloadTaskNameLable() + downloadUrl);
                         String targetFolder = getComponentsFolder().getAbsolutePath();
                         try {
-                            String fileName = extension.getLabel() + ".zip"; //$NON-NLS-1$
                             // if file name has special char ,replace it.
                             String regex = "[^a-zA-Z&&[^0-9]&&[^\\_]]"; //$NON-NLS-1$
-                            fileName = fileName.replaceAll(regex, "_"); //$NON-NLS-1$
+                            String fileName = extension.getLabel().replaceAll(regex, "_") + ".zip"; //$NON-NLS-1$ //$NON-NLS-2$
                             File localZipFile = new File(targetFolder, fileName);
 
                             monitor.done();
@@ -331,7 +331,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
                     throw e;
                 }
                 monitor.done();
-                extensionDownloadCompleted(extension);
+                ExchangeManager.getInstance().saveDownloadedExtensionsToFile(extension);
             } else {
                 File installedLocation = ComponentInstaller.unzip(localZipFile.getAbsolutePath(), getComponentsFolder()
                         .getAbsolutePath());
@@ -344,12 +344,19 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
         }
 
         private void askReboot() {
-            boolean reboot = MessageDialog.openQuestion(new Shell(),
-                    Messages.getString("DownloadComponenentsAction_restartTitle"), //$NON-NLS-1$
-                    Messages.getString("DownloadComponenentsAction_restartMessage")); //$NON-NLS-1$
-            if (reboot) {
-                PlatformUI.getWorkbench().restart();
-            }
+            DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+                @Override
+                public void run() {
+                    boolean reboot = MessageDialog.openQuestion(DisplayUtils.getDefaultShell(),
+                            Messages.getString("DownloadComponenentsAction_restartTitle"), //$NON-NLS-1$
+                            Messages.getString("DownloadComponenentsAction_restartMessage")); //$NON-NLS-1$
+                    if (reboot) {
+                        PlatformUI.getWorkbench().restart();
+                    }
+                }
+                
+            });
         }
 
         @Override

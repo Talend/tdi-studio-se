@@ -21,6 +21,7 @@ imports="
 
     String authenticationType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
     String crmVersion = ElementParameterParser.getValue(node, "__MS_CRM_VERSION__");
+    boolean ignoreNull = "true".equals(ElementParameterParser.getValue(node,"__IGNORE_NULL__"));
 
     boolean isMsCrm2015OnPremise = "ON_PREMISE".equals(authenticationType) && "CRM_2015".equals(crmVersion);
 

@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.properties;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.PatternCompiler;
@@ -58,6 +59,8 @@ public final class NodeQueryCheckUtil {
     // split the function
     private static final String FUNC_SPLIT = "(\\s)*(\\w*)\\((.*?)\\)(\\s+\\w*){0,1}"; //$NON-NLS-1$  
 
+    private static final String COMMENT_REGX_PATTERN = ("(?ms)('(?:''|[^'])*')|--.*?$|/\\*.*?\\*/"); //$NON-NLS-1$  
+
     /**
      * 
      * DOC ggu Comment method "checkQueryOK".
@@ -67,10 +70,14 @@ public final class NodeQueryCheckUtil {
      * @return
      */
     public static boolean checkQueryOK(Node node, String sql) {
-
         if (sql == null) {
             return false;
         }
+        // match the query comments
+        Pattern commentRegex = Pattern.compile(COMMENT_REGX_PATTERN);
+        Matcher commentMatcher = commentRegex.matcher(sql);
+        sql = commentMatcher.replaceAll("");
+
         // replace the new line char
         sql = sql.replaceAll("\r", " "); //$NON-NLS-1$ //$NON-NLS-2$
         sql = sql.replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$

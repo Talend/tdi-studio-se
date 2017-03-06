@@ -37,22 +37,22 @@ imports="
 		      String conn = "conn_" + connection;
 		      INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(),connection,false);
 		      driverName = ElementParameterParser.getValue(connectionNode, "__DRIVER_CLASS__");
-         } else {
+          } else {
 				driverName = ElementParameterParser.getValue(node, "__DRIVER_CLASS__");
 			}
-			if(null != driverName && driverName.indexOf("mysql") != -1){
+			if(null != driverName && driverName.toLowerCase().contains("mysql")){
 %>
 				stmt_<%=cid %> = conn_<%=cid%>.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
 																					java.sql.ResultSet.CONCUR_READ_ONLY);
 				((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
 <%
-			}else{
+			} 
             if(("true").equals(useCursor)) {
 %>
-                stmt_<%=cid %>.setFetchSize(<%=cursorSize %>);
+              stmt_<%=cid %>.setFetchSize(<%=cursorSize %>);
 <%
-			   }
-		   }            
+			  }
+			
 		}
 		
 		public void createConnection(INode node) {

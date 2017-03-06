@@ -26,8 +26,14 @@ imports="
     String crmVersion = ElementParameterParser.getValue(node, "__MS_CRM_VERSION__");
 
     boolean isMsCrm2015OnPremise = "ON_PREMISE".equals(authenticationType) && "CRM_2015".equals(crmVersion);
+    
+    String attemptConnTimes = ElementParameterParser.getValue(node, "__MAX_RECONN_ATTEMPS__");
+	String attemptsInterval = ElementParameterParser.getValue(node, "__ATTEMPS_INTERVAL_TIME__");
 %>
 	int nb_line_<%=cid%> = 0;
+	
+	int reConnMaxNum_<%=cid%>=<%=attemptConnTimes%>;
+	reConnMaxNum_<%=cid%> = reConnMaxNum_<%=cid%> >= 0 ? reConnMaxNum_<%=cid%> : 0;
 <%
     if(isMsCrm2015OnPremise){
        %>

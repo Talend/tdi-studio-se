@@ -101,8 +101,10 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
             public boolean getEnabledState() {
                 if (model != null
                         && !model.getElemParameter().getElement().isReadOnly()
-                        && (model.getElemParameter().getName().equals("HADOOP_ADVANCED_PROPERTIES") || model.getElemParameter()
-                                .getName().equals("HBASE_PARAMETERS")) && !model.getElemParameter().isRepositoryValueUsed()) {
+                        && (model.getElemParameter().getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                || model.getElemParameter().getName().equals("HBASE_PARAMETERS") || model.getElemParameter()
+                                .getName().equals("SPARK_ADVANCED_PROPERTIES"))
+                        && !model.getElemParameter().isRepositoryValueUsed()) {
                     return true;
                 }
                 return super.getEnabledState() && (model == null || !model.getElemParameter().isBasedOnSubjobStarts());
@@ -438,8 +440,9 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
             public boolean getEnabledState() {
                 if (model != null
                         && !model.getElemParameter().getElement().isReadOnly()
-                        && (model.getElemParameter().getName().equals("HADOOP_ADVANCED_PROPERTIES") || model.getElemParameter()
-                                .getName().equals("HBASE_PARAMETERS"))) {
+                        && (model.getElemParameter().getName().equals("HADOOP_ADVANCED_PROPERTIES")
+                                || model.getElemParameter().getName().equals("SPARK_ADVANCED_PROPERTIES") || model
+                                .getElemParameter().getName().equals("HBASE_PARAMETERS"))) {
                     if (getExtendedTableViewer().getTable().getSelectionIndex() > -1) {
                         TableItem item = extendedTableViewer.getTable().getSelection()[0];
                         HashMap<String, String> itemMap = (HashMap<String, String>) item.getData();

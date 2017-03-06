@@ -35,6 +35,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyEvent;
@@ -51,6 +53,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseTrackListener;
@@ -73,6 +76,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -80,6 +85,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.dialogs.SearchPattern;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
@@ -245,6 +251,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     private Text constraintExpressionTextEditor;
 
+    private UnnotifiableColorStyledText columnNameTextFilter;
+
+    private Label filterImageLabel;
+
+    private Label expressionImageLabel;
+
     private Cursor currentCursor;
 
     private final ExpressionColorProvider expressionColorProvider;
@@ -352,7 +364,13 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     private ToolItem activateFilterCheck;
 
+    private ToolItem columnNameFilter;
+
     private boolean previousStateCheckFilter;
+
+    private TableViewer viewer;
+
+    private boolean previousColumnNameFilter;
 
     private IExpressionBuilderDialogController dialog;
 
@@ -522,7 +540,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         GridData centerData = new GridData(GridData.FILL_BOTH);
         centerComposite.setLayoutData(centerData);
 
-        GridLayout centerLayout = new GridLayout(2, false);
+        GridLayout centerLayout = new GridLayout(3, false);
         int marginCenterLayout = 0;
         centerLayout.marginLeft = marginCenterLayout;
         centerLayout.marginRight = marginCenterLayout;
@@ -543,6 +561,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         if (mapperManager.isAdvancedMap() && this instanceof OutputDataMapTableView) {
             createExpressionFilter(DEFAULT_OUT_EXPRESSION_FILTER);
+            createColumnNameFilter();
             initExtraTable();
         } else {
             initExtraTable();
@@ -831,16 +850,21 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                     }
 
                 });
-
             }
 
         };
         tableViewerCreatorForColumns = this.extendedTableViewerForColumns.getTableViewerCreator();
+
+        if (getZone() == Zone.INPUTS || getZone() == Zone.OUTPUTS) {
+            viewer = tableViewerCreatorForColumns.getTableViewer();
+            viewer.addFilter(new selectorViewerFilter());
+        }
+
         this.extendedTableViewerForColumns.setCommandStack(mapperManager.getCommandStack());
         tableForEntries = tableViewerCreatorForColumns.getTable();
         GridData tableEntriesGridData = new GridData(SWT.FILL, SWT.FILL, true, true);
         tableEntriesGridData.grabExcessVerticalSpace = true;
-        tableEntriesGridData.horizontalSpan = 2; // for 10690
+        tableEntriesGridData.horizontalSpan = 3; // for 10690
         tableEntriesGridData.minimumHeight = tableForEntries.getHeaderHeight() + tableForEntries.getItemHeight();
         tableForEntries.setLayoutData(tableEntriesGridData);
         tableViewerCreatorForColumns.setCellModifier(new TableCellModifier(tableViewerCreatorForColumns));
@@ -973,6 +997,57 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             });
         }
+
+        // add menu listener
+        tableForEntries.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseDown(MouseEvent e) {
+                if (e.button == 3 && getZone() == Zone.OUTPUTS) {
+                    Menu mainMenu = new Menu(tableForEntries);
+                    tableForEntries.setMenu(mainMenu);
+                    new MenuItem(mainMenu, SWT.SEPARATOR);
+                    // Custom
+                    MenuItem customItem = new MenuItem(mainMenu, SWT.PUSH);
+                    customItem.setText("Custom");
+                    // Add menu listeners
+                    final IService service = GlobalServiceRegister.getDefault().getService(IExpressionBuilderDialogService.class);
+                    customItem.addListener(SWT.Selection, new Listener() {
+
+                        public void handleEvent(Event event) {
+                            IExpressionBuilderDialogController dialogForTable = ((IExpressionBuilderDialogService) service)
+                                    .getExpressionBuilderInstance(DataMapTableView.this.getCenterComposite(), null,
+                                            mapperManager.getAbstractMapComponent(), true);
+                            if (dialogForTable instanceof TrayDialog) {
+                                TrayDialog parentDialog = (TrayDialog) dialogForTable;
+                                dialogForTable.setDefaultExpression(expressionFilterText.getText());
+                                if (Window.OK == parentDialog.open()) {
+                                    String expressionForTable = dialogForTable.getExpressionForTable();
+                                    TableItem[] selectedTableItems = tableForEntries.getSelection();
+                                    for (TableItem tableItem : selectedTableItems) {
+                                        ITableEntry currentModifiedEntry = (ITableEntry) tableItem.getData();
+                                        String currentExpr = currentModifiedEntry.getExpression();
+                                        if (expressionForTable != null && !expressionForTable.equals(currentExpr)) {
+                                            String replacedExpression = expressionForTable;
+                                            if (!StringUtils.isEmpty(currentExpr)) {
+                                                replacedExpression = expressionForTable.replace("${0}", currentExpr);//$NON-NLS-1$
+                                            }
+                                            mapperManager.changeEntryExpression(currentModifiedEntry, replacedExpression);
+                                            StyledTextHandler textTarget = mapperManager.getUiManager().getTabFolderEditors()
+                                                    .getStyledTextHandler();
+                                            textTarget.setCurrentEntry(currentModifiedEntry);
+                                            textTarget.setTextWithoutNotifyListeners(replacedExpression);
+                                            mapperManager.getUiManager().parseNewExpression(replacedExpression,
+                                                    currentModifiedEntry, false);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**
@@ -1556,8 +1631,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         });
 
         if (mapperManager.isAdvancedMap()) {
-
             createActivateFilterCheck();
+            createColumnNameFilterCheck();
 
         } else {
 
@@ -1631,6 +1706,35 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             });
         }
         // /////////////////////////////////////////////////////////////////
+    }
+
+    protected void createColumnNameFilterCheck() {
+        AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+        boolean isErrorReject = false;
+        if (getDataMapTable() instanceof OutputTable) {
+            isErrorReject = getMapperManager().ERROR_REJECT.equals(getDataMapTable().getName());
+        }
+        //
+        columnNameFilter = new ToolItem(toolBarActions, SWT.CHECK);
+        columnNameFilter.setEnabled(!mapperManager.componentIsReadOnly() && !isErrorReject);
+        previousColumnNameFilter = table.isActivateColumnNameFilter();
+        columnNameFilter.setSelection(table.isActivateColumnNameFilter());
+        columnNameFilter.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ColumnNameFilter")); //$NON-NLS-1$
+        columnNameFilter.setImage(ImageProviderMapper.getImage(ImageInfo.TMAP_FILTER_ICON));
+
+        if (columnNameFilter != null) {
+
+            columnNameFilter.addSelectionListener(new SelectionListener() {
+
+                public void widgetDefaultSelected(SelectionEvent e) {
+                }
+
+                public void widgetSelected(SelectionEvent e) {
+                    updateColumnNameFilterTextAndLayout(true);
+                    previousColumnNameFilter = columnNameFilter.getSelection();
+                }
+            });
+        }
     }
 
     protected void createToolItems() {
@@ -2373,6 +2477,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
 
+            expressionImageLabel = new Label(getCenterComposite(), SWT.NONE);
+            expressionImageLabel.setImage(ImageProviderMapper.getImage(ImageInfo.ACTIVATE_FILTER_ICON));
+            expressionImageLabel.setVisible(table.isActivateExpressionFilter());
+            expressionImageLabel.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.activateExpressionFilter")); //$NON-NLS-1$
+
             expressionFilterText = new UnnotifiableColorStyledText(getCenterComposite(), SWT.BORDER | SWT.V_SCROLL,
                     preferenceStore, LanguageManager.getCurrentLanguage().getName());
             // hywang add for 9225
@@ -2422,10 +2531,15 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (mapperManager.componentIsReadOnly()) {
                 expressionFilterText.setEditable(false);
                 openExpressionBuilder.setEnabled(false);
+                expressionImageLabel.setEnabled(false);
             }
             GridData gridData1 = new GridData();
             gridData1.exclude = !table.isActivateExpressionFilter();
             openExpressionBuilder.setLayoutData(gridData1);
+
+            GridData gridData2 = new GridData();
+            gridData2.exclude = !table.isActivateExpressionFilter();
+            expressionImageLabel.setLayoutData(gridData2);
             //
 
             GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
@@ -2637,6 +2751,109 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         }
     }
 
+    protected void createColumnNameFilter() {
+        if (mapperManager.isAdvancedMap() && getDataMapTable() instanceof AbstractInOutTable) {
+            final AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+
+            IPreferenceStore preferenceStore = CorePlugin.getDefault().getPreferenceStore();
+
+            filterImageLabel = new Label(getCenterComposite(), SWT.NONE);
+            filterImageLabel.setImage(ImageProviderMapper.getImage(ImageInfo.TMAP_FILTER_ICON));
+            filterImageLabel.setVisible(table.isActivateColumnNameFilter());
+            filterImageLabel.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ColumnNameFilter")); //$NON-NLS-1$
+
+            columnNameTextFilter = new UnnotifiableColorStyledText(getCenterComposite(), SWT.BORDER, preferenceStore,
+                    LanguageManager.getCurrentLanguage().getName());
+
+            if (mapperManager.componentIsReadOnly()) {
+                columnNameTextFilter.setEditable(false);
+                filterImageLabel.setEnabled(false);
+            }
+
+            GridData gridData1 = new GridData();
+            gridData1.exclude = !table.isActivateColumnNameFilter();
+            gridData1.horizontalAlignment = GridData.HORIZONTAL_ALIGN_CENTER;
+            filterImageLabel.setLayoutData(gridData1);
+
+            GridData nameFilterTextGridData = new GridData(GridData.FILL_HORIZONTAL);
+            nameFilterTextGridData.minimumHeight = 10;
+            nameFilterTextGridData.heightHint = 15;
+            nameFilterTextGridData.minimumWidth = 25;
+            nameFilterTextGridData.widthHint = 50;
+            columnNameTextFilter.setLayoutData(nameFilterTextGridData);
+            columnNameTextFilter.setText("");
+
+            columnNameTextFilter.setVisible(table.isActivateColumnNameFilter());
+            nameFilterTextGridData.exclude = !table.isActivateColumnNameFilter();
+            //
+            columnNameTextFilter.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
+            columnNameTextFilter.setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+            columnNameTextFilter.addControlListener(new ControlListener() {
+
+                public void controlMoved(ControlEvent e) {
+                    redrawColumnNameFilter();
+                }
+
+                public void controlResized(ControlEvent e) {
+                    redrawColumnNameFilter();
+                }
+
+            });
+
+            columnNameTextFilter.addModifyListener(new ModifyListener() {
+
+                public void modifyText(ModifyEvent e) {
+                    parseColumnNameFilterRefresh();
+                }
+            });
+        }
+    }
+
+    public String getNameFilter() {
+        return this.columnNameTextFilter.getText().trim();
+    }
+
+    class selectorViewerFilter extends ViewerFilter {
+
+        @Override
+        public boolean select(Viewer viewer, Object parentElement, Object element) {
+            String pattern = getNameFilter();
+            if (!columnNameFilter.getSelection()) {
+                pattern = "";
+            }
+            SearchPattern matcher = new SearchPattern();
+            // SearchPattern for dynamic search/exact match/fuzzy match
+            matcher.setPattern("*" + pattern.trim() + "*");
+            if (element instanceof OutputColumnTableEntry) {
+                OutputColumnTableEntry outputColumn = (OutputColumnTableEntry) element;
+                //
+                if (outputColumn.getParent() instanceof OutputTable) {
+                    IMetadataColumn metadataColumn = outputColumn.getMetadataColumn();
+                    if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
+                        return false;
+
+                    }
+
+                }
+
+            }
+            if (element instanceof InputColumnTableEntry) {
+                InputColumnTableEntry inputColumn = (InputColumnTableEntry) element;
+                if (inputColumn.getParent() instanceof InputTable) {
+                    IMetadataColumn metadataColumn = inputColumn.getMetadataColumn();
+                    if (metadataColumn != null && (!matcher.matches(metadataColumn.getLabel()))) {
+                        return false;
+
+                    }
+
+                }
+
+            }
+            return true;
+        }
+
+    }
+
     /**
      * DOC amaumont Comment method "onExpressionFilterTextResized".
      */
@@ -2645,6 +2862,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         // System.currentTimeMillis());
         if (!expressionFilterText.isDisposed()) {
             expressionFilterText.redraw();
+        }
+    }
+
+    private void redrawColumnNameFilter() {
+        if (!columnNameTextFilter.isDisposed()) {
+            columnNameTextFilter.redraw();
         }
     }
 
@@ -2807,6 +3030,10 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         return this.expressionFilterText;
     }
 
+    public UnnotifiableColorStyledText getColumnNameFilterText() {
+        return this.columnNameTextFilter;
+    }
+
     /**
      * DOC amaumont Comment method "correctAsynchStyledTextWrapBug".
      */
@@ -2858,6 +3085,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
         GridData gridData2 = (GridData) openExpressionBuilder.getLayoutData();
 
+        GridData gridData3 = (GridData) expressionImageLabel.getLayoutData();
+
         if (activateFilterCheck.getSelection()) {
             expressionFilterText.setVisible(true);
             gridData.exclude = false;
@@ -2866,6 +3095,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             // hywang add
             openExpressionBuilder.setVisible(true);
             gridData2.exclude = false;
+
+            expressionImageLabel.setVisible(true);
+            gridData3.exclude = false;
 
             mapperManager.getUiManager().parseExpression(expressionFilterText.getText(), table.getExpressionFilter(), false,
                     false, false);
@@ -2876,6 +3108,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             // hywang add
             openExpressionBuilder.setVisible(false);
             gridData2.exclude = true;
+
+            expressionImageLabel.setVisible(false);
+            gridData3.exclude = true;
 
             mapperManager.removeTableEntry(table.getExpressionFilter());
         }
@@ -2908,6 +3143,87 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         }
 
         correctAsynchStyledTextWrapBug();
+    }
+
+    protected void updateColumnNameFilterTextAndLayout(boolean buttonPressed) {
+        final AbstractInOutTable table = (AbstractInOutTable) getDataMapTable();
+        GridData gridData = (GridData) columnNameTextFilter.getLayoutData();
+        GridData gridData1 = (GridData) filterImageLabel.getLayoutData();
+
+        if (columnNameFilter.getSelection()) {
+            columnNameTextFilter.setVisible(true);
+            gridData.exclude = false;
+            table.setActiveColumnNameFilter(true);
+            gridData1.exclude = false;
+            filterImageLabel.setVisible(true);
+
+        } else {
+            columnNameTextFilter.setVisible(false);
+            gridData.exclude = true;
+            table.setActiveColumnNameFilter(false);
+            gridData1.exclude = true;
+            filterImageLabel.setVisible(false);
+
+        }
+        parseColumnNameFilterRefresh();
+        if (buttonPressed) {
+            DataMapTableView.this.changeSize(DataMapTableView.this.getPreferredSize(false, true, false), true, true);
+        }
+        DataMapTableView.this.layout();
+
+        mapperManager.getUiManager().refreshBackground(true, false);
+
+        if (columnNameTextFilter.isVisible() && buttonPressed) {
+            columnNameTextFilter.setFocus();
+        }
+    }
+
+    private void parseColumnNameFilterRefresh() {
+        viewer.refresh();
+
+        if (abstractDataMapTable instanceof OutputTable) {
+            OutputTable outputTable = (OutputTable) abstractDataMapTable;
+            List<IColumnEntry> oldOuputEntries = outputTable.getDataMapTableEntries();
+            // Table tableViewerForEntries = tableViewerCreatorForColumns.getTableViewer().getTable();
+            if (oldOuputEntries != null) {
+                for (IColumnEntry entry : oldOuputEntries) {
+                    if (entry instanceof OutputColumnTableEntry) {
+                        OutputColumnTableEntry outputEntry = (OutputColumnTableEntry) entry;
+                        if (outputEntry.getExpression() != null) {
+                            String[] expressions = outputEntry.getExpression().split("\\s+");
+                            for (String expression : expressions) {
+                                mapperManager.getUiManager().parseNewFilterColumn(expression, outputEntry, false);
+                                mapperManager.getUiManager().refreshBackground(false, false);
+                            }
+                        }
+                    }
+                }
+                resizeAtExpandedSize();
+            }
+        }
+
+        if (abstractDataMapTable instanceof InputTable) {
+            InputTable inputTable = (InputTable) abstractDataMapTable;
+            List<IColumnEntry> oldInputEntries = inputTable.getDataMapTableEntries();
+            if (oldInputEntries != null) {
+                for (IColumnEntry entry : oldInputEntries) {
+                    if (entry instanceof InputColumnTableEntry) {
+                        // InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
+                        StyledTextHandler textTarget = mapperManager.getUiManager().getTabFolderEditors().getStyledTextHandler();
+                        if (textTarget.getStyledText().getText() != null && textTarget.getCurrentEntry() != null) {
+                            String[] expressions = textTarget.getStyledText().getText().split("\\s+");
+                            for (String expression : expressions) {
+                                mapperManager.getUiManager()
+                                        .parseNewFilterColumn(expression, textTarget.getCurrentEntry(), false);
+                                mapperManager.getUiManager().refreshBackground(false, false);
+                            }
+                        }
+                        mapperManager.getUiManager().refreshBackground(true, false);
+                    }
+                }
+                resizeAtExpandedSize();
+            }
+        }
     }
 
     /**

@@ -132,7 +132,7 @@ public class PigCategoryComposite extends CategoryComposite {
                     if (function.isUserDefined()) {
                         event.data = (JavaUtils.JAVA_PIGUDF_DIRECTORY + "." + function.getName() + "()");
                     } else {
-                        event.data = (FunctionManagerExt.getOneColData(column, false));
+                        event.data = (FunctionManagerExt.getOneColData(column, false, false));
                     }
                 }
             }

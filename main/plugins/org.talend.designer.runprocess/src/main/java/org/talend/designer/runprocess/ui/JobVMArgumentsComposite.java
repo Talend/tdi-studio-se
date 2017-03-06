@@ -365,7 +365,7 @@ public class JobVMArgumentsComposite {
     protected void editItem(ISelection sel) {
         IStructuredSelection selection = (IStructuredSelection) sel;
         String existing = (String) selection.getFirstElement();
-        String value = getExistingInputObject(existing.replace(" ", ""));
+        String value = getExistingInputObject(existing.trim());
         if (value != null) {
             int indexOf = list.indexOf(existing);
             list.remove(existing);

@@ -295,7 +295,6 @@ public class Node extends Element implements IGraphicalNode {
 
     boolean isJunitStart = false;
 
-
     // as the talend job contains multiple mapreduce jobs, use this to indicate which mapreduce job contains this
     // graphic node
     private Integer mrGroupId;
@@ -1420,7 +1419,11 @@ public class Node extends Element implements IGraphicalNode {
                             }
                         }
                         if (takeSchema.booleanValue()) {
+                            String connectionLabel = connection.getMetadataTable().getLabel();
                             MetadataToolHelper.copyTable(mainTargetTable, connection.getMetadataTable());
+                            if (connection.getSource().isELTComponent()) {
+                                connection.getMetadataTable().setLabel(connectionLabel);
+                            }
                             if (connection.getTarget().isELTComponent()) {
                                 IElementParameter elemParam = connection.getTarget().getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
                                 if (elemParam != null && elemParam.getFieldType().equals(EParameterFieldType.TEXT)) {
@@ -1771,12 +1774,8 @@ public class Node extends Element implements IGraphicalNode {
                 // still have connetions using this metadataTable, couldn't delete
                 return;
             }
-            if (table != null) { // hywang add for bug 0009593
-                String label = table.getLabel();
-                IMetadataTable metadataTable = MetadataToolHelper.getMetadataTableFromNode(source, label);
-                if (metadataTable != null) {
-                    source.metadataList.remove(metadataTable);
-                }
+            if (table != null) {
+                source.metadataList.remove(table);
             }
         }
 
@@ -1817,7 +1816,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.designer.core.ui.editor.Element#getPropertyValue(java.lang.Object)
      */
     @Override
@@ -1831,7 +1830,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.designer.core.ui.editor.Element#setPropertyValue(java.lang.Object, java.lang.Object)
      */
     @Override
@@ -1989,7 +1988,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.designer.core.ui.editor.Element#getElementName()
      */
     @Override
@@ -2239,7 +2238,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#hasConditionnalOutputs()
      */
     @Override
@@ -2483,7 +2482,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#setProcess(org.talend.core.model.process.IProcess)
      */
     @Override
@@ -2666,12 +2665,14 @@ public class Node extends Element implements IGraphicalNode {
                             if (itemParameter.getFieldType() == EParameterFieldType.PREV_COLUMN_LIST) {
                                 preColumnListParamNames.add(itemParameter.getName());
                             }
-                            if (itemParameter.getFieldType() == EParameterFieldType.CONTEXT_PARAM_NAME_LIST && tableValues.size() > 0) {
+                            if (itemParameter.getFieldType() == EParameterFieldType.CONTEXT_PARAM_NAME_LIST
+                                    && tableValues.size() > 0) {
                                 Object[] itemsValue = itemParameter.getListItemsValue();
-                                if (itemParameter.getListItemsDisplayName() == null || itemParameter.getListItemsDisplayName().length == 0) {
-                                     itemsValue = getContextParamsFromProcess();
-                                } 
-                                
+                                if (itemParameter.getListItemsDisplayName() == null
+                                        || itemParameter.getListItemsDisplayName().length == 0) {
+                                    itemsValue = getContextParamsFromProcess();
+                                }
+
                                 for (int index = 0; index < tableValues.size(); index++) {
                                     Map<String, Object> tabMap = tableValues.get(index);
                                     Object value = tabMap.get(itemParameter.getName());
@@ -2979,19 +2980,19 @@ public class Node extends Element implements IGraphicalNode {
         }
 
     }
-    
+
     private Object[] getContextParamsFromProcess() {
         IElementParameter processTypeParam = this.getElementParameterFromField(EParameterFieldType.PROCESS_TYPE);
         if (processTypeParam == null) {
             processTypeParam = this.getElementParameterFromField(EParameterFieldType.ROUTE_INPUT_PROCESS_TYPE);
         }
         if (processTypeParam != null) {
-            IElementParameter jobElemParam = processTypeParam.getChildParameters()
-                    .get(EParameterName.PROCESS_TYPE_PROCESS.getName());
-            IElementParameter jobVersionParam = processTypeParam.getChildParameters()
-                    .get(EParameterName.PROCESS_TYPE_VERSION.getName());
-            IElementParameter contextElemParam = processTypeParam.getChildParameters()
-                    .get(EParameterName.PROCESS_TYPE_CONTEXT.getName());
+            IElementParameter jobElemParam = processTypeParam.getChildParameters().get(
+                    EParameterName.PROCESS_TYPE_PROCESS.getName());
+            IElementParameter jobVersionParam = processTypeParam.getChildParameters().get(
+                    EParameterName.PROCESS_TYPE_VERSION.getName());
+            IElementParameter contextElemParam = processTypeParam.getChildParameters().get(
+                    EParameterName.PROCESS_TYPE_CONTEXT.getName());
             // get context list
             String processId = (String) jobElemParam.getValue();
             String contextName = (String) contextElemParam.getValue();
@@ -3639,6 +3640,7 @@ public class Node extends Element implements IGraphicalNode {
             getAllSourceNode(node, list);
         }
     }
+
     public boolean isSchemaSynchronized() {
         return schemaSynchronized;
     }
@@ -3858,7 +3860,11 @@ public class Node extends Element implements IGraphicalNode {
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
                         } else if (connector != null && connector.getMaxLinkInput() != 0 && connector.getMaxLinkOutput() == 0) {
-                            if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_NONE)) {
+                            if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
+                                    | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
+                                    | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
+                                    | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                    | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
                                 schemaSynchronized = false;
                                 String errorMessage = Messages.getString(
                                         "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
@@ -3930,7 +3936,9 @@ public class Node extends Element implements IGraphicalNode {
                     if (firstIsMerge) {
                         IMetadataTable firstSchema = inputs.get(0).getMetadataTable();
                         if (inputs.get(0).getLineStyle().equals(EConnectionType.FLOW_MERGE)) {
-                            boolean isSame = firstSchema.sameMetadataAs(getMetadataList().get(0));
+                            boolean isSame = firstSchema.sameMetadataAs(getMetadataList().get(0),
+                                    IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                            | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_DBTYPE);
                             if (!isSame) {
                                 String warningMessage = Messages.getString(
                                         "Node.inputLinkDifferentFromSchemaDefined", getUniqueName()); //$NON-NLS-1$
@@ -4155,7 +4163,6 @@ public class Node extends Element implements IGraphicalNode {
         }
     }
 
-
     @Override
     public void checkAndRefreshNode() {
         Problems.clearAll(this);
@@ -4207,9 +4214,6 @@ public class Node extends Element implements IGraphicalNode {
         }
     }
 
-
-
-
     /*
      * Includes new custom dependency libraries into bundle classpath by default
      */
@@ -4226,7 +4230,6 @@ public class Node extends Element implements IGraphicalNode {
                 return;
             }
 
-
             Object stored = additionalProperties.get(Constants.BUNDLE_CLASSPATH);
             if (stored == null) {
                 return;
@@ -4234,10 +4237,10 @@ public class Node extends Element implements IGraphicalNode {
 
             List<String> bundleClassPath = new ArrayList<>(Arrays.asList(stored.toString().split(",")));
 
-            List<String> currentLibs =  new ArrayList<>();
+            List<String> currentLibs = new ArrayList<>();
 
-            for(Map m : (List<Map>)param.getValue()) {
-                currentLibs.add((String)m.get("JAR_NAME"));
+            for (Map m : (List<Map>) param.getValue()) {
+                currentLibs.add((String) m.get("JAR_NAME"));
             }
 
             if (previousCustomLibs != null) {
@@ -4263,7 +4266,7 @@ public class Node extends Element implements IGraphicalNode {
                 sb.append(s).append(",");
             }
 
-            additionalProperties.put(Constants.BUNDLE_CLASSPATH,  sb.substring(0, sb.length() - 1));
+            additionalProperties.put(Constants.BUNDLE_CLASSPATH, sb.substring(0, sb.length() - 1));
         }
     }
 
@@ -4467,7 +4470,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#renameMetadataColumnName(java.lang.String, java.lang.String,
      * java.lang.String)
      */
@@ -4510,7 +4513,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#isThereLinkWithHash()
      */
     @Override
@@ -4693,7 +4696,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#reloadComponent(org.talend.core.model.components.IComponent,
      * java.util.Map)
      */
@@ -4857,7 +4860,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#getDesignSubjobStartNode()
      */
     @Override
@@ -4867,7 +4870,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#isDesignSubjobStartNode()
      */
     @Override
@@ -4877,7 +4880,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * return false is ok, becase all nodes generated from virtual component are DataNode.
-     *
+     * 
      * @see org.talend.core.model.process.INode#isVirtualGenerateNode()
      */
     @Override
@@ -4910,7 +4913,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#isGeneratedAsVirtualComponent()
      */
     @Override
@@ -4961,7 +4964,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#isUseLoopOnConditionalOutput(java.lang.String)
      */
     @Override
@@ -4971,7 +4974,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#getUniqueShortName()
      */
     @Override
@@ -5009,7 +5012,7 @@ public class Node extends Element implements IGraphicalNode {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.process.INode#isSubProcessContainTraceBreakpoint()
      */
     @Override

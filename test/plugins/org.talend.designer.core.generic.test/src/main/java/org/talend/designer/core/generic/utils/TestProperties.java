@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.generic.utils;
 
+import static org.talend.daikon.properties.presentation.Widget.*;
 import static org.talend.daikon.properties.property.PropertyFactory.*;
 
 import java.util.Collections;
@@ -19,12 +20,14 @@ import java.util.Set;
 
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.common.FixedConnectorsComponentProperties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 
 /**
- * 
+ *
  * created by ycbai on 2016年3月15日 Detailled comment
  *
  */
@@ -38,6 +41,10 @@ public class TestProperties extends FixedConnectorsComponentProperties {
 
     public TestContactProperties contactProps = new TestContactProperties("contactProps"); //$NON-NLS-1$
 
+    public ComponentReferenceProperties<TestReferencedProperties> referencePros = new ComponentReferenceProperties<>(
+            "referencePros", //$NON-NLS-1$
+            TestReferencedProperties.TEST_DEFINTION_NAME);
+
     protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema"); //$NON-NLS-1$
 
     public TestProperties(String name) {
@@ -47,10 +54,16 @@ public class TestProperties extends FixedConnectorsComponentProperties {
     @Override
     public void setupLayout() {
         super.setupLayout();
-        Form form = Form.create(this, Form.MAIN);
-        form.addRow(userId);
-        form.addRow(nestedProps.getForm(Form.MAIN));
-        form.addRow(contactProps.getForm(Form.MAIN));
+
+        Form mainForm = Form.create(this, Form.MAIN);
+        mainForm.addRow(userId);
+        mainForm.addRow(nestedProps.getForm(Form.MAIN));
+        mainForm.addRow(contactProps.getForm(Form.MAIN));
+
+        Form refForm = Form.create(this, Form.REFERENCE);
+        Widget compListWidget = widget(referencePros).setWidgetType(Widget.COMPONENT_REFERENCE_WIDGET_TYPE);
+        refForm.addRow(compListWidget);
+        refForm.addRow(mainForm);
     }
 
     @Override

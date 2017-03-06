@@ -1,0 +1,240 @@
+<%@ jet
+%>
+<%
+Boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
+if (!isParallelize) {
+	manager = getELTManager(dbmsId, cid);
+    
+    String ending="";
+    
+	boolean useCascade = VERTICA.equalsIgnoreCase(dbmsId);
+    
+    if(!("NONE").equals(tableAction)) {
+        if(("DROP_CREATE").equals(tableAction)) {
+        %>
+            java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+            <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+            stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
+            <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+            stmtDrop_<%=cid%>.close();
+            java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+            <%dbLog.table().createTry(dbLog.var("tableName"));%>
+            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+            <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            stmtCreate_<%=cid%>.close();
+        <%
+        } else if(("CREATE").equals(tableAction)) {
+        %>
+            java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+            <%dbLog.table().createTry(dbLog.var("tableName"));%>
+            stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+            <%dbLog.table().createDone(dbLog.var("tableName"));%>
+            stmtCreate_<%=cid%>.close();
+        <%
+        } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
+            boolean tableNameCaseSensitive=false;
+            if(DB2.equalsIgnoreCase(dbmsId)||POSTGRESQL.equalsIgnoreCase(dbmsId)||GREENPLUM.equalsIgnoreCase(dbmsId)||POSTGREPLUS.equalsIgnoreCase(dbmsId)){
+                tableNameCaseSensitive=true;
+            }
+            
+            if(MSSQL.equalsIgnoreCase(dbmsId)) {
+            %>
+                java.sql.Statement isExistStmt_<%=cid%> = conn_<%=cid%>.createStatement();
+                boolean whetherExist_<%=cid%> = false;
+                try {
+                    isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM " + tableName_<%=cid%>);
+                    whetherExist_<%=cid%> = true;
+                } catch (java.lang.Exception e){
+                    whetherExist_<%=cid%> = false;
+                }
+                isExistStmt_<%=cid%>.close();
+            <%
+            } else if (ORACLE.equalsIgnoreCase(dbmsId) || SAPHANA.equalsIgnoreCase(dbmsId)) {
+            %>
+            	String tableNameForSearch_<%=cid%> = <%=table%>;
+            	String dbschemaForSearch_<%=cid%> = null;
+            	if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().isEmpty()) {
+            		dbschemaForSearch_<%=cid%> = dbUser_<%=cid %>.toUpperCase();
+            	} else {
+            		dbschemaForSearch_<%=cid%> = dbschema_<%=cid%>.toUpperCase();
+            	}
+            	
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                if(tableNameForSearch_<%=cid%>.indexOf("\"")==-1){
+                    tableNameForSearch_<%=cid%> = tableNameForSearch_<%=cid%>.toUpperCase();
+                }else{
+                    tableNameForSearch_<%=cid%> = tableNameForSearch_<%=cid%>.replaceAll("\"","");
+                }
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, dbschemaForSearch_<%=cid%>, tableNameForSearch_<%=cid%>, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                if(rsTable_<%=cid%>.next()) {
+                    whetherExist_<%=cid%> = true;
+                }
+                rsTable_<%=cid%>.close();
+
+            <%
+            } else if ( SYBASE.equalsIgnoreCase(dbmsId)
+                        || INFORMIX.equalsIgnoreCase(dbmsId) ) {
+            %>
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
+                    if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>)
+                        && (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbschema_<%=cid%>) || dbschema_<%=cid%>.trim().length() ==0)) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            } else if( DB2.equalsIgnoreCase(dbmsId) || TERADATA.equalsIgnoreCase(dbmsId)){
+            %>
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
+                    if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>)
+                        && (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbschema_<%=cid%>) || (dbschema_<%=cid%>.trim().length() ==0 && dbUser_<%=cid%>.equalsIgnoreCase(schema_<%=cid%>)))) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            } else if (GREENPLUM.equalsIgnoreCase(dbmsId) || POSTGRESQL.equalsIgnoreCase(dbmsId) || POSTGREPLUS.equalsIgnoreCase(dbmsId) || VERTICA.equalsIgnoreCase(dbmsId)) {
+            %>
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                String defaultSchema_<%=cid%> = "public";
+                if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+                    java.sql.Statement stmtSchema_<%=cid%> = conn_<%=cid%>.createStatement();
+                    java.sql.ResultSet rsSchema_<%=cid%> = stmtSchema_<%=cid%>.executeQuery("select current_schema() ");
+                    while(rsSchema_<%=cid%>.next()){
+                        defaultSchema_<%=cid%> = rsSchema_<%=cid%>.getString("current_schema");
+                    }
+                    rsSchema_<%=cid%>.close();
+                    stmtSchema_<%=cid%>.close();
+                }
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    String schema_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_SCHEM");
+                    if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=table%>)
+                        && (schema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(dbschema_<%=cid%>) || ((dbschema_<%=cid%> ==null || dbschema_<%=cid%>.trim().length() ==0) && defaultSchema_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(schema_<%=cid%>)))) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            } else if(EXASOL.equalsIgnoreCase(dbmsId)) {
+            %>
+            	String tableForSearch_<%=cid%> = <%=table%>;
+            	if(tableForSearch_<%=cid%> != null){
+            		if(tableForSearch_<%=cid%>.startsWith("\"") && tableForSearch_<%=cid%>.endsWith("\"")){
+            			tableForSearch_<%=cid%> =  tableForSearch_<%=cid%>.substring(1,tableForSearch_<%=cid%>.length()-1);
+            		}else{
+            			tableForSearch_<%=cid%> =  tableForSearch_<%=cid%>.toUpperCase();
+            		}
+            	}
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, conn_<%=cid%>.getSchema(), tableForSearch_<%=cid%>, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+               	if(rsTable_<%=cid%>.next()) {
+					whetherExist_<%=cid%> = true;
+				}
+                rsTable_<%=cid%>.close();
+            <%
+            } else if(REDSHIFT.equalsIgnoreCase(dbmsId)) {
+            %>
+                String schemaForSearch_<%=cid%> = null;
+				String tableForSearch_<%=cid%> = <%=table%>;
+				
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, schemaForSearch_<%=cid%>, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                while(rsTable_<%=cid%>.next()) {
+                    if(rsTable_<%=cid%>.getString("TABLE_NAME").equalsIgnoreCase(tableForSearch_<%=cid%>)) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            } else {
+            %>
+                java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                while(rsTable_<%=cid%>.next()) {
+                    String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+                    if(table_<%=cid%>.equalsIgnoreCase(<%=table%>)) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            }
+            %>
+            
+            <%
+            if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
+            %>
+                if(!whetherExist_<%=cid%>) {
+                    java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                    <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                    stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                    <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                    stmtCreate_<%=cid%>.close();
+                }
+            <%
+            } else {
+            %>
+                if(whetherExist_<%=cid%>) {
+                    java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+                    <%dbLog.table().dropTry(dbLog.var("tableName"));%>
+                    stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
+                    <%dbLog.table().dropDone(dbLog.var("tableName"));%>
+                    stmtDrop_<%=cid%>.close();
+                }
+                java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
+                <%dbLog.table().createTry(dbLog.var("tableName"));%>
+                stmtCreate_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)");
+                <%dbLog.table().createDone(dbLog.var("tableName"));%>
+                stmtCreate_<%=cid%>.close();
+            <%
+            }
+        } else if(("CLEAR").equals(tableAction)) {
+        %>
+            java.sql.Statement stmtClear_<%=cid%> = conn_<%=cid%>.createStatement();
+            <%dbLog.table().clearTry(dbLog.var("tableName"));%>
+            stmtClear_<%=cid%>.executeUpdate("<%=manager.getDeleteTableSQL()%>");
+            <%dbLog.table().clearDone(dbLog.var("tableName"));%>
+            stmtClear_<%=cid%>.close();
+        <%
+        } else if(("TRUNCATE").equals(tableAction)) {
+        %>
+            java.sql.Statement stmtTrunc_<%=cid%> = conn_<%=cid%>.createStatement();
+            <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
+            <%if(DB2.equalsIgnoreCase(dbmsId)){%>
+                conn_<%=cid%>.commit();
+            <%}%>
+            stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
+            <%if(INFORMIX.equalsIgnoreCase(dbmsId)){%>
+                if(!conn_<%= cid %>.getAutoCommit()){
+                    conn_<%=cid%>.commit();
+                }
+            <%}%>
+            <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
+            stmtTrunc_<%=cid%>.close();
+        <%
+        }
+    }
+}
+%>

@@ -57,6 +57,14 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="10"
+    >
+      <DEFAULT>mysql_id</DEFAULT>
+    </PARAMETER>
 
 
    </PARAMETERS>

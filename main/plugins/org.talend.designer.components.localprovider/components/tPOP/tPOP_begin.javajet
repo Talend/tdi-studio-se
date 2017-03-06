@@ -202,20 +202,26 @@ boolean isNewerEmailFirst = ("true").equals(ElementParameterParser.getValue(node
 				if (isMatch_<%=cid%>) {
     <%
     		}
-    
-    		if (bDeleteFromServer){
-    %> 
-     			message_<%=cid %>.setFlag(javax.mail.Flags.Flag.DELETED, true);
-    		<%}%>
+    %>
 			    String filename_<%=cid %> = <%=filenamePattern %>;
 			    java.io.File file_<%=cid %> = new java.io.File(<%=outputDirectory %>, filename_<%=cid %>);
 			    java.io.OutputStream os_<%=cid %> = new java.io.FileOutputStream(file_<%=cid %>);
-			    
+	    
 <%
    				 //for bug TDI-21323
 %> 
 			    message_<%=cid %>.writeTo(os_<%=cid %>);
 			    os_<%=cid %>.close();
+				
+	<%
+    		if (bDeleteFromServer){
+    %> 
+     			message_<%=cid %>.setFlag(javax.mail.Flags.Flag.DELETED, true);
+    <%
+    		}
+    %>
+
+
 			    nb_email_<%=cid %>++;
 			    globalMap.put("<%=cid %>_CURRENT_FILE", filename_<%=cid %>);
 			    globalMap.put("<%=cid %>_CURRENT_FILEPATH", file_<%=cid %>.getAbsolutePath());

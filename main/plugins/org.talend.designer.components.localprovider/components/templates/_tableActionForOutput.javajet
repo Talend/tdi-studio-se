@@ -7,20 +7,24 @@ String dbms=ElementParameterParser.getValue(node, "__MAPPING__");
 boolean convertToUppercase_tableAction = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONVERT_COLUMN_TABLE_TO_UPPERCASE__"));
 if (!isParallelize) {
 //end issue 0010346 Parallelization crash with "Drop table if exists and create"
-    manager = getManager(dbmsId, cid);
+	
+	manager = getManager(dbmsId, cid);
+    
     String ending="";
-
+    
+	//TODO need to remove it as it seems not useful now
     if("VECTORWISE".equalsIgnoreCase(dbmsId)) {
         ending="WITH STRUCTURE = VECTORWISE";
     }
-
+	
     boolean useCascade = "true".equals(ElementParameterParser.getValue(node,"__USE_CASCADE__"));
+    
     //bugfix: TDI-31650
     boolean setQueryTimeOut = false;
     String queryTimeOutInSeconds = null;
     if(SYBASE.equalsIgnoreCase(dbmsId)){
-            setQueryTimeOut = "true".equals(ElementParameterParser.getValue(node,"__SET_QUERY_TIMEOUT__"));
-            queryTimeOutInSeconds = ElementParameterParser.getValue(node,"__QUERY_TIMEOUT_IN_SECONDS__");
+        setQueryTimeOut = "true".equals(ElementParameterParser.getValue(node,"__SET_QUERY_TIMEOUT__"));
+        queryTimeOutInSeconds = ElementParameterParser.getValue(node,"__QUERY_TIMEOUT_IN_SECONDS__");
     }
 
     if(!("NONE").equals(tableAction)) {
@@ -137,7 +141,7 @@ if (!isParallelize) {
                                 java.sql.Statement isExistStmt_<%=cid%> = conn_<%=cid%>.createStatement();
                                 boolean whetherExist_<%=cid%> = false;
                                 try {
-                                    isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
+                                    isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" + tableName_<%=cid%> + "]" );
                                     whetherExist_<%=cid%> = true;
                                 } catch (java.lang.Exception e){
                                     whetherExist_<%=cid%> = false;

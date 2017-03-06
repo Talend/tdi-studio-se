@@ -173,6 +173,167 @@
 	}
 
 
+	<%
+	String resultSizeType = ElementParameterParser.getValue(node,"__RESULT_SIZE__");
+	%>
+	class BigQueryUtil_<%=cid%> {
+		String projectId;
+		com.google.api.services.bigquery.Bigquery bigqueryclient = null;
+		String tokenFile;
+		
+		public BigQueryUtil_<%=cid%>(String projectId, com.google.api.services.bigquery.Bigquery bigqueryclient, String tokenFile) {
+			this.projectId = projectId;
+			this.bigqueryclient = bigqueryclient;
+			this.tokenFile = tokenFile;
+		}
+		
+		boolean useLargeResult = false;
+		String tempDataset;
+		String tempTable;
+		
+		private String genTempName(String prefix){
+			return "temp_" + prefix + java.util.UUID.randomUUID().toString().replaceAll("-", "") + "<%=cid%>".toLowerCase().replaceAll("[^a-z0-9]", "0").replaceAll("^[^a-z]", "a") + Integer.toHexString(java.util.concurrent.ThreadLocalRandom.current().nextInt());
+		}
+		
+		public void cleanup() throws Exception{
+			if(useLargeResult){
+				bigqueryclient.tables().delete(projectId, tempDataset, tempTable).execute();
+				bigqueryclient.datasets().delete(projectId, tempDataset).execute();
+			}
+		}
+		
+        // private String getLocation(com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig) throws Exception {
+            // String location = null;
+            // com.google.api.services.bigquery.model.JobConfiguration config = new com.google.api.services.bigquery.model.JobConfiguration();
+            // config.setQuery(queryConfig);
+            // config.setDryRun(true);
+            // com.google.api.services.bigquery.model.Job job = new com.google.api.services.bigquery.model.Job();
+            // job.setConfiguration(config);
+            // List<com.google.api.services.bigquery.model.TableReference> referencedTables = bigqueryclient.jobs().insert(projectId, job).execute().getStatistics().getQuery().getReferencedTables();
+            // if(referencedTables != null && !referencedTables.isEmpty()){
+                // location = bigqueryclient.tables().get(projectId, referencedTables.get(0).getDatasetId(), referencedTables.get(0).getTableId()).execute().getLocation();
+            // }
+            // return location;
+        // }
+		
+		private void createDataset(String location) throws Exception {
+			com.google.api.services.bigquery.model.Dataset dataset = new com.google.api.services.bigquery.model.Dataset().setDatasetReference(new com.google.api.services.bigquery.model.DatasetReference().setProjectId(projectId).setDatasetId(tempDataset));
+			// if(location != null){
+				// dataset.setLocation(location); // do not support on current version of API
+			// }
+			String description = "Dataset for BigQuery query job temporary table";
+			dataset.setFriendlyName(description);
+        	dataset.setDescription(description);
+        	bigqueryclient.datasets().insert(projectId, dataset).execute();
+		}
+		
+		public com.google.api.services.bigquery.model.Job executeQuery(String query, boolean useLargeResult) throws Exception{
+			com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig = new com.google.api.services.bigquery.model.JobConfigurationQuery();
+			queryConfig.setQuery(query);
+			if(useLargeResult){
+				this.useLargeResult = true;
+				tempDataset = genTempName("dataset");
+				tempTable = genTempName("table");
+				//createDataset(getLocation(queryConfig)); // do not support on current version of API
+				createDataset(null);
+				queryConfig.setAllowLargeResults(true);
+				queryConfig.setDestinationTable(new com.google.api.services.bigquery.model.TableReference()
+												.setProjectId(projectId)
+												.setDatasetId(tempDataset)
+												.setTableId(tempTable));
+			}
+			
+			com.google.api.services.bigquery.model.JobConfiguration config = new com.google.api.services.bigquery.model.JobConfiguration();
+			config.setQuery(queryConfig);
+			
+			com.google.api.services.bigquery.model.Job job = new com.google.api.services.bigquery.model.Job();
+			job.setConfiguration(config);
+			
+			com.google.api.services.bigquery.model.Job insert = null;
+			com.google.api.services.bigquery.model.JobReference jobId = null;
+			try {
+				insert = bigqueryclient.jobs().insert(projectId, job).execute();
+				jobId = insert.getJobReference();
+			} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e) {
+				try {
+					java.io.File f = new java.io.File(tokenFile);
+					boolean isRemoved = f.delete();
+					if(isRemoved){
+						<%
+				    	if(isLog4jEnabled){
+						%>
+							log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
+						<%
+						}
+				    	%>
+						System.err.println("---> Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
+					}else{
+						throw new java.lang.Exception();
+					}
+				} catch (java.lang.Exception ee) {
+					<%
+			    	if(isLog4jEnabled){
+					%>
+						log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
+					<%
+					}
+			    	%>
+					System.err.println("---> Unable to connect. This might come from the token expiration. Remove the file " + tokenFile + " Execute again the job with an empty authorization code.");
+				}
+				throw e;
+			}
+			
+			<%
+			if(isLog4jEnabled){
+			%>
+				log.info("<%=cid%> - Wait for query execution");
+			<%
+			}
+			%>
+			// wait for query execution
+			while (true) {
+				com.google.api.services.bigquery.model.Job pollJob = bigqueryclient.jobs().get(projectId, jobId.getJobId()).execute();
+				com.google.api.services.bigquery.model.JobStatus status = pollJob.getStatus();
+				if (status.getState().equals("DONE")) {
+					com.google.api.services.bigquery.model.ErrorProto errorProto = status.getErrorResult();
+					if(errorProto != null){// job failed, handle it
+						<%if("AUTO".equals(resultSizeType)){%>
+							if(!useLargeResult && "responseTooLarge".equals(errorProto.getReason())){// try with large result flag
+								<%
+								if(isLog4jEnabled){
+								%>
+									log.info("<%=cid%> - Try with allow large results flag");
+								<%
+								}
+								%>
+								return executeQuery(query, true);
+							}
+						<%}%>
+						// Do not throw exception to avoid behavior changed(because it may throw "duplicate" exception which do not throw before);
+						// TalendException te = new TalendException(new Exception("Reason: " + errorProto.getReason() + "\nMessage: " + errorProto.getMessage()), "<%=cid%>", globalMap);
+            			// throw te;
+            			<%
+				    	if(isLog4jEnabled){
+						%>
+							log.error("<%=cid%> - Reason: " + errorProto.getReason() + "\nMessage: " + errorProto.getMessage());
+						<%
+						}
+				    	%>
+						System.err.println("---> Reason: " + errorProto.getReason() + "\nMessage: " + errorProto.getMessage());
+					}// else job successful
+					break;
+				}
+				// Pause execution for one second before polling job status again, to 
+				// reduce unnecessary calls to the BigQUery API and lower overall
+				// application bandwidth.
+				Thread.sleep(1000);
+			}
+		
+			return insert;
+		}
+ 		
+	}
+
 	// Start a Query Job
 	String querySql_<%=cid %> = <%=query %>;
 	System.out.format("Running Query : %s\n", querySql_<%=cid %>);
@@ -183,65 +344,17 @@
 	<%
 	}
 	%>
-	com.google.api.services.bigquery.model.Job job_<%=cid %> = new com.google.api.services.bigquery.model.Job();
-	com.google.api.services.bigquery.model.JobConfiguration config_<%=cid %> = new com.google.api.services.bigquery.model.JobConfiguration();
-	com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig_<%=cid %> = new com.google.api.services.bigquery.model.JobConfigurationQuery();
-	config_<%=cid %>.setQuery(queryConfig_<%=cid %>);
-
-	job_<%=cid %>.setConfiguration(config_<%=cid %>);
-	queryConfig_<%=cid %>.setQuery(querySql_<%=cid %>);
 	
-	com.google.api.services.bigquery.model.Job insert_<%=cid %> = null;
-	com.google.api.services.bigquery.model.JobReference jobId_<%=cid %> = null;
-	try {
-		insert_<%=cid %> = bigqueryclient_<%=cid %>.jobs().insert(PROJECT_ID_<%=cid %>, job_<%=cid %>).execute();
-		jobId_<%=cid %> = insert_<%=cid %>.getJobReference();
-	} catch (com.google.api.client.googleapis.json.GoogleJsonResponseException e_<%=cid%>) {
-		try {
-			java.io.File f_<%=cid%> = new java.io.File(tokenFile_<%=cid %>);
-			boolean isRemoved_<%=cid%> = f_<%=cid%>.delete();
-			if(isRemoved_<%=cid%>){
-				<%
-		    	if(isLog4jEnabled){
-				%>
-					log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
-				<%
-				}
-		    	%>
-				System.err.println("---> Unable to connect. This might come from the token expiration. Execute again the job with an empty authorization code.");
-			}else{
-				throw new java.lang.Exception();
-			}
-		} catch (java.lang.Exception ee_<%=cid%>) {
-			<%
-	    	if(isLog4jEnabled){
-			%>
-				log.error("<%=cid%> - Unable to connect. This might come from the token expiration. Remove the file " + tokenFile_<%=cid %> + " Execute again the job with an empty authorization code.");
-			<%
-			}
-	    	%>
-			System.err.println("---> Unable to connect. This might come from the token expiration. Remove the file " + tokenFile_<%=cid %> + " Execute again the job with an empty authorization code.");
-		}
-		throw e_<%=cid%>;
-	}
+	BigQueryUtil_<%=cid%> bigQueryUtil_<%=cid%> = new BigQueryUtil_<%=cid%>(PROJECT_ID_<%=cid%>, bigqueryclient_<%=cid%>, tokenFile_<%=cid%>);
+	
 	<%
 	if(isLog4jEnabled){
 	%>
-		log.info("<%=cid%> - Wait for query execution");
+		log.info("<%=cid%> - Try <%="LARGE".equals(resultSizeType) ? "with" : "without"%> allow large results flag");
 	<%
 	}
 	%>
-	// wait for query execution
-	while (true) {
-		com.google.api.services.bigquery.model.Job pollJob_<%=cid %> = bigqueryclient_<%=cid %>.jobs().get(PROJECT_ID_<%=cid %>, jobId_<%=cid %>.getJobId()).execute();
-		if (pollJob_<%=cid %>.getStatus().getState().equals("DONE")) {
-			break;
-		}
-		// Pause execution for one second before polling job status again, to 
-		// reduce unnecessary calls to the BigQUery API and lower overall
-		// application bandwidth.
-		Thread.sleep(1000);
-	}
+	com.google.api.services.bigquery.model.Job insert_<%=cid %> = bigQueryUtil_<%=cid%>.executeQuery(querySql_<%=cid%>, <%="LARGE".equals(resultSizeType) ? true : false%>);
 
 	<%
 	if(isLog4jEnabled){

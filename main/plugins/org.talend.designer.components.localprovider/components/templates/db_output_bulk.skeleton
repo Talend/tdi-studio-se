@@ -1185,7 +1185,7 @@ public class CLASS {
 
         /*
          * maybe some db need add getLProtectedChar() and getRProtectedChar() to schema name.
-         * this because of some db default add getLProtectedChar() and getRProtectedChar() to schaem when create table. e.g:db2
+         * this because of some db default add getLProtectedChar() and getRProtectedChar() to schema when create table. e.g:db2
          * 
          * in fact the db add getLProtectedChar() and getRProtectedChar() to scheam when create table that is wrong
         */
@@ -4155,6 +4155,388 @@ public class CLASS {
             return "";
         }
     }
+    
+    //////////////////////////////////////////////////////////////////////////////////
+    //the managers which only work for tELTJDBCOutput component, we add it to ignore the text quote which wrap the schema, table or column name.
+    
+    public class AS400ELTManager extends AS400Manager {
+        public AS400ELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class AccessELTManager extends AccessManager {
+        public AccessELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class DB2ELTManager extends DB2Manager {
+        public DB2ELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class FirebirdELTManager extends FirebirdManager {
+        public FirebirdELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class HSQLDBELTManager extends HSQLDBManager {
+        public HSQLDBELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class HiveELTManager extends HiveManager {
+        public HiveELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class InformixELTManager extends InformixManager {
+        public InformixELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class IngresELTManager extends IngresManager {
+        public IngresELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class VectorWiseELTManager extends VectorWiseManager {
+        public VectorWiseELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class InterbaseELTManager extends InterbaseManager {
+        public InterbaseELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class JavaDBELTManager extends JavaDBManager {
+        public JavaDBELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class MaxDBELTManager extends MaxDBManager {
+        public MaxDBELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class MSSQLELTManager extends MSSQLManager {
+        public MSSQLELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class MysqlELTManager extends MysqlManager {
+        public MysqlELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class NetezzaELTManager extends NetezzaManager {
+        public NetezzaELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class OracleELTManager extends OracleManager {
+        public OracleELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class PostgrePlusELTManager extends PostgrePlusManager {
+        public PostgrePlusELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class GreenplumELTManager extends GreenplumManager {
+        public GreenplumELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class PostgreELTManager extends PostgreManager {
+        public PostgreELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class RedshiftELTManager extends RedshiftManager {
+        public RedshiftELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class SQLiteELTManager extends SQLiteManager {
+        public SQLiteELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class SybaseELTManager extends SybaseManager {
+        public SybaseELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class TeradataELTManager extends TeradataManager {
+        public TeradataELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class VerticaELTManager extends VerticaManager {
+        public VerticaELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class ExasolELTManager extends ExasolManager {
+        public ExasolELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public class SAPHanaELTManager extends SAPHanaManager {
+        public SAPHanaELTManager(String cid) {
+            super(cid);
+        }
+        protected String getLProtectedChar() {
+            return "";
+        }
+        protected String getRProtectedChar() {
+            return "";
+        }
+    }
+    
+    public Manager getELTManager(String dbmsId, String cid) {
+        Manager manager = managerMap.get(dbmsId + cid);
+        if(manager == null) {
+            if(dbmsId.equalsIgnoreCase(AS400)) {
+                manager = new AS400ELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(ACCESS)) {
+                manager = new AccessELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(DB2)) {
+                manager = new DB2ELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(FIREBIRD)) {
+                manager = new FirebirdELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(HSQLDB)) {
+                manager = new HSQLDBELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(HIVE)) {
+                manager = new HiveELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(INFORMIX)) {
+                manager = new InformixELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(INGRES)) {
+                manager = new IngresELTManager(cid);         
+            } else if(dbmsId.equalsIgnoreCase(VECTORWISE)) {
+                manager = new VectorWiseELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(INTERBASE)) {
+                manager = new InterbaseELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(JAVADB)) {
+                manager = new JavaDBELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(MAXDB)) {
+                manager = new MaxDBELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(MSSQL)) {
+                manager = new MSSQLELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(MYSQL)) {
+                manager = new MysqlELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(NETEZZA)) {
+                manager = new NetezzaELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(ORACLE)) {
+                manager = new OracleELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(POSTGREPLUS)) {
+                manager = new PostgrePlusELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(GREENPLUM)) {
+                manager = new GreenplumELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(POSTGRESQL)) {
+                manager = new PostgreELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(REDSHIFT)) {
+                manager = new RedshiftELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(SQLITE)) {
+                manager = new SQLiteELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(SYBASE)) {
+                manager = new SybaseELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(TERADATA)) {
+                manager = new TeradataELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(VERTICA)) {
+                manager = new VerticaELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(EXASOL)) {
+                manager = new ExasolELTManager(cid);
+            } else if(dbmsId.equalsIgnoreCase(SAPHANA)) {
+                manager = new SAPHanaELTManager(cid);
+            } else {
+                manager = new UnDefinedManager(cid);
+                ((UnDefinedManager)manager).setDBMSId(dbmsId);
+            }
+        }
+        managerMap.put(dbmsId + cid, manager);
+        return manager;
+    }
+    /////////////////////////////////////////////////////////////////////////////////////
+    //ELT part end
+    
     public Manager getManager(String dbmsId, String cid) {
         Manager manager = managerMap.get(dbmsId + cid);
         if(manager == null) {

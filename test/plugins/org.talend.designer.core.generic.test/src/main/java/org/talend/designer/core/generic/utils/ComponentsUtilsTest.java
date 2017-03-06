@@ -50,7 +50,7 @@ import org.talend.designer.core.ui.editor.process.Process;
  *
  */
 public class ComponentsUtilsTest {
-    
+
     @Before
     public void before() {
         System.setProperty("talend.test.component.filter", "true");
@@ -81,19 +81,24 @@ public class ComponentsUtilsTest {
         /*
          * Test component
          */
-        IComponent component = ComponentsFactoryProvider.getInstance().get("tSalesforceInput", "DI"); //$NON-NLS-1$ //$NON-NLS-2$
-        INode node = new Node(component, new Process(new FakePropertyImpl()));
-
         // Test parameter initialization case (mainly to test ComponentsUtils.getParameterValue() method).
-        checkParameterInitializationStatus(node, true);
-        checkParameterInitializationStatus(node, false);
+        checkParameterInitializationStatus(true);
+        checkParameterInitializationStatus(false);
     }
 
-    private void checkParameterInitializationStatus(INode node, boolean isInitializing) {
+    private void checkParameterInitializationStatus(boolean isInitializing) {
+        INode node = createSFTestNode();
         ComponentProperties props = node.getComponentProperties();
-        Form form = props.getForm(Form.MAIN);
+        props.setValueEvaluator(null);
+        Form form = props.getForm(Form.ADVANCED);
         List<ElementParameter> parameters = ComponentsUtils.getParametersFromForm(node, isInitializing, null, props, form);
         checkParameterInitializationStatus(parameters, isInitializing);
+    }
+
+    private INode createSFTestNode() {
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tSalesforceConnection", "DI"); //$NON-NLS-1$ //$NON-NLS-2$
+        INode node = new Node(component, new Process(new FakePropertyImpl()));
+        return node;
     }
 
     private void checkParameterInitializationStatus(List<ElementParameter> parameters, boolean isInitializing) {
@@ -213,7 +218,7 @@ public class ComponentsUtilsTest {
         assertTrue(properties.contains(props.contactProps.email));
     }
 
-    
+
     @Test
     public void testLoadComponents() {
         ComponentService componentService = ComponentsUtils.getComponentService();
@@ -245,7 +250,7 @@ public class ComponentsUtilsTest {
             assertFalse(foundCom);
         }
     }
-    
+
     @After
     public void after() {
         System.setProperty("talend.test.component.filter", "false");

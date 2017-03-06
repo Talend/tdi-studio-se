@@ -48,6 +48,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.PresentationItem;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
@@ -84,7 +85,7 @@ public class GenericElementParameter extends ElementParameter {
     private boolean isFirstCall;
 
     private boolean drivedByForm;
-    
+
     private Boolean askPropagate;
 
     public GenericElementParameter(IElement element, ComponentProperties rootProperties, Form form, Widget widget,
@@ -111,7 +112,7 @@ public class GenericElementParameter extends ElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.ElementParameter#getValue()
      */
     @Override
@@ -128,7 +129,7 @@ public class GenericElementParameter extends ElementParameter {
     public void setValue(Object o) {
         super.setValue(o);
         if (!isFirstCall
-                || (widget.getContent() instanceof ComponentProperties && !Widget.TABLE_WIDGET_TYPE
+                || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE
                         .equals(widget.getWidgetType()))) {
             updateProperty(o);
             boolean calledValidate = callValidate();
@@ -368,7 +369,7 @@ public class GenericElementParameter extends ElementParameter {
 
     /**
      * Update schema parameters according the <code>currentContext</code>. Here will update UI at the same time.
-     * 
+     *
      * @param schemaParameters
      * @param currentContext
      * @param newSchema
@@ -561,7 +562,7 @@ public class GenericElementParameter extends ElementParameter {
             property.setTaggedValue(IGenericConstants.IS_DYNAMIC, mode);
         }
     }
-    
+
     public void setAskPropagate(Boolean askPropagate) {
         this.askPropagate = askPropagate;
     }

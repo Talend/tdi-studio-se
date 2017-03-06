@@ -336,18 +336,20 @@ public class DynamicInvoker {
         Object ret = call.invoke(inputs.toArray());
         Map outputs = call.getOutputParams();
         HashMap map = new HashMap();
+        
+        String name = null;
+		Object value = null;
+		if(outNames.size()>0){
+            name = (String) outNames.get(0);
+		    value = outputs.get(name);
+		}
 
-        for (int pos = 0; pos < outNames.size(); ++pos) {
-            String name = (String) outNames.get(pos);
-            Object value = outputs.get(name);
-
-            if ((value == null) && (pos == 0)) {
-                map.put(name, ret);
-            } else {
-                map.put(name, value);
-            }
-        }
-        return map;
+		if ((value == null) && (ret != null)) {
+			map.put(name, ret);
+		} else {
+			map.put(outNames, outputs);
+		}
+		return map;
     }
 
     /**

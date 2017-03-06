@@ -132,7 +132,9 @@ format_<%=cid %>.setTrimText(<%=trimText%>);
 class OrderHelper_<%=cid%> {
     java.util.Map<String,Boolean> recalculateOrderMap = new java.util.HashMap<String,Boolean>();
 	java.util.Map<String,Integer> orderMap = new java.util.HashMap<String,Integer>();
+	java.util.Map<String,Integer> indexMap = new java.util.HashMap<String,Integer>();
 	java.util.Map<String,Boolean> tailAppendMap = new java.util.HashMap<String,Boolean>();
+	String lastProcessedField;
 	
 	boolean need_recalculate(String field) {
 		Boolean result = recalculateOrderMap.get(field);
@@ -149,6 +151,11 @@ class OrderHelper_<%=cid%> {
 		return order == null ? 0 : order;
 	}
 	
+	void setOrder(String field,Integer order) {
+		orderMap.put(field,order);
+		indexMap.put(field,order);
+	}
+	
 	void fillRecalculateOrderMap(String field,Boolean value) {
 		recalculateOrderMap.put(field,value);
 	}
@@ -157,8 +164,27 @@ class OrderHelper_<%=cid%> {
 		tailAppendMap.put(field,value);
 	}
 	
-	void setOrder(String field,Integer order) {
-		orderMap.put(field,order);
+	int index(String field) {
+		Integer i = indexMap.get(field);
+		return i == null ? 0 : i;
+	}
+	
+	void incrementIndex(String field){
+		Integer i = index(field);
+		indexMap.put(field, ++i);
+	}
+	
+	void resetIndex(String field){
+		Integer order = order(field);
+		indexMap.put(field, order);
+	}
+	
+	boolean isLastProcessedField(String field){
+		return (lastProcessedField != null && lastProcessedField.equals(field)) ? true : false;
+	}
+	
+	void setLastPorcessedField(String field){
+		lastProcessedField = field;
 	}
 }
 

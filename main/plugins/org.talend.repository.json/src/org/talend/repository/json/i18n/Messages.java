@@ -20,6 +20,8 @@ import org.eclipse.osgi.util.NLS;
 public class Messages extends NLS {
 
     private static final String BUNDLE_NAME = "org.talend.repository.json.messages"; //$NON-NLS-1$
+    
+    public static String JSONLimitToolTip;
 
     public static String CreateJSONAction_CREATE_JSON;
 

@@ -65,6 +65,13 @@
                                     hasOwnerID = true;
                                     continue;
                                 }
+                                
+                                boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, column.isNullable());
+ 								if(!isPrimitive && ignoreNull) { //begin of skipping null values.
+ 								%>
+ 			    					if(<%=conn.getName() %>.<%=column.getLabel() %> != null ) { //
+ 								<%
+ 								}
 
                                 if(!"Id".equals(column.getLabel())){
                                 %>
@@ -127,6 +134,11 @@
                                     OperXml_<%=cid%>.append("\n");
                                 <%
                                 }
+                                if(!isPrimitive && ignoreNull) {//end of skipping null values.
+ 								%>
+ 			    					} //
+ 								<%
+ 								}
                             }//5
                             if("insert".equals(action)){//#######
                             %>
@@ -242,10 +254,23 @@
                                         idColumnName = columnName;
                                     }
                                 }
+                                boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, column.isNullable());
+                                if(!isPrimitive && ignoreNull) {
+  								//This will skip the null values and won't add them to the request. 
+  								%>   				
+  			    					if(<%=connName%>.<%=columnName%> != null){
+  								<%
+  								}
                                 %>
                                 attribute_<%=cid%> = attributes_<%=cid%>.addNewKeyValuePairOfstringanyType();
                                 attribute_<%=cid%>.setKey("<%=columnName%>");
                                 <%
+                                if(!isPrimitive && !ignoreNull) {
+  								//if you want to set null, just skip this step. 
+  								%>   				
+  			    					if(<%=connName%>.<%=columnName%> != null){
+  								<%
+  								}
                                 if("entityRef".equals(crmTypeMapping.get(crmType))){
                                     boolean hasFound = false;
                                     if(lookupMapping.size()>0){
@@ -338,9 +363,23 @@
                                     "wrong type <%=crmType%>"
                                 <%
                                 }
+                                if(!isPrimitive && !ignoreNull) {
+  								//End of setting null values part. 
+  								%>
+  									} else {
+  										xmlObject_<%=cid%> = null;
+  									}
+  								<%
+  								}
                                 %>
                                 attribute_<%=cid%>.setValue(xmlObject_<%=cid%>);
                                 <%
+                                if(!isPrimitive && ignoreNull) {
+  								//End of ignoring null values part. 
+  								%>
+  									}
+  								<%
+  								}
                             }
                             %>
                             entity_<%=cid%>.setAttributes(attributes_<%=cid%>);

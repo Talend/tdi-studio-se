@@ -221,6 +221,25 @@ public class FlowVariablesWriterTest {
     }
 
     /**
+     * Checks {@link FlowVariablesWriter#getSuccessfulWrites()} returns unchanged instance of {@link Iterable} and no exception
+     * is thrown in case wrapped Writer returns empty {@link Iterable}
+     * NPE was thrown before code was fixed
+     */
+    @Test
+    public void testGetSuccessfulWritesFirstEmpty() throws IOException {
+        ArrayList<Object> records = new ArrayList<>();
+
+        when(wrappedWriter.getSuccessfulWrites()).thenReturn(records);
+
+        FlowVariablesWriter<Object> writer = new FlowVariablesWriter<>(wrappedWriter, runtimeContainer);
+        Iterable<Object> actualDataIterable = writer.getSuccessfulWrites();
+
+        assertEquals(records, actualDataIterable);
+
+        writer.close();
+    }
+
+    /**
      * Checks {@link FlowVariablesWriter#getRejectedWrites()} returns instance of {@link Iterable} with the only one
      * Main {@link IndexedRecord} unwrapped from Root record
      * and {@link RuntimeContainer} contains flow variable value after this method call
@@ -337,6 +356,25 @@ public class FlowVariablesWriterTest {
         assertThat(flowVariable, instanceOf(Integer.class));
 
         assertEquals(123, flowVariable);
+
+        writer.close();
+    }
+
+    /**
+     * Checks {@link FlowVariablesWriter#getRejectedWrites()} returns unchanged instance of {@link Iterable} and no exception
+     * is thrown in case wrapped Writer returns empty {@link Iterable}
+     * NPE was thrown before code was fixed
+     */
+    @Test
+    public void testGetRejectedWritesFirstEmpty() throws IOException {
+        ArrayList<Object> records = new ArrayList<>();
+
+        when(wrappedWriter.getRejectedWrites()).thenReturn(records);
+
+        FlowVariablesWriter<Object> writer = new FlowVariablesWriter<>(wrappedWriter, runtimeContainer);
+        Iterable<Object> actualDataIterable = writer.getRejectedWrites();
+
+        assertEquals(records, actualDataIterable);
 
         writer.close();
     }

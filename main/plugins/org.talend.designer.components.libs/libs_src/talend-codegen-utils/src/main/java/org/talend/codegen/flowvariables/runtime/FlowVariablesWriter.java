@@ -137,6 +137,8 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
                     successDataProcessor = new MainDataProcessor();
                 }
                 firstSuccessData = false;
+            } else {
+                return successfulWrites;
             }
         }
         return successDataProcessor.processDataIterable(successfulWrites);
@@ -182,6 +184,8 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
                     rejectDataProcessor = new MainDataProcessor();
                 }
                 firstSuccessData = false;
+            } else {
+                return rejectedWrites;
             }
         }
         return rejectDataProcessor.processDataIterable(rejectedWrites);

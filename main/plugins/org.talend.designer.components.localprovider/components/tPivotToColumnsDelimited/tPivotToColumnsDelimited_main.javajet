@@ -207,17 +207,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     
     %>
     
-    for(int i = 0;i<group_Keys<%=cid%>.size();i++){
-    
-        if(group_Keys<%=cid%>.get(i).equals(gKvalue<%=cid%>)){
-            
-            group_Exists<%=cid%> = true;
-            
-            break;
-            
-        }
-        
-    }
+	if (group_Keys<%=cid%>.contains(gKvalue<%=cid%>)) {
+                     group_Exists<%=cid%> = true;
+	}
+	
 
     if(!group_Exists<%=cid%>){
         

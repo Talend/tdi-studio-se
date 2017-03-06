@@ -41,7 +41,7 @@
   <repositories>
     <repository>
       <id>talend_nexus</id>
-      <url>https://talend-update.talend.com/nexus/content/repositories/libraries</url>
+      <url>https://artifacts-oss.talend.com/nexus/content/repositories/talend-update/</url>
     </repository>
   </repositories>
 </project>

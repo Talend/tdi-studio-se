@@ -783,7 +783,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         }
 
         codeSync();
-        updateCodeEditorContent();
+        // updateCodeEditorContent();
         changeContextsViewStatus(true);
     }
 

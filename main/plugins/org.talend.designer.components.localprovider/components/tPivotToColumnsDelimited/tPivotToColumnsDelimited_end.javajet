@@ -68,14 +68,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
     
 		    out<%=cid%>.write(<%=rowSeparator%>);
 		
-		    for(int i = 0;i<group_Keys<%=cid%>.size();i++){
-		        
-		        for(int j = 0; j < group_Keys<%=cid%>.get(i).size(); j++) {
-					out<%=cid%>.write(group_Keys<%=cid%>.get(i).get(j));
+			java.util.Iterator<List<String>> iterator_<%=cid%> = group_Keys<%=cid%>.iterator();
+		    
+			
+		    while(iterator_<%=cid%>.hasNext()) {
+				List<String> next = iterator_<%=cid%>.next();
+		        for(int j = 0; j < next.size(); j++) {
+					out<%=cid%>.write(next.get(j));
 					out<%=cid%>.write(<%=fieldSeparator%>);
 				}
 		        
-		        java.util.List<String> aggOut<%=cid%> = aggregation<%=cid%>.get(group_Keys<%=cid%>.get(i));
+		        java.util.List<String> aggOut<%=cid%> = aggregation<%=cid%>.get(next);
 		
 		        int gap<%=cid%> = aggOut<%=cid%>.size() - pivot_Keys<%=cid%>.size();
 		        
@@ -129,12 +132,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		    CsvWriter<%=cid%>.writeNext(finalStr<%=cid%>);
 		    
 		    CsvWriter<%=cid%>.flush();
-		
-		    for(int i = 0;i<group_Keys<%=cid%>.size();i++){
-		        
+			java.util.Iterator<List<String>> iterator_<%=cid%> = group_Keys<%=cid%>.iterator();
+		    
+		      while(iterator_<%=cid%>.hasNext()){
+				List<String> next = iterator_<%=cid%>.next();
 		        finalStr<%=cid%> = new String[rowSize<%=cid%>];
 		
-		        java.util.List<String> gkSplit<%=cid%> = group_Keys<%=cid%>.get(i);
+		        java.util.List<String> gkSplit<%=cid%> = next;
         
 				<%
 				for (int i=0; i<groupbys.size(); i++) {

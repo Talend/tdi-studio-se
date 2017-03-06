@@ -23,6 +23,7 @@ import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.datacontract.schemas._2004._07.system_collections_generic.KeyValuePairOfEndpointTypestringztYlk6OT;
 import org.talend.ms.crm.sdk.OnlineAuthenticationPolicy;
+import org.talend.ms.crm.sdk.OrganizationServiceStubWrapper;
 import org.talend.ms.crm.sdk.RequestDateTimeData;
 import org.talend.ms.crm.sdk.SecurityData;
 import org.talend.ms.crm.sdk.WsdlTokenManager;
@@ -87,6 +88,10 @@ public class MSCRMClient {
 
     private Boolean reuseHttpClient;
 
+    private int maxConnectionRetries = 5;
+
+    private int attemptsInterval = 1000;
+
     public MSCRMClient(String username, String password, String orgName) {
         this.username = username;
         this.password = password;
@@ -102,6 +107,19 @@ public class MSCRMClient {
         this.reuseHttpClient = reuseHttpClient;
     }
 
+    public void setMaxConnectionRetries(int maxConnectionRetries) {
+        this.maxConnectionRetries = maxConnectionRetries;
+    }
+
+    public void setAttemptsInterval(int attemptsInterval) {
+        this.attemptsInterval = attemptsInterval;
+    }
+
+    public OrganizationServiceStub getOnlineConnection(String discoveryServiceURL) throws Exception {
+        return new OrganizationServiceStubWrapper(doGetOnlineConnection(discoveryServiceURL), this, discoveryServiceURL,
+                maxConnectionRetries, attemptsInterval);
+    }
+
     /**
      * URL for the Discovery Service For North America Microsoft account, discovery service url is
      * https://dev.crm.dynamics.com/XRMServices/2011/Discovery.svc Microsoft office 365, discovery service url is
@@ -110,7 +128,7 @@ public class MSCRMClient {
      * 
      * @throws Exception
      */
-    public OrganizationServiceStub getOnlineConnection(String discoveryServiceURL) throws Exception {
+    public OrganizationServiceStub doGetOnlineConnection(String discoveryServiceURL) throws Exception {
 
         try {
             // Retrieve the authentication policy for the discovery service.

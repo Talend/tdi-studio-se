@@ -97,6 +97,8 @@ imports="
     	org.talend.ms.crm.MSCRMClient client_<%=cid%> = new org.talend.ms.crm.MSCRMClient(<%=username%>, decryptedPassword_<%=cid%>, <%=orgName%>);
 		client_<%=cid%>.setTimeout(<%=timeout%>);
 		client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
+		client_<%=cid%>.setMaxConnectionRetries(reConnMaxNum_<%=cid%>);
+		client_<%=cid%>.setAttemptsInterval(<%=attemptsInterval%>);
 		com.microsoft.schemas.xrm._2011.contracts.OrganizationServiceStub serviceStub_<%=cid%> = client_<%=cid%>.getOnlineConnection(<%=discWSDL%>);
     <%
     }%>

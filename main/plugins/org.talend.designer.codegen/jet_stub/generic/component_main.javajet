@@ -142,8 +142,10 @@ if(hasInput){
             <%
             if (mainIrToRow != null) {
                 %>
-            	if(writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>){
-                    java.util.Iterator<?> outgoingMainRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getSuccessfulWrites().iterator();
+            	if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback) {
+					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackMain_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
+					writerWithFeedbackMain_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackMain_<%=cid%>, container_<%=cid%>);
+                    java.util.Iterator outgoingMainRecords_<%=cid%> = writerWithFeedbackMain_<%=cid%>.getSuccessfulWrites().iterator();
                     Object outgoingMain_<%=cid%> = null;
                     if (outgoingMainRecords_<%=cid%>.hasNext()) {
                         outgoingMain_<%=cid%> = outgoingMainRecords_<%=cid%>.next();
@@ -154,23 +156,23 @@ if(hasInput){
                     <%
                     if (rejectIrToRow == null) {
                     %>
-                    else{
-                    	if (!((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator().hasNext()) {
+                    else {
+                    	if (!writerWithFeedbackMain_<%=cid%>.getRejectedWrites().iterator().hasNext()) {
                     		outgoingMain_<%=cid%> = data_<%=cid%>;
                     	}
                     }
                     <%
                     }
                     %>
-                    if(outgoingMain_<%=cid%>!=null){
+                    if (outgoingMain_<%=cid%>!=null) {
                     	<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
                     	<%
                         mainIrToRow.generateConvertRecord("outgoingMain_" + cid, mainIrToRow.getConnection().getName());
                         %>
                     }
-              	}else{
+              	} else {
               		// For no feedback writer,just pass the input record to the output
-              		if(data_<%=cid%>!=null){
+              		if (data_<%=cid%>!=null) {
                   		<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
                 		<%
                         mainIrToRow.generateConvertRecord("data_" + cid, mainIrToRow.getConnection().getName());
@@ -180,8 +182,10 @@ if(hasInput){
             <%
             }
             if (rejectIrToRow != null) {
-                %>
-                    java.util.Iterator<?> outgoingRejectRecords_<%=cid%> = ((org.talend.components.api.component.runtime.WriterWithFeedback<?, ?, ?>)writer_<%=cid%>).getRejectedWrites().iterator();
+            %>
+					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackReject_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
+					writerWithFeedbackReject_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackReject_<%=cid%>, container_<%=cid%>);
+                    java.util.Iterator outgoingRejectRecords_<%=cid%> = writerWithFeedbackReject_<%=cid%>.getRejectedWrites().iterator();
                     if (outgoingRejectRecords_<%=cid%>.hasNext()) {
                         <%=rejectIrToRow.getConnection().getName()%> = new <%=rejectIrToRow.getConnection().getName() %>Struct();
                         Object outgoingReject_<%=cid%> = outgoingRejectRecords_<%=cid%>.next();

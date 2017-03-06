@@ -522,4 +522,8 @@ public class ExpressionBuilderDialog extends TrayDialog implements IExpressionBu
     public String getExpressionForTable() {
         return this.expressionForTable;
     }
+
+    public CategoryManager getManager() {
+        return this.manager;
+    }
 }

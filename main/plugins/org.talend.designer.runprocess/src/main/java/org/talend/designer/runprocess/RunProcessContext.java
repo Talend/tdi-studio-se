@@ -531,7 +531,7 @@ public class RunProcessContext {
                         final IProgressMonitor progressMonitor = new EventLoopProgressMonitor(monitor);
 
                         progressMonitor.beginTask(Messages.getString("ProcessComposite.buildTask"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-                        try {
+                        
                             testPort();
                             // findNewStatsPort();
                             if (monitorPerf || monitorTrace) {
@@ -567,11 +567,21 @@ public class RunProcessContext {
                             }
                             final String generateCodeId = "Generate job source codes and compile before run"; //$NON-NLS-1$
                             TimeMeasure.begin(generateCodeId);
-
-                            ProcessorUtilities.generateCode(processor, process, context,
+                            try {
+                                ProcessorUtilities.generateCode(processor, process, context,
                                     getStatisticsPort() != IProcessor.NO_STATISTICS, getTracesPort() != IProcessor.NO_TRACES
                                             && hasConnectionTrace(), true, progressMonitor);
-
+                            } catch (Throwable e) {
+                                // catch any Exception or Error to kill the process,
+                                // see bug 0003567
+                                running = true;
+                                ExceptionHandler.process(e);
+                                kill();
+                            } finally {
+                                progressMonitor.done();
+                                // System.out.println("exitValue:" +
+                                // ps.exitValue());
+                            }
                             TimeMeasure.end(generateCodeId);
                             // if active before, not disable and active still.
                             if (!oldMeasureActived) {
@@ -656,18 +666,7 @@ public class RunProcessContext {
 
                             }
 
-                        } catch (Throwable e) {
-                            // catch any Exception or Error to kill the process,
-                            // see bug 0003567
-                            running = true;
-                            ExceptionHandler.process(e);
-                            addErrorMessage(e);
-                            kill();
-                        } finally {
-                            progressMonitor.done();
-                            // System.out.println("exitValue:" +
-                            // ps.exitValue());
-                        }
+                        
                     }
                 });
             } catch (InvocationTargetException e1) {

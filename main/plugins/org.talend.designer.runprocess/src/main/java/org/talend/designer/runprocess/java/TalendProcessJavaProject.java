@@ -292,7 +292,8 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         if (childModulePomFile.getLocation().toFile().exists()) { // existed
             MavenPomCommandLauncher mavenLauncher = null;
             // by default is compile
-            if (goals == null || goals.trim().length() == 0 || goals.equals(TalendMavenConstants.GOAL_COMPILE)) {
+            if (goals == null || goals.trim().length() == 0 || goals.equals(TalendMavenConstants.GOAL_COMPILE) 
+                    || goals.equals(TalendMavenConstants.GOAL_TEST_COMPILE)) {
 //                mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, TalendMavenConstants.GOAL_REFRESH);
 //                mavenLauncher.setArgumentsMap(argumentsMap);
 //                mavenLauncher.execute(monitor);

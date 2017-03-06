@@ -409,22 +409,28 @@ class GenerateToolByDom4j{
 %>
 			}
 			
+			//IF the element is at the end of the xml branch we just append it to the end of the elements list
 			if(order_<%=cid%> == allElements_<%=currEleName%>_<%=cid%>.size()) {
 				orderHelper_<%=cid%>.fillTailAppendMap("<%=tool.connName + "_" + currEleName%>",true);
 			}
 			
 			orderHelper_<%=cid%>.setOrder("<%=tool.connName + "_" + currEleName%>",order_<%=cid%>);
 			orderHelper_<%=cid%>.fillRecalculateOrderMap("<%=tool.connName + "_" + currEleName%>",false);
-		} else {
-			int order_<%=cid%> = orderHelper_<%=cid%>.order("<%=tool.connName + "_" + currEleName%>");
-			orderHelper_<%=cid%>.setOrder("<%=tool.connName + "_" + currEleName%>",++order_<%=cid%>);
+		}
+		
+		if (!orderHelper_<%=cid%>.isLastProcessedField("<%=tool.connName + "_" + currEleName%>") && !orderHelper_<%=cid%>.tailAppend("<%=tool.connName + "_" + currEleName%>")){
+			orderHelper_<%=cid%>.resetIndex("<%=tool.connName + "_" + currEleName%>");	
+		} else {			
+			orderHelper_<%=cid%>.incrementIndex("<%=tool.connName + "_" + currEleName%>");
 		}
 		
 		if(orderHelper_<%=cid%>.tailAppend("<%=tool.connName + "_" + currEleName%>")) {
 			<%touchXMLNode.getXMLElement(parentName);%>.add(<%touchXMLNode.getXMLNode(currEleName);%>);
 		} else {
-			<%touchXMLNode.getXMLElement(parentName);%>.elements().add(orderHelper_<%=cid%>.order("<%=tool.connName + "_" + currEleName%>"),<%touchXMLNode.getXMLNode(currEleName);%>);
+			<%touchXMLNode.getXMLElement(parentName);%>.elements().add(orderHelper_<%=cid%>.index("<%=tool.connName + "_" + currEleName%>"),<%touchXMLNode.getXMLNode(currEleName);%>);
 		}
+		
+		orderHelper_<%=cid%>.setLastPorcessedField("<%=tool.connName + "_" + currEleName%>");
 		
 <%
 		}else{

@@ -13,6 +13,8 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
@@ -61,17 +63,31 @@ public class ChangeOutputConnectionOrderCommand extends Command {
      */
     @Override
     public void execute() {
-        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+        List<IMetadataTable> connectionMetadatas = new ArrayList<IMetadataTable>();
         for (IConnection connection : connectionInNewOrder) {
             if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-                if (!metadataList.contains(connection.getMetadataTable())) {
-                    metadataList.add(connection.getMetadataTable());
+                if (!connectionMetadatas.contains(connection.getMetadataTable())) {
+                    connectionMetadatas.add(connection.getMetadataTable());
                 }
             }
         }
-        if (!metadataList.isEmpty()) {
-            multipleOutputNode.setMetadataList(metadataList);
-        }
+        List<IMetadataTable> metadataList = multipleOutputNode.getMetadataList();
+        Collections.sort(metadataList, new Comparator<IMetadataTable>() {
+
+            @Override
+            public int compare(IMetadataTable o1, IMetadataTable o2) {
+                int index1 = connectionMetadatas.indexOf(o1);
+                if (index1 == -1) {
+                    index1 = 0;
+                }
+                int index2 = connectionMetadatas.indexOf(o2);
+                if (index2 == -1) {
+                    index2 = 0;
+                }
+                return index1 - index2;
+            }
+        });
+
         multipleOutputNode.setOutgoingConnections(connectionInNewOrder);
         connectionInNewOrder.get(0).updateAllId();
         ((Process) multipleOutputNode.getProcess()).checkStartNodes();
@@ -85,18 +101,31 @@ public class ChangeOutputConnectionOrderCommand extends Command {
      */
     @Override
     public void undo() {
-        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
-        // if (hasBuiltInConnector) {
+        List<IMetadataTable> connectionMetadatas = new ArrayList<IMetadataTable>();
         for (IConnection connection : connectionInOldOrder) {
             if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-                if (!metadataList.contains(connection.getMetadataTable())) {
-                    metadataList.add(connection.getMetadataTable());
+                if (!connectionMetadatas.contains(connection.getMetadataTable())) {
+                    connectionMetadatas.add(connection.getMetadataTable());
                 }
             }
         }
-        // }
 
-        multipleOutputNode.setMetadataList(metadataList);
+        List<IMetadataTable> metadataList = multipleOutputNode.getMetadataList();
+        Collections.sort(metadataList, new Comparator<IMetadataTable>() {
+
+            @Override
+            public int compare(IMetadataTable o1, IMetadataTable o2) {
+                int index1 = connectionMetadatas.indexOf(o1);
+                if (index1 == -1) {
+                    index1 = 0;
+                }
+                int index2 = connectionMetadatas.indexOf(o2);
+                if (index2 == -1) {
+                    index2 = 0;
+                }
+                return index1 - index2;
+            }
+        });
 
         multipleOutputNode.setOutgoingConnections(connectionInOldOrder);
         connectionInOldOrder.get(0).updateAllId();

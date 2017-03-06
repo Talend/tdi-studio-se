@@ -16,6 +16,7 @@ imports="
 		break;
 	}
   }
+  bigQueryUtil_<%=cid%>.cleanup();
   	<%
 	log4jFileUtil.retrievedDataNumberInfo(node);
 	%>

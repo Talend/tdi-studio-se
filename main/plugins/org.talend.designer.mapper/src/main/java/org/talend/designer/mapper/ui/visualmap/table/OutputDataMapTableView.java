@@ -124,7 +124,7 @@ public class OutputDataMapTableView extends DataMapTableView {
 
         mapSettingViewerCreator = extendedTableViewerForMapSetting.getTableViewerCreator();
         mapSettingTable = extendedTableViewerForMapSetting.getTable();
-        tableForMapSettingGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1);
+        tableForMapSettingGridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1);
         mapSettingTable.setLayoutData(tableForMapSettingGridData);
         mapSettingTable.setHeaderVisible(true);
         mapSettingTable.setLinesVisible(true);

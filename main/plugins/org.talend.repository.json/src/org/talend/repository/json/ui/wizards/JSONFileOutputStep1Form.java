@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +76,7 @@ import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.node.FOXTreeNode;
 import org.talend.metadata.managment.ui.wizard.metadata.xml.utils.TreeUtil;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.json.i18n.Messages;
 import org.talend.repository.json.util.JSONUtil;
 import org.talend.repository.ui.wizards.metadata.connection.files.xml.TreePopulator;
 import orgomg.cwm.resource.record.RecordFactory;
@@ -266,6 +268,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
         GridData gd = new GridData(18, 12);
         commonNodesLimitation.setLayoutData(gd);
         commonNodesLimitation.setText(String.valueOf(TreePopulator.getLimit()));
+        labelLimitation.setToolTipText(MessageFormat.format(Messages.JSONLimitToolTip, commonNodesLimitation.getText()));
         
         if (!noFileButton.getSelection() && !useFileButton.getSelection()) {
             noFileButton.setSelection(true);
@@ -531,8 +534,10 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
                 String str = commonNodesLimitation.getText();
                 if ((!str.matches("\\d+")) || (Integer.valueOf(str) < 0)) {
                     commonNodesLimitation.setText(String.valueOf(treePopulator.getLimit()));
+                    labelLimitation.setToolTipText(MessageFormat.format(Messages.JSONLimitToolTip, commonNodesLimitation.getText()));
                 } else {
                     treePopulator.setLimit(Integer.valueOf(str));
+                    labelLimitation.setToolTipText(MessageFormat.format(Messages.JSONLimitToolTip, str));
                 }
                 if (JSONFileOutputStep1Form.this.tempPath == null) {
                     JSONFileOutputStep1Form.this.tempPath = JSONUtil.changeJsonToXml(jsonFilePath.getText());
@@ -555,6 +560,7 @@ public class JSONFileOutputStep1Form extends AbstractJSONFileStepForm {
             @Override
             public void focusLost(FocusEvent e) {
                 commonNodesLimitation.setText(String.valueOf(TreePopulator.getLimit()));
+                labelLimitation.setToolTipText(MessageFormat.format(Messages.JSONLimitToolTip, commonNodesLimitation.getText()));
             }
 
         });

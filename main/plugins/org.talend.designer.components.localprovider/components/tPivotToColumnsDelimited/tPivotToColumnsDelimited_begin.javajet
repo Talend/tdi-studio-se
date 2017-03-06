@@ -159,7 +159,7 @@ boolean group_Exists<%=cid%> = false;
 
 StringBuilder group_Key<%=cid%> = new StringBuilder();
 
-java.util.List<java.util.List<String>> group_Keys<%=cid%> = new java.util.ArrayList<java.util.List<String>>();
+java.util.Set<java.util.List<String>> group_Keys<%=cid%> = new java.util.LinkedHashSet<java.util.List<String>>();
 
 java.util.List<String> gKvalue<%=cid%> = null;
 

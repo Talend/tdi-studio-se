@@ -16,6 +16,10 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.compiler.BuildContext;
 import org.eclipse.jdt.core.compiler.CompilationParticipant;
@@ -36,6 +40,7 @@ import org.talend.designer.codegen.ITalendSynchronizer;
 import org.talend.designer.codegen.model.CodeGeneratorEmittersPoolFactory;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -58,46 +63,60 @@ public class JavaCompilationParticipant extends CompilationParticipant {
      * [])
      */
     @Override
-    public void processAnnotations(BuildContext[] files) {
+    public void processAnnotations(final BuildContext[] files) {
 
-        boolean routineToUpdate = false;
         super.processAnnotations(files);
 
-        List<IRepositoryViewObject> routineObjectList = null;
-        for (BuildContext context : files) {
+        Job routineJob = new Job(Messages.getString("JavaCompilationParticipant.validateRoutine")) { //$NON-NLS-1$
 
-            String filePath = (context.getFile().getProjectRelativePath()).toString();
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                boolean routineToUpdate = false;
+                List<IRepositoryViewObject> routineObjectList = null;
+                for (BuildContext context : files) {
 
-            if (isRoutineFile(filePath)) {
-                if (!routineToUpdate) {
-                    IProxyRepositoryFactory factory = CorePlugin.getDefault().getProxyRepositoryFactory();
+                    String filePath = (context.getFile().getProjectRelativePath()).toString();
 
-                    try {
+                    if (isRoutineFile(filePath)) {
+                        if (!routineToUpdate) {
+                            IProxyRepositoryFactory factory = CorePlugin.getDefault().getProxyRepositoryFactory();
 
-                        routineObjectList = factory.getAll(ERepositoryObjectType.ROUTINES, false);
-                    } catch (PersistenceException e) {
-                        ExceptionHandler.process(e);
+                            try {
+
+                                routineObjectList = factory.getAll(ERepositoryObjectType.ROUTINES, false);
+                            } catch (PersistenceException e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+                        updateProblems(routineObjectList, filePath);
+                        routineToUpdate = true;
+                        break;
                     }
                 }
-                updateProblems(routineObjectList, filePath);
-                routineToUpdate = true;
+
+                if (routineToUpdate && !CommonsPlugin.isHeadless()) {
+                    Display.getDefault().asyncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                Problems.refreshProblemTreeView();
+                            } catch (Exception e) {
+                                // ignore any exception here, as there is no impact if refresh or not.
+                                // but if don't ignore, exception could be thrown if refresh is done too early.
+                            }
+                        }
+                    });
+                }
+
+                return Status.OK_STATUS;
             }
-        }
 
-        if (routineToUpdate && !CommonsPlugin.isHeadless()) {
-            Display.getDefault().asyncExec(new Runnable() {
+        };
 
-                @Override
-                public void run() {
-                    try {
-                        Problems.refreshProblemTreeView();
-                    } catch (Exception e) {
-                        // ignore any exception here, as there is no impact if refresh or not.
-                        // but if don't ignore, exception could be thrown if refresh is done too early.
-                    }
-                }
-            });
-        }
+        routineJob.setUser(false);
+        routineJob.setRule(null);
+        routineJob.schedule();
 
     }
 

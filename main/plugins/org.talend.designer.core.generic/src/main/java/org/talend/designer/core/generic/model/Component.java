@@ -75,6 +75,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -1110,6 +1111,7 @@ public class Component extends AbstractBasicComponent {
     public List<ModuleNeeded> getModulesNeeded() {
         return getModulesNeeded(null);
     }
+    
 
     @Override
     public List<ModuleNeeded> getModulesNeeded(INode node) {
@@ -1117,7 +1119,6 @@ public class Component extends AbstractBasicComponent {
             return componentImportNeedsList;
         } else {
             componentImportNeedsList = new ArrayList<>();
-
             ConnectorTopology topology = null;
             if (node != null) {
                 boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
@@ -1328,7 +1329,10 @@ public class Component extends AbstractBasicComponent {
         for (NamedThing prop : props.getProperties()) {
             if (prop instanceof Properties) {
                 if (prop instanceof ComponentReferenceProperties) {
-                    ((ComponentReferenceProperties) prop).componentProperties = null;
+                    ComponentReferenceProperties crp = (ComponentReferenceProperties) prop;
+                    crp.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                    crp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                    crp.setReference(null);
                 }
                 CodegenPropInfo childPropInfo = new CodegenPropInfo();
                 if (fieldString.equals("")) {//$NON-NLS-1$
