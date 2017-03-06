@@ -8,11 +8,11 @@
   <packaging>jar</packaging>
 
   <name>talend-webservice-input</name>
-  <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+    <java.source.version>1.5</java.source.version>
   </properties>
   
   	<distributionManagement>
