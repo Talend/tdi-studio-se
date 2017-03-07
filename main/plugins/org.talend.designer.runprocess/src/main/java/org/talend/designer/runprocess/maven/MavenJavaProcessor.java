@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.resource.FileExtensions;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
@@ -39,12 +38,14 @@ import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
-import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.core.runtime.repository.build.AbstractBuildProvider;
+import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.core.runtime.repository.build.IBuildPomCreatorParameters;
+import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.ProjectPomManager;
-import org.talend.designer.maven.tools.creator.CreateMavenBundleTemplatePom;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
-import org.talend.designer.maven.tools.creator.CreateMavenTestPom;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -82,8 +83,9 @@ public class MavenJavaProcessor extends JavaProcessor {
             if (property != null) {
                 Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem());
                 for (JobInfo jobInfo : infos) {
-                    if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
-                            TalendProcessArgumentConstant.ARG_GENERATE_OPTION, TalendProcessOptionConstants.GENERATE_TESTS)) {
+                    if (jobInfo.isTestContainer()
+                            && !ProcessUtils.isOptionChecked(getArguments(), TalendProcessArgumentConstant.ARG_GENERATE_OPTION,
+                                    TalendProcessOptionConstants.GENERATE_TESTS)) {
                         continue;
                     }
                     buildChildrenJobs.add(jobInfo);
@@ -216,9 +218,8 @@ public class MavenJavaProcessor extends JavaProcessor {
 
         try {
 
-            CreateMavenBundleTemplatePom createTemplatePom = createMavenTemplatePom();
+            IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
-                createTemplatePom.setOverwrite(true);
                 boolean previousValue = ProcessUtils.isHDInsight();
                 ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
@@ -230,39 +231,52 @@ public class MavenJavaProcessor extends JavaProcessor {
 
     }
 
-    protected CreateMavenBundleTemplatePom createMavenTemplatePom() {
-        boolean isTestContainer = false;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
-                    .getDefault().getService(ITestContainerProviderService.class);
-            if (testContainerService != null) {
-                isTestContainer = testContainerService.isTestContainerItem(this.getProperty().getItem());
+    protected IMavenPomCreator createMavenPomCreator() {
+        final Property itemProperty = this.getProperty();
+        String buildTypeName = null;
+        // FIXME, better use the arguments directly for run/export/build/..., and remove this flag later.
+        if (ProcessorUtilities.isExportConfig()) {
+            // final Object exportType = itemProperty.getAdditionalProperties().get(MavenConstants.NAME_EXPORT_TYPE);
+            final Object exportType = getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            buildTypeName = exportType != null ? exportType.toString() : null; //$NON-NLS-1$
+        } // else { //if run job, will be null (use Standalone by default)
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(IBuildParametes.ITEM, itemProperty.getItem());
+        parameters.put(IBuildPomCreatorParameters.PROCESSOR, this);
+        parameters.put(IBuildPomCreatorParameters.FILE_POM, getPomFile());
+        parameters.put(IBuildPomCreatorParameters.FILE_ASSEMBLY, getAssemblyFile());
+        parameters.put(IBuildPomCreatorParameters.CP_LINUX, this.unixClasspath);
+        parameters.put(IBuildPomCreatorParameters.CP_WIN, this.windowsClasspath);
+        parameters.put(IBuildPomCreatorParameters.ARGUMENTS_MAP, getArguments());
+        parameters.put(IBuildPomCreatorParameters.OVERWRITE_POM, Boolean.TRUE);
+
+        AbstractBuildProvider foundBuildProvider = BuildExportManager.getInstance().getBuildProvider(buildTypeName, parameters);
+        if (foundBuildProvider != null) {
+            final IMavenPomCreator creator = foundBuildProvider.createPomCreator(parameters);
+            if (creator != null) {
+                return creator;
             }
         }
 
-        CreateMavenBundleTemplatePom createMavenPom = null;
-        if (!isTestContainer) {
-            CreateMavenJobPom createTemplatePom = new CreateMavenJobPom(this, getPomFile());
+        // normally, won't be here, should return creator in font.
+        CreateMavenJobPom createTemplatePom = new CreateMavenJobPom(this, getPomFile());
 
-            createTemplatePom.setUnixClasspath(this.unixClasspath);
-            createTemplatePom.setWindowsClasspath(this.windowsClasspath);
+        createTemplatePom.setUnixClasspath(this.unixClasspath);
+        createTemplatePom.setWindowsClasspath(this.windowsClasspath);
 
-            createTemplatePom.setAssemblyFile(getAssemblyFile());
+        createTemplatePom.setAssemblyFile(getAssemblyFile());
 
-            IPath itemLocationPath = ItemResourceUtil.getItemLocationPath(this.getProperty());
-            IFolder objectTypeFolder = ItemResourceUtil.getObjectTypeFolder(this.getProperty());
-            if (itemLocationPath != null && objectTypeFolder != null) {
-                IPath itemRelativePath = itemLocationPath.removeLastSegments(1).makeRelativeTo(objectTypeFolder.getLocation());
-                createTemplatePom.setObjectTypeFolder(objectTypeFolder);
-                createTemplatePom.setItemRelativePath(itemRelativePath);
-            }
-
-            createMavenPom = createTemplatePom;
-        } else {
-            createMavenPom = new CreateMavenTestPom(this, getPomFile());
+        IPath itemLocationPath = ItemResourceUtil.getItemLocationPath(this.getProperty());
+        IFolder objectTypeFolder = ItemResourceUtil.getObjectTypeFolder(this.getProperty());
+        if (itemLocationPath != null && objectTypeFolder != null) {
+            IPath itemRelativePath = itemLocationPath.removeLastSegments(1).makeRelativeTo(objectTypeFolder.getLocation());
+            createTemplatePom.setObjectTypeFolder(objectTypeFolder);
+            createTemplatePom.setItemRelativePath(itemRelativePath);
         }
-        createMavenPom.setArgumentsMap(getArguments());
-        return createMavenPom;
+
+        return createTemplatePom;
+
     }
 
     /**

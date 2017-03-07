@@ -72,6 +72,7 @@ import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.ui.views.jobsettings.tabs.DeploymentComposite;
 import org.talend.designer.core.ui.views.jobsettings.tabs.HeaderFooterComposite;
 import org.talend.designer.core.ui.views.jobsettings.tabs.MainComposite;
 import org.talend.designer.core.ui.views.jobsettings.tabs.ProcessVersionComposite;
@@ -314,6 +315,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         } else if (EComponentCategory.ASSIGNMENT.equals(category)) {
             dynamicComposite = (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService()
                     .getBusinessAssignmentComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(), selectedModel);
+        } else if (EComponentCategory.DEPLOYMENT.equals(category)) {
+            dynamicComposite = new DeploymentComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(),
+                    (IRepositoryViewObject) data);
         }
 
         if (dynamicComposite != null) {
@@ -515,7 +519,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             if (allowVerchange) {
                 category.add(EComponentCategory.VERSIONS);
             }
-
+            if (!isJoblet) {
+                category.add(EComponentCategory.DEPLOYMENT);
+            }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {
                 IHeaderFooterProviderService headerFooterService = (IHeaderFooterProviderService) GlobalServiceRegister
                         .getDefault().getService(IHeaderFooterProviderService.class);

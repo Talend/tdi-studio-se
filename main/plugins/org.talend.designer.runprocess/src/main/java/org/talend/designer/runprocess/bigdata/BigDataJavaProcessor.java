@@ -33,7 +33,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
-import org.talend.designer.maven.tools.creator.CreateMavenBundleTemplatePom;
+import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorConstants;
@@ -321,8 +321,8 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
     }
 
     @Override
-    protected CreateMavenBundleTemplatePom createMavenTemplatePom() {
-        CreateMavenBundleTemplatePom createMavenTemplatePom = super.createMavenTemplatePom();
+    protected IMavenPomCreator createMavenPomCreator() {
+        IMavenPomCreator createMavenTemplatePom = super.createMavenPomCreator();
         if (createMavenTemplatePom instanceof CreateMavenJobPom) {
             CreateMavenJobPom createMavenJobPom = (CreateMavenJobPom) createMavenTemplatePom;
 

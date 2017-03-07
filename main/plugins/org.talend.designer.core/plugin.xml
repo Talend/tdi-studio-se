@@ -849,4 +849,27 @@
             class="org.talend.designer.core.ui.viewer.proposal.TalendCompletionProposalComputer">
       </javaCompletionProposalComputer>
    </extension>
+       <extension
+             point="org.talend.core.runtime.buildExport_provider">
+          <buildProvider
+                description="Build Standalone for Standard job"
+                id="build.provider.standard.job.standalone"
+                provider="org.talend.designer.core.build.StandardJobStandaloneBuildProvider">
+             <buildType
+                   label="%standard.job.standalone"
+                   name="STANDALONE"
+                   order="10">
+             </buildType>
+          </buildProvider>
+          <buildProvider
+                description="Build OSGi bundle for Standard job"
+                id="build.provider.standard.job.osgibundle"
+                provider="org.talend.designer.core.build.StandardJobOSGiBundleBuildProvider">
+             <buildType
+                   label="%standard.job.osgi"
+                   name="OSGI"
+                   order="20">
+             </buildType>
+          </buildProvider>
+       </extension>
 </plugin>

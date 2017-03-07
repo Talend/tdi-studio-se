@@ -516,6 +516,7 @@ public class JavaProcessUtil {
                                 if (var.equals(paramName)) {
                                     ModuleNeeded module = getModuleNeededForContextParam(contextPara);
                                     if (module != null && !modulesNeeded.contains(module)) {
+                                        module.setDynamic(true);
                                         modulesNeeded.add(module);
                                     }
                                 }
@@ -523,6 +524,7 @@ public class JavaProcessUtil {
                         }
                     } else {
                         ModuleNeeded module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(text), null, true);
+                        module.setDynamic(true);
                         modulesNeeded.add(module);
                     }
                 }

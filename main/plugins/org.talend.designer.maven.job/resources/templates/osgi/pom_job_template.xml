@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>@ItemGroupName@</groupId>
+	<artifactId>@ItemName@-bundle</artifactId>
+	<version>@ItemVersion@</version>
+	<packaging>bundle</packaging>
+
+	<properties>
+		<item.name>@ItemName@</item.name>
+		<item.project.name>@ItemProjectName@</item.project.name>
+		
+		<bundle.config.export.package>@BundleConfigExportPackage@</bundle.config.export.package>
+		<bundle.config.import.package>@BundleConfigImportPackage@</bundle.config.import.package>
+		<bundle.config.export.service>@BundleConfigExportService@</bundle.config.export.service>
+		<bundle.config.bundle.classpath>@BundleConfigBundleClasspath@</bundle.config.bundle.classpath>
+
+		<resources.path>${basedir}/src/main/resources</resources.path>
+		<lib.path>${resources.path}/lib</lib.path>
+		<provided.lib.path>${resources.path}/provided-lib</provided.lib.path>
+	</properties>
+
+	<dependencies>
+		<!-- Will add some dependencies by API -->
+	</dependencies>
+
+	<build>
+		<resources>
+			<resource>
+				<directory>${resources.path}</directory>
+				<excludes>
+					<!-- Exclude the "provided" libs -->
+					<exclude>provided-lib/**</exclude>
+				</excludes>
+			</resource>
+		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<encoding>UTF-8</encoding>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.3.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<archive>
+						<addMavenDescriptor>false</addMavenDescriptor>
+					</archive>
+					<instructions>
+						<Bundle-SymbolicName>${project.groupId}</Bundle-SymbolicName>
+						<Bundle-Name>${item.name}</Bundle-Name>
+						<Bundle-Version>${project.version}</Bundle-Version>
+						<Export-Package>${bundle.config.export.package}</Export-Package>
+						<Export-Service>${bundle.config.export.service}</Export-Service>
+						<Import-Package>
+							${bundle.config.import.package},
+							*;resolution:=optional
+						</Import-Package>
+						<Include-Resource>
+							{maven-resources}, {maven-dependencies},
+						</Include-Resource>
+						<Bundle-ClassPath>
+							${bundle.config.bundle.classpath}
+						</Bundle-ClassPath>
+					</instructions>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

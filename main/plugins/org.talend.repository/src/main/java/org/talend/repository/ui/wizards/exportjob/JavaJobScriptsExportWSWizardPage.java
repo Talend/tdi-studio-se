@@ -52,10 +52,12 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
+import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobFactory;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManagerFactory;
@@ -379,7 +381,24 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 exportTypeCombo.add(exportType.label);
             }
         }
-        exportTypeCombo.setText(getCurrentExportType1().label);
+        String label2 = getCurrentExportType1().label;
+        // if the build type was set, try to select by default
+        if (nodes != null && nodes.length == 1) { // deal with one node only.
+            ProcessItem item = getProcessItem();
+            final Object buildType = item.getProperty().getAdditionalProperties()
+                    .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            if (buildType != null) {
+                Map<JobExportType, String> map = BuildJobFactory.oldBuildTypeMap;
+                for (JobExportType t : map.keySet()) {
+                    if (buildType.toString().equals(map.get(t))) { // same build type
+                        label2 = t.label;
+                        break;
+                    }
+                }
+            }
+        }
+
+        exportTypeCombo.setText(label2);
         if (exportTypeFixed != null) {
             left.setVisible(false);
             optionsGroup.setVisible(false);

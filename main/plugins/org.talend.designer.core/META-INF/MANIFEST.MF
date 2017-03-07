@@ -57,7 +57,8 @@ Require-Bundle: org.talend.model,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.e4.ui.workbench.renderers.swt,
  org.eclipse.e4.ui.workbench,
- org.eclipse.core.resources
+ org.eclipse.core.resources,
+ org.talend.designer.maven
 Eclipse-LazyStart: true
 Plugin-Class: org.talend.designer.core.DesignerPlugin
 Export-Package: org.talend.designer.core;
@@ -75,6 +76,7 @@ Export-Package: org.talend.designer.core;
    org.osgi.framework,
    org.talend.designer.codegen",
  org.talend.designer.core.assist,
+ org.talend.designer.core.build,
  org.talend.designer.core.debug,
  org.talend.designer.core.i18n,
  org.talend.designer.core.model,

@@ -93,7 +93,7 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
         LastGenerationInfo.getInstance().getUseRulesMap().clear();
 
-        final Map<String, Object> argumentsMap = new HashMap<String, Object>();
+        final Map<String, Object> argumentsMap = new HashMap<String, Object>(getArguments());
 
         argumentsMap.put(TalendProcessArgumentConstant.ARG_ENABLE_APPLY_CONTEXT_TO_CHILDREN,
                 isOptionChoosed(ExportChoice.applyToChildren));
@@ -148,8 +148,8 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
             generationOption = generationOption | ProcessorUtilities.GENERATE_WITHOUT_COMPILING;
         }
         argumentsMap.put(TalendProcessArgumentConstant.ARG_GENERATE_OPTION, generationOption);
-        
-        //deployVersion for ci builder
+
+        // deployVersion for ci builder
         String deployVersion = (String) exportChoice.get(ExportChoice.deployVersion);
         if (deployVersion != null) {
             argumentsMap.put(TalendProcessArgumentConstant.ARG_DEPLOY_VERSION, deployVersion);
@@ -212,12 +212,12 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                 items.add(repositoryObject.getProperty().getItem());
             }
         }
-        if(isOptionChoosed(ExportChoice.executeTests)){
-        	 IPath path = talendProcessJavaProject.getTargetFolder().getFolder("surefire-reports").getLocation();
-             File reports = new File(path.toOSString());
-             if (reports.exists()) {
-            	 FilesUtils.deleteFolder(reports, false);
-             }
+        if (isOptionChoosed(ExportChoice.executeTests)) {
+            IPath path = talendProcessJavaProject.getTargetFolder().getFolder("surefire-reports").getLocation();
+            File reports = new File(path.toOSString());
+            if (reports.exists()) {
+                FilesUtils.deleteFolder(reports, false);
+            }
         }
         if (isOptionChoosed(ExportChoice.needJobItem)) {
             File destination = new File(itemsFolder.getLocation().toFile().getAbsolutePath());
@@ -356,7 +356,8 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
                     }
                 }
             }
-            // TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java.src.main.resources". so that it will be used by
+            // TDQ-12474 copy the "metadata/survivorship/rulePackage" to ".Java.src.main.resources". so that it will be
+            // used by
             // maven command 'include-survivorship-rules' to export.
             if (!isOptionChoosed(ExportChoice.needJobItem)) {
                 ExportFileResource resouece = new ExportFileResource();

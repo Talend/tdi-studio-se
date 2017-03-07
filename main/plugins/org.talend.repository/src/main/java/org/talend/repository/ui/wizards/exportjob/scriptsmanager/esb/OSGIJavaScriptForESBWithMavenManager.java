@@ -75,7 +75,7 @@ public class OSGIJavaScriptForESBWithMavenManager extends JavaScriptForESBWithMa
 
             }
             String mavenScript = MavenTemplateManager.getTemplateContent(templateFile,
-                    IProjectSettingPreferenceConstants.TEMPLATE_OSGI_BUNDLE_POM, PluginChecker.EXPORT_JOB_PLUGIN_ID,
+                    IProjectSettingPreferenceConstants.TEMPLATE_OSGI_BUNDLE_POM, PluginChecker.MAVEN_JOB_PLUGIN_ID,
                     IProjectSettingTemplateConstants.PATH_OSGI_BUNDLE + '/'
                             + IProjectSettingTemplateConstants.POM_JOB_TEMPLATE_FILE_NAME);
 

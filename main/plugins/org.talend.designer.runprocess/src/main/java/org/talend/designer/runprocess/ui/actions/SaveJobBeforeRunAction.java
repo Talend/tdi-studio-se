@@ -20,6 +20,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 
 /**
@@ -48,7 +49,12 @@ public class SaveJobBeforeRunAction extends Action {
         if (nodes.isEmpty()) {
             return;
         }
-        IEditorPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+        IEditorPart part = null;
+        if (activeProcess instanceof IProcess2) {
+            part = ((IProcess2) activeProcess).getEditor(); // save the editor directly.
+        } else {// try to save current active editor
+            part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+        }
         if (part != null && part.isDirty()) {
             if (part != null && part instanceof AbstractMultiPageTalendEditor) {
                 AbstractMultiPageTalendEditor editor = (AbstractMultiPageTalendEditor) part;

@@ -72,6 +72,8 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
 
     private boolean itemDependencies;
 
+    private final Map<String, Object> argumentsMap = new HashMap<String, Object>();
+
     public AbstractBuildJobHandler(ProcessItem processItem, String version, String contextName,
             Map<ExportChoice, Object> exportChoiceMap) {
         this.processItem = processItem;
@@ -90,6 +92,10 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    public Map<String, Object> getArguments() {
+        return argumentsMap;
     }
 
     protected boolean isOptionChoosed(Object key) {
@@ -163,8 +169,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         }
         return false;
     }
-
-
 
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
