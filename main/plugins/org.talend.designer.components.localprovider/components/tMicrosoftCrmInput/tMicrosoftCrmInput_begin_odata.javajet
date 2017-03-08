@@ -1,0 +1,156 @@
+<%@ jet
+imports="
+        java.util.List
+        java.util.Map
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.types.JavaType
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+		"
+%>
+<%
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+	IMetadataTable metadata = metadatas.get(0);
+
+	if (metadata != null) {
+		List<IMetadataColumn> columnList = metadata.getListColumns();
+		int nbSchemaColumns = columnList.size();
+		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+		// if output columns are defined
+		if(nbSchemaColumns > 0 && outgoingConns != null && outgoingConns.size() > 0){
+			String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+			String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
+			//TODO authcation
+			
+			String passwordFieldName = "__PASSWORD__";
+			%>
+
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+				String clientId_<%=cid%>=null;
+				//TODO maybe no need to be set here
+				String resource_<%=cid%>=null;
+				
+				String userName_<%=cid%>=null;
+				String password_<%=cid%>=null;
+				String authoryEndpoint_<%=cid%>=null;
+				
+				String serviceRootURI_<%=cid%>=<%=serviceURL%>;
+				
+				org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(clientId_<%=cid%>, resource_<%=cid%>, userName_<%=cid%>, password_<%=cid%>, authoryEndpoint_<%=cid%>);
+				org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,serviceRootURI_<%=cid%>);
+				<%
+	     		String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+	     		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+	     		if("CustomEntity".equals(entitySetName)){
+					entitySetName = customEntityname.replaceAll("\"","");
+				}
+	     		String logical = ElementParameterParser.getValue(node,"__LOGICAL_OP__");
+	     		List<Map<String, String>> keyColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__CONDITIONS__");
+	     		%>
+	       	//TODO
+	       	<%
+	        	if(keyColumns.size()>0 ){
+				%>
+	            //TODO
+	            <%
+	            for(Map<String, String> keyColumn:keyColumns){
+	        		%>
+	        			//TODO
+						<%
+	        			if(!("").equals(keyColumn.get("RVALUE"))){
+	        			%>
+	        			//TODO
+	       			<%
+	            	}
+	        		}
+	        		%>
+	        		<%
+	        		if(!("").equals(logical)){
+	        		%>
+	       		//TODO
+	       		<%
+	        		}
+	        	}
+	        	%>
+
+	        	<%
+	        	StringBuilder sb = new StringBuilder("");
+	        	for(IMetadataColumn column: columnList){
+	  				sb.append("\"");
+	  				sb.append(column.getLabel());
+	  				sb.append("\",");
+	        	}
+	        	sb.deleteCharAt(sb.lastIndexOf(","));
+	        	IConnection outgoingConn = outgoingConns.get(0);
+				if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	        	%>
+		        	//aos_<%=cid%>.setStringArray(new String[]{<%=sb%>});
+		        	//cols_<%=cid%>.setColumns(aos_<%=cid%>);
+		        	//query_<%=cid%>.setColumnSet(cols_<%=cid%>);
+					org.talend.mscrm.QueryOptionConfig queryOption_<%=cid%> = new org.talend.mscrm.QueryOptionConfig();
+		        	queryOption_<%=cid%>.setReturnEntityProperties(new String[]{<%=sb%>});
+		        	//TODO
+		        	queryOption_<%=cid%>.setTop(5);
+		        	//TODO
+		        	queryOption_<%=cid%>.setOrderBy("name desc");
+		        	org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest<org.apache.olingo.client.api.domain.ClientEntitySet,org.apache.olingo.client.api.domain.ClientEntity> 
+		        		request_<%=cid%> = client_<%=cid%>.creatEntitySetIteratorRequest("accounts",queryOption_<%=cid%>);
+					//TODO page 
+		        	int pageNumber_<%=cid%> = 1;
+		        	//pagingInfo_<%=cid%>.setPageNumber(pageNumber_<%=cid%>);
+						
+		        	while(true){
+		        		org.apache.olingo.client.api.communication.response.ODataRetrieveResponse<org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, 
+		        		org.apache.olingo.client.api.domain.ClientEntity>> response_<%=cid%> = request_<%=cid%>.execute();
+        				org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, org.apache.olingo.client.api.domain.ClientEntity> iterator_<%=cid%> = response_<%=cid%>.getBody();
+		        		while(iterator_<%=cid%>.hasNext()){
+		        			org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = iterator_<%=cid%>.next();
+		               nb_line_<%=cid%>++;
+	                  <%
+							for(int i = 0; i < columnList.size(); i++){//for begin
+	
+								IMetadataColumn column = columnList.get(i);
+	
+								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+	
+								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+	
+								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+								%>
+								org.apache.olingo.client.api.domain.ClientProperty property_<%=column.getLabel()%>_<%=cid%> =entity_<%=cid%>.getProperty("<%=column.getLabel()%>");
+								if( property_<%=column.getLabel()%>_<%=cid%>.getValue().toString().length()>0){
+		        					<%
+		       						if(javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT){
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = property_<%=column.getLabel()%>_<%=cid%>.getValue().toString();
+		        					<%
+		        					}else if(javaType == JavaTypesManager.DATE){ // Date
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_Date(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString(), <%= patternValue %>);
+		        					<%
+		        					}else{ // other
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_<%=typeToGenerate%>(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString());
+		        					<%
+		        					}
+		        					%>
+	        					}else{
+	        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+	        					}
+	        				<%
+							}//for end
+							%>
+				<%
+			}
+		}
+	}
+}
+%>
