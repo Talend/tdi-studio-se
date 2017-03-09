@@ -498,6 +498,13 @@ public class UpdateNodeParameterCommand extends Command {
                             }
                         }
                     }
+                }else if(node.getLabel().startsWith("tPattern") && parameter!=null && parameter instanceof IElementParameter){
+                    //Added TDQ-11688 20170309 yyin
+                    IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
+                    if(elementParameter!=null && !elementParameter.getValue().equals(((IElementParameter)parameter).getValue())){
+                        elementParameter.setValue(((IElementParameter)parameter).getValue());
+                        update = true;
+                    }
                 }
             }
             if (!update) { // bult-in

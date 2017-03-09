@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.process;
 
 import java.beans.PropertyChangeEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -2168,13 +2170,28 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     } else if(item!=null && "pattern".equalsIgnoreCase(item.getFileExtension())){
                         //Added TDQ-11688, check pattern update
                         ITDQPatternService service = null;
-                        try {
+                        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
                             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
-                        } catch (RuntimeException e) {
-                            // nothing to do
                         }
                         if (service != null) {
-                            service.updateJobForPattern(node,item);
+                            IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
+                            String path = item.getState().getPath().replaceAll("Regex"+ File.separator, "");
+                            String name = File.separator+ path + File.separator+  item.getProperty().getDisplayName();
+
+                            if(!StringUtils.equals(name, (String)nameParam.getValue())){
+                                nameParam.setValue(name);
+                                result = new UpdateCheckResult(node);
+                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,nameParam);
+                                propertiesResults.add(result);
+                            }
+//                            service.updateJobForPattern(node,item);                            
+                            String regex = service.getRegex(node, item);
+                            IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
+                            if(!StringUtils.equals(regex, (String)reParam.getValue())){
+                                reParam.setValue(regex);
+                                result = new UpdateCheckResult(node);
+                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,reParam);
+                            }  
                         } 
                     }else{
                         result = new UpdateCheckResult(node);

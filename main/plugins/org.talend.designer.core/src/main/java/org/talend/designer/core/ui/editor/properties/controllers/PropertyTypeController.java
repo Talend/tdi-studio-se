@@ -311,7 +311,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     String[] listRepositoryItems = dbTypeParam.getListRepositoryItems();
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
                             param.getRepositoryValue(), listRepositoryItems);
-                }else if(elem.getElementName().startsWith("tPattern")){
+                }else if (elem instanceof INode &&((INode)elem).getComponent().getName().startsWith("tPattern")){//Added TDQ-11688 
                     return processPattern(elem);
                 }else {
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
@@ -580,10 +580,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
     private Command processPattern(IElement elem) {
         CompoundCommand compoundCommand = new CompoundCommand();
         ITDQPatternService service = null;
-        try {
+        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
-        } catch (RuntimeException e) {
-            // nothing to do
         }
         if (service != null && elem instanceof Node) {
             Node node = (Node) elem;
