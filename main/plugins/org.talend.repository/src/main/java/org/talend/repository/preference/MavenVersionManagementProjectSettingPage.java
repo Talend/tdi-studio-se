@@ -57,6 +57,7 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.repository.RepositoryWorkUnit;
@@ -71,6 +72,9 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     private final Color COLOR_RED = Display.getDefault().getSystemColor(SWT.COLOR_RED);
 
     private final Color COLOR_WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+
+    // Should be the same with CamelRepositoryNodeType.repositoryRouteDesinsType
+    private final String NODENAME_ROUTE_DESIGNS = "ROUTE_DESIGNS"; //$NON-NLS-1$
 
     private Button applyVersionButton;
 
@@ -109,9 +113,15 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                 return false;
             }
         }
+        if (type == ERepositoryObjectType.FOLDER) {
+            if (node.getObject() instanceof Folder) {
+                type = ((Folder) node.getObject()).getContentType();
+            }
+        }
         if (type == ERepositoryObjectType.PROCESS || type == ERepositoryObjectType.PROCESS_MR
-                || type == ERepositoryObjectType.PROCESS_ROUTE || type == ERepositoryObjectType.PROCESS_SPARK
-                || type == ERepositoryObjectType.PROCESS_SPARKSTREAMING || type == ERepositoryObjectType.PROCESS_STORM) {
+                || type == ERepositoryObjectType.valueOf(NODENAME_ROUTE_DESIGNS) || type == ERepositoryObjectType.PROCESS_ROUTE
+                || type == ERepositoryObjectType.PROCESS_SPARK || type == ERepositoryObjectType.PROCESS_SPARKSTREAMING
+                || type == ERepositoryObjectType.PROCESS_STORM) {
             return true;
         }
         return false;
