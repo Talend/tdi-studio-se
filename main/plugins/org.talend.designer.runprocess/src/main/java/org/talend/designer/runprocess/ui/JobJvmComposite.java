@@ -17,6 +17,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
@@ -36,6 +37,8 @@ public class JobJvmComposite extends Composite {
      */
     private static RunProcessContext processContext;
 
+    private Composite execComposite;
+
     public JobJvmComposite(Composite parent, int style) {
         super(parent, style);
         // TODO Auto-generated constructor stub
@@ -53,19 +56,19 @@ public class JobJvmComposite extends Composite {
     }
 
     protected Composite createTargetExecutionComposite(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
+        execComposite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.marginHeight = 0;
         layout.marginWidth = 0;
-        composite.setLayout(layout);
+        execComposite.setLayout(layout);
 
-        StyledText text = new StyledText(composite, SWT.NONE);
+        StyledText text = new StyledText(execComposite, SWT.NONE);
         text.setText(Messages.getString("ProcessComposite.targetExecutionTabTooltipAvailable")); //$NON-NLS-1$
         text.setWordWrap(true);
         text.setEditable(false);
         text.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-        return composite;
+        return execComposite;
     }
 
     protected void addListeners() {
@@ -74,6 +77,9 @@ public class JobJvmComposite extends Composite {
 
     public void setProcessContext(RunProcessContext processContext) {
         this.processContext = processContext;
+        for (Control control : execComposite.getChildren()) {
+            control.setEnabled(processContext != null);
+        }
     }
 
     public void debug() {

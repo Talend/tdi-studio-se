@@ -60,12 +60,9 @@ public class RunProcessPlugin extends AbstractUIPlugin {
         IExtensionPointLimiter extensionPointLimiter = new ExtensionPointLimiterImpl(
                 "org.talend.designer.runprocess.runprocess_manager", "runprocess_manager"); //$NON-NLS-1$ //$NON-NLS-2$
 
+        runProcessContextManager = new RunProcessContextManager();
         runProcessContextManagerList = ExtensionImplementationProvider.getInstance(extensionPointLimiter);
-        runProcessContextManager = runProcessContextManagerList.size() > 0 ? runProcessContextManagerList.get(0) : null;
-
-        if (runProcessContextManager == null) {
-            runProcessContextManager = new RunProcessContextManager();
-        }
+        runProcessContextManagerList.add(runProcessContextManager);
     }
 
     /*
