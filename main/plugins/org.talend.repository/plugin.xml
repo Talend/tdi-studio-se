@@ -2866,6 +2866,15 @@
               name="AddNewIgnoreNullSettingForTMicrosoftCrmOutputTask"
               version="6.2.2">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="4.2.4"
+              class="org.talend.repository.model.migration.ResetItemLabelMigrationTask"
+              description="Reset the item label"
+              id="org.talend.repository.model.migration.ResetItemLabelMigrationTask"
+              name="ResetItemLabelMigrationTask"
+              version="5.2.2">
+        </projecttask>
    </extension>
 
    <extension
