@@ -379,7 +379,7 @@ public class GenericElementParameter extends ElementParameter {
             return;
         }
         for (IElementParameter parameter : schemaParameters) {
-            if (currentContext.equals(parameter.getContext())) {
+            if (parameter != this && currentContext.equals(parameter.getContext())) {
                 parameter.setValue(newSchema);
             }
         }
