@@ -475,7 +475,7 @@ public class CLASS {
             return createSQL.toString();
         }
         protected String getAutoIncrement(int startValue, int step) {
-            if("sybase_id".equalsIgnoreCase(getDBMSId())){
+            if("sybase_id".equalsIgnoreCase(getDBMSId()) || "Exasol_id".equalsIgnoreCase(getDBMSId())){
                 return " IDENTITY NOT NULL";
             } else if("mysql_id".equalsIgnoreCase(getDBMSId()) ) {
                 return " AUTO_INCREMENT";

@@ -87,18 +87,32 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                     }
                 }//here end the last for, the List "columns"
                 %>
+				
+				String currentValue_<%=cid %> = value_<%=cid %>;
+				
+<%
+				
+				for (IContextParameter ctxParam: params) {
+					if ("id_Password".equals(ctxParam.getType()) ) {
+%>						
+						if ("<%=ctxParam.getName()%>".equals(key_<%=cid %>) ) currentValue_<%=cid %> = currentValue_<%=cid %>.replaceAll(".", "*");
+<%						
+					}	
+
+				}		
+%>
 
 <%
                 if(node.getElementParameter("PRINT_OPERATIONS").isContextMode()) {
 %>
                     if(<%=ElementParameterParser.getValue(node, "__PRINT_OPERATIONS__")%>) {
-                        System.out.println("<%=cid %> set key \"" + key_<%=cid %> + "\" with value \"" + value_<%=cid %> + "\"");
+                        System.out.println("<%=cid %> set key \"" + key_<%=cid %> + "\" with value \"" + currentValue_<%=cid %> + "\"");
                     }
 <%
                 } else {
                     if (ElementParameterParser.getValue(node, "__PRINT_OPERATIONS__").equals("true")) {
 %>
-                        System.out.println("<%=cid %> set key \"" + key_<%=cid %> + "\" with value \"" + value_<%=cid %> + "\"");
+                        System.out.println("<%=cid %> set key \"" + key_<%=cid %> + "\" with value \"" + currentValue_<%=cid %> + "\"");
 <%
                     }
                 }

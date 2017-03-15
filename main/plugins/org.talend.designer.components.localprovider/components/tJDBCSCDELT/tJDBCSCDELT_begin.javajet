@@ -1,0 +1,166 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.MetadataTalendType
+    org.talend.core.model.metadata.MappingTypeRetriever
+    java.util.List
+    java.util.Map
+    java.util.HashMap
+    java.util.ArrayList
+    org.talend.commons.utils.StringUtils
+" 
+skeleton="../templates/db_output_bulk.skeleton"
+%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+
+List<IMetadataColumn> columnList = getColumnList(node);
+
+if(columnList == null || columnList.isEmpty()) {
+	return "";
+}
+
+dbLog = new DBLogUtil(node);
+
+//some global var
+boolean isEnableDebug = ("true").equals(ElementParameterParser.getValue(node, "__DEBUG__"));
+String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+
+//get or create db connection statement generation
+String useExistingConnection = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+if (("true").equals(useExistingConnection)) {
+    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+    String connectionName = "conn_" + connection;
+    String username = "username_" + connection;
+    %>
+    java.sql.Connection conn_<%=cid%> = (java.sql.Connection) globalMap.get("<%=connectionName%>");
+    String dbUser_<%=cid %> = (String)globalMap.get("<%=username%>");
+    <%
+} else {
+	String driverClass = ElementParameterParser.getValue(node, "__DRIVER_CLASS__");
+	String jdbcURL = ElementParameterParser.getValue(node, "__URL__");
+	String dbuser= ElementParameterParser.getValue(node, "__USER__");
+    %>
+    java.lang.Class.forName(<%=driverClass%>);
+    String url_<%=cid%> = <%=jdbcURL %>;
+    String dbUser_<%=cid %> = <%=dbuser%>;
+
+    <%
+    String passwordFieldName = "__PASS__";
+    %>
+
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+    String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+
+    java.sql.Connection conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);
+    <%
+}
+%>
+
+<%
+Manager manager = getManager(dbmsId, cid, node);
+%>
+
+String dbschema_<%=cid%> = <%=ElementParameterParser.getValue(node, "__SCHEMA_DB__")%>;
+String sourceTable_<%=cid%> = <%=ElementParameterParser.getValue(node, "__TABLE_SRC__")%>;
+String tableName_<%=cid%> = <%=ElementParameterParser.getValue(node, "__TABLE__")%>;
+
+<%if("redshift_id".equals(dbmsId)) {%>
+String schemaForSearch_<%=cid%> = null;
+String tableForSearch_<%=cid%> = tableName_<%=cid%>;
+<%}%>
+
+if(dbschema_<%=cid%>!=null && !dbschema_<%=cid%>.trim().isEmpty()) {
+	tableName_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>;
+    sourceTable_<%=cid%> = dbschema_<%=cid%> + "<%=manager.getRProtectedChar()%>.<%=manager.getLProtectedChar()%>" + sourceTable_<%=cid%>;
+    
+    <%if("redshift_id".equals(dbmsId)) {%>
+    schemaForSearch_<%=cid%> = dbschema_<%=cid%>;
+    <%}%>
+}
+
+<%
+//table action statement generation
+String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
+String table = ElementParameterParser.getValue(node, "__TABLE__");
+
+String surrogateKey = ElementParameterParser.getValue(node,"__SURROGATE_KEY__");
+
+String surrogateKeyType = ElementParameterParser.getValue(node,"__SK_CREATION__");
+boolean autoIncrease = "AUTO_INCREMENT".equals(surrogateKeyType)&&surrogateKey!=null;
+
+List<Column> stmtStructure = null;
+if(autoIncrease) {
+	stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null, true, surrogateKey, 1, 1);
+} else {
+	stmtStructure = getManager(dbmsId, cid).createColumnList(columnList, false, null, null);
+}
+
+boolean isDynamic = false;
+%>
+
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
+
+<%
+if(isEnableDebug) {
+    %>
+    System.out.println("[<%=cid%>] table action <%=tableAction%> done\n");
+    <%
+}
+%>
+
+<%
+class TextUtil {
+	Manager manager;
+	
+	TextUtil(Manager manager) {
+		this.manager = manager;
+	}
+	
+	String wrap(String objectName) {
+		return manager.getLProtectedChar() + objectName + manager.getRProtectedChar();
+	}
+	
+	String wrap(String var, String cid) {
+		return manager.getLProtectedChar() + "\" + " + var + "_" + cid + " + \"" + manager.getRProtectedChar();
+	}
+}
+
+TextUtil text_util = new TextUtil(manager);
+%>
+
+<%if("DB_SEQUENCE".equals(surrogateKeyType)) {%>
+String sequence_<%=cid%> = <%=ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__")%>;
+
+String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("sequence", cid)%>";
+<%}%>
+
+<%if("mysql_id".equals(dbmsId)) {%>
+	<%@ include file="./mysql.javajet"%>
+<%} else if("oracle_id".equals(dbmsId)){%>
+	<%@ include file="./oracle.javajet"%>
+<%} else if("teradata_id".equals(dbmsId)){%>
+	<%@ include file="./teradata.javajet"%>
+<%} else if("postgresplus_id".equals(dbmsId)){%>
+	<%@ include file="./postgresplus.javajet"%>
+<%} else if("ibmdb2_id".equals(dbmsId)){%>
+	<%@ include file="./db2.javajet"%>
+<%} else if("postgres_id".equals(dbmsId)){%>
+	<%@ include file="./postgres.javajet"%>
+<%} else if("sybase_id".equals(dbmsId)){%>
+	<%@ include file="./sybase.javajet"%>
+<%} else if("redshift_id".equals(dbmsId)){%>
+	<%@ include file="./common_scd_pattern1.javajet"%>
+<%} else if("netezza_id".equals(dbmsId)){%>
+	<%@ include file="./common_scd_pattern2.javajet"%>
+<%} else {%>
+	<%@ include file="./common_scd_pattern1.javajet"%>
+<%}%>

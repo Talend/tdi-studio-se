@@ -69,6 +69,7 @@ import org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.IMetadataColumn;
+import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.TraceData;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.abstractmap.model.table.IDataMapTable;
@@ -91,6 +92,7 @@ import org.talend.designer.mapper.ui.footer.StatusBar.STATUS;
 import org.talend.designer.mapper.ui.image.ImageInfo;
 import org.talend.designer.mapper.ui.image.ImageProviderMapper;
 import org.talend.designer.mapper.ui.visualmap.zone.Zone;
+import org.talend.designer.mapper.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -135,7 +137,7 @@ public class InputDataMapTableView extends DataMapTableView {
     @Override
     protected void createContent() {
         createExpressionFilter(DEFAULT_POST_MATCHING_EXPRESSION_FILTER);
-        
+
         createColumnNameFilter();
         createTableForColumns();
 
@@ -441,6 +443,9 @@ public class InputDataMapTableView extends DataMapTableView {
             }
         }
         condensedItem.setImage(ImageProviderMapper.getImage(getCondencedItemImage(changedOptions)));
+        if (!getInputTable().isMainConnection()) {
+            checkLookupTableProblems(mapperManager.isTableHasAtLeastOneHashKey(table));
+        }
     }
 
     @Override
@@ -753,19 +758,11 @@ public class InputDataMapTableView extends DataMapTableView {
                 continue;
             }
             if (text.length() != 0) {
-
-                if (matchingMode == TMAP_MATCHING_MODE.ALL_ROWS
-                        && getInputTable().getMatchingMode() != TMAP_MATCHING_MODE.ALL_ROWS
-                        || matchingMode != TMAP_MATCHING_MODE.ALL_ROWS
-                        && getInputTable().getMatchingMode() == TMAP_MATCHING_MODE.ALL_ROWS) {
-                    // avilable.add(matchingMode);
+                if (getMapperManager().isMRProcess() && matchingMode == TMAP_MATCHING_MODE.ALL_MATCHES) {
+                    // set ALL_MATCHES as default value for m/r process
+                    avilable.add(0, matchingMode);
                 } else {
-                    if (getMapperManager().isMRProcess() && matchingMode == TMAP_MATCHING_MODE.ALL_MATCHES) {
-                        // set ALL_MATCHES as default value for m/r process
-                        avilable.add(0, matchingMode);
-                    } else {
-                        avilable.add(matchingMode);
-                    }
+                    avilable.add(matchingMode);
                 }
 
             }
@@ -807,7 +804,6 @@ public class InputDataMapTableView extends DataMapTableView {
             if (forceEvaluation || previousStateAtLeastOneHashKey != stateAtLeastOneHashKey) {
                 if (stateAtLeastOneHashKey) {
                     Object previous = getInputTable().getMatchingMode();
-                    getInputTable().setMatchingMode(previousMatchingModeSelected);
                     Object object = mapperManager.getDefaultSetting().get(MATCH_MODEL_SETTING);
                     if (object instanceof IUIMatchingMode[]) {
                         IUIMatchingMode[] modes = (IUIMatchingMode[]) object;
@@ -831,9 +827,8 @@ public class InputDataMapTableView extends DataMapTableView {
                     }
                     innerJoinCheckItemEditable = true;
                     updateViewAfterChangeInnerJoinCheck();
-                } else {
-                    TMAP_MATCHING_MODE matchingMode = TMAP_MATCHING_MODE.ALL_ROWS;
 
+                } else {
                     if (getInputTable().getLookupMode() == TMAP_LOOKUP_MODE.CACHE_OR_RELOAD) {
                         String errorMessage = Messages.getString("InputDataMapTableView.invalidConfiguration", getInputTable() //$NON-NLS-1$
                                 .getName());
@@ -844,7 +839,6 @@ public class InputDataMapTableView extends DataMapTableView {
                         // selectMatchingModeMenuItem(matchingMode);
                     }
                     Object previous = getInputTable().getMatchingMode();
-                    getInputTable().setMatchingMode(matchingMode);
                     Object object = mapperManager.getDefaultSetting().get(MATCH_MODEL_SETTING);
                     if (object instanceof IUIMatchingMode[]) {
                         IUIMatchingMode[] modes = (IUIMatchingMode[]) object;
@@ -866,11 +860,34 @@ public class InputDataMapTableView extends DataMapTableView {
             if (!forceEvaluation) {
                 condensedItem.setImage(ImageProviderMapper.getImage(getCondencedItemImage(changedOptions)));
             }
-            layoutToolBar();
+            checkLookupTableProblems(stateAtLeastOneHashKey);
             mapSettingViewerCreator.refresh();
-
         }
 
+    }
+
+    private void checkLookupTableProblems(boolean stateAtLeastOneHashKey) {
+        ProblemsAnalyser problemAnalyser = new ProblemsAnalyser(mapperManager);
+        List<Problem> lookupTableProblem = problemAnalyser.getLookupTableProblem(getInputTable(), stateAtLeastOneHashKey);
+        if (!lookupTableProblem.isEmpty()) {
+            String problemTxt = "";
+            for (Problem problem : lookupTableProblem) {
+                problemTxt = problemTxt + problem.getDescription();
+            }
+            warningLabel.setToolTipText(problemTxt);
+            nameLabel.setToolTipText(problemTxt);
+            // headerComposite.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_ENTRY_SEARCH_HIGHLIGHTED));
+            headerComposite.setToolTipText(problemTxt);
+            warningLabel.setVisible(true);
+            warnLabelData.exclude = false;
+        } else {
+            warningLabel.setVisible(false);
+            nameLabel.setToolTipText(getInputTable().getName());
+            headerComposite.setToolTipText(null);
+            // headerComposite.setBackground(this.getBackground());
+            warnLabelData.exclude = true;
+        }
+        layoutToolBar();
     }
 
     /**

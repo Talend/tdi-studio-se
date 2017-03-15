@@ -36,6 +36,7 @@ import org.talend.designer.mapper.model.MapperModel;
 import org.talend.designer.mapper.model.table.AbstractDataMapTable;
 import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
+import org.talend.designer.mapper.model.table.TMAP_MATCHING_MODE;
 import org.talend.designer.mapper.model.table.VarsTable;
 import org.talend.designer.mapper.model.tableentry.AbstractInOutTableEntry;
 import org.talend.designer.mapper.model.tableentry.FilterTableEntry;
@@ -197,6 +198,9 @@ public class ExternalDataConverter {
             for (IOConnection connection : inputConnections) {
                 InputTable inputTable = new InputTable(this.mapperManager, connection, connection.getName());
                 inputTable.initFromExternalData(null);
+                if (EConnectionType.FLOW_MAIN != connection.getConnectionType()) {
+                    inputTable.setMatchingMode(TMAP_MATCHING_MODE.ALL_ROWS);
+                }
                 inputDataMapTables.add(inputTable);
             }
         } else {
@@ -228,6 +232,8 @@ public class ExternalDataConverter {
                 if (EConnectionType.FLOW_MAIN == connection.getConnectionType()) {
                     inputTable.setActivateCondensedTool(false);
                     inputTable.setPersistent(false);// bug TDI-8027
+                } else {
+                    inputTable.setMatchingMode(TMAP_MATCHING_MODE.ALL_ROWS);
                 }
             }
         }

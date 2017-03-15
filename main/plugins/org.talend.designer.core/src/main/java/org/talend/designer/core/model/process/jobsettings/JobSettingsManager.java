@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.core.model.process.jobsettings;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -480,7 +480,7 @@ public class JobSettingsManager {
             param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
             param.setRequired(true);
             param.setShowIf(dbCondition
-                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " +dbTypeName + " =='MSSQL' or " + dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
+                    + " and (" + dbTypeName + " == 'OCLE' or " + dbTypeName + " == 'OCLE_OCI' or " + dbTypeName + " =='ACCESS' or " + dbTypeName + " =='MSSQL' or " + dbTypeName + " =='MYSQL') "); //$NON-NLS-1$ //$NON-NLS-2$//$NON-NLS-3$ //$NON-NLS-4$//$NON-NLS-5$
             param.setGroup(IMPLICIT_GROUP);
             paramList.add(param);
         }
@@ -947,17 +947,7 @@ public class JobSettingsManager {
                     .getValue();
             String fileSparator = (String) process.getElementParameter(EParameterName.FIELDSEPARATOR.getName()).getValue();
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
-            if (getMetadataChars().contains(TalendQuoteUtils.removeQuotes(fileSparator))) {
-                // TDI-31730: in case the fileSeparator is one of the metacharacters,need to set the backslash
-                fileSparator = TalendQuoteUtils.removeQuotes(fileSparator);
-                if (fileSparator.equals(File.separator)) {
-                    fileSparator = TalendQuoteUtils.addQuotes("\\\\\\" + fileSparator); //$NON-NLS-1$
-                } else {
-                    fileSparator = TalendQuoteUtils.addQuotes("\\\\" + fileSparator); //$NON-NLS-1$
-                }
-            }
-            String regex = "\"^([^\"+" + fileSparator + "+\"]*)\"+" + fileSparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
+            String regex = FileSeparator.getSeparatorsRegexp(TalendQuoteUtils.removeQuotes(fileSparator));
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
         } else {
             // is db
@@ -1221,5 +1211,28 @@ public class JobSettingsManager {
     private static List<String> getMetadataChars() {
         String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
         return Arrays.asList(metaChars);
+    }
+
+    public static class FileSeparator {
+
+        static String doRegexpQuote(String separators) {
+            if (StringUtils.isEmpty(separators)) {
+                return separators;
+            } else if (separators.length() == 1) {
+                if (separators.equals("\\")) { // special \ //$NON-NLS-1$ 
+                    return "\\\\\\" + separators;//$NON-NLS-1$ 
+                } else if (getMetadataChars().contains(separators)) {
+                    return "\\\\" + separators;//$NON-NLS-1$ 
+                }
+            } else {
+                return doRegexpQuote(separators.substring(0, 1)) + doRegexpQuote(separators.substring(1));
+            }
+            return separators;
+        }
+
+        static String getSeparatorsRegexp(String fileSeparator) {
+            fileSeparator = TalendQuoteUtils.addQuotes(doRegexpQuote(fileSeparator));
+            return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
     }
 }

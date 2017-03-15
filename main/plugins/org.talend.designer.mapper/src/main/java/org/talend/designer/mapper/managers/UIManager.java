@@ -50,6 +50,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
@@ -1307,7 +1308,7 @@ public class UIManager extends AbstractUIManager {
     
                     pointFromTableViewOrigin = display.map(tableItem.getParent(), dataMapTableView, point);
                 } else {
-                    StyledText columnFilterText = dataMapTableView.getColumnNameFilterText();
+                    Text columnFilterText = dataMapTableView.getColumnNameFilterText();
                     Point point = new Point(-dataMapTableView.getBorderWidth() - 19, minHeight);
                     pointFromTableViewOrigin = display.map(columnFilterText, dataMapTableView, point);
                 }

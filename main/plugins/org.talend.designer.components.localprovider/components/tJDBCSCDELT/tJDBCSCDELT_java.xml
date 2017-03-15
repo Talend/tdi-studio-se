@@ -1,0 +1,412 @@
+<COMPONENT>
+  <HEADER
+    PLATEFORM="ALL"
+    SERIAL=""
+    VERSION="0.101"
+    STATUS="ALPHA"
+    COMPATIBILITY="ALL"
+    AUTHOR="Talend"
+    RELEASE_DATE="20170308A"
+    STARTABLE="true"
+    SCHEMA_AUTO_PROPAGATE="false"
+	PARTITIONING="NONE"
+  >
+    <SIGNATURE />
+  </HEADER>
+
+  <FAMILIES>
+    <FAMILY>Databases/DB_JDBC</FAMILY>
+    <FAMILY>Business_Intelligence/DB_SCD</FAMILY>
+  </FAMILIES>
+
+  <DOCUMENTATION>
+    <URL />
+  </DOCUMENTATION>
+
+  <CONNECTORS>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0" />
+    <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="0" />
+    <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+    <CONNECTOR CTYPE="COMPONENT_OK" />
+    <CONNECTOR CTYPE="COMPONENT_ERROR" />
+    <CONNECTOR CTYPE="RUN_IF" />
+  </CONNECTORS>
+
+  <PARAMETERS>
+
+    <PARAMETER
+      NAME="PROPERTY"
+      FIELD="PROPERTY_TYPE"
+      NUM_ROW="1"
+      REPOSITORY_VALUE="DATABASE:JDBC"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    />
+
+    <PARAMETER
+      NAME="USE_EXISTING_CONNECTION"
+      FIELD="CHECK"
+      NUM_ROW="10"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="CONNECTION"
+      FIELD="COMPONENT_LIST"
+      REQUIRED="true" FILTER="tJDBCConnection"
+      NUM_ROW="10"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
+      DYNAMIC_SETTINGS="true"
+    />
+
+    <PARAMETER
+      NAME="URL"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REPOSITORY_VALUE="URL"
+      REQUIRED="true"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>"jdbc:"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="DRIVER_JAR"
+      FIELD="TABLE"
+      NUM_ROW="24"
+      NB_LINES="2" 
+      REPOSITORY_VALUE="DRIVER_JAR"
+      REQUIRED="true"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      	<ITEMS> 
+			<ITEM NAME="JAR_NAME" FIELD="MODULE_LIST"  /> 
+		</ITEMS> 
+    </PARAMETER>
+	
+    <PARAMETER
+      NAME="DRIVER_CLASS"
+      FIELD="TEXT"
+      NUM_ROW="28"
+      REPOSITORY_VALUE="DRIVER_CLASS"
+      REQUIRED="true"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	
+    <PARAMETER
+      NAME="USER"
+      FIELD="TEXT"
+      NUM_ROW="30"
+      REPOSITORY_VALUE="USERNAME"
+      REQUIRED="true"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="PASS"
+      FIELD="PASSWORD"
+      NUM_ROW="30"
+      REPOSITORY_VALUE="PASSWORD"
+      REQUIRED="true"
+      SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SCHEMA_DB"
+      FIELD="TEXT"
+      NUM_ROW="40"
+      REPOSITORY_VALUE="SCHEMA"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="NOTE_SCHEMA_DB"
+      FIELD="LABEL"
+	  NUM_ROW="41"
+	 >
+	   <DEFAULT>Don't need to set the db schema if the database doesn't support schema, or you want to use the default db schema</DEFAULT>
+	</PARAMETER>
+
+    <PARAMETER
+      NAME="TABLE_SRC"
+      FIELD="TEXT"
+      NUM_ROW="50"
+      REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TABLE"
+      FIELD="DBTABLE"
+      NUM_ROW="51"
+      REQUIRED="true"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="TABLE_ACTION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="52"
+    >
+      <ITEMS DEFAULT="NONE">
+        <ITEM NAME="NONE" VALUE="NONE"/>
+        <ITEM NAME="DROP_CREATE" VALUE="DROP_CREATE"/>
+        <ITEM NAME="CREATE" VALUE="CREATE"/>
+        <ITEM NAME="CREATE_IF_NOT_EXISTS" VALUE="CREATE_IF_NOT_EXISTS"/>
+        <ITEM NAME="DROP_IF_EXISTS_AND_CREATE" VALUE="DROP_IF_EXISTS_AND_CREATE" />
+        <ITEM NAME="CLEAR" VALUE="CLEAR"/>
+        <ITEM NAME="TRUNCATE" VALUE="TRUNCATE"/>
+      </ITEMS>
+    </PARAMETER>
+    
+    <!-- this field only work for teradata, keep it hidden and use the default now -->
+    <PARAMETER
+      NAME="CREATE_TABLE_TYPE"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="58"
+      SHOW="false"
+    >
+        <ITEMS DEFAULT="SET">
+            <ITEM NAME="SET" VALUE="SET" />
+            <ITEM NAME="MULTISET" VALUE="MULTISET" />
+        </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="SCHEMA"
+      FIELD="SCHEMA_TYPE"
+      NUM_ROW="60"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="SURROGATE_KEY"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="61"
+    >
+      <DEFAULT></DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="SK_CREATION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="61"
+    >
+      <ITEMS DEFAULT="AUTO_INCREMENT">
+        <ITEM NAME="AUTO_INCREMENT"   VALUE="AUTO_INCREMENT" />
+        <ITEM NAME="DB_SEQUENCE"      VALUE="DB_SEQUENCE"/>
+      </ITEMS>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="SK_DB_SEQUENCE"
+      FIELD="TEXT"
+      NUM_ROW="61"
+      SHOW_IF="SK_CREATION == 'DB_SEQUENCE'"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	
+	<PARAMETER
+      NAME="NOTE_SK_CREATION"
+      FIELD="LABEL"
+	  NUM_ROW="66"
+	 >
+	   <DEFAULT>Some databases support "DB sequence" only, some other databases support "Auto increment" only, please select the right type</DEFAULT>
+	</PARAMETER>
+	
+    <PARAMETER
+      NAME="SOURCE_KEYS"
+      FIELD="TABLE"
+      NUM_ROW="68"
+      NB_LINES="2"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L1"
+      FIELD="CHECK"
+      NUM_ROW="70"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L1_FIELDS"
+      FIELD="TABLE"
+      NUM_ROW="71"
+      NB_LINES="5"
+      SHOW_IF="USE_L1 == 'true'"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L2"
+      FIELD="CHECK"
+      NUM_ROW="80"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L2_FIELDS"
+      FIELD="TABLE"
+      NUM_ROW="81"
+      NB_LINES="5"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+      <ITEMS>
+        <ITEM NAME="NAME" FIELD="COLUMN_LIST" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L2_STARTDATE_FIELD"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="82"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+    </PARAMETER>
+    
+    <!-- this field only work for oracle, keep it hidden and use the default now -->
+    <PARAMETER NAME="L2_STARTDATE_FIELD_TYPE" FIELD="CLOSED_LIST" NUM_ROW="82"
+		SHOW="false"
+		>
+		<ITEMS DEFAULT="JOB_START_TIME">
+			<ITEM NAME="JOB_START_TIME" VALUE="JOB_START_TIME" />
+			<ITEM NAME="INPUT_FIELD" VALUE="INPUT_FIELD" />
+		</ITEMS>
+	</PARAMETER>
+
+	<!-- this field only work for oracle, keep it hidden and use the default now -->
+    <PARAMETER
+      NAME="INPUT_FIELD_NAME"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="82"
+      SHOW_IF="isShow[L2_STARTDATE_FIELD_TYPE] AND (L2_STARTDATE_FIELD_TYPE == 'INPUT_FIELD')"
+    >
+      <DEFAULT></DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L2_ENDDATE_FIELD"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="86"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+    </PARAMETER>
+    
+    <!-- this field only work for oracle, keep it hidden and use the default now -->
+    <PARAMETER NAME="L2_ENDDATE_FIELD_TYPE" FIELD="CLOSED_LIST" NUM_ROW="86"
+		SHOW="false"
+		>
+		<ITEMS DEFAULT="NULL">
+			<ITEM NAME="NULL" VALUE="NULL" />
+			<ITEM NAME="FIXED_YEAR_VALUE" VALUE="FIXED_YEAR_VALUE" />
+		</ITEMS>
+	</PARAMETER>
+
+	<!-- this field only work for oracle, keep it hidden and use the default now -->
+    <PARAMETER
+      NAME="FIXED_YEAR_VALUE"
+      FIELD="TEXT"
+      NUM_ROW="86"
+	  SHOW_IF="isShow[L2_ENDDATE_FIELD_TYPE] AND (L2_ENDDATE_FIELD_TYPE == 'FIXED_YEAR_VALUE')"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L2_ACTIVE"
+      FIELD="CHECK"
+      NUM_ROW="88"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L2_ACTIVE_FIELD"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="88"
+      SHOW_IF="isShow[USE_L2_ACTIVE] AND (USE_L2_ACTIVE == 'true')"
+    >
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="USE_L2_VERSION"
+      FIELD="CHECK"
+      NUM_ROW="90"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="L2_VERSION_FIELD"
+      FIELD="COLUMN_LIST"
+      NUM_ROW="90"
+      SHOW_IF="isShow[USE_L2_VERSION] AND (USE_L2_VERSION == 'true')"
+    >
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="100"
+    >
+      <DEFAULT>mysql_id</DEFAULT>
+    </PARAMETER>
+
+  </PARAMETERS>
+
+  <ADVANCED_PARAMETERS>
+  
+    <PARAMETER
+      NAME="FIELD_VALUE_INC_NULL"
+      FIELD="CHECK"
+      NUM_ROW="15"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="NOTE_FIELD_VALUE_INC_NULL"
+      FIELD="LABEL"
+	  NUM_ROW="16"
+	 >
+	   <DEFAULT>"Source fields value include Null" doesn't work for Postgres and PostgresPlus</DEFAULT>
+	</PARAMETER>
+
+    <PARAMETER
+      NAME="DEBUG"
+      FIELD="CHECK"
+      NUM_ROW="20"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+  </ADVANCED_PARAMETERS>
+
+  <CODEGENERATION>
+  </CODEGENERATION>
+
+  <RETURNS />
+</COMPONENT>

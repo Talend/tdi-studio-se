@@ -692,7 +692,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
     }
 
     public void updateHeader(String id, String currTitle, boolean isHide) {
-        final TableViewerCreatorColumn funColumn = getTableViewerCreator().getColumn(id);
+        final TableViewerCreatorColumnNotModifiable funColumn = getTableViewerCreator().getColumn(id);
         if (isHide) {
             final TableEditorContentNotModifiable tableEditorContent = funColumn.getTableEditorContent();
             if (tableEditorContent != null && tableEditorContent instanceof CheckboxTableEditorContent) {

@@ -15,12 +15,14 @@ package org.talend.designer.core.ui.editor.properties.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
+import org.talend.core.ITDQPatternService;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.QueriesConnection;
 import org.talend.core.model.metadata.builder.connection.Query;
@@ -37,6 +39,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.metadata.RepositoryObjectHelper;
+import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -130,6 +133,18 @@ public class ControllerRepositoryValueHander {
                     displayName = "Rules:" //$NON-NLS-1$
                             + lastLinkItem.getProperty().getLabel();
 
+                }
+                if(StringUtils.isEmpty(displayName)){
+                    ITDQPatternService tdqService = null;
+                    try {
+                        tdqService = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+                        if(tdqService!=null){
+                            displayName = tdqService.getPatternDisplayName(item);
+                        }
+                    } catch (RuntimeException e) {
+                        // nothing to do
+                    }
+                    
                 }
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);

@@ -1,0 +1,32 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.MetadataTalendType
+    org.talend.core.model.metadata.MappingTypeRetriever
+    java.util.List
+    java.util.Map
+    java.util.HashMap
+    java.util.ArrayList
+" 
+skeleton="../templates/db_output_bulk.skeleton"
+%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+List<IMetadataColumn> columnList = getColumnList(node);
+if(columnList != null && columnList.size() > 0) {
+    String useExistingConnection = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
+    if(!("true").equals(useExistingConnection)) {
+        %>
+        if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed()) {
+            conn_<%=cid%>.close();
+        }
+        <%
+    }
+}
+%>

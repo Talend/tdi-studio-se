@@ -30,6 +30,15 @@
               name="Salesforce620Migration"
               version="6.2.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.0"
+              class="org.talend.designer.core.generic.model.migration.NewAzureBlobMigrationTask"
+              description="migration task for jobs using azureBlob cpt to tcomp"
+              id="org.talend.designer.core.generic.model.migration.NewAzureBlobMigrationTask"
+              name="NewAzureBlobMigrationTask"
+              version="6.4.0">
+        </projecttask>
         <!--<projecttask
               beforeLogon="false"
               breaks="6.3.0"

@@ -15,12 +15,15 @@ package org.talend.designer.mapper.utils.problems;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
+import org.talend.designer.components.lookup.common.ICommonLookup.MATCHING_MODE;
 import org.talend.designer.mapper.MapperComponent;
 import org.talend.designer.mapper.MapperMain;
 import org.talend.designer.mapper.external.connection.IOConnection;
@@ -34,7 +37,9 @@ import org.talend.designer.mapper.language.LanguageProvider;
 import org.talend.designer.mapper.language.generation.JavaGenerationManager;
 import org.talend.designer.mapper.language.generation.JavaGenerationManager.PROBLEM_KEY_FIELD;
 import org.talend.designer.mapper.managers.MapperManager;
+import org.talend.designer.mapper.model.table.IUIMatchingMode;
 import org.talend.designer.mapper.model.table.InputTable;
+import org.talend.designer.mapper.model.table.TMAP_MATCHING_MODE;
 import org.talend.designer.mapper.model.tableentry.InputColumnTableEntry;
 
 /**
@@ -61,38 +66,52 @@ public class ProblemsAnalyser {
 
         problems.clear();
 
-        if (externalData != null && mapperManager.isCheckSyntaxEnabled()) {
-
-            List<ExternalMapperTable> extInputTables = new ArrayList<ExternalMapperTable>(externalData.getInputTables());
-            List<ExternalMapperTable> extVarTables = new ArrayList<ExternalMapperTable>(externalData.getVarsTables());
-            List<ExternalMapperTable> extOutputTables = new ArrayList<ExternalMapperTable>(externalData.getOutputTables());
-            // loop on all tables
+        if (externalData != null) {
+            checkLookupTablesKeyProblems(externalData);
 
             ICodeProblemsChecker codeChecker = LanguageProvider.getCurrentLanguage().getCodeChecker();
-            ILanguage currentLanguage = LanguageProvider.getCurrentLanguage();
-            if (currentLanguage.getCodeLanguage() == ECodeLanguage.JAVA) {
-                codeChecker.checkProblems(null);
+
+            if (mapperManager.isCheckSyntaxEnabled()) {
+                List<ExternalMapperTable> extInputTables = new ArrayList<ExternalMapperTable>(externalData.getInputTables());
+                List<ExternalMapperTable> extVarTables = new ArrayList<ExternalMapperTable>(externalData.getVarsTables());
+                List<ExternalMapperTable> extOutputTables = new ArrayList<ExternalMapperTable>(externalData.getOutputTables());
+                checkExpressionSyntaxProblems(extInputTables, codeChecker);
+                checkExpressionSyntaxProblems(extVarTables, codeChecker);
+                checkExpressionSyntaxProblems(extOutputTables, codeChecker);
+
+                List<? extends IConnection> incomingConnections = new ArrayList<IConnection>(this.mapperManager
+                        .getAbstractMapComponent().getIncomingConnections());
+                ExternalDataConverter converter = new ExternalDataConverter(mapperManager);
+                MapperMain mapperMain = ((MapperComponent) mapperManager.getAbstractMapComponent()).getMapperMain();
+                ArrayList<IOConnection> inputsIOConnections = mapperMain.createIOConnections(incomingConnections);
+                ArrayList<InputTable> inputTables = converter.prepareInputTables(inputsIOConnections, externalData);
+
+                checkKeysProblems(inputTables);
+
+                checkOutputTablesProblems(extOutputTables);
             }
-
-            checkExpressionSyntaxProblems(extInputTables, codeChecker);
-            checkExpressionSyntaxProblems(extVarTables, codeChecker);
-            checkExpressionSyntaxProblems(extOutputTables, codeChecker);
-
-            List<? extends IConnection> incomingConnections = new ArrayList<IConnection>(this.mapperManager
-                    .getAbstractMapComponent().getIncomingConnections());
-            ExternalDataConverter converter = new ExternalDataConverter(mapperManager);
-            MapperMain mapperMain = ((MapperComponent) mapperManager.getAbstractMapComponent()).getMapperMain();
-            ArrayList<IOConnection> inputsIOConnections = mapperMain.createIOConnections(incomingConnections);
-            ArrayList<InputTable> inputTables = converter.prepareInputTables(inputsIOConnections, externalData);
-
-            checkKeysProblems(inputTables);
-
-            checkOutputTablesProblems(extOutputTables);
-
-            checkLookupTablesUnusedProblems(inputTables);
 
         }
 
+        return getProblems();
+    }
+
+    public List<Problem> getLookupTableProblem(InputTable inputTable, boolean atLeastOneExpressionFilled) {
+        problems.clear();
+        if (!atLeastOneExpressionFilled) {
+            IUIMatchingMode matchingMode = inputTable.getMatchingMode();
+            if (MATCHING_MODE.ALL_ROWS != matchingMode.getMatchingMode()) {
+                addProblem(new Problem(null,
+                        "The lookup table '" + inputTable.getName() + "' should have at least one expression key filled.", //$NON-NLS-1$ //$NON-NLS-2$
+                        ProblemStatus.WARNING));
+            }
+        } else {
+            IUIMatchingMode matchingMode = inputTable.getMatchingMode();
+            if (MATCHING_MODE.ALL_ROWS == matchingMode.getMatchingMode()) {
+                addProblem(new Problem(null, "The expression key can't be used in lookup table '" + inputTable.getName()
+                        + "' with match mode 'All Rows'.", ProblemStatus.WARNING));
+            }
+        }
         return getProblems();
     }
 
@@ -134,37 +153,46 @@ public class ProblemsAnalyser {
 
     }
 
-    /**
-     * DOC amaumont Comment method "checkLookupTablesUnusedProblems".
-     * 
-     * @param inputTables
-     */
-    private void checkLookupTablesUnusedProblems(ArrayList<InputTable> inputTables) {
-
-        for (InputTable table : inputTables) {
-            if (table.isMainConnection()) {
-                continue;
+    public void checkLookupTablesKeyProblems(ExternalMapperData externalData) {
+        List<ExternalMapperTable> lookupTables = new ArrayList<ExternalMapperTable>(externalData.getInputTables());
+        List<? extends IConnection> mainConnections = mapperManager.getAbstractMapComponent().getIncomingConnections(
+                EConnectionType.FLOW_MAIN);
+        if (mainConnections.size() == 1) {
+            ExternalMapperTable mainTable = null;
+            for (ExternalMapperTable table : lookupTables) {
+                if (mainConnections.get(0).getName().equals(table.getName())) {
+                    mainTable = table;
+                    break;
+                }
             }
-            List<IColumnEntry> columnEntries = table.getColumnEntries();
+            if (mainTable != null) {
+                lookupTables.remove(mainTable);
+            }
+        }
+
+        for (ExternalMapperTable table : lookupTables) {
+            List<ExternalMapperTableEntry> columnEntries = table.getMetadataTableEntries();
             boolean atLeastOneExpressionFilled = false;
-            for (IColumnEntry entry : columnEntries) {
-                InputColumnTableEntry inputEntry = (InputColumnTableEntry) entry;
-                if (!mapperManager.checkEntryHasEmptyExpression(inputEntry)) {
+            for (ExternalMapperTableEntry entry : columnEntries) {
+                if (!StringUtils.isEmpty(entry.getExpression())) {
                     atLeastOneExpressionFilled = true;
                     break;
                 }
             }
 
             if (!atLeastOneExpressionFilled) {
-                if (mapperManager.isAdvancedMap()) {
-                    addProblem(new Problem(null, Messages.getString("Problem.warning.setExpressionKey", //$NON-NLS-1$
-                            new Object[] { table.getName() }), ProblemStatus.WARNING));
-                } else {
+                String matchingMode = table.getMatchingMode();
+                if (!TMAP_MATCHING_MODE.ALL_ROWS.name().equals(matchingMode)) {
                     addProblem(new Problem(null,
-                            "The lookup table '" + table.getName() + "' should have at least one expression key filled. ", //$NON-NLS-1$ //$NON-NLS-2$
+                            "The lookup table '" + table.getName() + "' should have at least one expression key filled.", //$NON-NLS-1$ //$NON-NLS-2$
                             ProblemStatus.WARNING));
                 }
-
+            } else {
+                String matchingMode = table.getMatchingMode();
+                if (TMAP_MATCHING_MODE.ALL_ROWS.name().equals(matchingMode)) {
+                    addProblem(new Problem(null, "The expression key can't be used in lookup table '" + table.getName()
+                            + "' with match mode 'All Rows'.", ProblemStatus.WARNING));
+                }
             }
 
         }

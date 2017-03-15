@@ -211,9 +211,13 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     protected IDataMapTable abstractDataMapTable;
 
-    private Composite headerComposite;
+    protected Composite headerComposite;
 
-    private Label nameLabel;
+    protected GridData warnLabelData;
+
+    protected Label warningLabel;
+
+    protected Label nameLabel;
 
     private ToolItem minimizeButton;
 
@@ -251,7 +255,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     private Text constraintExpressionTextEditor;
 
-    private UnnotifiableColorStyledText columnNameTextFilter;
+    private Text columnNameTextFilter;
 
     private Label filterImageLabel;
 
@@ -484,6 +488,11 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         headerLayout.verticalSpacing = spacing;
         headerComposite.setLayout(headerLayout);
 
+        warningLabel = new Label(headerComposite, SWT.NONE);
+        warningLabel.setImage(ImageProvider.getImage(EImage.WARNING_ICON));
+        warnLabelData = new GridData();
+        warningLabel.setLayoutData(warnLabelData);
+        warnLabelData.exclude = true;
         nameLabel = new Label(headerComposite, SWT.NONE);
         nameLabel.setFont(FontProviderMapper.getFont(FontInfo.FONT_SYSTEM_BOLD));
         if (abstractDataMapTable instanceof OutputTable && ((OutputTable) abstractDataMapTable).getIsJoinTableOf() != null) {
@@ -1006,7 +1015,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 if (e.button == 3 && getZone() == Zone.OUTPUTS) {
                     Menu mainMenu = new Menu(tableForEntries);
                     tableForEntries.setMenu(mainMenu);
-                    new MenuItem(mainMenu, SWT.SEPARATOR);
                     // Custom
                     MenuItem customItem = new MenuItem(mainMenu, SWT.PUSH);
                     customItem.setText("Custom");
@@ -2762,8 +2770,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             filterImageLabel.setVisible(table.isActivateColumnNameFilter());
             filterImageLabel.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ColumnNameFilter")); //$NON-NLS-1$
 
-            columnNameTextFilter = new UnnotifiableColorStyledText(getCenterComposite(), SWT.BORDER, preferenceStore,
-                    LanguageManager.getCurrentLanguage().getName());
+            columnNameTextFilter = new Text(getCenterComposite(), SWT.BORDER);
 
             if (mapperManager.componentIsReadOnly()) {
                 columnNameTextFilter.setEditable(false);
@@ -2777,7 +2784,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
             GridData nameFilterTextGridData = new GridData(GridData.FILL_HORIZONTAL);
             nameFilterTextGridData.minimumHeight = 10;
-            nameFilterTextGridData.heightHint = 15;
+            nameFilterTextGridData.heightHint = 20;
             nameFilterTextGridData.minimumWidth = 25;
             nameFilterTextGridData.widthHint = 50;
             columnNameTextFilter.setLayoutData(nameFilterTextGridData);
@@ -3030,7 +3037,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         return this.expressionFilterText;
     }
 
-    public UnnotifiableColorStyledText getColumnNameFilterText() {
+    public Text getColumnNameFilterText() {
         return this.columnNameTextFilter;
     }
 

@@ -131,6 +131,11 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
     public String getName() {
         return this.getClass().getName();
     }
+    
+    @Override
+    public String getOriginalName(){
+        return getName();
+    }
 
     // no use for virtual component
     @Override
