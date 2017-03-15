@@ -16,11 +16,15 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.utils.WorkspaceUtils;
 import org.talend.migration.IProjectMigrationTask;
-import org.talend.repository.model.RepositoryConstants;
+import org.talend.repository.items.importexport.handlers.imports.ImportBasicHandler;
+import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * DOC hwang  class global comment. Detailled comment
@@ -35,6 +39,8 @@ public class ResetItemLabelMigrationTask extends AbstractItemMigrationTask imple
 
     @Override
     public ExecutionResult execute(Item item) {
+        IProxyRepositoryFactory repositoryFactory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
+        ImportBasicHandler handler = new ImportBasicHandler();
         Property property = item.getProperty();
         if(property == null){
             return ExecutionResult.NOTHING_TO_DO;
@@ -43,17 +49,18 @@ public class ResetItemLabelMigrationTask extends AbstractItemMigrationTask imple
         if(label == null){
             return ExecutionResult.NOTHING_TO_DO;
         }
-        property.setLabel(getPropertyLabel(getPropertyLabel(StringUtils.trimToNull(label))));
-        property.setDisplayName(StringUtils.trimToNull(label));
-        return ExecutionResult.SUCCESS_WITH_ALERT;
-    }
-    
-    private String getPropertyLabel(String name) {
-        String label = name;
-        for (String toReplace : RepositoryConstants.ITEM_FORBIDDEN_IN_LABEL) {
-            label = label.replace(toReplace, "_"); //$NON-NLS-1$
+        try {
+            boolean isAvailable = WorkspaceUtils.checkNameIsOK(label);
+            if(!isAvailable){
+                property.setLabel(handler.getPropertyLabel(StringUtils.trimToNull(label)));
+                property.setDisplayName(StringUtils.trimToNull(label));
+                repositoryFactory.save(item, true);
+            }
+        } catch (PersistenceException e) {
+            return ExecutionResult.FAILURE;
         }
-        return label;
+        
+        return ExecutionResult.SUCCESS_WITH_ALERT;
     }
 
 }
