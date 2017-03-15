@@ -77,8 +77,10 @@ public class JobJvmComposite extends Composite {
 
     public void setProcessContext(RunProcessContext processContext) {
         this.processContext = processContext;
-        for (Control control : execComposite.getChildren()) {
-            control.setEnabled(processContext != null);
+        if (execComposite != null) {
+            for (Control control : execComposite.getChildren()) {
+                control.setEnabled(processContext != null);
+            }
         }
     }
 

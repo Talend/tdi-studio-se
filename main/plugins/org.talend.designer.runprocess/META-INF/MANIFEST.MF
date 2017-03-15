@@ -49,6 +49,7 @@ Export-Package: org.talend.designer.runprocess,
  org.talend.designer.runprocess.shadow,
  org.talend.designer.runprocess.spark,
  org.talend.designer.runprocess.storm,
+ org.talend.designer.runprocess.trace,
  org.talend.designer.runprocess.ui,
  org.talend.designer.runprocess.ui.actions,
  org.talend.designer.runprocess.ui.views
