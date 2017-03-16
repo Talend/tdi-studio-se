@@ -19,6 +19,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -82,6 +83,9 @@ public class JavaScdDialog extends AbstractScdDialog {
         type0Fields.setTitle(Messages.getString("JavaScdDialog.type0Field"), SWTResourceManager.getColor(255, //$NON-NLS-1$
                 146, 0));
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(type0Fields.getControl());
+        GridData fieldsData = new GridData(GridData.FILL_BOTH);
+        fieldsData.heightHint = 100;
+        type0Fields.getControl().setLayoutData(fieldsData);
         type0Fields.setTableInput(scdManager.getType0Table());
         addContextHelp(type0Fields.getTableViewer().getTable(), "org.talend.designer.scd.type0"); //$NON-NLS-1$
 
@@ -89,6 +93,7 @@ public class JavaScdDialog extends AbstractScdDialog {
         type1Fields.setTitle(Messages.getString("JavaScdDialog.type1Field"), SWTResourceManager.getColor(255, //$NON-NLS-1$
                 203, 0));
         GridDataFactory.swtDefaults().align(SWT.FILL, SWT.FILL).grab(true, true).applyTo(type1Fields.getControl());
+        type1Fields.getControl().setLayoutData(fieldsData);
         type1Fields.setTableInput(scdManager.getType1Table());
         addContextHelp(type1Fields.getTableViewer().getTable(), "org.talend.designer.scd.type1"); //$NON-NLS-1$
 
