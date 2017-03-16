@@ -177,7 +177,7 @@ topology_<%=cid%> = org.talend.components.api.component.ConnectorTopology.NONE;
 org.talend.components.api.component.runtime.RuntimeInfo runtime_info_<%=cid%> = def_<%=cid%>.getRuntimeInfo(props_<%=cid%>, topology_<%=cid%>);
 java.util.Set<org.talend.components.api.component.ConnectorTopology> supported_connector_topologies_<%=cid%> = def_<%=cid%>.getSupportedConnectorTopologies();
 
-org.talend.components.api.component.runtime.ComponentRuntime componentRuntime_<%=cid%> = (org.talend.components.api.component.runtime.ComponentRuntime)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
+org.talend.components.api.component.runtime.RuntimableRuntime componentRuntime_<%=cid%> = (org.talend.components.api.component.runtime.RuntimableRuntime)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
 org.talend.daikon.properties.ValidationResult initVr_<%=cid%> = componentRuntime_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
 
 if (initVr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
@@ -186,7 +186,7 @@ if (initVr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult
 
 if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runtime.ComponentDriverInitialization) {
 	org.talend.components.api.component.runtime.ComponentDriverInitialization compDriverInitialization_<%=cid%> = (org.talend.components.api.component.runtime.ComponentDriverInitialization)componentRuntime_<%=cid%>;
-	compDriverInitialization_<%=cid%>.runAtDriver();
+	compDriverInitialization_<%=cid%>.runAtDriver(container_<%=cid%>);
 }
 
 org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = null;
