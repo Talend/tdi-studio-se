@@ -189,7 +189,8 @@ public class RunProcessService implements IRunProcessService {
      * org.talend.core.model.process.IProcess, java.util.Set)
      */
     @Override
-    public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules) {
+    public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
+            throws ProcessorException {
         delegateService.updateLibraries(jobModuleList, process, alreadyRetrievedModules);
     }
 

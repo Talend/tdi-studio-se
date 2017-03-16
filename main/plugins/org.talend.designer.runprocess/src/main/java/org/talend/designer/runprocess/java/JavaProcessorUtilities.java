@@ -71,6 +71,7 @@ import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
@@ -160,6 +161,7 @@ public class JavaProcessorUtilities {
 
     public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process) {
         Set<ModuleNeeded> neededLibraries = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
+
             @Override
             public int compare(ModuleNeeded m1, ModuleNeeded m2) {
                 return m1.toString().compareTo(m2.toString());
@@ -274,7 +276,11 @@ public class JavaProcessorUtilities {
      * @see org.talend.designer.runprocess.IProcessor#computeLibrariesPath(Set<String>)
      */
     public static void computeLibrariesPath(Set<ModuleNeeded> jobModuleList, IProcess process) {
-        computeLibrariesPath(jobModuleList, process, new HashSet<ModuleNeeded>());
+        try {
+            computeLibrariesPath(jobModuleList, process, new HashSet<ModuleNeeded>());
+        } catch (ProcessorException e) {
+            ExceptionHandler.process(e);
+        }
     }
 
     /**
@@ -283,9 +289,10 @@ public class JavaProcessorUtilities {
      * @param hashSet
      * @param process
      * @param alreadyRetrievedModules
+     * @throws BusinessException
      */
     public static void computeLibrariesPath(Set<ModuleNeeded> jobModuleList, IProcess process,
-            Set<ModuleNeeded> alreadyRetrievedModules) {
+            Set<ModuleNeeded> alreadyRetrievedModules) throws ProcessorException {
         RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
                 Context.REPOSITORY_CONTEXT_KEY);
         Project project = repositoryContext.getProject();
@@ -295,8 +302,6 @@ public class JavaProcessorUtilities {
         // use maven to update the class path.
         try {
             sortClasspath(jobModuleList, process, alreadyRetrievedModules);
-        } catch (BusinessException be1) {
-            ExceptionHandler.process(be1);
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
@@ -310,7 +315,7 @@ public class JavaProcessorUtilities {
     // command
     // // line in run mode
     private static void sortClasspath(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
-            throws CoreException, BusinessException {
+            throws CoreException, ProcessorException {
         ITalendProcessJavaProject jProject = getTalendJavaProject();
         if (jProject == null) {
             return;
@@ -419,7 +424,7 @@ public class JavaProcessorUtilities {
      * @throws BusinessException
      */
     private static void handleMissingJarsForProcess(Set<String> missingJarsForRoutines, final Set<String> missingJarsForProcess,
-            String missingJars) throws BusinessException {
+            String missingJars) throws ProcessorException {
         final StringBuffer sb = new StringBuffer(""); //$NON-NLS-1$
         if (missingJarsForProcess.size() > 0) {
             sb.append(Messages.getString("JavaProcessorUtilities.msg.missingjar.forProcess")); //$NON-NLS-1$
@@ -470,7 +475,7 @@ public class JavaProcessorUtilities {
                     });
                 }
             }
-            throw new BusinessException(missingJars);
+            throw new ProcessorException(missingJars);
 
         } else {
             if (missingJarsForRoutines.size() > 0) {
@@ -556,6 +561,7 @@ public class JavaProcessorUtilities {
     public static boolean hasBatchOrStreamingSubProcess(Item item) throws PersistenceException {
         return hasBatchOrStreamingSubProcess(item, new HashSet<String>());
     }
+
     public static boolean hasBatchOrStreamingSubProcess(Item item, Set<String> testedItems) throws PersistenceException {
         if (testedItems.contains(item.getProperty().getId())) {
             return false;
@@ -590,9 +596,10 @@ public class JavaProcessorUtilities {
                                     IRepositoryViewObject lastVersion = RunProcessPlugin.getDefault().getRepositoryService()
                                             .getProxyRepositoryFactory().getLastVersion(value.toString());
                                     if (lastVersion != null) {
-                                        boolean hasBatchOrStreaming = hasBatchOrStreamingSubProcess(lastVersion.getProperty().getItem(), testedItems);
+                                        boolean hasBatchOrStreaming = hasBatchOrStreamingSubProcess(lastVersion.getProperty()
+                                                .getItem(), testedItems);
                                         if (hasBatchOrStreaming) {
-                                            // only stop the loop once we checked every child 
+                                            // only stop the loop once we checked every child
                                             return hasBatchOrStreaming;
                                         }
                                     }
