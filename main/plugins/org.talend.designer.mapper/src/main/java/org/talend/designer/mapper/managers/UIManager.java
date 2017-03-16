@@ -1093,11 +1093,11 @@ public class UIManager extends AbstractUIManager {
                     link.setState(LinkState.UNSELECTED);
                     ITableEntry sourceITableEntry = link.getPointLinkDescriptor1().getTableEntry();
                     TableItem tableItem = mapperManager.retrieveTableItem(sourceITableEntry);
-                    if(tableItem != null) {
+                    if (tableItem != null) {
                         tableItem.setBackground(unselectedColor);
                     }
                     ITableEntry targetITableEntry = link.getPointLinkDescriptor2().getTableEntry();
-                    if(tableItem != null) {
+                    if (tableItem != null) {
                         tableItem = mapperManager.retrieveTableItem(targetITableEntry);
                     }
                     if (tableItem != null) {
@@ -1206,7 +1206,7 @@ public class UIManager extends AbstractUIManager {
     public void setEntryState(MapperManager pMapperManager, EntryState entryState, ITableEntry entry) {
         if (!(entry instanceof ExpressionFilterEntry)) {
             TableItem tableItem = pMapperManager.retrieveTableItem(entry);
-            if(tableItem != null) {
+            if (tableItem != null) {
                 tableItem.setBackground(entryState.getColor());
             }
         }
@@ -1236,11 +1236,12 @@ public class UIManager extends AbstractUIManager {
         DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(tableEntry);
 
         int entriesSize = 0;
-        int minHeight = dataMapTableView.getTableViewerCreatorForColumns().getTable().getHeaderHeight() + dataMapTableView.getTableViewerCreatorForColumns().getTable().getItemHeight();
+        int minHeight = dataMapTableView.getTableViewerCreatorForColumns().getTable().getHeaderHeight()
+                + dataMapTableView.getTableViewerCreatorForColumns().getTable().getItemHeight();
         TableItem[] tableItems = new TableItem[0];
         if (tableEntry instanceof InputColumnTableEntry || tableEntry instanceof OutputColumnTableEntry) {
             tableItems = dataMapTableView.getTableViewerCreatorForColumns().getTable().getItems();
-        
+
             AbstractInOutTable abstractInOutTable = (AbstractInOutTable) dataMapTableView.getDataMapTable();
             if (dataMapTableView.getZone() == Zone.OUTPUTS) {
                 OutputTable outputTable = (OutputTable) abstractInOutTable;
@@ -1258,7 +1259,7 @@ public class UIManager extends AbstractUIManager {
         Display display = dataMapTableView.getDisplay();
         Point returnedPoint = new Point(0, 0);
         TableEntryProperties tableEntryProperties = null;
-        
+
         int itemIndex = 0;
         if (tableEntry instanceof IColumnEntry || tableEntry instanceof FilterTableEntry || tableEntry instanceof GlobalMapEntry) {
             tableEntryProperties = mapperManager.getTableEntryProperties(tableEntry);
@@ -1271,41 +1272,41 @@ public class UIManager extends AbstractUIManager {
                 boolean checked = false;
                 for (int i = 0; i < tableItems.length; i++) {
                     if (tableItems[i].getData() == tableEntry) {
-                        itemIndex= i;
+                        itemIndex = i;
                         break;
-                    } 
+                    }
                 }
                 boolean allIsNull = false;
-                if(tableItem == null && (isIntputEntry || isOutputEntry)){
-                    if(tableItems.length > 0){
+                if (tableItem == null && (isIntputEntry || isOutputEntry)) {
+                    if (tableItems.length > 0) {
                         tableItem = tableItems[0];
                         checked = true;
-                    }else {
+                    } else {
                         allIsNull = true;
                     }
                 }
 
-                if(!allIsNull){
+                if (!allIsNull) {
                     Table table = tableItem.getParent();
                     Rectangle boundsTableItem = tableItem.getBounds(1);// FIX for issue 1225 ("1" parameter added)
-                    y = boundsTableItem.y + table.getItemHeight() / 2  + dataMapTableView.getBorderWidth();
-             
-                    if(isOutputEntry || isIntputEntry) {
-                        if( entriesSize != tableItems.length) {
-                            y = boundsTableItem.y + table.getItemHeight() / 2  + dataMapTableView.getBorderWidth();
+                    y = boundsTableItem.y + table.getItemHeight() / 2 + dataMapTableView.getBorderWidth();
+
+                    if (isOutputEntry || isIntputEntry) {
+                        if (entriesSize != tableItems.length) {
+                            y = boundsTableItem.y + table.getItemHeight() / 2 + dataMapTableView.getBorderWidth();
                         }
                     }
-                    if(checked) {
-                        y = boundsTableItem.y  + dataMapTableView.getBorderWidth();
+                    if (checked) {
+                        y = boundsTableItem.y + dataMapTableView.getBorderWidth();
                         checked = false;
                     }
                     int x = 0;
                     if (y < 0) {
                         y = 0;
                     }
-    
+
                     Point point = new Point(x, y);
-    
+
                     pointFromTableViewOrigin = display.map(tableItem.getParent(), dataMapTableView, point);
                 } else {
                     Text columnFilterText = dataMapTableView.getColumnNameFilterText();
@@ -1315,7 +1316,7 @@ public class UIManager extends AbstractUIManager {
             }
         } else if (tableEntry instanceof ExpressionFilterEntry) {
             StyledText expressionFilterText = dataMapTableView.getExpressionFilterText();
-//            dataMapTableView.getex
+            // dataMapTableView.getex
             Point point = new Point(-dataMapTableView.getBorderWidth() - 19, 16);
             pointFromTableViewOrigin = display.map(expressionFilterText, dataMapTableView, point);
         } else {
@@ -1371,12 +1372,12 @@ public class UIManager extends AbstractUIManager {
         }
 
     }
-    
+
     public void parseNewFilterColumn(String expression, ITableEntry currentModifiedITableEntry, boolean appliedOrCanceled) {
         ParseExpressionResult result = parseFilterColumn(expression, currentModifiedITableEntry, true, true, appliedOrCanceled);
-//        if (result.isAtLeastOneLinkHasBeenAddedOrRemoved()) {
-//            mapperManager.getUiManager().refreshBackground(false, false);
-//        }
+        // if (result.isAtLeastOneLinkHasBeenAddedOrRemoved()) {
+        // mapperManager.getUiManager().refreshBackground(false, false);
+        // }
     }
 
     /**
@@ -1514,8 +1515,6 @@ public class UIManager extends AbstractUIManager {
         return new ParseExpressionResult(linkHasBeenAdded, linkHasBeenRemoved);
     }
 
-    
-
     public ParseExpressionResult parseFilterColumn(String expression, ITableEntry currentModifiedITableEntry,
             boolean linkMustHaveSelectedState, boolean checkInputKeyAutomatically, boolean inputExpressionAppliedOrCanceled) {
 
@@ -1529,7 +1528,7 @@ public class UIManager extends AbstractUIManager {
         DataMapTableView dataMapTableView = mapperManager.retrieveDataMapTableView(currentModifiedITableEntry);
         boolean linkHasBeenAdded = false;
         boolean linkHasBeenRemoved = false;
-       
+
         DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(LanguageProvider.getCurrentLanguage());
         TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser.parseTableEntryLocations(expression);
         Set<TableEntryLocation> alreadyProcessed = new HashSet<TableEntryLocation>();
@@ -1537,7 +1536,7 @@ public class UIManager extends AbstractUIManager {
         Set<ITableEntry> sourcesForTargetToDelete = new HashSet<ITableEntry>(sourcesForTarget);
 
         boolean isInputEntry = currentModifiedITableEntry instanceof InputColumnTableEntry;
-        
+
         ECodeLanguage codeLanguage = LanguageProvider.getCurrentLanguage().getCodeLanguage();
 
         for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
@@ -1552,13 +1551,13 @@ public class UIManager extends AbstractUIManager {
             if (!alreadyProcessed.contains(location) && checkSourceLocationIsValid(location, currentModifiedITableEntry)
                     && (mapperManager.isAdvancedMap() || !mapperManager.isAdvancedMap() && dontRemoveLink)) {
                 ITableEntry sourceTableEntry = mapperManager.retrieveTableEntry(location);
-                    if (sourceTableEntry != null && sourcesForTarget.contains(sourceTableEntry)){
-                        Set<IMapperLink> targets = mapperManager.getGraphicalLinksFromTarget(currentModifiedITableEntry);
-                        Set<IMapperLink> linksFromTarget = new HashSet<IMapperLink>(targets);
-                        for (IMapperLink link : linksFromTarget) {
-                                link.calculate();
-                        }
-                } 
+                if (sourceTableEntry != null && sourcesForTarget.contains(sourceTableEntry)) {
+                    Set<IMapperLink> targets = mapperManager.getGraphicalLinksFromTarget(currentModifiedITableEntry);
+                    Set<IMapperLink> linksFromTarget = new HashSet<IMapperLink>(targets);
+                    for (IMapperLink link : linksFromTarget) {
+                        link.calculate();
+                    }
+                }
             }
         }
 
@@ -1577,8 +1576,7 @@ public class UIManager extends AbstractUIManager {
 
         return new ParseExpressionResult(linkHasBeenAdded, linkHasBeenRemoved);
     }
-    
-    
+
     /**
      * DOC amaumont Comment method "removeInvalidKeys".
      * 
