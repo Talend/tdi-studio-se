@@ -343,4 +343,18 @@
          version="0.0.0"
          unpack="false"/>
                   
+   <plugin
+         id="org.talend.components.netsuite"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+   <plugin
+         id="org.talend.components.marketo"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
 </feature>

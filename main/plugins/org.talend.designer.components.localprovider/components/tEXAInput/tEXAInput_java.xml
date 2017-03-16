@@ -244,7 +244,7 @@
 	
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9032.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9032/6.3.0"  REQUIRED="true" />
+		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 

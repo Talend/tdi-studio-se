@@ -3167,7 +3167,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     public String generateUniqueNodeName(INode node) {
-        String baseName = node.getComponent().getName();
+        String baseName = node.getComponent().getOriginalName();
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
