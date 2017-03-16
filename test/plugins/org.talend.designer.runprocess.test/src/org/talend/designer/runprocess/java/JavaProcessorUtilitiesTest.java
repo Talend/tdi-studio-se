@@ -102,7 +102,7 @@ public class JavaProcessorUtilitiesTest {
                 exception = e;
             }
             if (exception != null) {
-                Assert.assertEquals(exception.getMessage(), "Missing jars: computeLibrariesPath.jar");
+                Assert.assertTrue(exception.getMessage().contains("computeLibrariesPath.jar"));
             } else {
                 fail("computeLibrariesPath failed for process test{tLibraryLoad},computeLibrariesPath.jar not found but no exception");
             }
