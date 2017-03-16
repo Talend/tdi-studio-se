@@ -43,14 +43,16 @@ skeleton="../templates/db_output_bulk.skeleton"
 		<%
 	}
 	%>
-	String tableName_<%=cid%> = null;
-	String tableName2_<%=cid%> = null;
-	if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
-		tableName_<%=cid%> = <%=table%>;
-		tableName2_<%=cid%> = <%=table%>;
+	String tableName_<%=cid%> = <%=table%>;
+	String tableName2_<%=cid%> = tableName_<%=cid%>;
+	boolean isTempTable_<%=cid%> = tableName_<%=cid%>!=null && tableName_<%=cid%>.trim().startsWith("#");
+	if(isTempTable_<%=cid%>) {
+		tableName2_<%=cid%> = "\"" + tableName2_<%=cid%> + "\"";
+	} else if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
+		//do nothing
 	} else {
-		tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + <%=table%>;
-		tableName2_<%=cid%> = dbschema_<%=cid%> + "." + <%=table%>;
+		tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + tableName_<%=cid%>;
+		tableName2_<%=cid%> = dbschema_<%=cid%> + "." + tableName2_<%=cid%>;
 	}
 
 	java.sql.Connection conn_<%=cid%> = null;

@@ -12,10 +12,10 @@
 // ============================================================================
 package org.talend.designer.xmlmap.ui.tabs.table;
 
+import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorColumnNotModifiable;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.AccessorUtils;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
-import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier;
 
 /**
@@ -35,7 +35,7 @@ public class XmlCellModifier extends DefaultCellModifier {
         if (!AbstractXmlTreeSchemaTableView.ID_COLUMN_XPATH.equals(idColumn)) {
             return super.getValue(bean, idColumn);
         } else {
-            TableViewerCreatorColumn column = tableViewerCreator.getColumn(idColumn);
+        	TableViewerCreatorColumnNotModifiable column = tableViewerCreator.getColumn(idColumn);
             ModifiedObjectInfo modifiedObjectInfo = this.tableViewerCreator.getModifiedObjectInfo();
             modifiedObjectInfo.setCurrentModifiedBean(bean);
             modifiedObjectInfo.setCurrentModifiedColumn(column);

@@ -23,4 +23,6 @@ public interface IESBRunContainerService extends IService {
 
     void addRuntimeServer(TargetExecComposite targetExecComposite, JobJvmComposite jobComposite);
 
+    boolean isESBProcessContextManager(RunProcessContextManager contextManager);
+
 }

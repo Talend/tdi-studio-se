@@ -1447,6 +1447,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 dbName = dbName.replace("\\\"", "");
             }
             dbName = TextUtil.removeQuots(dbName);
+        } else if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(connParameters.getDbType())) {
+            dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
         if (connParameters.getDbType().equals(EDatabaseTypeName.SQLITE.getXmlName())
@@ -1603,6 +1605,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
                 dbName = dbName.replace("\\\"", "");
             }
             dbName = TextUtil.removeQuots(dbName);
+        } else if (EDatabaseTypeName.GENERAL_JDBC.getDisplayName().equals(connParameters.getDbType())) {
+            dbName = ""; //$NON-NLS-1$
         }
         connParameters.setDbName(dbName);
         connParameters.setPassword(getParameterValueWithContext(element, EConnectionParameterName.PASSWORD.getName(), context,

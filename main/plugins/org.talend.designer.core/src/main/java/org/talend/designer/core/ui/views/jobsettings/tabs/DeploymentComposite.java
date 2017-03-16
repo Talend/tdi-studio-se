@@ -15,7 +15,6 @@ package org.talend.designer.core.ui.views.jobsettings.tabs;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -40,6 +39,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -62,6 +62,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     private Button versionCheckbox;
 
     private Text versionText;
+
+    private Label buildTypeLabel;
 
     private ComboViewer buildTypeCombo;
 
@@ -120,7 +122,7 @@ public class DeploymentComposite extends AbstractTabComposite {
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);
 
-        Label buildTypeLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.buildTypeLabel")); //$NON-NLS-1$
+        buildTypeLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.buildTypeLabel")); //$NON-NLS-1$
         buildTypeLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
         buildTypeCombo = new ComboViewer(widgetFactory.createCCombo(composite, SWT.READ_ONLY | SWT.BORDER));
@@ -183,13 +185,15 @@ public class DeploymentComposite extends AbstractTabComposite {
                 versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$ ;
             }
 
-            Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put(IBuildParametes.PROCESS, this.process);
-            final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
+            final boolean showBuildType = isShowBuildType();
             final Control buildTypeControl = buildTypeCombo.getControl();
-            if (validBuildTypes == null || validBuildTypes.length == 0) {
-                buildTypeControl.setEnabled(false);
-            } else {
+            buildTypeControl.setVisible(showBuildType);
+            buildTypeLabel.setVisible(showBuildType);
+
+            if (showBuildType) {
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                parameters.put(IBuildParametes.PROCESS, this.process);
+                final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
                 buildTypeCombo.setInput(validBuildTypes);
                 buildTypeControl.setEnabled(true);
                 String buildType = (String) processAdditionalProperties.get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
@@ -210,6 +214,19 @@ public class DeploymentComposite extends AbstractTabComposite {
         }
     }
 
+    private boolean isShowBuildType() {
+        if (!PluginChecker.isTIS()) {
+            return false;
+        }
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put(IBuildParametes.PROCESS, this.process);
+        final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
+        if (validBuildTypes != null && validBuildTypes.length > 1) {// TUP-17276
+            return true;
+        }
+        return false;
+    }
+
     private void addListeners() {
         groupIdCheckbox.addSelectionListener(new SelectionAdapter() {
 
@@ -226,9 +243,9 @@ public class DeploymentComposite extends AbstractTabComposite {
                     getCommandStack().execute(cmd);
                 }
             }
-            
+
         });
-        
+
         groupIdText.addModifyListener(new ModifyListener() {
 
             @Override
@@ -239,8 +256,8 @@ public class DeploymentComposite extends AbstractTabComposite {
                     if (!defaultGroupId.equals(groupIdText.getText())) {
                         groupId = groupIdText.getText();
                     }
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID,
-                            groupIdText.getText());
+                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID, groupIdText
+                            .getText());
                     getCommandStack().execute(cmd);
                 } else {
                     groupIdText.setBackground(COLOR_RED);
@@ -283,8 +300,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                         version = currentVersion;
                     }
                     // if empty, remove it from job, else will set the new value
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION,
-                            currentVersion);
+                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION, currentVersion);
                     getCommandStack().execute(cmd);
                 }
             }
@@ -299,8 +315,8 @@ public class DeploymentComposite extends AbstractTabComposite {
                 if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
                     final Object elem = ((IStructuredSelection) selection).getFirstElement();
                     if (elem instanceof BuildType) {
-                        Command cmd = new MavenDeploymentValueChangeCommand(process, TalendProcessArgumentConstant.ARG_BUILD_TYPE,
-                                ((BuildType) elem).getName());
+                        Command cmd = new MavenDeploymentValueChangeCommand(process,
+                                TalendProcessArgumentConstant.ARG_BUILD_TYPE, ((BuildType) elem).getName());
                         getCommandStack().execute(cmd);
                     }
                 }

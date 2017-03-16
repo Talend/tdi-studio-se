@@ -655,6 +655,13 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 table.setListColumns((((IMetadataTable) schemaParam.getValue()).clone(true)).getListColumns());
             }
             ((Process) ((Node) elem).getProcess()).checkProcess();
+            //Added TDQ-11688 show regex when "built-in"
+            if(elem.getElementName().startsWith("tPattern")){
+                IElementParameter regexParameter = ((Node) elem).getElementParameter("PATTERN_REGEX");
+                if(regexParameter !=null){
+                    regexParameter.setShow(EmfComponent.BUILTIN.equals(this.value));
+                }
+            }
         }
     }
 

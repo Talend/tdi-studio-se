@@ -839,17 +839,7 @@ public class JobletUtil {
         if(expression == null){
             return false;
         }
-        Perl5Matcher matcher = new Perl5Matcher();
-        Perl5Compiler compiler = new Perl5Compiler();
-
-        Pattern pattern = null;
-        try {
-            pattern = compiler.compile("[0-9a-zA-Z_]{1,}:[0-9a-zA-Z_]{1,}"); //$NON-NLS-1$
-        } catch (MalformedPatternException e) {
-            CommonExceptionHandler.process(e);
-        }
-
-        if (matcher.matches(expression, pattern)) {
+        if(expression.contains(":")){//$NON-NLS-1$
             return true;
         }
         return false;

@@ -215,6 +215,11 @@ public class JobContextLoadComponent implements IComponent {
     public String getName() {
         return this.getClass().getName();
     }
+    
+    @Override
+    public String getOriginalName(){
+        return getName();
+    }
 
     @Override
     public String getOriginalFamilyName() {

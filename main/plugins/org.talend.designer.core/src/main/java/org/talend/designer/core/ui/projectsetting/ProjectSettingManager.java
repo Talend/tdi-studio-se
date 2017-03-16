@@ -12,7 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.ui.projectsetting;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -23,6 +29,7 @@ import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.param.ERepositoryCategoryType;
@@ -39,6 +46,7 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.EParameterName;
@@ -56,6 +64,7 @@ import org.talend.designer.core.ui.preferences.StatsAndLogsConstants;
 import org.talend.designer.core.ui.views.jobsettings.ExtraComposite;
 import org.talend.designer.core.ui.views.jobsettings.ImplicitContextLoadHelper;
 import org.talend.designer.core.ui.views.statsandlogs.StatsAndLogsComposite;
+import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.UpdateRepositoryUtils;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -88,9 +97,9 @@ public class ProjectSettingManager extends Utils {
     }
 
     /**
-     * 
+     *
      * Load ImplicitContextLoad Preference setting to Project only Load Once
-     * 
+     *
      * @param pro
      */
     private static void loadImplicitContextLoadPreferenceToProject(Project pro) {
@@ -112,9 +121,9 @@ public class ProjectSettingManager extends Utils {
     }
 
     /**
-     * 
+     *
      * create implicitContextLoad Element for project
-     * 
+     *
      * @param pro
      * @return
      */
@@ -133,9 +142,9 @@ public class ProjectSettingManager extends Utils {
     }
 
     /**
-     * 
+     *
      * create StatsAndLogsElement for project
-     * 
+     *
      * @param pro
      * @return
      */
@@ -284,9 +293,9 @@ public class ProjectSettingManager extends Utils {
     }
 
     /**
-     * 
+     *
      * when create a new job default use project settings
-     * 
+     *
      * @param pItem
      */
     public static void defaultUseProjectSetting(org.talend.designer.core.ui.editor.process.Process process) {
@@ -327,7 +336,7 @@ public class ProjectSettingManager extends Utils {
     }
 
     /**
-     * 
+     *
      * create parameter for ImplicitContextLoad.
      */
     static void createImplicitContextLoadParameters(Element elem) {
@@ -421,7 +430,7 @@ public class ProjectSettingManager extends Utils {
         param.setGroup(IMPLICIT_GROUP);
         param.setNumRow(31);
         String condition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION)
-                + " and " //$NON-NLS-1$ 
+                + " and " //$NON-NLS-1$
                 + JobSettingsConstants.addBrackets(JobSettingsConstants.getExtraParameterName(EParameterName.FROM_FILE_FLAG
                         .getName()) + " == 'true'"); //$NON-NLS-1$
 
@@ -539,6 +548,74 @@ public class ProjectSettingManager extends Utils {
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
+        // jdbc url
+        param = new ElementParameter(elem);
+        param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName()));
+        param.setValue(StatsAndLogsManager.addQuotes(preferenceStore.getString(languagePrefix + EParameterName.URL.getName())));
+        param.setDisplayName(EParameterName.URL.getDisplayName());
+        param.setFieldType(EParameterFieldType.TEXT);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(43);
+        param.setRepositoryValue("URL"); //$NON-NLS-1$
+        String dbCon = dbTypeName + " == 'JDBC'";
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
+
+        // jdbc child param
+        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+        Set<String> moduleNameList = new TreeSet<String>();
+        Set<String> moduleValueList = new TreeSet<String>();
+        for (ModuleNeeded module : moduleNeededList) {
+            String moduleName = module.getModuleName();
+            if (moduleName != null) {
+                moduleNameList.add(moduleName);
+                moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+            }
+        }
+        Comparator<String> comprarator = new IgnoreCaseComparator();
+        String[] moduleNameArray = moduleNameList.toArray(new String[0]);
+        String[] moduleValueArray = moduleValueList.toArray(new String[0]);
+        Arrays.sort(moduleNameArray, comprarator);
+        Arrays.sort(moduleValueArray, comprarator);
+        ElementParameter childParam = new ElementParameter(elem);
+        childParam.setName("JAR_NAME"); //$NON-NLS-1$
+        childParam.setDisplayName("JAR_NAME"); //$NON-NLS-1$
+        childParam.setFieldType(EParameterFieldType.MODULE_LIST);
+        childParam.setListItemsDisplayName(moduleNameArray);
+        childParam.setListItemsValue(moduleValueArray);
+        // driver jar for jdbc
+        param = new ElementParameter(elem);
+        param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
+        param.setDisplayName(EParameterName.DRIVER_JAR.getDisplayName());
+        param.setFieldType(EParameterFieldType.TABLE);
+        param.setListItemsDisplayCodeName(new String[] { "JAR_NAME" }); //$NON-NLS-1$
+        param.setListItemsDisplayName(new String[] { "Jar Name" }); //$NON-NLS-1$
+        param.setListItemsValue(new ElementParameter[] { childParam });
+        param.setValue(new ArrayList<Map<String, Object>>());
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(44);
+        param.setRepositoryValue("DRIVER_JAR"); //$NON-NLS-1$
+        dbCon = dbTypeName + " == 'JDBC'"; //$NON-NLS-1$
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
+
+        // class name for jdbc
+        param = new ElementParameter(elem);
+        param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName()));
+        param.setValue(
+                StatsAndLogsManager.addQuotes(preferenceStore.getString(languagePrefix + EParameterName.DRIVER_CLASS.getName())));
+        param.setDisplayName(EParameterName.DRIVER_CLASS.getDisplayName());
+        param.setFieldType(EParameterFieldType.TEXT);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(45);
+        param.setRepositoryValue("DRIVER_CLASS"); //$NON-NLS-1$
+        dbCon = dbTypeName + " == 'JDBC'";
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
+
         // host
         param = new ElementParameter(elem);
         param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.HOST.getName()));
@@ -548,8 +625,8 @@ public class ProjectSettingManager extends Utils {
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(43);
         param.setRepositoryValue("SERVER_NAME"); //$NON-NLS-1$
-        String dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'OCLE_OCI' "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$ //$NON-NLS-5$
+        dbCon = dbTypeName + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + "!='OCLE_OCI'" //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$//$NON-NLS-4$//$NON-NLS-5$
+                + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -564,7 +641,8 @@ public class ProjectSettingManager extends Utils {
         param.setNumRow(43);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " + dbTypeName + " != 'OCLE_OCI' "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$ //$NON-NLS-7$
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$
+                + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'" + " and " + dbTypeName + "!='ODBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -579,7 +657,8 @@ public class ProjectSettingManager extends Utils {
         param.setNumRow(44);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
         dbCon = dbTypeName
-                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD' " + " and " + dbTypeName + " != 'OCLE_OCI' "; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$ //$NON-NLS-7$
+                + " != 'SQLITE'" + " and " + dbTypeName + " != 'ACCESS'" + " and " + dbTypeName + " != 'FIREBIRD'" + " and " //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$//$NON-NLS-6$
+                + dbTypeName + "!='OCLE_OCI'" + " and " + dbTypeName + "!='JDBC'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
@@ -593,8 +672,8 @@ public class ProjectSettingManager extends Utils {
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(44);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
-        dbCon = dbTypeName + " == 'OCLE_OCI' "; //$NON-NLS-1$ 
-        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+        dbCon = dbTypeName + " == 'OCLE_OCI' "; //$NON-NLS-1$
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
@@ -613,7 +692,7 @@ public class ProjectSettingManager extends Utils {
                     + " == 'MSSQL'" + " or " + dbTypeName + " == 'MYSQL'" + " or " + dbTypeName //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     + " == 'INFORMIX'" + " or " + dbTypeName + " == 'OCLE'" + " or " + dbTypeName + " == 'OCLE_OCI'" + " or " + dbTypeName + " == 'SYBASE'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 
-            param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+            param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
             param.setGroup(IMPLICIT_GROUP);
             paramList.add(param);
         }
@@ -672,7 +751,7 @@ public class ProjectSettingManager extends Utils {
         param.setNumRow(46);
         param.setRepositoryValue("FILE"); //$NON-NLS-1$
         dbCon = dbTypeName + " == 'SQLITE'" + " or " + dbTypeName + " == 'ACCESS'" + " or " + dbTypeName + " == 'FIREBIRD'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$ 
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
@@ -798,4 +877,13 @@ public class ProjectSettingManager extends Utils {
     private static String getPreferenceName(EParameterName param) {
         return languagePrefix + ImplicitContextLoadHelper.getExtraParameterName(param);
     }
+
+    private final static class IgnoreCaseComparator implements Comparator<String> {
+
+        @Override
+        public int compare(String o1, String o2) {
+            return o1.compareToIgnoreCase(o2);
+        }
+    }
+
 }

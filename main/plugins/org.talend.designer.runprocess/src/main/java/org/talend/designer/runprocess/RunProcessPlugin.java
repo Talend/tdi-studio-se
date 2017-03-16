@@ -61,10 +61,25 @@ public class RunProcessPlugin extends AbstractUIPlugin {
                 "org.talend.designer.runprocess.runprocess_manager", "runprocess_manager"); //$NON-NLS-1$ //$NON-NLS-2$
 
         runProcessContextManagerList = ExtensionImplementationProvider.getInstance(extensionPointLimiter);
-        runProcessContextManager = runProcessContextManagerList.size() > 0 ? runProcessContextManagerList.get(0) : null;
 
+        // Fixed to use remote process context instead of using esb context
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
+            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
+                    .getService(IESBRunContainerService.class);
+            for (RunProcessContextManager contextManager : runProcessContextManagerList) {
+                if (runContainerService != null && !runContainerService.isESBProcessContextManager(contextManager)) {
+                    runProcessContextManager = contextManager;
+                    break;
+                }
+            }
+        } else {
+            runProcessContextManager = runProcessContextManagerList.size() > 0 ? runProcessContextManagerList.get(0) : null;
+        }
+
+        // If no process context, use local process context
         if (runProcessContextManager == null) {
             runProcessContextManager = new RunProcessContextManager();
+            runProcessContextManagerList.add(runProcessContextManager);
         }
     }
 
