@@ -52,6 +52,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.Item;
@@ -546,6 +547,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                 if (objectValue != null) {
                                     objectValue = objectValue.toString().replace("\\", "/");
                                 }
+                            }
+                            if (EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(param.getName())&&!ProcessUtils.isUseSparkProperties(connection)) {
+                                objectValue = ProcessUtils.updateSparkProperties(objectValue);
                             }
                             elem.setPropertyValue(param.getName(), objectValue);
                         }
