@@ -187,11 +187,25 @@ org.talend.daikon.runtime.RuntimeInfo runtime_info_<%=cid%> = def_<%=cid%>.getRu
     org.talend.components.api.component.runtime.ExecutionEngine.DI, props_<%=cid%>, topology_<%=cid%>);
 java.util.Set<org.talend.components.api.component.ConnectorTopology> supported_connector_topologies_<%=cid%> = def_<%=cid%>.getSupportedConnectorTopologies();
 
-org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
-sourceOrSink_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
-org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
-if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
-    throw new RuntimeException(vr_<%=cid%>.getMessage());
+org.talend.components.api.component.runtime.RuntimableRuntime componentRuntime_<%=cid%> = (org.talend.components.api.component.runtime.RuntimableRuntime)(Class.forName(runtime_info_<%=cid%>.getRuntimeClassName()).newInstance());
+org.talend.daikon.properties.ValidationResult initVr_<%=cid%> = componentRuntime_<%=cid%>.initialize(container_<%=cid%>, props_<%=cid%>);
+
+if (initVr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
+    throw new RuntimeException(initVr_<%=cid%>.getMessage());
+}
+
+if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runtime.ComponentDriverInitialization) {
+	org.talend.components.api.component.runtime.ComponentDriverInitialization compDriverInitialization_<%=cid%> = (org.talend.components.api.component.runtime.ComponentDriverInitialization)componentRuntime_<%=cid%>;
+	compDriverInitialization_<%=cid%>.runAtDriver(container_<%=cid%>);
+}
+
+org.talend.components.api.component.runtime.SourceOrSink sourceOrSink_<%=cid%> = null;
+if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runtime.SourceOrSink) {
+	sourceOrSink_<%=cid%> = (org.talend.components.api.component.runtime.SourceOrSink)componentRuntime_<%=cid%>;
+	org.talend.daikon.properties.ValidationResult vr_<%=cid%> = sourceOrSink_<%=cid%>.validate(container_<%=cid%>);
+	if (vr_<%=cid%>.getStatus() == org.talend.daikon.properties.ValidationResult.Result.ERROR ) {
+    	throw new RuntimeException(vr_<%=cid%>.getMessage());
+	}
 }
 
 <%
