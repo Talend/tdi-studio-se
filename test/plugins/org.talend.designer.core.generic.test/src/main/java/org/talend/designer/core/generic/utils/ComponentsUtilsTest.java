@@ -237,7 +237,7 @@ public class ComponentsUtilsTest {
         ComponentsUtils.loadComponents(componentService);
         coms = ComponentsFactoryProvider.getInstance().getComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
-            if(componentDefinition.getName().equals("tSalesforceInput")){
+            if(!componentDefinition.getName().equals("tJIRAInput")){
                 continue;
             }
             for(IComponent com : coms){
