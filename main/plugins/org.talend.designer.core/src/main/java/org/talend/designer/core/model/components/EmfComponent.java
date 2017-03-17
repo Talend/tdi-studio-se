@@ -143,11 +143,9 @@ import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.component.HadoopComponent;
 import org.talend.hadoop.distribution.component.SparkComponent;
 import org.talend.hadoop.distribution.condition.BasicExpression;
-import org.talend.hadoop.distribution.condition.BooleanExpression;
 import org.talend.hadoop.distribution.condition.BooleanOperator;
 import org.talend.hadoop.distribution.condition.ComponentCondition;
 import org.talend.hadoop.distribution.condition.EqualityOperator;
-import org.talend.hadoop.distribution.condition.Expression;
 import org.talend.hadoop.distribution.condition.MultiComponentCondition;
 import org.talend.hadoop.distribution.condition.NestedComponentCondition;
 import org.talend.hadoop.distribution.condition.SimpleComponentCondition;
@@ -1564,9 +1562,7 @@ public class EmfComponent extends AbstractBasicComponent {
             String[] notShowIfVersion = new String[hadoopDistributions.length];
 
             List<DistributionVersion> versionsList = new ArrayList<>();
-
             HashMap<String, Set<Pair<String, String>>> supported_spark_version = new HashMap<>();
-
             Set<Pair<String, String>> pairDistributionVersion = new HashSet<>();
 
             for (int i = 0; i < hadoopDistributions.length; i++) {
@@ -1579,10 +1575,10 @@ public class EmfComponent extends AbstractBasicComponent {
                 if (!that.useCustom()) { // ignore custom version, because it's fake one
                     versionsList.addAll(Arrays.asList(that.getVersions()));
                     for (DistributionVersion version : that.getVersions()) {
-                        SparkComponent sc;
+                        SparkComponent sparkComponent;
                         try {
-                            sc = (SparkComponent) DistributionFactory.buildDistribution(that.name, version.version);
-                            for (ESparkVersion v : sc.getSparkVersion()) {
+                            sparkComponent = (SparkComponent) DistributionFactory.buildDistribution(that.name, version.version);
+                            for (ESparkVersion v : sparkComponent.getSparkVersion()) {
                                 if (supported_spark_version.containsKey(v.getSparkVersion())) {
                                     pairDistributionVersion = supported_spark_version.get(v.getSparkVersion());
                                     pairDistributionVersion.add(Pair.of(that.name, version.version));
@@ -1593,7 +1589,6 @@ public class EmfComponent extends AbstractBasicComponent {
                                     supported_spark_version.put(v.getSparkVersion(), pairDistributionVersion);
                                 }
                             }
-
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                             ExceptionHandler.process(e);
@@ -1702,35 +1697,26 @@ public class EmfComponent extends AbstractBasicComponent {
 
             listParam.add(newParam);
 
-            // Manage spark versions
-            // String sparkVersion = itemValue[0];
-
-            // Set<ESparkVersion> setSpark = EnumSet.allOf(ESparkVersion.class);
-
-            // String bla = itemValue[0];
-            // String[] test = setSpark.toArray(new String[setSpark.size()]);
-
-            List<ESparkVersion> somethingList = Arrays.asList(ESparkVersion.values());
-
-            List<String> sparkVersionList = new ArrayList<String>();
+            List<String> sparkVersionLabelList = new ArrayList<>();
             for (ESparkVersion sv : ESparkVersion.values()) {
-                sparkVersionList.add(sv.getVersionLabel());
+                sparkVersionLabelList.add(sv.getVersionLabel());
             }
 
+            List<ESparkVersion> eSparkVersionList = Arrays.asList(ESparkVersion.values());
+            ESparkVersion[] sparkVersionValues = eSparkVersionList.toArray(new ESparkVersion[sparkVersionLabelList.size()]);
             String[] showIfSparkVersion = new String[supported_spark_version.size()];
-
-            String[] sparkVersionName = sparkVersionList.toArray(new String[sparkVersionList.size()]);
-
-            showIfSparkVersion = meilleurNomDeFonction(supported_spark_version);
+            String[] sparkVersionLabel = sparkVersionLabelList.toArray(new String[sparkVersionLabelList.size()]);
+            showIfSparkVersion = generateShowIfConditions(supported_spark_version);
 
             newParam = new ElementParameter(node);
             newParam.setCategory(EComponentCategory.BASIC);
-            newParam.setName("SUPPORTED_SPARK_VERSION");
+            newParam.setName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
             newParam.setDisplayName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
-            newParam.setListItemsDisplayName(sparkVersionName);
-            newParam.setListItemsDisplayCodeName(sparkVersionName);
-            newParam.setListItemsValue(somethingList.toArray(new ESparkVersion[sparkVersionList.size()]));
+            newParam.setListItemsDisplayName(sparkVersionLabel);
+            newParam.setListItemsDisplayCodeName(sparkVersionLabel);
+            newParam.setListItemsValue(sparkVersionValues);
             newParam.setListItemsShowIf(showIfSparkVersion);
+            newParam.setListItemsNotShowIf(new String[sparkVersionLabelList.size()]);
             newParam.setNumRow(xmlParam.getNUMROW());
             newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
             newParam.setShow(true);
@@ -1745,71 +1731,49 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
 
             listParam.add(newParam);
-
         }
     }
 
     public ComponentCondition displayCondition;
 
-    public String[] meilleurNomDeFonction(HashMap<String, Set<Pair<String, String>>> supported_spark_version) {
-        String[] results = new String[5];
-        final Expression trueExp = new BooleanExpression(true);
-        final Expression falseExp = new BooleanExpression(false);
+    public String[] generateShowIfConditions(HashMap<String, Set<Pair<String, String>>> supported_spark_version) {
+        String[] results = new String[supported_spark_version.size()];
 
-        int i = 0;
+        int conditionIndex = 0;
 
         for (Map.Entry<String, Set<Pair<String, String>>> entry : supported_spark_version.entrySet()) {
-            List<MultiComponentCondition> conditions = new ArrayList<>();
-            String key = entry.getKey();
+            List<MultiComponentCondition> multiComponentConditions = new ArrayList<>();
             Set<Pair<String, String>> value = entry.getValue();
             for (Pair<String, String> pair : value) {
-                SimpleComponentCondition distribution = new SimpleComponentCondition(new BasicExpression("DISTRIBUTION",
-                        pair.getLeft(), EqualityOperator.EQ));
-                SimpleComponentCondition version = new SimpleComponentCondition(new BasicExpression("SPARK_VERSION",
-                        pair.getRight(), EqualityOperator.EQ));
-
-                conditions.add(new MultiComponentCondition(distribution, BooleanOperator.AND, version));
+                SimpleComponentCondition distribution = new SimpleComponentCondition(new BasicExpression(
+                        "DISTRIBUTION", EqualityOperator.EQ, pair.getLeft())); //$NON-NLS-1$
+                SimpleComponentCondition version = new SimpleComponentCondition(new BasicExpression(
+                        "SPARK_VERSION", EqualityOperator.EQ, pair.getRight())); //$NON-NLS-1$
+                multiComponentConditions.add(new MultiComponentCondition(distribution, BooleanOperator.AND, version));
             }
 
-            Iterator<MultiComponentCondition> iter = conditions.iterator();
+            Iterator<MultiComponentCondition> iterComponentCondition = multiComponentConditions.iterator();
 
-            ComponentCondition previous = null;
-            ComponentCondition fin = null;
-            while (iter.hasNext()) {
-                MultiComponentCondition cc = iter.next();
+            ComponentCondition previousCondition = null;
+            ComponentCondition completeCondition = null;
+            while (iterComponentCondition.hasNext()) {
+                MultiComponentCondition cc = iterComponentCondition.next();
                 if (cc == null) {
                     return null;
                 }
                 ComponentCondition wrappedCondition = new NestedComponentCondition(cc);
-                if (previous != null) {
-                    wrappedCondition = new MultiComponentCondition(previous, BooleanOperator.OR, wrappedCondition);
+                if (previousCondition != null) {
+                    wrappedCondition = new MultiComponentCondition(previousCondition, BooleanOperator.OR, wrappedCondition);
                 }
-                previous = wrappedCondition;
+                previousCondition = wrappedCondition;
             }
-            if (previous != null) {
-                fin = new NestedComponentCondition(previous);
+            if (previousCondition != null) {
+                completeCondition = new NestedComponentCondition(previousCondition);
+                results[conditionIndex] = completeCondition.getConditionString();
+                conditionIndex++;
             }
-
-            results[i] = fin.getConditionString();
-            i++;
         }
-        /*
-         * ComponentCondition additionalCondition = displayCondition; if (additionalCondition != null &&
-         * (trueExp.getExpressionString().equals(additionalCondition.getConditionString()) || falseExp
-         * .getExpressionString().equals(additionalCondition.getConditionString()))) { // Don't show a version if it's
-         * display condition is a BooleanCondition. return
-         * trueExp.getExpressionString().equals(additionalCondition.getConditionString()) ? Boolean.TRUE.toString() :
-         * Boolean.FALSE.toString(); } else { // Compose the ComponentCondition to display a version. ComponentCondition
-         * condition; org.talend.hadoop.distribution.condition.Expression e = new BasicExpression(
-         * distribution.componentType.getDistributionParameter(), EqualityOperator.EQ, distribution.name); if
-         * (additionalCondition != null) { condition = new MultiComponentCondition(new SimpleComponentCondition(e),
-         * BooleanOperator.AND, new NestedComponentCondition(additionalCondition)); } else { condition = new
-         * SimpleComponentCondition(e); }
-         * 
-         * condition.getConditionString();
-         */
         return results;
-
     }
 
     @SuppressWarnings("unchecked")
