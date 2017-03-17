@@ -34,6 +34,8 @@
         <%if(isLog4jEnabled){%>
         	log.info("<%=cid%> - Dumping context.");
         <%}%>
+		
+		
         for( java.util.Enumeration<?> en_<%=cid %> = context.propertyNames() ; en_<%=cid %>.hasMoreElements() ; ) {        
             nb_line_<%=cid %>++;
             Object key_<%=cid %> = en_<%=cid %>.nextElement();
@@ -43,7 +45,17 @@
                 if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
                     %>
                     <%=outgoingConn.getName()%>.<%=columnList.get(0).getLabel()%> = key_<%=cid %>.toString();
-                    <%=outgoingConn.getName()%>.<%=columnList.get(1).getLabel()%> = value_<%=cid %>.toString();
+					<%
+					if (hidePassword) {
+					%>
+						if (("id_Password").equals(context.getContextType(key_<%=cid %>.toString()))) {
+							<%=outgoingConn.getName()%>.<%=columnList.get(1).getLabel()%> = value_<%=cid %>.toString().replaceAll(".","*");
+						}
+						else 
+					<%
+					}
+					%>		
+						<%=outgoingConn.getName()%>.<%=columnList.get(1).getLabel()%> = value_<%=cid %>.toString();
                     <%for (IContextParameter param :params){
 	                  	if(("id_Password").equals(param.getType()) && hidePassword){
 	                  		String str = param.getName(); 

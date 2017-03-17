@@ -258,7 +258,7 @@
     }
 %>
 
-    private java.util.Properties context_param = new java.util.Properties();
+    private PropertiesWithType context_param = new PropertiesWithType();
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";
@@ -490,9 +490,19 @@
 
             if(!context_param.isEmpty()) {
                 context.putAll(context_param);
+				//set types for params from parentJobs
+				for (Object key: context_param.keySet()){
+					String context_key = key.toString();
+					String context_type = context_param.getContextType(context_key);
+					context.setContextType(context_key, context_type);
+				
+				}
             }
             <% for (IContextParameter ctxParam :params)
             {
+				%>
+				    context.setContextType("<%=ctxParam.getName()%>", "<%=ctxParam.getType()%>");
+				<%
             	if (ctxParam.getType().equals("id_Password")) {
             %>
             		String pwd_<%=ctxParam.getName()%>_value = context.getProperty("<%=ctxParam.getName()%>");
@@ -1311,7 +1321,19 @@ if (execStat) {
             fatherNode = arg.substring(14);
         } else if (arg.startsWith("--pid=")) {
             pid = arg.substring(6);
-        } else if (arg.startsWith("--context_param")) {
+        } else if (arg.startsWith("--context_type")) {
+            String keyValue = arg.substring(15);
+			int index = -1;
+            if (keyValue != null && (index = keyValue.indexOf('=')) > -1) {
+                if (fatherPid==null) {
+                    context_param.setContextType(keyValue.substring(0, index), replaceEscapeChars(keyValue.substring(index + 1)));
+                } else { // the subjob won't escape the especial chars
+                    context_param.setContextType(keyValue.substring(0, index), keyValue.substring(index + 1) );
+                }
+				
+            }
+			
+		} else if (arg.startsWith("--context_param")) {
             String keyValue = arg.substring(16);
             int index = -1;
             if (keyValue != null && (index = keyValue.indexOf('=')) > -1) {

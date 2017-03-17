@@ -231,11 +231,31 @@ if(isRunInMultiThread){
 
 	<%//uft-8 is for temp file, for example: tSortRow, tMap. Because they need keep reversibility.%>
 	private final static String utf8Charset = "UTF-8";
-
+	//contains type for every context property
+	public class PropertiesWithType extends java.util.Properties {
+		private static final long serialVersionUID = 1L;
+		private java.util.Map<String,String> propertyTypes = new java.util.HashMap<>();
+		
+		public PropertiesWithType(java.util.Properties properties){
+			super(properties);
+		}
+		public PropertiesWithType(){
+			super();
+		}
+		
+		public void setContextType(String key, String type) {
+			propertyTypes.put(key,type);
+		}
+	
+		public String getContextType(String key) {
+			return propertyTypes.get(key);
+		}
+	}
+	
 	// create and load default properties
 	private java.util.Properties defaultProps = new java.util.Properties();
 	// create application properties with default
-	public class ContextProperties extends java.util.Properties {
+	public class ContextProperties extends PropertiesWithType {
 
 		private static final long serialVersionUID = 1L;
 
