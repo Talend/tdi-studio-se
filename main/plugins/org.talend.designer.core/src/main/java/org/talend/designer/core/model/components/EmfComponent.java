@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -137,7 +138,9 @@ import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.hadoop.distribution.ComponentType;
 import org.talend.hadoop.distribution.DistributionFactory;
 import org.talend.hadoop.distribution.DistributionModuleGroup;
+import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.component.HadoopComponent;
+import org.talend.hadoop.distribution.component.SparkComponent;
 import org.talend.hadoop.distribution.condition.BasicExpression;
 import org.talend.hadoop.distribution.condition.ComponentCondition;
 import org.talend.hadoop.distribution.condition.EqualityOperator;
@@ -147,6 +150,7 @@ import org.talend.hadoop.distribution.helper.DistributionsManager;
 import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.hadoop.distribution.model.DistributionVersion;
 import org.talend.hadoop.distribution.model.DistributionVersionModule;
+import org.talend.hadoop.distribution.utils.ComponentConditionUtil;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
@@ -1545,7 +1549,6 @@ public class EmfComponent extends AbstractBasicComponent {
             ComponentType componentType = ComponentType.getComponentType(parentParam.getName());
             DistributionsManager distributionsHelper = new DistributionsManager(componentType);
             final DistributionBean[] hadoopDistributions = distributionsHelper.getDistributions();
-
             ElementParameter newParam = new ElementParameter(node);
             newParam.setCategory(EComponentCategory.BASIC);
             newParam.setName(componentType.getDistributionParameter());
@@ -1556,7 +1559,9 @@ public class EmfComponent extends AbstractBasicComponent {
             String[] showIfVersion = new String[hadoopDistributions.length];
             String[] notShowIfVersion = new String[hadoopDistributions.length];
 
-            List<DistributionVersion> versionsList = new ArrayList<DistributionVersion>();
+            List<DistributionVersion> versionsList = new ArrayList<>();
+
+            Map<ESparkVersion, Set<DistributionVersion>> supportedSparkVersions = new HashMap<>();
 
             for (int i = 0; i < hadoopDistributions.length; i++) {
                 DistributionBean that = hadoopDistributions[i];
@@ -1567,6 +1572,25 @@ public class EmfComponent extends AbstractBasicComponent {
                 notShowIfVersion[i] = null;
                 if (!that.useCustom()) { // ignore custom version, because it's fake one
                     versionsList.addAll(Arrays.asList(that.getVersions()));
+                    if (ComponentType.isSparkComponent(componentType)) {
+                        for (DistributionVersion version : that.getVersions()) {
+                            try {
+                                // Here, we build a map of Spark versions with the corresponding Hadoop versions that
+                                // support these Spark versions.
+                                SparkComponent sparkComponent = (SparkComponent) DistributionFactory.buildDistribution(that.name,
+                                        version.version);
+
+                                for (ESparkVersion v : sparkComponent.getSparkVersions()) {
+                                    Set<DistributionVersion> versionsPerSparkVersion = supportedSparkVersions.getOrDefault(v,
+                                            new HashSet<>());
+                                    versionsPerSparkVersion.add(version);
+                                    supportedSparkVersions.put(v, versionsPerSparkVersion);
+                                }
+                            } catch (Exception e) {
+                                ExceptionHandler.process(e);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -1600,6 +1624,7 @@ public class EmfComponent extends AbstractBasicComponent {
             notShowIfVersion = new String[versionsList.size()];
 
             int index = 0;
+
             Iterator<DistributionVersion> versionIter = versionsList.iterator();
             while (versionIter.hasNext()) {
                 DistributionVersion that = versionIter.next();
@@ -1640,7 +1665,6 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setListItemsValue(itemValue);
             newParam.setListItemsShowIf(showIfVersion);
             newParam.setListItemsNotShowIf(notShowIfVersion);
-            // newParam.setValue(defaultValue);
             newParam.setNumRow(xmlParam.getNUMROW());
             newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
             newParam.setShow(true);
@@ -1668,6 +1692,51 @@ public class EmfComponent extends AbstractBasicComponent {
             }
 
             listParam.add(newParam);
+
+            // If the ComponentType is SparkBatch or SparkStreaming, then we are in a tSparkConfiguration case and
+            // need to display an additional SparkVersion list.
+            if (ComponentType.isSparkComponent(componentType)) {
+
+                newParam = new ElementParameter(node);
+                String[] showIfSparkVersion = ComponentConditionUtil.generateSparkVersionShowIfConditions(supportedSparkVersions);
+
+                int supportedSparkVersionsCount = supportedSparkVersions.keySet().size();
+                String[] sparkVersionValues = new String[supportedSparkVersionsCount];
+                String[] sparkVersionLabels = new String[supportedSparkVersionsCount];
+                index = 0;
+                for (ESparkVersion sv : supportedSparkVersions.keySet()) {
+                    sparkVersionValues[index] = sv.getSparkVersion();
+                    sparkVersionLabels[index] = sv.getVersionLabel();
+                    IElementParameterDefaultValue defaultType = new ElementParameterDefaultValue();
+                    defaultType.setDefaultValue(sv.getSparkVersion());
+                    defaultType.setIfCondition(showIfSparkVersion[index]);
+                    newParam.getDefaultValues().add(defaultType);
+                    index++;
+                }
+
+                newParam.setCategory(EComponentCategory.BASIC);
+                newParam.setName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
+                newParam.setDisplayName("Spark Version"); //$NON-NLS-1$
+                newParam.setListItemsDisplayName(sparkVersionLabels);
+                newParam.setListItemsDisplayCodeName(sparkVersionLabels);
+                newParam.setListItemsValue(sparkVersionValues);
+                newParam.setListItemsShowIf(showIfSparkVersion);
+                newParam.setListItemsNotShowIf(new String[supportedSparkVersionsCount]);
+                newParam.setNumRow(xmlParam.getNUMROW());
+                newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
+                newParam.setShow(true);
+                newParam.setGroup(xmlParam.getGROUP());
+                newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
+                showIf = xmlParam.getSHOWIF();
+                if (showIf != null) {
+                    newParam.setShowIf(showIf + " AND (" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    newParam.setShowIf("(" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
+
+                listParam.add(newParam);
+            }
         }
     }
 
@@ -2998,7 +3067,9 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private static final String DB_VERSION = "DB_VERSION"; //$NON-NLS-1$
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
