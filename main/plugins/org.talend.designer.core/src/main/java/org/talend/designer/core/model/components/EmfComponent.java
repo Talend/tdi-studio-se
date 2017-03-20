@@ -1575,9 +1575,12 @@ public class EmfComponent extends AbstractBasicComponent {
                     if (ComponentType.isSparkComponent(componentType)) {
                         for (DistributionVersion version : that.getVersions()) {
                             try {
+                                // Here, we build a map of Spark versions with the corresponding Hadoop versions that
+                                // support these Spark versions.
                                 SparkComponent sparkComponent = (SparkComponent) DistributionFactory.buildDistribution(that.name,
                                         version.version);
-                                for (ESparkVersion v : sparkComponent.getSparkVersion()) {
+
+                                for (ESparkVersion v : sparkComponent.getSparkVersions()) {
                                     Set<DistributionVersion> versionsPerSparkVersion = supportedSparkVersions.getOrDefault(v,
                                             new HashSet<>());
                                     versionsPerSparkVersion.add(version);
@@ -1690,9 +1693,13 @@ public class EmfComponent extends AbstractBasicComponent {
 
             listParam.add(newParam);
 
-            // If the ComponentType is SparkBartch or SparkStreaming, then we are in a tSparkConfiguration case and we
+            // If the ComponentType is SparkBatch or SparkStreaming, then we are in a tSparkConfiguration case and
             // need to display an additional SparkVersion list.
             if (ComponentType.isSparkComponent(componentType)) {
+
+                newParam = new ElementParameter(node);
+                String[] showIfSparkVersion = ComponentConditionUtil.generateSparkVersionShowIfConditions(supportedSparkVersions);
+
                 int supportedSparkVersionsCount = supportedSparkVersions.keySet().size();
                 String[] sparkVersionValues = new String[supportedSparkVersionsCount];
                 String[] sparkVersionLabels = new String[supportedSparkVersionsCount];
@@ -1700,12 +1707,13 @@ public class EmfComponent extends AbstractBasicComponent {
                 for (ESparkVersion sv : supportedSparkVersions.keySet()) {
                     sparkVersionValues[index] = sv.getSparkVersion();
                     sparkVersionLabels[index] = sv.getVersionLabel();
+                    IElementParameterDefaultValue defaultType = new ElementParameterDefaultValue();
+                    defaultType.setDefaultValue(sv.getSparkVersion());
+                    defaultType.setIfCondition(showIfSparkVersion[index]);
+                    newParam.getDefaultValues().add(defaultType);
                     index++;
                 }
 
-                String[] showIfSparkVersion = ComponentConditionUtil.generateSparkVersionShowIfConditions(supportedSparkVersions);
-
-                newParam = new ElementParameter(node);
                 newParam.setCategory(EComponentCategory.BASIC);
                 newParam.setName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
                 newParam.setDisplayName("Spark Version"); //$NON-NLS-1$
