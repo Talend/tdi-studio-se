@@ -13,6 +13,7 @@
 package org.talend.repository.preference;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.resources.IWorkspace;
@@ -21,6 +22,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -47,6 +50,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -54,12 +62,18 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.Folder;
 import org.talend.core.model.repository.RepositoryManager;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.ui.images.CoreImageProvider;
+import org.talend.core.ui.process.IGEFProcess;
+import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.core.IMultiPageTalendEditor;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode.EProperties;
@@ -99,8 +113,7 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         }
         if (node.getObject() != null) {
             ERepositoryStatus status = FACTORY.getStatus(node.getObject());
-            if (status == ERepositoryStatus.LOCK_BY_OTHER
-                    || (status == ERepositoryStatus.LOCK_BY_USER && RepositoryManager.isOpenedItemInEditor(node.getObject()))) {
+            if (status == ERepositoryStatus.LOCK_BY_OTHER) {
                 return false;
             }
         }
@@ -407,6 +420,57 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     }
 
     protected void updateItemsVersion() {
+
+        List<ItemVersionObject> JobsOpenedInEditor = new ArrayList<ItemVersionObject>();
+        boolean hasJobOpenedInEditor = false;
+        StringBuilder builder = new StringBuilder();
+        for (ItemVersionObject object : checkedObjects) {
+            if (RepositoryManager.isOpenedItemInEditor(object.getRepositoryNode().getObject())) {
+                hasJobOpenedInEditor = true;
+                JobsOpenedInEditor.add(object);
+                builder.append(object.getRepositoryNode().getObject().getLabel() + ", "); //$NON-NLS-1$
+            }
+        }
+        if (builder.length() > 0) {
+            builder.delete(builder.length() - 2, builder.length());
+        }
+        if (hasJobOpenedInEditor) {
+            MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+                    Messages.getString("VersionManagementDialog.WarningTitle2"), //$NON-NLS-1$
+                    Messages.getString("VersionManagementDialog.openedInEditorMessage", builder.toString())); //$NON-NLS-1$
+            IWorkbenchWindow workBench = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+            if (workBench != null) {
+                IWorkbenchPage page = workBench.getActivePage();
+                IEditorReference[] editorRefs = page.getEditorReferences();
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreUIService.class)) {
+                    IDesignerCoreUIService service = (IDesignerCoreUIService) GlobalServiceRegister.getDefault()
+                            .getService(IDesignerCoreUIService.class);
+                    if (service != null) {
+                        for (IEditorReference editorRef : editorRefs) {
+                            IEditorPart editor = editorRef.getEditor(false);
+                            if (editor instanceof IMultiPageTalendEditor) {
+                                IProcess2 process = ((IMultiPageTalendEditor) editor).getProcess();
+                                String value = null;
+                                for (ItemVersionObject object : JobsOpenedInEditor) {
+                                    if (object.getItem().getProperty().getId().equals(process.getId())) {
+                                        value = object.getNewVersion();
+                                        break;
+                                    }
+                                }
+                                if (value != null) {
+                                    Command command = service.crateMavenDeploymentValueChangeCommand(process,
+                                            MavenConstants.NAME_USER_VERSION, value);
+                                    if (process instanceof IGEFProcess) {
+                                        service.executeCommand((IGEFProcess) process, command);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         final IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
 
             @Override
