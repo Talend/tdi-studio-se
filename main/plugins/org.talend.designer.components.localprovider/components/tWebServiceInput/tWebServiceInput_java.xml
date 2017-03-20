@@ -201,7 +201,7 @@ for(int i = 0; i &lt; result.length; i++){
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="WebServiceInput" MODULE="WebServiceInput.jar" MVN="mvn:org.talend.libraries/WebServiceInput/6.0.0"
+			<IMPORT NAME="WebServiceInput" MODULE="talend-webservice-input-1.0.0-20170301.jar" MVN="mvn:org.talend.libraries/talend-webservice-input-1.0.0-20170301/6.0.0"
 				REQUIRED="true" />
 			<IMPORT NAME="SOAP-axis" MODULE="axis.jar" MVN="mvn:org.talend.libraries/axis/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/axis.jar" REQUIRED="true" />
 			<IMPORT NAME="SOAP-jaxrpc" MODULE="jaxrpc.jar" MVN="mvn:org.talend.libraries/jaxrpc/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jax/lib/jaxrpc.jar"

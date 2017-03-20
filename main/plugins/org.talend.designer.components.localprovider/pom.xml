@@ -14,6 +14,7 @@
     <bulkload.dir>${project.basedir}/components/tMDMBulkLoad</bulkload.dir>
     <marketo.dir>${project.basedir}/components/tMarketoInput</marketo.dir>
     <soap.dir>${project.basedir}/components/tSOAP</soap.dir>
+    <webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
   </properties>
   
   <build>
@@ -40,6 +41,12 @@
                         <directory>${soap.dir}</directory>
                         <includes>
                             <include>talend-soap*.jar</include>
+                        </includes>
+                    </fileset>
+                    <fileset>
+                        <directory>${webservice.dir}</directory>
+                        <includes>
+                            <include>talend-webservice-input*.jar</include>
                         </includes>
                     </fileset>
                 </filesets>
@@ -93,6 +100,14 @@
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${soap.dir}</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                                <groupId>org.talend.libraries</groupId>
+                                <artifactId>talend-webservice-input</artifactId>
+                                <version>1.0.0-20170301</version>
+                                <type>jar</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>${webservice.dir}</outputDirectory>
                             </artifactItem>
                         </artifactItems>
                     </configuration>
