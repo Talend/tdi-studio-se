@@ -1740,8 +1740,6 @@ public class EmfComponent extends AbstractBasicComponent {
         }
     }
 
-    public ComponentCondition displayCondition;
-
     @SuppressWarnings("unchecked")
     private void addPropertyParameters(final List<ElementParameter> listParam, final INode node, boolean advanced) {
         if (compType == null) {
