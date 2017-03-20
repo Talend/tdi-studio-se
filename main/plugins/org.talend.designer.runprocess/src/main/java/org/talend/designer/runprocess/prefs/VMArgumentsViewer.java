@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.talend.commons.ui.swt.preferences.TableEditor;
 import org.talend.designer.runprocess.i18n.Messages;
+import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
 
 /**
  * qzhang class global comment. Detailled comment <br/>
@@ -92,7 +93,7 @@ public class VMArgumentsViewer extends TableEditor {
             public String getColumnText(Object element, int columnIndex) {
                 String value = ((String) element);
                 if (columnIndex == 0) {
-                    return value.replace(" ", "");
+                    return value;
                 }
                 throw new IllegalStateException();
             }
@@ -165,16 +166,7 @@ public class VMArgumentsViewer extends TableEditor {
      */
     @Override
     protected List<String> readString(String stringList) {
-        if (stringList == null || "".equals(stringList)) { //$NON-NLS-1$        
-            return EMPTY_STRING_LIST;
-        }
-        ArrayList<String> result = new ArrayList<String>(50);
-        for (String tmp : stringList.split(" ")) {
-            if (tmp != null && !"".equals(tmp)) { //$NON-NLS-1$
-                result.add(tmp);
-            }
-        }
-        return result;
+        return new JobVMArgumentsUtil().readString(stringList);
     }
 
     /*
@@ -184,14 +176,7 @@ public class VMArgumentsViewer extends TableEditor {
      */
     @Override
     protected String writeString(List<String> items) {
-        int size = items.size();
-        StringBuffer buf = new StringBuffer(size * 50);
-        buf.append(" ");
-        for (int i = 0; i < size; i++) {
-            buf.append(items.get(i).trim().replaceAll(" ", ""));
-            buf.append(" "); //$NON-NLS-1$
-        }
-        return buf.toString();
+        return new JobVMArgumentsUtil().writeString(items);
     }
 
     /**

@@ -2174,17 +2174,16 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                         }
                         if (service != null) {
+                            //check pattern name
                             IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
-                            String path = item.getState().getPath().replaceAll("Regex"+ File.separator, "");
-                            String name = File.separator+ path + File.separator+  item.getProperty().getDisplayName();
-
-                            if(!StringUtils.equals(name, (String)nameParam.getValue())){
+                            if(service.isSameName(item, (String) nameParam.getValue())){
+                                String name =  item.getState().getPath().replaceFirst("Regex", "") + File.separator+  item.getProperty().getDisplayName();
                                 nameParam.setValue(name);
                                 result = new UpdateCheckResult(node);
                                 result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,nameParam);
                                 propertiesResults.add(result);
                             }
-//                            service.updateJobForPattern(node,item);                            
+                            //check pattern regex
                             String regex = service.getRegex(node, item);
                             IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
                             if(!StringUtils.equals(regex, (String)reParam.getValue())){

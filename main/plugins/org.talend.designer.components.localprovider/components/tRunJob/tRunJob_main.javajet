@@ -317,6 +317,7 @@ String inputConnName = null;
 			String ctxParamName = ctxParam.getName();
  			%>
 			parentContextMap_<%=cid %>.put("<%=ctxParamName %>", <%=localContext%>.<%=ctxParamName %>);
+			paraList_<%=cid %>.add("--context_type " + "<%=ctxParam.getName()%>" + "=" + "<%=ctxParam.getType()%>");
 		<%
 		}
 		%> 

@@ -237,17 +237,14 @@ public class ComponentsUtilsTest {
         ComponentsUtils.loadComponents(componentService);
         coms = ComponentsFactoryProvider.getInstance().getComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
-            boolean foundCom = false;
             if(componentDefinition.getName().equals("tSalesforceInput")){
                 continue;
             }
             for(IComponent com : coms){
                 if(com.getName().equals(componentDefinition.getName())){
-                    foundCom = true;
-                    break;
+                    assertFalse("Component loaded: "+componentDefinition.getName(), true);
                 }
             }
-            assertFalse(foundCom);
         }
     }
 
