@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
@@ -143,16 +142,15 @@ import org.talend.hadoop.distribution.ESparkVersion;
 import org.talend.hadoop.distribution.component.HadoopComponent;
 import org.talend.hadoop.distribution.component.SparkComponent;
 import org.talend.hadoop.distribution.condition.BasicExpression;
-import org.talend.hadoop.distribution.condition.BooleanOperator;
 import org.talend.hadoop.distribution.condition.ComponentCondition;
 import org.talend.hadoop.distribution.condition.EqualityOperator;
-import org.talend.hadoop.distribution.condition.MultiComponentCondition;
 import org.talend.hadoop.distribution.condition.NestedComponentCondition;
 import org.talend.hadoop.distribution.condition.SimpleComponentCondition;
 import org.talend.hadoop.distribution.helper.DistributionsManager;
 import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.hadoop.distribution.model.DistributionVersion;
 import org.talend.hadoop.distribution.model.DistributionVersionModule;
+import org.talend.hadoop.distribution.utils.ComponentConditionUtil;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
@@ -1562,8 +1560,8 @@ public class EmfComponent extends AbstractBasicComponent {
             String[] notShowIfVersion = new String[hadoopDistributions.length];
 
             List<DistributionVersion> versionsList = new ArrayList<>();
-            HashMap<String, Set<Pair<String, String>>> supported_spark_version = new HashMap<>();
-            Set<Pair<String, String>> pairDistributionVersion = new HashSet<>();
+
+            Map<ESparkVersion, Set<DistributionVersion>> supportedSparkVersions = new HashMap<>();
 
             for (int i = 0; i < hadoopDistributions.length; i++) {
                 DistributionBean that = hadoopDistributions[i];
@@ -1574,24 +1572,20 @@ public class EmfComponent extends AbstractBasicComponent {
                 notShowIfVersion[i] = null;
                 if (!that.useCustom()) { // ignore custom version, because it's fake one
                     versionsList.addAll(Arrays.asList(that.getVersions()));
-                    for (DistributionVersion version : that.getVersions()) {
-                        SparkComponent sparkComponent;
-                        try {
-                            sparkComponent = (SparkComponent) DistributionFactory.buildDistribution(that.name, version.version);
-                            for (ESparkVersion v : sparkComponent.getSparkVersion()) {
-                                if (supported_spark_version.containsKey(v.getSparkVersion())) {
-                                    pairDistributionVersion = supported_spark_version.get(v.getSparkVersion());
-                                    pairDistributionVersion.add(Pair.of(that.name, version.version));
-                                    supported_spark_version.put(v.getSparkVersion(), pairDistributionVersion); // );
-                                } else {
-                                    pairDistributionVersion = new HashSet<>();
-                                    pairDistributionVersion.add(Pair.of(that.name, version.version));
-                                    supported_spark_version.put(v.getSparkVersion(), pairDistributionVersion);
+                    if (ComponentType.isSparkComponent(componentType)) {
+                        for (DistributionVersion version : that.getVersions()) {
+                            try {
+                                SparkComponent sparkComponent = (SparkComponent) DistributionFactory.buildDistribution(that.name,
+                                        version.version);
+                                for (ESparkVersion v : sparkComponent.getSparkVersion()) {
+                                    Set<DistributionVersion> versionsPerSparkVersion = supportedSparkVersions.getOrDefault(v,
+                                            new HashSet<>());
+                                    versionsPerSparkVersion.add(version);
+                                    supportedSparkVersions.put(v, versionsPerSparkVersion);
                                 }
+                            } catch (Exception e) {
+                                ExceptionHandler.process(e);
                             }
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            ExceptionHandler.process(e);
                         }
                     }
                 }
@@ -1668,7 +1662,6 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setListItemsValue(itemValue);
             newParam.setListItemsShowIf(showIfVersion);
             newParam.setListItemsNotShowIf(notShowIfVersion);
-            // newParam.setValue(defaultValue);
             newParam.setNumRow(xmlParam.getNUMROW());
             newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
             newParam.setShow(true);
@@ -1697,84 +1690,49 @@ public class EmfComponent extends AbstractBasicComponent {
 
             listParam.add(newParam);
 
-            List<String> sparkVersionLabelList = new ArrayList<>();
-            for (ESparkVersion sv : ESparkVersion.values()) {
-                sparkVersionLabelList.add(sv.getVersionLabel());
+            // If the ComponentType is SparkBartch or SparkStreaming, then we are in a tSparkConfiguration case and we
+            // need to display an additional SparkVersion list.
+            if (ComponentType.isSparkComponent(componentType)) {
+                int supportedSparkVersionsCount = supportedSparkVersions.keySet().size();
+                String[] sparkVersionValues = new String[supportedSparkVersionsCount];
+                String[] sparkVersionLabels = new String[supportedSparkVersionsCount];
+                index = 0;
+                for (ESparkVersion sv : supportedSparkVersions.keySet()) {
+                    sparkVersionValues[index] = sv.getSparkVersion();
+                    sparkVersionLabels[index] = sv.getVersionLabel();
+                    index++;
+                }
+
+                String[] showIfSparkVersion = ComponentConditionUtil.generateSparkVersionShowIfConditions(supportedSparkVersions);
+
+                newParam = new ElementParameter(node);
+                newParam.setCategory(EComponentCategory.BASIC);
+                newParam.setName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
+                newParam.setDisplayName("Spark Version"); //$NON-NLS-1$
+                newParam.setListItemsDisplayName(sparkVersionLabels);
+                newParam.setListItemsDisplayCodeName(sparkVersionLabels);
+                newParam.setListItemsValue(sparkVersionValues);
+                newParam.setListItemsShowIf(showIfSparkVersion);
+                newParam.setListItemsNotShowIf(new String[supportedSparkVersionsCount]);
+                newParam.setNumRow(xmlParam.getNUMROW());
+                newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
+                newParam.setShow(true);
+                newParam.setGroup(xmlParam.getGROUP());
+                newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
+                showIf = xmlParam.getSHOWIF();
+                if (showIf != null) {
+                    newParam.setShowIf(showIf + " AND (" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                } else {
+                    newParam.setShowIf("(" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
+
+                listParam.add(newParam);
             }
-
-            List<ESparkVersion> eSparkVersionList = Arrays.asList(ESparkVersion.values());
-            ESparkVersion[] sparkVersionValues = eSparkVersionList.toArray(new ESparkVersion[sparkVersionLabelList.size()]);
-            String[] showIfSparkVersion = new String[supported_spark_version.size()];
-            String[] sparkVersionLabel = sparkVersionLabelList.toArray(new String[sparkVersionLabelList.size()]);
-            showIfSparkVersion = generateShowIfConditions(supported_spark_version);
-
-            newParam = new ElementParameter(node);
-            newParam.setCategory(EComponentCategory.BASIC);
-            newParam.setName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
-            newParam.setDisplayName("SUPPORTED_SPARK_VERSION"); //$NON-NLS-1$
-            newParam.setListItemsDisplayName(sparkVersionLabel);
-            newParam.setListItemsDisplayCodeName(sparkVersionLabel);
-            newParam.setListItemsValue(sparkVersionValues);
-            newParam.setListItemsShowIf(showIfSparkVersion);
-            newParam.setListItemsNotShowIf(new String[sparkVersionLabelList.size()]);
-            newParam.setNumRow(xmlParam.getNUMROW());
-            newParam.setFieldType(EParameterFieldType.CLOSED_LIST);
-            newParam.setShow(true);
-            newParam.setGroup(xmlParam.getGROUP());
-            newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
-            showIf = xmlParam.getSHOWIF();
-            if (showIf != null) {
-                newParam.setShowIf(showIf + " AND (" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
-            } else {
-                newParam.setShowIf("(" + componentType.getDistributionParameter() + "!='CUSTOM')"); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
-
-            listParam.add(newParam);
         }
     }
 
     public ComponentCondition displayCondition;
-
-    public String[] generateShowIfConditions(HashMap<String, Set<Pair<String, String>>> supported_spark_version) {
-        String[] results = new String[supported_spark_version.size()];
-
-        int conditionIndex = 0;
-
-        for (Map.Entry<String, Set<Pair<String, String>>> entry : supported_spark_version.entrySet()) {
-            List<MultiComponentCondition> multiComponentConditions = new ArrayList<>();
-            Set<Pair<String, String>> value = entry.getValue();
-            for (Pair<String, String> pair : value) {
-                SimpleComponentCondition distribution = new SimpleComponentCondition(new BasicExpression(
-                        "DISTRIBUTION", EqualityOperator.EQ, pair.getLeft())); //$NON-NLS-1$
-                SimpleComponentCondition version = new SimpleComponentCondition(new BasicExpression(
-                        "SPARK_VERSION", EqualityOperator.EQ, pair.getRight())); //$NON-NLS-1$
-                multiComponentConditions.add(new MultiComponentCondition(distribution, BooleanOperator.AND, version));
-            }
-
-            Iterator<MultiComponentCondition> iterComponentCondition = multiComponentConditions.iterator();
-
-            ComponentCondition previousCondition = null;
-            ComponentCondition completeCondition = null;
-            while (iterComponentCondition.hasNext()) {
-                MultiComponentCondition cc = iterComponentCondition.next();
-                if (cc == null) {
-                    return null;
-                }
-                ComponentCondition wrappedCondition = new NestedComponentCondition(cc);
-                if (previousCondition != null) {
-                    wrappedCondition = new MultiComponentCondition(previousCondition, BooleanOperator.OR, wrappedCondition);
-                }
-                previousCondition = wrappedCondition;
-            }
-            if (previousCondition != null) {
-                completeCondition = new NestedComponentCondition(previousCondition);
-                results[conditionIndex] = completeCondition.getConditionString();
-                conditionIndex++;
-            }
-        }
-        return results;
-    }
 
     @SuppressWarnings("unchecked")
     private void addPropertyParameters(final List<ElementParameter> listParam, final INode node, boolean advanced) {
