@@ -220,10 +220,10 @@ public class MavenJavaProcessor extends JavaProcessor {
 
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
-                boolean previousValue = ProcessUtils.isHDInsight();
-                ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist((ProcessItem) property.getItem()));
+                boolean previousValue = ProcessUtils.jarNeedsToContainsContext();
+                ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
-                ProcessUtils.setHDInsight(previousValue);
+                ProcessUtils.setJarWithContext(previousValue);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);

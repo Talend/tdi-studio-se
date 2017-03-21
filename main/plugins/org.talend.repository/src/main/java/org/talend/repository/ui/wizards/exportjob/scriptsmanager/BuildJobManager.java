@@ -189,7 +189,7 @@ public class BuildJobManager {
             final String label = processItem.getProperty().getLabel();
             final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
                     exportChoiceMap, jobExportType);
-            ProcessUtils.setHDInsight(ProcessUtils.isDistributionExist(processItem));
+            ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar(processItem));
             final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
                 @Override
@@ -227,7 +227,7 @@ public class BuildJobManager {
                 }
                 throw new PersistenceException(cause);
             }
-            ProcessUtils.setHDInsight(false);
+            ProcessUtils.setJarWithContext(false);
             IFile jobTargetFile = buildJobHandler.getJobTargetFile();
             if (jobTargetFile != null && jobTargetFile.exists()) {
                 IPath jobZipLocation = jobTargetFile.getLocation();
