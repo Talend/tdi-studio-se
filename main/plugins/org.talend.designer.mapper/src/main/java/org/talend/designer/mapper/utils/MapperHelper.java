@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
 import org.talend.designer.mapper.external.data.ExternalMapperData;
@@ -45,6 +46,9 @@ public class MapperHelper {
      * @return
      */
     public static boolean isGeneratedAsVirtualComponent(final INode mapperNode) {
+        if (isMapperOnBigDataProcess(mapperNode.getComponent().getPaletteType())) {
+            return false;
+        }
 
         boolean hasPersistentSortedLookup = false;
 
@@ -85,6 +89,11 @@ public class MapperHelper {
             } // T_TM_M_241
         }
         return hasPersistentSortedLookup;
+    }
+    
+    public static boolean isMapperOnBigDataProcess(String componentType) {
+        return ComponentCategory.CATEGORY_4_SPARK.getName().equals(componentType)
+                || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(componentType) || ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(componentType);
     }
 
     public static void saveDataToEmf(ExternalMapperData externalData, MapperData emfMapperData) {
