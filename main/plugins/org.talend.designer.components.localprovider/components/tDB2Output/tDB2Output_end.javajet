@@ -92,7 +92,9 @@ imports="
     	
     	<%if(("true").equals(dieOnError)) {
     	%>
-    		throw(e);
+            String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
+            <%dbLog.logPrintedException("errormessage_"+cid);%>
+            throw(e);
     	<%
     	}else {
     	%>
@@ -146,24 +148,6 @@ imports="
     <%
 	}
     %>
-    } catch (java.sql.SQLException e) {
-       
-       
-       <%
-       		if(("true").equals(dieOnError)) {
-       %>
-           String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-           <%dbLog.logPrintedException("errormessage_"+cid);%>
-           throw(e);
-       <%
-            }else{
-       %>
-            String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
-       <%
-            dbLog.logPrintedException("errormessage_"+cid);
-            }
-       %>
-   }
    <%@ include file="../templates/DB/Output/DBOutputEndGlobalVars.javajet"%>
 
 
