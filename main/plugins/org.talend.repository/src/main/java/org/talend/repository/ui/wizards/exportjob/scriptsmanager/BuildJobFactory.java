@@ -76,7 +76,7 @@ public class BuildJobFactory {
             buildType = newType;
         }
 
-        IBuildJobHandler buildJobHandler = createBuildJobHandler(processItem, version, contextName, exportChoiceMap, buildType);
+        IBuildJobHandler buildJobHandler = createBuildJobHandler(processItem, contextName, version, exportChoiceMap, buildType);
         if (buildJobHandler == null) {
             // default
             buildJobHandler = new BuildJobHandler(processItem, version, contextName, exportChoiceMap);
@@ -120,7 +120,7 @@ public class BuildJobFactory {
     public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap) {
         // according to the export type from additional properties setting.
-        return createBuildJobHandler(processItem, version, contextName, exportChoiceMap, (String) null);
+        return createBuildJobHandler(processItem, contextName, version, exportChoiceMap, (String) null);
     }
 
 }
