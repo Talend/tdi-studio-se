@@ -220,7 +220,7 @@ public class MavenJavaProcessor extends JavaProcessor {
 
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
-                boolean previousValue = ProcessUtils.jarNeedsToContainsContext();
+                boolean previousValue = ProcessUtils.jarNeedsToContainContext();
                 ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
                 ProcessUtils.setJarWithContext(previousValue);
