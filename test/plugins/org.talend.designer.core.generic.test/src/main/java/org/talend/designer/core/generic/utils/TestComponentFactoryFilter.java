@@ -28,7 +28,7 @@ public class TestComponentFactoryFilter implements IComponentFactoryFilter {
     @Override
     public boolean isAvailable(String componentName) {
        if(Boolean.getBoolean("talend.test.component.filter")){
-           if(!componentName.equals("tSalesforceInput")){
+           if(componentName.equals("tJIRAInput")){
                return false;
            }
        }
