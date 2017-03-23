@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Talend Guided Tutorials</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <link rel="stylesheet" href="F:\project\studio_code_master\tdi-studio-se\main\plugins\org.talend.designer.tutorials\content\css\style.css" type="text/css" media="screen, projection" title="no title" charset="utf-8"/>
+</head>
+<body>
+  <article class="tabs">
+		<input id="one" name="tabs" type="radio"></input>
+	    <label for="one">Create Job/add Input</label>
+
+	    <input id="two" name="tabs" type="radio" value="Two"></input>
+	    <label for="two">Mapping</label>
+
+	    <input id="three" name="tabs" type="radio"></input>
+	    <label for="three">Map Into Out</label>
+
+	    <input id="four" name="tabs" type="radio"></input>
+	    <label for="four">Run Job</label>
+
+	    <div class="panels">
+		    <div id="panel1" class="panel">
+		    	<video src="F:\project\studio_code_master\tdi-studio-se\main\plugins\org.talend.designer.tutorials\resources\Step1-mp4.mp4" width="580" height="450" controls="controls">Your browser does not support the video tag.</video>
+		    	<textarea name="panel1" cols="70" rows="9"><internationalization id="TutorialsDialog.panel1.message" /></textarea>
+		    </div>
+
+		    <div id="panel2" class="panel">
+		    	<video src="F:\project\studio_code_master\tdi-studio-se\main\plugins\org.talend.designer.tutorials\resources\Step2-mp4.mp4" width="580" height="450" controls="controls">Your browser does not support the video tag.</video>
+		    	<textarea name="panel2" cols="70" rows="9"><internationalization id="TutorialsDialog.panel2.message" /></textarea>
+		    </div>
+
+		    <div id="panel3" class="panel">
+                <video src="F:\project\studio_code_master\tdi-studio-se\main\plugins\org.talend.designer.tutorials\resources\Step3-mp4.mp4" width="580" height="450" controls="controls">Your browser does not support the video tag.</video>
+		    	<textarea name="panel3" cols="70" rows="9"><internationalization id="TutorialsDialog.panel3.message" /></textarea>
+		    </div>
+
+		    <div id="panel4" class="panel">
+                <video src="F:\project\studio_code_master\tdi-studio-se\main\plugins\org.talend.designer.tutorials\resources\Step4-mp4.mp4" width="580" height="450" controls="controls">Your browser does not support the video tag.</video>
+		    	<textarea name="panel4" cols="70" rows="9"><internationalization id="TutorialsDialog.panel4.message" /></textarea>
+		    </div>
+		</div>
+    </article>
+</body>
+<script type="text/javascript">
+
+function none(){
+    document.getElementById('panel1').style.cssText="display:none;"; 
+    document.getElementById('panel2').style.cssText="display:none;"; 
+    document.getElementById('panel3').style.cssText="display:none;"; 
+    document.getElementById('panel4').style.cssText="display:none;"; 
+}
+
+
+var one = document.getElementById('one');   
+one.onclick = function(){
+    none();
+    document.getElementById('panel1').style.cssText="display:block;"; 
+};
+one.click();  
+
+var two = document.getElementById('two');   
+two.onclick = function(){
+    none();
+    document.getElementById('panel2').style.cssText="display:block;"; 
+};
+
+var three = document.getElementById('three');   
+three.onclick = function(){
+    none();
+    document.getElementById('panel3').style.cssText="display:block;"; 
+};
+
+var four = document.getElementById('four');   
+four.onclick = function(){
+    none(); 
+    document.getElementById('panel4').style.cssText="display:block;"; 
+};
+
+</script>
+</html>
