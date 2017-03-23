@@ -53,7 +53,7 @@ public class TutorialsHelper {
     }
 
     public String getHtmlContent() throws IOException {
-        //        if (content == null || "".equals(content)) { //$NON-NLS-1$
+        if (content == null || "".equals(content)) { //$NON-NLS-1$
             URL startingHtmlURL = TutorialsPlugin.getDefault().getBundle().getEntry("content/tutorials.html"); //$NON-NLS-1$;
             if (startingHtmlURL != null) {
                 startingHtmlURL = FileLocator.toFileURL(startingHtmlURL);
@@ -68,17 +68,18 @@ public class TutorialsHelper {
                 Document dom = parser.getDocument();
                 if (dom != null) {
                     resolveInternationalization(dom);
+                // resolve all relative resources relative to content file. Do it before
+                // inserting shared style to enable comparing fully qualified styles.
+                TalendHtmlModelUtil.updateResourceAttributes(dom.getDocumentElement(), "/content/", TutorialsPlugin.getDefault()
+                        .getBundle());
                     resolveDynamicContent(dom, null);
                     content = IntroContentParser.convertToString(dom);
                 }
             }
-
-        // }
-
+        }
         if (content == null || "".equals(content)) { //$NON-NLS-1$
             throw new IOException("Can't find starting helper content"); //$NON-NLS-1$
         }
-
         return content;
     }
 

@@ -17,12 +17,12 @@ import java.io.IOException;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
@@ -72,23 +72,22 @@ public class TutorialsDialog extends TrayDialog {
     @Override
     protected void configureShell(final Shell newShell) {
         super.configureShell(newShell);
-        newShell.setSize(670, 670);
+        newShell.setSize(650, 650);
         newShell.setText(Messages.getString("TutorialsDialog.title")); //$NON-NLS-1$
     }
 
     @Override
     protected Control createContents(Composite parent) {
-        parent.setLayout(new FormLayout());
-        Composite composite = new Composite(parent, 0);
-        FormData data = new FormData();
-        data.height = 670;
-        data.width = 670;
-        composite.setLayoutData(data);
-        composite.setLayout(new FillLayout());
-        composite.setBackground(new Color(null, 255, 255, 255));
+        SashForm sash = new SashForm(parent, SWT.NONE);
+        GridData layoutData = new GridData(GridData.FILL_BOTH);
+        layoutData.widthHint = 600;
+        layoutData.heightHint = 600;
+        sash.setLayoutData(layoutData);
+        sash.setLayout(new GridLayout());
+        sash.setBackground(new Color(null, 255, 255, 255));
         // create the dialog area and button bar
-        dialogArea = createDialogArea(composite);
-        return composite;
+        dialogArea = createDialogArea(sash);
+        return sash;
     }
 
     @Override
@@ -100,7 +99,6 @@ public class TutorialsDialog extends TrayDialog {
             CommonExceptionHandler.process(e);
         }
         browser.addLocationListener(new BrowserDynamicPartLocationListener());
-
         return parent;
     }
 

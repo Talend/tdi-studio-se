@@ -5,7 +5,7 @@ body {
 
 	.tabs {
 		width: 100%;
-		max-width: 650px;
+		max-width: 100%;
 		margin: 5px auto;
 	}
 
@@ -51,7 +51,7 @@ body {
 			width: 100%;
 			background: #fff;
 			border-radius: 0 10px 10px 10px;
-			min-height: 650px;
+			min-height: 100%;
 		}
 
 			.panel {

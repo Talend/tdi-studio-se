@@ -23,5 +23,4 @@ public class ContentConstants {
      * action ids
      */
     public static final String INSERT_DATA = "INSERT_DATA";
-
 }
