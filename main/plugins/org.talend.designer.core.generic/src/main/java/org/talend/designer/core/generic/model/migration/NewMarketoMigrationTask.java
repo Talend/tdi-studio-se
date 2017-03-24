@@ -11,6 +11,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 
 public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask {
+
+    Boolean hasAPI = Boolean.FALSE;
+
     @Override
     public Date getOrder() {
         return new GregorianCalendar(2017, 3, 8, 10, 0, 0).getTime();
@@ -26,17 +29,35 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return props;
     }
 
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
-        ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
+        // Not sure that it's the right place for that...
         //
+        // Very old job didn't support REST API
+        // This means it has neither USE_REST_API nor USE_SOAP_API so migrate to SOAP
+        //
+        if (node != null && !hasAPI) {
+            ElementParameterType apiParamType = ParameterUtilTool.findParameterType(node, "USE_SOAP_API");
+            if (apiParamType == null) {
+                apiParamType.setValue("SOAP");
+                ParameterUtilTool.addParameterType(node, apiParamType);
+            }
+            hasAPI = true;
+        }
+        //
+        ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
         if (node != null && paramType != null) {
             Object value = ParameterUtilTool.convertParameterValue(paramType);
-            // connection.apiMode USE_REST_API USE_SOAP_API
+            if("USE_SOAP_API".equals(paramName)){
+                if("true".equals(String.valueOf(value))) {
+                    paramType.setValue("SOAP");
+                } else {
+                    paramType.setValue("REST");
+                }
+            }
         }
         return paramType;
     }
