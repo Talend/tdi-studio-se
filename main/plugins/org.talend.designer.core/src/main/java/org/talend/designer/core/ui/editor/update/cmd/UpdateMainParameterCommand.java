@@ -18,12 +18,14 @@ import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.HeaderFooterConnection;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.HeaderFooterConnectionItem;
 import org.talend.core.model.properties.Item;
@@ -182,10 +184,13 @@ public class UpdateMainParameterCommand extends Command {
                                             String repositoryValue = param.getRepositoryValue();
                                             if (param.isShow(process.getElementParameters()) && (repositoryValue != null)
                                                     && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))) {
-                                                Object objectValue = RepositoryToComponentProperty.getValue(
-                                                        (org.talend.core.model.metadata.builder.connection.Connection) result
-                                                                .getParameter(), repositoryValue, null);
+                                                Connection connection = (org.talend.core.model.metadata.builder.connection.Connection) result
+                                                        .getParameter();
+                                                Object objectValue = RepositoryToComponentProperty.getValue(connection,
+                                                        repositoryValue, null);
                                                 if (objectValue != null) {
+                                                    boolean sparkAdvancedProperties = EParameterName.SPARK_ADVANCED_PROPERTIES
+                                                            .getName().equals(param.getName());
                                                     if (param.getFieldType().equals(EParameterFieldType.CLOSED_LIST)
                                                             && repositoryValue.equals(UpdatesConstants.TYPE)) {
                                                         boolean found = false;
@@ -199,8 +204,7 @@ public class UpdateMainParameterCommand extends Command {
                                                         }
                                                     } else if (EParameterName.HADOOP_ADVANCED_PROPERTIES.getName().equals(
                                                             param.getName())
-                                                            || EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(
-                                                                    param.getName())) {
+                                                            || sparkAdvancedProperties) {
                                                         List<Map> list = (ArrayList) param.getValue();
                                                         for (Map map : list) {
                                                             if (map.get("BUILDIN") != null && map.get("BUILDIN").equals("TRUE")) {
@@ -209,12 +213,15 @@ public class UpdateMainParameterCommand extends Command {
                                                                 }
                                                             }
                                                         }
+                                                        if (sparkAdvancedProperties
+                                                                && !ProcessUtils.isUseSparkProperties(connection)) {
+                                                            objectValue = ProcessUtils.updateSparkProperties(objectValue);
+                                                        }
                                                         process.setPropertyValue(param.getName(), objectValue);
                                                     } else {
                                                         process.setPropertyValue(param.getName(), objectValue);
                                                     }
-                                                    if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(
-                                                            param.getName())) {
+                                                    if (!sparkAdvancedProperties) {
                                                         param.setRepositoryValueUsed(true);
                                                         param.setReadOnly(true);
                                                     }

@@ -73,6 +73,7 @@ import org.talend.core.model.process.IExternalData;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.ContextItem;
 import org.talend.core.model.properties.DatabaseConnectionItem;
@@ -858,6 +859,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                                         }
                                                     }
                                                 }
+                                            }
+                                            if (!ProcessUtils.isUseSparkProperties(repositoryConnection)) {
+                                                sameValues = false;
                                             }
                                         } else if (!param.getValue().equals(repValue)) {
                                             sameValues = false;
