@@ -103,7 +103,7 @@ if(either){
 	    	}else{
 	    		globalMap.put("<%=cid %>_CURRENT_STATUS", "No path deleted.");
 <%
-		if(("true").equals(failon)){
+		if("true".equals(failon)){
 %>
 			throw new RuntimeException("The directory " + path_<%=cid%>.getAbsolutePath() + " can not be deleted.");
 <%
@@ -118,7 +118,7 @@ if(either){
 	}else{
 		globalMap.put("<%=cid %>_CURRENT_STATUS", "File or path does not exist or is invalid.");
 <%
-		if(("true").equals(failon)){
+		if("true".equals(failon)){
 %>
     		throw new RuntimeException("File or path does not exist or is invalid.");
 <%
