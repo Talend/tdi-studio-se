@@ -57,7 +57,7 @@
             <DEFAULT>"http://192.168.0.22/MSCrmServices/2007/CrmService.asmx"</DEFAULT>
         </PARAMETER>
 
-        <PARAMETER NAME="ORGNAME" FIELD="TEXT" NUM_ROW="15" REQUIRED="true" NOT_SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')">
+        <PARAMETER NAME="ORGNAME" FIELD="TEXT" NUM_ROW="15" REQUIRED="true" NOT_SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA'))">
             <DEFAULT>"talend"</DEFAULT>
         </PARAMETER>
 
@@ -108,8 +108,16 @@
             SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')">
             <DEFAULT>""</DEFAULT>
         </PARAMETER>
+        
+        <PARAMETER NAME="APPLICATION_ID" FIELD="TEXT" NUM_ROW="30" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER NAME="AUTHORITY" FIELD="TEXT" NUM_ROW="35" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+            <DEFAULT>"https://login.windows.net/common/oauth2/authorize"</DEFAULT>
+        </PARAMETER>
 
-        <PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="30" REQUIRED="true">
+        <PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="45" REQUIRED="true">
             <DEFAULT>2</DEFAULT>
         </PARAMETER>
 
@@ -19488,14 +19496,22 @@
 
         </PARAMETER>
 
-        <PARAMETER NAME="LOGICAL_OP" FIELD="CLOSED_LIST" NUM_ROW="70" REQUIRED="true">
+        <PARAMETER NAME="SPECIFY_COMPLEX_FILTER" FIELD="CHECK" NUM_ROW="70" REQUIRED="false" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="CUSTOM_FILTER" FIELD="TEXT" NUM_ROW="70" REQUIRED="true" SHOW_IF="isShow[SPECIFY_COMPLEX_FILTER] AND (SPECIFY_COMPLEX_FILTER=='true')" >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="LOGICAL_OP" FIELD="CLOSED_LIST" NUM_ROW="75" REQUIRED="true" NOT_SHOW_IF="isShow[SPECIFY_COMPLEX_FILTER] AND (SPECIFY_COMPLEX_FILTER=='true')" >
             <ITEMS DEFAULT="AND">
                 <ITEM NAME="OR" VALUE="Or" />
                 <ITEM NAME="AND" VALUE="And" />
             </ITEMS>
         </PARAMETER>
 
-        <PARAMETER NAME="CONDITIONS" FIELD="TABLE" REQUIRED="false" NUM_ROW="80" NB_LINES="3">
+        <PARAMETER NAME="CONDITIONS" FIELD="TABLE" REQUIRED="false" NUM_ROW="80" NB_LINES="3" NOT_SHOW_IF="isShow[SPECIFY_COMPLEX_FILTER] AND (SPECIFY_COMPLEX_FILTER=='true')">
             <ITEMS>
                 <ITEM NAME="INPUT_COLUMN" FIELD="COLUMN_LIST" />
                 <ITEM NAME="OPERATOR" FIELD="CLOSED_LIST">
@@ -19506,23 +19522,38 @@
                         <ITEM NAME="LESSTHAN" VALUE="LessThan" />
                         <ITEM NAME="GREATEREQUAL" VALUE="GreaterEqual" />
                         <ITEM NAME="LESSEQUAL" VALUE="LessEqual" />
-                        <ITEM NAME="LIKE" VALUE="Like" />
+                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA')"/>
                     </ITEMS>
                 </ITEM>
                 <ITEM NAME="RVALUE" FIELD="String" />
             </ITEMS>
         </PARAMETER>
-
+        
+        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" >
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER NAME="ORDER_BY_TABLE" FIELD="TABLE" REQUIRED="false" NUM_ROW="85" NB_LINES="3" SHOW_IF="isShow[ORDER_BY] AND (ORDER_BY=='true')" >
+            <ITEMS>
+                <ITEM NAME="COLUMN_NAME" FIELD="COLUMN_LIST" />
+                <ITEM NAME="DESC" FIELD="CHECK" />
+            </ITEMS>
+        </PARAMETER>
+        
+        <!--
+        <PARAMETER NAME="TOP" FIELD="TEXT" NUM_ROW="90" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" >
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        -->
+        
     </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
-        <PARAMETER NAME="REUSE_HTTP_CLIENT" FIELD="CHECK" NUM_ROW="10" REQUIRED="true"
-            NOT_SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')">
+        <PARAMETER NAME="REUSE_HTTP_CLIENT" FIELD="CHECK" NUM_ROW="10" REQUIRED="true" NOT_SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')">
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
 
-        <PARAMETER NAME="DEBUG" FIELD="CHECK" NUM_ROW="20"
-            REQUIRED="false" SHOW="false">
+        <PARAMETER NAME="DEBUG" FIELD="CHECK" NUM_ROW="20" REQUIRED="false" SHOW="false">
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
         

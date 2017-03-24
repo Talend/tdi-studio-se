@@ -27,13 +27,14 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			IConnection outgoingConn = outgoingConns.get(0);
 
 			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-				String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
-				boolean isAPI2011 = ("API_2011").equals(ElementParameterParser.getValue(node,"__API_VERSION__"));
-				String discWSDL = ElementParameterParser.getValue(node, "__DISC_WSDL__");
-				%>
+			%>
     				}
-    				break;
-    				//TODO handle page
+    				// Gets the next page link if exists.
+    				if (iterator_<%=cid%>.getNext() != null) {
+                nextPageURI_<%=cid%> = iterator_<%=cid%>.getNext();
+	            } else {
+	                break;
+	            }
 				}
 
 				<%
