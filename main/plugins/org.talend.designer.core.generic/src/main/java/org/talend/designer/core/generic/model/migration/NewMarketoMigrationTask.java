@@ -42,8 +42,7 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
         if (node != null && !hasAPI) {
             ElementParameterType apiParamType = ParameterUtilTool.findParameterType(node, "USE_SOAP_API");
             if (apiParamType == null) {
-                apiParamType.setValue("SOAP");
-                ParameterUtilTool.addParameterType(node, apiParamType);
+               ParameterUtilTool.addParameterType(node, "RADIO","USE_SOAP_API", "true");
             }
             hasAPI = true;
         }
