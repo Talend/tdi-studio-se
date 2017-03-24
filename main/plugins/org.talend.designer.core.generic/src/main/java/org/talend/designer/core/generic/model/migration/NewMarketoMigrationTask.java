@@ -16,7 +16,7 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
 
     @Override
     public Date getOrder() {
-        return new GregorianCalendar(2017, 3, 8, 10, 0, 0).getTime();
+        return new GregorianCalendar(2017, 2, 24, 10, 0, 0).getTime();
     }
 
     @Override
