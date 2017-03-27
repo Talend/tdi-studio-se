@@ -2108,9 +2108,39 @@ if(columnList != null && columnList.size() > 0) {
 	                    break;
 	                }
 	            }
+<%			
+			} else if ( "TERADATA".equalsIgnoreCase(dbType)) {
+%>	
+				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+	            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
+	            while(rsTable_<%=cid%>.next()) {
+	                String table_<%=cid%> = rsTable_<%=cid%>.getString("TABLE_NAME");
+	                if(table_<%=cid%>.equals<%if(!tableNameCaseSensitive){%>IgnoreCase<%}%>(<%=tableName%>)) {
+	                    whetherExist_<%=cid%> = true;
+	                    break;
+	                }
+	            }
+				/* 
+				* Teradata DBMS store all tables into service table DBC.Tables
+				* Every Teradata server should contain it.
+				* This additional check is needed because DatabaseMetaData.getTables return names of all users' databases
+				* But the current table could be absent under current user. 
+				*/
+				if (whetherExist_<%=cid%>) {
+					try (java.sql.PreparedStatement checkExistingTableInSpecifiedDatabase_<%=cid%> = conn_<%=cid%>.prepareStatement("SELECT COUNT(*) FROM dbc.Tables WHERE databasename = ? AND tablename = ?")) {
+						checkExistingTableInSpecifiedDatabase_<%=cid%>.setString(1, <%=ElementParameterParser.getValue(node, "__DBNAME__")%>);
+						checkExistingTableInSpecifiedDatabase_<%=cid%>.setString(2, <%=ElementParameterParser.getValue(node, "__TABLE__") %>);
+						java.sql.ResultSet databasesUnderCurrentUser_<%=cid%> = checkExistingTableInSpecifiedDatabase_<%=cid%>.executeQuery();
+						databasesUnderCurrentUser_<%=cid%>.next();
+						if (databasesUnderCurrentUser_<%=cid%>.getInt(1) == 0) whetherExist_<%=cid%> = false;
+						databasesUnderCurrentUser_<%=cid%>.close();
+					}
+				}
+				
+
 <%
             } else {
-            %>
+%>
 	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
 	            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
 	            while(rsTable_<%=cid%>.next()) {
