@@ -188,7 +188,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     		String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     		String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
     		
-    		List<Column> stmtStructure = getELTManager(dbmsId, cid).createColumnList(columnList, false, null, null);
+    		List<Column> stmtStructure = getELTManager(dbmsId, cid, node).createColumnList(columnList, false, null, null);
     		
     		String table = useDifferentTable ? differenttable : ("\""+dbtable +"\"");
     		
