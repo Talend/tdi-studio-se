@@ -12,7 +12,6 @@
   
   <properties>
     <bulkload.dir>${project.basedir}/components/tMDMBulkLoad</bulkload.dir>
-    <marketo.dir>${project.basedir}/components/tMarketoInput</marketo.dir>
     <soap.dir>${project.basedir}/components/tSOAP</soap.dir>
     <webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
   </properties>
@@ -29,12 +28,6 @@
                         <includes>
                             <include>bulkloadclient.jar</include>
                             <include>org.talend.mdm.bulkload.client*.jar</include>
-                        </includes>
-                    </fileset>
-                    <fileset>
-                        <directory>${marketo.dir}</directory>
-                        <includes>
-                            <include>talend-marketo-rest*.jar</include>
                         </includes>
                     </fileset>
                     <fileset>
@@ -85,14 +78,6 @@
                     </goals>
                     <configuration>
                         <artifactItems>
-                            <artifactItem>
-                                <groupId>org.talend.libraries</groupId>
-                                <artifactId>talend-marketo-rest</artifactId>
-                                <version>2.1-20161125</version>
-                                <type>jar</type>
-                                <overWrite>true</overWrite>
-                                <outputDirectory>${marketo.dir}</outputDirectory>
-                            </artifactItem>
                             <artifactItem>
                                 <groupId>org.talend.libraries</groupId>
                                 <artifactId>talend-soap</artifactId>
