@@ -99,6 +99,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.hadoop.HadoopConstants;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
@@ -1281,13 +1282,16 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         Set<ModuleNeeded> neededModules = getNeededModules();
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
-        // Ignore hadoop confs jars in lib path.
-        Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
-        while (moduleIter.hasNext()) {
-            ModuleNeeded module = moduleIter.next();
-            Object obj = module.getExtraAttributes().get(HadoopConstants.IS_HADOOP_CUSTOM_CONFS);
-            if (Boolean.valueOf(String.valueOf(obj))) {
-                moduleIter.remove();
+        // Ignore hadoop confs jars in lib path only for DI process now.
+        ComponentCategory category = ComponentCategory.getComponentCategoryFromItem(property.getItem());
+        if (ComponentCategory.CATEGORY_4_DI.equals(category)) {
+            Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
+            while (moduleIter.hasNext()) {
+                ModuleNeeded module = moduleIter.next();
+                Object obj = module.getExtraAttributes().get(HadoopConstants.IS_HADOOP_CUSTOM_CONFS);
+                if (Boolean.valueOf(String.valueOf(obj))) {
+                    moduleIter.remove();
+                }
             }
         }
 
