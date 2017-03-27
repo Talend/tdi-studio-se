@@ -3,7 +3,7 @@
 <%
 Boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
 if (!isParallelize) {
-	manager = getELTManager(dbmsId, cid);
+	manager = getELTManager(dbmsId, cid, node);
     
     String ending="";
     
