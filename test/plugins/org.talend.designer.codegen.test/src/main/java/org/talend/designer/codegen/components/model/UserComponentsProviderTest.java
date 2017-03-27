@@ -14,21 +14,18 @@ package org.talend.designer.codegen.components.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.osgi.framework.FrameworkUtil;
+import org.talend.commons.utils.resource.BundleFileUtil;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -116,16 +113,7 @@ public class UserComponentsProviderTest {
     }
 
     protected File getTestDataFile(String bundlePath) throws IOException {
-        URL dataUrl = FileLocator.find(FrameworkUtil.getBundle(this.getClass()), new Path(bundlePath), null);
-        if (dataUrl != null) {
-            dataUrl = FileLocator.toFileURL(dataUrl);
-        }
-
-        File zipFile = new File(dataUrl.getFile());
-        if (zipFile.exists()) {
-            return zipFile;
-        }
-        return null;
+        return BundleFileUtil.getBundleFile(this.getClass(), bundlePath);
     }
 
     private void testEmpty(UserComponentsProviderTestClass provider) throws Exception {
