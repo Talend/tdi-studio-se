@@ -7,41 +7,33 @@ imports="
 %>
 <%
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	String userName = ElementParameterParser.getValue(node, "__USERNAME__");
 	String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
+	String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+	String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 	
 	//TODO remove useless code
-	String endpointURL = ElementParameterParser.getValue(node, "__ENDPOINTURL__");
-	String orgName = ElementParameterParser.getValue(node, "__ORGNAME__");
-	String username = ElementParameterParser.getValue(node, "__USERNAME__");
-
-	String domain = ElementParameterParser.getValue(node, "__DOMAIN__");
-	String host = ElementParameterParser.getValue(node, "__HOST__");
-	String port = ElementParameterParser.getValue(node, "__PORT__");
 	String timeoutSecTemp = ElementParameterParser.getValue(node, "__TIMEOUT__");
 	String timeoutSec = (timeoutSecTemp!=null&&!("").equals(timeoutSecTemp))?timeoutSecTemp:"2";
 	int timeout = (int)(Double.valueOf(timeoutSec) * 1000);
-	boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
-	boolean debug = ("true").equals(ElementParameterParser.getValue(node,"__DEBUG__"));
-	boolean isAPI2011 = ("API_2011").equals(ElementParameterParser.getValue(node,"__API_VERSION__"));
-	String discWSDL = ElementParameterParser.getValue(node, "__DISC_WSDL__");
 	%>
 	int nb_line_<%=cid%> = 0;
-
 	<%
 	String passwordFieldName = "__PASSWORD__";
+	String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+ 	String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+ 	if("CustomEntity".equals(entitySetName)){
+	%>
+		String entitySetName_<%=cid%>=<%=customEntityname%>;
+	<%
+	}else{
+	%>
+		String entitySetName_<%=cid%>="<%=entitySetName%>";
+	<%	
+	}
 	%>
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-	String clientId_<%=cid%>=null;
-	//TODO maybe no need to be set here
-	String resource_<%=cid%>=null;
-	
-	String userName_<%=cid%>=null;
-	String password_<%=cid%>=null;
-	String authoryEndpoint_<%=cid%>=null;
-	
-	String serviceRootURI_<%=cid%>=<%=serviceURL%>;
-	
-	org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(clientId_<%=cid%>, resource_<%=cid%>, userName_<%=cid%>, password_<%=cid%>, authoryEndpoint_<%=cid%>);
-	org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,serviceRootURI_<%=cid%>);
+	org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+	org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);

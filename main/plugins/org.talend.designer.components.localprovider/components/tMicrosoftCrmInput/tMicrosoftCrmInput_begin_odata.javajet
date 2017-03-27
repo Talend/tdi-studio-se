@@ -32,25 +32,38 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 			
 			String passwordFieldName = "__PASSWORD__";
+			String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+     		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+     		if("CustomEntity".equals(entitySetName)){
+			%>
+				String entitySetName_<%=cid%>=<%=customEntityname%>;
+			<%
+			}else{
+			%>
+				String entitySetName_<%=cid%>="<%=entitySetName%>";
+			<%	
+			}
+			boolean debug = ("true").equals(ElementParameterParser.getValue(node,"__DEBUG__"));
+			if(debug){
+			%>
+				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		    	System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+		    	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
+		    	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+			<%
+			}else{
+			%>
+				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+			<%
+			}
 			%>
 
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 				org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
-				org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>);
+				org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
 				String queryFilter_<%=cid%>=null;
 				<%
-	     		String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
-	     		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
-	     		if("CustomEntity".equals(entitySetName)){
-				%>
-					String entitySetName_<%=cid%>=<%=customEntityname%>;
-				<%
-				}else{
-				%>
-					String entitySetName_<%=cid%>="<%=entitySetName%>";
-				<%	
-				}
 	     		String logical = ElementParameterParser.getValue(node,"__LOGICAL_OP__");
 	     		boolean isSpecifyComplexFilter="true".equals(ElementParameterParser.getValue(node, "__SPECIFY_COMPLEX_FILTER__"));
 	     		if(isSpecifyComplexFilter){

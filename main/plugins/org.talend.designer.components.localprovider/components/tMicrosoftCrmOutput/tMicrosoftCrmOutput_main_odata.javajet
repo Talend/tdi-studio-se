@@ -1,16 +1,4 @@
 <%
-    String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
-    boolean isAPI2011 = ("API_2011").equals(ElementParameterParser.getValue(node,"__API_VERSION__"));
-    
-    boolean emptyLookupIntoNull = "true".equals(ElementParameterParser.getValue(node,"__EMPTY_LOOKUP_TO_NULL__"));
-
-    String str4nil = "\"\"";
-    String entityname = ElementParameterParser.getValue(node, "__ENTITYNAME__").trim();
-    String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
-    if("CustomEntity".equals(entityname)){
-        entityname = customEntityname.replaceAll("\"","");
-    }
-    entityname = entityname.toLowerCase();
     String action = ElementParameterParser.getValue(node,"__ACTION__");
 
     List<IMetadataTable> metadatas = node.getMetadataList();
@@ -24,8 +12,7 @@
                     List<IMetadataColumn> columns = metadata.getListColumns();
                     int sizeColumns = columns.size();
                     %>
-                    //TODO support context ?
-                    org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = client_<%=cid%>.createdEntity("<%=entityname%>");
+                    org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = client_<%=cid%>.newEntity();
                     <%
                     if("insert".equals(action) || "update".equals(action)){
 	                    for(int i = 0; i < sizeColumns; i++){
@@ -52,16 +39,16 @@
                     	<%
                    	if("isnert".equals(action)){
 							%>
-                    		client_<%=cid%>.insertEntity("<%=entityname%>", entity_<%=cid%>);
+                    		client_<%=cid%>.insertEntity(entity_<%=cid%>);
                     	<%
                     	}else if("update".equals(action)){
                     	%>
                     		//TODO support both PATCH/REPLACE ?
-                 			client_<%=cid%>.updateEntity("<%=entityname%>", entity_<%=cid%>,org.apache.olingo.client.api.communication.request.cud.UpdateType.PATCH);
+                 			client_<%=cid%>.updateEntity( entity_<%=cid%>,org.apache.olingo.client.api.communication.request.cud.UpdateType.PATCH);
                     	<%
                     	} else if ("delete".equals(action)){
                     	%>
-                    		client_<%=cid%>.deleteEntity("<%=entityname%>", <%=connName%>.Id);
+                    		client_<%=cid%>.deleteEntity(<%=connName%>.Id);
                     	<%
                     	}
                     	%>

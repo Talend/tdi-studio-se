@@ -19549,7 +19549,7 @@
     </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
-        <PARAMETER NAME="REUSE_HTTP_CLIENT" FIELD="CHECK" NUM_ROW="10" REQUIRED="true" NOT_SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')">
+        <PARAMETER NAME="REUSE_HTTP_CLIENT" FIELD="CHECK" NUM_ROW="10" REQUIRED="true" NOT_SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA'))">
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
 
@@ -19869,6 +19869,145 @@
                     UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-microsoft-crm-2015-on-premises-0.2.jar"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <!-- Jars for CRM 2015 CXF end -->
+                
+            <!-- CRM 2016 odata start -->
+            <IMPORT
+                NAME="talend-mscrm-odata-1.0-20170324"
+                MODULE="talend-mscrm-odata-1.0-20170324.jar"
+                MVN="mvn:org.talend.libraries/talend-mscrm-odata-1.0-20170324/6.4.0"
+                UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-odata-1.0-20170324.jar"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="aalto-xml-0.9.10"
+                MODULE="aalto-xml-0.9.10.jar"
+                MVN="mvn:org.talend.libraries/aalto-xml-0.9.10/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="adal4j-1.1.1"
+                MODULE="adal4j-1.1.1.jar"
+                MVN="mvn:org.talend.libraries/adal4j-1.1.1/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="commons-codec-1.9"
+                MODULE="commons-codec-1.9.jar"
+                MVN="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"
+                UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.9.jar"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="apache-commons-io"
+				MODULE="commons-io-2.4.jar"
+				MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="commons-lang3-3.3.2.jar"
+				MODULE="commons-lang3-3.3.2.jar"
+				MVN="mvn:org.talend.libraries/commons-lang3-3.3.2/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.3.2.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="gson-2.3.1"
+				MODULE="gson-2.3.1.jar"
+				MVN="mvn:org.talend.libraries/gson-2.3.1/6.1.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/gson-2.3.1.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="commons-logging"
+				MODULE="commons-logging-1.2.jar"
+				MVN="mvn:org.talend.libraries/commons-logging-1.2/6.0.0"
+				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="httpcore-4.4.4"
+				MODULE="httpcore-4.4.4.jar"
+				MVN="mvn:org.talend.libraries/httpcore-4.4.4/6.3.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="httpclient-4.5.2"
+				MODULE="httpclient-4.5.2.jar"
+				MVN="mvn:org.talend.libraries/httpclient-4.5.2/6.3.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="jackson-core-2.5.3.jar"
+				MODULE="jackson-core-2.5.3.jar"
+				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="jackson-databind-2.5.3.jar"
+				MODULE="jackson-databind-2.5.3.jar"
+				MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="jackson-annotations-2.5.3.jar"
+				MODULE="jackson-annotations-2.5.3.jar"
+				MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+				NAME="json-smart-2.2.1.jar"
+				MODULE="json-smart-2.2.1.jar"
+				MVN="mvn:org.talend.libraries/json-smart-2.2.1/6.0.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="accessors-smart-1.1"
+				MODULE="accessors-smart-1.1.jar"
+				MVN="mvn:org.talend.libraries/accessors-smart-1.1/6.0.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="mail-1.4.7"
+				MODULE="mail-1.4.7.jar"
+				MVN="mvn:org.talend.libraries/mail-1.4.7/6.0.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="nimbus-jose-jwt-3.1.2"
+                MODULE="nimbus-jose-jwt-3.1.2.jar"
+                MVN="mvn:org.talend.libraries/nimbus-jose-jwt-3.1.2/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="oauth2-oidc-sdk-4.5"
+                MODULE="oauth2-oidc-sdk-4.5.jar"
+                MVN="mvn:org.talend.libraries/oauth2-oidc-sdk-4.5/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="odata-client-core-4.3.0"
+                MODULE="odata-client-core-4.3.0.jar"
+                MVN="mvn:org.talend.libraries/odata-client-core-4.3.0/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="odata-client-api-4.3.0"
+                MODULE="odata-client-api-4.3.0.jar"
+                MVN="mvn:org.talend.libraries/odata-client-api-4.3.0/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="odata-commons-api-4.3.0"
+                MODULE="odata-commons-api-4.3.0.jar"
+                MVN="mvn:org.talend.libraries/odata-commons-api-4.3.0/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="odata-commons-core-4.3.0"
+                MODULE="odata-commons-core-4.3.0.jar"
+                MVN="mvn:org.talend.libraries/odata-commons-core-4.3.0/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="slf4j-api-1.7.12"
+                MODULE="slf4j-api-1.7.12.jar"
+                MVN="mvn:org.talend.libraries/slf4j-api-1.7.12/6.4.0"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+			<IMPORT
+				NAME="slf4j-simple-1.7.2"
+				MODULE="slf4j-simple-1.7.2.jar"
+				MVN="mvn:org.talend.libraries/slf4j-simple-1.7.2/6.0.0"
+				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <IMPORT
+                NAME="stax2-api-3.1.4"
+                MODULE="stax2-api-3.1.4.jar"
+                MVN="mvn:org.talend.libraries/stax2-api-3.1.4/6.0.0"
+                UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/stax2-api-3.1.4.jar"
+                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+            <!-- CRM 2016 odata end -->
+                
             </IMPORTS>
         </CODEGENERATION>
 
