@@ -71,7 +71,7 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
                            "LeadKeySelector".equals(String.valueOf(leadSelectorValue)) ) &&
                             batchSize != null) {
                          Object batchSizeValue = ParameterUtilTool.convertParameterValue(batchSize);
-                         paramType.setValue(batchSizeValue);
+                        paramType.setValue(String.valueOf(batchSizeValue));
                     }
                 }
             }
@@ -88,7 +88,7 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
                        "LeadKeySelector".equals(String.valueOf(leadSelectorValue)) &&
                         maxReturn != null) {
                         Object maxReturnValue = ParameterUtilTool.convertParameterValue(maxReturn);
-                        paramType.setValue(maxReturnValue);
+                        paramType.setValue(String.valueOf(maxReturnValue));
                    }
                 }
             }
