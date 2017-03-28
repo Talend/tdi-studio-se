@@ -21,10 +21,10 @@ imports="
 	<%
 	String passwordFieldName = "__PASSWORD__";
 	String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
- 	String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
- 	if("CustomEntity".equals(entitySetName)){
+ 	String customEntityName = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+ 	if("CustomEntitySET".equals(entitySetName)){
 	%>
-		String entitySetName_<%=cid%>=<%=customEntityname%>;
+		String entitySetName_<%=cid%>=<%=customEntityName%>;
 	<%
 	}else{
 	%>

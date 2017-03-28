@@ -34,7 +34,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String passwordFieldName = "__PASSWORD__";
 			String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
      		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
-     		if("CustomEntity".equals(entitySetName)){
+     		if("CustomEntitySET".equals(entitySetName)){
 			%>
 				String entitySetName_<%=cid%>=<%=customEntityname%>;
 			<%
@@ -87,7 +87,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		       		<%
 		        		}
 		        		%>
-		        		queryFilter_<%=cid%>=org.talend.mscrm.QueryFilterUtil.getURIFilterString(LogicalOperator.<%=logical%>, fields_<%=cid%>, conditionOperators_<%=cid%>, values_<%=cid%>)
+		        		queryFilter_<%=cid%>=org.talend.mscrm.QueryFilterUtil.getURIFilterString(org.talend.mscrm.LogicalOperator.<%=logical%>, fields_<%=cid%>, conditionOperators_<%=cid%>, values_<%=cid%>);
 		        	<%
 		        	}
 	     		}
@@ -134,7 +134,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 				   java.net.URI nextPageURI_<%=cid%>=null;
 		        	while(true){
 		        		org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest<org.apache.olingo.client.api.domain.ClientEntitySet,org.apache.olingo.client.api.domain.ClientEntity> 
-		        		request_<%=cid%> = client_<%=cid%>.createEntitySetIteratorRequest(entitySetName_<%=cid%>,queryOption_<%=cid%>);
+		        		request_<%=cid%> = client_<%=cid%>.createEntitySetIteratorRequest(queryOption_<%=cid%>);
 		        		if(nextPageURI_<%=cid%>!=null){
 		        			request_<%=cid%>.setURI(nextPageURI_<%=cid%>);
 		        		}
@@ -156,7 +156,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
 								%>
 								org.apache.olingo.client.api.domain.ClientProperty property_<%=column.getLabel()%>_<%=cid%> =entity_<%=cid%>.getProperty("<%=column.getLabel()%>");
-								if( property_<%=column.getLabel()%>_<%=cid%>.getValue().toString().length()>0){
+								if(property_<%=column.getLabel()%>_<%=cid%>!=null && !property_<%=column.getLabel()%>_<%=cid%>.hasNullValue()){
 		        					<%
 		       						if(javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT){
 		        					%>

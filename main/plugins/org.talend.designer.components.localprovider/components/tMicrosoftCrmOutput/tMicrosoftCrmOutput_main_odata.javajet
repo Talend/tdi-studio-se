@@ -22,22 +22,22 @@
 	                       	if(!isPrimitive && ignoreNull) {
 		  							%>   				
 		  			    				if(<%=connName%>.<%=column.getLabel()%> != null){
-		  			    					client_<%=cid%>.addEntityProperty(entity_<%=cid%>, <%=connName%>.<%=column.getLabel()%>, org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getOriginalDbColumnName()%>, 
+		  			    					client_<%=cid%>.addEntityProperty(entity_<%=cid%>, "<%=column.getLabel()%>", org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getOriginalDbColumnName()%>, 
 		  			    						<%=connName%>.<%=column.getLabel()%>);
 		  			    				}
 		  							<%
 		  							}else{
 		  							%>
-			  							client_<%=cid%>.addEntityProperty(entity_<%=cid%>, <%=connName%>.<%=column.getLabel()%>, org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getType()%>, 
+			  							client_<%=cid%>.addEntityProperty(entity_<%=cid%>, "<%=column.getLabel()%>", org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getType()%>, 
 			  			    						<%=connName%>.<%=column.getLabel()%>);
 		  							<%
 		  							}
                 			}
 	  						}
                     %>
-                        
+                        //<%=action%>
                     	<%
-                   	if("isnert".equals(action)){
+                   	if("insert".equals(action)){
 							%>
                     		client_<%=cid%>.insertEntity(entity_<%=cid%>);
                     	<%
