@@ -86,8 +86,6 @@ public class TutorialsHelper {
     private void resolveInternationalization(Document dom) {
         NodeList internationals = dom.getElementsByTagNameNS("*", //$NON-NLS-1$
                 StartingConstants.KEY_INTERNATIONAL);
-
-        // Node[] nodes = ModelUtil.getArray(internationals);
         Node[] nodes = TalendHtmlModelUtil.getArray(internationals);
         for (Node node : nodes) {
             Element internationalElement = (Element) node;
@@ -140,5 +138,4 @@ public class TutorialsHelper {
         }
         return dom;
     }
-
 }
