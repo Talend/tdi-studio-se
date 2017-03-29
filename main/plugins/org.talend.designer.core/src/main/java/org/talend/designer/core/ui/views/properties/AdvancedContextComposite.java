@@ -64,6 +64,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.DesignerUtilities;
 
 /**
  * yzhang class global comment. Detailled comment
@@ -418,7 +419,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
                         newBean.setContextMode(true);
 
                         // add related
-                        List<IElementParameter> associateParams = findRadioParamInSameGroup(comboContent, newBean);
+                        List<IElementParameter> associateParams = DesignerUtilities.findRadioParamInSameGroup(comboContent, newBean);
                         for (IElementParameter param : associateParams) {
                             param.setContextMode(true);
                             tableInput.add(param);
@@ -439,7 +440,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
                 @Override
                 public boolean canModify(Object bean) {
                     if (super.canModify(bean) && !comboContent.isEmpty()) {
-                        List<IElementParameter> associateParams = findRadioParamInSameGroup(getTableViewerCreator()
+                        List<IElementParameter> associateParams = DesignerUtilities.findRadioParamInSameGroup(getTableViewerCreator()
                                 .getInputList(), (IElementParameter) bean);
                         return associateParams.isEmpty();
                     }
@@ -533,7 +534,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
 
                                         parameter.setContextMode(true);
 
-                                        List<IElementParameter> associateParams = findRadioParamInSameGroup(comboContent,
+                                        List<IElementParameter> associateParams = DesignerUtilities.findRadioParamInSameGroup(comboContent,
                                                 parameter);
                                         for (IElementParameter param : associateParams) {
                                             param.setContextMode(true);
@@ -632,7 +633,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
                 }
 
                 private void removeAssociateParams(List<IElementParameter> tableViewerInput, Object element) {
-                    List<IElementParameter> associateParams = findRadioParamInSameGroup(tableViewerInput,
+                    List<IElementParameter> associateParams = DesignerUtilities.findRadioParamInSameGroup(tableViewerInput,
                             (IElementParameter) element);
                     for (IElementParameter param : associateParams) {
                         param.setContextMode(false);
@@ -649,31 +650,7 @@ public class AdvancedContextComposite extends ScrolledComposite implements IDyna
          * @param param
          * @return
          */
-        private List<IElementParameter> findRadioParamInSameGroup(final List<IElementParameter> list,
-                final IElementParameter param) {
-            List<IElementParameter> associateParams = new ArrayList<IElementParameter>();
-            for (IElementParameter p : list) {
-
-                if (p.equals(param)) {
-                    continue;
-                }
-
-                if (p.getFieldType() == EParameterFieldType.RADIO) {
-                    String group = param.getGroup();
-                    if (group == null) {
-                        if (p.getGroup() == null) {
-                            associateParams.add(p);
-                        }
-                    } else {
-                        if (p.getGroup() != null && p.getGroup().equals(group)) {
-                            associateParams.add(p);
-                        }
-                    }
-                }
-            }
-
-            return associateParams;
-        }
+        
 
         /**
          * yzhang AdvancedContextComposite class global comment. Detailled comment

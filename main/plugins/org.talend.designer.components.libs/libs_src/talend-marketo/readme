@@ -1,6 +1,0 @@
-Note:
-There are two jars we can't find them in http://mvnrepository.com/ .
-we need add it to the local repository manually.
-For example(change local dir in you local side):
-mvn install:install-file -Dfile={local dir}\mail.jar -DgroupId=javax.mail -DartifactId=mail -Dversion=x -Dpackaging=jar
-mvn install:install-file -Dfile={local dir}\saaj.jar -DgroupId=javax.xml.soap -DartifactId=saaj -Dversion=x -Dpackaging=jar

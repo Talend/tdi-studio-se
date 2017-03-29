@@ -14,17 +14,17 @@ package org.talend.designer.core.ui.editor.cmd;
 
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
-import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.core.model.process.IProcess2;
 
 public class MavenDeploymentValueChangeCommand extends Command {
 
-    private Process process;
+    private IProcess2 process;
 
     private String type;
 
     private String newValue;
 
-    public MavenDeploymentValueChangeCommand(Process process, String type, String value) {
+    public MavenDeploymentValueChangeCommand(IProcess2 process, String type, String value) {
         this.process = process;
         this.type = type;
         newValue = value;

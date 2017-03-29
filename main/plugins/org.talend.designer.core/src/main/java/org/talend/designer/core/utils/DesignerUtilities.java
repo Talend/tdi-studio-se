@@ -184,4 +184,29 @@ public class DesignerUtilities {
         return mainSchemaParamName;
     }
 
+    public static List<IElementParameter> findRadioParamInSameGroup(final List<? extends IElementParameter> list,
+            final IElementParameter param) {
+        List<IElementParameter> associateParams = new ArrayList<IElementParameter>();
+        for (IElementParameter p : list) {
+
+            if (p.equals(param)) {
+                continue;
+            }
+
+            if (p.getFieldType() == EParameterFieldType.RADIO) {
+                String group = param.getGroup();
+                if (group == null) {
+                    if (p.getGroup() == null) {
+                        associateParams.add(p);
+                    }
+                } else {
+                    if (p.getGroup() != null && p.getGroup().equals(group)) {
+                        associateParams.add(p);
+                    }
+                }
+            }
+        }
+
+        return associateParams;
+    }
 }

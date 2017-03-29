@@ -75,7 +75,6 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
-import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -116,10 +115,6 @@ public class Component extends AbstractBasicComponent {
     private static Logger log = Logger.getLogger(Component.class);
 
     private ComponentDefinition componentDefinition;
-
-    private RuntimeInfo runtimeInfo;
-
-    private List<ModuleNeeded> componentImportNeedsList;
 
     private ComponentsProvider provider;
 
@@ -1111,74 +1106,69 @@ public class Component extends AbstractBasicComponent {
     public List<ModuleNeeded> getModulesNeeded() {
         return getModulesNeeded(null);
     }
-    
+
 
     @Override
     public List<ModuleNeeded> getModulesNeeded(INode node) {
-        if (runtimeInfo != null && componentImportNeedsList != null) {
-            return componentImportNeedsList;
-        } else {
-            componentImportNeedsList = new ArrayList<>();
-            ConnectorTopology topology = null;
-            if (node != null) {
-                boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
-                boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
-                if (hasInput && hasOutput) {
-                    topology = ConnectorTopology.INCOMING_AND_OUTGOING;
-                } else if (hasInput) {
-                    topology = ConnectorTopology.INCOMING;
-                } else if (hasOutput) {
-                    topology = ConnectorTopology.OUTGOING;
-                } else {
-                    topology = ConnectorTopology.NONE;
-                }
+        List<ModuleNeeded> componentImportNeedsList = new ArrayList<>();
+        ConnectorTopology topology = null;
+        if (node != null) {
+            boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+            boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
+            if (hasInput && hasOutput) {
+                topology = ConnectorTopology.INCOMING_AND_OUTGOING;
+            } else if (hasInput) {
+                topology = ConnectorTopology.INCOMING;
+            } else if (hasOutput) {
+                topology = ConnectorTopology.OUTGOING;
             } else {
-                Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
-                if (!topologies.isEmpty()) {
-                    topology = topologies.iterator().next();
-                }
+                topology = ConnectorTopology.NONE;
             }
-            try {
-                runtimeInfo = componentDefinition.getRuntimeInfo(ExecutionEngine.DI,
-                        node == null ? null : node.getComponentProperties(), topology);
-            } catch (Exception e) {
-                if (node == null) {
-                    // not handled, must because the runtime info must have a node configuration (properties are null)
-                } else {
-                    ExceptionHandler.process(e);
-                }
+        } else {
+            Set<ConnectorTopology> topologies = componentDefinition.getSupportedConnectorTopologies();
+            if (!topologies.isEmpty()) {
+                topology = topologies.iterator().next();
             }
-            if (runtimeInfo != null) {
-                final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
-                for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
-                    ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri.toString()); //$NON-NLS-1$
-                    componentImportNeedsList.add(moduleNeeded);
+        }
+        RuntimeInfo runtimeInfo = null;
+        try {
+            runtimeInfo = componentDefinition.getRuntimeInfo(ExecutionEngine.DI,
+                    node == null ? null : node.getComponentProperties(), topology);
+        } catch (Exception e) {
+            if (node == null) {
+                // not handled, must because the runtime info must have a node configuration (properties are null)
+            } else {
+                ExceptionHandler.process(e);
+            }
+        }
+        if (runtimeInfo != null) {
+            final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
+            for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
+                ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, mvnUri.toString()); //$NON-NLS-1$
+                componentImportNeedsList.add(moduleNeeded);
 
-                    if (bundle != null) { // update module location
-                        try {
-                            final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getMavenUri());
-                            final String moduleFileName = artifact.getFileName();
-                            final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
-                            if (bundleFile != null && bundleFile.exists()) {
-                                // FIXME, better install the embed jars from bundle directly in this way.
-                                moduleNeeded.setModuleLocaion(ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName()
-                                        + '/' + moduleFileName);
-                            }
-                        } catch (IOException e) {
-                            ExceptionHandler.process(e);
+                if (bundle != null) { // update module location
+                    try {
+                        final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getMavenUri());
+                        final String moduleFileName = artifact.getFileName();
+                        final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
+                        if (bundleFile != null && bundleFile.exists()) {
+                            // FIXME, better install the embed jars from bundle directly in this way.
+                            moduleNeeded.setModuleLocaion(
+                                    ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName() + '/' + moduleFileName);
                         }
+                    } catch (IOException e) {
+                        ExceptionHandler.process(e);
                     }
                 }
-
             }
-            ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true,
-                    "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
-            componentImportNeedsList.add(moduleNeeded);
-            moduleNeeded = new ModuleNeeded(getName(), "", true,
-                    "mvn:org.talend.libraries/talend-codegen-utils/0.17.0-SNAPSHOT");
-            componentImportNeedsList.add(moduleNeeded);
-            return componentImportNeedsList;
+
         }
+        ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
+        componentImportNeedsList.add(moduleNeeded);
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.17.0-SNAPSHOT");
+        componentImportNeedsList.add(moduleNeeded);
+        return componentImportNeedsList;
     }
 
     @Override

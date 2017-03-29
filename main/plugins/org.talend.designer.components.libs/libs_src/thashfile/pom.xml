@@ -6,8 +6,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>tshfile</artifactId>
-	<version>2.0-20160622</version>
+	<artifactId>thashfile</artifactId>
+	<version>2.0-20170321</version>
 	<packaging>jar</packaging>
 
 	<name>thashfile</name>
@@ -51,12 +51,22 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<resources>
+		<resources>	
 			<resource>
-				<directory>src/main/java</directory>
+				<directory>./</directory>
 			</resource>
 		</resources>
 		<plugins>
+			
+			<plugin>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <version>3.5.1</version>
+		        <configuration>
+		            <source>1.7</source>
+		            <target>1.7</target>
+		        </configuration>
+    		</plugin>
+			
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>

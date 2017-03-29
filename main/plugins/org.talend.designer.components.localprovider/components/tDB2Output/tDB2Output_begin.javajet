@@ -89,7 +89,6 @@ int deletedCount_<%=cid%> = 0;
 int updatedCount_<%=cid%> = 0;
 int insertedCount_<%=cid%> = 0;
 int rejectedCount_<%=cid%> = 0;
-try{
 <%
 getManager(dbmsId, cid, node);
 

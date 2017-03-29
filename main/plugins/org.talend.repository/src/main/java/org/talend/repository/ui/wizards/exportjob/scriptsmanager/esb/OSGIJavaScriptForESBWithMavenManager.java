@@ -15,6 +15,7 @@ package org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,11 +26,14 @@ import org.eclipse.core.runtime.Path;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.Property;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.projectsetting.IProjectSettingPreferenceConstants;
 import org.talend.core.runtime.projectsetting.IProjectSettingTemplateConstants;
 import org.talend.designer.maven.template.MavenTemplateManager;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.resources.util.EMavenBuildScriptProperties;
 
@@ -53,6 +57,8 @@ public class OSGIJavaScriptForESBWithMavenManager extends JavaScriptForESBWithMa
         super(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
     }
 
+
+
     @Override
     protected void addMavenBuildScripts(ExportFileResource[] processes, List<URL> scriptsUrls,
             Map<String, String> mavenPropertiesMap) {
@@ -74,10 +80,11 @@ public class OSGIJavaScriptForESBWithMavenManager extends JavaScriptForESBWithMa
                 }
 
             }
+            final Map<String, Object> templateParameters = PomUtil.getTemplateParameters(item.getProperty());
             String mavenScript = MavenTemplateManager.getTemplateContent(templateFile,
                     IProjectSettingPreferenceConstants.TEMPLATE_OSGI_BUNDLE_POM, PluginChecker.MAVEN_JOB_PLUGIN_ID,
                     IProjectSettingTemplateConstants.PATH_OSGI_BUNDLE + '/'
-                            + IProjectSettingTemplateConstants.POM_JOB_TEMPLATE_FILE_NAME);
+                            + IProjectSettingTemplateConstants.POM_JOB_TEMPLATE_FILE_NAME, templateParameters);
 
             // String mavenScript = mavenUiService
             // .getProjectSettingValue(IProjectSettingPreferenceConstants.TEMPLATE_OSGI_BUNDLE_POM);

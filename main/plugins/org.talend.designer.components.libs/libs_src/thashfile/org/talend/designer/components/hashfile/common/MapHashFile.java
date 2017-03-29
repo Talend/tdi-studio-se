@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 import org.talend.designer.components.hashfile.memory.AdvancedMemoryHashFile;
 
 public class MapHashFile {
 	//use this map instead of globalMap
-	private Map<String, AdvancedMemoryHashFile> resourceMap = Collections.synchronizedMap(new HashMap<String, AdvancedMemoryHashFile>());
+	private Map<String, AdvancedMemoryHashFile> resourceMap = new ConcurrentHashMap<>();
 	//keep the present key of AdvancedMemoryHashFile as key and the previous key as value
-	private Map<String, String> keyMap = Collections.synchronizedMap(new HashMap<String, String>());
+	private Map<String, String> keyMap = new ConcurrentHashMap<>();
 	//singleton
 	private static final MapHashFile mhf = new MapHashFile();
 
@@ -69,8 +70,9 @@ public class MapHashFile {
 			Iterator<String> it = set.iterator();
 			while(it.hasNext()){
 				String key = it.next();
-				if(keyMap.get(key).equals(root)){
+				if(root.equals(keyMap.get(key))){
 					this.resourceMap.remove(key);
+					this.keyMap.remove(key);
 					clearChildCache(key);
 				}
 			}

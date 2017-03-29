@@ -39,6 +39,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeActivateStatusElementCommand
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.utils.DesignerUtilities;
 
 /**
  * yzhang class global comment. Detailled comment
@@ -85,10 +86,21 @@ public class RadioController extends AbstractElementPropertySectionController {
                                     commands.add(cmd);
                                 }
                             } else {
+                                IElementParameter param = elem.getElementParameter(name);
+                                if (Boolean.TRUE.equals(value)) {
+                                    List<IElementParameter> parameters = DesignerUtilities.findRadioParamInSameGroup(elem.getElementParameters(), param);
+                                    for (IElementParameter currentRadioParam : parameters) {
+                                        if (Boolean.TRUE.equals(currentRadioParam.getValue())) {
+                                            cmd = new PropertyChangeCommand(elem, currentRadioParam.getName(), Boolean.FALSE);
+                                            commands.add(cmd);
+                                        }
+                                    }
+                                }
+
                                 cmd = new PropertyChangeCommand(elem, name, value);
                                 commands.add(cmd);
 
-                                String groupName = elem.getElementParameter(name).getGroup();
+                                String groupName = param.getGroup();
                                 if (groupName != null && elem.getElementParameter(groupName) != null) {
                                     Command cmd2 = new PropertyChangeCommand(elem, groupName, name);
                                     commands.add(cmd2);

@@ -51,6 +51,19 @@
       </ITEMS>
     </PARAMETER>
     
+    <!-- work for teradata only -->
+    <PARAMETER
+      NAME="CREATE_TABLE_TYPE"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="3"
+      SHOW="false"
+    >
+      <ITEMS DEFAULT="SET">
+          <ITEM NAME="SET" VALUE="SET" />
+          <ITEM NAME="MULTISET" VALUE="MULTISET" />
+      </ITEMS>
+    </PARAMETER>
+    
     <PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"

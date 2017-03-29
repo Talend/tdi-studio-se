@@ -86,6 +86,7 @@ import org.talend.designer.mapper.ui.visualmap.table.EntryState;
 import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 import org.talend.designer.mapper.ui.visualmap.zone.scrollable.TablesZoneView;
 import org.talend.designer.mapper.utils.DataMapExpressionParser;
+import org.talend.designer.mapper.utils.MapperHelper;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 
@@ -132,8 +133,7 @@ public class MapperManager extends AbstractMapperManager {
         problemsManager = new ProblemsManager(this);
         IProcess process = getAbstractMapComponent().getProcess();
         isMRProcess = ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType());
-        isBigDataProcess = isMRProcess || ComponentCategory.CATEGORY_4_SPARK.getName().equals(process.getComponentsType())
-                || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType());
+        isBigDataProcess = MapperHelper.isMapperOnBigDataProcess(process.getComponentsType());
         getDefaultSetting();
     }
 
