@@ -114,8 +114,10 @@ class IndexedRecordToRowStructGenerator {
                 org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.daikon.di.DiOutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
                 for (org.apache.avro.Schema.Field childDynamic_<%=cid%> : dynSchema_<%=cid%>.getFields()){
                     routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
+                    // set name and db name
                     dynamicMetadata_<%=cid%>.setName(childDynamic_<%=cid%>.name());
                     dynamicMetadata_<%=cid%>.setDbName(childDynamic_<%=cid%>.name());
+                    // set type
                     String talendType_<%=cid%> = null;
                     org.apache.avro.Schema.Type type_<%=cid%> = childDynamic_<%=cid%>.schema().getType();
                     if(type_<%=cid%>  == org.apache.avro.Schema.Type.UNION){
@@ -155,15 +157,21 @@ class IndexedRecordToRowStructGenerator {
                     } else if (type_<%=cid%> == org.apache.avro.Schema.Type.STRING) {
                         talendType_<%=cid%> = "<%=JavaTypesManager.STRING.getId()%>";
                     }
+                    dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
+                    // set logical type
+                    String logicalType_<%=cid%> = org.talend.daikon.avro.LogicalTypeUtils.getLogicalTypeName(childDynamic_<%=cid%>);
+                    dynamicMetadata_<%=cid%>.setLogicalType(logicalType_<%=cid%>);
+                    // set length
                     Object length_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_LENGTH);
                     if(length_<%=cid%> != null){
                     	dynamicMetadata_<%=cid%>.setLength(Integer.parseInt(String.valueOf(length_<%=cid%>)));
                     }
+                    // set precision
                     Object precision_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_PRECISION); 
                     if(precision_<%=cid%> != null){
 						dynamicMetadata_<%=cid%>.setPrecision(Integer.parseInt(String.valueOf(precision_<%=cid%>)));
                     } 
-                    dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
+                    // add dynamic field metadata to dynamic variable
                     <%=codeVarDynamic%>.metadatas.add(dynamicMetadata_<%=cid%>);
                 }
                 initDyn_<%=cid%> = true;
