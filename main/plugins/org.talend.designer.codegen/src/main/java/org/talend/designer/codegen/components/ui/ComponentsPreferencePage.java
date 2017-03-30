@@ -410,27 +410,30 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                                     if (newPath != null && StringUtils.isNotEmpty(newPath.trim())) {
                                         File componentFolder = new File(newPath.trim());
                                         if (componentFolder.exists()) {
-                                            component.setComponentFolder(componentFolder);
-                                            if (component.install()) {
+                                            try {
+                                                component.setComponentFolder(componentFolder);
+                                                if (component.install()) {
+
+                                                    String installedMessages = component.getInstalledMessages();
+                                                    String title = Messages.getString("ComponentsPreferencePage_SuccessTitle"); //$NON-NLS-1$
+                                                    if (component.needRelaunch()) {
+
+                                                        String warningMessage = Messages
+                                                                .getString("ComponentsPreferencePage_SuccessMessage1") //$NON-NLS-1$
+                                                                + Messages.getString("ComponentsPreferencePage_SuccessMessage2"); //$NON-NLS-1$
+                                                        boolean confirm = MessageDialog.openConfirm(getShell(), title,
+                                                                installedMessages + '\n' + '\n' + warningMessage);
+
+                                                        if (confirm) {
+                                                            PlatformUI.getWorkbench().restart();
+                                                        }
+                                                    } else {
+                                                        MessageDialog.openInformation(getShell(), title, installedMessages);
+                                                    }
+                                                }
+                                            } finally {
                                                 // after install, clear the setting for service.
                                                 component.setComponentFolder(null);
-
-                                                String installedMessages = component.getInstalledMessages();
-                                                String title = Messages.getString("ComponentsPreferencePage_SuccessTitle"); //$NON-NLS-1$
-                                                if (component.needRelaunch()) {
-
-                                                    String warningMessage = Messages
-                                                            .getString("ComponentsPreferencePage_SuccessMessage1") //$NON-NLS-1$
-                                                            + Messages.getString("ComponentsPreferencePage_SuccessMessage2"); //$NON-NLS-1$
-                                                    boolean confirm = MessageDialog.openConfirm(getShell(), title,
-                                                            installedMessages + '\n' + '\n' + warningMessage);
-
-                                                    if (confirm) {
-                                                        PlatformUI.getWorkbench().restart();
-                                                    }
-                                                } else {
-                                                    MessageDialog.openInformation(getShell(), title, installedMessages);
-                                                }
                                             }
                                         }
                                     }

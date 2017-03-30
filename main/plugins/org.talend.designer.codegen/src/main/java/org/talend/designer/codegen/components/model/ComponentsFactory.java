@@ -281,23 +281,27 @@ public class ComponentsFactory implements IComponentsFactory {
                 }
 
                 // 2. do install via p2
-                component.setComponentFolder(workFolder);
-                if (component.install()) {
+                try {
+                    component.setComponentFolder(workFolder);
+                    if (component.install()) {
+
+                        if (component.needRelaunch()) {
+                            final String message = "Have done to install some components:\n" + component.getInstalledMessages()
+                                    + "\nIn order to apply the new components, need restart product first.";
+                            if (!CommonsPlugin.isHeadless()) {
+                                boolean confirm = MessageDialog.openConfirm(null, "Install new components", message);
+                                if (confirm && Workbench.getInstance() != null) {
+                                    PlatformUI.getWorkbench().restart();
+                                }
+                            }
+                            log.warn(message);
+                        }
+                    } else {
+                        return; // nothing to install successfully.
+                    }
+                } finally {
                     // after install, clear the setting for service.
                     component.setComponentFolder(null);
-                    if (component.needRelaunch()) {
-                        final String message = "Have done to install some components:\n" + component.getInstalledMessages()
-                                + "\nIn order to apply the new components, need restart product first.";
-                        if (!CommonsPlugin.isHeadless()) {
-                            boolean confirm = MessageDialog.openConfirm(null, "Install new components", message);
-                            if (confirm && Workbench.getInstance() != null) {
-                                PlatformUI.getWorkbench().restart();
-                            }
-                        }
-                        log.warn(message);
-                    }
-                } else {
-                    return; // nothing to install successfully.
                 }
 
                 // 3. add the installed components to record

@@ -320,18 +320,21 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
                     ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
                     if (component != null) {
-                        component.setComponentFolder(workFolder);
-                        if (component.install()) {
+                        try {
+                            component.setComponentFolder(workFolder);
+                            if (component.install()) {
+
+                                if (component.needRelaunch()) {
+                                    askReboot();
+                                }
+                            } else {// install failure
+                                MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
+                                        Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                                        Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
+                            }
+                        } finally {
                             // after install, clear the setting for service.
                             component.setComponentFolder(null);
-
-                            if (component.needRelaunch()) {
-                                askReboot();
-                            }
-                        } else {// install failure
-                            MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
-                                    Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
-                                    Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                         }
                     }
                 } catch (Exception e) {
