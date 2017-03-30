@@ -145,7 +145,7 @@ class IndexedRecordToRowStructGenerator {
                     } else if (type_<%=cid%> == org.apache.avro.Schema.Type.INT) {
                         talendType_<%=cid%> = "<%=JavaTypesManager.INTEGER.getId()%>";
                     } else if (type_<%=cid%> == org.apache.avro.Schema.Type.LONG) {
-                    	String pattern_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_PATTERN);
+                    	String pattern_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PATTERN);
                     	if(pattern_<%=cid%>!=null && !pattern_<%=cid%>.trim().isEmpty()){
                     		talendType_<%=cid%> = "<%=JavaTypesManager.DATE.getId()%>";
                     		dynamicMetadata_<%=cid%>.setFormat(pattern_<%=cid%>);
@@ -162,12 +162,12 @@ class IndexedRecordToRowStructGenerator {
                     String logicalType_<%=cid%> = org.talend.daikon.avro.LogicalTypeUtils.getLogicalTypeName(childDynamic_<%=cid%>);
                     dynamicMetadata_<%=cid%>.setLogicalType(logicalType_<%=cid%>);
                     // set length
-                    Object length_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_LENGTH);
+                    Object length_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_DB_LENGTH);
                     if(length_<%=cid%> != null){
                     	dynamicMetadata_<%=cid%>.setLength(Integer.parseInt(String.valueOf(length_<%=cid%>)));
                     }
                     // set precision
-                    Object precision_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.di.DiSchemaConstants.TALEND6_COLUMN_PRECISION); 
+                    Object precision_<%=cid%> = childDynamic_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PRECISION); 
                     if(precision_<%=cid%> != null){
 						dynamicMetadata_<%=cid%>.setPrecision(Integer.parseInt(String.valueOf(precision_<%=cid%>)));
                     } 
