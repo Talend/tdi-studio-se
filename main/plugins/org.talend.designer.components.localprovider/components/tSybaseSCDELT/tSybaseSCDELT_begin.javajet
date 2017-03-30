@@ -46,10 +46,14 @@ if(columnList != null && columnList.size() > 0) {
         String dbhost = ElementParameterParser.getValue(node, "__HOST__");    
         String dbport = ElementParameterParser.getValue(node, "__PORT__");  
         String dbuser= ElementParameterParser.getValue(node, "__USER__");   
-
+        String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 		String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
-        %>
-        java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+        
+            if("SYBSEIQ_16".equals(dbVersion)){%>
+		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+	        <%}else{%>
+	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+	        <%}%>
 <%
 		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>

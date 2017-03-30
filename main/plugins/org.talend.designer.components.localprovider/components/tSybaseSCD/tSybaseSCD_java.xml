@@ -74,6 +74,14 @@
     >
       <DEFAULT>SybaseASE</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="25"
+		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
+		<ITEMS DEFAULT="SYBSEIQ_12_15">
+			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
+			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+		</ITEMS>
+	</PARAMETER>
 
     <PARAMETER
       NAME="HOST"
@@ -498,7 +506,8 @@
 
   <CODEGENERATION>
     <IMPORTS>
-		<IMPORT NAME="Driver-Sybase" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  REQUIRED="true" />
+	   <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_12_15') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>
   </CODEGENERATION>
 
