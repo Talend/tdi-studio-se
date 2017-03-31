@@ -318,7 +318,7 @@ if(useExistingConn) {
     String dbschema_<%=cid%> = <%=dbschema%>;
     String dbUser_<%=cid%> = <%=userName %>;
 <%
-    if ("jconn3.jar".equals(dbVersion)) {//sybase IQ 12
+    if ("jconn3.jar".equals(dbVersion)||"jconn4.jar".equals(dbVersion)) {//sybase IQ 12/16
 %>
 
 <%
@@ -331,9 +331,13 @@ if(useExistingConn) {
             String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=host %> + ":" + <%=port %> + "/" + <%=dbName %> + "?" + <%=dbproperties%>;
 <%
         }
+        if("jconn3.jar".equals(dbVersion)){
 %>
          String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
+       <%}else{%>
+         String driverClass_<%=cid%> = "com.sybase.jdbc4.jdbc.SybDriver";
 <%
+         }
     } else {//sybase IQ 15
         if ("DSN".equals(ElementParameterParser.getValue(node,"__DATA_SOURCE__"))) {
 %>

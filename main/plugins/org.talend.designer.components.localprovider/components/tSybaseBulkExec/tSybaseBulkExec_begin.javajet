@@ -44,6 +44,7 @@ String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
 String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 boolean convertToUppercase = false; // not active this function
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
 %>
 int deletedCount_<%=cid%>=0;
 String dbschema_<%=cid%>= <%=dbschema%>; 
@@ -105,7 +106,12 @@ if(useExistingConnection) {
 <%
 		}
 %>
-   	 	String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
+
+		<%if("SYBSEIQ_16".equals(dbVersion)){%>
+			 String driverClass_<%=cid%> = "com.sybase.jdbc4.jdbc.SybDriver";
+		<%}else{%>
+			 String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
+	    <%}%>
    	 	java.lang.Class.forName(driverClass_<%=cid%>);
     	java.sql.Connection conn_<%=cid %> = null;
     	

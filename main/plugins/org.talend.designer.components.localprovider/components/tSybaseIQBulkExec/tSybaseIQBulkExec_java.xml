@@ -57,7 +57,7 @@
       NAME="USE_EXISTING_CONNECTION"
       FIELD="CHECK"
       NUM_ROW="20"
-      SHOW_IF="DB_VERSION == 'SYBSEIQ_12'"
+      SHOW_IF="DB_VERSION != 'SYBSEIQ_15'"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -81,13 +81,14 @@
       <DEFAULT>SybaseASE</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="23"
-         SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
-        <ITEMS DEFAULT="SYBSEIQ_12">
-            <ITEM NAME="SYBSEIQ_12" VALUE="jconn3.jar" />
-            <ITEM NAME="SYBSEIQ_15" VALUE="jodbc.jar" />
-        </ITEMS>
-    </PARAMETER>
+	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="23"
+		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
+		<ITEMS DEFAULT="SYBSEIQ_12">
+			<ITEM NAME="SYBSEIQ_12" VALUE="jconn3.jar" />
+			<ITEM NAME="SYBSEIQ_15" VALUE="jodbc.jar" />
+			<ITEM NAME="SYBSEIQ_16" VALUE="jconn4.jar" />
+		</ITEMS>
+	</PARAMETER>
 
     <PARAMETER NAME="DATA_SOURCE" FIELD="CLOSED_LIST" NUM_ROW="25"
         REPOSITORY_VALUE="DATA_SOURCE" SHOW_IF="(DB_VERSION == 'SYBSEIQ_15')">
@@ -641,10 +642,10 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  REQUIRED="true" />
-       <IMPORT NAME="Driver-Sybase" MODULE="jodbc.jar" MVN="mvn:org.talend.libraries/jodbc/6.0.0"  REQUIRED="false" />
+       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_12') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase" MODULE="jodbc.jar" MVN="mvn:org.talend.libraries/jodbc/6.0.0" BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_15') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>
   </CODEGENERATION>
-
    <RETURNS />
 </COMPONENT>

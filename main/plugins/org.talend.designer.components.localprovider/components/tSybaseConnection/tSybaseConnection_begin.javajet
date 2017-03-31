@@ -27,7 +27,12 @@ imports="
 		}
 	
 		public String getDirverClassName(INode node){
-			return "com.sybase.jdbc3.jdbc.SybDriver";
+		    String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
+			if("SYBSEIQ_16".equals(dbVersion)){
+			    return "com.sybase.jdbc4.jdbc.SybDriver";
+			    }else{
+			    return "com.sybase.jdbc3.jdbc.SybDriver";
+			    }
 		}
 		
 	}//end class

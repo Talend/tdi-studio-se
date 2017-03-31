@@ -1353,7 +1353,12 @@ class SybaseManager extends Manager {
 		this.connection = connection;
     }
     protected String getDriver() {
-        return "com.sybase.jdbc3.jdbc.SybDriver";
+        String dbVersion = ElementParameterParser.getValue(node, "__DB_SYBASE_VERSION__");
+		    if("SYBSEIQ_16".equals(dbVersion)){
+			    return "com.sybase.jdbc4.jdbc.SybDriver";
+			    }else{
+			    return "com.sybase.jdbc3.jdbc.SybDriver";
+			    }
     }
     public String getConnectionURL() {
         return "\"jdbc:sybase:Tds:\" + " + host + "+ \":\" + " + port + "+ \"/\" + " + dbName;
