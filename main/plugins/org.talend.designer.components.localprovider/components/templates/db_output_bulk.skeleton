@@ -871,7 +871,7 @@ public class CLASS {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 setStmt.append(prefix + cid + ".setTimestamp(" + index + dynamic + ", new java.sql.Timestamp(" + incomingConnName + "." + column.getName() + ".getTime()));\r\n");
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIMESTAMP);\r\n");
                 setStmt.append("}\r\n");
             } else if(typeToGenerate.equals("Bytes") && (dbType != null && (dbType.equals("LONG RAW") || dbType.equals("RAW")))) {
                 setStmt.append(prefix + cid + ".setBytes(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
@@ -977,7 +977,7 @@ public class CLASS {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 setStmt.append(prefix + cid + ".setTimestamp(" + index + dynamic + ", new java.sql.Timestamp(" + incomingConnName + "." + column.getName() + ".getTime()));\r\n");
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIMESTAMP);\r\n");
                 setStmt.append("}\r\n");
             } else {
                 setStmt.append(prefix + cid + ".set" + typeToGenerate + "(" + index + dynamic + ", " + incomingConnName + "." + column.getName() + ");\r\n");
@@ -1304,7 +1304,7 @@ public class CLASS {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 setStmt.append(prefix + cid + ".setTimestamp(" + index + ", new java.sql.Timestamp(" + incomingConnName + "." + column.getName() + ".getTime()));\r\n");
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.DATE);\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.TIMESTAMP);\r\n");
                 setStmt.append("}\r\n");
             } else {
                 if (typeToGenerate.equals("Long")) {
@@ -3359,7 +3359,7 @@ public class CLASS {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 setStmt.append(prefix + cid + ".setTimestamp(" + index + dynamic + ", new java.sql.Timestamp(" + incomingConnName + "." + column.getName() + ".getTime()));\r\n");
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.DATE);\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + dynamic + ", java.sql.Types.TIMESTAMP);\r\n");
                 setStmt.append("}\r\n");
             } else if(typeToGenerate.equals("BigDecimal")){
                 if(column.getColumn().getPrecision()!=null && column.getColumn().getLength()!=null){
@@ -3796,7 +3796,7 @@ public class CLASS {
                 setStmt.append("if(" + incomingConnName + "." + column.getName() + " != null) {\r\n");
                 setStmt.append(prefix + cid + ".setTimestamp(" + index + ", new java.sql.Timestamp(" + incomingConnName + "." + column.getName() + ".getTime()));\r\n");
                 setStmt.append("} else {\r\n");
-                setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.DATE);\r\n");
+                setStmt.append(prefix + cid + ".setNull(" + index + ", java.sql.Types.TIMESTAMP);\r\n");
                 setStmt.append("}\r\n");
             } else {
                 if(typeToGenerate.equals("Int")) {
