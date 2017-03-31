@@ -57,14 +57,7 @@
 					%>		
 						<%=outgoingConn.getName()%>.<%=columnList.get(1).getLabel()%> = value_<%=cid %>.toString();
                     <%for (IContextParameter param :params){
-	                  	if(("id_Password").equals(param.getType()) && hidePassword){
-	                  		String str = param.getName(); 
-	                %>
-							if(("<%=str%>").equals(key_<%=cid %>.toString())){
-			                    <%=outgoingConn.getName()%>.<%=columnList.get(1).getLabel()%> = value_<%=cid %>.toString().replaceAll(".","*");
-			                }
-						<%
-						}else if(("id_Date").equals(param.getType())){
+	                  	 if(("id_Date").equals(param.getType())){
 							String str = param.getName();
 						%>
 							if(("<%=str%>").equals(key_<%=cid %>.toString())){

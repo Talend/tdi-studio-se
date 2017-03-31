@@ -14,6 +14,7 @@
     <bulkload.dir>${project.basedir}/components/tMDMBulkLoad</bulkload.dir>
     <soap.dir>${project.basedir}/components/tSOAP</soap.dir>
     <webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
+    <thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
   </properties>
   
   <build>
@@ -40,6 +41,12 @@
                         <directory>${webservice.dir}</directory>
                         <includes>
                             <include>talend-webservice-input*.jar</include>
+                        </includes>
+                    </fileset>
+                    <fileset>
+                        <directory>${thashfile.dir}</directory>
+                        <includes>
+                            <include>thashfile*.jar</include>
                         </includes>
                     </fileset>
                 </filesets>
@@ -93,6 +100,14 @@
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${webservice.dir}</outputDirectory>
+                            </artifactItem>
+                            <artifactItem>
+                                <groupId>org.talend.libraries</groupId>
+                                <artifactId>thashfile</artifactId>
+                                <version>2.0-20170329</version>
+                                <type>jar</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>${thashfile.dir}</outputDirectory>
                             </artifactItem>
                         </artifactItems>
                     </configuration>
