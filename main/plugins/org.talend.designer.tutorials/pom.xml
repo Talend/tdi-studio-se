@@ -27,26 +27,26 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>org.talend.studio.vedio</groupId>
-									<artifactId>Step1-mp4</artifactId>
+									<groupId>org.talend.studio</groupId>
+									<artifactId>studio-tutorial-step1</artifactId>
 									<version>1.0</version>
 									<type>mp4</type>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.studio.vedio</groupId>
-									<artifactId>Step2-mp4</artifactId>
+									<groupId>org.talend.studio</groupId>
+									<artifactId>studio-tutorial-step2</artifactId>
 									<version>1.0</version>
 									<type>mp4</type>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.studio.vedio</groupId>
-									<artifactId>Step3-mp4</artifactId>
+									<groupId>org.talend.studio</groupId>
+									<artifactId>studio-tutorial-step3</artifactId>
 									<version>1.0</version>
 									<type>mp4</type>
 								</artifactItem>
 								<artifactItem>
-									<groupId>org.talend.studio.vedio</groupId>
-									<artifactId>Step4-mp4</artifactId>
+									<groupId>org.talend.studio</groupId>
+									<artifactId>studio-tutorial-step4</artifactId>
 									<version>1.0</version>
 									<type>mp4</type>
 								</artifactItem>
