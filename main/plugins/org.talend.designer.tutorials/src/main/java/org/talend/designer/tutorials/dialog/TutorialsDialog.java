@@ -72,7 +72,7 @@ public class TutorialsDialog extends TrayDialog {
     @Override
     protected void configureShell(final Shell newShell) {
         super.configureShell(newShell);
-        newShell.setSize(750, 870);
+        newShell.setSize(850, 950);
         newShell.setText(Messages.getString("TutorialsDialog.title")); //$NON-NLS-1$
     }
 
@@ -80,8 +80,8 @@ public class TutorialsDialog extends TrayDialog {
     protected Control createContents(Composite parent) {
         SashForm sash = new SashForm(parent, SWT.NONE);
         GridData layoutData = new GridData(GridData.FILL_BOTH);
-        layoutData.widthHint = 700;
-        layoutData.heightHint = 820;
+        layoutData.widthHint = 800;
+        layoutData.heightHint = 700;
         sash.setLayoutData(layoutData);
         sash.setLayout(new GridLayout());
         sash.setBackground(new Color(null, 255, 255, 255));

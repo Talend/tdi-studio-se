@@ -15,14 +15,13 @@ body {
 
 		label {
 			cursor: pointer;
-			background: #a6c35c;
+			background: #aea9a9;
 			background: -webkit-linear-gradient(#666, #555);
 			color: #eee;
 			border-radius: 5px 5px 0 0;
 			padding: 1.5% 3%;
 			float: left;
 			margin-right: 2px;
-			font: italic 1em cambria;
 		}
 
 			label:hover {
@@ -30,7 +29,7 @@ body {
 			}
 
 			input:checked + label {
-				background: #fff;
+				background: #f4f2f2;
 				color: #333;
 			}
 
@@ -59,7 +58,7 @@ body {
 				width: 100%;
 				/*opacity: 0;*/
 				position: absolute;
-				background: #fff;
+				background: #f4f2f2;
 				border-radius: 0 10px 10px 10px;
 				padding: 4%;
 				box-sizing: border-box;
