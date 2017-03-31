@@ -13,9 +13,10 @@ imports="
 	String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 	
 	//TODO remove useless code
-	String timeoutSecTemp = ElementParameterParser.getValue(node, "__TIMEOUT__");
-	String timeoutSec = (timeoutSecTemp!=null&&!("").equals(timeoutSecTemp))?timeoutSecTemp:"2";
-	int timeout = (int)(Double.valueOf(timeoutSec) * 1000);
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+	String maxRetryTimes = ElementParameterParser.getValue(node, "__MAX_RECONN_ATTEMPS__");
+	String intevralTime = ElementParameterParser.getValue(node, "__ATTEMPS_INTERVAL_TIME__");
+	boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
 	%>
 	int nb_line_<%=cid%> = 0;
 	<%
@@ -37,3 +38,6 @@ imports="
 
 	org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
 	org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
+	client_<%=cid%>.setTimeout(<%=timeout%>);
+	client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
+	client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
