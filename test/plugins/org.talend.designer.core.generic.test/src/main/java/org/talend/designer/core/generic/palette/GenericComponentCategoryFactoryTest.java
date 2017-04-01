@@ -15,7 +15,6 @@ package org.talend.designer.core.generic.palette;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +31,10 @@ public class GenericComponentCategoryFactoryTest {
     @Test
     public void testGetPaletteTypes() {
         List<String> paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(SupportedProduct.ALL);
-        assertThat(paletteTypes, is(new ArrayList<>(ComponentCategory.getAllCategoryNames())));
+        // assertThat(paletteTypes, is(new ArrayList<>(ComponentCategory.getAllCategoryNames())));
+        // TODO: Regard the product as DI temporarily for now. Remove below line and use the above line after components
+        // are all upadated to fill the right supported products.
+        assertThat(paletteTypes, is(Arrays.asList(ComponentCategory.CATEGORY_4_DI.getName())));
 
         paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(SupportedProduct.DI);
         assertThat(paletteTypes, is(Arrays.asList(ComponentCategory.CATEGORY_4_DI.getName())));

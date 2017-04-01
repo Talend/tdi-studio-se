@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.core.generic.palette;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +26,10 @@ public class GenericComponentCategoryFactory {
 
     public static List<String> getPaletteTypes(String productType) {
         if (SupportedProduct.ALL.equals(productType)) {
-            return new ArrayList<>(ComponentCategory.getAllCategoryNames());
+            // return new ArrayList<>(ComponentCategory.getAllCategoryNames());
+            // TODO: Regard the product as DI temporarily for now. Remove below line and use the above line after
+            // components are all upadated to fill the right supported products.
+            return Arrays.asList(ComponentCategory.CATEGORY_4_DI.getName());
         } else if (SupportedProduct.DI.equals(productType)) {
             return Arrays.asList(ComponentCategory.CATEGORY_4_DI.getName());
         } else if (SupportedProduct.MAP_REDUCE.equals(productType)) {
