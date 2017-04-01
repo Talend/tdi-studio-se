@@ -120,13 +120,15 @@ public class Component extends AbstractBasicComponent {
 
     private Map<String, String> translatedMap = new HashMap<>();
 
-    private static String ERROR_MESSAGE = "ERROR_MESSAGE";
+    private static String ERROR_MESSAGE = "ERROR_MESSAGE"; //$NON-NLS-1$
 
     public Component(ComponentDefinition componentDefinition) throws BusinessException {
+        this(componentDefinition, ComponentCategory.CATEGORY_4_DI.getName());
+    }
+
+    public Component(ComponentDefinition componentDefinition, String paletteType) throws BusinessException {
         this.componentDefinition = componentDefinition;
-        // TODO
-        // TCOMP-92
-        this.setPaletteType("DI"); //$NON-NLS-1$
+        this.setPaletteType(paletteType);
     }
 
     public ComponentDefinition getComponentDefinition() {
