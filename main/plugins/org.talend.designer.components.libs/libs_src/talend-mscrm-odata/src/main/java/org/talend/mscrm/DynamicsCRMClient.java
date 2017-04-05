@@ -75,10 +75,12 @@ public class DynamicsCRMClient {
 
     private String entityType;
 
-    private int maxRetryTime = 5;
+    private int maxRetryTimes = 5;
 
-    private int intevralTime = 100;
+    // Retry intevralTime 1000(ms)
+    private int intevralTime = 1000;
 
+    // Default timeout 60(s)
     private int timeout = 60;
 
     public DynamicsCRMClient(ClientConfiguration clientConfiguration, String serviceRootURL, String entitySet)
@@ -171,6 +173,7 @@ public class DynamicsCRMClient {
      * @param entitySet the EntitySet name which you want to retrieve records
      * @param queryOption
      * @return the entity set iterator object
+     * 
      * @throws ServiceUnavailableException
      */
     public ClientEntitySetIterator<ClientEntitySet, ClientEntity> retrieveEntities(QueryOptionConfig queryOption)
@@ -183,7 +186,7 @@ public class DynamicsCRMClient {
                 ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
                 return entitySetIterator;
             } else {
-                if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && retryTime < maxRetryTime) {
+                if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && retryTime < maxRetryTimes) {
                     refreshToken();
                     request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
                     continue;
@@ -199,8 +202,7 @@ public class DynamicsCRMClient {
      * 
      * @param entitySet entitySet the EntitySet name which you want to create record
      * @param entity provided content for create
-     * @throws IOException
-     * @throws ODataSerializerException
+     * 
      * @throws ServiceUnavailableException
      */
     public void insertEntity(ClientEntity entity) throws ServiceUnavailableException {
@@ -218,18 +220,17 @@ public class DynamicsCRMClient {
      * @param entitySet entitySet the EntitySet name which you want to update records
      * @param entity provide to update
      * @param updateType UpdateType.REPLACE(Full updates) or UpdateType.PATCH(Partial updates )
-     * @throws ClientProtocolException
-     * @throws IOException
-     * @throws ODataSerializerException
+     * 
      * @throws ServiceUnavailableException
      */
-    public void updateEntity(ClientEntity entity, UpdateType updateType, Object keySegment) throws ServiceUnavailableException {
-        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL + "/" + entitySet + "(" + keySegment + ")");
-        HttpPatch post = new HttpPatch(uriBuilder.build());
-        post.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+    public void updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
+        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
+                .appendKeySegment(UUID.fromString(keySegment));
+        HttpPatch patch = new HttpPatch(uriBuilder.build());
+        patch.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        post.setEntity(httpEntity);
-        executeRequest(post);
+        patch.setEntity(httpEntity);
+        executeRequest(patch);
     }
 
     /**
@@ -237,9 +238,8 @@ public class DynamicsCRMClient {
      * 
      * @param entitySet entitySet the EntitySet name which you want to delete records
      * @param keySegment Entity key segment
-     * @throws IOException
+     * 
      * @throws ServiceUnavailableException
-     * @throws ClientProtocolException
      */
     public void deleteEntity(String keySegment) throws ServiceUnavailableException {
         URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
@@ -304,7 +304,7 @@ public class DynamicsCRMClient {
             String linkedEntityId) {
         if (linkedEntityId != null) {
             try {
-                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink("primarycontactid",
+                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationName,
                         new URI("" + lookupEntitySet + "(" + linkedEntityId + ")")));
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
@@ -384,7 +384,7 @@ public class DynamicsCRMClient {
                 this.authResult = getAccessToken();
                 break;// refresh token successfully
             } catch (ServiceUnavailableException e) {
-                if (retryTime < maxRetryTime) {
+                if (retryTime < maxRetryTimes) {
                     retryTime++;
                     try {
                         Thread.sleep(intevralTime);
@@ -414,9 +414,9 @@ public class DynamicsCRMClient {
     }
 
     public void setMaxRetry(int maxRetry, int intevralTime) {
-        this.maxRetryTime = maxRetry;
+        this.maxRetryTimes = maxRetry;
         if (intevralTime > 0) {
-            this.maxRetryTime = intevralTime;
+            this.maxRetryTimes = intevralTime;
         }
 
     }
