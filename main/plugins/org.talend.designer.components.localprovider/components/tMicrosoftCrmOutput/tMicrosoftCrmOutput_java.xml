@@ -649,11 +649,11 @@
                 <ITEM NAME="webwizards" VALUE="webwizards" />
                 <ITEM NAME="workflowlogs" VALUE="workflowlogs" />
                 <ITEM NAME="workflows" VALUE="workflows" />
-                <ITEM NAME="CustomEntitySET" VALUE="CustomEntitySET" />
+                <ITEM NAME="CustomEntitySet" VALUE="CustomEntitySet" />
             </ITEMS>
         </PARAMETER>
         
-        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(ENTITYNAME=='CustomEntity') OR (ENTITYSET=='CustomEntitySET')" REQUIRED="true" REPOSITORY_VALUE="CUSTOM_ENTITY_NAME">
+        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(ENTITYNAME=='CustomEntity') OR (ENTITYSET=='CustomEntitySet')" REQUIRED="true" REPOSITORY_VALUE="CUSTOM_ENTITY_NAME">
             <DEFAULT>"customEntityName"</DEFAULT>
         </PARAMETER>
 
@@ -29018,7 +29018,7 @@
         </TABLE>
         <!-- update end -->
 <!--2016 odata end-->
-        <TABLE IF="(ENTITYNAME=='CustomEntity') OR (ENTITYSET=='CustomEntitySET')"/>
+        <TABLE IF="(ENTITYNAME=='CustomEntity') OR (ENTITYSET=='CustomEntitySet')"/>
 
         </PARAMETER>
 
@@ -29026,7 +29026,8 @@
             SHOW_IF="((ACTION=='insert') OR (ACTION=='update')) AND ((AUTH_TYPE != 'ON_PREMISE') AND (MS_CRM_VERSION != 'CRM_2015'))">
             <ITEMS>
                 <ITEM NAME="INPUT_COLUMN" FIELD="COLUMN_LIST" />
-                <ITEM NAME="TYPE" FIELD="String" />
+                <ITEM NAME="TYPE" FIELD="String" SHOW_IF="(AUTH_TYPE!='ONLINE') OR (API_VERSION !='API_2016_ODATA')"/>
+                <ITEM NAME="REF_ENTITYSET" FIELD="String" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')"/>
             </ITEMS>
         </PARAMETER>
 

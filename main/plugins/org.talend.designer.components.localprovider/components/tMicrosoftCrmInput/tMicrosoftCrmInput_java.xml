@@ -641,11 +641,11 @@
 				<ITEM NAME="webwizards" VALUE="webwizards" />
 				<ITEM NAME="workflowlogs" VALUE="workflowlogs" />
 				<ITEM NAME="workflows" VALUE="workflows" />
-				<ITEM NAME="CustomEntitySET" VALUE="CustomEntitySET" />
+				<ITEM NAME="CustomEntitySet" VALUE="CustomEntitySet" />
 			</ITEMS>
         </PARAMETER>
 
-        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(ENTITYNAME=='CustomEntity') OR (AUTH_TYPE=='ONLINE' AND API_VERSION=='API_2016_ODATA' AND ENTITYSET=='CustomEntitySET')" REQUIRED="true">
+        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(ENTITYNAME=='CustomEntity') OR (AUTH_TYPE=='ONLINE' AND API_VERSION=='API_2016_ODATA' AND ENTITYSET=='CustomEntitySet')" REQUIRED="true">
             <DEFAULT>"customEntityName"</DEFAULT>
         </PARAMETER>
 
