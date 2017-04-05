@@ -27,6 +27,14 @@
                             <include>talend-mscrm-*.jar</include>
                         </includes>
                     </fileset>
+                    
+                    <!-- mscrm odata client api -->
+                    <fileset>
+                        <directory>${libs.dir}</directory>
+                        <includes>
+                            <include>alend-mscrm-odata*.jar</include>
+                        </includes>
+                    </fileset>
                 </filesets>
             </configuration>
         </plugin>
@@ -47,6 +55,16 @@
                                 <groupId>org.talend.libraries</groupId>
                                 <artifactId>talend-mscrm</artifactId>
                                 <version>2.1-20170314</version>
+                                <type>jar</type>
+                                <overWrite>true</overWrite>
+                                <outputDirectory>${libs.dir}</outputDirectory>
+                            </artifactItem>
+                            
+                            <!-- mscrm odata client api -->
+                            <artifactItem>
+                                <groupId>org.talend.libraries</groupId>
+                                <artifactId>talend-mscrm-odata</artifactId>
+                                <version>1.0-20170324</version>
                                 <type>jar</type>
                                 <overWrite>true</overWrite>
                                 <outputDirectory>${libs.dir}</outputDirectory>
