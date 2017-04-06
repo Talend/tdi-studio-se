@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.talend.core.runtime.service">
+      <Service
+            class="org.talend.designer.tutorials.TutorialsService"
+            serviceId="ITutorialsService">
+      </Service>
+   </extension>
+</plugin>

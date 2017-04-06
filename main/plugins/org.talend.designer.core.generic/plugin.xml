@@ -39,15 +39,24 @@
               name="NewAzureBlobMigrationTask"
               version="6.4.0">
         </projecttask>
-        <!--<projecttask
-              beforeLogon="false"
-              breaks="6.3.0"
-              class="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
-              description="New file delimited migration task"
-              id="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
-              name="NewFileDelimitedMigrationTask"
-              version="6.3.0">
-        </projecttask> -->
+       <projecttask
+               beforeLogon="false"
+               breaks="6.4.0"
+               class="org.talend.designer.core.generic.model.migration.NewMarketoMigrationTask"
+               description="Migration task for jobs using Marketo components to TCOMP"
+               id="org.talend.designer.core.generic.model.migration.NewMarketoMigrationTask"
+               name="NewMarketoMigrationTask"
+               version="6.4.0">
+       </projecttask>
+       <!--<projecttask
+             beforeLogon="false"
+             breaks="6.3.0"
+             class="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
+             description="New file delimited migration task"
+             id="org.talend.designer.core.generic.model.migration.NewFileDelimitedMigrationTask"
+             name="NewFileDelimitedMigrationTask"
+             version="6.3.0">
+       </projecttask> -->
    </extension>
    <extension
          point="org.talend.designer.core.generic.fieldType_mapping">

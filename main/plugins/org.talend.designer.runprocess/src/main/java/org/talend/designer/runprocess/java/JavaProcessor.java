@@ -1283,8 +1283,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
         // Ignore hadoop confs jars in lib path only for DI process now.
-        ComponentCategory category = ComponentCategory.getComponentCategoryFromItem(property.getItem());
-        if (ComponentCategory.CATEGORY_4_DI.equals(category)) {
+        if (isDIProcess()) {
             Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
             while (moduleIter.hasNext()) {
                 ModuleNeeded module = moduleIter.next();
@@ -1336,6 +1335,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libPath.deleteCharAt(lastSep);
         }
         return libPath.toString();
+    }
+
+    private boolean isDIProcess() {
+        return property == null
+                || ComponentCategory.CATEGORY_4_DI.equals(ComponentCategory.getComponentCategoryFromItem(property.getItem()));
     }
 
     protected String getBaseLibPath() {
@@ -1955,7 +1959,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     @Override
     public Property getProperty() {
         if (property == null) {
-            property = ItemCacheManager.getProcessItem(process.getId(), process.getVersion()).getProperty();
+            ProcessItem processItem = ItemCacheManager.getProcessItem(process.getId(), process.getVersion());
+            if (processItem != null) {
+                property = processItem.getProperty();
+            }
         }
         return property;
     }

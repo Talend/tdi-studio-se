@@ -474,8 +474,9 @@ public class JavaProcessorUtilities {
 
                     });
                 }
+            } else {
+                throw new ProcessorException(missingJars);
             }
-            throw new ProcessorException(missingJars);
 
         } else {
             if (missingJarsForRoutines.size() > 0) {

@@ -18,7 +18,7 @@ String dbhost = ElementParameterParser.getValue(node, "__HOST__");
 String dbport = ElementParameterParser.getValue(node, "__PORT__");
 String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
 String dbuser = ElementParameterParser.getValue(node, "__USER__");
-
+String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 String spName = ElementParameterParser.getValue(node, "__SP_NAME__");
 String dbschema = ElementParameterParser.getValue(node, "__DB_SCHEMA__");
 boolean isFunction = ("true").equals(ElementParameterParser.getValue(node, "__IS_FUNCTION__"));
@@ -35,9 +35,14 @@ if(useExistingConn){
     String dbschema_<%=cid%>= (String)globalMap.get("<%=schema%>");
     <%
 } else {       
-    %>
-    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
-    <%dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc3.jdbc.SybDriver"));%>
+    
+	 if("SYBSEIQ_16".equals(dbVersion)){
+	    dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc4.jdbc.SybDriver"));%>
+		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+	<%}else{
+	    dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc3.jdbc.SybDriver"));%>
+	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+	<%}%>
 <%
 	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
