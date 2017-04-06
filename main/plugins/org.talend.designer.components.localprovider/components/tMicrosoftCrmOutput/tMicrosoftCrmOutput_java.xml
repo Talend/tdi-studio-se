@@ -611,11 +611,6 @@
                 <ITEM NAME="solutioncomponents" VALUE="solutioncomponents" />
                 <ITEM NAME="solutions" VALUE="solutions" />
                 <ITEM NAME="subjects" VALUE="subjects" />
-                <ITEM NAME="subscriptionmanuallytrackedobjects" VALUE="subscriptionmanuallytrackedobjects" />
-                <ITEM NAME="subscriptionstatisticsofflineset" VALUE="subscriptionstatisticsofflineset" />
-                <ITEM NAME="subscriptionstatisticsoutlookset" VALUE="subscriptionstatisticsoutlookset" />
-                <ITEM NAME="subscriptionsyncentriesoffline" VALUE="subscriptionsyncentriesoffline" />
-                <ITEM NAME="subscriptionsyncentriesoutlook" VALUE="subscriptionsyncentriesoutlook" />
                 <ITEM NAME="syncerrors" VALUE="syncerrors" />
                 <ITEM NAME="systemforms" VALUE="systemforms" />
                 <ITEM NAME="systemuserlicensescollection" VALUE="systemuserlicensescollection" />
@@ -22354,32 +22349,6 @@
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String" />
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_parentsubject_value" TYPE="id_String" />
         </TABLE>
-        <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='subscriptionmanuallytrackedobjects') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="track" TYPE="id_Boolean" />
-        </TABLE>
-        <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='subscriptionstatisticsofflineset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="fullsyncrequired" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-        </TABLE>
-        <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='subscriptionstatisticsoutlookset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="fullsyncrequired" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-        </TABLE>
-        <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='subscriptionsyncentriesoffline') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="syncstate" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int64" KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long" />
-        </TABLE>
-        <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='subscriptionsyncentriesoutlook') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="syncstate" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int64" KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long" />
-        </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='syncerrors') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="action" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="actiondata" TYPE="id_String" />
@@ -28295,37 +28264,6 @@
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String" />
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String" />
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_parentsubject_value" TYPE="id_String" />
-        </TABLE>
-        <TABLE IF="(ACTION=='update') AND (ENTITYSET=='subscriptionmanuallytrackedobjects') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="subscriptionmanuallytrackedobjectid" TYPE="id_String" />
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="track" TYPE="id_Boolean" />
-        </TABLE>
-        <TABLE IF="(ACTION=='update') AND (ENTITYSET=='subscriptionstatisticsofflineset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="fullsyncrequired" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-        </TABLE>
-        <TABLE IF="(ACTION=='update') AND (ENTITYSET=='subscriptionstatisticsoutlookset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="fullsyncrequired" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-        </TABLE>
-        <TABLE IF="(ACTION=='update') AND (ENTITYSET=='subscriptionsyncentriesoffline') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="syncstate" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int64" KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long" />
-        </TABLE>
-        <TABLE IF="(ACTION=='update') AND (ENTITYSET=='subscriptionsyncentriesoutlook') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-            <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="subscriptionid" TYPE="id_String" />
-            <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="objectid" TYPE="id_String" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="syncstate" TYPE="id_Integer" />
-            <COLUMN DBTYPE="Int64" KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long" />
         </TABLE>
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='syncerrors') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="syncerrorid" TYPE="id_String" />
