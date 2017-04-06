@@ -77,8 +77,8 @@ public class DynamicsCRMClient {
 
     private int maxRetryTimes = 5;
 
-    // Retry intevralTime 1000(ms)
-    private int intevralTime = 1000;
+    // Retry intervalTime 1000(ms)
+    private int intervalTime = 1000;
 
     // Default timeout 60(s)
     private int timeout = 60;
@@ -305,7 +305,7 @@ public class DynamicsCRMClient {
         if (linkedEntityId != null) {
             try {
                 entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationName,
-                        new URI("" + lookupEntitySet + "(" + linkedEntityId + ")")));
+                        new URI(lookupEntitySet + "(" + linkedEntityId + ")")));
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
             }
@@ -387,7 +387,7 @@ public class DynamicsCRMClient {
                 if (retryTime < maxRetryTimes) {
                     retryTime++;
                     try {
-                        Thread.sleep(intevralTime);
+                        Thread.sleep(intervalTime);
                     } catch (InterruptedException e1) {
                         // ignore
                     }
@@ -413,10 +413,10 @@ public class DynamicsCRMClient {
         return statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_OK;
     }
 
-    public void setMaxRetry(int maxRetry, int intevralTime) {
+    public void setMaxRetry(int maxRetry, int intervalTime) {
         this.maxRetryTimes = maxRetry;
-        if (intevralTime > 0) {
-            this.maxRetryTimes = intevralTime;
+        if (intervalTime > 0) {
+            this.intervalTime = intervalTime;
         }
 
     }
