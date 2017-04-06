@@ -88,7 +88,7 @@ public class ItemsVersionConfirmDialog extends Dialog {
             public Image getColumnImage(Object element, int columnIndex) {
                 ItemVersionObject object = (ItemVersionObject) element;
                 if (columnIndex == 0) {
-                    return ImageProvider.getImage(CoreImageProvider.getIcon(ERepositoryObjectType.getItemType(object.getItem())));
+                    return ImageProvider.getImage(CoreImageProvider.getIcon(object.getItem()));
                 }
                 return null;
             }
