@@ -61,8 +61,8 @@
 #if ($endpoint.useAuthentication && $endpoint.authenticationType == "SAML")
 			<bean class="org.apache.cxf.rs.security.saml.SamlHeaderInHandler" />
 #end
-#if ($endpoint.useAuthentication && $endpoint.authenticationType == "OPENID_PASSWORD_GRANT")
-			<bean class="org.talend.esb.security.openid.OpenIDAccessTokenValidator" />
+#if ($endpoint.useAuthentication && $endpoint.authenticationType == "OIDC_PASSWORD_GRANT")
+			<bean class="org.talend.esb.security.oidc.OidcAccessTokenValidator" />
 #end
 		</jaxrs:providers>
 		<jaxrs:features>
