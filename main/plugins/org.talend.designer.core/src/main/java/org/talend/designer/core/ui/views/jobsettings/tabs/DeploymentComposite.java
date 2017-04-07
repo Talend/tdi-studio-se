@@ -108,7 +108,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 SWT.CHECK);
         groupIdCheckbox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        groupIdText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
+        groupIdText = new Text(composite, SWT.BORDER);
         GridData groupIdTextData = new GridData(GridData.FILL_HORIZONTAL);
         groupIdTextData.widthHint = 200;
         groupIdText.setLayoutData(groupIdTextData);
@@ -117,7 +117,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 SWT.CHECK);
         versionCheckbox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
+        versionText = new Text(composite, SWT.BORDER);
         GridData versionTextData = new GridData(GridData.FILL_HORIZONTAL);
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);
