@@ -38,7 +38,7 @@
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:SYBASE"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     />
@@ -46,7 +46,7 @@
     <PARAMETER
       NAME="USE_EXISTING_CONNECTION"
       FIELD="CHECK"
-      NUM_ROW="2"
+      NUM_ROW="20"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -55,15 +55,23 @@
       NAME="CONNECTION"
       FIELD="COMPONENT_LIST"
       REQUIRED="true" FILTER="tSybaseConnection"
-      NUM_ROW="2"
+      NUM_ROW="20"
       SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
       DYNAMIC_SETTINGS="true"
     />
+    
+    <PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="25"
+		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
+		<ITEMS DEFAULT="SYBSEIQ_12_15">
+			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
+			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+		</ITEMS>
+	</PARAMETER>
 
     <PARAMETER
       NAME="SERVER"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REQUIRED="true"
       REPOSITORY_VALUE="SERVER_NAME"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false' and (TABLE_ACTION != 'NONE' or DATA_ACTION == 'UPDATE'))"
@@ -74,7 +82,7 @@
    <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REQUIRED="true"
       REPOSITORY_VALUE="PORT"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false' and (TABLE_ACTION != 'NONE' or DATA_ACTION == 'UPDATE'))"
@@ -85,7 +93,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="3"
+      NUM_ROW="30"
       REQUIRED="true"
       REPOSITORY_VALUE="SID"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -96,7 +104,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REQUIRED="true"
       REPOSITORY_VALUE="USERNAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -107,7 +115,7 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REQUIRED="true"
       REPOSITORY_VALUE="PASSWORD"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -118,7 +126,7 @@
     <PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="4"
+      NUM_ROW="40"
       REPOSITORY_VALUE="SCHEMA"
       REQUIRED="true"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -129,7 +137,7 @@
 	<PARAMETER
       NAME="BCP_UTILITY"
       FIELD="FILE"
-      NUM_ROW="5"
+      NUM_ROW="50"
       REQUIRED="true"
     >
       <DEFAULT>"C:\sybase\OCS-12_5\bin\bcp.exe"</DEFAULT>
@@ -138,7 +146,7 @@
 	<PARAMETER
 		NAME="SERVERNAME"
 		FIELD="TEXT"
-		NUM_ROW="6"
+		NUM_ROW="60"
 		REQUIRED="false"
 	>
 		<DEFAULT>""</DEFAULT>
@@ -147,7 +155,7 @@
 	<PARAMETER
 		NAME="BATCHROW"
 		FIELD="TEXT"
-		NUM_ROW="6"
+		NUM_ROW="60"
 		REQUIRED="false"
 	>
 		<DEFAULT>0</DEFAULT>
@@ -156,7 +164,7 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="TEXT"
-      NUM_ROW="7"
+      NUM_ROW="70"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
@@ -165,7 +173,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="7"
+      NUM_ROW="70"
       NOT_SHOW_IF="PARALLELIZE == 'true'"
     >
       <ITEMS DEFAULT="NONE">
@@ -181,7 +189,7 @@
     <PARAMETER
       NAME="FILENAME"
       FIELD="FILE"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>"C:\talend_files\sybase_bulk.txt"</DEFAULT>
@@ -190,12 +198,12 @@
     <PARAMETER 
     	NAME="APPEND" 
     	FIELD="CHECK" 
-    	NUM_ROW="9">
+    	NUM_ROW="90">
     	
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
            
-    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="10">
+    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="100">
       <DEFAULT/> 
     </PARAMETER>  
 
@@ -215,7 +223,7 @@
  	<PARAMETER
       NAME="USE_INTERFACE_FILE"
       FIELD="CHECK"
-      NUM_ROW="1"
+      NUM_ROW="10"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -223,7 +231,7 @@
   	<PARAMETER
       NAME="INTERFACE_FILE"
       FIELD="FILE"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REQUIRED="true"
       NOT_SHOW_IF="USE_INTERFACE_FILE == 'false'"
     >
@@ -233,7 +241,7 @@
 	<PARAMETER 
 		NAME="PROPERTIES" 
 		FIELD="TEXT" 
-		NUM_ROW="3" 
+		NUM_ROW="30" 
 		REPOSITORY_VALUE="PROPERTIES_STRING"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 		<DEFAULT>""</DEFAULT>
@@ -242,7 +250,7 @@
     <PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="5"
+      NUM_ROW="50"
     >
       <ITEMS DEFAULT="INSERT">
         <ITEM NAME="INSERT" VALUE="INSERT"/>
@@ -253,7 +261,7 @@
  	<PARAMETER
       NAME="FIELDS_TERMINATOR"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>";"</DEFAULT>
@@ -262,7 +270,7 @@
     <PARAMETER
       NAME="ROW_TERMINATOR_DB"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>"\\n"</DEFAULT>
@@ -271,7 +279,7 @@
     <PARAMETER
       NAME="HEAD"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="false"
     >
       <DEFAULT>"1"</DEFAULT>
@@ -280,7 +288,7 @@
     <PARAMETER
       NAME="ROW_TERMINATOR_FILE"
       FIELD="TEXT"
-      NUM_ROW="9"
+      NUM_ROW="90"
       REQUIRED="true"
     >
       <DEFAULT>"\n"</DEFAULT>
@@ -289,7 +297,7 @@
     <PARAMETER 
     	NAME="INCLUDEHEADER" 
     	FIELD="CHECK" 
-    	NUM_ROW="9">
+    	NUM_ROW="90">
     	
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -297,7 +305,7 @@
     <PARAMETER 
     	NAME="ENCODING"  
     	FIELD="ENCODING_TYPE"  
-    	NUM_ROW="11" 
+    	NUM_ROW="110" 
     	REQUIRED="true" >
     	
       <DEFAULT>"ISO-8859-15"</DEFAULT>
@@ -306,7 +314,7 @@
     <PARAMETER 
     	NAME="SYBASE_ENCODING"  
     	FIELD="OPENED_LIST"  
-    	NUM_ROW="11" 
+    	NUM_ROW="110" 
     	REQUIRED="true" >
       	<ITEMS DEFAULT="&quot;UTF8&quot;">
     		<ITEM NAME="UTF8" VALUE="&quot;UTF8&quot;" />
@@ -318,7 +326,7 @@
     	</ITEMS>
     </PARAMETER>
 
-    <PARAMETER NAME="OUTPUT" FIELD="CLOSED_LIST" NUM_ROW="20">
+    <PARAMETER NAME="OUTPUT" FIELD="CLOSED_LIST" NUM_ROW="120">
        <ITEMS DEFAULT="OUTPUT_TO_CONSOLE">
           <ITEM NAME="OUTPUT_TO_CONSOLE" VALUE="OUTPUT_TO_CONSOLE" />
           <ITEM NAME="RETRIEVE_OUTPUT"   VALUE="RETRIEVE_OUTPUT" />
@@ -342,6 +350,7 @@
       <TEMPLATE_PARAM SOURCE="self.BCP_UTILITY" TARGET="tSBE.BCP_UTILITY" />
       <TEMPLATE_PARAM SOURCE="self.USE_EXISTING_CONNECTION" TARGET="tSBE.USE_EXISTING_CONNECTION" />
       <TEMPLATE_PARAM SOURCE="self.CONNECTION" TARGET="tSBE.CONNECTION" />
+      <TEMPLATE_PARAM SOURCE="self.DB_VERSION" TARGET="tSBE.DB_VERSION" />
 	  <TEMPLATE_PARAM SOURCE="self.TABLE_ACTION" TARGET="tSBE.TABLE_ACTION" />
       <TEMPLATE_PARAM SOURCE="self.SERVER" TARGET="tSBE.SERVER" />
       <TEMPLATE_PARAM SOURCE="self.PORT" TARGET="tSBE.PORT" />

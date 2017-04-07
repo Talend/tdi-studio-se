@@ -422,6 +422,8 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     protected void updateItemsVersion() {
 
         List<ItemVersionObject> JobsOpenedInEditor = new ArrayList<ItemVersionObject>();
+        List<ItemVersionObject> closedJobs = new ArrayList<ItemVersionObject>();
+        
         boolean hasJobOpenedInEditor = false;
         StringBuilder builder = new StringBuilder();
         for (ItemVersionObject object : checkedObjects) {
@@ -429,6 +431,8 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                 hasJobOpenedInEditor = true;
                 JobsOpenedInEditor.add(object);
                 builder.append(object.getRepositoryNode().getObject().getLabel() + ", "); //$NON-NLS-1$
+            } else {
+                closedJobs.add(object);
             }
         }
         if (builder.length() > 0) {
@@ -479,8 +483,8 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
 
                     @Override
                     protected void run() throws LoginException, PersistenceException {
-                        monitor.beginTask("Update items Maven version", checkedObjects.size()); //$NON-NLS-1$
-                        for (ItemVersionObject object : checkedObjects) {
+                        monitor.beginTask("Update items Maven version", closedJobs.size()); //$NON-NLS-1$
+                        for (ItemVersionObject object : closedJobs) {
                             final Item item = object.getItem();
                             Property itemProperty = item.getProperty();
                             if (!object.getNewVersion().equals(MavenVersionUtils.getItemMavenVersion(itemProperty))) {

@@ -174,6 +174,8 @@
        <IMPORT NAME="sap-api.jar" MODULE="sap-api.jar" MVN="mvn:org.talend.libraries/sap-api/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.sap/lib/sap-api.jar" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />
        <IMPORT NAME="sap-impl.jar" MODULE="sap-impl.jar" MVN="mvn:org.talend.libraries/sap-impl/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.sap/lib/sap-impl.jar" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />
        <IMPORT NAME="Java_DOM4J1.6" MODULE="dom4j-1.6.1.jar" MVN="mvn:org.talend.libraries/dom4j-1.6.1/6.0.0"  BundleID="org.apache.servicemix.bundles.dom4j" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />       
+       <IMPORT NAME="slf4j-api-1.7.10.jar" MODULE="slf4j-api-1.7.10.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.10.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.10/6.1.0" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />
+       <IMPORT NAME="slf4j-log4j12-1.7.10.jar" MODULE="slf4j-log4j12-1.7.10.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.10.jar" MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.10/6.1.0" REQUIRED_IF="(DB_VERSION == 'sapjco3.jar') OR (DB_VERSION == 'TALENDSAP')" />
      </IMPORTS>
   </CODEGENERATION>
 

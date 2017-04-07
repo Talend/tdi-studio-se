@@ -15,9 +15,7 @@ package org.talend.designer.core.generic.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -73,6 +71,7 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericNodeConnector;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.model.mapping.WidgetFieldTypeMapper;
+import org.talend.designer.core.generic.palette.GenericComponentCategoryFactory;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.ElementParameterDefaultValue;
@@ -124,47 +123,64 @@ public class ComponentsUtils {
         } else {
             componentsList.removeAll(components);
         }
-        Map<String, IComponent> existComponents = new HashMap<String, IComponent>();
-
-        for (IComponent component : componentsList) {
-            existComponents.put(component.getName(), component);
-        }
 
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
-            try {
-                Component currentComponent = new Component(componentDefinition);
+            loadComponents(componentsList, componentDefinition);
+        }
+    }
 
-                Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance()
-                        .getProviders();
-                boolean hiddenComponent = false;
-                for (IComponentFactoryFilter filter : filters) {
-                    if (!filter.isAvailable(currentComponent.getName())) {
-                        hiddenComponent = true;
-                        break;
-                    }
-                }
-
-                // if the component is not needed in the current branding,
-                // and that this one IS NOT a specific component for code generation
-                // just don't load it
-                if (hiddenComponent
-                        && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                    continue;
-                }
-                componentsList.add(currentComponent);
-                // if the component is not needed in the current branding,
-                // and that this one IS a specific component for code generation,
-                // hide it
-                if (hiddenComponent
-                        && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
-                    currentComponent.setVisible(false);
-                    currentComponent.setTechnical(true);
-                }
-            } catch (BusinessException e) {
-                ExceptionHandler.process(e);
+    private static void loadComponents(Set<IComponent> componentsList, ComponentDefinition componentDefinition) {
+        List<String> supportedProducts = componentDefinition.getSupportedProducts();
+        if (supportedProducts == null) {
+            return;
+        }
+        for (String productType : supportedProducts) {
+            List<String> paletteTypes = GenericComponentCategoryFactory.getPaletteTypes(productType);
+            if (paletteTypes == null) {
+                continue;
             }
+            for (String paletteType : paletteTypes) {
+                loadComponent(componentsList, componentDefinition, paletteType);
+            }
+        }
+    }
+
+    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition,
+            String paletteType) {
+        try {
+            Component currentComponent = new Component(componentDefinition, paletteType);
+
+            Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
+            boolean hiddenComponent = false;
+            for (IComponentFactoryFilter filter : filters) {
+                if (!filter.isAvailable(currentComponent.getName())) {
+                    hiddenComponent = true;
+                    break;
+                }
+            }
+
+            // if the component is not needed in the current branding,
+            // and that this one IS NOT a specific component for code generation
+            // just don't load it
+            if (hiddenComponent
+                    && !(currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                return;
+            }
+
+            // if the component is not needed in the current branding,
+            // and that this one IS a specific component for code generation,
+            // hide it
+            if (hiddenComponent
+                    && (currentComponent.getOriginalFamilyName().contains("Technical") || currentComponent.isTechnical())) {
+                currentComponent.setVisible(false);
+                currentComponent.setTechnical(true);
+            }
+
+            componentsList.add(currentComponent);
+        } catch (BusinessException e) {
+            ExceptionHandler.process(e);
         }
     }
 

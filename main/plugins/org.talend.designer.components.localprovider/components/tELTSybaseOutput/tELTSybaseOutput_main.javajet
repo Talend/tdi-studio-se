@@ -29,7 +29,7 @@ imports="
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
-	
+	String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 %>
 	String select_query = null;
 	String tableName_<%=cid%> = null;
@@ -85,8 +85,11 @@ imports="
 <%
 	log4jCodeGenerateUtil.useExistConnection(node);
 	} else {
-%>
-    String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
+            if("SYBSEIQ_16".equals(dbVersion)){%>
+    String driverClass_<%=cid%> = "com.sybase.jdbc4.jdbc.SybDriver";
+	        <%}else{%>
+	String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";
+	        <%}%>
     java.lang.Class.forName(driverClass_<%=cid%>);
 <%
 		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {

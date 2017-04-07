@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Talend Guided Tutorials</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection" title="no title" charset="utf-8"/>
+</head>
+<body>
+  <article class="tabs">
+		<input id="one" name="tabs" type="radio"></input>
+	    <label for="one"><internationalization id="TutorialsDialog.tab1.title"/></label>
+
+	    <input id="two" name="tabs" type="radio" value="Two"></input>
+	    <label for="two"><internationalization id="TutorialsDialog.tab2.title"/></label>
+
+	    <input id="three" name="tabs" type="radio"></input>
+	    <label for="three"><internationalization id="TutorialsDialog.tab3.title"/></label>
+
+	    <input id="four" name="tabs" type="radio"></input>
+	    <label for="four"><internationalization id="TutorialsDialog.tab4.title"/></label>
+
+	    <div class="panels">
+		    <div id="panel1" class="panel">
+		    	<video src="../resources/studio-tutorial-step1.mp4" width="100%" height="100%" controls="controls">Your browser does not support the video tag.</video>
+		    	<text name="panel1" cols="70" rows="10">
+		    	<br>Get started building your first job. After taking the tour you should be familiar with all the parts of the studio, now let's bring it all together.</br>
+		    	<br>Step 1 – Create the new <b>job</b> from the menu icon shown.</br>
+		    	<br>Step 2 – Expand the <b>Metadata</b> section on the left and expand <b>File Delimited</b> to find and drag in the metadata for the flat file <b>StreamngResults.csv</b> to the design window.</br>
+		    	</text>
+		    </div>
+
+		    <div id="panel2" class="panel">
+		    	<video src="../resources/studio-tutorial-step2.mp4" width="100%" height="100%" controls="controls">Your browser does not support the video tag.</video>
+		    	<text name="panel2" cols="70" rows="10">
+		    	<br>Next you will build the full job flow by adding the tMap component, used to map input source columns to output target columns, and then a final component the tFileOutputDelimited component used to write to a flat file.</br>
+		    	<br>Step 1 – Either type in the design window <b>tMap</b> and select <b>tMap</b>, or drag it over from the palette under <b>Processing</b> on the right to the design window.</br>
+		    	<br>Step 2 – Connect the <b>tFileInputDelimited</b> to the <b>tMap</b> by clicking on the output row connector as shown in the video.</br>
+		    	<br>Step 3 – Right click on the <b>tMap</b> and select <b>Row</b> and select <b>*New Output*</b> and drag and release and start typing <b>tFileOutputDelimited</b> once visible select it and it will be connected to the tMap.</br>
+		    	</text>
+		    </div>
+
+		    <div id="panel3" class="panel">
+                <video src="../resources/studio-tutorial-step3.mp4" width="100%" height="100%" controls="controls">Your browser does not support the video tag.</video>
+		    	<text name="panel3" cols="70" rows="10">
+		    	<br>In this step, you will be mapping the input fields to the output field and in this example creating the output schema at the same time.</br>
+		    	<br>Step 1 – Double Click on the <b>tMap</b> Component to open the mapping interface.</br>
+		    	<br>Step 2 – <b>Highlight the fields</b> you want in the output file and <b>drag</b> them to the output side (Note: when there a dark blue line visible release the mouse to drop them into the target. This will create the target columns in the tFileOutputDelimited schema.)</br>
+		    	<br>Step 3 – Click <b>OK</b> and <b>Yes</b> to save changes and to <b>propagate</b> the changes to the output file schema.</br>
+		    	</text>
+		    </div>
+
+		    <div id="panel4" class="panel">
+                <video src="../resources/studio-tutorial-step4.mp4" width="100%" height="100%" controls="controls">Your browser does not support the video tag.</video>
+		    	<text name="panel4" cols="70" rows="10">
+		    	<br>The final step is to run the job within the studio runtime environment and view results.</br>
+		    	<br>Step 1 – Click on the <b>Run</b> Tab below the Design window</br>
+		    	<br>Step 2 - Click <b>Run</b></br>
+		    	<br>Note – this builds the java needed to execute the flow built in the job.  Once the java has been built the job executes.  You will see the throughput metrics on the rows between each component.  You can either open the file from the tFileOutputDelimeted or right click on the components and choose <b>view data</b> to see the data written to the target file.</br>
+		    	</text>
+		    </div>
+		</div>
+    </article>
+</body>
+<script type="text/javascript">
+
+function none(){
+    document.getElementById('panel1').style.cssText="display:none;"; 
+    document.getElementById('panel2').style.cssText="display:none;"; 
+    document.getElementById('panel3').style.cssText="display:none;"; 
+    document.getElementById('panel4').style.cssText="display:none;"; 
+}
+
+
+var one = document.getElementById('one');   
+one.onclick = function(){
+    none();
+    document.getElementById('panel1').style.cssText="display:block;"; 
+};
+one.click();  
+
+var two = document.getElementById('two');   
+two.onclick = function(){
+    none();
+    document.getElementById('panel2').style.cssText="display:block;"; 
+};
+
+var three = document.getElementById('three');   
+three.onclick = function(){
+    none();
+    document.getElementById('panel3').style.cssText="display:block;"; 
+};
+
+var four = document.getElementById('four');   
+four.onclick = function(){
+    none(); 
+    document.getElementById('panel4').style.cssText="display:block;"; 
+};
+
+</script>
+</html>

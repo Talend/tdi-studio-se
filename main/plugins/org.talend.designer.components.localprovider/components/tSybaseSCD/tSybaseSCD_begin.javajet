@@ -23,6 +23,7 @@ INode node = (INode) codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 List<IMetadataColumn> inputSchema = getInputSchema(node);
 List<IMetadataColumn> outputSchema = getOutputSchema(node);
+String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 
 String incomingConnName = null;
 List<? extends IConnection> incomingConnections = node.getIncomingConnections();
@@ -73,8 +74,11 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         dbschema_<%=cid%>= (String)globalMap.get("<%=schema%>");
         <%
     } else {
-        %>
-        java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+            if("SYBSEIQ_16".equals(dbVersion)){%>
+		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+	        <%}else{%>
+	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+	        <%}%>
 <%
 		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>

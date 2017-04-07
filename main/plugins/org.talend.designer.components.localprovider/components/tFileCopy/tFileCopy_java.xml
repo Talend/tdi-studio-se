@@ -132,6 +132,13 @@
     >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
+    <PARAMETER 
+     NAME="FAILON"
+     FIELD="CHECK"
+     NUM_ROW="70"
+    >
+    <DEFAULT>false</DEFAULT>
+    </PARAMETER>
   </PARAMETERS>
   
   <CODEGENERATION>
