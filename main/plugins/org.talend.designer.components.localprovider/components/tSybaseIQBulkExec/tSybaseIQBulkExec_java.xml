@@ -83,10 +83,10 @@
 
 	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="23"
 		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
-		<ITEMS DEFAULT="SYBSEIQ_12">
-			<ITEM NAME="SYBSEIQ_12" VALUE="jconn3.jar" />
-			<ITEM NAME="SYBSEIQ_15" VALUE="jodbc.jar" />
-			<ITEM NAME="SYBSEIQ_16" VALUE="jconn4.jar" />
+		<ITEMS DEFAULT="SYBSEIQ_12_15">
+			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
+			<ITEM NAME="SYBSEIQ_15" VALUE="SYBSEIQ_15" />
+			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
 		</ITEMS>
 	</PARAMETER>
 
@@ -642,9 +642,9 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_12') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION != 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
-       <IMPORT NAME="Driver-Sybase" MODULE="jodbc.jar" MVN="mvn:org.talend.libraries/jodbc/6.0.0" BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_15') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase" MODULE="jodbc.jar" MVN="mvn:org.talend.libraries/jodbc/6.0.0" BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_15'" />
     </IMPORTS>
   </CODEGENERATION>
    <RETURNS />
