@@ -139,6 +139,7 @@ public class LoginHelper {
     }
 
     protected LoginHelper() {
+        licenseMap = new HashMap<String, String>();
         init();
     }
 
@@ -160,7 +161,6 @@ public class LoginHelper {
                 // nothing to do
             }
         }
-        licenseMap = new HashMap<String, String>();
         prefManipulator = new PreferenceManipulator(CorePlugin.getDefault().getPreferenceStore());
         perReader = ConnectionUserPerReader.getInstance();
         readConnectionData();
