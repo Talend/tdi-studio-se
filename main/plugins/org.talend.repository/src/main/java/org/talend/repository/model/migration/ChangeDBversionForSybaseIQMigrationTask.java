@@ -69,7 +69,7 @@ public class ChangeDBversionForSybaseIQMigrationTask extends AbstractJobMigratio
 	}
 
 	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2017, 0, 24, 17, 0, 0);
+		GregorianCalendar gc = new GregorianCalendar(2017, 3, 7, 17, 0, 0);
 		return gc.getTime();
 	}
 
