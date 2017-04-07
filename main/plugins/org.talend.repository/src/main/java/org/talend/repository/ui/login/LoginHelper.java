@@ -17,8 +17,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -127,6 +129,8 @@ public class LoginHelper {
 
     private IGITProviderService gitProviderService;
 
+    private Map<String, String> licenseMap;
+
     public static LoginHelper getInstance() {
         if (instance == null) {
             instance = new LoginHelper();
@@ -156,6 +160,7 @@ public class LoginHelper {
                 // nothing to do
             }
         }
+        licenseMap = new HashMap<String, String>();
         prefManipulator = new PreferenceManipulator(CorePlugin.getDefault().getPreferenceStore());
         perReader = ConnectionUserPerReader.getInstance();
         readConnectionData();
@@ -806,6 +811,22 @@ public class LoginHelper {
             }
         }
         return filteredConnections;
+    }
+
+    public String getLicenseMapKey(String url, String projectLabel, String userId) {
+        return url + "/" + userId + "/" + projectLabel; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public void putLicense(String key, String license) throws PersistenceException {
+        licenseMap.put(key, license);
+    }
+
+    public void clearLicenseMap() {
+        licenseMap.clear();
+    }
+
+    public String getLicense(String key) throws PersistenceException {
+        return licenseMap.get(key);
     }
 
     public void setUsableShell(Shell usableShell) {
