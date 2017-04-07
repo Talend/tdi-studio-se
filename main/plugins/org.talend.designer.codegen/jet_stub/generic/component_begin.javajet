@@ -12,6 +12,7 @@ imports="
         org.talend.components.api.component.ConnectorTopology
         org.talend.components.api.container.RuntimeContainer
         org.talend.components.api.properties.ComponentProperties
+        org.talend.components.api.properties.ComponentReferenceProperties
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.metadata.types.JavaType
@@ -64,6 +65,8 @@ List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(c
 <%= componentProps.getClass().getName()%> props_<%=cid %> =
         (<%= componentProps.getClass().getName()%>) def_<%=cid %>.createRuntimeProperties();
 <%
+
+final Set<String> referenceProperties = new HashSet<String>();
 
 for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
     List<NamedThing> properties = propInfo.props.getProperties();
@@ -134,10 +137,28 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
                 props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>", null);
             <%
             }
-        }//else may be a ComponentProperties so ignore
+        } else if (prop instanceof ComponentReferenceProperties) {
+            final String fieldString = propInfo.fieldName + "." + prop.getName();
+            referenceProperties.add(fieldString);
+        } //else may be a ComponentProperties so ignore
     } // property
 } // propInfo
+
+for (final String fieldString : referenceProperties) {
+    %>
+    if (org.talend.components.api.properties.ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE == props_<%=cid %><%=fieldString %>.referenceType.getValue()) {
+        final String referencedComponentInstanceId = props_<%=cid %><%=fieldString %>.componentInstanceId.getStringValue();
+        if (referencedComponentInstanceId != null) {
+            org.talend.daikon.properties.Properties referencedComponentProperties = (org.talend.daikon.properties.Properties) globalMap.get(
+                referencedComponentInstanceId + "_COMPONENT_RUNTIME_PROPERTIES");
+            props_<%=cid %><%=fieldString %>.setReference(referencedComponentProperties);
+        }
+    }
+    <%
+}
 %>
+globalMap.put("<%=cid %>_COMPONENT_RUNTIME_PROPERTIES", props_<%=cid %>);
+
 org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() {
     public Object getComponentData(String componentId, String key) {
         return globalMap.get(componentId + "_" + key);
