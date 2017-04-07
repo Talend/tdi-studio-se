@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -42,6 +41,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.intro.IIntroSite;
 import org.eclipse.ui.intro.config.IIntroAction;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.helper.LocalComponentInstallHelper;
+import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.utils.resource.UpdatesHelper;
 import org.talend.core.CorePlugin;
@@ -67,8 +68,7 @@ import org.talend.designer.components.exchange.util.ExchangeWebService;
 import org.talend.designer.components.exchange.util.WebserviceStatus;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.AbstractTalendEditor;
-import org.talend.updates.runtime.engine.InstalledUnit;
-import org.talend.updates.runtime.engine.P2Installer;
+import org.talend.utils.io.FilesUtils;
 
 /**
  * 
@@ -312,12 +312,30 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
         }
 
         protected void afterDownload(IProgressMonitor monitor, ComponentExtension extension, File localZipFile) throws Exception {
-            if (UpdatesHelper.isUpdateSite(localZipFile)) {
+            if (UpdatesHelper.isComponentUpdateSite(localZipFile)) {
+                final File workFolder = org.talend.utils.files.FileUtils.createTmpFolder("downloadedComponents", ""); //$NON-NLS-1$  //$NON-NLS-2$
+
                 try {
-                    P2Installer installer = new P2Installer();
-                    final Set<InstalledUnit> installed = installer.installPatchFile(localZipFile, true);
-                    if (installed != null && !installed.isEmpty()) {
-                        askReboot();
+                    FilesUtils.copyFile(localZipFile, new File(workFolder, localZipFile.getName()));
+
+                    ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
+                    if (component != null) {
+                        try {
+                            component.setComponentFolder(workFolder);
+                            if (component.install()) {
+
+                                if (component.needRelaunch()) {
+                                    askReboot();
+                                }
+                            } else {// install failure
+                                MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
+                                        Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                                        Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
+                            }
+                        } finally {
+                            // after install, clear the setting for service.
+                            component.setComponentFolder(null);
+                        }
                     }
                 } catch (Exception e) {
                     // Popup dialog to user to waring install failed.
@@ -325,10 +343,13 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
                         @Override
                         public void run() {
-                            MessageDialog.openError(new Shell(), "Error", "Install failed for " + extension.getLabel());
+                            MessageDialog.openError(new Shell(), Messages.getString("DownloadComponenentsAction_failureTitle"), //$NON-NLS-1$
+                                    Messages.getString("DownloadComponenentsAction_failureMessage", extension.getLabel())); //$NON-NLS-1$
                         }
                     });
                     throw e;
+                } finally {
+                    FilesUtils.deleteFolder(workFolder, true);
                 }
                 monitor.done();
                 ExchangeManager.getInstance().saveDownloadedExtensionsToFile(extension);
@@ -355,7 +376,7 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
                         PlatformUI.getWorkbench().restart();
                     }
                 }
-                
+
             });
         }
 
