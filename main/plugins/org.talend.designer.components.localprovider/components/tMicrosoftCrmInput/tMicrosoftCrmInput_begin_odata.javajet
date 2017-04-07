@@ -64,8 +64,8 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-				org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
-				org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
+				org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+				org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
 				client_<%=cid%>.setTimeout(<%=timeout%>);
 				client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
 				client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
@@ -83,18 +83,18 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		        	if(keyColumns.size()>0 ){
 					%>
 						java.util.List<String> fields_<%=cid%> = new java.util.ArrayList<String>();
-						java.util.List<org.talend.mscrm.ConditionOperator> conditionOperators_<%=cid%> = new java.util.ArrayList<org.talend.mscrm.ConditionOperator>();
+						java.util.List<org.talend.ms.crm.odata.ConditionOperator> conditionOperators_<%=cid%> = new java.util.ArrayList<org.talend.ms.crm.odata.ConditionOperator>();
 			        	java.util.List<Object> values_<%=cid%> = new java.util.ArrayList<Object>();
 		            <%
 		            for(Map<String, String> keyColumn:keyColumns){
 		        		%>
 		        			fields_<%=cid%>.add("<%=keyColumn.get("INPUT_COLUMN")%>");
-		        			conditionOperators_<%=cid%>.add(org.talend.mscrm.ConditionOperator.<%=keyColumn.get("OPERATOR")%>);
+		        			conditionOperators_<%=cid%>.add(org.talend.ms.crm.odata.ConditionOperator.<%=keyColumn.get("OPERATOR")%>);
 		        			values_<%=cid%>.add(<%=keyColumn.get("RVALUE")%>);
 		       		<%
 		        		}
 		        		%>
-		        		queryFilter_<%=cid%>=org.talend.mscrm.QueryFilterUtil.getURIFilterString(org.talend.mscrm.LogicalOperator.<%=logical%>, fields_<%=cid%>, conditionOperators_<%=cid%>, values_<%=cid%>);
+		        		queryFilter_<%=cid%>=org.talend.ms.crm.odata.QueryFilterUtil.getURIFilterString(org.talend.ms.crm.odata.LogicalOperator.<%=logical%>, fields_<%=cid%>, conditionOperators_<%=cid%>, values_<%=cid%>);
 		        	<%
 		        	}
 	     		}
@@ -126,7 +126,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 	        	IConnection outgoingConn = outgoingConns.get(0);
 				if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
 	        	%>
-					org.talend.mscrm.QueryOptionConfig queryOption_<%=cid%> = new org.talend.mscrm.QueryOptionConfig();
+					org.talend.ms.crm.odata.QueryOptionConfig queryOption_<%=cid%> = new org.talend.ms.crm.odata.QueryOptionConfig();
 		        	queryOption_<%=cid%>.setReturnEntityProperties(new String[]{<%=sb%>});
 		        	//TODO need to support top(limit)?
 		        	// queryOption_<%=cid%>.setTop(5000);

@@ -36,8 +36,8 @@ imports="
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-	org.talend.mscrm.ClientConfiguration clientConfig_<%=cid%> = new org.talend.mscrm.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
-	org.talend.mscrm.DynamicsCRMClient client_<%=cid%> = new org.talend.mscrm.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
+	org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+	org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
 	client_<%=cid%>.setTimeout(<%=timeout%>);
 	client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
 	client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
