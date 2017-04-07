@@ -89,7 +89,7 @@ public class UserComponentsProviderTest {
 
         // set empty first
         CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONObject().toString());
+                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
 
         final Project currentProject = ProjectManager.getInstance().getCurrentProject();
         final IProject project = ResourceUtils.getProject(currentProject);
@@ -109,7 +109,7 @@ public class UserComponentsProviderTest {
         }
         // set empty first
         CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONObject().toString());
+                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
     }
 
     protected File getTestDataFile(String bundlePath) throws IOException {
@@ -123,11 +123,15 @@ public class UserComponentsProviderTest {
 
         String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
                 .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONObject newCFComponentsJson = new JSONObject();
+        JSONArray newCFComponentsJson = new JSONArray();
         if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONObject(installedComponentsValues);
+            newCFComponentsJson = new JSONArray(installedComponentsValues);
         }
         Assert.assertEquals(0, newCFComponentsJson.length());
+
+        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
+        Assert.assertNotNull(needInstalledNewCFComponents);
+        Assert.assertEquals(0, needInstalledNewCFComponents.length());
     }
 
     @Test
@@ -274,7 +278,7 @@ public class UserComponentsProviderTest {
     }
 
     @Test
-    public void test_preComponentsLoad_componentsInProject_Folder() throws Exception {
+    public void test_preComponentsLoad_oldComponentsInProject_Folder() throws Exception {
         final String componentName = "tHTMLInput";
         File testDataFile = getTestDataFile(PATH_OLD_COMPONENT);
         Assert.assertTrue(testDataFile.exists());
@@ -304,7 +308,7 @@ public class UserComponentsProviderTest {
     }
 
     @Test
-    public void test_preComponentsLoad_componentsInProject_Zip() throws Exception {
+    public void test_preComponentsLoad_oldComponentsInProject_Zip() throws Exception {
         File testDataFile = getTestDataFile(PATH_OLD_COMPONENT);
         Assert.assertTrue(testDataFile.exists());
 
@@ -328,7 +332,7 @@ public class UserComponentsProviderTest {
     }
 
     @Test
-    public void test_preComponentsLoad_componentsInProject_newComponent() throws Exception {
+    public void test_preComponentsLoad_newComponentsInProject() throws Exception {
 
         File testDataFile = getTestDataFile(PATH_NEW_COMPONENT);
         Assert.assertTrue(testDataFile.exists());
@@ -339,7 +343,8 @@ public class UserComponentsProviderTest {
                 .getFolderName(ERepositoryObjectType.COMPONENTS));
         Assert.assertTrue(projectComponentsFolder.exists());
 
-        FilesUtils.copyFile(testDataFile, new File(projectComponentsFolder.getLocation().toFile(), testDataFile.getName()));
+        final File target = new File(projectComponentsFolder.getLocation().toFile(), testDataFile.getName());
+        FilesUtils.copyFile(testDataFile, target);
 
         UserComponentsProviderTestClass provider = new UserComponentsProviderTestClass() {
 
@@ -355,16 +360,20 @@ public class UserComponentsProviderTest {
 
         String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
                 .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONObject newCFComponentsJson = new JSONObject();
+        JSONArray newCFComponentsJson = new JSONArray();
         if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONObject(installedComponentsValues);
+            newCFComponentsJson = new JSONArray(installedComponentsValues);
         }
-        Assert.assertEquals(1, newCFComponentsJson.length());
-        final Object object = newCFComponentsJson.get(currentProject.getTechnicalLabel());
-        Assert.assertTrue(object instanceof JSONArray);
-        final JSONArray jsonArray = (JSONArray) object;
-        Assert.assertEquals(1, jsonArray.length());
-        Assert.assertEquals(testDataFile.getName(), jsonArray.get(0));
+        Assert.assertEquals(0, newCFComponentsJson.length());
 
+        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
+        Assert.assertNotNull(needInstalledNewCFComponents);
+        final String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        Assert.assertTrue(needInstalledNewCFComponents.has(technicalLabel));
+        final JSONArray jsonArray = needInstalledNewCFComponents.getJSONArray(technicalLabel);
+        Assert.assertNotNull(jsonArray);
+        Assert.assertEquals(1, jsonArray.length());
+        final String path = jsonArray.getString(0);
+        Assert.assertEquals(target.getAbsolutePath(), path);
     }
 }
