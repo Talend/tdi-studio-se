@@ -17,7 +17,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -37,9 +36,13 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
+import org.talend.commons.runtime.helper.LocalComponentInstallHelper;
+import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.swt.preferences.CheckBoxFieldEditor;
 import org.talend.commons.ui.utils.workbench.preferences.ComboFieldEditor;
+import org.talend.commons.utils.resource.UpdatesHelper;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
@@ -79,8 +82,6 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
     private final String assist = "Component Assist"; //$NON-NLS-1$
 
     private static String oldPath = null;
-
-    private final String component_suffix = "_java.xml";
 
     /**
      * This class exists to provide visibility to the <code>refreshValidState</code> method and to perform more
@@ -319,13 +320,11 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
     }
 
     private boolean checkUserComponentsFolder(File componentsfolder) {
-        for (File subFile : componentsfolder.listFiles()) {
-            String name = subFile.getName();
-            if (name.equals(componentsfolder.getName() + component_suffix)) {
-                boolean isContinue = MessageDialog.openConfirm(Display.getDefault().getActiveShell(), "Confirm",
-                        Messages.getString("ComponentsPreferencePage.notValidDirectory")); //$NON-NLS-1$
-                return isContinue;
-            }
+        if (UpdatesHelper.isOldComponent(componentsfolder)) {
+            // should select the component folder directly, should for parent folder.
+            boolean isContinue = MessageDialog.openConfirm(Display.getDefault().getActiveShell(), "Confirm",
+                    Messages.getString("ComponentsPreferencePage.notValidDirectory")); //$NON-NLS-1$
+            return isContinue;
         }
         return true;
     }
@@ -402,6 +401,44 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
 
                             @Override
                             public void run() {
+                                // install the new components via P2
+                                ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
+                                if (component != null) {
+                                    String newPath = CodeGeneratorActivator.getDefault().getPreferenceStore()
+                                            .getString(IComponentPreferenceConstant.USER_COMPONENTS_FOLDER);
+
+                                    if (newPath != null && StringUtils.isNotEmpty(newPath.trim())) {
+                                        File componentFolder = new File(newPath.trim());
+                                        if (componentFolder.exists()) {
+                                            try {
+                                                component.setComponentFolder(componentFolder);
+                                                if (component.install()) {
+
+                                                    String installedMessages = component.getInstalledMessages();
+                                                    String title = Messages.getString("ComponentsPreferencePage_SuccessTitle"); //$NON-NLS-1$
+                                                    if (component.needRelaunch()) {
+
+                                                        String warningMessage = Messages
+                                                                .getString("ComponentsPreferencePage_SuccessMessage1") //$NON-NLS-1$
+                                                                + Messages.getString("ComponentsPreferencePage_SuccessMessage2"); //$NON-NLS-1$
+                                                        boolean confirm = MessageDialog.openConfirm(getShell(), title,
+                                                                installedMessages + '\n' + '\n' + warningMessage);
+
+                                                        if (confirm) {
+                                                            PlatformUI.getWorkbench().restart();
+                                                        }
+                                                    } else {
+                                                        MessageDialog.openInformation(getShell(), title, installedMessages);
+                                                    }
+                                                }
+                                            } finally {
+                                                // after install, clear the setting for service.
+                                                component.setComponentFolder(null);
+                                            }
+                                        }
+                                    }
+                                }
+
                                 // components will be reloaded when refreshTemplates;
                                 // IComponentsFactory components = ComponentsFactoryProvider.getInstance();
                                 // components.loadUserComponentsFromComponentsProviderExtension();
@@ -410,8 +447,7 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                                 // ComponentUtilities.updatePalette();
                                 ICodeGeneratorService service = (ICodeGeneratorService) GlobalServiceRegister.getDefault()
                                         .getService(ICodeGeneratorService.class);
-                                Job refreshTemplates = service.refreshTemplates();
-
+                                service.refreshTemplates();
                             }
                         });
 
@@ -433,5 +469,4 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
         }
         return flag;
     }
-
 }
