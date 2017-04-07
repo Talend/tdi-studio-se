@@ -1,4 +1,4 @@
-package org.talend.mscrm;
+package org.talend.ms.crm.odata;
 
 import java.util.ArrayList;
 import java.util.List;
