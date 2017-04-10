@@ -146,11 +146,18 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
 
 for (final String fieldString : referenceProperties) {
     %>
-    resolveReferencedComponentProperties(props_<%=cid %><%=fieldString %>);
+    if (org.talend.components.api.properties.ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE == props_<%=cid %><%=fieldString %>.referenceType.getValue()) {
+        final String referencedComponentInstanceId_<%=cid %> = props_<%=cid %><%=fieldString %>.componentInstanceId.getStringValue();
+        if (referencedComponentInstanceId_<%=cid %> != null) {
+            org.talend.daikon.properties.Properties referencedComponentProperties_<%=cid %> = (org.talend.daikon.properties.Properties) globalMap.get(
+                referencedComponentInstanceId_<%=cid %> + "_COMPONENT_RUNTIME_PROPERTIES");
+            props_<%=cid %><%=fieldString %>.setReference(referencedComponentProperties_<%=cid %>);
+        }
+    }
     <%
 }
 %>
-registerComponentProperties("<%=cid %>", props_<%=cid %>);
+globalMap.put("<%=cid %>_COMPONENT_RUNTIME_PROPERTIES", props_<%=cid %>);
 
 org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() {
     public Object getComponentData(String componentId, String key) {
