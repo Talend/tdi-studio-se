@@ -590,6 +590,24 @@ private class TalendException extends Exception {
 	}
 }
 
+private void registerComponentProperties(String componentInstanceId, org.talend.components.api.properties.ComponentProperties properties) {
+	globalMap.put(componentInstanceId + "_COMPONENT_PROPERTIES", properties);
+}
+
+private void resolveReferencedComponentProperties(org.talend.components.api.properties.ComponentReferenceProperties<?> refProps) {
+    if (refProps.getReference() != null) {
+        return;
+    }
+    if (org.talend.components.api.properties.ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE == refProps.referenceType.getValue()) {
+        String referencedComponentInstanceId = refProps.componentInstanceId.getStringValue();
+        if (referencedComponentInstanceId != null) {
+            org.talend.daikon.properties.Properties referencedComponentPropertiesInstance = (org.talend.daikon.properties.Properties) globalMap.get(
+                referencedComponentInstanceId + "_COMPONENT_PROPERTIES");
+            refProps.setReference(referencedComponentPropertiesInstance);
+        }
+    }
+}
+
 <% // Methods for RUN IF Error links %>
 <%
 	for (INode node : processNodes) {
