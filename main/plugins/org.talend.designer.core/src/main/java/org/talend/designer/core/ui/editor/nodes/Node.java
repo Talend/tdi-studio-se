@@ -1768,7 +1768,7 @@ public class Node extends Element implements IGraphicalNode {
 
     private void removeSourceMatadata(IConnection connection) {
         Node source = (Node) connection.getSource();
-        if (source.isELTMapComponent()) {
+        if (source.isELTMapComponent() && connection.getLineStyle() != EConnectionType.FLOW_MAIN) {
             IMetadataTable table = connection.getMetadataTable();
             if (0 < source.countConnectionsUsingMetadata(table)) {
                 // still have connetions using this metadataTable, couldn't delete
