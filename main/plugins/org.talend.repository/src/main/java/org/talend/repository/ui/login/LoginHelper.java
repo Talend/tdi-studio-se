@@ -17,8 +17,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -127,6 +129,8 @@ public class LoginHelper {
 
     private IGITProviderService gitProviderService;
 
+    private Map<String, String> licenseMap;
+
     public static LoginHelper getInstance() {
         if (instance == null) {
             instance = new LoginHelper();
@@ -135,6 +139,7 @@ public class LoginHelper {
     }
 
     protected LoginHelper() {
+        licenseMap = new HashMap<String, String>();
         init();
     }
 
@@ -222,6 +227,7 @@ public class LoginHelper {
         if (connectionsBeans != storedConnections) {
             setStoredConnections(connectionsBeans);
         }
+        init();
     }
 
     public void saveLastConnectionBean(ConnectionBean connBean) {
@@ -229,6 +235,7 @@ public class LoginHelper {
         if (connBean != null) {
             lastConnection = connBean.getName();
         }
+        init();
     }
 
     public ConnectionBean getCurrentSelectedConnBean() {
@@ -244,6 +251,10 @@ public class LoginHelper {
 
     protected static ConnectionBean getConnection() {
         return LoginHelper.getInstance().getFirstConnBean();
+    }
+
+    public static boolean isRemoteConnection() {
+        return isRemoteConnection(getConnection());
     }
 
     protected static boolean needRestartForLocal(ConnectionBean curConnection) {
@@ -806,6 +817,22 @@ public class LoginHelper {
             }
         }
         return filteredConnections;
+    }
+
+    public String getLicenseMapKey(String url, String projectLabel, String userId) {
+        return url + "/" + userId + "/" + projectLabel; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public void putLicense(String key, String license) throws PersistenceException {
+        licenseMap.put(key, license);
+    }
+
+    public void clearLicenseMap() {
+        licenseMap.clear();
+    }
+
+    public String getLicense(String key) throws PersistenceException {
+        return licenseMap.get(key);
     }
 
     public void setUsableShell(Shell usableShell) {
