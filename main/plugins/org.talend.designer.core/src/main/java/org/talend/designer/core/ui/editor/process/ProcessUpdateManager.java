@@ -2176,7 +2176,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         if (service != null) {
                             //check pattern name
                             IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
-                            if(service.isSameName(item, (String) nameParam.getValue())){
+                            if(!service.isSameName(item, (String) nameParam.getValue())){
                                 String name =  item.getState().getPath().replaceFirst("Regex", "") + File.separator+  item.getProperty().getDisplayName();
                                 nameParam.setValue(name);
                                 result = new UpdateCheckResult(node);
