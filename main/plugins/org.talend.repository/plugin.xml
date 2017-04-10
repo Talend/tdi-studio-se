@@ -2875,6 +2875,14 @@
               name="ResetItemLabelMigrationTask"
               version="5.2.2">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.0"
+              class="org.talend.repository.model.migration.ChangeDBversionForSybaseIQMigrationTask"
+              id="org.talend.repository.model.migration.ChangeDBversionForSybaseIQMigrationTask"
+              name="ChangeDBversionForSybaseIQMigrationTask"
+              version="6.4.1">
+        </projecttask>
    </extension>
 
    <extension

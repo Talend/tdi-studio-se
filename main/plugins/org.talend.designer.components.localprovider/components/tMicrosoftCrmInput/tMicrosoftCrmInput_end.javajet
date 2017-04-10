@@ -23,12 +23,20 @@ imports="
 
     if(isMsCrm2015OnPremise){
        %>
-          <%@ include file="@{org.talend.designer.components.localprovider}/components/tMicrosoftCrmInput/tMicrosoftCrmInput_end_CXF.javajet"%>
+          <%@ include file="./tMicrosoftCrmInput_end_CXF.javajet"%>
        <%
     }else{
-        %>
-           <%@ include file="@{org.talend.designer.components.localprovider}/components/tMicrosoftCrmInput/tMicrosoftCrmInput_end_AXIS.javajet"%>
+    	  String crmOnlineVersion = ElementParameterParser.getValue(node, "__API_VERSION__");
+        boolean isOnline2016WithOdata="ONLINE".equals(authenticationType) && "API_2016_ODATA".equals(crmOnlineVersion);
+    	  if(isOnline2016WithOdata){
+    	  %>
+           <%@ include file="./tMicrosoftCrmInput_end_odata.javajet"%>
         <%
+    	  }else{
+        %>
+           <%@ include file="./tMicrosoftCrmInput_end_AXIS.javajet"%>
+        <%
+        }
     }
 %>
 	globalMap.put("<%=cid %>_NB_LINE",nb_line_<%=cid%>);

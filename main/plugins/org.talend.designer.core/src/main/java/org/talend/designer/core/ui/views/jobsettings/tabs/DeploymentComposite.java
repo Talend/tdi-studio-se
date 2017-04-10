@@ -39,8 +39,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.BuildExportManager;
@@ -91,6 +94,27 @@ public class DeploymentComposite extends AbstractTabComposite {
         createControl();
         initialize();
         addListeners();
+        checkReadOnly();
+    }
+
+    private void checkReadOnly() {
+        try {
+            String currentVersion = process.getVersion();
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(process.getId());
+            String latestVersion = obj.getVersion();
+            if (!currentVersion.equals(latestVersion)) {
+                groupIdCheckbox.setEnabled(false);
+                groupIdText.setEnabled(false);
+                versionCheckbox.setEnabled(false);
+                versionText.setEnabled(false);
+                if (buildTypeCombo != null) {
+                    buildTypeCombo.getCCombo().setEnabled(false);
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+        
     }
 
     private void createControl() {
@@ -108,7 +132,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 SWT.CHECK);
         groupIdCheckbox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        groupIdText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
+        groupIdText = new Text(composite, SWT.BORDER);
         GridData groupIdTextData = new GridData(GridData.FILL_HORIZONTAL);
         groupIdTextData.widthHint = 200;
         groupIdText.setLayoutData(groupIdTextData);
@@ -117,7 +141,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 SWT.CHECK);
         versionCheckbox.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
-        versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
+        versionText = new Text(composite, SWT.BORDER);
         GridData versionTextData = new GridData(GridData.FILL_HORIZONTAL);
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);

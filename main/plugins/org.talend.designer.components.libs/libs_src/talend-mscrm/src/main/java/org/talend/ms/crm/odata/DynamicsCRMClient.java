@@ -1,7 +1,6 @@
-package org.talend.mscrm;
+package org.talend.ms.crm.odata;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,15 +16,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.olingo.client.api.ODataClient;
+import org.apache.olingo.client.api.communication.ODataClientErrorException;
 import org.apache.olingo.client.api.communication.request.cud.ODataDeleteRequest;
-import org.apache.olingo.client.api.communication.request.cud.UpdateType;
 import org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest;
 import org.apache.olingo.client.api.communication.response.ODataDeleteResponse;
 import org.apache.olingo.client.api.communication.response.ODataRetrieveResponse;
@@ -35,7 +33,6 @@ import org.apache.olingo.client.api.domain.ClientEntitySetIterator;
 import org.apache.olingo.client.api.domain.ClientProperty;
 import org.apache.olingo.client.api.http.HttpClientException;
 import org.apache.olingo.client.api.serialization.ODataSerializer;
-import org.apache.olingo.client.api.serialization.ODataSerializerException;
 import org.apache.olingo.client.api.uri.QueryOption;
 import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.client.core.ODataClientFactory;
@@ -44,6 +41,7 @@ import org.apache.olingo.commons.api.Constants;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.olingo.commons.api.http.HttpHeader;
+import org.apache.olingo.commons.api.http.HttpMethod;
 
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -178,21 +176,27 @@ public class DynamicsCRMClient {
      */
     public ClientEntitySetIterator<ClientEntitySet, ClientEntity> retrieveEntities(QueryOptionConfig queryOption)
             throws ServiceUnavailableException {
-        ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = createEntitySetIteratorRequest(queryOption);
-        int retryTime = 0;
+        boolean hasRetried = false;
         while (true) {
-            ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
-            if (response.getStatusCode() == HttpStatus.SC_OK) {
-                ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
-                return entitySetIterator;
-            } else {
-                if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED && retryTime < maxRetryTimes) {
+            ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = null;
+            try {
+                ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = createEntitySetIteratorRequest(
+                        queryOption);
+                response = request.execute();
+                if (isResponseSuccess(response.getStatusCode())) {
+                    return response.getBody();
+                }
+            } catch (ODataClientErrorException clientException) {
+                // If get 401 Unauthorized, it would refresh the token
+                if (clientException.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
                     refreshToken();
-                    request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+                    hasRetried = true;
                     continue;
                 }
-                throw new HttpClientException(response.getStatusMessage());
+                // If have been refresh the token or still got other kind of exception
+                throw clientException;
             }
+            throw new HttpClientException(response.getStatusMessage());
         }
 
     }
@@ -206,12 +210,9 @@ public class DynamicsCRMClient {
      * @throws ServiceUnavailableException
      */
     public void insertEntity(ClientEntity entity) throws ServiceUnavailableException {
-        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet);
-        HttpPost post = new HttpPost(uriBuilder.build());
-        post.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+        URIBuilder insertURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet);
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        post.setEntity(httpEntity);
-        executeRequest(post);
+        createAndExecuteRequest(insertURIBuilder.build(), httpEntity, HttpMethod.POST);
     }
 
     /**
@@ -224,13 +225,10 @@ public class DynamicsCRMClient {
      * @throws ServiceUnavailableException
      */
     public void updateEntity(ClientEntity entity, String keySegment) throws ServiceUnavailableException {
-        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
+        URIBuilder updateURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
                 .appendKeySegment(UUID.fromString(keySegment));
-        HttpPatch patch = new HttpPatch(uriBuilder.build());
-        patch.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        patch.setEntity(httpEntity);
-        executeRequest(patch);
+        createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
     }
 
     /**
@@ -241,16 +239,31 @@ public class DynamicsCRMClient {
      * 
      * @throws ServiceUnavailableException
      */
-    public void deleteEntity(String keySegment) throws ServiceUnavailableException {
-        URIBuilder uriBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
+    public ODataDeleteResponse deleteEntity(String keySegment) throws ServiceUnavailableException {
+        URIBuilder deleteURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
                 .appendKeySegment(UUID.fromString(keySegment));
-        ODataDeleteRequest entityDeleteRequest = odataClient.getCUDRequestFactory().getDeleteRequest(uriBuilder.build());
-        entityDeleteRequest.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
-        ODataDeleteResponse response = entityDeleteRequest.execute();
-        if (response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-            refreshToken();
-            entityDeleteRequest.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
-            entityDeleteRequest.execute();
+        boolean hasRetried = false;
+        while (true) {
+            ODataDeleteResponse response = null;
+            try {
+                ODataDeleteRequest entityDeleteRequest = odataClient.getCUDRequestFactory()
+                        .getDeleteRequest(deleteURIBuilder.build());
+                entityDeleteRequest.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+                response = entityDeleteRequest.execute();
+                if (response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                    return response;
+                }
+            } catch (ODataClientErrorException clientException) {
+                // If get 401 Unauthorized, it would refresh the token
+                if (clientException.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
+                    refreshToken();
+                    hasRetried = true;
+                    continue;
+                }
+                // If have been refresh the token or still got other kind of exception
+                throw new HttpClientException(clientException);
+            }
+            throw new HttpClientException(response.getStatusMessage());
         }
     }
 
@@ -340,28 +353,41 @@ public class DynamicsCRMClient {
     }
 
     /**
-     * Executes a request using the httpClient
+     * Created and executes a request
      * 
-     * @param httpClient the HTTP client which used to execute request
-     * @param request the request to execute
+     * @param uri the request URI
+     * @param httpEntity the entity to send.
+     * @param method HTTP method
      * 
      * @return the response to the request.
      * @throws ServiceUnavailableException
      */
 
-    protected HttpResponse executeRequest(HttpUriRequest request) throws ServiceUnavailableException {
-        if (!reuseHttpClient) {
-            newHttpClient();
-        }
+    protected HttpResponse createAndExecuteRequest(URI uri, HttpEntity httpEntity, HttpMethod method)
+            throws ServiceUnavailableException {
+        boolean hasRetried = false;
         while (true) {
             try {
+                if (!reuseHttpClient) {
+                    newHttpClient();
+                }
+                HttpEntityEnclosingRequestBase request = null;
+                if (method == HttpMethod.POST) {
+                    request = new HttpPost(uri);
+                } else if (method == HttpMethod.PATCH) {
+                    request = new HttpPatch(uri);
+                } else {
+                    throw new HttpClientException("Unsupported operation:" + method);
+                }
+                request.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+                request.setEntity(httpEntity);
                 HttpResponse response = httpClient.execute(request);
                 if (isResponseSuccess(response.getStatusLine().getStatusCode())) {
                     return response;
                 } else {
-                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+                    if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
                         refreshToken();
-                        request.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+                        hasRetried = true;
                         continue;
                     }
                     throw new HttpClientException(response.getStatusLine().getReasonPhrase());

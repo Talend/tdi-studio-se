@@ -1,4 +1,4 @@
-package org.talend.mscrm;
+package org.talend.ms.crm.odata;
 
 public enum LogicalOperator {
     /**

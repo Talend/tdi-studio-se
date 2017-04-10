@@ -1,0 +1,84 @@
+<%
+    String action = ElementParameterParser.getValue(node,"__ACTION__");
+	 boolean emptyLookupIntoNull = "true".equals(ElementParameterParser.getValue(node,"__EMPTY_LOOKUP_TO_NULL__"));
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    if ((metadatas!=null)&&(metadatas.size()>0)) {//1
+        IMetadataTable metadata = metadatas.get(0);
+        if (metadata!=null) {//2
+            List<? extends IConnection> conns = node.getIncomingConnections();
+            for (IConnection conn : conns) {//3
+					if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
+						String connName = conn.getName();
+						List<IMetadataColumn> columns = metadata.getListColumns();
+                  int sizeColumns = columns.size();
+                  String idColumnName = null;
+                  %>
+                  org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = client_<%=cid%>.newEntity();
+                  <%
+                  if("insert".equals(action) || "update".equals(action)){
+                  	List<Map<String, String>> lookupMapping = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__LOOKUP_MAPPING__");
+                  	Map<String,String> lookupMaps = new java.util.HashMap<String,String>();
+							if(lookupMapping.size()>0){
+								for(Map<String, String> lookupMapper:lookupMapping){
+			                    lookupMaps.put(lookupMapper.get("INPUT_COLUMN"),lookupMapper.get("TYPE"));
+			                }
+			            }
+	                    for(int i = 0; i < sizeColumns; i++){
+	                			IMetadataColumn column = columns.get(i);
+	                			JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+	                       	boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType(javaType, column.isNullable());
+	                       	if("update".equals(action)){
+                                if(column.isKey() && idColumnName == null){
+                                    idColumnName = column.getLabel();
+                                    continue;
+                                }
+                            }
+                            
+		  			    			if(lookupMaps.containsKey(column.getLabel())){
+                           %>
+                            		if(<%=connName%>.<%=column.getLabel()%> != null<%if(emptyLookupIntoNull) {%> && !(String.valueOf(<%=connName%>.<%=column.getLabel()%>).isEmpty())<%}%>){
+	                            		client_<%=cid%>.addEntityNavigationLink(entity_<%=cid%>, <%=lookupMaps.get(column.getLabel())%>,"<%=column.getOriginalDbColumnName()%>", <%=connName%>.<%=column.getLabel()%>);
+	                            	}
+                           <%
+                           }else{
+	                           if(!isPrimitive && ignoreNull) {
+			  							%>   				
+			  			    				if(<%=connName%>.<%=column.getLabel()%> != null){
+			  			    				
+			  			    			<%
+			  			    			}
+	                           %>
+                           		client_<%=cid%>.addEntityProperty(entity_<%=cid%>, "<%=column.getLabel()%>", org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getType()%>, 	<%=connName%>.<%=column.getLabel()%>);
+	                           <%
+	                           if(!isPrimitive && ignoreNull) {
+			  			    			%>
+			  			    				}
+			  							<%
+			  							}
+                           }
+                			}
+	  						}
+                    %>
+                        //<%=action%>
+                    	<%
+                   	if("insert".equals(action)){
+							%>
+                    		client_<%=cid%>.insertEntity(entity_<%=cid%>);
+                    	<%
+                    	}else if("update".equals(action)){
+                    	%>
+                 			client_<%=cid%>.updateEntity( entity_<%=cid%>, <%=connName%>.<%=idColumnName%>);
+                    	<%
+                    	} else if ("delete".equals(action)){
+                    	%>
+                    		client_<%=cid%>.deleteEntity(<%=connName%>.Id);
+                    	<%
+                    	}
+                    	%>
+                    	nb_line_<%=cid %>++;
+                <%
+                }//4
+            }//3
+        }//2
+    }//1
+    %>
