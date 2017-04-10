@@ -1,0 +1,43 @@
+<%@ jet
+imports="
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+		"
+%>
+<%
+	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	String userName = ElementParameterParser.getValue(node, "__USERNAME__");
+	String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
+	String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+	String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
+	
+	//TODO remove useless code
+	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+	String maxRetryTimes = ElementParameterParser.getValue(node, "__MAX_RECONN_ATTEMPS__");
+	String intevralTime = ElementParameterParser.getValue(node, "__ATTEMPS_INTERVAL_TIME__");
+	boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+	%>
+	int nb_line_<%=cid%> = 0;
+	<%
+	String passwordFieldName = "__PASSWORD__";
+	String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+ 	String customEntityName = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+ 	if("CustomEntitySET".equals(entitySetName)){
+	%>
+		String entitySetName_<%=cid%>=<%=customEntityName%>;
+	<%
+	}else{
+	%>
+		String entitySetName_<%=cid%>="<%=entitySetName%>";
+	<%	
+	}
+	%>
+
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+	org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+	org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
+	client_<%=cid%>.setTimeout(<%=timeout%>);
+	client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
+	client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);

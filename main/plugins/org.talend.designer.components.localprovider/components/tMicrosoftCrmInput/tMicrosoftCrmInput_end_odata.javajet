@@ -1,0 +1,45 @@
+<%@ jet
+imports="
+    	org.talend.core.model.process.INode
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.core.model.process.ElementParameterParser
+		java.util.List
+		"
+%>
+<%
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+	IMetadataTable metadata = metadatas.get(0);
+
+	if (metadata != null) {
+		List<IMetadataColumn> columnList = metadata.getListColumns();
+		int nbSchemaColumns = columnList.size();
+
+		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+		// if output columns are defined
+		if (nbSchemaColumns > 0 && outgoingConns != null && outgoingConns.size() > 0){
+
+			IConnection outgoingConn = outgoingConns.get(0);
+
+			if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+			%>
+    				}
+    				// Gets the next page link if exists.
+    				if (iterator_<%=cid%>.getNext() != null) {
+                nextPageURI_<%=cid%> = iterator_<%=cid%>.getNext();
+	            } else {
+	                break;
+	            }
+				}
+
+				<%
+			}
+		}
+	}
+}
+%>

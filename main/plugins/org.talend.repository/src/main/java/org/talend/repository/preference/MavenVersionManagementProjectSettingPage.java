@@ -116,6 +116,9 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             if (status == ERepositoryStatus.LOCK_BY_OTHER) {
                 return false;
             }
+            if (node.getObject().isDeleted()) {
+                return false;
+            }
         }
         ERepositoryObjectType type = node.getObjectType();
         if (type == null) {

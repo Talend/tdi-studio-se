@@ -1,0 +1,193 @@
+<%@ jet
+imports="
+        java.util.List
+        java.util.Map
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.types.JavaType
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+		"
+%>
+<%
+List<IMetadataTable> metadatas = node.getMetadataList();
+if ((metadatas != null) && (metadatas.size() > 0)) {
+	IMetadataTable metadata = metadatas.get(0);
+
+	if (metadata != null) {
+		List<IMetadataColumn> columnList = metadata.getListColumns();
+		int nbSchemaColumns = columnList.size();
+		List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+
+		// if output columns are defined
+		if(nbSchemaColumns > 0 && outgoingConns != null && outgoingConns.size() > 0){
+			String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+			String userName = ElementParameterParser.getValue(node, "__USERNAME__");
+			String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
+			String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
+			String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
+			String maxRetryTimes = ElementParameterParser.getValue(node, "__MAX_RECONN_ATTEMPS__");
+			String intevralTime = ElementParameterParser.getValue(node, "__ATTEMPS_INTERVAL_TIME__");
+			boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+			
+			String passwordFieldName = "__PASSWORD__";
+			String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
+     		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
+     		if("CustomEntitySET".equals(entitySetName)){
+			%>
+				String entitySetName_<%=cid%>=<%=customEntityname%>;
+			<%
+			}else{
+			%>
+				String entitySetName_<%=cid%>="<%=entitySetName%>";
+			<%	
+			}
+			boolean debug = ("true").equals(ElementParameterParser.getValue(node,"__DEBUG__"));
+			if(debug){
+			%>
+				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+		    	System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+		    	System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
+		    	System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "debug");
+			<%
+			}else{
+			%>
+				System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.NoOpLog");
+			<%
+			}
+			%>
+
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+				org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+				org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
+				client_<%=cid%>.setTimeout(<%=timeout%>);
+				client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
+				client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
+				String queryFilter_<%=cid%>=null;
+				<%
+	     		String logical = ElementParameterParser.getValue(node,"__LOGICAL_OP__");
+	     		boolean isSpecifyComplexFilter="true".equals(ElementParameterParser.getValue(node, "__SPECIFY_COMPLEX_FILTER__"));
+	     		if(isSpecifyComplexFilter){
+	     			String customQueryFilter = ElementParameterParser.getValue(node, "__CUSTOM_FILTER__");
+	     			%>
+	     			queryFilter_<%=cid%>=<%=customQueryFilter%>;
+	     		<%
+	     		}else{
+		     		List<Map<String, String>> keyColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__CONDITIONS__");
+		        	if(keyColumns.size()>0 ){
+					%>
+						java.util.List<String> fields_<%=cid%> = new java.util.ArrayList<String>();
+						java.util.List<org.talend.ms.crm.odata.ConditionOperator> conditionOperators_<%=cid%> = new java.util.ArrayList<org.talend.ms.crm.odata.ConditionOperator>();
+			        	java.util.List<Object> values_<%=cid%> = new java.util.ArrayList<Object>();
+		            <%
+		            for(Map<String, String> keyColumn:keyColumns){
+		        		%>
+		        			fields_<%=cid%>.add("<%=keyColumn.get("INPUT_COLUMN")%>");
+		        			conditionOperators_<%=cid%>.add(org.talend.ms.crm.odata.ConditionOperator.<%=keyColumn.get("OPERATOR")%>);
+		        			values_<%=cid%>.add(<%=keyColumn.get("RVALUE")%>);
+		       		<%
+		        		}
+		        		%>
+		        		queryFilter_<%=cid%>=org.talend.ms.crm.odata.QueryFilterUtil.getURIFilterString(org.talend.ms.crm.odata.LogicalOperator.<%=logical%>, fields_<%=cid%>, conditionOperators_<%=cid%>, values_<%=cid%>);
+		        	<%
+		        	}
+	     		}
+	     		boolean isOrderBy="true".equals(ElementParameterParser.getValue(node, "__ORDER_BY__"));
+	     		List<Map<String, String>> orderByColumns = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ORDER_BY_TABLE__");
+	     		if(isOrderBy && orderByColumns.size()>0){
+	        		StringBuilder sbOrderBy = new StringBuilder();
+	        		for(int i=0;i<orderByColumns.size();i++){
+	        			Map<String, String> orderByColumn =orderByColumns.get(i);
+	        			if(i!=0){
+	        				sbOrderBy.append(",");
+	        			}
+	        			sbOrderBy.append(orderByColumn.get("COLUMN_NAME"));
+	        			if("true".equalsIgnoreCase(orderByColumn.get("DESC"))){
+	        				sbOrderBy.append(" desc");
+	        			}
+	        		}
+	        		%>
+	     			String orderBy_<%=cid%>="<%=sbOrderBy.toString()%>";
+	     			<%
+	     		}
+	        	StringBuilder sb = new StringBuilder("");
+	        	for(IMetadataColumn column: columnList){
+	  				sb.append("\"");
+	  				sb.append(column.getLabel());
+	  				sb.append("\",");
+	        	}
+	        	sb.deleteCharAt(sb.lastIndexOf(","));
+	        	IConnection outgoingConn = outgoingConns.get(0);
+				if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	        	%>
+					org.talend.ms.crm.odata.QueryOptionConfig queryOption_<%=cid%> = new org.talend.ms.crm.odata.QueryOptionConfig();
+		        	queryOption_<%=cid%>.setReturnEntityProperties(new String[]{<%=sb%>});
+		        	//TODO need to support top(limit)?
+		        	// queryOption_<%=cid%>.setTop(5000);
+					queryOption_<%=cid%>.setFilter(queryFilter_<%=cid%>);
+					<%
+					if(isOrderBy && orderByColumns.size()>0){
+					%>
+						queryOption_<%=cid%>.setOrderBy(orderBy_<%=cid%>);
+					<%
+					}
+					%>
+				   java.net.URI nextPageURI_<%=cid%>=null;
+		        	while(true){
+		        		org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest<org.apache.olingo.client.api.domain.ClientEntitySet,org.apache.olingo.client.api.domain.ClientEntity> 
+		        		request_<%=cid%> = client_<%=cid%>.createEntitySetIteratorRequest(queryOption_<%=cid%>);
+		        		if(nextPageURI_<%=cid%>!=null){
+		        			request_<%=cid%>.setURI(nextPageURI_<%=cid%>);
+		        		}
+		        		org.apache.olingo.client.api.communication.response.ODataRetrieveResponse<org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, 
+		        		org.apache.olingo.client.api.domain.ClientEntity>> response_<%=cid%> = request_<%=cid%>.execute();
+        				org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, org.apache.olingo.client.api.domain.ClientEntity> iterator_<%=cid%> = response_<%=cid%>.getBody();
+		        		while(iterator_<%=cid%>.hasNext()){
+		        			org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = iterator_<%=cid%>.next();
+		               nb_line_<%=cid%>++;
+	                  <%
+							for(int i = 0; i < columnList.size(); i++){//for begin
+	
+								IMetadataColumn column = columnList.get(i);
+	
+								String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+	
+								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+	
+								String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+								%>
+								org.apache.olingo.client.api.domain.ClientProperty property_<%=column.getLabel()%>_<%=cid%> =entity_<%=cid%>.getProperty("<%=column.getLabel()%>");
+								if(property_<%=column.getLabel()%>_<%=cid%>!=null && !property_<%=column.getLabel()%>_<%=cid%>.hasNullValue()){
+		        					<%
+		       						if(javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT){
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = property_<%=column.getLabel()%>_<%=cid%>.getValue().toString();
+		        					<%
+		        					}else if(javaType == JavaTypesManager.DATE){ // Date
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_Date(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString(), <%= patternValue %>);
+		        					<%
+		        					}else{ // other
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_<%=typeToGenerate%>(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString());
+		        					<%
+		        					}
+		        					%>
+	        					}else{
+	        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+	        					}
+	        				<%
+							}//for end
+							%>
+				<%
+			}
+		}
+	}
+}
+%>

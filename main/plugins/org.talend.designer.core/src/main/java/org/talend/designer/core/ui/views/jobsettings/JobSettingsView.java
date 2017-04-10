@@ -519,7 +519,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             if (allowVerchange) {
                 category.add(EComponentCategory.VERSIONS);
             }
-            if (!isJoblet) {
+            if (!isJoblet && !ProcessUtils.isTestContainer(process) && ERepositoryObjectType
+                    .getItemType(process.getProperty().getItem()) != ERepositoryObjectType.PROCESS_ROUTELET) {
                 category.add(EComponentCategory.DEPLOYMENT);
             }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {

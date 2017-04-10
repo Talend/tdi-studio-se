@@ -32,7 +32,7 @@
     if (isTestContainer) {
         className = className + "Test";
     }
-
+    
     List<INode> rootNodes = (List<INode>)v.get(1);
 	boolean containsTPartitioner = process.getNodesOfType("tPartitioner").size() > 0 ? true : false;
     boolean stats = codeGenArgument.isStatistics();
@@ -40,7 +40,7 @@
     boolean isRunInMultiThread = codeGenArgument.getIsRunInMultiThread();
     List<IContextParameter> params = new ArrayList<IContextParameter>();
     params=process.getContextManager().getDefaultContext().getContextParameterList();
-
+    
 	String jobFolderName = "";
 	IProcess baseProcess = ProcessUtils.getTestContainerBaseProcess(process);
 	if (baseProcess != null) {
@@ -123,7 +123,7 @@
     if (ftpComponentsList.size() > 0) {
         exist_tFtp = true;
     }
-
+    
     boolean exist_tS3 = false;
     List<INode> s3ComponentsList = (List<INode>)process.getNodesOfType("tS3Connection");
     if (s3ComponentsList.size() > 0) {
@@ -190,7 +190,7 @@
         public boolean useDatastax(INode node){
             String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
             String apiType = ElementParameterParser.getValue(node, "__API_TYPE__");
-            return "CASSANDRA_2_2".equals(dbVersion) || "CASSANDRA_3_0".equals(dbVersion) || ("CASSANDRA_2_0_0".equals(dbVersion) && "DATASTAX".equals(apiType));
+            return "CASSANDRA_2_2".equals(dbVersion) || "CASSANDRA_3_0".equals(dbVersion) || ("CASSANDRA_2_0_0".equals(dbVersion) && "DATASTAX".equals(apiType)); 
         }
     }
 %>
@@ -276,13 +276,13 @@
         System.exit(exitCode);
     }
 
-   <%
+   <% 
     if (isTestContainer) {
          List<String> instanceList =  ProcessUtils.getTestInstances(process);
          String encoding = System.getProperty("file.encoding");
          for(String instance : instanceList)
          {
-         String context = ProcessUtils.getInstanceContext(process,instance);
+         String context = ProcessUtils.getInstanceContext(process,instance); 
         %>
       @Test
         public void test<%=instance%>() throws java.lang.Exception{
@@ -303,7 +303,7 @@
             String paramemterName = ProcessUtils.getTestDataParamemter(process, instance, testData);
             if(path!=null&&path.length()>0){
             %>
-
+            
             String instance_<%=testData%>=null;
             <%
             if(ProcessUtils.isSpark(process)){
@@ -313,7 +313,7 @@
                 fileContentEnCodeStr = (new sun.misc.BASE64Encoder()).encode(path.getBytes("UTF-8"));
             } catch (java.io.UnsupportedEncodingException e) {
                 e.printStackTrace();
-            }
+            } 
             StringBuilder result = new StringBuilder();
             String[] arrayStr = fileContentEnCodeStr.split(lineSeparator);
             for(String item : arrayStr){
@@ -326,13 +326,13 @@
                 } catch (java.lang.Exception e) {
                     e.printStackTrace();
                 }
-
+                
             <%
             }else if(paramemterName!=null){
             %>
                 java.net.URL url_<%=testData%> = getClass().getResource("<%=path%>");
                 instance_<%=testData%>="<%=paramemterName%>=" + java.net.URLDecoder.decode(url_<%=testData%>.getPath(), "<%=encoding%>");
-
+            
             <%
             }else{
             %>
@@ -345,19 +345,19 @@
             paraList_<%=instance%>.add(instance_<%=testData%>);
         <%
          }
-
+               
         }
-        %>
+        %>  
         String[] arrays = new String[paraList_<%=instance%>.size()];
         for(int i=0;i<paraList_<%=instance%>.size();i++){
             arrays[i] = (String)paraList_<%=instance%>.get(i);
         }
         <%=className %>Class.runJobInTOS(arrays);
-
+       
         String errors = (String)junitGlobalMap.get("tests.log");
         Integer nbFailure = (Integer)junitGlobalMap.get("tests.nbFailure");
         assertTrue("Failure="+nbFailure+java.lang.System.getProperty("line.separator")+errors, errors.isEmpty());
-
+        
          if(<%=className %>Class.exception!=null){
             throw <%=className %>Class.exception;
         }
@@ -663,8 +663,6 @@ if(execStat) {
 
         List<INode> postjobNodes = new ArrayList<INode>();
 
-        List<INode> hadoopConfNodes = new ArrayList<INode>();
-
         INode implicit_Context = null;
 
         for (INode rootNode : rootNodes) {
@@ -681,30 +679,11 @@ if(execStat) {
                 continue;
             }
 
-            if (componentName.equals("tHadoopConfManager")) {
-                hadoopConfNodes.add(rootNode);
-                continue;
-            }
-
             if (uniqueName.startsWith("Implicit_Context_")) {
                 implicit_Context = rootNode;
                 continue;
             }
         }
-%>
-
-<%if (hadoopConfNodes.size() > 1) {%>
-    System.err.println("Only one hadoop configuration is allowed in one job!");
-<%}%>
-
-<%
-// run tHadoopConfManager component if there is it.
- if(!hadoopConfNodes.isEmpty()) {
-    INode hadoopConfNode = hadoopConfNodes.get(0);
-%>
-<%=createCallProcess(hadoopConfNode, className, false) %>
-<%
- }
 %>
 
 <%
@@ -757,7 +736,6 @@ this.globalResumeTicket = false;//to run others jobs
             //filter the special subjob
             if("tPrejob".equals(componentName)) continue;
             if("tPostjob".equals(componentName)) continue;
-            if("tHadoopConfManager".equals(componentName)) continue;
 
             //bug16808 when use parallel option at Output components, that will multi thread
             if(componentName.startsWith("tAsyncIn")) continue;
@@ -826,7 +804,6 @@ this.globalResumeTicket = false;//to run others jobs
             //filter the special subjob
             if("tPrejob".equals(componentName)) continue;
             if("tPostjob".equals(componentName)) continue;
-            if("tHadoopConfManager".equals(componentName)) continue;
             if(implicit_Context!=null && implicit_Context.getUniqueName().equals(uniqueName)) continue;
 
             if (!componentName.equals("tLogCatcher") && !componentName.equals("tFlowMeterCatcher") && !componentName.equals("tAssertCatcher") && !componentName.equals("tStatCatcher") && !componentName.equals("tAsyncIn")) {
@@ -978,7 +955,7 @@ if (execStat) {
             for (INode momNode : momComponentsList) {
             // fix for TESB-16026
             if (!(Boolean.valueOf(ElementParameterParser.getValue(momNode, "__USE_CONNECTION__")) || Boolean.valueOf(ElementParameterParser.getValue(momNode, "__USE_SHARED_CONNECTION__")))) {
-            // end fix for TESB-16026
+            // end fix for TESB-16026            
 %>
             obj_conn = globalMap.remove("connection_<%=momNode.getUniqueName() %>");
             if (null != obj_conn) {
@@ -988,7 +965,7 @@ if (execStat) {
             }
             // fix for TESB-16026
             }
-            // end fix for TESB-16026
+            // end fix for TESB-16026            
 %>
         } catch (java.lang.Exception e) {
         }
@@ -1040,7 +1017,7 @@ if (execStat) {
         try {
             Object obj_cluster;
             Object obj_conn;
-<%  for (INode cassandraDbNode : cassandraComponentsList) {
+<%  for (INode cassandraDbNode : cassandraComponentsList) { 
         if((new API_selector()).useDatastax(cassandraDbNode)) { %>
             obj_cluster = globalMap.remove("cluster_<%=cassandraDbNode.getUniqueName()%>");
             obj_conn = globalMap.remove("connection_<%=cassandraDbNode.getUniqueName()%>");
@@ -1062,11 +1039,11 @@ if (execStat) {
     }
 <%   }//End if
 %>
-
+		
 <%  if(exist_tHBase) { %>
     private void closeHBaseConnections() {
         try {
-<%
+<%    
 	for (INode hbaseComponent : hbaseComponentsList) {
 
         String hbaseDistribution = ElementParameterParser.getValue(hbaseComponent, "__DISTRIBUTION__");
@@ -1081,7 +1058,7 @@ if (execStat) {
         }
 
         boolean isCustom = hbaseDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
-
+		
 	    boolean isHadoop2 = "HADOOP_2".equals(ElementParameterParser.getValue(hbaseComponent, "__HADOOP_CUSTOM_VERSION__"));%>
    			org.apache.hadoop.conf.Configuration conn_<%=hbaseComponent.getUniqueName()%> =(org.apache.hadoop.conf.Configuration)globalMap.get("conn_<%=hbaseComponent.getUniqueName()%>");
 			if(conn_<%=hbaseComponent.getUniqueName()%> != null )
@@ -1138,7 +1115,7 @@ if (execStat) {
 <%    for (INode s3Component : s3ComponentsList) { %>
     	com.amazonaws.services.s3.AmazonS3Client conn_<%=s3Component.getUniqueName() %> = (com.amazonaws.services.s3.AmazonS3Client)globalMap.get("conn_<%=s3Component.getUniqueName() %>");
 	    if(conn_<%=s3Component.getUniqueName() %> !=null){
-			conn_<%=s3Component.getUniqueName() %>.shutdown();
+			conn_<%=s3Component.getUniqueName() %>.shutdown();	
 		}
 <%    } %>
         } catch (java.lang.Exception e) {
@@ -1187,7 +1164,7 @@ if (execStat) {
     	org.talend.jpalo.paloconnection pConn_<%=paloComponent.getUniqueName()%> = (org.talend.jpalo.paloconnection)globalMap.get("pConn_<%=paloComponent.getUniqueName()%>");
 	    if(pConn_<%=paloComponent.getUniqueName()%> !=null){
 					pConn_<%=paloComponent.getUniqueName() %>.logout();
-
+	
 		}
 <%    } %>
         } catch (java.lang.Exception e) {
@@ -1202,7 +1179,7 @@ if (execStat) {
 		org.xmldb.api.base.Collection col_<%=existComponent.getUniqueName()%> = (org.xmldb.api.base.Collection)globalMap.get("col_<%=existComponent.getUniqueName()%>");
 	    if(col_<%=existComponent.getUniqueName()%> !=null){
 					col_<%=existComponent.getUniqueName()%>.close();
-
+	
 		}
 <%    } %>
         } catch (java.lang.Exception e) {
@@ -1214,7 +1191,7 @@ if (execStat) {
     private void closeGSConnections() {
         try {
 <%    for (INode gsComponent : gsComponentsList) { %>
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> =
+		org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=gsComponent.getUniqueName()%> = 
 				(org.jets3t.service.impl.rest.httpclient.GoogleStorageService)globalMap.get("service_<%=gsComponent.getUniqueName()%>");
 		if(service_<%=gsComponent.getUniqueName()%> !=null){
 				service_<%=gsComponent.getUniqueName()%>.shutdown();
@@ -1251,7 +1228,7 @@ if (execStat) {
         }
 %>
 <%
-
+        
         for (INode cassandraDbNode : cassandraComponentsList) {
             if((new API_selector()).useDatastax(cassandraDbNode)) { %>
             connections.put("connection_<%=cassandraDbNode.getUniqueName() %>", globalMap.get("connection_<%=cassandraDbNode.getUniqueName() %>"));

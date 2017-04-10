@@ -24,6 +24,10 @@
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
         <property name="basePath" value="${endpoint.originalAddress}"/>
         <property name="scan" value="false"/>
+        <property name="title" value="${job.name} REST Application"/>
+        <property name="contact"><null/></property>
+        <property name="license"><null/></property>
+        <property name="licenseUrl"><null/></property>
     </bean>
 #end
 
@@ -56,6 +60,9 @@
 #end
 #if ($endpoint.useAuthentication && $endpoint.authenticationType == "SAML")
 			<bean class="org.apache.cxf.rs.security.saml.SamlHeaderInHandler" />
+#end
+#if ($endpoint.useAuthentication && $endpoint.authenticationType == "OIDC_PASSWORD_GRANT")
+			<bean class="org.talend.esb.security.oidc.OidcAccessTokenValidator" />
 #end
 		</jaxrs:providers>
 		<jaxrs:features>
