@@ -25,11 +25,11 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask {
 
-	private static final Map<String, String> searchOperatorMapping;
-	
-	static {
-		searchOperatorMapping = new HashMap<String, String>();
-		
+    private static final Map<String, String> searchOperatorMapping;
+
+    static {
+        searchOperatorMapping = new HashMap<String, String>();
+
         // String Operators
         searchOperatorMapping.put("S-contains", "String.contains");
         searchOperatorMapping.put("S-doesNotContain", "String.doesNotContain");
@@ -96,11 +96,11 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
         // Boolean Operators
         searchOperatorMapping.put("B-boolean", "Boolean");
 
-	}
-	
+    }
+
     @Override
     public Date getOrder() {
-       return new GregorianCalendar(2017, 2, 24, 10, 0, 0).getTime();
+        return new GregorianCalendar(2017, 2, 24, 10, 0, 0).getTime();
     }
 
     @Override
@@ -117,89 +117,89 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
     }
 
     @Override
-	protected IComponentConversion getComponentConversion(ProcessType processType, ComponentCategory componentCategory,
-			Properties props) {
-    	
-		return new ComponentConversion(processType, componentCategory, props) {
-			
-			@Override
-			protected void processElementParameter(ElementParameterContext ctx, NamedThing target) {
-	        	if ("MODULENAME".equals(ctx.getOldParamName())) {
-	            	Property<Object> property = (Property<Object>) target;
-					Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
-	                property.setValue("\"" + value + "\"");
-	        		
-	        	} else if ("tNetsuiteInput".equals(ctx.getComponentName()) && "CONDITIONS".equals(ctx.getOldParamName())) {
-	        		processSearchConditionsTable(ctx, target);
-		        	
-		    	} else if ("tNetsuiteOutput".equals(ctx.getComponentName()) && "ACTION".equals(ctx.getOldParamName())) {
-					Property<Object> property = (Property<Object>) target;
-					Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
-					// Map INSERT action to ADD, other actions are mapped as is
-					if ("INSERT".equals(value)) {
-						value = "ADD";
-					}
-					property.setValue(value);
-					
-		    	} else {
-		    		super.processElementParameter(ctx, target);
-		    	}
-			}
-			
-		};
-	}
+    protected IComponentConversion getComponentConversion(ProcessType processType, ComponentCategory componentCategory,
+            Properties props) {
 
-	private void processSearchConditionsTable(ElementParameterContext ctx, NamedThing target) {
-		ComponentProperties searchQueryProps = (ComponentProperties) target;
-		ElementParameterType paramType = ctx.getParamType();
+        return new ComponentConversion(processType, componentCategory, props) {
 
-		List<ElementValueType> columns = paramType.getElementValue();
-		
-		if (!(columns != null && columns.size() > 0)) {
-			return;
-		}
+            @Override
+            protected void processElementParameter(ElementParameterContext ctx, NamedThing target) {
+                if ("MODULENAME".equals(ctx.getOldParamName())) {
+                    Property<Object> property = (Property<Object>) target;
+                    Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
+                    property.setValue("\"" + value + "\"");
 
-		Map<String, String> columnMapping = new HashMap<String, String>();
-		columnMapping.put("INPUT_COLUMN", "field");
-		columnMapping.put("OPERATOR", "operator");
-		columnMapping.put("RVALUE", "value1");
-		columnMapping.put("RVALUE2", "value2");
-		
-		List<String> fieldPropPossibleValues = new ArrayList<String>();
-		
-		List<Map<String, Object>> tableEntries = new ArrayList<Map<String, Object>>();
-		Map<String, Object> tableEntry = null;
-		for (ElementValueType column : columns) {
-			String sourceName = column.getElementRef();
-			
-			if ("INPUT_COLUMN".equals(sourceName)) {
-				if (tableEntry != null) {
-					tableEntries.add(tableEntry);
-				}
-				tableEntry = new HashMap<String, Object>();
-			}
-			
-			String targetName = columnMapping.get(sourceName);
-			Object targetValue = column.getValue();
-			
-			if ("field".equals(targetName)) {
-				String mappedFieldName = toInitialLower(targetValue.toString());
-				targetValue = mappedFieldName;
-				fieldPropPossibleValues.add(mappedFieldName);
-				
-			} else if ("operator".equals(targetName)) {
-				String mappedOperatorName = searchOperatorMapping.get(targetValue.toString());
-				if (mappedOperatorName != null) {
-					targetValue = mappedOperatorName;
-				}
-			}
-			
-			tableEntry.put(targetName, targetValue);
-		}
-		tableEntries.add(tableEntry);
-		
+                } else if ("tNetsuiteInput".equals(ctx.getComponentName()) && "CONDITIONS".equals(ctx.getOldParamName())) {
+                    processSearchConditionsTable(ctx, target);
+
+                } else if ("tNetsuiteOutput".equals(ctx.getComponentName()) && "ACTION".equals(ctx.getOldParamName())) {
+                    Property<Object> property = (Property<Object>) target;
+                    Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
+                    // Map INSERT action to ADD, other actions are mapped as is
+                    if ("INSERT".equals(value)) {
+                        value = "ADD";
+                    }
+                    property.setValue(value);
+
+                } else {
+                    super.processElementParameter(ctx, target);
+                }
+            }
+
+        };
+    }
+
+    private void processSearchConditionsTable(ElementParameterContext ctx, NamedThing target) {
+        ComponentProperties searchQueryProps = (ComponentProperties) target;
+        ElementParameterType paramType = ctx.getParamType();
+
+        List<ElementValueType> columns = paramType.getElementValue();
+
+        if (!(columns != null && columns.size() > 0)) {
+            return;
+        }
+
+        Map<String, String> columnMapping = new HashMap<String, String>();
+        columnMapping.put("INPUT_COLUMN", "field");
+        columnMapping.put("OPERATOR", "operator");
+        columnMapping.put("RVALUE", "value1");
+        columnMapping.put("RVALUE2", "value2");
+
+        List<String> fieldPropPossibleValues = new ArrayList<String>();
+
+        List<Map<String, Object>> tableEntries = new ArrayList<Map<String, Object>>();
+        Map<String, Object> tableEntry = null;
+        for (ElementValueType column : columns) {
+            String sourceName = column.getElementRef();
+
+            if ("INPUT_COLUMN".equals(sourceName)) {
+                if (tableEntry != null) {
+                    tableEntries.add(tableEntry);
+                }
+                tableEntry = new HashMap<String, Object>();
+            }
+
+            String targetName = columnMapping.get(sourceName);
+            Object targetValue = column.getValue();
+
+            if ("field".equals(targetName)) {
+                String mappedFieldName = toInitialLower(targetValue.toString());
+                targetValue = mappedFieldName;
+                fieldPropPossibleValues.add(mappedFieldName);
+
+            } else if ("operator".equals(targetName)) {
+                String mappedOperatorName = searchOperatorMapping.get(targetValue.toString());
+                if (mappedOperatorName != null) {
+                    targetValue = mappedOperatorName;
+                }
+            }
+
+            tableEntry.put(targetName, targetValue);
+        }
+        tableEntries.add(tableEntry);
+
         GenericTableUtils.setTableValues(searchQueryProps, tableEntries, ctx.getParam());
-        
+
         Property<String> fieldProp = (Property<String>) searchQueryProps.getProperty("field");
         fieldProp.setPossibleValues(Arrays.asList("type"));
 
@@ -207,7 +207,7 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
         List<String> operatorPropPossibleValues = new ArrayList<String>(searchOperatorMapping.values());
         Collections.sort(operatorPropPossibleValues);
         operatorProp.setPossibleValues(operatorPropPossibleValues);
-	}
+    }
 
     public static String toInitialLower(String value) {
         return value.substring(0, 1).toLowerCase() + value.substring(1);

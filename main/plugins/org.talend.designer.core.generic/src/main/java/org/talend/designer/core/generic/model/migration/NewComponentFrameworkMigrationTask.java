@@ -87,7 +87,7 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                     }
                     IComponentFilter filter = new NameComponentFilter(componentName);
                     modified = ModifyComponentsAction.searchAndModify((NodeType) obj, filter,
-                                Arrays.<IComponentConversion> asList(conversion)) || modified;
+                            Arrays.<IComponentConversion> asList(conversion)) || modified;
                 }
             }
             if (modified) {
@@ -115,18 +115,18 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
         return ParameterUtilTool.findParameterType(node, paramName);
     }
-    
+
     protected IComponentConversion getComponentConversion(ProcessType processType, ComponentCategory componentCategory, Properties props) {
-    	return new ComponentConversion(processType, componentCategory, props);
+        return new ComponentConversion(processType, componentCategory, props);
     }
 
-	protected static String getTableMapping(ElementParameterContext ctx) {
-		return ctx.getProps().getProperty(ctx.getComponentName()
+    protected static String getTableMapping(ElementParameterContext ctx) {
+        return ctx.getProps().getProperty(ctx.getComponentName()
                 + IGenericConstants.EXP_SEPARATOR + ctx.getParamName() + IGenericConstants.EXP_SEPARATOR
                 + "mapping");
-	}
+    }
 
-	public static List<Map<String, Object>> getTableValues(ElementParameterType pType, String tableMapping) {
+    public static List<Map<String, Object>> getTableValues(ElementParameterType pType, String tableMapping) {
         Map<String, String> columnsMapping = new HashMap<String, String>();
         String[] mappings = tableMapping.split(";");
         for (String curMapping : mappings) {
@@ -167,93 +167,93 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
     }
 
     protected static class ComponentContext {
-    	private Properties props;
-    	private NodeType node;
+        private Properties props;
+        private NodeType node;
 
-		public ComponentContext(Properties props, NodeType node) {
-			super();
-			this.props = props;
-			this.node = node;
-		}
+        public ComponentContext(Properties props, NodeType node) {
+            super();
+            this.props = props;
+            this.node = node;
+        }
 
-		public Properties getProps() {
-			return props;
-		}
+        public Properties getProps() {
+            return props;
+        }
 
-		public NodeType getNode() {
-			return node;
-		}
+        public NodeType getNode() {
+            return node;
+        }
 
-		public String getComponentName() {
-			return node.getComponentName();
-		}
+        public String getComponentName() {
+            return node.getComponentName();
+        }
 
     }
-    
+
     protected static class ElementParameterContext extends ComponentContext {
-    	private IElementParameter param;
-    	private String paramName;
-    	private ElementParameterType paramType;
+        private IElementParameter param;
+        private String paramName;
+        private ElementParameterType paramType;
 
-		public ElementParameterContext(ComponentContext compCtx, 
-				IElementParameter param, String paramName, ElementParameterType paramType) {
-			super(compCtx.props, compCtx.node);
-			this.param = param;
-			this.paramName = paramName;
-			this.paramType = paramType;
-		}
+        public ElementParameterContext(ComponentContext compCtx, 
+                IElementParameter param, String paramName, ElementParameterType paramType) {
+            super(compCtx.props, compCtx.node);
+            this.param = param;
+            this.paramName = paramName;
+            this.paramType = paramType;
+        }
 
-		public IElementParameter getParam() {
-			return param;
-		}
-		
-		public String getOldParamName() {
-			return paramType.getName();
-		}
+        public IElementParameter getParam() {
+            return param;
+        }
 
-		public String getParamName() {
-			return paramName;
-		}
+        public String getOldParamName() {
+            return paramType.getName();
+        }
 
-		public ElementParameterType getParamType() {
-			return paramType;
-		}
-		
+        public String getParamName() {
+            return paramName;
+        }
+
+        public ElementParameterType getParamType() {
+            return paramType;
+        }
+
     }
-    
-    protected class ComponentConversion implements IComponentConversion {
-    	protected ProcessType processType;
-    	protected ComponentCategory componentCategory;
-    	protected Properties props;
-    	
-        public ComponentConversion(ProcessType processType, ComponentCategory componentCategory, Properties props) {
-			super();
-			this.processType = processType;
-			this.componentCategory = componentCategory;
-			this.props = props;
-		}
 
-		@Override
+    protected class ComponentConversion implements IComponentConversion {
+        protected ProcessType processType;
+        protected ComponentCategory componentCategory;
+        protected Properties props;
+
+        public ComponentConversion(ProcessType processType, ComponentCategory componentCategory, Properties props) {
+            super();
+            this.processType = processType;
+            this.componentCategory = componentCategory;
+            this.props = props;
+        }
+
+        @Override
         public void transform(NodeType nodeType) {
             if (nodeType == null || props == null) {
                 return;
             }
-            
+
             boolean modified = false;
-            
+
             Map<String, String> schemaParamMap = new HashMap<>();
-            
+
             String currComponentName = nodeType.getComponentName();
             String newComponentName = props.getProperty(currComponentName);
             nodeType.setComponentName(newComponentName);
-            
+
             IComponent component = ComponentsFactoryProvider.getInstance().get(newComponentName, componentCategory.getName());
             ComponentProperties compProperties = ComponentsUtils.getComponentProperties(newComponentName);
             FakeNode fNode = new FakeNode(component);
-        	
+
             ComponentContext compContext = new ComponentContext(props, nodeType);
-            
-        	for (IElementParameter param : fNode.getElementParameters()) {
+
+            for (IElementParameter param : fNode.getElementParameters()) {
                 if (param instanceof GenericElementParameter) {
                     String paramName = param.getName();
                     NamedThing currNamedThing = ComponentsUtils.getGenericSchemaElement(compProperties, paramName);
@@ -267,16 +267,16 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         }
                         ElementParameterType paramType = getElementParameterType(nodeType, oldParamName);
                         if (paramType != null) {
-                        	ElementParameterContext paramContext = new ElementParameterContext(compContext, param, paramName, paramType);
+                            ElementParameterContext paramContext = new ElementParameterContext(compContext, param, paramName, paramType);
                             if (currNamedThing instanceof ComponentReferenceProperties) {
                                 ComponentReferenceProperties refProps = (ComponentReferenceProperties) currNamedThing;
                                 refProps.referenceType
-                                        .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
+                                .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
                                 refProps.componentInstanceId.setStoredValue(ParameterUtilTool.convertParameterValue(paramType));
                                 refProps.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                             } else {
-                        		processElementParameter(paramContext, currNamedThing);
-                        	}
+                                processElementParameter(paramContext, currNamedThing);
+                            }
                             ParameterUtilTool.removeParameterType(nodeType, paramType);
                             modified = true;
                         }
@@ -322,7 +322,7 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                     }
                 }
             }
-        	
+
             // Migrate schemas
             Map<String, MetadataType> metadatasMap = new HashMap<>();
             EList<MetadataType> metadatas = nodeType.getMetadata();
@@ -341,13 +341,13 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                 MetadataType metadataType = metadatasMap.get(oldConnector);
                 if (metadataType != null) {
                     metadataType.setConnector(newConnector);
-                    
+
                     MetadataEmfFactory factory = new MetadataEmfFactory();
                     factory.setMetadataType(metadataType);
-                    
+
                     IMetadataTable metadataTable = factory.getMetadataTable();
                     Schema schema = processSchema(compContext, metadataTable);
-                    
+
                     compProperties.setValue(newParamName, schema);
                 }
                 if (!oldConnector.equals(newConnector)) {
@@ -382,27 +382,27 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
             }
         }
 
-	    protected ElementParameterType getElementParameterType(NodeType node, String paramName) {
-	    	// Redirect to enclosing class to provide compatibility with existing migration tasks
-	        return NewComponentFrameworkMigrationTask.this.getParameterType(node, paramName);
-	    }
+        protected ElementParameterType getElementParameterType(NodeType node, String paramName) {
+            // Redirect to enclosing class to provide compatibility with existing migration tasks
+            return NewComponentFrameworkMigrationTask.this.getParameterType(node, paramName);
+        }
 
-    	protected void processElementParameter(ElementParameterContext ctx, NamedThing target) {
+        protected void processElementParameter(ElementParameterContext ctx, NamedThing target) {
             if (EParameterFieldType.TABLE.equals(ctx.getParam().getFieldType())) {
                 String tableMapping = getTableMapping(ctx);
                 GenericTableUtils.setTableValues(((ComponentProperties) target),
                         getTableValues(ctx.getParamType(), tableMapping), ctx.getParam());
             } else {
-            	Property<Object> property = (Property<Object>) target;
+                Property<Object> property = (Property<Object>) target;
                 property.setValue(ParameterUtilTool.convertParameterValue(ctx.getParamType()));
             }
-    	}
+        }
 
-    	protected Schema processSchema(ComponentContext ctx, IMetadataTable metadataTable) {
+        protected Schema processSchema(ComponentContext ctx, IMetadataTable metadataTable) {
             Schema schema = SchemaUtils.convertTalendSchemaIntoComponentSchema(
-            		ConvertionHelper.convert(metadataTable));
-    		return schema;
-    	}
+                    ConvertionHelper.convert(metadataTable));
+            return schema;
+        }
 
     }
 }
