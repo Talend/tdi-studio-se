@@ -619,6 +619,10 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 connectionsViewer.setSelection(new StructuredSelection(new Object[] { storedConnections.get(0) }));
             }
         }
+        ConnectionBean selectedConnBean = getConnection();
+        if (selectedConnBean != null) {
+            loginHelper.setCurrentSelectedConnBean(selectedConnBean);
+        }
 
         if (getConnection() != null || !validateFields()) {
             setRepositoryContextInContext();
