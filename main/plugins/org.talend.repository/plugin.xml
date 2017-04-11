@@ -2840,7 +2840,7 @@
               description="ResetVMArgumentMigrationTask"
               id="org.talend.repository.model.migration.ResetVMArgumentMigrationTask"
               name="ResetVMArgumentMigrationTask"
-              version="6.4.1">
+              version="6.4.0">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -2848,15 +2848,15 @@
               class="org.talend.repository.model.migration.FixUnevenItemContextParametersMigrationTask"
               id="org.talend.repository.model.migration.FixUnevenItemContextParametersMigrationTask"
               name="FixUnevenItemContextParametersMigrationTask"
-              version="6.4.1">
+              version="6.4.0">
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.4.0"
+              breaks="6.3.1"
               class="org.talend.repository.model.migration.UncheckExceptionOnFileExistMigrationTask"
               id="org.talend.repository.model.migration.UncheckExceptionOnFileExistMigrationTask"
               name="UncheckExceptionOnFileExistMigrationTask"
-              version="6.4.1">
+              version="6.4.0">
         </projecttask>
         <projecttask
         	  beforeLogon="false"
@@ -2877,11 +2877,11 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.4.0"
+              breaks="6.3.1"
               class="org.talend.repository.model.migration.ChangeDBversionForSybaseIQMigrationTask"
               id="org.talend.repository.model.migration.ChangeDBversionForSybaseIQMigrationTask"
               name="ChangeDBversionForSybaseIQMigrationTask"
-              version="6.4.1">
+              version="6.4.0">
         </projecttask>
    </extension>
 
