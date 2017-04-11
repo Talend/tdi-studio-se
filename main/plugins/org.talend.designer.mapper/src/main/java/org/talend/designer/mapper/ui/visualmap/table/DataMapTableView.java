@@ -1695,7 +1695,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         activateFilterCheck.setEnabled(!mapperManager.componentIsReadOnly() && !isErrorReject);
         previousStateCheckFilter = table.isActivateExpressionFilter();
         activateFilterCheck.setSelection(table.isActivateExpressionFilter());
-        activateFilterCheck.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.activateExpressionFilter")); //$NON-NLS-1$
+        activateFilterCheck.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ExpressionFilter")); //$NON-NLS-1$
         activateFilterCheck.setImage(ImageProviderMapper.getImage(ImageInfo.ACTIVATE_FILTER_ICON));
 
         // /////////////////////////////////////////////////////////////////
@@ -2488,7 +2488,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             expressionImageLabel = new Label(getCenterComposite(), SWT.NONE);
             expressionImageLabel.setImage(ImageProviderMapper.getImage(ImageInfo.ACTIVATE_FILTER_ICON));
             expressionImageLabel.setVisible(table.isActivateExpressionFilter());
-            expressionImageLabel.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.activateExpressionFilter")); //$NON-NLS-1$
+            expressionImageLabel.setToolTipText(Messages.getString("DataMapTableView.buttonTooltip.ExpressionFilter")); //$NON-NLS-1$
 
             expressionFilterText = new UnnotifiableColorStyledText(getCenterComposite(), SWT.BORDER | SWT.V_SCROLL,
                     preferenceStore, LanguageManager.getCurrentLanguage().getName());
