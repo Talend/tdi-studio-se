@@ -215,21 +215,21 @@ public class SearchZoneMapper {
     public void setEntryState(MapperManager mapperManager, EntryState entryState, ITableEntry entry) {
         if (!(entry instanceof ExpressionFilterEntry)) {
             TableItem tableItem = mapperManager.retrieveTableItem(entry);
-            // tableItem.setForeground(1, entryState.getColor());
-            if (entry.getName() != null && matcher.matches(entry.getName())) {
-                IDataMapTable table = entry.getParent();
-                if (table instanceof InputTable && ((InputTable) table).isMainConnection()) {
+            if (tableItem != null) {
+                if (entry.getName() != null && matcher.matches(entry.getName())) {
+                    IDataMapTable table = entry.getParent();
+                    if (table instanceof InputTable && ((InputTable) table).isMainConnection()) {
+                        tableItem.setBackground(1, entryState.getColor());
+                    } else if (table instanceof VarsTable) {
+                        tableItem.setBackground(4, entryState.getColor());
+                    } else {
+                        tableItem.setBackground(2, entryState.getColor());
+                    }
+                }
+                if (entry.getExpression() != null && matcher.matches(entry.getExpression())) {
                     tableItem.setBackground(1, entryState.getColor());
-                } else if (table instanceof VarsTable) {
-                    tableItem.setBackground(4, entryState.getColor());
-                } else {
-                    tableItem.setBackground(2, entryState.getColor());
                 }
             }
-            if (entry.getExpression() != null && matcher.matches(entry.getExpression())) {
-                tableItem.setBackground(1, entryState.getColor());
-            }
-
         } else {
             DataMapTableView dataMapTableView = mapperManager.retrieveAbstractDataMapTableView(entry.getParent());
             if (dataMapTableView.getExpressionFilterText() != null) {
