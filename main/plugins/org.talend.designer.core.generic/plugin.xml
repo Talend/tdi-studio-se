@@ -48,6 +48,15 @@
                name="NewMarketoMigrationTask"
                version="6.4.0">
        </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="6.4.1"
+               class="org.talend.designer.core.generic.model.migration.NewNetsuiteMigrationTask"
+               description="Migration task for jobs using Netsuite components to TCOMP"
+               id="org.talend.designer.core.generic.model.migration.NewNetsuiteMigrationTask"
+               name="NewNetsuiteMigrationTask"
+               version="6.4.1">
+       </projecttask>
        <!--<projecttask
              beforeLogon="false"
              breaks="6.3.0"
