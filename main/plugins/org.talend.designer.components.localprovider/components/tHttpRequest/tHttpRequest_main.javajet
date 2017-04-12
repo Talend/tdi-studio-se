@@ -163,7 +163,7 @@ try{
         		es_<%=cid%>.close();
         	}
         
-        	responseMessage_<%=cid%> += ("\n" + new String(baos_<%=cid%>.toByteArray(), "UTF-8"));
+        	responseMessage_<%=cid%> += ("\n" + new String(baos_<%=cid%>.toByteArray()));
         }
     	
         <%if(!dieOnError){%>
