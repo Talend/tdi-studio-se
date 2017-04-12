@@ -30,7 +30,9 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.VirtualComponentProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
@@ -96,9 +98,9 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
  * This class will create the list of nodes that will be used to generate the code.
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class DataProcess implements IGeneratingProcess {
 
@@ -602,7 +604,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "addMultipleNode".
-     * 
+     *
      * @param graphicalNode
      * @param multipleComponentManager
      * @return
@@ -687,7 +689,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "addAllMultipleComponentConnections".
-     * 
+     *
      * @param itemsMap
      * @param multipleComponentManager
      * @param graphicalNode
@@ -802,7 +804,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "prepareAllMultipleComponentNodes".
-     * 
+     *
      * @param itemsMap
      * @param multipleComponentManager
      * @param graphicalNode
@@ -946,7 +948,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "setMultipleComponentParameters".
-     * 
+     *
      * @param multipleComponentManager
      * @param itemsMap
      * @param graphicalNode
@@ -1290,7 +1292,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "replaceMultipleComponents".
-     * 
+     *
      * @param node
      */
     private void replaceMultipleComponents(INode graphicalNode) {
@@ -1689,6 +1691,7 @@ public class DataProcess implements IGeneratingProcess {
 
         for (INode node : newGraphicalNodeList) {
             checkUseParallelize(node);
+            checkUseHadoopConfs(node);
         }
 
         // calculate the merge info for every node
@@ -1845,7 +1848,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC bchen Comment method "tagSubProcessAfterParallelIterator".
-     * 
+     *
      * @param node
      */
     private void tagSubProcessAfterParallelIterator(INode node) {
@@ -1867,7 +1870,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC bchen Comment method "tagComponentAfterParallelIterator".
-     * 
+     *
      * @param node
      */
     private void tagComponentAfterParallelIterator(INode node) {
@@ -1917,7 +1920,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "replaceForValidationRules".
-     * 
+     *
      * @param node
      */
     private void replaceForValidationRules(INode node) {
@@ -1971,7 +1974,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "replaceValidationRules".
-     * 
+     *
      * @param rulesConnection
      * @param connection
      * @param isOutput
@@ -1990,7 +1993,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "replaceReferenceValidationRules".
-     * 
+     *
      * @param connection
      * @param rulesConnection
      * @param isOutput
@@ -2051,7 +2054,7 @@ public class DataProcess implements IGeneratingProcess {
 
         String originalConnector = null;
         if (dataConnection != null) {
-            originalConnector = dataConnection.getConnectorName(); 
+            originalConnector = dataConnection.getConnectorName();
             validRuleConnections.remove(dataConnection);
         }
 
@@ -2158,7 +2161,7 @@ public class DataProcess implements IGeneratingProcess {
                 dataConnec.setConnectorName(originalConnector);
                 dataConnec.getMetadataTable().setAttachedConnector(originalConnector);
             } else {
-                dataConnec.setConnectorName("FLOW"); //$NON-NLS-1$    
+                dataConnec.setConnectorName("FLOW"); //$NON-NLS-1$
             }
             dataConnec.setName("after_" + nodeUseValidationRule.getUniqueName()); //$NON-NLS-1$
             dataConnec.setSource(nodeUseValidationRule);
@@ -2326,7 +2329,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "replaceBasicOrCustomValidationRules".
-     * 
+     *
      * @param connection
      * @param rulesConnection
      * @param isCustom
@@ -2376,7 +2379,7 @@ public class DataProcess implements IGeneratingProcess {
         } else {
             typeStr = "input"; //$NON-NLS-1$
         }
-        String uniqueName = component.getName() + "_" + typeStr; //$NON-NLS-1$ 
+        String uniqueName = component.getName() + "_" + typeStr; //$NON-NLS-1$
         if (dataConnection != null) {
             uniqueName += "_" + dataConnection.getName(); //$NON-NLS-1$
         }
@@ -2387,7 +2390,7 @@ public class DataProcess implements IGeneratingProcess {
         IMetadataTable filterNodeMetadataTable = null;
         String originalConnector = null;
         if (dataConnection != null) {
-            originalConnector = dataConnection.getConnectorName(); 
+            originalConnector = dataConnection.getConnectorName();
             if (dataConnection.getMetadataTable() != null) {
                 filterNodeMetadataTable = dataConnection.getMetadataTable();
             }
@@ -2471,7 +2474,7 @@ public class DataProcess implements IGeneratingProcess {
                 dataConnec.setConnectorName(originalConnector);
                 dataConnec.getMetadataTable().setAttachedConnector(originalConnector);
             } else {
-                dataConnec.setConnectorName("FLOW"); //$NON-NLS-1$    
+                dataConnec.setConnectorName("FLOW"); //$NON-NLS-1$
             }
             dataConnec.setName("after_" + nodeUseValidationRule.getUniqueName()); //$NON-NLS-1$
             dataConnec.setSource(nodeUseValidationRule);
@@ -2514,7 +2517,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "checkTriggerAndDBSettings".
-     * 
+     *
      * @param node
      * @param rulesConnection
      * @param isOutput
@@ -2575,7 +2578,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "updateParametersWithValidationRuleConnection".
-     * 
+     *
      * @param node
      * @param rulesConnection
      */
@@ -2613,7 +2616,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * DOC ycbai Comment method "updateJoinParametersWithValidRuleConnection".
-     * 
+     *
      * @param node
      * @param rulesConnection
      */
@@ -2914,7 +2917,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "checkUseParallelize".
-     * 
+     *
      * @param node
      */
     @SuppressWarnings("unchecked")
@@ -3038,6 +3041,40 @@ public class DataProcess implements IGeneratingProcess {
         addDataNode(asyncOutNode);
     }
 
+    private void checkUseHadoopConfs(INode graphicalNode) {
+        IElementParameter propertyParam = graphicalNode.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        if (propertyParam != null) {
+            Object propertyValue = propertyParam.getValue();
+            if (propertyValue != null) {
+                IHadoopClusterService hadoopClusterService = getHadoopClusterService();
+                if (hadoopClusterService != null) {
+                    String confsJarName = hadoopClusterService.getCustomConfsJarName(String.valueOf(propertyValue), false, false);
+                    if (confsJarName != null) {
+                        IComponent component = ComponentsFactoryProvider.getInstance().get("tHadoopConfManager", //$NON-NLS-1$
+                                ComponentCategory.CATEGORY_4_DI.getName());
+                        DataNode confNode = new DataNode(component, component.getName() + "_" + graphicalNode.getUniqueName()); //$NON-NLS-1$
+                        confNode.setActivate(graphicalNode.isActivate());
+                        confNode.setStart(true);
+                        confNode.setDesignSubjobStartNode(confNode);
+                        confNode.setProcess(graphicalNode.getProcess());
+                        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB");
+                        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
+                        addDataNode(confNode);
+                    }
+                }
+            }
+        }
+    }
+
+    private IHadoopClusterService getHadoopClusterService() {
+        IHadoopClusterService hadoopClusterService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
+            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault()
+                    .getService(IHadoopClusterService.class);
+        }
+        return hadoopClusterService;
+    }
+
     @SuppressWarnings("unchecked")
     public INode buildNodeFromNode(final INode graphicalNode, final IProcess process) {
         if (buildCheckMap == null) {
@@ -3127,7 +3164,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * nrousseau Comment method "buildCopyOfGraphicalNodeList".
-     * 
+     *
      * @param graphicalNodeList
      * @return
      */
@@ -3204,7 +3241,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * qzhang Comment method "replaceJoblets".
-     * 
+     *
      * @param graphicalNodeList
      * @return
      */
@@ -3239,7 +3276,7 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * Getter for duplicatedProcess.
-     * 
+     *
      * @return the duplicatedProcess
      */
     public IProcess getDuplicatedProcess() {
@@ -3248,9 +3285,9 @@ public class DataProcess implements IGeneratingProcess {
 
     /**
      * xtan make sure the new tUnite incomingConnections order is the same as the old one.(bug:3417).
-     * 
+     *
      * @see Connection.setInputId(int id)
-     * 
+     *
      * @param oldtUnite
      * @param newtUnite
      */
@@ -3293,14 +3330,14 @@ public class DataProcess implements IGeneratingProcess {
 
         DataNode parallelizeNode = null;
         boolean alreadyHave = false;
-        String key = "tParallelize_" + sourceNode.getUniqueName();//$NON-NLS-1$ 
+        String key = "tParallelize_" + sourceNode.getUniqueName();//$NON-NLS-1$
         if (parallCheckMap.get(key) != null) {
             parallelizeNode = (DataNode) parallCheckMap.get(key);
             alreadyHave = true;
         } else {
-            String uniqueName = "tParallelize_" + connection.getUniqueName();//$NON-NLS-1$ 
+            String uniqueName = "tParallelize_" + connection.getUniqueName();//$NON-NLS-1$
             parallelizeNode = new DataNode(ComponentsFactoryProvider.getInstance().get(
-                    "tParallelize", ComponentCategory.CATEGORY_4_DI.getName()), uniqueName); //$NON-NLS-1$ 
+                    "tParallelize", ComponentCategory.CATEGORY_4_DI.getName()), uniqueName); //$NON-NLS-1$
 
             // DataNode hashNode = new DataNode(component, uniqueName);
             parallelizeNode.setActivate(connection.isActivate());
