@@ -84,6 +84,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.core.model.process.statsandlogs.StatsAndLogsManager;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
@@ -3042,28 +3043,46 @@ public class DataProcess implements IGeneratingProcess {
     }
 
     private void checkUseHadoopConfs(INode graphicalNode) {
-        IElementParameter propertyParam = graphicalNode.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-        if (propertyParam != null) {
-            Object propertyValue = propertyParam.getValue();
-            if (propertyValue != null) {
-                IHadoopClusterService hadoopClusterService = getHadoopClusterService();
-                if (hadoopClusterService != null) {
-                    String confsJarName = hadoopClusterService.getCustomConfsJarName(String.valueOf(propertyValue), false, false);
-                    if (confsJarName != null) {
-                        IComponent component = ComponentsFactoryProvider.getInstance().get("tHadoopConfManager", //$NON-NLS-1$
-                                ComponentCategory.CATEGORY_4_DI.getName());
-                        DataNode confNode = new DataNode(component, component.getName() + "_" + graphicalNode.getUniqueName()); //$NON-NLS-1$
-                        confNode.setActivate(graphicalNode.isActivate());
-                        confNode.setStart(true);
-                        confNode.setDesignSubjobStartNode(confNode);
-                        confNode.setProcess(graphicalNode.getProcess());
-                        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB");
-                        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
-                        addDataNode(confNode);
-                    }
-                }
-            }
+        IElementParameter propertyElementParameter = graphicalNode
+                .getElementParameterFromField((EParameterFieldType.PROPERTY_TYPE));
+        if (propertyElementParameter == null) {
+            return;
         }
+        Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
+        String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
+        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
+            return;
+        }
+        IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        if (propertyParam == null) {
+            return;
+        }
+        Object propertyValue = propertyParam.getValue();
+        if (propertyValue == null) {
+            return;
+        }
+        IHadoopClusterService hadoopClusterService = getHadoopClusterService();
+        if (hadoopClusterService == null) {
+            return;
+        }
+        String id = String.valueOf(propertyValue);
+        if (!hadoopClusterService.isUseDynamicConfJar(id)) {
+            return;
+        }
+        String confsJarName = hadoopClusterService.getCustomConfsJarName(id, false, false);
+        if (confsJarName == null) {
+            return;
+        }
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tHadoopConfManager", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
+        DataNode confNode = new DataNode(component, component.getName() + "_" + graphicalNode.getUniqueName()); //$NON-NLS-1$
+        confNode.setActivate(graphicalNode.isActivate());
+        confNode.setStart(true);
+        confNode.setDesignSubjobStartNode(confNode);
+        confNode.setProcess(graphicalNode.getProcess());
+        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB");
+        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
+        addDataNode(confNode);
     }
 
     private IHadoopClusterService getHadoopClusterService() {

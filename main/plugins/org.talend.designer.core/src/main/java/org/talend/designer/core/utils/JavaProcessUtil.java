@@ -45,6 +45,7 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -175,13 +176,11 @@ public class JavaProcessUtil {
         List<? extends INode> nodeList = process.getGeneratingNodes();
         for (INode node : nodeList) {
             if (hadoopItemId == null) {
-                String propertyId = getPropertyId(node);
-                Item hadoopClusterItem = getHadoopClusterItem(propertyId);
-                if (hadoopClusterItem != null) {
-                    hadoopItemId = propertyId;
+                String itemId = getHadoopClusterItemId(node);
+                if (itemId != null) {
+                    hadoopItemId = itemId;
                 }
             }
-
             if (process instanceof IProcess2) {
                 ((IProcess2) node.getProcess()).setNeedLoadmodules(((IProcess2) process).isNeedLoadmodules());
             }
@@ -208,25 +207,36 @@ public class JavaProcessUtil {
         }
     }
 
-    private static Item getHadoopClusterItem(String id) {
+    private static String getHadoopClusterItemId(INode node) {
         IHadoopClusterService hadoopClusterService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault().getService(
-                    IHadoopClusterService.class);
+            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault()
+                    .getService(IHadoopClusterService.class);
         }
-        if (hadoopClusterService != null) {
-            return hadoopClusterService.getHadoopClusterItemById(id);
+        if (hadoopClusterService == null) {
+            return null;
         }
-        return null;
-    }
-
-    private static String getPropertyId(INode node) {
-        IElementParameter propertyParam = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-        if (propertyParam != null) {
-            Object propertyValue = propertyParam.getValue();
-            if (propertyValue != null) {
-                return String.valueOf(propertyValue);
-            }
+        IElementParameter propertyElementParameter = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+        if (propertyElementParameter == null) {
+            return null;
+        }
+        Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
+        String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
+        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
+            return null;
+        }
+        IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+        if (propertyParam == null) {
+            return null;
+        }
+        Object propertyValue = propertyParam.getValue();
+        if (propertyValue == null) {
+            return null;
+        }
+        String id = String.valueOf(propertyValue);
+        Item item = hadoopClusterService.getHadoopClusterItemById(id);
+        if (item != null) {
+            return id;
         }
         return null;
     }

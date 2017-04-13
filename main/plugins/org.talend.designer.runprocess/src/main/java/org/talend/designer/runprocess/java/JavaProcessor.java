@@ -1287,7 +1287,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
             while (moduleIter.hasNext()) {
                 ModuleNeeded module = moduleIter.next();
-                Object obj = module.getExtraAttributes().get(HadoopConstants.IS_HADOOP_CUSTOM_CONFS);
+                Object obj = module.getExtraAttributes().get(HadoopConstants.IS_DYNAMIC_JAR);
                 if (Boolean.valueOf(String.valueOf(obj))) {
                     moduleIter.remove();
                 }
