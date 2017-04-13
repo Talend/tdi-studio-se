@@ -110,11 +110,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     		columnList = metadata.getListColumns();
     	}
     }
-    %>
-
-	java.sql.PreparedStatement pstmt_<%=cid %> =null;
-	
-    <%
+    
     if(columnList != null && columnList.size()>0){
         StringBuilder insertColName = new StringBuilder();
         
@@ -143,7 +139,6 @@ skeleton="../templates/db_output_bulk.skeleton"
         if(("INSERT").equals(dataAction)){
         %>	
         	String insertQuery = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query+")";
-        	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery);
         <%
     	} else if (("UPDATE").equals(dataAction)){
         %>
@@ -156,8 +151,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     		}
         %>
         	;
-        	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery);
-        
         <%
     	} else if (("DELETE").equals(dataAction)){
     	%>
@@ -170,7 +163,6 @@ skeleton="../templates/db_output_bulk.skeleton"
         	}
         	%>
         	;
-        	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery);
     	<%
     	}
     	%>
@@ -201,33 +193,37 @@ skeleton="../templates/db_output_bulk.skeleton"
 		if(("INSERT").equals(dataAction)){
 		%>
         System.out.println("Inserting with : \n" + insertQuery + "\n");
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery+\"");%> 
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery);
         nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
         System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
+        pstmt_<%=cid %>.close();
 		<%
     	} else if(("UPDATE").equals(dataAction)){
     	%>
         System.out.println("Updating with : \n" + updateQuery +"\n");
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery+\"");%> 
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery);
         nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
     	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
+    	pstmt_<%=cid %>.close();
     	<%
     	} else if (("DELETE").equals(dataAction)){
 		%>
     	System.out.println("Deleting with : \n" + deleteQuery +"\n");
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery+\"");%> 
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery+\"");%>
+		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery);
 		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
     	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
+    	pstmt_<%=cid %>.close();
 		<%
 		}
 	}
 	// END
 	%>
-
-	pstmt_<%=cid %>.close();
 
     <%
     if(!useExistingConn) {
