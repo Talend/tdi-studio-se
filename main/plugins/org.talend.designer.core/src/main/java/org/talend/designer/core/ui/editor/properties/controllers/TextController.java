@@ -57,8 +57,6 @@ public class TextController extends AbstractElementPropertySectionController {
 
     protected static int rowSize = 0;
 
-    protected Text labelText;
-
     public static boolean dragAndDropAction = false;
 
     /**
@@ -96,7 +94,7 @@ public class TextController extends AbstractElementPropertySectionController {
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.BOTTOM, false);
         }
         Control cLayout = dField.getLayoutControl();
-        labelText = (Text) dField.getControl();
+        Text labelText = (Text) dField.getControl();
 
         labelText.setData(PARAMETER_NAME, param.getName());
         editionControlHelper.register(param.getName(), labelText);
@@ -174,8 +172,8 @@ public class TextController extends AbstractElementPropertySectionController {
             } else {
                 data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
             }
-            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow),
-                    currentLabelWidth + ITabbedPropertyConstants.HSPACE);
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth
+                    + ITabbedPropertyConstants.HSPACE);
 
             data = (FormData) labelLabel.getLayoutData();
             data.right = new FormAttachment(cLayout, 0);
