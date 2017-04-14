@@ -204,15 +204,17 @@ public class RunProcessContext {
 
         pcsDelegate = new PropertyChangeSupport(this);
         this.processMessageManager = new ProcessMessageManager();
+        initialize();
+    }
 
+    public void initialize() {
         setMonitorPerf(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISSTATISTICSRUN));
         setMonitorTrace(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISTRACESRUN));
         setWatchAllowed(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISEXECTIMERUN));
         setSaveBeforeRun(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISSAVEBEFORERUN));
         setClearBeforeExec(RunProcessPlugin.getDefault().getPreferenceStore()
                 .getBoolean(RunProcessPrefsConstants.ISCLEARBEFORERUN));
-        setLog4jLevel(RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.LOG4JLEVEL));
-        setUseCustomLevel(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.CUSTOMLOG4J));
+        loadLog4jContextFromProcess();
     }
 
     public synchronized void addPropertyChangeListener(PropertyChangeListener l) {
@@ -1852,5 +1854,26 @@ public class RunProcessContext {
                 }
             }
         });
+    }
+
+    public void loadLog4jContextFromProcess() {
+        IElementParameter param = process.getElementParameter(EParameterName.LOG4J_RUN_ACTIVATE.getName());
+        if (param != null && param.getValue() instanceof Boolean && (Boolean) param.getValue()) { // checked
+            RunProcessPlugin.getDefault().getPreferenceStore().setValue(RunProcessPrefsConstants.CUSTOMLOG4J, true);
+        } else {
+            RunProcessPlugin.getDefault().getPreferenceStore().setValue(RunProcessPrefsConstants.CUSTOMLOG4J, false);
+        }
+        setUseCustomLevel(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.CUSTOMLOG4J));
+
+        if (useCustomLevel) {
+            IElementParameter log4jLevelParam = process.getElementParameter(EParameterName.LOG4J_RUN_LEVEL.getName());
+            if (log4jLevelParam != null && log4jLevelParam.getValue() != null) {
+                RunProcessPlugin.getDefault().getPreferenceStore()
+                        .setValue(RunProcessPrefsConstants.LOG4JLEVEL, (String) log4jLevelParam.getValue());
+            } else {
+                RunProcessPlugin.getDefault().getPreferenceStore().setValue(RunProcessPrefsConstants.LOG4JLEVEL, "");
+            }
+        }
+        setLog4jLevel(RunProcessPlugin.getDefault().getPreferenceStore().getString(RunProcessPrefsConstants.LOG4JLEVEL));
     }
 }
