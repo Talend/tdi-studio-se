@@ -137,6 +137,8 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         // setup for an export mode, and not
         // editor mode.
         ProcessorUtilities.setExportConfig(JAVA, "", ""); //$NON-NLS-1$
+        // set export type as osgi
+        ProcessorUtilities.setExportAsOSGI(true);
 
         try {
             ProcessItem processItem = null;

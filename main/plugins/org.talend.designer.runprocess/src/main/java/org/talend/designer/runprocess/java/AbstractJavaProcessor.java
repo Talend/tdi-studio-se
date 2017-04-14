@@ -25,29 +25,20 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.EList;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
-import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.runprocess.Processor;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -85,7 +76,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /**
      * DOC marvin AbstractJavaProcessor constructor comment.
-     * 
+     *
      * @param process
      */
     public AbstractJavaProcessor(IProcess process) {
@@ -101,7 +92,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /**
      * If a DI job calls somehow a Big Data job, then the PACKAGE Maven goal must be called on all the jobs.
-     * 
+     *
      * @return true if the job or its recursive childs contain a tRunJob which points to a Big Data job
      */
     protected boolean requirePackaging() {
@@ -137,7 +128,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
     }
 
     /**
-     * 
+     *
      * Should be more like ProcessorUtilities.isExportConfig() is true.
      */
     protected boolean isRunAsExport() {
@@ -151,20 +142,24 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
         return ProcessorUtilities.isExportConfig();
     }
 
+    protected static boolean isExportAsOSGI() {
+        return ProcessorUtilities.isExportAsOSGI();
+    }
+
     /**
      * <pre>
      * Makes all command segments up, like ahead commands, jvm commands, cp commands, main-class command, and others.
      * This method should be invoked by {@link #getCommandLine()}. The following is about some methods invoked by this
-     * method. 
+     * method.
      * <li>{@link #extractAheadCommandSegments()} to extract ahead command segments like "cd `dirname $0`\n".
-     * <li>{@link #extractJavaCommandSegments()} to extract java command segments like "java -Xms256M ". 
-     * <li>{@link #extractCPCommandSegments()} to extract cp command segments like "cp ../a.jar:../b.jar..". 
-     * <li>{@link #extractMainClassSegments()} to extract the main-class command segment. 
+     * <li>{@link #extractJavaCommandSegments()} to extract java command segments like "java -Xms256M ".
+     * <li>{@link #extractCPCommandSegments()} to extract cp command segments like "cp ../a.jar:../b.jar..".
+     * <li>{@link #extractMainClassSegments()} to extract the main-class command segment.
      * <li>{@link #extractArgumentSegments()} to extract other arguments for commands.
      * </pre>
-     * 
+     *
      * Added by Marvin Wang on Mar 22, 2013.
-     * 
+     *
      * @return
      */
     protected List<String> makeUpCommandSegments() {
@@ -179,7 +174,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaProcessor#extractAheadCommandSegments()
      */
     @Override
@@ -189,7 +184,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaProcessor#extractJavaCommandSegments()
      */
     @Override
@@ -199,7 +194,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaProcessor#extractCPCommandSegments()
      */
     @Override
@@ -209,7 +204,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaProcessor#extractMainClassSegments()
      */
     @Override
@@ -224,7 +219,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.runprocess.java.IJavaProcessor#extractArgumentSegments()
      */
     @Override
@@ -290,7 +285,7 @@ public abstract class AbstractJavaProcessor extends Processor implements IJavaPr
     }
 
     /**
-     * 
+     *
      * If need, will correct the path for commands.
      */
     protected String[] checkExecutingCommands(String path, String[] cmds) {

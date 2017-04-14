@@ -1283,7 +1283,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
         // Ignore hadoop confs jars in lib path only for DI process now.
-        if (isDIProcess()) {
+        if (isLoadHadoopConfJarDynamically()) {
             Iterator<ModuleNeeded> moduleIter = neededModules.iterator();
             while (moduleIter.hasNext()) {
                 ModuleNeeded module = moduleIter.next();
@@ -1972,4 +1972,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         // build whole project by default.
         getTalendJavaProject().buildModules(monitor, null, null);
     }
+
+    protected boolean isLoadHadoopConfJarDynamically() {
+        return isDIProcess() && !isExportAsOSGI();
+    }
+
 }
