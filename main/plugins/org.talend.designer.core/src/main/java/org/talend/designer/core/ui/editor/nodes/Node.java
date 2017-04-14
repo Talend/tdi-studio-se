@@ -728,7 +728,8 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         while ((nodeConnector == null) && (nbConn < listConnector.size())) {
-            if (listConnector.get(nbConn).getDefaultConnectionType() == testedType) {
+            INodeConnector connector = listConnector.get(nbConn);
+            if (connector.getDefaultConnectionType() == testedType && connector.isShow()) {
                 nodeConnector = listConnector.get(nbConn);
                 listConnectors.add(nodeConnector);
             }
@@ -747,13 +748,14 @@ public class Node extends Element implements IGraphicalNode {
     @Override
     public INodeConnector getConnectorFromName(final String connName) {
         for (INodeConnector nodeConnector : listConnector) {
-            if (connName.equals(nodeConnector.getName())) {
+            if (connName.equals(nodeConnector.getName()) && nodeConnector.isShow()) {
                 return nodeConnector;
             }
         }
         return null;
     }
 
+    @Override
     public List<INodeConnector> getConnectorsFromType(final EConnectionType connType) {
         INodeConnector nodeConnector = null;
         List<INodeConnector> listConnectors = new ArrayList<INodeConnector>();
@@ -768,7 +770,8 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         while (nbConn < listConnector.size()) {
-            if (listConnector.get(nbConn).getDefaultConnectionType() == testedType) {
+            INodeConnector connector = listConnector.get(nbConn);
+            if (connector.getDefaultConnectionType() == testedType && connector.isShow()) {
                 nodeConnector = listConnector.get(nbConn);
                 listConnectors.add(nodeConnector);
             }
