@@ -124,7 +124,14 @@ public class NodeConnector implements INodeConnector {
 
     @Override
     public void setCurLinkNbInput(int curLinkNbInput) {
-        this.curLinkNbInput = curLinkNbInput;
+        // TUP-17421 incase more than one flow main
+        for (INodeConnector connector : parentNode.getListConnector()) {
+            if (connector instanceof NodeConnector) {
+                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())) {
+                    ((NodeConnector) connector).setLinkNbInput(curLinkNbInput);
+                }
+            }
+        }
     }
 
     @Override
@@ -134,7 +141,22 @@ public class NodeConnector implements INodeConnector {
 
     @Override
     public void setCurLinkNbOutput(int curLinkNbOutput) {
+        // TUP-17421 incase more than one flow main
+        for (INodeConnector connector : parentNode.getListConnector()) {
+            if (connector instanceof NodeConnector) {
+                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())) {
+                    ((NodeConnector) connector).setLinkNbOutput(curLinkNbOutput);
+                }
+            }
+        }
+    }
+
+    private void setLinkNbOutput(int curLinkNbOutput) {
         this.curLinkNbOutput = curLinkNbOutput;
+    }
+
+    private void setLinkNbInput(int curLinkNbInput) {
+        this.curLinkNbInput = curLinkNbInput;
     }
 
     @Override
@@ -457,9 +479,9 @@ public class NodeConnector implements INodeConnector {
         this.showIf = showIf;
     }
 
-    
     /**
      * Getter for parentNode.
+     * 
      * @return the parentNode
      */
     protected INode getParentNode() {

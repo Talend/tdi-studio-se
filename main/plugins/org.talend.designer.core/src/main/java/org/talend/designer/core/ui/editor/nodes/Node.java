@@ -3488,6 +3488,9 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         for (INodeConnector nodeConnector : listConnector) {
+            if (!nodeConnector.isShow()) {
+                continue;
+            }
             if (!nodeConnector.getDefaultConnectionType().hasConnectionCategory(IConnectionCategory.USE_HASH)
                     && nodeConnector.getDefaultConnectionType() != EConnectionType.FLOW_MERGE) {
                 boolean needCheckOutput = true;
