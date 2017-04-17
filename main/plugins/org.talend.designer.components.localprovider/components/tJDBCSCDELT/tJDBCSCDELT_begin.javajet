@@ -107,6 +107,12 @@ if(autoIncrease) {
 boolean isDynamic = false;
 %>
 
+<%if("TRUNCATE".equals(tableAction)) {
+%>
+int deletedCount_<%=cid%> = 0;
+<%
+}%>
+
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/_tableActionForOutput.javajet"%>
 
 <%
