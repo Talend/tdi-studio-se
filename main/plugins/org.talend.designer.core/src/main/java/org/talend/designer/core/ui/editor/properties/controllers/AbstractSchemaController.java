@@ -917,9 +917,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
             String filter = schemaParam.getFilter();
             if (elem instanceof Node) {
                 Node sapNode = (Node) elem;
-                if (sapNode.getComponent().getName().startsWith("tSAP") && !sapNode.getComponent().getName().startsWith("tSAPHana")) { //$NON-NLS-1$ //$NON-NLS-2$
-                    type = ERepositoryObjectType.METADATA_SAP_FUNCTION;
-                } else if (sapNode.getComponent().getName().startsWith("tESB")) { //$NON-NLS-1$
+                if (sapNode.getComponent().getName().startsWith("tESB")) { //$NON-NLS-1$
                     filter = ERepositoryObjectType.SERVICESOPERATION.getType();
                 }
             }
