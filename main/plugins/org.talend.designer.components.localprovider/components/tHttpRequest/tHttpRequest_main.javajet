@@ -90,7 +90,6 @@ urlConn_<%=cid%>.setUseCaches(false);
 <%}%>
 boolean connected_<%=cid%> = false;
 int responseCode_<%=cid%> = 0;
-String responseMessage_<%=cid%> = null;
 globalMap.put("<%=cid%>_CONNECTED", false);
 try{
     urlConn_<%=cid%>.connect();
@@ -121,7 +120,6 @@ try{
 
     responseCode_<%=cid%> = urlConn_<%=cid%>.getResponseCode();
     globalMap.put("<%=cid%>_RESPONSE_CODE", responseCode_<%=cid%>);
-    responseMessage_<%=cid%> = urlConn_<%=cid%>.getResponseMessage();
 
     if (java.net.HttpURLConnection.HTTP_OK == responseCode_<%=cid%>) {
         java.io.InputStream bis_<%=cid%> = new java.io.BufferedInputStream(urlConn_<%=cid%>.getInputStream());
@@ -147,6 +145,27 @@ try{
 <%      }%>
         bis_<%=cid%>.close();
     } else {
+    	String responseMessage_<%=cid%> = urlConn_<%=cid%>.getResponseMessage();
+    
+        //get details response information which will be used when error appear
+        java.io.InputStream err_stream_<%=cid%> = urlConn_<%=cid%>.getErrorStream();
+        if(err_stream_<%=cid%>!=null) {
+            java.io.InputStream es_<%=cid%> = new java.io.BufferedInputStream(err_stream_<%=cid%>);
+        	java.io.ByteArrayOutputStream baos_<%=cid%> = new java.io.ByteArrayOutputStream();
+        	
+        	byte[] buf_<%=cid%> = new byte[1024];
+            int read_<%=cid%> = -1;
+        	try {
+            	while ((read_<%=cid%> = es_<%=cid%>.read(buf_<%=cid%>)) > 0) {
+            		baos_<%=cid%>.write(buf_<%=cid%>, 0, read_<%=cid%>);
+            	}
+        	} finally {
+        		es_<%=cid%>.close();
+        	}
+        
+        	responseMessage_<%=cid%> += ("\n" + new String(baos_<%=cid%>.toByteArray()));
+        }
+    	
         <%if(!dieOnError){%>
             <%if(isLog4jEnabled){%>
                 log.error("<%=cid%> - " + responseCode_<%=cid%> + " " + responseMessage_<%=cid%>);

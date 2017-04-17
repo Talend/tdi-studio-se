@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.process.IElementParameter;
@@ -66,6 +67,7 @@ public class GenericHiddenTextController extends TextController {
     public Control createControl(Composite subComposite, IElementParameter param, int numInRow, int nbInRow, int top,
             Control lastControl) {
         Control lastControlUsed = super.createControl(subComposite, param, numInRow, nbInRow, top, lastControl);
+        Text labelText = (Text) hashCurControls.get(param.getName());
         if (labelText != null && param != null && isPasswordParam(param)) {
             labelText.setEchoChar('*');
         }

@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IWorkbenchPart;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -122,6 +123,13 @@ public class ConnectionCreateAction extends SelectionAction {
 
             if (node.getJobletNode() != null) {
                 return false;
+            }
+
+            if (curNodeConnector != null && "VALIDATION_REJECT".equals(curNodeConnector.getName())) {
+                if (node.getProcess() != null
+                        && !ComponentCategory.CATEGORY_4_DI.getName().equals(node.getProcess().getComponentsType())) {
+                    return false;
+                }
             }
 
             if (connecType.hasConnectionCategory(IConnectionCategory.EXECUTION_ORDER)) {

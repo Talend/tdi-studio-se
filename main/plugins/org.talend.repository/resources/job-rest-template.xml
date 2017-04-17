@@ -25,6 +25,7 @@
         <property name="basePath" value="${endpoint.originalAddress}"/>
         <property name="scan" value="false"/>
         <property name="title" value="${job.name} REST Application"/>
+        <property name="description" value="${endpoint.description}"/>
         <property name="contact"><null/></property>
         <property name="license"><null/></property>
         <property name="licenseUrl"><null/></property>

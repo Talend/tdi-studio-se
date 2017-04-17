@@ -17,7 +17,12 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.talend.core.GlobalServiceRegister;
@@ -32,6 +37,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -39,10 +45,13 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.ValidationRulesUtil;
 
 /**
  * DOC Administrator class global comment. Detailled comment <br/>
@@ -54,7 +63,7 @@ public class ConnectionCreateActionTest {
 
     private Node node = null;
 
-    private NodeConnector curNodeConnector;
+    private INodeConnector curNodeConnector;
 
     private EConnectionType connecType;
 
@@ -299,6 +308,96 @@ public class ConnectionCreateActionTest {
             listArgs.add(fromConnectionName);
             assertEquals(listArgs.size(), 2);
             assertEquals(listArgs.get(1).toString(), "row1");
+        }
+
+    }
+
+    @Test
+    public void testValidationRuleEnableStatus() {
+        IElementParameter validationParam = node.getElementParameter(EParameterName.VALIDATION_RULES.getName());
+        validationParam.setValue(true);
+        curNodeConnector = ValidationRulesUtil.createRejectConnector(node);
+        curNodeConnector.setDefaultConnectionType(EConnectionType.FLOW_MAIN);
+        connecType = curNodeConnector.getDefaultConnectionType();
+
+        ConnectionCreateAction action = new ConnectionCreateAction(null, curNodeConnector);
+        action.setSelectionProvider(new SelectionProvider(node));
+        action.update();
+        Assert.assertTrue(action.isEnabled());
+
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        Process process = new Process(property);
+        process.setComponentsType(ComponentCategory.CATEGORY_4_SPARK.getName());
+        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
+                ComponentCategory.CATEGORY_4_SPARK.getName());
+
+        node = new Node(sourceCom, process);
+        validationParam = node.getElementParameter(EParameterName.VALIDATION_RULES.getName());
+        validationParam.setValue(true);
+        curNodeConnector = ValidationRulesUtil.createRejectConnector(node);
+        curNodeConnector.setDefaultConnectionType(EConnectionType.FLOW_MAIN);
+        connecType = curNodeConnector.getDefaultConnectionType();
+
+        action = new ConnectionCreateAction(null, curNodeConnector);
+        action.setSelectionProvider(new SelectionProvider(node));
+        action.update();
+        Assert.assertFalse(action.isEnabled());
+
+    }
+
+    class SelectionProvider implements ISelectionProvider {
+
+        StructuredSelection selection;
+
+        /**
+         * DOC wchen ConnectionCreateActionTest.SelectionProvider constructor comment.
+         */
+        public SelectionProvider(INode node) {
+            NodePart part = new NodePart();
+            part.setModel(node);
+            selection = new StructuredSelection(part);
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.
+         * ISelectionChangedListener)
+         */
+        @Override
+        public void addSelectionChangedListener(ISelectionChangedListener listener) {
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+         */
+        @Override
+        public ISelection getSelection() {
+            return selection;
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.
+         * ISelectionChangedListener)
+         */
+        @Override
+        public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+         */
+        @Override
+        public void setSelection(ISelection selection) {
+
         }
 
     }

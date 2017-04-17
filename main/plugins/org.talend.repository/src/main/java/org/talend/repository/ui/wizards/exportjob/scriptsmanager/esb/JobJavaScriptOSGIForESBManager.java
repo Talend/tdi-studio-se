@@ -460,6 +460,22 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
 
         endpointInfo.put("originalAddress", endpointUri); //$NON-NLS-1$  Needed by Swagger
 
+        String endpointDescription = "";
+        if (EmfModelUtils.computeCheckElementValue("INCLUDE_DOC_INTO_SWAGGER_SPEC", restRequestComponent)) {
+            endpointDescription = EmfModelUtils.computeTextElementValue("COMMENT", restRequestComponent);
+            if (endpointDescription == null) {
+                endpointDescription = "";
+            }
+            if (endpointDescription.contains("\r\n")) {
+                endpointDescription = endpointDescription.replace("\r\n", " ");
+            } else {
+                endpointDescription = endpointDescription.replace("\n", " ");
+            }
+        }
+
+        endpointInfo.put("description", endpointDescription); //$NON-NLS-1$  Needed by Swagger
+
+
         // TESB-5916: Rest service can't be deployed in the Runtime on the port said in the studio
         // if (endpointUri.contains("://")) {
         // endpointUri = new URL(endpointUri).getPath();
