@@ -17,19 +17,19 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.talend.commons.utils.VersionUtils;
-import org.talend.core.CorePlugin;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
-import org.talend.core.model.properties.PropertiesFactory;
-import org.talend.core.model.properties.Property;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.test.util.NodeTestCreator;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.TestProperties;
+import org.talend.designer.core.utils.TestUtils;
 
 /**
  * created by ycbai on 2016年3月23日 Detailled comment
@@ -55,7 +55,7 @@ public class DataProcessTest {
 
     @Before
     public void before() {
-        process = new Process(createProperty());
+        process = new Process(TestUtils.createDefaultProperty());
         dataProcess = new DataProcess(process);
         testNode = new Node(testComponent, process);
         TestProperties testProps = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
@@ -74,12 +74,33 @@ public class DataProcessTest {
         assertEquals(testNode.getComponentProperties(), node.getComponentProperties());
     }
 
-    private static Property createProperty() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
+    @Test
+    public void testCheckUseHadoopConfs() throws Exception {
+        Node simpleInputNode = NodeTestCreator.createSimpleInputNode(process);
+        TestUtils.invokePrivateMethod(dataProcess, "initialize", new Object[0]); //$NON-NLS-1$
 
-        return property;
+        // Built in mode
+        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode }, INode.class); //$NON-NLS-1$
+        assertFalse(containsHadoopConfsNode());
+
+        // Repository mode but repository value is null
+        IElementParameter propertyElementParameter = simpleInputNode
+                .getElementParameterFromField((EParameterFieldType.PROPERTY_TYPE));
+        propertyElementParameter.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
+                .setValue(EmfComponent.REPOSITORY);
+        propertyElementParameter.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()).setValue(null);
+        TestUtils.invokePrivateMethod(dataProcess, "checkUseHadoopConfs", new Object[] { simpleInputNode }, INode.class); //$NON-NLS-1$
+        assertFalse(containsHadoopConfsNode());
+    }
+
+    private boolean containsHadoopConfsNode() {
+        for (INode node : dataProcess.getNodeList()) {
+            String compName = node.getComponent().getName();
+            if ("tHadoopConfManager".equals(compName)) { //$NON-NLS-1$
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -207,7 +207,7 @@ public class JavaProcessUtil {
         }
     }
 
-    private static String getHadoopClusterItemId(INode node) {
+    public static String getHadoopClusterItemId(INode node) {
         IHadoopClusterService hadoopClusterService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
             hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault()

@@ -12,11 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,11 +25,17 @@ import org.junit.Test;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.designer.core.model.components.DummyComponent;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.DataNode;
+import org.talend.designer.core.test.util.NodeTestCreator;
+import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * created by nrousseau on Jun 8, 2016 Detailled comment
@@ -92,6 +95,23 @@ public class JavaProcessUtilTest {
     // @Test
     public void testGetChildrenModules_dynamicJob() {
         fail("Not impl yet!");
+    }
+
+    @Test
+    public void testGetHadoopClusterItemId() {
+        Process process = new Process(TestUtils.createDefaultProperty());
+        Node simpleInputNode = NodeTestCreator.createSimpleInputNode(process);
+
+        // Built in mode
+        assertNull(JavaProcessUtil.getHadoopClusterItemId(simpleInputNode));
+
+        // Repository mode but repository value is null
+        IElementParameter propertyElementParameter = simpleInputNode
+                .getElementParameterFromField((EParameterFieldType.PROPERTY_TYPE));
+        propertyElementParameter.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
+                .setValue(EmfComponent.REPOSITORY);
+        propertyElementParameter.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()).setValue(null);
+        assertNull(JavaProcessUtil.getHadoopClusterItemId(simpleInputNode));
     }
 
 }
