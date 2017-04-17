@@ -640,7 +640,7 @@
 			</ITEMS>
         </PARAMETER>
 
-        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="(ENTITYNAME=='CustomEntity') OR (AUTH_TYPE=='ONLINE' AND API_VERSION=='API_2016_ODATA' AND ENTITYSET=='CustomEntitySet')" REQUIRED="true">
+        <PARAMETER NAME="CUSTOM_ENTITY_NAME" FIELD="TEXT" NUM_ROW="50" SHOW_IF="((isShow[ENTITYNAME]) AND (ENTITYNAME=='CustomEntity')) OR ((isShow[ENTITYSET]) AND (ENTITYSET=='CustomEntitySet'))" REQUIRED="true">
             <DEFAULT>"customEntityName"</DEFAULT>
         </PARAMETER>
 
@@ -19446,7 +19446,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_sdkmessageid_value" TYPE="id_String"  />
 </TABLE>
 
-<TABLE IF="ENTITYNAME=='CustomEntity'">
+<TABLE IF="((isShow[ENTITYNAME]) AND (ENTITYNAME=='CustomEntity')) OR ((isShow[ENTITYSET]) AND (ENTITYSET=='CustomEntitySet'))">
 </TABLE>
 
         </PARAMETER>
