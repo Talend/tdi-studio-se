@@ -772,7 +772,8 @@ public class LoginHelper {
         if (usableShell != null) {
             return usableShell;
         } else {
-            return new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+            // return new Shell(DisplayUtils.getDisplay(), SWT.ON_TOP | SWT.TOP);
+            return DisplayUtils.getDefaultShell();
         }
     }
 
