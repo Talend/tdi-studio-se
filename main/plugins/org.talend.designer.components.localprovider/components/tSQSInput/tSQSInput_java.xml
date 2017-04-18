@@ -252,7 +252,6 @@
 			FIELD="TEXT" 
 			NUM_ROW="105"
 			REQUIRED="true" 
-			SHOW_IF="(READ_ALL_MESSAGE == 'false' OR DELETE_MESSAGE == 'false')"
 		>
 			<DEFAULT>1</DEFAULT>
 		</PARAMETER>
