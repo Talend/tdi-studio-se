@@ -12,13 +12,16 @@
 // ============================================================================
 package org.talend.repository.model.migration;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.migration.AbstractJobMigrationTask;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
@@ -75,6 +78,21 @@ public class ResetVMArgumentMigrationTask extends AbstractJobMigrationTask {
         }
     }
     
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
+        toReturn.add(ERepositoryObjectType.PROCESS);
+        
+        toReturn.add(ERepositoryObjectType.PROCESS_MR);
+        toReturn.add(ERepositoryObjectType.PROCESS_SPARK);
+        toReturn.add(ERepositoryObjectType.PROCESS_SPARKSTREAMING);
+        toReturn.add(ERepositoryObjectType.PROCESS_STORM);
+        
+        toReturn.add(ERepositoryObjectType.PROCESS_ROUTE);
+        toReturn.add(ERepositoryObjectType.PROCESS_ROUTELET);
+        return toReturn;
+    }
+
     private boolean isJson(String jsonString){
         try {
             new JSONObject(jsonString);
