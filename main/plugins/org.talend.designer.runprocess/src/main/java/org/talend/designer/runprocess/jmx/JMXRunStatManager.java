@@ -135,7 +135,7 @@ public class JMXRunStatManager {
         @Override
         public void run() {
             stopTracing = false;
-            do {
+            while (server != null && !stopTracing) {
                 if (listeners.size() > 0) {
                     try {
                         // for camel route
@@ -163,7 +163,8 @@ public class JMXRunStatManager {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } while (!stopTracing);
+            }
+            ;
         }
 
         /**
