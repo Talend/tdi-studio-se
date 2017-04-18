@@ -12,17 +12,23 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import javax.management.MBeanServerConnection;
+
 import org.talend.core.IService;
-import org.talend.designer.runprocess.ui.JobJvmComposite;
-import org.talend.designer.runprocess.ui.TargetExecComposite;
+import org.talend.core.model.process.IProcess;
+import org.talend.core.model.properties.Property;
+import org.talend.designer.runprocess.java.JavaProcessor;
 
 /**
  * DOC yyan class global comment. Detailled comment
  */
 public interface IESBRunContainerService extends IService {
 
-    void addRuntimeServer(TargetExecComposite targetExecComposite, JobJvmComposite jobComposite);
+    void enableRuntime(boolean valueOf);
 
-    boolean isESBProcessContextManager(RunProcessContextManager contextManager);
+    boolean isRuntimeEnable();
 
+    JavaProcessor createJavaProcessor(IProcess process, Property property, boolean filenameFromLabel);
+
+    MBeanServerConnection getJMXServerConnection();
 }

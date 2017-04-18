@@ -72,6 +72,8 @@ import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.ParallelExecutionUtils;
 import org.talend.designer.runprocess.ProcessMessage.MsgType;
 import org.talend.designer.runprocess.i18n.Messages;
+import org.talend.designer.runprocess.jmx.JMXPerformanceChangeListener;
+import org.talend.designer.runprocess.jmx.JMXRunStatManager;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.prefs.RunProcessTokenCollector;
 import org.talend.designer.runprocess.trace.TraceConnectionsManager;
@@ -687,6 +689,9 @@ public class RunProcessContext {
     }
 
     protected PerformanceMonitor getPerformanceMonitor() {
+        if (isESBRuntimeProcessor()) {
+            return new JMXPerformanceMonitor();
+        }
         return new PerformanceMonitor();
     }
 
@@ -842,6 +847,10 @@ public class RunProcessContext {
         return tracesPort;
     }
 
+    private boolean isESBRuntimeProcessor() {
+        return "runtimeProcessor".equals(processor.getProcessorType()); //$NON-NLS-1$
+    }
+
     // private int getWatchPort() {
     // int port = watchAllowed ? RunProcessPlugin.getDefault()
     // .getRunProcessContextManager().getPortForWatch(this)
@@ -960,6 +969,18 @@ public class RunProcessContext {
             } catch (IOException ioe) {
                 addErrorMessage(ioe);
                 ExceptionHandler.process(ioe);
+            }
+            if (isESBRuntimeProcessor()) {
+                if (messageOut != null || messageErr != null) {
+                    Display.getDefault().syncExec(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            processMessageManager.updateConsole();
+                        }
+                    });
+                }
+                return true;
             }
             return messageOut != null || messageErr != null;
         }
@@ -1199,6 +1220,50 @@ public class RunProcessContext {
             return node;
         }
 
+    }
+
+    /**
+     * JMX Performance Monitor for ESB Route running in ESB Runtime
+     */
+    class JMXPerformanceMonitor extends PerformanceMonitor {
+
+        private JMXPerformanceChangeListener jmxPerformanceChangeListener;
+
+        private JMXRunStatManager jmxManager;
+
+        public JMXPerformanceMonitor() {
+            jmxManager = JMXRunStatManager.getInstance();
+            jmxPerformanceChangeListener = new JMXPerformanceChangeListener() {
+
+                long startTime = System.currentTimeMillis();
+
+                @Override
+                public String getProcessName() {
+                    return getProcess().getLabel();
+                }
+
+                @Override
+                public void performancesChanged(String connId, int exchangesCompleted) {
+                    long duration = 100;
+                    final IConnection conn = traceConnectionsManager.finConnectionByUniqueName(connId);
+                    final PerformanceData perfData = new PerformanceData(connId + "|" + exchangesCompleted + "|" + duration);
+                    processPerformances(connId + "|" + exchangesCompleted + "|" + duration, perfData, conn);
+                    startTime = System.currentTimeMillis();
+                }
+            };
+        }
+
+        @Override
+        public void run() {
+            jmxManager.addTracing(RunProcessContext.this);
+            jmxManager.addPerformancesChangeListener(jmxPerformanceChangeListener);
+        }
+
+        @Override
+        public void stopThread() {
+            jmxManager.stopTracing(RunProcessContext.this);
+            super.stopThread();
+        }
     }
 
     /**

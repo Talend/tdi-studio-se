@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
-import java.util.List;
-
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
@@ -41,8 +39,6 @@ public class RunProcessPlugin extends AbstractUIPlugin {
 
     private ProjectPreferenceManager projectPreferenceManager;
 
-    private List<RunProcessContextManager> runProcessContextManagerList;
-
     /**
      * Constructs a new Activator.
      */
@@ -60,26 +56,10 @@ public class RunProcessPlugin extends AbstractUIPlugin {
         IExtensionPointLimiter extensionPointLimiter = new ExtensionPointLimiterImpl(
                 "org.talend.designer.runprocess.runprocess_manager", "runprocess_manager"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        runProcessContextManagerList = ExtensionImplementationProvider.getInstance(extensionPointLimiter);
+        runProcessContextManager = ExtensionImplementationProvider.getSingleInstance(extensionPointLimiter, null);
 
-        // Fixed to use remote process context instead of using esb context
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
-            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
-                    .getService(IESBRunContainerService.class);
-            for (RunProcessContextManager contextManager : runProcessContextManagerList) {
-                if (runContainerService != null && !runContainerService.isESBProcessContextManager(contextManager)) {
-                    runProcessContextManager = contextManager;
-                    break;
-                }
-            }
-        } else {
-            runProcessContextManager = runProcessContextManagerList.size() > 0 ? runProcessContextManagerList.get(0) : null;
-        }
-
-        // If no process context, use local process context
         if (runProcessContextManager == null) {
             runProcessContextManager = new RunProcessContextManager();
-            runProcessContextManagerList.add(runProcessContextManager);
         }
     }
 
@@ -109,21 +89,6 @@ public class RunProcessPlugin extends AbstractUIPlugin {
      */
     public RunProcessContextManager getRunProcessContextManager() {
         return this.runProcessContextManager;
-    }
-
-    public void setRunProcessContextManager(RunProcessContextManager manager) {
-        boolean alreadyExists = false;
-        for (RunProcessContextManager mgr : runProcessContextManagerList) {
-            if (manager.getClass() == mgr.getClass()) {
-                runProcessContextManager = mgr;
-                alreadyExists = true;
-                break;
-            }
-        }
-        if (!alreadyExists) {
-            runProcessContextManagerList.add(manager);
-            runProcessContextManager = manager;
-        }
     }
 
     public ProjectPreferenceManager getProjectPreferenceManager() {

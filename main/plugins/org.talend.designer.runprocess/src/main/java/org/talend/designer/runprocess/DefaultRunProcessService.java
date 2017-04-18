@@ -179,6 +179,17 @@ public class DefaultRunProcessService implements IRunProcessService {
         if (isTestContainer) {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         }
+        // check for ESB Runtime
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
+            IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
+                    .getService(IESBRunContainerService.class);
+            if (runContainerService != null) {
+                IProcessor processor = runContainerService.createJavaProcessor(process, property, filenameFromLabel);
+                if (processor != null) {
+                    return processor;
+                }
+            }
+        }
         if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType())) {
             return new MapReduceJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(process.getComponentsType())) {
