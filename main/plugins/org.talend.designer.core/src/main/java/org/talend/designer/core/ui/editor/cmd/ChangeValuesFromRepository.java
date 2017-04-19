@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ITDQPatternService;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IODataComponent;
@@ -656,7 +657,11 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             }
             ((Process) ((Node) elem).getProcess()).checkProcess();
             //Added TDQ-11688 show regex when "built-in"
-            if(elem.getElementName().startsWith("tPattern")){
+            ITDQPatternService service = null;
+            if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+                service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+            }
+            if (service != null&& service.isSinglePatternNode(elem)){
                 IElementParameter regexParameter = ((Node) elem).getElementParameter("PATTERN_REGEX");
                 if(regexParameter !=null){
                     regexParameter.setShow(EmfComponent.BUILTIN.equals(this.value));

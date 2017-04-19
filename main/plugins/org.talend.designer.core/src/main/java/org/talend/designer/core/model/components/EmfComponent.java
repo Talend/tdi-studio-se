@@ -2537,6 +2537,9 @@ public class EmfComponent extends AbstractBasicComponent {
                 // case VALIDATION_RULE_TYPE:
                 // newParam.setFieldType(EParameterFieldType.VALIDATION_RULE_TYPE);
                 // break;
+                case MULTI_PATTERN:
+                    newParam.setFieldType(EParameterFieldType.MULTI_PATTERN);
+                    break;
                 default: // TEXT by default
                     newParam.setFieldType(EParameterFieldType.TEXT);
                     if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$

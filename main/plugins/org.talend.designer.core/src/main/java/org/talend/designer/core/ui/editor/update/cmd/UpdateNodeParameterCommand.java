@@ -28,6 +28,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
+import org.talend.core.ITDQPatternService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -498,12 +499,18 @@ public class UpdateNodeParameterCommand extends Command {
                             }
                         }
                     }
-                }else if(node.getLabel().startsWith("tPattern") && parameter!=null && parameter instanceof IElementParameter){
+                }else{
                     //Added TDQ-11688 20170309 yyin
-                    IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
-                    if(elementParameter!=null && !elementParameter.getValue().equals(((IElementParameter)parameter).getValue())){
-                        elementParameter.setValue(((IElementParameter)parameter).getValue());
-                        update = true;
+                    ITDQPatternService service = null;
+                    if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+                        service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+                    }
+                    if (service != null && service.isSinglePatternNode(node)&& parameter!=null && parameter instanceof IElementParameter){
+                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
+                        if(elementParameter!=null && !elementParameter.getValue().equals(((IElementParameter)parameter).getValue())){
+                            elementParameter.setValue(((IElementParameter)parameter).getValue());
+                            update = true;
+                        }
                     }
                 }
             }

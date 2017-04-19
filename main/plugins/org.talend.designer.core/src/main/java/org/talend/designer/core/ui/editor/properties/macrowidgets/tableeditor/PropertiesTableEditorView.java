@@ -75,6 +75,7 @@ import org.talend.core.ui.metadata.editor.AbstractMetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.designer.core.ui.celleditor.PatternCellEditor;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
 
@@ -530,6 +531,15 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     column.setCellEditor(schemaXPathEditor);
 
                     break;
+
+
+                case MULTI_PATTERN:
+                    column.setModifiable(true);
+                    PatternCellEditor patternEditor = new PatternCellEditor(table,element);
+                    patternEditor.setTableEditorView(this);
+                    column.setCellEditor(patternEditor);
+                    break;
+                    
                 default: // TEXT
                     TextCellEditor tcEditor = null;
                     if (((i == 0) && (param.isBasedOnSchema() || param.isBasedOnSubjobStarts()))

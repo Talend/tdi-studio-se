@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -86,6 +87,8 @@ import org.talend.core.model.properties.LinkRulesItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RulesItem;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.AbstractUpdateManager;
@@ -114,6 +117,8 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -2174,23 +2179,50 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                         }
                         if (service != null) {
+                            if(node.getLabel().startsWith("tMultiPattern")){//TDQ-13437 tMultiPattern 
+                                IElementParameter schemasTableParam = node.getElementParameter( "SCHEMA_PATTERN_CHECK");
+
+                                if (schemasTableParam != null) {
+                                     List<Map> listValue = (List<Map>) schemasTableParam.getValue();
+                                     for(Map onePattern:listValue){
+                                         //firstly, need to check if the pattern id is equal
+                                        if (StringUtils.equals(item.getProperty().getId(), (String) onePattern.get("PATTERN_ID"))) {
+                                            if (!service.isSameName(item, (String) onePattern.get("PATTERN_NAME"))) {
+                                                String name = getItemNewName(item);
+                                                onePattern.put("PATTERN_NAME", name);
+                                                result = createUpdateCheckResult(node, propertiesResults, schemasTableParam);
+                                            }
+                                            String regex = service.getRegex(node, item);
+                                            if (!StringUtils.equals(regex, (String) onePattern.get("PATTERN_REGEX"))) {
+                                                onePattern.put("PATTERN_REGEX", regex);
+                                                if (result != null) {
+                                                    propertiesResults.add(result);
+                                                }
+                                                result = createUpdateCheckResult(node, propertiesResults, schemasTableParam);
+                                            }
+                                        }
+                                    }
+                                 }
+                            }else{//for single pattern component
                             //check pattern name
-                            IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
-                            if(service.isSameName(item, (String) nameParam.getValue())){
-                                String name =  item.getState().getPath().replaceFirst("Regex", "") + File.separator+  item.getProperty().getDisplayName();
-                                nameParam.setValue(name);
-                                result = new UpdateCheckResult(node);
-                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,nameParam);
-                                propertiesResults.add(result);
+                                IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
+                                if (!service.isSameName(item, (String) nameParam.getValue())) {
+                                    String name = getItemNewName(item);
+                                    nameParam.setValue(name);
+                                    result = createUpdateCheckResult(node, propertiesResults, nameParam);
+                                }
+                                // check pattern regex
+                                String regex = service.getRegex(node, item);
+                                IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
+                                if (!StringUtils.equals(regex, (String) reParam.getValue())) {
+                                    reParam.setValue(regex);
+                                    if(result!=null){
+                                        propertiesResults.add(result);
+                                    }
+                                    result = new UpdateCheckResult(node);
+                                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, reParam);
+                                }
                             }
-                            //check pattern regex
-                            String regex = service.getRegex(node, item);
-                            IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
-                            if(!StringUtils.equals(regex, (String)reParam.getValue())){
-                                reParam.setValue(regex);
-                                result = new UpdateCheckResult(node);
-                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,reParam);
-                            }  
                         } 
                     }else{
                         result = new UpdateCheckResult(node);
@@ -2210,6 +2242,19 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return propertiesResults;
+    }
+
+    private String getItemNewName(Item item) {
+        return item.getState().getPath().replaceFirst("Regex", "") + File.separator+  item.getProperty().getDisplayName();
+    }
+
+    private UpdateCheckResult createUpdateCheckResult(final Node node, List<UpdateResult> propertiesResults,
+            IElementParameter schemasTableParam) {
+        UpdateCheckResult result;
+        result = new UpdateCheckResult(node);
+         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,schemasTableParam);
+         propertiesResults.add(result);
+        return result;
     }
 
     /**
