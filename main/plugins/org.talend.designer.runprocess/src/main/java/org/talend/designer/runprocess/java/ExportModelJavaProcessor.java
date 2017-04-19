@@ -20,23 +20,13 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
-import org.talend.core.service.IMRProcessService;
-import org.talend.core.service.IStormProcessService;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
-import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.RunProcessPlugin;
@@ -73,7 +63,16 @@ public class ExportModelJavaProcessor extends MavenJavaProcessor {
         // export job
         String watchParam = ArrayUtils.contains(optionsParam, TalendProcessArgumentConstant.CMD_ARG_WATCH) ? TalendProcessArgumentConstant.CMD_ARG_WATCH
                 : null;
-        archive = helper.exportJob(this, statisticsPort, tracePort, watchParam, monitor);
+        String log4jLevel = null;
+        if (ArrayUtils.contains(optionsParam, TalendProcessArgumentConstant.CMD_ARG_LOG4J_LEVEL)) {
+            for (String param : optionsParam) {
+                if (param != null && param.indexOf(TalendProcessArgumentConstant.CMD_ARG_LOG4J_LEVEL) >= 0) {
+                    log4jLevel = param;
+                    break;
+                }
+            }
+        }
+        archive = helper.exportJob(this, statisticsPort, tracePort, watchParam, log4jLevel, monitor);
         unzipFolder = unzipAndDeploy(process, archive);
 
         Process process = super.execFrom(unzipFolder + File.separatorChar + this.process.getName(), Level.INFO, statisticsPort,
