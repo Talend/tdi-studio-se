@@ -69,7 +69,7 @@ import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 
 /**
- * 
+ *
  * created by ycbai on 2015年9月24日 Detailled comment
  *
  */
@@ -188,12 +188,6 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 }
                 if (properties != null && isRepository(element)) {
                     String repositoryValue = genericElementParameter.getRepositoryValue();
-                    if (repositoryValue == null) {
-                        if (genericElementParameter.getValue() != null) {
-                            genericElementParameter.setRepositoryValue(genericElementParameter.getName());
-                            repositoryValue = genericElementParameter.getRepositoryValue();
-                        }
-                    }
                     if (genericElementParameter.isShow(currentParameters) && (repositoryValue != null)
                             && (!genericElementParameter.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                             && genericElementParameter.getCategory() == section) {
