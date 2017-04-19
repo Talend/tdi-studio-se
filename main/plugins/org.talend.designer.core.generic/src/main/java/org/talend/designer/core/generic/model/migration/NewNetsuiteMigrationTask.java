@@ -21,6 +21,7 @@ import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask {
@@ -143,6 +144,17 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
 
                 } else {
                     super.processElementParameter(ctx, target);
+                }
+            }
+
+            @Override
+            protected void processUnmappedElementParameter(ElementParameterContext ctx, NamedThing target) {
+                if ("connection.apiVersion".equals(ctx.getNewParamName())) {
+                    Property<String> property = (Property<String>) target;
+                    property.setValue("2014.2");
+
+                } else {
+                    super.processUnmappedElementParameter(ctx, target);
                 }
             }
 
