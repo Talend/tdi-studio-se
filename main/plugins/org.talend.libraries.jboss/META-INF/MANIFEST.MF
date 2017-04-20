@@ -19,3 +19,4 @@ Export-Package: org.jboss.serial,
  org.jboss.serial.util
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Require-Bundle: org.apache.log4j
