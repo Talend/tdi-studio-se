@@ -278,7 +278,7 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
      *
      * @param props
      * @param nodeType
-     * @param param
+     * @param param new parameter object
      * @param paramType
      * @param currNamedThing
      */
