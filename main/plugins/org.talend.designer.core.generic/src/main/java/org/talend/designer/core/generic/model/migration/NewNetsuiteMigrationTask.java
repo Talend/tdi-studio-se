@@ -13,16 +13,14 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.talend.components.api.properties.ComponentProperties;
-import org.talend.core.model.components.ComponentCategory;
-import org.talend.core.model.components.conversions.IComponentConversion;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
-import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 
 public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask {
 
@@ -118,52 +116,45 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
     }
 
     @Override
-    protected IComponentConversion getComponentConversion(ProcessType processType, ComponentCategory componentCategory,
-            Properties props) {
+    protected void processMappedElementParameter(Properties props, NodeType nodeType, 
+            GenericElementParameter param, ElementParameterType paramType, NamedThing target) {
+        
+        if ("MODULENAME".equals(paramType.getName())) {
+            Property<Object> property = (Property<Object>) target;
+            Object value = ParameterUtilTool.convertParameterValue(paramType);
+            property.setValue("\"" + value + "\"");
 
-        return new ComponentConversion(processType, componentCategory, props) {
+        } else if ("tNetsuiteInput".equals(nodeType.getComponentName()) && "CONDITIONS".equals(paramType.getName())) {
+            processSearchConditionsTable(param, paramType, target);
 
-            @Override
-            protected void processElementParameter(ElementParameterContext ctx, NamedThing target) {
-                if ("MODULENAME".equals(ctx.getOldParamName())) {
-                    Property<Object> property = (Property<Object>) target;
-                    Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
-                    property.setValue("\"" + value + "\"");
-
-                } else if ("tNetsuiteInput".equals(ctx.getComponentName()) && "CONDITIONS".equals(ctx.getOldParamName())) {
-                    processSearchConditionsTable(ctx, target);
-
-                } else if ("tNetsuiteOutput".equals(ctx.getComponentName()) && "ACTION".equals(ctx.getOldParamName())) {
-                    Property<Object> property = (Property<Object>) target;
-                    Object value = ParameterUtilTool.convertParameterValue(ctx.getParamType());
-                    // Map INSERT action to ADD, other actions are mapped as is
-                    if ("INSERT".equals(value)) {
-                        value = "ADD";
-                    }
-                    property.setValue(value);
-
-                } else {
-                    super.processElementParameter(ctx, target);
-                }
+        } else if ("tNetsuiteOutput".equals(nodeType.getComponentName()) && "ACTION".equals(paramType.getName())) {
+            Property<Object> property = (Property<Object>) target;
+            Object value = ParameterUtilTool.convertParameterValue(paramType);
+            // Map INSERT action to ADD, other actions are mapped as is
+            if ("INSERT".equals(value)) {
+                value = "ADD";
             }
+            property.setValue(value);
 
-            @Override
-            protected void processUnmappedElementParameter(ElementParameterContext ctx, NamedThing target) {
-                if ("connection.apiVersion".equals(ctx.getNewParamName())) {
-                    Property<String> property = (Property<String>) target;
-                    property.setValue("2014.2");
-
-                } else {
-                    super.processUnmappedElementParameter(ctx, target);
-                }
-            }
-
-        };
+        } else {
+            super.processMappedElementParameter(props, nodeType, param, paramType, target);
+        }
     }
 
-    private void processSearchConditionsTable(ElementParameterContext ctx, NamedThing target) {
+    @Override
+    protected void processUnmappedElementParameter(Properties props, NodeType nodeType, 
+            GenericElementParameter param, NamedThing target) {
+        if ("connection.apiVersion".equals(param.getName())) {
+            Property<String> property = (Property<String>) target;
+            property.setValue("2014.2");
+
+        } else {
+            super.processUnmappedElementParameter(props, nodeType, param, target);
+        }
+    }
+
+    private void processSearchConditionsTable(GenericElementParameter param, ElementParameterType paramType, NamedThing target) {
         ComponentProperties searchQueryProps = (ComponentProperties) target;
-        ElementParameterType paramType = ctx.getParamType();
 
         List<ElementValueType> columns = paramType.getElementValue();
 
@@ -210,7 +201,7 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
         }
         tableEntries.add(tableEntry);
 
-        GenericTableUtils.setTableValues(searchQueryProps, tableEntries, ctx.getParam());
+        GenericTableUtils.setTableValues(searchQueryProps, tableEntries, param);
 
         Property<String> fieldProp = (Property<String>) searchQueryProps.getProperty("field");
         fieldProp.setPossibleValues(Arrays.asList("type"));
