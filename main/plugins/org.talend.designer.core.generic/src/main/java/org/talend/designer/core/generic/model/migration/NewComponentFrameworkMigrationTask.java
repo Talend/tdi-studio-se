@@ -271,6 +271,17 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
         return tableValues;
     }
 
+    /**
+     * Process element parameter which has mapping from old parameter to component property.
+     *
+     * <p>Subclasses can override this method to customize migration of element parameters.
+     *
+     * @param props
+     * @param nodeType
+     * @param param
+     * @param paramType
+     * @param currNamedThing
+     */
     protected void processMappedElementParameter(Properties props, NodeType nodeType, 
             GenericElementParameter param, ElementParameterType paramType, NamedThing currNamedThing) {
 
@@ -285,8 +296,18 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
             ((Property) currNamedThing).setValue(ParameterUtilTool.convertParameterValue(paramType));
         }
     }
-    
-    protected void processUnmappedElementParameter(Properties props, NodeType nodeType, 
+
+    /**
+     * Process element parameter which has no mapping from old parameter to component property.
+     *
+     * <p>Subclasses can override this method to customize migration of element parameters.
+     *
+     * @param props
+     * @param nodeType
+     * @param param
+     * @param currNamedThing
+     */
+    protected void processUnmappedElementParameter(Properties props, NodeType nodeType,
             GenericElementParameter param, NamedThing currNamedThing) {
 
         if (currNamedThing instanceof Property) {

@@ -22,6 +22,9 @@ import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 
+/**
+ * Performs migration of old tNetsuite components to new TCOMP based components.
+ */
 public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask {
 
     private static final Map<String, String> searchOperatorMapping;
