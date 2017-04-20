@@ -38,7 +38,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String passwordFieldName = "__PASSWORD__";
 			String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
      		String customEntityname = ElementParameterParser.getValue(node, "__CUSTOM_ENTITY_NAME__");
-     		if("CustomEntitySET".equals(entitySetName)){
+     		if("CustomEntitySet".equals(entitySetName)){
 			%>
 				String entitySetName_<%=cid%>=<%=customEntityname%>;
 			<%

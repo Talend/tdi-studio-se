@@ -20,7 +20,7 @@
                   	Map<String,String> lookupMaps = new java.util.HashMap<String,String>();
 							if(lookupMapping.size()>0){
 								for(Map<String, String> lookupMapper:lookupMapping){
-			                    lookupMaps.put(lookupMapper.get("INPUT_COLUMN"),lookupMapper.get("TYPE"));
+			                    lookupMaps.put(lookupMapper.get("INPUT_COLUMN"),lookupMapper.get("REF_ENTITYSET"));
 			                }
 			            }
 	                    for(int i = 0; i < sizeColumns; i++){
