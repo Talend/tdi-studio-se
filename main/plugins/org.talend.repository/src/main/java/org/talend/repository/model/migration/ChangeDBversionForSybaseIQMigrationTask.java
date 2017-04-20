@@ -39,22 +39,37 @@ public class ChangeDBversionForSybaseIQMigrationTask extends AbstractJobMigratio
 		if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
 			return ExecutionResult.NOTHING_TO_DO;
 		}
-		String[] compNames = { "tSybaseIQBulkExec", "tSybaseIQOutputBulkExec" };
+		String[] compNmaes = { "tSybaseIQBulkExec", "tSybaseIQOutputBulkExec", "tCreateTable", "tELTSybaseOutput",
+				"tSybaseBulkExec", "tSybaseConnection", "tSybaseInput", "tSybaseOutput", "tSybaseOutputBulkExec",
+				"tSybaseRow", "tSybaseSCD", "tSybaseSCDELT", "tSybaseSP","tSybaseCDC"};
 
-		for (String compName : compNames) {
-			IComponentFilter filter = new NameComponentFilter(compName); //$NON-NLS-1$
+		for (String compName : compNmaes) {
+			IComponentFilter filter = new NameComponentFilter(compName); // $NON-NLS-1$
 			try {
 				ModifyComponentsAction.searchAndModify(item, processType, filter,
 						Arrays.<IComponentConversion>asList(new IComponentConversion() {
 
 							public void transform(NodeType node) {
-								ElementParameterType dbVersion = ComponentUtilities.getNodeProperty(node,
-										"DB_VERSION"); //$NON-NLS-1$
-								if (dbVersion.getValue().equals("jconn3.jar")) {
+								ElementParameterType dbVersion = ComponentUtilities.getNodeProperty(node, "DB_VERSION"); //$NON-NLS-1$
+								if ("tSybaseIQBulkExec".equals(compName)
+										|| "tSybaseIQOutputBulkExec".equals(compName)) {
+									if (dbVersion.getValue().equals("jconn3.jar")) {
+										dbVersion.setValue("SYBSEIQ_12_15");
+									}
+									if (dbVersion.getValue().equals("jodbc.jar")) {
+										dbVersion.setValue("SYBSEIQ_15");
+									}
+								} else if ("tCreateTable".equals(compName)) {
+									ElementParameterType DBTYPE = ComponentUtilities.getNodeProperty(node, "DBTYPE"); //$NON-NLS-1$
+									if ("SYBASE".equals(DBTYPE.getValue())) {
+										ComponentUtilities.addNodeProperty(node, "DB_SYBASE_VERSION", "CLOSED_LIST");
+										dbVersion = ComponentUtilities.getNodeProperty(node, "DB_SYBASE_VERSION");
+										dbVersion.setValue("SYBSEIQ_12_15");
+									}
+								} else if (dbVersion == null) {
+									ComponentUtilities.addNodeProperty(node, "DB_VERSION", "CLOSED_LIST");
+									dbVersion = ComponentUtilities.getNodeProperty(node, "DB_VERSION");
 									dbVersion.setValue("SYBSEIQ_12_15");
-								}
-								if (dbVersion.getValue().equals("jodbc.jar")) {
-									dbVersion.setValue("SYBSEIQ_15");
 								}
 							}
 						}));
@@ -69,7 +84,7 @@ public class ChangeDBversionForSybaseIQMigrationTask extends AbstractJobMigratio
 	}
 
 	public Date getOrder() {
-		GregorianCalendar gc = new GregorianCalendar(2017, 3, 7, 17, 0, 0);
+		GregorianCalendar gc = new GregorianCalendar(2017, 3, 20, 17, 0, 0);
 		return gc.getTime();
 	}
 
