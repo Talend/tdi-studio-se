@@ -276,11 +276,11 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
      *
      * <p>Subclasses can override this method to customize migration of element parameters.
      *
-     * @param props
-     * @param nodeType
+     * @param props migration task properties
+     * @param nodeType component node
      * @param param new parameter object
-     * @param paramType
-     * @param currNamedThing
+     * @param paramType old parameter object
+     * @param currNamedThing component property object
      */
     protected void processMappedElementParameter(Properties props, NodeType nodeType, 
             GenericElementParameter param, ElementParameterType paramType, NamedThing currNamedThing) {
@@ -302,10 +302,10 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
      *
      * <p>Subclasses can override this method to customize migration of element parameters.
      *
-     * @param props
-     * @param nodeType
-     * @param param
-     * @param currNamedThing
+     * @param props migration task properties
+     * @param nodeType component node
+     * @param param new parameter object
+     * @param currNamedThing component property object
      */
     protected void processUnmappedElementParameter(Properties props, NodeType nodeType,
             GenericElementParameter param, NamedThing currNamedThing) {
