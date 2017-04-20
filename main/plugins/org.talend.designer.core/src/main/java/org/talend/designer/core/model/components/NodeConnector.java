@@ -127,7 +127,8 @@ public class NodeConnector implements INodeConnector {
         // TUP-17421 incase more than one flow main
         for (INodeConnector connector : parentNode.getListConnector()) {
             if (connector instanceof NodeConnector) {
-                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())) {
+                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())
+                        && this.getName().equals(connector.getName())) {
                     ((NodeConnector) connector).setLinkNbInput(curLinkNbInput);
                 }
             }
@@ -144,7 +145,8 @@ public class NodeConnector implements INodeConnector {
         // TUP-17421 incase more than one flow main
         for (INodeConnector connector : parentNode.getListConnector()) {
             if (connector instanceof NodeConnector) {
-                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())) {
+                if (this.getDefaultConnectionType().equals(connector.getDefaultConnectionType())
+                        && this.getName().equals(connector.getName())) {
                     ((NodeConnector) connector).setLinkNbOutput(curLinkNbOutput);
                 }
             }
