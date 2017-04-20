@@ -13,13 +13,16 @@
 package org.talend.repository.model.migration;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.utils.WorkspaceUtils;
 import org.talend.migration.IProjectMigrationTask;
@@ -61,6 +64,13 @@ public class ResetItemLabelMigrationTask extends AbstractItemMigrationTask imple
         }
         
         return ExecutionResult.SUCCESS_WITH_ALERT;
+    }
+
+    @Override
+    public List<ERepositoryObjectType> getTypes() {
+        List<ERepositoryObjectType> toReturn = new ArrayList<ERepositoryObjectType>();
+        toReturn.add(ERepositoryObjectType.CONTEXT);
+        return toReturn;
     }
 
 }
