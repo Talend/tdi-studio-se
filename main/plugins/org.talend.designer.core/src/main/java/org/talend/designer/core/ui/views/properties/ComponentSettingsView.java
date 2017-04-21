@@ -751,6 +751,9 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
      */
     private boolean isSupportValidationRuleNode(Node node) {
         boolean hasFlow = false;
+        if (!ComponentCategory.CATEGORY_4_DI.getName().equals(node.getProcess().getComponentsType())) {
+            return false;
+        }
         if (node.getComponent() != null && node.getComponent() instanceof AbstractBasicComponent) {
             AbstractBasicComponent component = (AbstractBasicComponent) node.getComponent();
             if (component.useLookup() || component.useMerge() || !component.useSchema(node)) {
