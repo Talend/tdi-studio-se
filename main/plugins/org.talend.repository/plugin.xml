@@ -2892,6 +2892,14 @@
               description="Add USE_SOAP_API and USE_REST_API properties to Marketo jobs created before 6.1"
               version="6.3.2">
         </projecttask>
+                <projecttask
+              beforeLogon="true"
+              breaks="6.3.1"
+              class="org.talend.repository.model.migration.AddJavaVersionMigrationTask"
+              id="org.talend.repository.model.migration.AddJavaVersionMigrationTask"
+              name="AddJavaVersionMigrationTask"
+              version="6.4.0">
+        </projecttask>
    </extension>
 
    <extension
@@ -2975,6 +2983,9 @@
       <initializer
             class="org.talend.repository.preference.RepositoryPreferenceInitializer">
       </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.JavaVersionProjectSettingPageInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">
@@ -3053,6 +3064,12 @@
             class="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             id="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             title="%projectSetting.versioning">
+      </page>
+      <page
+            category="projectsetting.Build"
+            class="org.talend.repository.preference.JavaVersionProjectSettingPage"
+            id="projectsetting.JavaVersion"
+            title="%ProjectSetting_JavaVersion">
       </page>
    </extension>
    <extension

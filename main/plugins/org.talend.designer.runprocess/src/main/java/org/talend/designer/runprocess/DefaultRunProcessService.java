@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
@@ -50,10 +51,12 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.runprocess.data.PerformanceData;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.language.SyntaxCheckerFactory;
@@ -63,6 +66,7 @@ import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.spark.SparkJavaProcessor;
 import org.talend.designer.runprocess.storm.StormJavaProcessor;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.repository.RepositoryWorkUnit;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 
@@ -539,6 +543,35 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     public File getJavaProjectLibFolder() {
         return JavaProcessorUtilities.getJavaProjectLibFolder();
+    }
+
+    @Override
+    public void updateProjectPomWithTemplate() {
+        try {
+            ProjectPomManager manager = new ProjectPomManager(getTalendProcessJavaProject().getProject());
+            manager.updateFromTemplate(null);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+    }
+
+    @Override
+    public void storeProjectPreferences(IPreferenceStore preferenceStore) {
+        RepositoryWorkUnit workUnit = new RepositoryWorkUnit("Store project preferences") { //$NON-NLS-1$
+
+            @Override
+            protected void run() {
+                try {
+                    if (preferenceStore instanceof IPersistentPreferenceStore) {
+                        ((IPersistentPreferenceStore) preferenceStore).save();
+                    }
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        };
+        workUnit.setAvoidUnloadResources(true);
+        ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
     }
 
 }
