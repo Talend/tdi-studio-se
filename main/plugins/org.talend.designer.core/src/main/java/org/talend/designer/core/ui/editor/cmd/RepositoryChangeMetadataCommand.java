@@ -227,6 +227,22 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 }
             }
             setTableRelevantParameterValues();
+            if (getConnection() != null) {
+                // for salesforce
+                IElementParameter param = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+                if (param != null
+                        && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
+                                .getValue())) {
+                    IElementParameter module = node.getElementParameter("module.moduleName");
+                    if (module != null && module.getRepositoryValue() != null) {
+                        Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), module.getRepositoryValue(),
+                                newOutputMetadata, node.getComponent().getName());
+                        if (objectValue != null) {
+                            module.setValue(objectValue);
+                        }
+                    }
+                }
+            }
         }
         super.setConnection(connection);
         super.execute();
