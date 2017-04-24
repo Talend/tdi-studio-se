@@ -159,7 +159,8 @@ class IndexedRecordToRowStructGenerator {
                     }
                     dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
                     // set logical type
-                    String logicalType_<%=cid%> = org.talend.daikon.avro.LogicalTypeUtils.getLogicalTypeName(dynamicField_<%=cid%>.schema());
+                    org.apache.avro.Schema unwrappedSchema_<%=cid%> = org.talend.daikon.avro.AvroUtils.unwrapIfNullable(dynamicField_<%=cid%>.schema());
+                    String logicalType_<%=cid%> = org.talend.daikon.avro.LogicalTypeUtils.getLogicalTypeName(unwrappedSchema_<%=cid%>);
                     dynamicMetadata_<%=cid%>.setLogicalType(logicalType_<%=cid%>);
                     // set length
                     Object length_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_DB_LENGTH);
