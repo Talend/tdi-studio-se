@@ -305,7 +305,8 @@ public class UpdateNodeParameterCommand extends Command {
                         }
                         if ((repositoryValue != null)
                                 && (param.isShow(node.getElementParameters())
-                                        || node.getComponentProperties() != null || (node instanceof INode && ((INode) node).getComponent().getName()
+                                        || node.getComponentProperties() != null
+                                        || (node instanceof INode && ((INode) node).getComponent().getName()
                                                 .equals("tAdvancedFileOutputXML")) || (node instanceof INode && ((INode) node)
                                         .getComponent().getName().equals("tESBProviderRequest")))) { //$NON-NLS-1$
                             if (param.getName().equals(EParameterName.PROPERTY_TYPE.getName())
@@ -499,18 +500,20 @@ public class UpdateNodeParameterCommand extends Command {
                             }
                         }
                     }
-                }else{
-                    //Added TDQ-11688 20170309 yyin
+                } else {
+                    // Added TDQ-11688 20170309 yyin
                     ITDQPatternService service = null;
-                    if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
                         service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                     }
-                    if (service != null && service.isSinglePatternNode(node)&& parameter!=null && parameter instanceof IElementParameter){
-                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
-                        if(elementParameter!=null && !elementParameter.getValue().equals(((IElementParameter)parameter).getValue())){
-                            elementParameter.setValue(((IElementParameter)parameter).getValue());
-                            update = true;
+                    if (service != null && service.isSinglePatternNode(node) && parameter != null
+                            && parameter instanceof IElementParameter) {
+                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter) parameter).getName());
+                        if (elementParameter != null
+                                && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
+                            elementParameter.setValue(((IElementParameter) parameter).getValue());
                         }
+                        update = true;
                     }
                 }
             }

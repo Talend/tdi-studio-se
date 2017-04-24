@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
@@ -30,7 +29,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.internal.ide.dialogs.FileFolderSelectionDialog;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -76,7 +74,6 @@ import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.projectsetting.ImplicitContextLoadElement;
 import org.talend.designer.core.ui.projectsetting.StatsAndLogsElement;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
-import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -116,6 +113,31 @@ public class PropertyTypeController extends AbstractRepositoryController {
         }
 
         return lastControlUsed;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.talend.designer.core.ui.editor.properties.controllers.AbstractRepositoryController#refresh(org.talend.core.model.process
+     * .IElementParameter, boolean)
+     */
+    @Override
+    public void refresh(IElementParameter param, boolean check) {
+        // judge only pattern mode
+        String componentName = ((Node) this.elem).getComponent().getName();
+        if ("tPatternExtract".equals(componentName) || "tPatternCheck".equals(componentName)) { //$NON-NLS-1$ //$NON-NLS-2$
+
+            IElementParameter patternPropertyTypeElementParameter = param.getChildParameters().get("REPOSITORY_PROPERTY_TYPE");//$NON-NLS-1$
+            if (patternPropertyTypeElementParameter.getListItemsDisplayName().length == 0
+                    && patternPropertyTypeElementParameter.getListItemsValue().length == 0) {
+                patternPropertyTypeElementParameter.setListItemsDisplayName(new String[] { param.getElement()
+                        .getPropertyValue("PATTERN_NAME").toString() }); //$NON-NLS-1$
+                patternPropertyTypeElementParameter.setListItemsValue(new String[] { patternPropertyTypeElementParameter
+                        .getValue().toString() });
+            }
+        }
+        super.refresh(param, check);
     }
 
     /**
@@ -188,8 +210,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
         CLabel labelLabel = getWidgetFactory().createCLabel(subComposite, ""); //$NON-NLS-1$
         data = new FormData();
         data.left = new FormAttachment(lastControl, 0);
-        data.right = new FormAttachment(lastControl,
-                labelLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + (ITabbedPropertyConstants.HSPACE * 2), SWT.RIGHT);
+        data.right = new FormAttachment(lastControl, labelLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x
+                + (ITabbedPropertyConstants.HSPACE * 2), SWT.RIGHT);
         if (resetBtn != null) {
             data.top = new FormAttachment(resetBtn, 0, SWT.CENTER);
         } else {
@@ -296,8 +318,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
                 if (EParameterName.PROPERTY_TYPE.getName().equals(paramName)) {
                     dbTypeParam = elem.getElementParameter(EParameterName.DB_TYPE.getName());
                 } else if (JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTY_TYPE.getName()).equals(paramName)) {
-                    dbTypeParam = elem
-                            .getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE.getName()));
+                    dbTypeParam = elem.getElementParameter(JobSettingsConstants.getExtraParameterName(EParameterName.DB_TYPE
+                            .getName()));
                 }
 
             }
@@ -311,16 +333,16 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     String[] listRepositoryItems = dbTypeParam.getListRepositoryItems();
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
                             param.getRepositoryValue(), listRepositoryItems);
-                }else{
-                    //Added TDQ-11688 
+                } else {
+                    // Added TDQ-11688
                     ITDQPatternService service = null;
-                    if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
                         service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                     }
-                    if (service != null && service.isSinglePatternNode(elem)){
+                    if (service != null && service.isSinglePatternNode(elem)) {
                         return processPattern(elem);
-                    }//~
-                
+                    }// ~
+
                     dialog = new RepositoryReviewDialog(Display.getCurrent().getActiveShell(), ERepositoryObjectType.METADATA,
                             elem, param);
                 }
@@ -330,9 +352,9 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     id = selectNode.getObject().getId();
                 }
             }
-            if (id != null && !"".equals(id)) {
-                IElementParameter repositoryParam = param.getChildParameters()
-                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+            if (id != null && !"".equals(id)) { //$NON-NLS-1$
+                IElementParameter repositoryParam = param.getChildParameters().get(
+                        EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
 
                 String fullParamName = paramName + ":" + getRepositoryChoiceParamName(); //$NON-NLS-1$
 
@@ -381,15 +403,14 @@ public class PropertyTypeController extends AbstractRepositoryController {
                         String portId = selectNode.getParent().getObject().getId();
                         String operationId = selectNode.getObject().getId();
 
-                        changeValuesFromRepository = new ChangeValuesFromRepository(elem, repositoryConnection,
-                                param.getName() + ":" + EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), //$NON-NLS-1$
-                                serviceId + " - " + portId + " - " + operationId);
+                        changeValuesFromRepository = new ChangeValuesFromRepository(elem, repositoryConnection, param.getName()
+                                + ":" + EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), //$NON-NLS-1$
+                                serviceId + " - " + portId + " - " + operationId); //$NON-NLS-1$ //$NON-NLS-2$
 
                         service.deleteOldRelation(currentJobId);
-                        service.updateOperation((INode) elem, serviceId + " - " + portId + " - " + operationId, selectNode);
+                        service.updateOperation((INode) elem, serviceId + " - " + portId + " - " + operationId, selectNode); //$NON-NLS-1$ //$NON-NLS-2$
                     } else {
-                        changeValuesFromRepository = new ChangeValuesFromRepository(elem, repositoryConnection, fullParamName,
-                                id);
+                        changeValuesFromRepository = new ChangeValuesFromRepository(elem, repositoryConnection, fullParamName, id);
                     }
                     if (changeValuesFromRepository != null) {
                         compoundCommand.add(changeValuesFromRepository);
@@ -472,7 +493,7 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     }
                     // file xml
                     if (ERepositoryCategoryType.XML.getName().equals(repositoryValue)
-                            // bug 18012
+                    // bug 18012
                             || repositoryValue.startsWith(ERepositoryCategoryType.XML.getName())) {
                         realNode = (RepositoryNode) repositoryService
                                 .getRootRepositoryNode(ERepositoryObjectType.METADATA_FILE_XML);
@@ -550,8 +571,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     }
                     // last resort we assume that the repository value was named after the root component type key
                     if (realNode == null) {
-                        realNode = (RepositoryNode) repositoryService
-                                .getRootRepositoryNode(ERepositoryObjectType.getTypeFromKey(repositoryValue));
+                        realNode = (RepositoryNode) repositoryService.getRootRepositoryNode(ERepositoryObjectType
+                                .getTypeFromKey(repositoryValue));
                     }
                     if (realNode != null) {
                         final IMetadataService metadataService = CorePlugin.getDefault().getMetadataService();
@@ -583,32 +604,32 @@ public class PropertyTypeController extends AbstractRepositoryController {
         return null;
     }
 
-    //Added TDQ-13192 20170222
+    // Added TDQ-13192 20170222
     private Command processPattern(IElement elem) {
         CompoundCommand compoundCommand = new CompoundCommand();
         ITDQPatternService service = null;
-        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
         }
         if (service != null && elem instanceof Node) {
             Node node = (Node) elem;
-            IElementParameter typeParam = node.getElementParameter("TYPE");
-            service.selectPattern(typeParam,elem);
-            
-            //create the command
-            final String showId = (String) node.getElementParameter("PATTERN_ID").getValue();
+            IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
+            service.selectPattern(typeParam, elem);
+
+            // create the command
+            final String showId = (String) node.getElementParameter("PATTERN_ID").getValue(); //$NON-NLS-1$
             Command command = new PropertyChangeCommand(elem, EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), showId);
             compoundCommand.add(command);
-            
+
             IElementParameter elementParameter = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
             String[] displayName = new String[1];
-            displayName[0]=(String) node.getElementParameter("PATTERN_NAME").getValue();
+            displayName[0] = (String) node.getElementParameter("PATTERN_NAME").getValue(); //$NON-NLS-1$
             elementParameter.setListItemsDisplayName(displayName);
             elementParameter.setListItemsValue(new String[] { showId });
 
-        }      
+        }
         return compoundCommand;
-        
+
     }
 
     // see bug 0004305
@@ -791,8 +812,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
                 public void execute() {
                     IElementParameter elementParameter = elem.getElementParameter(EParameterName.PROPERTY_TYPE.getName());
                     if (elementParameter != null) {
-                        elementParameter = elementParameter.getChildParameters()
-                                .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                        elementParameter = elementParameter.getChildParameters().get(
+                                EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                         if (elementParameter != null) {
                             elementParameter.setValue(id);
                         }
