@@ -2195,10 +2195,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             String regex = service.getRegex(node, item);
                                             if (!StringUtils.equals(regex, (String) onePattern.get("PATTERN_REGEX"))) {
                                                 onePattern.put("PATTERN_REGEX", regex);
-                                                if (result != null) {
-                                                    propertiesResults.add(result);
-                                                }
-                                                result = createUpdateCheckResult(node, propertiesResults, schemasTableParam);
+                                                result = new UpdateCheckResult(node);
+                                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, schemasTableParam);
                                             }
                                         }
                                     }
@@ -2216,9 +2214,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
                                 if (!StringUtils.equals(regex, (String) reParam.getValue())) {
                                     reParam.setValue(regex);
-                                    if(result!=null){
-                                        propertiesResults.add(result);
-                                    }
                                     result = new UpdateCheckResult(node);
                                     result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, reParam);
                                 }

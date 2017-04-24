@@ -500,18 +500,26 @@ public class UpdateNodeParameterCommand extends Command {
                             }
                         }
                     }
-                } else {
-                    // Added TDQ-11688 20170309 yyin
+                }else{
+                    //Added TDQ-11688 20170309 yyin
                     ITDQPatternService service = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
+                    if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
                         service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                     }
-                    if (service != null && service.isSinglePatternNode(node) && parameter != null
-                            && parameter instanceof IElementParameter) {
-                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter) parameter).getName());
-                        if (elementParameter != null
-                                && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
-                            elementParameter.setValue(((IElementParameter) parameter).getValue());
+                    if (service != null && parameter!=null && parameter instanceof IElementParameter){
+                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
+                        if (service.isSinglePatternNode(node)) {
+                            if (elementParameter != null
+                                    && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
+                                elementParameter.setValue(((IElementParameter) parameter).getValue());
+                            }
+                        }else if(service.isMultiPatternNode(node)){
+                            List<Map<String, Object>> newParamValues = (List<Map<String, Object>>)  ((IElementParameter)parameter).getValue();
+                            List<Map<String, Object>> oldParamValues = (List<Map<String, Object>>)  ((IElementParameter)elementParameter).getValue();
+                            //update the table value for tMultiPattern
+                            oldParamValues.clear();
+                            oldParamValues.addAll(newParamValues);
+                            
                         }
                         update = true;
                     }

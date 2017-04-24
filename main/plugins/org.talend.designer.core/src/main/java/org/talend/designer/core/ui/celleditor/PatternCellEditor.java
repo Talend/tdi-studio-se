@@ -3,6 +3,7 @@ package org.talend.designer.core.ui.celleditor;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -77,21 +78,24 @@ public class PatternCellEditor extends DialogCellEditor {
                 int index = 0;
                 TableViewer tableViewer = getTableViewer();
                 if(tableViewer!=null){
-                    index = getTableViewer().getTable().getSelectionIndex();
+                    index = tableViewer.getTable().getSelectionIndex();
                 }    
                 updatePatterInfoOnRow(index,patternInfo);
                 
-                //if any row select a pattern, set the node's PROPERTY = REPOSITORY 
+                // if any row select a pattern, set the node's PROPERTY = REPOSITORY
                 IElementParameter property = node.getElementParameter(EParameterName.PROPERTY_TYPE.getName());
 
-                if(property!=null){
-                    property.setValue(EmfComponent.REPOSITORY);
-                    IElementParameter repositoryParam = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                    if(repositoryParam!=null){
-                        repositoryParam.setValue(patternInfo[0]);
-                    }
+                if (property != null) {
+                    IElementParameter repositoryParam = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE
+                            .getName());
+                    if (StringUtils.isNotBlank(patternInfo[0])) {
+                        property.setValue(EmfComponent.REPOSITORY);
+                        if (repositoryParam != null) {
+                            repositoryParam.setValue(patternInfo[0]);
+                       }
+                    } 
                 }
-            }
+           }
             return patternInfo[1];
         }
         return null;

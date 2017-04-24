@@ -2540,6 +2540,9 @@ public class EmfComponent extends AbstractBasicComponent {
                 case MULTI_PATTERN:
                     newParam.setFieldType(EParameterFieldType.MULTI_PATTERN);
                     break;
+                case PATTERN_PROPERTY:
+                    newParam.setFieldType(EParameterFieldType.PATTERN_PROPERTY);
+                    break;
                 default: // TEXT by default
                     newParam.setFieldType(EParameterFieldType.TEXT);
                     if (item.getVALUE() == null || item.getVALUE().equals("")) { //$NON-NLS-1$

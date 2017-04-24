@@ -76,6 +76,7 @@ import org.talend.core.ui.proposal.TalendProposalProvider;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.celleditor.PatternCellEditor;
+import org.talend.designer.core.ui.celleditor.PatternPropertyCellEditor;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.event.CheckColumnSelectionListener;
 
@@ -538,6 +539,13 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     PatternCellEditor patternEditor = new PatternCellEditor(table,element);
                     patternEditor.setTableEditorView(this);
                     column.setCellEditor(patternEditor);
+                    break;
+                    
+                case PATTERN_PROPERTY:
+                    column.setModifiable(true);
+                    PatternPropertyCellEditor patternPropertyEditor = new PatternPropertyCellEditor(table,element);
+                    patternPropertyEditor.setTableEditorView(this);
+                    column.setCellEditor(patternPropertyEditor);
                     break;
                     
                 default: // TEXT
