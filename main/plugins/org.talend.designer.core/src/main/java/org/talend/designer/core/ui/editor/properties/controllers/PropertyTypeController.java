@@ -617,19 +617,21 @@ public class PropertyTypeController extends AbstractRepositoryController {
         if (service != null && elem instanceof Node) {
             Node node = (Node) elem;
             IElementParameter typeParam = node.getElementParameter("TYPE"); //$NON-NLS-1$
-            service.selectPattern(typeParam, elem);
+            boolean hadSelected = service.selectPattern(typeParam, elem);
 
-            // create the command
-            final String showId = (String) node.getElementParameter("PATTERN_ID").getValue(); //$NON-NLS-1$
-            Command command = new PropertyChangeCommand(elem, EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), showId);
-            compoundCommand.add(command);
+            if (hadSelected) {
+                // create the command
+                final String showId = (String) node.getElementParameter("PATTERN_ID").getValue(); //$NON-NLS-1$
+                compoundCommand = new CompoundCommand();
+                Command command = new PropertyChangeCommand(elem, EParameterName.REPOSITORY_PROPERTY_TYPE.getName(), showId);
+                compoundCommand.add(command);
 
-            IElementParameter elementParameter = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-            String[] displayName = new String[1];
-            displayName[0] = (String) node.getElementParameter("PATTERN_NAME").getValue(); //$NON-NLS-1$
-            elementParameter.setListItemsDisplayName(displayName);
-            elementParameter.setListItemsValue(new String[] { showId });
-
+                IElementParameter elementParameter = node.getElementParameter(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                String[] displayName = new String[1];
+                displayName[0] = (String) node.getElementParameter("PATTERN_NAME").getValue(); //$NON-NLS-1$
+                elementParameter.setListItemsDisplayName(displayName);
+                elementParameter.setListItemsValue(new String[] { showId });
+            }
         }
         return compoundCommand;
 
