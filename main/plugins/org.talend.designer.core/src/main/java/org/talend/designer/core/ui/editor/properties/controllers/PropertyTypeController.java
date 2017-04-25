@@ -125,16 +125,19 @@ public class PropertyTypeController extends AbstractRepositoryController {
     @Override
     public void refresh(IElementParameter param, boolean check) {
         // judge only pattern mode
-        String componentName = ((Node) this.elem).getComponent().getName();
-        if ("tPatternExtract".equals(componentName) || "tPatternCheck".equals(componentName)) { //$NON-NLS-1$ //$NON-NLS-2$
+        if (elem instanceof Node) {
+            String componentName = ((Node) elem).getComponent().getName();
+            if ("tPatternExtract".equals(componentName) || "tPatternCheck".equals(componentName)) { //$NON-NLS-1$ //$NON-NLS-2$
 
-            IElementParameter patternPropertyTypeElementParameter = param.getChildParameters().get("REPOSITORY_PROPERTY_TYPE");//$NON-NLS-1$
-            if (patternPropertyTypeElementParameter.getListItemsDisplayName().length == 0
-                    && patternPropertyTypeElementParameter.getListItemsValue().length == 0) {
-                patternPropertyTypeElementParameter.setListItemsDisplayName(new String[] { param.getElement()
-                        .getPropertyValue("PATTERN_NAME").toString() }); //$NON-NLS-1$
-                patternPropertyTypeElementParameter.setListItemsValue(new String[] { patternPropertyTypeElementParameter
-                        .getValue().toString() });
+                IElementParameter patternPropertyTypeElementParameter = param.getChildParameters()
+                        .get("REPOSITORY_PROPERTY_TYPE");//$NON-NLS-1$
+                if (patternPropertyTypeElementParameter.getListItemsDisplayName().length == 0
+                        && patternPropertyTypeElementParameter.getListItemsValue().length == 0) {
+                    patternPropertyTypeElementParameter.setListItemsDisplayName(new String[] { param.getElement()
+                            .getPropertyValue("PATTERN_NAME").toString() }); //$NON-NLS-1$
+                    patternPropertyTypeElementParameter.setListItemsValue(new String[] { patternPropertyTypeElementParameter
+                            .getValue().toString() });
+                }
             }
         }
         super.refresh(param, check);
