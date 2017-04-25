@@ -113,26 +113,6 @@
 							</artifactItems>
 						</configuration>
 					</execution>
-					<execution>
-						<id>copy-jars</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<stripVersion>true</stripVersion>
-							<artifactItems>
-								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
-									<artifactId>talendMsgMailUtil-1.1-20170419</artifactId>
-									<version>6.0.0</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.basedir}/components/tFileInputMail</outputDirectory>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 			<plugin>
