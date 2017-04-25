@@ -102,7 +102,11 @@ public class MapperSettingsManager {
         currentModel.setTempDataDir(defaultModel.getTempDataDir());
         currentModel.setRowBufferSize(defaultModel.getRowBufferSize());
         AbstractMapComponent component = manager.getAbstractMapComponent();
-        IElementParameter parameter = component.getElementParameter(REPLICATED_JOIN);
+        IElementParameter parameter = component.getElementParameter(DIE_ON_ERROR);
+        if (parameter != null && parameter.getValue() != null && parameter.getValue() instanceof Boolean) {
+            currentModel.setDieOnError((Boolean) parameter.getValue());
+        }
+        parameter = component.getElementParameter(REPLICATED_JOIN);
         if (parameter != null && parameter.getValue() != null && parameter.getValue() instanceof Boolean) {
             currentModel.setReplicatedJoin((Boolean) parameter.getValue());
         }
