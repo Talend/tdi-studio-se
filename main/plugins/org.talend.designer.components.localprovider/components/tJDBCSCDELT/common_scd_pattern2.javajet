@@ -99,7 +99,7 @@ if(isEnableType2) {
     %>        
     String changeDateTime_<%=cid%> = (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString();
 	
-    String updateForType2_<%=cid %> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> WHERE EXISTS (SELECT 1 FROM <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>)) AND d.<%=text_util.wrap(endDateField)%> IS NULL"; 
+    String updateForType2_<%=cid %> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> FROM <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> IS NULL"; 
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
     stmtType2Update_<%=cid%>.close();
