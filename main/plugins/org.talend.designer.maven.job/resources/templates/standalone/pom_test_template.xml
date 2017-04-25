@@ -9,7 +9,7 @@
 		<version>@ProjectVersion@</version>
 		<relativePath>./pom.xml</relativePath>
 	</parent>
-	<groupId>org.talend.test</groupId>
+	<groupId>@JobGroupId@</groupId>
 	<artifactId>@JobName@</artifactId>
 	<version>@JobVersion@</version>
 	<name>@ProjectName@ @JobName@ (@JobType@)</name>
