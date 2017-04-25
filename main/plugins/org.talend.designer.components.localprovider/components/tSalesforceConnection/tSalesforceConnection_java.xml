@@ -164,6 +164,7 @@
             NAME="OAUTH_TOKEN_FILE"
             FIELD="FILE"
             NUM_ROW="50"
+            REPOSITORY_VALUE="OAUTH_TOKEN_FILE"
             REQUIRED_IF="LOGIN_TYPE=='OAUTH'"
             SHOW_IF="LOGIN_TYPE=='OAUTH'"
             GROUP="LOGIN">
