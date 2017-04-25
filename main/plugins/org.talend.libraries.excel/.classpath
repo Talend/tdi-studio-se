@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/poi-3.16-20170419_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-3.16-20170419_modified_talend.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-3.16-20170419.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.16-20170419.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections4-4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.15-20160924.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-3.15-20160924_modified_talend.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-3.15-20160924_modified_talend.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-3.15-20160924.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/simpleexcel.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
