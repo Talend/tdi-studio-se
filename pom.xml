@@ -117,8 +117,6 @@
 		<module>main/plugins/org.talend.libraries.hl7</module>
 		<module>main/plugins/org.talend.libraries.hl7.jars</module>
 		<module>main/plugins/org.talend.libraries.jax</module>
-		<module>main/plugins/org.talend.libraries.jboss</module>
-		<module>main/plugins/org.talend.libraries.jboss.jars</module>
 		<module>main/plugins/org.talend.libraries.jersey</module>
 		<module>main/plugins/org.talend.libraries.jetty</module>
 		<module>main/plugins/org.talend.libraries.microsoft</module>
