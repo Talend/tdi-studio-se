@@ -2,6 +2,9 @@ package org.talend.ms.crm.odata;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
@@ -14,14 +17,16 @@ import javax.naming.ServiceUnavailableException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
@@ -42,7 +47,6 @@ import org.apache.olingo.client.api.uri.QueryOption;
 import org.apache.olingo.client.api.uri.URIBuilder;
 import org.apache.olingo.client.core.ODataClientFactory;
 import org.apache.olingo.client.core.http.DefaultHttpClientFactory;
-import org.apache.olingo.client.core.http.DefaultHttpUriRequestFactory;
 import org.apache.olingo.client.core.http.HttpPatch;
 import org.apache.olingo.commons.api.Constants;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
@@ -101,7 +105,6 @@ public class DynamicsCRMClient {
 
         httpClientFactory = new DefaultHttpClientFactory() {
 
-
             @Override
             public DefaultHttpClient create(final HttpMethod method, final URI uri) {
                 if (!clientConfiguration.isReuseHttpClient() || httpClient == null) {
@@ -109,6 +112,9 @@ public class DynamicsCRMClient {
 
                     HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), clientConfiguration.getTimeout() * 1000);
                     HttpConnectionParams.setSoTimeout(httpClient.getParams(), clientConfiguration.getTimeout() * 1000);
+
+                    // setup proxy
+                    setHttpclientProxy(httpClient);
                 }
                 return httpClient;
             }
@@ -116,20 +122,8 @@ public class DynamicsCRMClient {
         };
         odataClient.getConfiguration().setHttpClientFactory(httpClientFactory);
 
-        odataClient.getConfiguration().setHttpUriRequestFactory(new DefaultHttpUriRequestFactory() {
+        httpClient = (DefaultHttpClient) httpClientFactory.create(null, null);
 
-            @Override
-            public HttpUriRequest create(final HttpMethod method, final URI uri) {
-                HttpUriRequest result = super.create(method, uri);
-
-                HttpConnectionParams.setConnectionTimeout(result.getParams(), clientConfiguration.getTimeout() * 1000);
-                HttpConnectionParams.setSoTimeout(result.getParams(), clientConfiguration.getTimeout() * 1000);
-                return result;
-            }
-        });
-        httpClient = (DefaultHttpClient) odataClient.getConfiguration().getHttpClientFactory().create(null, null);
-
-        // TODO proxy not implement
     }
 
     public ODataClient getClient() {
@@ -143,6 +137,10 @@ public class DynamicsCRMClient {
         try {
             service = Executors.newFixedThreadPool(1);
             context = new AuthenticationContext(clientConfiguration.getAuthoryEndpoint(), false, service);
+            Proxy proxy = getProxy();
+            if (proxy != null) {
+                context.setProxy(proxy);
+            }
             Future<AuthenticationResult> future = context.acquireToken(clientConfiguration.getResource(),
                     clientConfiguration.getClientId(), clientConfiguration.getUserName(), clientConfiguration.getPassword(),
                     null);
@@ -281,16 +279,16 @@ public class DynamicsCRMClient {
         request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
         try {
-        ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
-        if (entitySetIterator.hasNext()) {
-            ClientProperty localName = entitySetIterator.next().getProperty("LogicalName");
-            if (localName != null && localName.getValue() != null) {
-                return localName.getValue().toString();
+            ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
+            if (entitySetIterator.hasNext()) {
+                ClientProperty localName = entitySetIterator.next().getProperty("LogicalName");
+                if (localName != null && localName.getValue() != null) {
+                    return localName.getValue().toString();
                 }
             }
         } finally {
             response.close();
-            //Close reponse would also close connection. So here need recreate httpclient
+            // Close reponse would also close connection. So here need recreate httpclient
             httpClient = null;
         }
         return null;
@@ -371,7 +369,7 @@ public class DynamicsCRMClient {
         boolean hasRetried = false;
         while (true) {
             try {
-                httpClient = (DefaultHttpClient) odataClient.getConfiguration().getHttpClientFactory().create(null, null);
+                httpClient = (DefaultHttpClient) httpClientFactory.create(null, null);
                 HttpRequestBase request = null;
                 if (method == HttpMethod.POST) {
                     request = new HttpPost(uri);
@@ -450,6 +448,51 @@ public class DynamicsCRMClient {
      */
     public boolean isResponseSuccess(int statusCode) {
         return statusCode == HttpStatus.SC_NO_CONTENT || statusCode == HttpStatus.SC_CREATED || statusCode == HttpStatus.SC_OK;
+    }
+
+    /**
+     * Setup proxy for httpClient
+     */
+    private void setHttpclientProxy(DefaultHttpClient httpClient) {
+
+        Proxy proxy = getProxy();
+        String proxyUser = System.getProperty("https.proxyUser");
+        String proxyPwd = System.getProperty("https.proxyPassword");
+        // set by other components like tSetProxy
+        if (proxy != null) {
+
+            final HttpHost httpHost = new HttpHost(((InetSocketAddress) proxy.address()).getHostName(),
+                    ((InetSocketAddress) proxy.address()).getPort());
+            // Sets usage of HTTP proxy
+            httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, httpHost);
+
+            // Sets proxy authentication, if credentials were provided
+            // TODO Because the proxy of get accesToken can't support authentication. remove this ?
+            if (proxyUser != null && proxyPwd != null) {
+                httpClient.getCredentialsProvider().setCredentials(new AuthScope(httpHost),
+                        new UsernamePasswordCredentials(proxyUser, proxyPwd));
+            }
+
+        }
+
+    }
+
+    /**
+     * Get the proxy setting if there is proxy for system
+     */
+    private Proxy getProxy() {
+        String proxyHost = System.getProperty("https.proxyHost");
+        String proxyPort = System.getProperty("https.proxyPort");
+        if (proxyHost != null) {
+            int port = -1;
+            if (proxyPort != null && proxyPort.length() > 0) {
+                port = Integer.parseInt(proxyPort);
+            }
+            SocketAddress addr = new InetSocketAddress(proxyHost, port);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+            return proxy;
+        }
+        return null;
     }
 
 }
