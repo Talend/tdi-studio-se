@@ -159,7 +159,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-     	<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.1.13.1013.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.1.13.1013/6.0.0"  REQUIRED="true" />
+     	<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.1.1001.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.1.1001/6.0.0"  REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
 
