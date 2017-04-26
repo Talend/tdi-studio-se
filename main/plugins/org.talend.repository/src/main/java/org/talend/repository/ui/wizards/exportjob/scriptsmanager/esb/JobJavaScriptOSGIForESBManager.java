@@ -606,7 +606,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         contextParams.put("job", collectJobInfo(processItem, process)); //$NON-NLS-1$
 
         TemplateProcessor.processTemplate("REST_JOB_BLUEPRINT_CONFIG", //$NON-NLS-1$
-                contextParams, targetFile, getClass().getResourceAsStream(TEMPLATE_BLUEPRINT_JOB_REST));
+                contextParams, targetFile, JobJavaScriptOSGIForESBManager.class.getResourceAsStream(TEMPLATE_BLUEPRINT_JOB_REST));
     }
 
     private static final String TEMPLATE_BLUEPRINT_JOB = "/resources/job-template.xml"; //$NON-NLS-1$
