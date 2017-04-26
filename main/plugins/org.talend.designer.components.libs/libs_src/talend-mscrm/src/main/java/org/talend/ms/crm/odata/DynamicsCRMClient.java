@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -25,8 +24,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.util.EntityUtils;
 import org.apache.olingo.client.api.ODataClient;
@@ -74,7 +71,7 @@ public class DynamicsCRMClient {
 
     private ODataClient odataClient;
 
-    private HttpClient httpClient;
+    private DefaultHttpClient httpClient;
 
     private HttpClientFactory httpClientFactory;
 
@@ -104,7 +101,6 @@ public class DynamicsCRMClient {
 
         httpClientFactory = new DefaultHttpClientFactory() {
 
-            private DefaultHttpClient httpClient;
 
             @Override
             public DefaultHttpClient create(final HttpMethod method, final URI uri) {
@@ -131,7 +127,7 @@ public class DynamicsCRMClient {
                 return result;
             }
         });
-        httpClient = odataClient.getConfiguration().getHttpClientFactory().create(null, null);
+        httpClient = (DefaultHttpClient) odataClient.getConfiguration().getHttpClientFactory().create(null, null);
 
         // TODO proxy not implement
     }
@@ -284,13 +280,18 @@ public class DynamicsCRMClient {
                 .getEntitySetIteratorRequest(uriBuilder.build());
         request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
-
+        try {
         ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
         if (entitySetIterator.hasNext()) {
             ClientProperty localName = entitySetIterator.next().getProperty("LogicalName");
             if (localName != null && localName.getValue() != null) {
                 return localName.getValue().toString();
+                }
             }
+        } finally {
+            response.close();
+            //Close reponse would also close connection. So here need recreate httpclient
+            httpClient = null;
         }
         return null;
     }
@@ -370,7 +371,7 @@ public class DynamicsCRMClient {
         boolean hasRetried = false;
         while (true) {
             try {
-                httpClient = odataClient.getConfiguration().getHttpClientFactory().create(null, null);
+                httpClient = (DefaultHttpClient) odataClient.getConfiguration().getHttpClientFactory().create(null, null);
                 HttpRequestBase request = null;
                 if (method == HttpMethod.POST) {
                     request = new HttpPost(uri);
@@ -386,7 +387,9 @@ public class DynamicsCRMClient {
                     ((HttpEntityEnclosingRequestBase) request).setEntity(httpEntity);
                 }
                 HttpResponse response = httpClient.execute(request);
+                request.releaseConnection();
                 if (isResponseSuccess(response.getStatusLine().getStatusCode())) {
+                    EntityUtils.consume(response.getEntity());
                     return response;
                 } else {
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {

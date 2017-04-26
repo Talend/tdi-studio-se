@@ -521,11 +521,6 @@
 				<ITEM NAME="mobileofflineprofileitems" VALUE="mobileofflineprofileitems" />
 				<ITEM NAME="mobileofflineprofiles" VALUE="mobileofflineprofiles" />
 				<ITEM NAME="monthlyfiscalcalendars" VALUE="monthlyfiscalcalendars" />
-				<ITEM NAME="new_countries" VALUE="new_countries" />
-				<ITEM NAME="new_customentities" VALUE="new_customentities" />
-				<ITEM NAME="new_talend_employees" VALUE="new_talend_employees" />
-				<ITEM NAME="new_test_1s" VALUE="new_test_1s" />
-				<ITEM NAME="new_testdoublequoteses" VALUE="new_testdoublequoteses" />
 				<ITEM NAME="officegraphdocuments" VALUE="officegraphdocuments" />
 				<ITEM NAME="opportunities" VALUE="opportunities" />
 				<ITEM NAME="opportunitycloses" VALUE="opportunitycloses" />
@@ -15659,122 +15654,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
-</TABLE>
-<TABLE IF="(ENTITYSET=='new_countries') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-    <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_capital" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_continent" TYPE="id_Integer"  />
-    <COLUMN KEY="true" LENGTH="0" NAME="new_countryid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_iso2" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_name" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="overriddencreatedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="statecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningbusinessunit_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
-</TABLE>
-<TABLE IF="(ENTITYSET=='new_customentities') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-    <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_city" TYPE="id_String"  />
-    <COLUMN KEY="true" LENGTH="0" NAME="new_customentityid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_email" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_firstname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_initial" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_new_id" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_setdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_status" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_zipcode" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="overriddencreatedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="statecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_new_contact_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
-</TABLE>
-<TABLE IF="(ENTITYSET=='new_talend_employees') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-    <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_age" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_lastname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_name" TYPE="id_String"  />
-    <COLUMN KEY="true" LENGTH="0" NAME="new_talend_employeeid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="overriddencreatedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="statecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
-</TABLE>
-<TABLE IF="(ENTITYSET=='new_test_1s') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-    <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_name" TYPE="id_String"  />
-    <COLUMN KEY="true" LENGTH="0" NAME="new_test_1id" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="overriddencreatedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="statecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningbusinessunit_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
-</TABLE>
-<TABLE IF="(ENTITYSET=='new_testdoublequoteses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
-    <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_age" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_firstname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_lastname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_name" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="new_new_id" TYPE="id_Integer"  />
-    <COLUMN KEY="true" LENGTH="0" NAME="new_testdoublequotesid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="overriddencreatedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="statecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningbusinessunit_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
 <TABLE IF="(ENTITYSET=='officegraphdocuments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
     <COLUMN KEY="false" LENGTH="0" NAME="authornames" TYPE="id_String"  />
