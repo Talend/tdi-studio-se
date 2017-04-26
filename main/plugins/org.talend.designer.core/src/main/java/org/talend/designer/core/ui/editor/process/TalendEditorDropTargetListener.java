@@ -75,6 +75,7 @@ import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.IOozieService;
+import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
@@ -199,14 +200,13 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
-
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
  * Performs a native Drop for the talendEditor. see feature
  *
- * $Id: TalendEditorDropTargetListener.java 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29 Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006)
- * nrousseau $
+ * $Id: TalendEditorDropTargetListener.java 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29
+ * Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006) nrousseau $
  *
  */
 public class TalendEditorDropTargetListener extends TemplateTransferDropTargetListener {
@@ -243,11 +243,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                     return false;
                 }
             }
-            IHadoopClusterService hadoopClusterService = null;
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-                hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault().getService(
-                        IHadoopClusterService.class);
-            }
+            IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
             if (hadoopClusterService != null && hadoopClusterService.isHadoopClusterNode(sourceNode)) {
                 return false;
             }
@@ -288,7 +284,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDragOver()
      */
     @Override
@@ -459,7 +455,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.eclipse.gef.dnd.TemplateTransferDropTargetListener#handleDrop()
      */
     @Override
@@ -612,11 +608,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             return;
         }
 
-        IHadoopClusterService hadoopClusterService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault().getService(
-                    IHadoopClusterService.class);
-        }
+        IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService == null || !hadoopClusterService.isHadoopSubnode(repositoryNode)) {
             return;
         }
@@ -627,7 +619,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                 && !ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
             return;
         }
-        if((process instanceof IProcess2) &&(((IProcess2)process).getProperty().getItem() instanceof JobletProcessItem)){
+        if ((process instanceof IProcess2) && (((IProcess2) process).getProperty().getItem() instanceof JobletProcessItem)) {
             return;
         }
 
@@ -648,8 +640,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             return;
         }
 
-        Item hadoopClusterItem = hadoopClusterService.getHadoopClusterBySubitemId(
-                new Project(ProjectManager.getInstance().getProject(subItem)), subItem.getProperty().getId());
+        Item hadoopClusterItem = hadoopClusterService.getHadoopClusterBySubitemId(new Project(ProjectManager.getInstance()
+                .getProject(subItem)), subItem.getProperty().getId());
         String hadoopClusterId = hadoopClusterItem.getProperty().getId();
         if (EmfComponent.REPOSITORY.equals(propertyParam.getValue())) {
             // do nothing when select the same hadoop cluster.
@@ -992,7 +984,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
     /**
      * Used to store data temporarily. <br/>
      *
-     * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29 Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006) nrousseau $
+     * $Id: talend.epf 1 2006-09-29 17:06:40 +0000 (Ð“Â¦Ð’ï¿½Ð’ÑŸÐ“Â¦Ð’ÑšÐ’ÑŸÐ“Â¤Ð’Ñ”Ð’â€�, 29
+     * Ð“Â¤Ð’â„–Ð’ÑœÐ“Â¦Ð’ÑšÐ’â‚¬ 2006) nrousseau $
      *
      */
     class TempStore {
@@ -1116,11 +1109,11 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_MR
                             || repositoryNode.getObjectType() == ERepositoryObjectType.PROCESS_STORM) { // dnd a job
                         LabelValue = DesignerUtilities.getParameterVar(EParameterName.PROCESS);
-                    }else if(repositoryNode.getObjectType() == ERepositoryObjectType.JOBLET
-                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_JOBLET
-                    		|| repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_STREAMING_JOBLET){
-                    	LabelValue = element.getName();
-                    }else if (CorePlugin.getDefault().getDesignerCoreService()
+                    } else if (repositoryNode.getObjectType() == ERepositoryObjectType.JOBLET
+                            || repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_JOBLET
+                            || repositoryNode.getObjectType() == ERepositoryObjectType.SPARK_STREAMING_JOBLET) {
+                        LabelValue = element.getName();
+                    } else if (CorePlugin.getDefault().getDesignerCoreService()
                             .getPreferenceStore(TalendDesignerPrefConstants.DEFAULT_LABEL)
                             .equals(node.getPropertyValue(EParameterName.LABEL.getName()))) {// dnd a default
                         LabelValue = selectedNode.getObject().getLabel();
@@ -1130,7 +1123,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
                     }
                 }
                 processSpecificDBTypeIfSameProduct(store.componentName, node);
-                NodeContainer nc = ((Process)node.getProcess()).loadNodeContainer(node, false);;
+                NodeContainer nc = ((Process) node.getProcess()).loadNodeContainer(node, false);
+                ;
 
                 // create component on link
                 boolean executed = false;
@@ -1902,12 +1896,13 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         }
         boolean isCurrentProject = true;
         String projectName = null;
-        if(store.seletetedNode.getObject()!=null){
-        	projectName = store.seletetedNode.getObject().getProjectLabel();
-        	isCurrentProject = projectName.equals(ProjectManager.getInstance().getCurrentProject().getLabel());
+        if (store.seletetedNode.getObject() != null) {
+            projectName = store.seletetedNode.getObject().getProjectLabel();
+            isCurrentProject = projectName.equals(ProjectManager.getInstance().getCurrentProject().getLabel());
         }
 
-        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type, isCurrentProject, projectName);
+        List<IComponent> neededComponents = RepositoryComponentManager.filterNeededComponents(item, store.seletetedNode, type,
+                isCurrentProject, projectName);
 
         for (IDragAndDropServiceHandler handler : DragAndDropManager.getHandlers()) {
             List<IComponent> comList = handler.filterNeededComponents(item, store.seletetedNode, type);
@@ -2037,8 +2032,8 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             viewOriginalPosition = viewport.getViewLocation();
         }
         Point point = new Point(originalPoint.x + viewOriginalPosition.x, originalPoint.y + viewOriginalPosition.y);
-        point.x =  (int) (point.x/AnimatableZoomManager.currentZoom);
-        point.y =  (int) (point.y/AnimatableZoomManager.currentZoom);
+        point.x = (int) (point.x / AnimatableZoomManager.currentZoom);
+        point.y = (int) (point.y / AnimatableZoomManager.currentZoom);
         org.talend.designer.core.ui.editor.connections.Connection targetConnection = null;
         if (selectedConnectionPart != null) {
             targetConnection = (org.talend.designer.core.ui.editor.connections.Connection) selectedConnectionPart.getModel();
@@ -2046,7 +2041,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         if (targetConnection != null) {
             IProcess2 p = editor.getProcess();
-            NodeContainer nodeContainer = ((Process)node.getProcess()).loadNodeContainer(node, false);
+            NodeContainer nodeContainer = ((Process) node.getProcess()).loadNodeContainer(node, false);
             // TDI-21099
             if (p instanceof Process) {
                 CreateNodeContainerCommand createCmd = new CreateNodeContainerCommand((Process) p, nodeContainer, point);
@@ -2265,7 +2260,7 @@ class ComponentChooseDialog extends ListDialog {
 
             /*
              * (non-Javadoc)
-             *
+             * 
              * @see org.eclipse.jface.viewers.BaseLabelProvider#dispose()
              */
             @Override

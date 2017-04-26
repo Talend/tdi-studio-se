@@ -71,6 +71,7 @@ import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.hadoop.IHadoopClusterService;
+import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Project;
@@ -309,10 +310,10 @@ public class ExportItemWizardPage extends WizardPage {
                     if (node.getObject() != null) {
                         property = node.getObject().getProperty();
                     }
-                }else if(objectType == ERepositoryObjectType.METADATA_CON_COLUMN){
+                } else if (objectType == ERepositoryObjectType.METADATA_CON_COLUMN) {
                     if (node.getObject() != null && (node.getObject() instanceof MetadataColumnRepositoryObject)) {
-                        IRepositoryViewObject viewObj = ((MetadataColumnRepositoryObject)node.getObject()).getViewObject();
-                        if(viewObj!=null){
+                        IRepositoryViewObject viewObj = ((MetadataColumnRepositoryObject) node.getObject()).getViewObject();
+                        if (viewObj != null) {
                             property = viewObj.getProperty();
                         }
                     }
@@ -1241,11 +1242,7 @@ public class ExportItemWizardPage extends WizardPage {
     }
 
     private boolean isHadoopClusterNode(IRepositoryNode repositoryNode) {
-        IHadoopClusterService hadoopClusterService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault().getService(
-                    IHadoopClusterService.class);
-        }
+        IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService != null) {
             return hadoopClusterService.isHadoopClusterNode(repositoryNode);
         }

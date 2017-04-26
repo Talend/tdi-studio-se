@@ -45,6 +45,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
+import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IProcess;
@@ -72,6 +73,7 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
@@ -135,13 +137,20 @@ public class JavaProcessorUtilities {
      * @param process
      * @return
      */
-    public static Set<String> extractLibNamesOnlyForMapperAndReducerWithoutRoutines(IProcess process) {
+    public static Set<String> extractLibNamesOnlyForMapperAndReducerWithoutRoutines(IProcess2 process) {
         Set<String> libNames = new HashSet<String>();
         Set<ModuleNeeded> libs = extractLibsOnlyForMapperAndReducer(process);
         if (libs != null) {
             Iterator<ModuleNeeded> itLibs = libs.iterator();
             while (itLibs.hasNext()) {
-                libNames.add(itLibs.next().getModuleName());
+                ModuleNeeded currentModule = itLibs.next();
+                if (ProcessorUtilities.hadoopConfJarCanBeLoadedDynamically(process.getProperty())) {
+                    Object obj = currentModule.getExtraAttributes().get(HadoopConstants.IS_DYNAMIC_JAR);
+                    if (Boolean.valueOf(String.valueOf(obj))) {
+                        continue;
+                    }
+                }
+                libNames.add(currentModule.getModuleName());
             }
         }
         return libNames;
@@ -153,7 +162,7 @@ public class JavaProcessorUtilities {
      * @param process
      * @return
      */
-    public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcess process) {
+    public static Set<String> extractLibNamesOnlyForMapperAndReducer(IProcess2 process) {
         Set<String> libNames = extractLibNamesOnlyForMapperAndReducerWithoutRoutines(process);
         libNames.addAll(PomUtil.getCodesExportJars(process));
         return libNames;

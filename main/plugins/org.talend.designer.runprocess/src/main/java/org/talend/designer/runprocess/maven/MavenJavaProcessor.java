@@ -238,7 +238,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (ProcessorUtilities.isExportConfig()) {
             // final Object exportType = itemProperty.getAdditionalProperties().get(MavenConstants.NAME_EXPORT_TYPE);
             final Object exportType = getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-            buildTypeName = exportType != null ? exportType.toString() : null; //$NON-NLS-1$
+            buildTypeName = exportType != null ? exportType.toString() : null;
         } // else { //if run job, will be null (use Standalone by default)
 
         Map<String, Object> parameters = new HashMap<String, Object>();

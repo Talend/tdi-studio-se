@@ -179,14 +179,17 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
         StringBuffer libJars = new StringBuffer();
         Set<String> libNames = null;
         boolean isExport = isExportConfig() || isRunAsExport();
-        if (isExport) {
-            // In an export mode, all the dependencies and the routines/beans/udfs are packaged in the lib folder.
-            libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer(process);
-        } else {
-            // In the local mode, all the dependencies are packaged in the lib folder. The routines/beans/udfs are not.
-            // We will
-            // handle them separetely.
-            libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducerWithoutRoutines(process);
+        if (process instanceof IProcess2) {
+            if (isExport) {
+                // In an export mode, all the dependencies and the routines/beans/udfs are packaged in the lib folder.
+                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducer((IProcess2) process);
+            } else {
+                // In the local mode, all the dependencies are packaged in the lib folder. The routines/beans/udfs are
+                // not.
+                // We will
+                // handle them separetely.
+                libNames = JavaProcessorUtilities.extractLibNamesOnlyForMapperAndReducerWithoutRoutines((IProcess2) process);
+            }
         }
 
         File libDir = JavaProcessorUtilities.getJavaProjectLibFolder();

@@ -43,9 +43,9 @@ import org.eclipse.swt.widgets.Text;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.time.TimeMeasure;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.IHadoopClusterService;
+import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -347,26 +347,23 @@ public class RepositoryReviewDialog extends Dialog {
     }
 
     private IRepositoryTypeProcessor getHadoopSubMultiRepTypeProcessor(String[] repTypes) {
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-            IHadoopClusterService hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault()
-                    .getService(IHadoopClusterService.class);
-            if (hadoopClusterService != null) {
-                List<String> repTypeList = new ArrayList<String>();
-                Map<String, Object> attributes = new HashMap<String, Object>();
-                for (String repType : repTypes) {
-                    Map<String, Object> attr = parseAttributes(repType);
-                    if (attr == null) {
-                        repTypeList.add(repType);
-                    } else {
-                        attributes.putAll(attr);
-                    }
+        IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
+        if (hadoopClusterService != null) {
+            List<String> repTypeList = new ArrayList<String>();
+            Map<String, Object> attributes = new HashMap<String, Object>();
+            for (String repType : repTypes) {
+                Map<String, Object> attr = parseAttributes(repType);
+                if (attr == null) {
+                    repTypeList.add(repType);
+                } else {
+                    attributes.putAll(attr);
                 }
-
-                IRepositoryTypeProcessor processor = hadoopClusterService
-                        .getHadoopSubMultiRepTypeProcessor(repTypeList.toArray(new String[0]));
-                processor.setAttributes(attributes);
-                return processor;
             }
+
+            IRepositoryTypeProcessor processor = hadoopClusterService.getHadoopSubMultiRepTypeProcessor(repTypeList
+                    .toArray(new String[0]));
+            processor.setAttributes(attributes);
+            return processor;
         }
 
         return null;

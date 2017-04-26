@@ -30,9 +30,9 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.VirtualComponentProperties;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.hadoop.IHadoopClusterService;
+import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
@@ -84,7 +84,6 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
-import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.core.model.process.statsandlogs.StatsAndLogsManager;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
@@ -94,6 +93,7 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
@@ -3043,55 +3043,45 @@ public class DataProcess implements IGeneratingProcess {
     }
 
     private void checkUseHadoopConfs(INode graphicalNode) {
-        IElementParameter propertyElementParameter = graphicalNode
-                .getElementParameterFromField((EParameterFieldType.PROPERTY_TYPE));
-        if (propertyElementParameter == null) {
-            return;
+        String id = JavaProcessUtil.getHadoopClusterItemId(graphicalNode);
+        if (id != null) {
+            DataNode confNode = createHadoopConfManagerNode(id, "tHadoopConfManager", ComponentCategory.CATEGORY_4_DI,
+                    graphicalNode);
+            if (confNode != null) {
+                addDataNode(confNode);
+            }
         }
-        Map<String, IElementParameter> childParameters = propertyElementParameter.getChildParameters();
-        String propertyType = (String) childParameters.get(EParameterName.PROPERTY_TYPE.getName()).getValue();
-        if (!EmfComponent.REPOSITORY.equals(propertyType)) {
-            return;
-        }
-        IElementParameter propertyParam = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-        if (propertyParam == null) {
-            return;
-        }
-        Object propertyValue = propertyParam.getValue();
-        if (propertyValue == null) {
-            return;
-        }
-        IHadoopClusterService hadoopClusterService = getHadoopClusterService();
-        if (hadoopClusterService == null) {
-            return;
-        }
-        String id = String.valueOf(propertyValue);
-        if (!hadoopClusterService.isUseDynamicConfJar(id)) {
-            return;
-        }
-        String confsJarName = hadoopClusterService.getCustomConfsJarName(id, false, false);
-        if (confsJarName == null) {
-            return;
-        }
-        IComponent component = ComponentsFactoryProvider.getInstance().get("tHadoopConfManager", //$NON-NLS-1$
-                ComponentCategory.CATEGORY_4_DI.getName());
-        DataNode confNode = new DataNode(component, component.getName() + "_" + graphicalNode.getUniqueName()); //$NON-NLS-1$
-        confNode.setActivate(graphicalNode.isActivate());
-        confNode.setStart(true);
-        confNode.setDesignSubjobStartNode(confNode);
-        confNode.setProcess(graphicalNode.getProcess());
-        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB");
-        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
-        addDataNode(confNode);
     }
 
-    private IHadoopClusterService getHadoopClusterService() {
-        IHadoopClusterService hadoopClusterService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IHadoopClusterService.class)) {
-            hadoopClusterService = (IHadoopClusterService) GlobalServiceRegister.getDefault()
-                    .getService(IHadoopClusterService.class);
+    /**
+     * Creates a hadoop configuration manager component
+     * 
+     * @param hadoopClusterItemId the hadoop cluster metadata id
+     * @param componentName the name of the component to instantiate
+     * @param componentCategory the {@link ComponentCategory} of the component to instantiate
+     * @param node the {@link INode} to which the hadoop cluster metadata is linked
+     * @return the hadoop configuration manager {@link DataNode}
+     */
+    public static DataNode createHadoopConfManagerNode(String hadoopClusterItemId, String componentName,
+            ComponentCategory componentCategory, INode node) {
+        IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
+        if (!hadoopClusterService.isUseDynamicConfJar(hadoopClusterItemId)) {
+            return null;
         }
-        return hadoopClusterService;
+        String confsJarName = hadoopClusterService.getCustomConfsJarName(hadoopClusterItemId, false, false);
+        if (confsJarName == null) {
+            return null;
+        }
+        IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentCategory.getName());
+        DataNode confNode = new DataNode(component, component.getName() + "_" + node.getUniqueName()); //$NON-NLS-1$
+        confNode.setActivate(node.isActivate());
+        confNode.setStart(true);
+        confNode.setSubProcessStart(true);
+        confNode.setDesignSubjobStartNode(confNode);
+        confNode.setProcess(node.getProcess());
+        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
+        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
+        return confNode;
     }
 
     @SuppressWarnings("unchecked")
