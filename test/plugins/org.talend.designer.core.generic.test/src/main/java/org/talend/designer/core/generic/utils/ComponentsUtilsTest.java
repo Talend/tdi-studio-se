@@ -31,6 +31,7 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.repository.FakePropertyImpl;
+import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.NamedThing;
@@ -246,6 +247,52 @@ public class ComponentsUtilsTest {
                 }
             }
         }
+    }
+
+    @Test
+    public void testIsPropertyChangedByUser() {
+        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
+        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
+
+        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
+        assertTrue(ComponentsUtils.isPropertyChangedByUser(props.userId));
+
+        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, false);
+        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
+    }
+
+    @Test
+    public void testGetParameterValue() {
+        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
+        props.userId.setValue("user"); //$NON-NLS-1$
+        Form form = props.getForm(Form.MAIN);
+        Element fakeElement = new FakeElement(form.getName());
+        INode node = createSFTestNode();
+
+        // If it is a fake element, do not add quotes.
+        Object parameterValue = ComponentsUtils.getParameterValue(fakeElement, props.userId, null);
+        assertEquals("user", parameterValue); //$NON-NLS-1$
+
+        // If the property value is context mode, do not add quotes.
+        props.userId.setValue("context.user"); //$NON-NLS-1$
+        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        assertEquals("context.user", parameterValue); //$NON-NLS-1$
+
+        // If the property value is changed by user, do not add quotes.
+        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
+        props.userId.setValue("user"); //$NON-NLS-1$
+        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        assertEquals("user", parameterValue); //$NON-NLS-1$
+
+        // Otherwise will add quotes.
+        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, false);
+        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        assertEquals("\"user\"", parameterValue); //$NON-NLS-1$
+
+        // If value is NULL, return "".
+        props.userId.setValue(null);
+        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        assertEquals("\"\"", parameterValue); //$NON-NLS-1$
     }
 
     @After

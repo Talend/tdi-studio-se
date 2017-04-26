@@ -48,6 +48,7 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDbMapDesignerService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.Expression;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
@@ -64,9 +65,9 @@ import org.talend.designer.runprocess.ItemCacheManager;
 /**
  * Command that changes a given property. It will call the set or get property value in an element. This element can be
  * either a node, a connection or a process. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class PropertyChangeCommand extends Command {
 
@@ -138,7 +139,7 @@ public class PropertyChangeCommand extends Command {
 
     /**
      * The property is defined in an element, which can be either a node or a connection.
-     * 
+     *
      * @param elem
      * @param propName
      * @param propValue
@@ -219,6 +220,10 @@ public class PropertyChangeCommand extends Command {
         oldElementValues.clear();
         if (currentParam == null) {
             return;
+        }
+
+        if (currentParam instanceof ElementParameter) {
+            ((ElementParameter) currentParam).setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
         }
 
         if (currentParam.isRepositoryValueUsed()) {
@@ -511,7 +516,7 @@ public class PropertyChangeCommand extends Command {
 
     /**
      * DOC cmeng Comment method "updateRelativeNodesIfNeeded".
-     * 
+     *
      * @param currentParam
      */
     private void updateRelativeNodesIfNeeded(IElementParameter currentParam) {
@@ -531,7 +536,7 @@ public class PropertyChangeCommand extends Command {
 
     /**
      * DOC cmeng Comment method "setDefaultValues".
-     * 
+     *
      * @param currentParam
      */
     private void setDefaultValues(IElementParameter currentParam, IElement node) {
@@ -633,7 +638,7 @@ public class PropertyChangeCommand extends Command {
 
     /**
      * Set the values to default if needed.
-     * 
+     *
      * @param currentParam Current parameter that has been modified in the interface
      * @param testedParam Tested parameter, to know if there is a link for the default values between this parameter and
      * the current.

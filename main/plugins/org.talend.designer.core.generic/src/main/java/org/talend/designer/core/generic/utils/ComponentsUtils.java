@@ -51,6 +51,7 @@ import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -323,7 +324,7 @@ public class ComponentsUtils {
             } else if (widgetProperty instanceof Property) {
                 Property property = (Property) widgetProperty;
                 param.setRequired(property.isRequired());
-                param.setValue(getParameterValue(element, property, fieldType, isInitializing));
+                param.setValue(getParameterValue(element, property, fieldType));
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
                         || EParameterFieldType.CLOSED_LIST.equals(fieldType) || EParameterFieldType.CHECK.equals(fieldType)
@@ -485,8 +486,7 @@ public class ComponentsUtils {
         return params;
     }
 
-    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType,
-            boolean isInitializing) {
+    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType) {
         Object paramValue = property.getStoredValue();
         if (paramValue instanceof List) {
             return null;
@@ -500,11 +500,10 @@ public class ComponentsUtils {
                 }
             }
         } else if (GenericTypeUtils.isStringType(property)) {
-            // If value is empty (from default value or input) AND input field of type is String AND is not context mode
-            // and is not in wizard, add double quotes.
             String value = (String) paramValue;
-            if ((isInitializing || StringUtils.isEmpty(value))
-                    && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
+            // If value is not context mode and is not in wizard and is not changed by user then add double quotes.
+            if (!(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value)
+                    || isPropertyChangedByUser(property))) {
                 if (value == null) {
                     value = StringUtils.EMPTY;
                 }
@@ -518,6 +517,10 @@ public class ComponentsUtils {
             }
         }
         return paramValue;
+    }
+
+    public static boolean isPropertyChangedByUser(Property property) {
+        return Boolean.valueOf(String.valueOf(property.getTaggedValue(UpdatesConstants.CHANGED_BY_USER)));
     }
 
     public static String unescapeForJava(String input) {
