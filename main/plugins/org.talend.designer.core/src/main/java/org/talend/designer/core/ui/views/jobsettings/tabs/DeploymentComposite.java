@@ -89,7 +89,7 @@ public class DeploymentComposite extends AbstractTabComposite {
         assert (repositoryViewObject instanceof Process);
         process = (Process) repositoryViewObject;
         commandStack = process.getCommandStack();
-        defaultVersion = process.getVersion();
+        defaultVersion = MavenVersionUtils.getDefaultVersion(process.getVersion());
 
         createControl();
         initialize();
@@ -274,14 +274,16 @@ public class DeploymentComposite extends AbstractTabComposite {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                if (groupIdText.getText() != null && !groupIdText.getText().trim().equals("")) { //$NON-NLS-1$
+                String currentGroupId =  groupIdText.getText();
+                if (currentGroupId != null && !currentGroupId.trim().equals("")) { //$NON-NLS-1$
                     groupIdText.setBackground(getBackground());
                     groupIdText.setToolTipText(""); //$NON-NLS-1$
-                    if (!defaultGroupId.equals(groupIdText.getText())) {
-                        groupId = groupIdText.getText();
+                    if (!defaultGroupId.equals(currentGroupId)) {
+                        groupId = currentGroupId;
+                    } else {
+                        currentGroupId = null;
                     }
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID, groupIdText
-                            .getText());
+                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID, currentGroupId);
                     getCommandStack().execute(cmd);
                 } else {
                     groupIdText.setBackground(COLOR_RED);
@@ -322,6 +324,8 @@ public class DeploymentComposite extends AbstractTabComposite {
                     versionText.setBackground(getBackground());
                     if (!defaultVersion.equals(currentVersion)) {
                         version = currentVersion;
+                    } else {
+                        currentVersion = null;
                     }
                     // if empty, remove it from job, else will set the new value
                     Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION, currentVersion);

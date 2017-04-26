@@ -15,6 +15,7 @@ package org.talend.repository.utils;
 import java.util.ArrayList;
 
 import org.eclipse.emf.common.util.EMap;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -28,7 +29,7 @@ public class MavenVersionUtils {
     private static ArrayList<ERepositoryObjectType> hasSubjobTypes;
 
     public static boolean isValidMavenVersion(String version) {
-        String mavenVersionPattern = "\\d+\\.\\d+.*"; //$NON-NLS-1$
+        String mavenVersionPattern = "\\d+\\.\\d+\\.\\d+.*"; //$NON-NLS-1$
         String[] fragments = version.split(" "); //$NON-NLS-1$
         if (fragments.length > 1) {
             return false;
@@ -43,7 +44,7 @@ public class MavenVersionUtils {
             version = (String) additionalProperties.get(MavenConstants.NAME_USER_VERSION);
         }
         if (version == null) {
-            version = ""; //$NON-NLS-1$
+            version = getDefaultVersion(property.getVersion());
         }
         return version;
     }
@@ -51,7 +52,13 @@ public class MavenVersionUtils {
     public static void setItemMavenVersion(Property property, String version) {
         EMap additionalProperties = property.getAdditionalProperties();
         if (additionalProperties != null) {
-            additionalProperties.put(MavenConstants.NAME_USER_VERSION, version);
+            if (version == null || getDefaultVersion(property.getVersion()).equals(version)) {
+                if (additionalProperties.containsKey(MavenConstants.NAME_USER_VERSION)) {
+                    additionalProperties.remove(MavenConstants.NAME_USER_VERSION);
+                }
+            } else {
+                additionalProperties.put(MavenConstants.NAME_USER_VERSION, version);
+            }
         }
     }
 
@@ -94,6 +101,10 @@ public class MavenVersionUtils {
             }
         }
         return hasSubjobTypes.contains(type);
+    }
+
+    public static String getDefaultVersion(String version) {
+        return VersionUtils.getPublishVersion(version);
     }
 
 }
