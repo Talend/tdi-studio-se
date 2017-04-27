@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -87,8 +86,6 @@ import org.talend.core.model.properties.LinkRulesItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RulesItem;
-import org.talend.core.model.relationship.Relation;
-import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.AbstractUpdateManager;
@@ -117,8 +114,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
-import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
@@ -2172,54 +2167,73 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             propertiesResults.addAll(contextResults);
                         }
 
-                    } else if(item!=null && "pattern".equalsIgnoreCase(item.getFileExtension())){
-                        //Added TDQ-11688, check pattern update
+                    } else if (item != null && "pattern".equalsIgnoreCase(item.getFileExtension())) {
+                        // Added TDQ-11688, check pattern update
                         ITDQPatternService service = null;
-                        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
-                            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
+                            service = (ITDQPatternService) GlobalServiceRegister.getDefault()
+                                    .getService(ITDQPatternService.class);
                         }
                         if (service != null) {
-                            if(node.getLabel().startsWith("tMultiPattern")){//TDQ-13437 tMultiPattern 
-                                IElementParameter schemasTableParam = node.getElementParameter( "SCHEMA_PATTERN_CHECK");
-
+                            if (node.getLabel().startsWith("tMultiPattern")) {// TDQ-13437 tMultiPattern
+                                IElementParameter schemasTableParam = node.getElementParameter("SCHEMA_PATTERN_CHECK");
                                 if (schemasTableParam != null) {
-                                     List<Map> listValue = (List<Map>) schemasTableParam.getValue();
-                                     for(Map onePattern:listValue){
-                                         //firstly, need to check if the pattern id is equal
+
+                                    ElementParameter newValueParameter = new ElementParameter(schemasTableParam.getElement());
+                                    newValueParameter.setName(schemasTableParam.getName());
+                                    List<Map> newValueList = new ArrayList<>();
+                                    newValueParameter.setValue(newValueList);
+                                    List<Map> listValue = (List<Map>) schemasTableParam.getValue();
+                                    for (Map onePattern : listValue) {
+                                        // firstly, need to check if the pattern id is equal
+                                        Map newListMap = new HashMap();
+                                        newListMap.putAll(onePattern);
+                                        newValueList.add(newListMap);
                                         if (StringUtils.equals(item.getProperty().getId(), (String) onePattern.get("PATTERN_ID"))) {
                                             if (!service.isSameName(item, (String) onePattern.get("PATTERN_NAME"))) {
                                                 String name = getItemNewName(item);
-                                                onePattern.put("PATTERN_NAME", name);
+                                                newListMap.put("PATTERN_NAME", name);
                                                 result = createUpdateCheckResult(node, propertiesResults, schemasTableParam);
                                             }
                                             String regex = service.getRegex(node, item);
                                             if (!StringUtils.equals(regex, (String) onePattern.get("PATTERN_REGEX"))) {
-                                                onePattern.put("PATTERN_REGEX", regex);
-                                                result = new UpdateCheckResult(node);
-                                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, schemasTableParam);
+                                                newListMap.put("PATTERN_REGEX", regex);
+                                                if (result != null) {
+                                                    propertiesResults.add(result);
+                                                }
+                                                result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
                                             }
                                         }
                                     }
-                                 }
-                            }else{//for single pattern component
-                            //check pattern name
+                                }
+                            } else {// for single pattern component
+                                // check pattern name
                                 IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
                                 if (!service.isSameName(item, (String) nameParam.getValue())) {
-                                    String name = getItemNewName(item);
-                                    nameParam.setValue(name);
-                                    result = createUpdateCheckResult(node, propertiesResults, nameParam);
+                                    String newVlaue = getItemNewName(item);
+                                    // nameParam.setValue(newVlaue);
+                                    ElementParameter newValueParameter = new ElementParameter(nameParam.getElement());
+                                    newValueParameter.setName(nameParam.getName());
+                                    newValueParameter.setValue(newVlaue);
+                                    result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
                                 }
                                 // check pattern regex
                                 String regex = service.getRegex(node, item);
                                 IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
                                 if (!StringUtils.equals(regex, (String) reParam.getValue())) {
-                                    reParam.setValue(regex);
+                                    // reParam.setValue(regex);
+                                    ElementParameter newValueParameter = new ElementParameter(reParam.getElement());
+                                    newValueParameter.setName(reParam.getName());
+                                    newValueParameter.setValue(regex);
+                                    if (result != null) {
+                                        propertiesResults.add(result);
+                                    }
                                     result = new UpdateCheckResult(node);
-                                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, reParam);
+                                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, newValueParameter);
                                 }
                             }
-                        } 
-                    }else{
+                        }
+                    } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
                     }
@@ -2240,15 +2254,15 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     private String getItemNewName(Item item) {
-        return item.getState().getPath().replaceFirst("Regex", "") + File.separator+  item.getProperty().getDisplayName();
+        return item.getState().getPath().replaceFirst("Regex", "") + File.separator + item.getProperty().getDisplayName();
     }
 
     private UpdateCheckResult createUpdateCheckResult(final Node node, List<UpdateResult> propertiesResults,
             IElementParameter schemasTableParam) {
         UpdateCheckResult result;
         result = new UpdateCheckResult(node);
-         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE,schemasTableParam);
-         propertiesResults.add(result);
+        result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, schemasTableParam);
+        propertiesResults.add(result);
         return result;
     }
 

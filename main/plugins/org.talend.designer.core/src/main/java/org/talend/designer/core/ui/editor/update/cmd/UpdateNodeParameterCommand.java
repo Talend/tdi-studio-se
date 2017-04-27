@@ -500,28 +500,36 @@ public class UpdateNodeParameterCommand extends Command {
                             }
                         }
                     }
-                }else{
-                    //Added TDQ-11688 20170309 yyin
+                } else {
+                    // Added TDQ-11688 20170309 yyin
                     ITDQPatternService service = null;
-                    if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
                         service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
                     }
-                    if (service != null && parameter!=null && parameter instanceof IElementParameter){
-                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter)parameter).getName());
-                        if (service.isSinglePatternNode(node)) {
-                            if (elementParameter != null
-                                    && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
-                                elementParameter.setValue(((IElementParameter) parameter).getValue());
-                            }
-                        }else if(service.isMultiPatternNode(node)){
-                            List<Map<String, Object>> newParamValues = (List<Map<String, Object>>)  ((IElementParameter)parameter).getValue();
-                            List<Map<String, Object>> oldParamValues = (List<Map<String, Object>>)  ((IElementParameter)elementParameter).getValue();
-                            //update the table value for tMultiPattern
-                            oldParamValues.clear();
-                            oldParamValues.addAll(newParamValues);
-                            
+                    if (service != null && (service.isSinglePatternNode(node) || service.isMultiPatternNode(node))
+                            && parameter != null && parameter instanceof IElementParameter) {
+                        IElementParameter elementParameter = node.getElementParameter(((IElementParameter) parameter).getName());
+                        if (elementParameter != null
+                                && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
+                            elementParameter.setValue(((IElementParameter) parameter).getValue());
                         }
                         update = true;
+                        Object regexValue = null;
+                        Object parameterValue = ((IElementParameter) parameter).getValue();
+                        if ("PATTERN_REGEX".equals(((IElementParameter) parameter).getName())) {
+                            regexValue = parameterValue;
+                        } else if ("SCHEMA_PATTERN_CHECK".equals(((IElementParameter) parameter).getName())) {
+                            List<Map<String, String>> multiPatternList = ((List<Map<String, String>>) parameterValue);
+                            for (Map<String, String> patternMap : multiPatternList) {
+                                regexValue = patternMap.get("PATTERN_REGEX");
+                                if (regexValue == null) {
+                                    patternMap.put("PATTERN_PROPERTY", EmfComponent.BUILTIN);
+                                }
+                            }
+                        }
+                        if (regexValue == null || regexValue.toString().isEmpty()) {
+                            update = false;
+                        }
                     }
                 }
             }
