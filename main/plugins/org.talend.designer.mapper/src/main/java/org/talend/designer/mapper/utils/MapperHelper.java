@@ -160,6 +160,7 @@ public class MapperHelper {
     private static void setInOutPersistentTable(AbstractInOutTable persistentTable, ExternalMapperTable table) {
         persistentTable.setActivateCondensedTool(table.isActivateCondensedTool());
         persistentTable.setActivateExpressionFilter(table.isActivateExpressionFilter());
+        persistentTable.setActivateColumnNameFilter(table.isActivateColumnNameFilter());
         persistentTable.setExpressionFilter(table.getExpressionFilter());
         persistentTable.setMinimized(table.isMinimized());
         persistentTable.setName(table.getName());

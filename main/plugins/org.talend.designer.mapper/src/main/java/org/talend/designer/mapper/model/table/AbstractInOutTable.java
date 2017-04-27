@@ -106,6 +106,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
             this.expressionFilterEntry.setExpression(externalMapperTable.getExpressionFilter());
             this.activateExpressionFilter = externalMapperTable.isActivateExpressionFilter();
             this.activateCondensedTool = externalMapperTable.isActivateCondensedTool();
+            this.activateColumnNameFilter = externalMapperTable.isActivateColumnNameFilter();
             this.id = externalMapperTable.getId();
             this.isRepository = this.id == null ? false : true;
         }

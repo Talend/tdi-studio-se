@@ -18,6 +18,7 @@ package org.talend.designer.mapper.model.emf.mapper;
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getExpressionFilter <em>Expression Filter</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateExpressionFilter <em>Activate Expression Filter</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateCondensedTool <em>Activate Condensed Tool</em>}</li>
+ *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateColumnNameFilter <em>Activate Column Name Filter</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getId <em>Id</em>}</li>
  * </ul>
  * </p>
@@ -104,6 +105,32 @@ public interface AbstractInOutTable extends AbstractDataMapTable {
      * @generated
      */
     void setActivateCondensedTool(boolean value);
+
+    /**
+     * Returns the value of the '<em><b>Activate Column Name Filter</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Activate Column Name Filter</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Activate Column Name Filter</em>' attribute.
+     * @see #setActivateColumnNameFilter(boolean)
+     * @see org.talend.designer.mapper.model.emf.mapper.MapperPackage#getAbstractInOutTable_ActivateColumnNameFilter()
+     * @model
+     * @generated
+     */
+    boolean isActivateColumnNameFilter();
+
+    /**
+     * Sets the value of the '{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateColumnNameFilter <em>Activate Column Name Filter</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Activate Column Name Filter</em>' attribute.
+     * @see #isActivateColumnNameFilter()
+     * @generated
+     */
+    void setActivateColumnNameFilter(boolean value);
 
     /**
      * Returns the value of the '<em><b>Id</b></em>' attribute.

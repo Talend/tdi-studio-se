@@ -32,7 +32,7 @@ public class MapperFactoryImpl extends EFactoryImpl implements MapperFactory {
      */
     public static MapperFactory init() {
         try {
-            MapperFactory theMapperFactory = (MapperFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.talend.org/mapper"); 
+            MapperFactory theMapperFactory = (MapperFactory)EPackage.Registry.INSTANCE.getEFactory(MapperPackage.eNS_URI);
             if (theMapperFactory != null) {
                 return theMapperFactory;
             }
