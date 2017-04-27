@@ -16,7 +16,6 @@ import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
-import org.talend.migration.IMigrationTask.ExecutionResult;
 
 public class AddFailOnErrorOnTFileCopyTDI38441 extends AbstractJobMigrationTask {
 
