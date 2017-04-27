@@ -3080,6 +3080,8 @@ public class DataProcess implements IGeneratingProcess {
         confNode.setStart(true);
         confNode.setDesignSubjobStartNode(confNode);
         confNode.setProcess(graphicalNode.getProcess());
+        IElementParameter clusterIdParam = confNode.getElementParameter("CLUSTER_ID");
+        clusterIdParam.setValue(id);
         IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB");
         confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
         addDataNode(confNode);
