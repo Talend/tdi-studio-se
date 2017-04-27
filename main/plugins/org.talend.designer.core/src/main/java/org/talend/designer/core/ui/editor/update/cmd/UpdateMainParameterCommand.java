@@ -37,6 +37,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.preferences.StatsAndLogsConstants;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.UpdateRepositoryUtils;
 
 /**
@@ -228,15 +229,16 @@ public class UpdateMainParameterCommand extends Command {
                         }
 
                     }
+                    IElementParameter property = process.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
+                            category);
+                    Map<String, IElementParameter> childParameters = null;
+                    if (property != null) {
+                        childParameters = property.getChildParameters();
+                    }
                     if (!repository) {
-                        IElementParameter property = process.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
-                                category);
-                        if (property != null) {
-                            Map<String, IElementParameter> childParameters = property.getChildParameters();
-                            if (childParameters != null) {
-                                IElementParameter elementParameter = childParameters.get(EParameterName.PROPERTY_TYPE.getName());
-                                elementParameter.setValue(EmfComponent.BUILTIN);
-                            }
+                        if (childParameters != null) {
+                            IElementParameter elementParameter = childParameters.get(EParameterName.PROPERTY_TYPE.getName());
+                            elementParameter.setValue(EmfComponent.BUILTIN);
                         }
 
                         // built-in
@@ -270,6 +272,14 @@ public class UpdateMainParameterCommand extends Command {
                                 param.setRepositoryValueUsed(false);
                                 param.setReadOnly(false);
                             }
+                        }
+                    } else {
+                        if (childParameters != null) {
+                            IElementParameter elementParameter = childParameters
+                                    .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                            ConnectionItem connItem = UpdateRepositoryUtils
+                                    .getConnectionItemByItemId((String) elementParameter.getValue());
+                            ConnectionContextHelper.addContextForProcessParameter(process, connItem, category, false);
                         }
                     }
                 }
