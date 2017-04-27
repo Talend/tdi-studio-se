@@ -3073,15 +3073,18 @@ public class DataProcess implements IGeneratingProcess {
             return null;
         }
         IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentCategory.getName());
-        DataNode confNode = new DataNode(component, component.getName() + "_" + node.getUniqueName()); //$NON-NLS-1$
-        confNode.setActivate(node.isActivate());
-        confNode.setStart(true);
-        confNode.setSubProcessStart(true);
-        confNode.setDesignSubjobStartNode(confNode);
-        confNode.setProcess(node.getProcess());
-        IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
-        confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
-        return confNode;
+        if (component != null) {
+            DataNode confNode = new DataNode(component, component.getName() + "_" + node.getUniqueName()); //$NON-NLS-1$
+            confNode.setActivate(node.isActivate());
+            confNode.setStart(true);
+            confNode.setSubProcessStart(true);
+            confNode.setDesignSubjobStartNode(confNode);
+            confNode.setProcess(node.getProcess());
+            IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
+            confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
+            return confNode;
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
