@@ -385,8 +385,8 @@ public class DynamicsCRMClient {
                     ((HttpEntityEnclosingRequestBase) request).setEntity(httpEntity);
                 }
                 HttpResponse response = httpClient.execute(request);
-                request.releaseConnection();
                 if (isResponseSuccess(response.getStatusLine().getStatusCode())) {
+                    request.releaseConnection();
                     EntityUtils.consume(response.getEntity());
                     return response;
                 } else {
