@@ -30,7 +30,9 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.utils.KeywordsValidator;
@@ -282,6 +284,8 @@ public class ConnectionCreateCommand extends Command {
         // All component types use the same MetadataTable implementation.
         return new MetadataTable();
     }
+    
+
 
     @Override
     public void execute() {
@@ -306,7 +310,7 @@ public class ConnectionCreateCommand extends Command {
             } else {
                 connecType = EConnectionType.FLOW_MAIN;
             }
-            mainConnector = source.getConnectorFromType(connecType);
+            mainConnector = NodeUtil.getValidConnector(source);
 
             if (source.getConnectorFromName(connectorName).isMultiSchema()) {
                 boolean connectionOk = false;

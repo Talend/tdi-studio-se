@@ -591,16 +591,17 @@ public class ChangeMetadataCommand extends Command {
             if ((!connector.getName().equals(currentConnector)) && connector.getBaseSchema().equals(currentConnector)) {
                 // if there is some other schema dependant of this one, modify them
                 MetadataToolHelper.copyTable(newOutputMetadata, node.getMetadataFromConnector(connector.getName()));
-                updateComponentSchema(node.getMetadataFromConnector(connector.getName()));
+                updateComponentSchema(node, node.getMetadataFromConnector(connector.getName()));
             }
         }
 
-        updateComponentSchema(currentOutputMetadata);
+        updateComponentSchema(node, currentOutputMetadata);
 
         List<ColumnNameChanged> columnNameChanged = MetadataToolHelper.getColumnNameChanged(oldOutputMetadata, newOutputMetadata);
         ColumnListController.updateColumnList(node, columnNameChanged, true);
 
         if (inputNode != null) {
+            updateComponentSchema(inputNode, currentInputMetadata);
             List<ColumnNameChanged> inputColumnNameChangedExt = MetadataToolHelper.getColumnNameChangedExt(inputNode,
                     oldInputMetadata, newInputMetadata);
             ColumnListController.updateColumnList(node, inputColumnNameChangedExt);
@@ -619,13 +620,13 @@ public class ChangeMetadataCommand extends Command {
         refreshMetadataChanged();
     }
 
-    private void updateComponentSchema(IMetadataTable table) {
+    private void updateComponentSchema(INode selectedNode, IMetadataTable table) {
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
             wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
         if (wizardService != null) {
-            wizardService.updateComponentSchema(node, table);
+            wizardService.updateComponentSchema(selectedNode, table);
         }
     }
 
