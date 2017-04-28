@@ -18,7 +18,7 @@
 		<talend.project.name>@ProjectName@</talend.project.name>
 		<talend.job.path>@JobPath@</talend.job.path>
 		<talend.job.name>@JobName@</talend.job.name>
-		<talend.job.version>@JobVersion@</talend.job.version>
+		<talend.job.version>@TalendJobVersion@</talend.job.version>
 	</properties>
 
 	<dependencies>

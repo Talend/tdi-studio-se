@@ -373,4 +373,14 @@ public class RunProcessService implements IRunProcessService {
         return delegateService.getJavaProjectLibFolder();
     }
 
+    @Override
+    public void updateProjectPomWithTemplate() {
+        delegateService.updateProjectPomWithTemplate();
+    }
+
+    @Override
+    public void storeProjectPreferences(IPreferenceStore preferenceStore) {
+        delegateService.storeProjectPreferences(preferenceStore);
+    }
+
 }

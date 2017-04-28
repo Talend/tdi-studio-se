@@ -62,13 +62,6 @@
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
-    <PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="9">
-		<ITEMS DEFAULT="SYBSEIQ_16">
-			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
-			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
-		</ITEMS>
-	</PARAMETER>
-
 	<PARAMETER
       NAME="ELT_TABLE_NAME"
       FIELD="TEXT"
@@ -114,12 +107,8 @@
     </PARAMETER>
 
   </PARAMETERS>
-
+  
   <CODEGENERATION>
-    <IMPORTS>
-       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_12_15')" />
-       <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16')" />
-    </IMPORTS>
   </CODEGENERATION>
 
   <RETURNS>

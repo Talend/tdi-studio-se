@@ -3620,7 +3620,7 @@ public class Node extends Element implements IGraphicalNode {
         if (currentNode.getIncomingConnections().size() > 1) {
             List<INode> nodeList = new ArrayList<INode>();
             Set<INode> nodeSet = new HashSet<INode>();
-            getAllSourceNode(currentNode, nodeList);
+            getAllMainConnSourceNode(currentNode, nodeList);
             for (INode node : nodeList) {
                 nodeSet.add(node);
             }
@@ -3629,12 +3629,15 @@ public class Node extends Element implements IGraphicalNode {
         return false;
     }
 
-    private static void getAllSourceNode(INode source, List<INode> list) {
+    private static void getAllMainConnSourceNode(INode source, List<INode> list) {
         List<? extends IConnection> connections = source.getIncomingConnections();
         for (IConnection connection : connections) {
+            if(connection.getLineStyle() != EConnectionType.FLOW_MAIN){
+                continue;
+            }
             INode node = connection.getSource();
             list.add(node);
-            getAllSourceNode(node, list);
+            getAllMainConnSourceNode(node, list);
         }
     }
 

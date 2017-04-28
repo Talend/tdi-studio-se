@@ -30,8 +30,8 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			%>
     				}
     				// Gets the next page link if exists.
-    				if (iterator_<%=cid%>.getNext() != null) {
-                nextPageURI_<%=cid%> = iterator_<%=cid%>.getNext();
+    				if (clientEntitySet_<%=cid%>.getNext() != null) {
+                nextPageURI_<%=cid%> = clientEntitySet_<%=cid%>.getNext();
 	            } else {
 	                break;
 	            }

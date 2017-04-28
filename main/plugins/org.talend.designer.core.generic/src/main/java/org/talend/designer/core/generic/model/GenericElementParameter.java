@@ -567,4 +567,34 @@ public class GenericElementParameter extends ElementParameter {
         this.askPropagate = askPropagate;
     }
 
+    @Override
+    public void setTaggedValue(String key, Object value) {
+        super.setTaggedValue(key, value);
+        setPropertyTaggedValue(key, value);
+    }
+
+    private void setPropertyTaggedValue(String key, Object value) {
+        Property property = getProperty();
+        if (property != null) {
+            property.setTaggedValue(key, value);
+        }
+    }
+
+    @Override
+    public Object getTaggedValue(String key) {
+        Object taggedValue = super.getTaggedValue(key);
+        if (taggedValue == null) {
+            taggedValue = getPropertyTaggedValue(key);
+        }
+        return taggedValue;
+    }
+
+    private Object getPropertyTaggedValue(String key) {
+        Property property = getProperty();
+        if (property != null) {
+            return property.getTaggedValue(key);
+        }
+        return null;
+    }
+
 }

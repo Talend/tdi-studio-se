@@ -32,9 +32,9 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 
 /**
  * Each parameter of the components are read and written in this class. <br/>
- * 
+ *
  * $Id$
- * 
+ *
  */
 public class ElementParameter implements IElementParameter {
 
@@ -150,6 +150,8 @@ public class ElementParameter implements IElementParameter {
 
     private Object defaultValue;
 
+    private Map<String, Object> taggedValues = new HashMap<>();
+
     protected boolean isSerialized = false;
 
     public ElementParameter(final IElement element) {
@@ -166,7 +168,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setName(java.lang.String)
      */
     @Override
@@ -176,7 +178,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getVariableName()
      */
     @Override
@@ -191,7 +193,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getCategory()
      */
     @Override
@@ -201,7 +203,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setDisplayName(java.lang.String)
      */
     @Override
@@ -211,7 +213,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @seeorg.talend.designer.core.model.components.IDesignerElementParameter#setField(org.talend.core.model.designer.
      * EParameterFieldType)
      */
@@ -222,7 +224,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#setValue(java.lang.Object)
      */
     @Override
@@ -237,7 +239,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getDisplayName()
      */
     @Override
@@ -247,7 +249,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getField()
      */
     @Override
@@ -257,7 +259,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.designer.core.model.components.IDesignerElementParameter#getValue()
      */
     @Override
@@ -597,7 +599,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for noCheck.
-     * 
+     *
      * @return the noCheck
      */
     @Override
@@ -618,7 +620,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the noCheck.
-     * 
+     *
      * @param noCheck the noCheck to set
      */
     @Override
@@ -628,7 +630,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for context.
-     * 
+     *
      * @return the context
      */
     @Override
@@ -638,7 +640,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the context.
-     * 
+     *
      * @param context the context to set
      */
     @Override
@@ -648,7 +650,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for childParameters.
-     * 
+     *
      * @return the childParameters
      */
     @Override
@@ -678,7 +680,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for currentRow.
-     * 
+     *
      * @return the currentRow
      */
     public int getCurrentRow() {
@@ -687,7 +689,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the currentRow.
-     * 
+     *
      * @param currentRow the currentRow to set
      */
     public void setCurrentRow(int currentRow) {
@@ -696,7 +698,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getGroup()
      */
     @Override
@@ -706,7 +708,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setGroup(java.lang.String)
      */
     @Override
@@ -716,7 +718,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getGroupDisplayName()
      */
     @Override
@@ -726,7 +728,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setGroupDisplayName(java.lang.String)
      */
     @Override
@@ -736,7 +738,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getContextMode()
      */
     @Override
@@ -746,7 +748,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setContextMode(java.lang.String)
      */
     @Override
@@ -756,7 +758,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getLabelFromRepository()
      */
     @Override
@@ -766,7 +768,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setLabelFromRepository(java.lang.String)
      */
     @Override
@@ -777,7 +779,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for color.
-     * 
+     *
      * @return the color
      */
     @Override
@@ -787,7 +789,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the color.
-     * 
+     *
      * @param color the color to set
      */
     @Override
@@ -797,7 +799,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for backgroundColor.
-     * 
+     *
      * @return the backgroundColor
      */
     @Override
@@ -807,7 +809,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the backgroundColor.
-     * 
+     *
      * @param backgroundColor the backgroundColor to set
      */
     @Override
@@ -817,7 +819,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isBasedOnSubjobStarts()
      */
     @Override
@@ -827,7 +829,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setBasedOnSubjobStarts(boolean)
      */
     @Override
@@ -837,7 +839,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isDynamicSettings()
      */
     @Override
@@ -847,7 +849,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setDynamicSettings(java.lang.Boolean)
      */
     @Override
@@ -857,7 +859,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getListItemsNotReadOnlyIf()
      */
     @Override
@@ -867,7 +869,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getListItemsReadOnlyIf()
      */
     @Override
@@ -877,7 +879,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getNotReadOnlyIf()
      */
     @Override
@@ -888,7 +890,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getReadOnlyIf()
      */
     @Override
@@ -899,7 +901,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isReadOnly(java.util.List)
      */
     @Override
@@ -920,7 +922,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isReadOnly(java.lang.String, java.lang.String,
      * java.util.Map)
      */
@@ -943,7 +945,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setListItemsNotReadOnlyIf(java.lang.String[])
      */
     @Override
@@ -954,7 +956,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setListItemsReadOnlyIf(java.lang.String[])
      */
     @Override
@@ -965,7 +967,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setNotReadOnlyIf(java.lang.String)
      */
     @Override
@@ -975,7 +977,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setReadOnlyIf(java.lang.String)
      */
     @Override
@@ -1070,7 +1072,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for javaMethod.
-     * 
+     *
      * @return the javaMethod
      */
     public String getJavaClass() {
@@ -1079,7 +1081,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the javaMethod.
-     * 
+     *
      * @param javaMethod the javaMethod to set
      */
     public void setJavaClass(String javaClass) {
@@ -1088,7 +1090,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for jar.
-     * 
+     *
      * @return the jar
      */
     public String getJar() {
@@ -1097,7 +1099,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the jar.
-     * 
+     *
      * @param jar the jar to set
      */
     public void setJar(String jar) {
@@ -1106,7 +1108,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for args.
-     * 
+     *
      * @return the args
      */
     public String[] getArgs() {
@@ -1115,7 +1117,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the args.
-     * 
+     *
      * @param args the args to set
      */
     public void setArgs(String[] args) {
@@ -1124,7 +1126,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for javaFunction.
-     * 
+     *
      * @return the javaFunction
      */
     public String getJavaFunction() {
@@ -1133,7 +1135,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Sets the javaFunction.
-     * 
+     *
      * @param javaFunction the javaFunction to set
      */
     public void setJavaFunction(String javaFunction) {
@@ -1142,7 +1144,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * DOC Administrator Comment method "setMaxLength".
-     * 
+     *
      * @param maxlength
      */
     public void setMaxLength(int maxlength) {
@@ -1151,7 +1153,7 @@ public class ElementParameter implements IElementParameter {
 
     /**
      * Getter for maxlength.
-     * 
+     *
      * @return the maxlength
      */
     @Override
@@ -1171,7 +1173,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#getRepositoryProperty()
      */
     @Override
@@ -1181,7 +1183,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setRepositoryProperty(java.lang.String)
      */
     @Override
@@ -1206,7 +1208,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isDefault()
      */
     @Override
@@ -1233,7 +1235,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isLog4JEnabled()
      */
     @Override
@@ -1243,7 +1245,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setLog4JEnabled(boolean)
      */
     @Override
@@ -1253,7 +1255,7 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#isSerialized()
      */
     @Override
@@ -1263,11 +1265,20 @@ public class ElementParameter implements IElementParameter {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see org.talend.core.model.process.IElementParameter#setSerialized(boolean)
      */
     @Override
     public void setSerialized(boolean isSerialized) {
         this.isSerialized = isSerialized;
     }
+
+    public void setTaggedValue(String key, Object value) {
+        taggedValues.put(key, value);
+    }
+
+    public Object getTaggedValue(String key) {
+        return taggedValues.get(key);
+    }
+
 }

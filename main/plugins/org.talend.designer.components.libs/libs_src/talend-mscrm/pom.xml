@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.0-20170407</version>
+	<version>3.0-20170426</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>

@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.talend.core.model.process.IProcess2;
 
@@ -33,8 +32,11 @@ public class MavenDeploymentValueChangeCommand extends Command {
     @Override
     public void execute() {
         if (process != null) {
-            if (StringUtils.isEmpty(newValue)) {// if empty, remove key
-                process.getAdditionalProperties().remove(type);
+            if (newValue == null || newValue.trim().equals("")) { //$NON-NLS-1$
+                // if empty, remove key
+                if (process.getAdditionalProperties().containsKey(type)) {
+                    process.getAdditionalProperties().remove(type);
+                }
             } else {
                 process.getAdditionalProperties().put(type, newValue);
             }

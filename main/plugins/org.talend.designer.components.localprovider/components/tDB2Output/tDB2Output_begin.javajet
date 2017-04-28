@@ -56,30 +56,7 @@ boolean useBatch = useBatchSize && (rejectConnName == null)
               ("INSERT").equals(dataAction) || ("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)
             );
 %>
-class PrintSQLException_<%=cid%>{
-	public String getSQLException(java.sql.SQLException ex,boolean skipFirst) {
-		StringBuilder fullErrorMessage = new java.lang.StringBuilder();
-    	for (Throwable e : ex) {
-    		if(skipFirst){
-    		    skipFirst=false;
-    		    continue;
-    		}
-        	if (e instanceof java.sql.SQLException) {
-                fullErrorMessage.append("SQLState: " +((java.sql.SQLException)e).getSQLState()+'\n');
-                fullErrorMessage.append("Error Code: " +((java.sql.SQLException)e).getErrorCode()+'\n');
-                fullErrorMessage.append("Message: " + e.getMessage());
-                Throwable t = ex.getCause();
-                while(t != null) {
-                    System.err.println("Cause: " + t);
-                    fullErrorMessage .append("Cause: " + t);
-                    t = t.getCause();
-                }
-        	}
-    	}
-    	return fullErrorMessage.toString();
-	}
-}
-PrintSQLException_<%=cid%> printSQLException_<%=cid%> = new PrintSQLException_<%=cid%>();
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/BatchUpdateExceptionHelper.javajet"%>
 int nb_line_<%=cid%> = 0;
 int nb_line_update_<%=cid%> = 0;
 int nb_line_inserted_<%=cid%> = 0;

@@ -3080,6 +3080,10 @@ public class DataProcess implements IGeneratingProcess {
             confNode.setSubProcessStart(true);
             confNode.setDesignSubjobStartNode(confNode);
             confNode.setProcess(node.getProcess());
+            if (ComponentCategory.CATEGORY_4_DI == componentCategory) {
+                IElementParameter clusterIdParam = confNode.getElementParameter("CLUSTER_ID"); //$NON-NLS-1$
+                clusterIdParam.setValue(hadoopClusterItemId);
+            }
             IElementParameter confLibParam = confNode.getElementParameter("CONF_LIB"); //$NON-NLS-1$
             confLibParam.setValue(TalendTextUtils.addQuotes(confsJarName));
             return confNode;

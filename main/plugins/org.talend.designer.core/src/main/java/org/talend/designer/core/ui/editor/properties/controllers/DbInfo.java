@@ -254,7 +254,13 @@ public class DbInfo {
                     || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }
-        } else {
+        }else if(EDatabaseTypeName.SYBASEASE.getDisplayName().equals(dbType)){
+            if(EDatabaseVersion4Drivers.SYBASEIQ_16.getVersionValue().equals(dbVersion)){
+                driverClassName = EDatabase4DriverClassName.SYBASEIQ_16.getDriverClass();
+            }else if(EDatabaseVersion4Drivers.SYBASEASE.getVersionValue().equals(dbVersion)){
+                driverClassName = EDatabase4DriverClassName.SYBASEIQ.getDriverClass();
+            }
+        }else {
             driverClassName = ExtractMetaDataUtils.getInstance().getDriverClassByDbType(dbType);
         }
     }

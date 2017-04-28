@@ -135,6 +135,7 @@ public class JMXRunStatManager {
         @Override
         public void run() {
             stopTracing = false;
+            Map<String, Integer> completedHistory = new HashMap();
             while (server != null && !stopTracing) {
                 if (listeners.size() > 0) {
                     try {
@@ -148,20 +149,24 @@ public class JMXRunStatManager {
 
                             String camelID = String.valueOf(server.getAttribute(component, "CamelId"));
                             String processorId = String.valueOf(server.getAttribute(component, "ProcessorId"));
+
                             for (JMXPerformanceChangeListener listener : listeners) {
                                 if (listener.getProcessName().equals(camelID.substring(camelID.lastIndexOf('.') + 1))) {
-                                    listener.performancesChanged(targetNodeToConnectionMap.get(processorId), completed);
+                                    if (completedHistory.get(processorId) != null
+                                            && completed == completedHistory.get(processorId)) {
+                                        continue;
+                                    } else {
+                                        completedHistory.put(processorId, completed);
+                                        listener.performancesChanged(targetNodeToConnectionMap.get(processorId), completed);
+                                    }
                                 }
                             }
                         }
+                        TimeUnit.MILLISECONDS.sleep(100);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                }
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
                 }
             }
             ;

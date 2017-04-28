@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<genmodel:GenModel xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
-    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.talend.designer.mapper/src/main/java"
-    modelPluginID="org.talend.designer.mapper" modelName="Mapper" importerID="org.eclipse.emf.importer.ecore"
-    complianceLevel="5.0" copyrightFields="false" usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
+<genmodel:GenModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+    xmlns:genmodel="http://www.eclipse.org/emf/2002/GenModel" modelDirectory="/org.talend.designer.mapper/src/main/java" modelPluginID="org.talend.designer.mapper"
+    modelName="Mapper" importerID="org.eclipse.emf.importer.ecore" complianceLevel="5.0"
+    copyrightFields="false" runtimeVersion="2.6" usedGenPackages="../../org.talend.model/model/TalendFile.genmodel#//talendfile">
   <foreignModel>mapper.ecore</foreignModel>
   <genPackages prefix="Mapper" basePackage="org.talend.designer.mapper.model.emf"
       resource="XML" disposableProviderFactory="true" ecorePackage="mapper.ecore#/">
@@ -43,6 +42,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/expressionFilter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateExpressionFilter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateCondensedTool"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateColumnNameFilter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/id"/>
     </genClasses>
     <genClasses ecoreClass="mapper.ecore#//UiProperties">

@@ -318,8 +318,9 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             if (fixedVersionButton.getSelection()) {
                 tableItem.setText(2, appliedFixedVersion);
             } else if (useJobVersionButton.getSelection()) {
-                tableItem.setText(2, item.getProperty().getVersion());
-                object.setNewVersion(item.getProperty().getVersion());
+                String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(item.getProperty().getVersion());
+                tableItem.setText(2, jobDefaultVersion);
+                object.setNewVersion(jobDefaultVersion);
             } else {
                 // new version
                 versionEditor = new TableEditor(itemTable);
@@ -417,7 +418,7 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         } else if (eachVersionButton.getSelection()) {
             newVersion = object.getNewVersion();
         } else {
-            newVersion = object.getItem().getProperty().getVersion();
+            newVersion = MavenVersionUtils.getDefaultVersion(object.getItem().getProperty().getVersion());
         }
         return newVersion;
     }
@@ -457,16 +458,21 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                             IEditorPart editor = editorRef.getEditor(false);
                             if (editor instanceof IMultiPageTalendEditor) {
                                 IProcess2 process = ((IMultiPageTalendEditor) editor).getProcess();
-                                String value = null;
+                                String version = null;
                                 for (ItemVersionObject object : JobsOpenedInEditor) {
                                     if (object.getItem().getProperty().getId().equals(process.getId())) {
-                                        value = object.getNewVersion();
+                                        version = object.getNewVersion();
                                         break;
                                     }
                                 }
-                                if (value != null) {
+                                if (version != null) {
+                                    String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(process.getProperty().getVersion());
+                                    if (version.equals(jobDefaultVersion)) {
+                                        // if default, set null to remove key from property.
+                                        version = null;
+                                    }
                                     Command command = service.crateMavenDeploymentValueChangeCommand(process,
-                                            MavenConstants.NAME_USER_VERSION, value);
+                                            MavenConstants.NAME_USER_VERSION, version);
                                     if (process instanceof IGEFProcess) {
                                         service.executeCommand((IGEFProcess) process, command);
                                     }
@@ -490,11 +496,9 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                         for (ItemVersionObject object : closedJobs) {
                             final Item item = object.getItem();
                             Property itemProperty = item.getProperty();
-                            if (!object.getNewVersion().equals(MavenVersionUtils.getItemMavenVersion(itemProperty))) {
-                                MavenVersionUtils.setItemMavenVersion(itemProperty, object.getNewVersion());
-                                monitor.subTask(itemProperty.getLabel());
-                                FACTORY.save(project, itemProperty);
-                            }
+                            MavenVersionUtils.setItemMavenVersion(itemProperty, object.getNewVersion());
+                            monitor.subTask(itemProperty.getLabel());
+                            FACTORY.save(project, itemProperty);
                             monitor.worked(1);
                         }
                         try {

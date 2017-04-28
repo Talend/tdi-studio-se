@@ -23,7 +23,8 @@ public class MavenVersionUtilsTest {
     public void testIsValidMavenVersion() {
         assertTrue(MavenVersionUtils.isValidMavenVersion("1.0.0"));
         assertTrue(MavenVersionUtils.isValidMavenVersion("1.1.0.0-SNAPSHOT"));
-        assertTrue(MavenVersionUtils.isValidMavenVersion("1.0-SNAPSHOT"));
+        assertFalse(MavenVersionUtils.isValidMavenVersion("1.0"));
+        assertFalse(MavenVersionUtils.isValidMavenVersion("1.0-SNAPSHOT"));
         assertFalse(MavenVersionUtils.isValidMavenVersion("1.0 SNAPSHOT"));
         assertFalse(MavenVersionUtils.isValidMavenVersion("1-SNAPSHOT"));
     }

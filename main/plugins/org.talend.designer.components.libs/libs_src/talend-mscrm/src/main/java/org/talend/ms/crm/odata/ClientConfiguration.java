@@ -27,6 +27,20 @@ public class ClientConfiguration {
      */
     private String authoryEndpoint;
 
+    private int maxRetryTimes = 5;
+
+    /*
+     * Retry intervalTime 1000(ms)
+     */
+    private int intervalTime = 1000;
+
+    /*
+     * Default timeout 60(s)
+     */
+    private int timeout = 60;
+
+    private boolean reuseHttpClient;
+
     /**
      * @param clientId
      * @param resource
@@ -79,6 +93,39 @@ public class ClientConfiguration {
 
     public void setAuthoryEndpoint(String authoryEndpoint) {
         this.authoryEndpoint = authoryEndpoint;
+    }
+
+    public int getMaxRetryTimes() {
+        return maxRetryTimes;
+    }
+
+    public int getIntervalTime() {
+        return intervalTime;
+    }
+
+    public void setMaxRetry(int maxRetry, int intervalTime) {
+        this.maxRetryTimes = maxRetry;
+        if (intervalTime > 0) {
+            this.intervalTime = intervalTime;
+        }
+
+    }
+
+    
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public boolean isReuseHttpClient() {
+        return reuseHttpClient;
+    }
+
+    public void setReuseHttpClient(boolean reuseHttpClient) {
+        this.reuseHttpClient = reuseHttpClient;
     }
 
 }

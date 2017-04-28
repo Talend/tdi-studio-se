@@ -1032,10 +1032,13 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 }catch (java.sql.BatchUpdateException e){
                     <%if(("true").equals(dieOnError)) {
                     %>
+                        String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
+                        <%dbLog.logPrintedException("errormessage_"+cid);%>
                         throw(e);
                     <%
                     }else {
                     %>
+                    String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
                     int countSum_<%=cid%> = 0;
                     for(int countEach_<%=cid%>: e.getUpdateCounts()) {
                         countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
@@ -1053,9 +1056,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                         deletedCount_<%=cid%> += countSum_<%=cid%>;
                     <%
                     }%>
-                    <%dbLog.logPrintedException("e.getMessage()");%>
-                    System.err.println(e.getMessage());
-                    <%
+                    <%dbLog.logPrintedException("errormessage_"+cid);
                     }%>
                 }
                 }
@@ -1095,10 +1096,13 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                 }catch (java.sql.BatchUpdateException e){
                     <%if(("true").equals(dieOnError)) {
                     %>
+                        String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
+                        <%dbLog.logPrintedException("errormessage_"+cid);%>
                         throw(e);
                     <%
                     }else {
                     %>
+                        String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
                         int countSum_<%=cid%> = 0;
                         for(int countEach_<%=cid%>: e.getUpdateCounts()) {
                             countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
@@ -1116,9 +1120,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                             deletedCount_<%=cid%> += countSum_<%=cid%>;
                         <%
                         }%>
-                        <%dbLog.logPrintedException("e.getMessage()");%>
-                        System.err.println(e.getMessage());
-                    <%
+                        <%dbLog.logPrintedException("errormessage_"+cid);
                     }%>
                 }
             }

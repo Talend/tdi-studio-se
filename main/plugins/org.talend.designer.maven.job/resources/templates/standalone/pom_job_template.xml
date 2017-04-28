@@ -24,7 +24,7 @@
 		<talend.project.id>@ProjectId@</talend.project.id>
 		<talend.project.branch>@ProjectBranch@</talend.project.branch>
 		<talend.job.name>@JobName@</talend.job.name>
-		<talend.job.version>@JobVersion@</talend.job.version>
+		<talend.job.version>@TalendJobVersion@</talend.job.version>
 		<talend.job.date>@JobDate@</talend.job.date>
 		<talend.job.context>@JobContext@</talend.job.context>
 		<talend.job.id>@JobId@</talend.job.id>

@@ -145,7 +145,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
     }
     %>
-
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/Output/BatchUpdateExceptionHelper.javajet"%>
     <%
     if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
         int updateKeyCount = 0;

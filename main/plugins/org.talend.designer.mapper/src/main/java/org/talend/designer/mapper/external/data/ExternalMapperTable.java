@@ -81,6 +81,8 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     private boolean activateCondensedTool;
 
+    private boolean activateColumnNameFilter;
+
     private String matchingMode;
 
     private String lookupMode;
@@ -111,6 +113,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         this.name = medataTableName;
     }
 
+    @Override
     public boolean isMinimized() {
         return this.minimized;
     }
@@ -527,6 +530,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         return false;
     }
 
+    @Override
     public boolean isActivateCondensedTool() {
         return this.activateCondensedTool;
     }
@@ -546,4 +550,11 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         return true;
     }
 
+    public boolean isActivateColumnNameFilter() {
+        return this.activateColumnNameFilter;
+    }
+
+    public void setActivateColumnNameFilter(boolean activateColumnNameFilter) {
+        this.activateColumnNameFilter = activateColumnNameFilter;
+    }
 }

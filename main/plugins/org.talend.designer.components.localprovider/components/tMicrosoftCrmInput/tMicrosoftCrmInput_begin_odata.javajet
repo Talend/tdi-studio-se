@@ -31,9 +31,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
 			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 			String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
-			String maxRetryTimes = ElementParameterParser.getValue(node, "__MAX_RECONN_ATTEMPS__");
-			String intevralTime = ElementParameterParser.getValue(node, "__ATTEMPS_INTERVAL_TIME__");
 			boolean reuseHttpClient = ("true").equals(ElementParameterParser.getValue(node,"__REUSE_HTTP_CLIENT__"));
+			// TODO Because of current retrieve would close httpclient automatically
+        	// Need to recreated httpclient for every page query
+			reuseHttpClient =false;
 			
 			String passwordFieldName = "__PASSWORD__";
 			String entitySetName = ElementParameterParser.getValue(node, "__ENTITYSET__").trim();
@@ -65,10 +66,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 				org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+				clientConfig_<%=cid%>.setTimeout(<%=timeout%>);
+				clientConfig_<%=cid%>.setMaxRetry(reConnMaxNum_<%=cid%>,<%=attemptsInterval%>);
+				clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
 				org.talend.ms.crm.odata.DynamicsCRMClient client_<%=cid%> = new org.talend.ms.crm.odata.DynamicsCRMClient(clientConfig_<%=cid%>,<%=serviceURL%>,entitySetName_<%=cid%>);
-				client_<%=cid%>.setTimeout(<%=timeout%>);
-				client_<%=cid%>.setMaxRetry(<%=maxRetryTimes%>,<%=intevralTime%>);
-				client_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);
 				String queryFilter_<%=cid%>=null;
 				<%
 	     		String logical = ElementParameterParser.getValue(node,"__LOGICAL_OP__");
@@ -140,16 +141,13 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 					%>
 				   java.net.URI nextPageURI_<%=cid%>=null;
 		        	while(true){
-		        		org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetIteratorRequest<org.apache.olingo.client.api.domain.ClientEntitySet,org.apache.olingo.client.api.domain.ClientEntity> 
-		        		request_<%=cid%> = client_<%=cid%>.createEntitySetIteratorRequest(queryOption_<%=cid%>);
+		        		org.apache.olingo.client.api.communication.request.retrieve.ODataEntitySetRequest<org.apache.olingo.client.api.domain.ClientEntitySet> request_<%=cid%> = client_<%=cid%>.createEntityRetrieveRequest(queryOption_<%=cid%>);
 		        		if(nextPageURI_<%=cid%>!=null){
 		        			request_<%=cid%>.setURI(nextPageURI_<%=cid%>);
 		        		}
-		        		org.apache.olingo.client.api.communication.response.ODataRetrieveResponse<org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, 
-		        		org.apache.olingo.client.api.domain.ClientEntity>> response_<%=cid%> = request_<%=cid%>.execute();
-        				org.apache.olingo.client.api.domain.ClientEntitySetIterator<org.apache.olingo.client.api.domain.ClientEntitySet, org.apache.olingo.client.api.domain.ClientEntity> iterator_<%=cid%> = response_<%=cid%>.getBody();
-		        		while(iterator_<%=cid%>.hasNext()){
-		        			org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%> = iterator_<%=cid%>.next();
+		        		org.apache.olingo.client.api.communication.response.ODataRetrieveResponse<org.apache.olingo.client.api.domain.ClientEntitySet> response_<%=cid%> = request_<%=cid%>.execute();
+        				org.apache.olingo.client.api.domain.ClientEntitySet clientEntitySet_<%=cid%> = response_<%=cid%>.getBody();
+		        		for (org.apache.olingo.client.api.domain.ClientEntity entity_<%=cid%>:clientEntitySet_<%=cid%>.getEntities()) {
 		               nb_line_<%=cid%>++;
 	                  <%
 							for(int i = 0; i < columnList.size(); i++){//for begin
