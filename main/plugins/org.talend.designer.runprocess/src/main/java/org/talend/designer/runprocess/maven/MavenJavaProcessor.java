@@ -69,7 +69,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         super.generateCode(statistics, trace, javaProperties, option);
         // only job, now for Shadow Process/Data Preview.
         if (isStandardJob()) {
-            generatePom();
+            generatePom(option);
         }
 
         updateProjectPom(null);
@@ -213,13 +213,14 @@ public class MavenJavaProcessor extends JavaProcessor {
         }
     }
 
-    protected void generatePom() {
+    protected void generatePom(int option) {
         initJobClasspath();
 
         try {
 
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
+                createTemplatePom.setSyncCodesPoms(option == 0);
                 boolean previousValue = ProcessUtils.jarNeedsToContainContext();
                 ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
@@ -238,7 +239,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (ProcessorUtilities.isExportConfig()) {
             // final Object exportType = itemProperty.getAdditionalProperties().get(MavenConstants.NAME_EXPORT_TYPE);
             final Object exportType = getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
-            buildTypeName = exportType != null ? exportType.toString() : null; //$NON-NLS-1$
+            buildTypeName = exportType != null ? exportType.toString() : null;
         } // else { //if run job, will be null (use Standalone by default)
 
         Map<String, Object> parameters = new HashMap<String, Object>();

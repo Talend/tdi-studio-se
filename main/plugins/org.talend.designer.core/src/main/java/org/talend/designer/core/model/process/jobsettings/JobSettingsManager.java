@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -67,6 +65,12 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
 public class JobSettingsManager {
 
     private static final String IMPLICIT_GROUP = "IMPLICIT_GROUP"; //$NON-NLS-1$
+
+    private static List<String> moduleNameList;
+
+    private static List<String> moduleValueList;
+
+    private static boolean isTeamEdition = PluginChecker.isTeamEdition();
 
     public static List<IElementParameter> getJobSettingsParameters(IProcess process) {
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
@@ -242,7 +246,7 @@ public class JobSettingsManager {
         param.setShowIf("(MULTI_THREAD_EXECATION=='true' or MULTI_THREAD_EXECATION=='false')"); //$NON-NLS-1$
         paramList.add(param);
 
-        if (PluginChecker.isTeamEdition()) {
+        if (isTeamEdition) {
             param = new ElementParameter(process);
             param.setName(EParameterName.PARALLELIZE_UNIT_SIZE.getName());
             param.setValue("25000"); //$NON-NLS-1$
@@ -390,11 +394,6 @@ public class JobSettingsManager {
 
         String languagePrefix = LanguageManager.getCurrentLanguage().toString() + "_"; //$NON-NLS-1$
 
-        // checks current language, if it is perl, set languageType to 0(default value), otherwise to 1.
-        int languageType = 0;
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
-            languageType = 1;
-        }
         final String onDBCondition = JobSettingsConstants.getExtraParameterName(EParameterName.FROM_DATABASE_FLAG.getName())
                 + " == 'true'"; //$NON-NLS-1$
         final String dbCondition = JobSettingsConstants.addBrackets(CONTEXTLOAD_CONDITION)
@@ -452,10 +451,10 @@ public class JobSettingsManager {
         param.setDisplayName(EParameterName.DB_TYPE.getDisplayName());
         param.setFieldType(EParameterFieldType.CLOSED_LIST);
         param.setCategory(EComponentCategory.EXTRA);
-        param.setListItemsDisplayName(StatsAndLogsConstants.DISPLAY_DBNAMES[languageType]);
-        param.setListItemsValue(JobSettingsConstants.DB_INPUT_COMPONENTS[languageType]);
-        param.setListRepositoryItems(StatsAndLogsConstants.REPOSITORY_ITEMS[languageType]);
-        param.setListItemsDisplayCodeName(StatsAndLogsConstants.CODE_LIST[languageType]);
+        param.setListItemsDisplayName(StatsAndLogsConstants.DISPLAY_DBNAMES[1]);
+        param.setListItemsValue(JobSettingsConstants.DB_INPUT_COMPONENTS[1]);
+        param.setListRepositoryItems(StatsAndLogsConstants.REPOSITORY_ITEMS[1]);
+        param.setListItemsDisplayCodeName(StatsAndLogsConstants.CODE_LIST[1]);
         param.setValue("");
         param.setNumRow(42);
         param.setRepositoryValue("TYPE"); //$NON-NLS-1$
@@ -500,21 +499,28 @@ public class JobSettingsManager {
         paramList.add(param);
 
         // jdbc child param
-        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
-        Set<String> moduleNameList = new TreeSet<String>();
-        Set<String> moduleValueList = new TreeSet<String>();
-        for (ModuleNeeded module : moduleNeededList) {
-            String moduleName = module.getModuleName();
-            if (moduleName != null) {
-                moduleNameList.add(moduleName);
-                moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+        if (moduleNameList == null) {
+            List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+            moduleNameList = new ArrayList<String>();
+            moduleValueList = new ArrayList<String>();
+            for (ModuleNeeded module : moduleNeededList) {
+                String moduleName = module.getModuleName();
+                if (moduleName != null) {
+                    if (!moduleNameList.contains(moduleName)) {
+                        moduleNameList.add(moduleName);
+                    }
+                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    if (!moduleValueList.contains(moduleValue)) {
+                        moduleValueList.add(moduleValue);
+                    }
+                }
             }
+            Comparator<String> comprarator = new IgnoreCaseComparator();
+            Collections.sort(moduleNameList, comprarator);
+            Collections.sort(moduleValueList, comprarator);
         }
-        Comparator<String> comprarator = new IgnoreCaseComparator();
         String[] moduleNameArray = moduleNameList.toArray(new String[0]);
         String[] moduleValueArray = moduleValueList.toArray(new String[0]);
-        Arrays.sort(moduleNameArray, comprarator);
-        Arrays.sort(moduleValueArray, comprarator);
         ElementParameter childParam = new ElementParameter(process);
         childParam.setName("JAR_NAME");
         childParam.setDisplayName("JAR_NAME");
@@ -612,25 +618,23 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
+        // additional parameters
+        param = new ElementParameter(process);
+        param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTIES.getName()));
+        param.setValue(StatsAndLogsManager.addQuotes("")); //$NON-NLS-1$
+        param.setDisplayName(EParameterName.PROPERTIES.getDisplayName());
+        param.setFieldType(EParameterFieldType.TEXT);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(47);
+        param.setRepositoryValue("PROPERTIES_STRING"); //$NON-NLS-1$
+        dbCon = dbTypeName
+                + " == 'MSSQL'" + " or " + dbTypeName + " == 'MYSQL'" + " or " + dbTypeName //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                + " == 'INFORMIX'" + " or " + dbTypeName + " == 'OCLE'" + " or " + dbTypeName + " == 'OCLE_OCI'" + " or " + dbTypeName + " == 'SYBASE'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 
-            // additional parameters
-            param = new ElementParameter(process);
-            param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.PROPERTIES.getName()));
-            param.setValue(StatsAndLogsManager.addQuotes("")); //$NON-NLS-1$
-            param.setDisplayName(EParameterName.PROPERTIES.getDisplayName());
-            param.setFieldType(EParameterFieldType.TEXT);
-            param.setCategory(EComponentCategory.EXTRA);
-            param.setNumRow(47);
-            param.setRepositoryValue("PROPERTIES_STRING"); //$NON-NLS-1$
-            dbCon = dbTypeName
-                    + " == 'MSSQL'" + " or " + dbTypeName + " == 'MYSQL'" + " or " + dbTypeName //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    + " == 'INFORMIX'" + " or " + dbTypeName + " == 'OCLE'" + " or " + dbTypeName + " == 'OCLE_OCI'" + " or " + dbTypeName + " == 'SYBASE'"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+        param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
 
-            param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
-            param.setGroup(IMPLICIT_GROUP);
-            paramList.add(param);
-        }
         // schema
         param = new ElementParameter(process);
         param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.SCHEMA_DB.getName()));
@@ -738,37 +742,35 @@ public class JobSettingsManager {
         ElementParameter param;
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
 
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
-            final String[] itemValues = new String[] { ContextLoadInfo.ERROR.getDisplayName(),
-                    ContextLoadInfo.WARNING.getDisplayName(), ContextLoadInfo.INFO.getDisplayName() };
+        final String[] itemValues = new String[] { ContextLoadInfo.ERROR.getDisplayName(),
+                ContextLoadInfo.WARNING.getDisplayName(), ContextLoadInfo.INFO.getDisplayName() };
 
-            //
-            param = new ElementParameter(process);
-            param.setName(EParameterName.LOAD_NEW_VARIABLE.getName());
-            param.setDisplayName(EParameterName.LOAD_NEW_VARIABLE.getDisplayName());
-            param.setValue(ContextLoadInfo.WARNING.getDisplayName());
-            param.setListItemsDisplayName(itemValues);
-            param.setListItemsValue(itemValues);
-            param.setFieldType(EParameterFieldType.CLOSED_LIST);
-            param.setCategory(EComponentCategory.EXTRA);
-            param.setNumRow(80);
-            param.setShowIf(CONTEXTLOAD_CONDITION);
-            param.setGroup(IMPLICIT_GROUP);
-            paramList.add(param);
-            //
-            param = new ElementParameter(process);
-            param.setName(EParameterName.NOT_LOAD_OLD_VARIABLE.getName());
-            param.setDisplayName(EParameterName.NOT_LOAD_OLD_VARIABLE.getDisplayName());
-            param.setValue(ContextLoadInfo.WARNING.getDisplayName());
-            param.setListItemsDisplayName(itemValues);
-            param.setListItemsValue(itemValues);
-            param.setFieldType(EParameterFieldType.CLOSED_LIST);
-            param.setCategory(EComponentCategory.EXTRA);
-            param.setNumRow(81);
-            param.setShowIf(CONTEXTLOAD_CONDITION);
-            param.setGroup(IMPLICIT_GROUP);
-            paramList.add(param);
-        }
+        //
+        param = new ElementParameter(process);
+        param.setName(EParameterName.LOAD_NEW_VARIABLE.getName());
+        param.setDisplayName(EParameterName.LOAD_NEW_VARIABLE.getDisplayName());
+        param.setValue(ContextLoadInfo.WARNING.getDisplayName());
+        param.setListItemsDisplayName(itemValues);
+        param.setListItemsValue(itemValues);
+        param.setFieldType(EParameterFieldType.CLOSED_LIST);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(80);
+        param.setShowIf(CONTEXTLOAD_CONDITION);
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
+        //
+        param = new ElementParameter(process);
+        param.setName(EParameterName.NOT_LOAD_OLD_VARIABLE.getName());
+        param.setDisplayName(EParameterName.NOT_LOAD_OLD_VARIABLE.getDisplayName());
+        param.setValue(ContextLoadInfo.WARNING.getDisplayName());
+        param.setListItemsDisplayName(itemValues);
+        param.setListItemsValue(itemValues);
+        param.setFieldType(EParameterFieldType.CLOSED_LIST);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(81);
+        param.setShowIf(CONTEXTLOAD_CONDITION);
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
         // print operations
         param = new ElementParameter(process);
         param.setName(EParameterName.PRINT_OPERATIONS.getName());
@@ -782,20 +784,18 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
-            // disable error
-            param = new ElementParameter(process);
-            param.setName(EParameterName.DISABLE_ERROR.getName());
-            param.setValue(false);
-            param.setDisplayName(EParameterName.DISABLE_ERROR.getDisplayName());
-            param.setFieldType(EParameterFieldType.CHECK);
-            param.setCategory(EComponentCategory.EXTRA);
-            param.setNumRow(83);
-            param.setRequired(true);
-            param.setShowIf("((DISABLE_ERROR == 'true' or DISABLE_ERROR == 'false') and " + CONTEXTLOAD_CONDITION + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-            param.setGroup(IMPLICIT_GROUP);
-            paramList.add(param);
-        }
+        // disable error
+        param = new ElementParameter(process);
+        param.setName(EParameterName.DISABLE_ERROR.getName());
+        param.setValue(false);
+        param.setDisplayName(EParameterName.DISABLE_ERROR.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(83);
+        param.setRequired(true);
+        param.setShowIf("((DISABLE_ERROR == 'true' or DISABLE_ERROR == 'false') and " + CONTEXTLOAD_CONDITION + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
 
         // disable warnings
         param = new ElementParameter(process);
@@ -810,20 +810,18 @@ public class JobSettingsManager {
         param.setGroup(IMPLICIT_GROUP);
         paramList.add(param);
 
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
-            // disable info
-            param = new ElementParameter(process);
-            param.setName(EParameterName.DISABLE_INFO.getName());
-            param.setValue(true);
-            param.setDisplayName(EParameterName.DISABLE_INFO.getDisplayName());
-            param.setFieldType(EParameterFieldType.CHECK);
-            param.setCategory(EComponentCategory.EXTRA);
-            param.setNumRow(83);
-            param.setRequired(true);
-            param.setShowIf("((DISABLE_INFO == 'true' or DISABLE_INFO == 'false') and " + CONTEXTLOAD_CONDITION + ")"); //$NON-NLS-1$ //$NON-NLS-2$
-            param.setGroup(IMPLICIT_GROUP);
-            paramList.add(param);
-        }
+        // disable info
+        param = new ElementParameter(process);
+        param.setName(EParameterName.DISABLE_INFO.getName());
+        param.setValue(true);
+        param.setDisplayName(EParameterName.DISABLE_INFO.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.EXTRA);
+        param.setNumRow(83);
+        param.setRequired(true);
+        param.setShowIf("((DISABLE_INFO == 'true' or DISABLE_INFO == 'false') and " + CONTEXTLOAD_CONDITION + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        param.setGroup(IMPLICIT_GROUP);
+        paramList.add(param);
 
         return paramList;
     }

@@ -13,12 +13,10 @@
 package org.talend.designer.core.model.process.statsandlogs;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
@@ -70,6 +68,10 @@ public class StatsAndLogsManager {
     public static final String ENCODING_TYPE_CUSTOM = "CUSTOM"; //$NON-NLS-1$
 
     public static final String CONNECTION_UID = "connectionStatsLogs";//$NON-NLS-1$
+
+    private static List<String> moduleNameList;
+
+    private static List<String> moduleValueList;
 
     public static boolean isStatsAndLogsActivated(IProcess process) {
         String dbOutput = null;
@@ -905,12 +907,6 @@ public class StatsAndLogsManager {
 
         List<IElementParameter> paramList = new ArrayList<IElementParameter>();
 
-        // checks current language, if it is perl, set languageType to 0(default value), otherwise to 1.
-        int languageType = 0;
-        if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.JAVA)) {
-            languageType = 1;
-        }
-
         String languagePrefix = LanguageManager.getCurrentLanguage().toString() + "_"; //$NON-NLS-1$
 
         // on database
@@ -971,16 +967,16 @@ public class StatsAndLogsManager {
         param.setName(EParameterName.DB_TYPE.getName());
         String type = preferenceStore.getString(languagePrefix + EParameterName.DB_TYPE.getName());
         if (type == null || "".equals(type.trim())) { //$NON-NLS-1$
-            type = StatsAndLogsConstants.DB_COMPONENTS[languageType][0];
+            type = StatsAndLogsConstants.DB_COMPONENTS[1][0];
         }
         param.setValue(type);
         param.setDisplayName(EParameterName.DB_TYPE.getDisplayName());
         param.setFieldType(EParameterFieldType.CLOSED_LIST);
         param.setCategory(EComponentCategory.STATSANDLOGS);
-        param.setListItemsDisplayName(StatsAndLogsConstants.DISPLAY_DBNAMES[languageType]);
-        param.setListItemsValue(StatsAndLogsConstants.DB_COMPONENTS[languageType]);
-        param.setListRepositoryItems(StatsAndLogsConstants.REPOSITORY_ITEMS[languageType]);
-        param.setListItemsDisplayCodeName(StatsAndLogsConstants.CODE_LIST[languageType]);
+        param.setListItemsDisplayName(StatsAndLogsConstants.DISPLAY_DBNAMES[1]);
+        param.setListItemsValue(StatsAndLogsConstants.DB_COMPONENTS[1]);
+        param.setListRepositoryItems(StatsAndLogsConstants.REPOSITORY_ITEMS[1]);
+        param.setListItemsDisplayCodeName(StatsAndLogsConstants.CODE_LIST[1]);
         param.setNumRow(52);
         param.setRepositoryValue("TYPE"); //$NON-NLS-1$
         param.setRequired(true);
@@ -1018,19 +1014,28 @@ public class StatsAndLogsManager {
         paramList.add(param);
 
         // jdbc child param
-        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
-        Set<String> moduleNameList = new TreeSet<String>();
-        Set<String> moduleValueList = new TreeSet<String>();
-        for (ModuleNeeded module : moduleNeededList) {
-            String moduleName = module.getModuleName();
-            moduleNameList.add(moduleName);
-            moduleValueList.add(TalendTextUtils.addQuotes(moduleName));
+        if (moduleNameList == null) {
+            List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+            moduleNameList = new ArrayList<String>();
+            moduleValueList = new ArrayList<String>();
+            for (ModuleNeeded module : moduleNeededList) {
+                String moduleName = module.getModuleName();
+                if (moduleName != null) {
+                    if (!moduleNameList.contains(moduleName)) {
+                        moduleNameList.add(moduleName);
+                    }
+                    String moduleValue = TalendTextUtils.addQuotes(moduleName);
+                    if (!moduleValueList.contains(moduleValue)) {
+                        moduleValueList.add(moduleValue);
+                    }
+                }
+            }
+            Comparator<String> comprarator = new IgnoreCaseComparator();
+            Collections.sort(moduleNameList, comprarator);
+            Collections.sort(moduleValueList, comprarator);
         }
-        Comparator<String> comprarator = new IgnoreCaseComparator();
         String[] moduleNameArray = moduleNameList.toArray(new String[0]);
         String[] moduleValueArray = moduleValueList.toArray(new String[0]);
-        Arrays.sort(moduleNameArray, comprarator);
-        Arrays.sort(moduleValueArray, comprarator);
         ElementParameter childParam = new ElementParameter(process);
         childParam.setName("JAR_NAME");
         childParam.setDisplayName("JAR_NAME");
