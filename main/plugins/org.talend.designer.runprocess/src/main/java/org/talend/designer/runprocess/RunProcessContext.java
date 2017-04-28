@@ -1236,15 +1236,15 @@ public class RunProcessContext {
             jmxPerformanceChangeListener = new JMXPerformanceChangeListener() {
 
                 long startTime = System.currentTimeMillis();
-
+                String name = process.getLabel();
                 @Override
                 public String getProcessName() {
-                    return getProcess().getLabel();
+                    return name;
                 }
 
                 @Override
                 public void performancesChanged(String connId, int exchangesCompleted) {
-                    long duration = 100;
+                    long duration = System.currentTimeMillis() - startTime;
                     final IConnection conn = traceConnectionsManager.finConnectionByUniqueName(connId);
                     final PerformanceData perfData = new PerformanceData(connId + "|" + exchangesCompleted + "|" + duration);
                     processPerformances(connId + "|" + exchangesCompleted + "|" + duration, perfData, conn);
@@ -1262,6 +1262,7 @@ public class RunProcessContext {
         @Override
         public void stopThread() {
             jmxManager.stopTracing(RunProcessContext.this);
+            jmxManager.removePerformancesChangeListener(jmxPerformanceChangeListener);
             super.stopThread();
         }
     }
