@@ -316,7 +316,8 @@ if (metadatas != null && metadatas.size()>0) {
               %>
         <%}//end partial%>
     } catch (java.lang.Exception e) {
-    <% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
+      miList_<%=cid %>.clear();
+      <% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
       <%if (dieOnError) {%>
         throw(e);
       <%} else {
@@ -380,8 +381,6 @@ if (metadatas != null && metadatas.size()>0) {
           %>
           nb_line_rejected_<%=cid%>++;
           <%=rejectConnName %>.errorMessage = e.getMessage() + " - Line: " + tos_count_<%=node.getUniqueName() %>;
-        <%} else {%>
-          System.err.println(e.getMessage());
         <%}
       }%>
     }
