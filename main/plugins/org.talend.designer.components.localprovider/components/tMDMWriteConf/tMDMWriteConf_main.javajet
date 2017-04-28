@@ -255,6 +255,7 @@ if (metadatas != null && metadatas.size()>0) {
           %>
       <%}//end partial%>
     } catch (java.lang.Exception e) {
+      miList_<%=cid %>.clear();
       <%if (dieOnError) {%>
         throw(e);
       <%} else {
