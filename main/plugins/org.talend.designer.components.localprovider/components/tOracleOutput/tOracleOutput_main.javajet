@@ -1194,20 +1194,17 @@ skeleton="../templates/db_output_bulk.skeleton"
                     <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                     pstmt_<%=cid %>.executeBatch();
                     <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                }catch (java.sql.BatchUpdateException e){
+                }catch (java.sql.BatchUpdateException e_<%=cid%>){
                     <%
                     if(("true").equals(dieOnError)) {
                     %>
-                    
-                        String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-                        <%dbLog.logPrintedException("errormessage_"+cid);%>
-                        throw(e);
+                        throw(e_<%=cid%>);
                     <%
                     }else {
+                        dbLog.logPrintedException("e_"+cid+".getMessage()");
                         %>
-                        String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
-                        <%
-                        dbLog.logPrintedException("errormessage_"+cid);
+                        System.err.println(e_<%=cid%>.getMessage());
+                    <%
                     }
                     %>
                 }
@@ -1248,20 +1245,17 @@ skeleton="../templates/db_output_bulk.skeleton"
                             <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                             pstmt_<%=cid %>.executeBatch();
                             <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                        }catch (java.sql.BatchUpdateException e){
+                        }catch (java.sql.BatchUpdateException e_<%=cid%>){
                             <%
                             if(("true").equals(dieOnError)) {
                             %>
-                            
-                                String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-                                <%dbLog.logPrintedException("errormessage_"+cid);%>
-                                throw(e);
+                                throw(e_<%=cid%>);
                             <%
                             }else {
+                                dbLog.logPrintedException("e_"+cid+".getMessage()");
                                 %>
-                                String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
-                                <%
-                                dbLog.logPrintedException("errormessage_"+cid);
+                                System.err.println(e_<%=cid%>.getMessage());
+                            <%
                             }
                             %>
                         }

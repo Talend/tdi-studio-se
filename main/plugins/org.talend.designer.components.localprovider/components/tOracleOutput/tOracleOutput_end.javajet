@@ -189,19 +189,17 @@ imports="
 					pstmt_<%=cid %>.executeBatch();
 					<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
         	    }
-            }catch (java.sql.BatchUpdateException e){
+            }catch (java.sql.BatchUpdateException e_<%=cid%>){
             	<%
             	if(("true").equals(dieOnError)) {
            		%>
-           		    String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-           		    <%dbLog.logPrintedException("errormessage_"+cid);%>
-            		throw(e);
+            		throw(e_<%=cid%>);
             	<%
             	}else {
-            	    %>
-            	    String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
-            	    <%
-    				dbLog.logPrintedException("errormessage_"+cid);
+    				dbLog.logPrintedException("e_"+cid+".getMessage()");
+    				%>
+                	System.err.println(e_<%=cid%>.getMessage());
+            	<%
             	}
             	%>
         	}
