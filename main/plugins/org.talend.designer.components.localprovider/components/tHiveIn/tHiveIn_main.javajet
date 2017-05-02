@@ -17,7 +17,6 @@ imports="
 		java.util.HashSet
 		"
 %>
-
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
@@ -31,38 +30,67 @@ imports="
 
 	String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
 	dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
+
+    String theDistribution = ElementParameterParser.getValue(node, "__DISTRIBUTION__");
+    String theVersion = ElementParameterParser.getValue(node, "__HIVE_VERSION__");
+
+    if ("true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"))) {
+        String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+        for (INode pNode : node.getProcess().getNodesOfType("tHiveConnection")) {
+            if (connection!=null && connection.equals(pNode.getUniqueName())) {
+                theDistribution = ElementParameterParser.getValue(pNode, "__DISTRIBUTION__");
+                theVersion = ElementParameterParser.getValue(pNode, "__HIVE_VERSION__");
+            }
+        }
+    }
+
+    org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;
+    try {
+        hiveDistrib = (org.talend.hadoop.distribution.component.HiveComponent) org.talend.hadoop.distribution.DistributionFactory.buildDistribution(theDistribution, theVersion);
+    } catch (java.lang.Exception e) {
+        e.printStackTrace();
+        return "";
+    }
+    boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
+
+    if (hiveDistrib.isExecutedThroughWebHCat()) {
 %>
 
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetAzureConnection.javajet"%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetAzureConnection.javajet"%>
 <%
-	if("false".equals(useExistingConn)) { // This variable is declared and initialized in the GetAzureConnection.javajet
-		boolean setMemory = "true".equals(ElementParameterParser.getValue(node, "__SET_MEMORY__"));
-		if(setMemory) {
-			String mapMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_MAP_MEMORY_MB__");
-			String reduceMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_REDUCE_MEMORY_MB__");
-			String amMemory = ElementParameterParser.getValue(node,"__YARN_APP_MAPREDUCE_AM_RESOURCE_MB__");
+        if ("false".equals(useExistingConn)) { // This variable is declared and initialized in the GetAzureConnection.javajet
+            boolean setMemory = "true".equals(ElementParameterParser.getValue(node, "__SET_MEMORY__"));
+            if (setMemory) {
+                String mapMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_MAP_MEMORY_MB__");
+                String reduceMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_REDUCE_MEMORY_MB__");
+                String amMemory = ElementParameterParser.getValue(node,"__YARN_APP_MAPREDUCE_AM_RESOURCE_MB__");
 %>
-			bw_<%=cid%>.write("SET mapreduce.map.memory.mb=" + <%=mapMemory%> + ";");
-			bw_<%=cid%>.write("SET mapreduce.reduce.memory.mb=" + <%=reduceMemory%> + ";");
-			bw_<%=cid%>.write("SET yarn.app.mapreduce.am.resource.mb=" + <%=amMemory%> + ";");
+                bw_<%=cid%>.write("SET mapreduce.map.memory.mb=" + <%=mapMemory%> + ";");
+                bw_<%=cid%>.write("SET mapreduce.reduce.memory.mb=" + <%=reduceMemory%> + ";");
+                bw_<%=cid%>.write("SET yarn.app.mapreduce.am.resource.mb=" + <%=amMemory%> + ";");
 <%
-		}
+            }
 
-		List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__");
-		if(advProps!=null) {
-			for(Map<String, String> item : advProps){
+            List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__");
+            if (advProps!=null) {
+                for(Map<String, String> item : advProps) {
 %>
-				bw_<%=cid%>.write("SET "+<%=item.get("PROPERTY")%>+"="+<%=item.get("VALUE")%> + ";");
+                    bw_<%=cid%>.write("SET "+<%=item.get("PROPERTY")%>+"="+<%=item.get("VALUE")%> + ";");
 <%
-			}
-		}
+                }
+            }
 %>
-		String dbname_<%=cid%> = <%=dbname%>;
-		if(dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
-			bw_<%=cid%>.write("use " + dbname_<%=cid%> + ";");
-		}
+            String dbname_<%=cid%> = <%=dbname%>;
+            if (dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
+                bw_<%=cid%>.write("use " + dbname_<%=cid%> + ";");
+            }
 <%
-	}
+        }
+    } else if (hiveDistrib.isGoogleDataprocDistribution()) {
+%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/GetDataprocConnection.javajet"%>
+<%
+    }
 
 	// Register jars
 
@@ -70,74 +98,256 @@ imports="
 	java.util.List<String> jars = null;
 	String[] commandLine = new String[] {"<command>"};
 	try {
-		commandLine = ProcessorUtilities.getCommandLine("win32",true, processId, "",org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, new String[]{});
+		commandLine = ProcessorUtilities.getCommandLine("win32", true, processId, "",org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, new String[]{});
 	} catch (ProcessorException e) {
 		e.printStackTrace();
 	}
 
 	jarsToRegister = new java.util.ArrayList();
 
-    if(useParquet) {
+    if (useParquet) {
 	  jarsToRegister.add("snappy-java");
 	  jarsToRegister.add("parquet-hive-bundle");
 	}
 	jarsToRegister.add("jets3t");
 
 	for (int j = 0; j < commandLine.length; j++) {
-		if(commandLine[j].contains("jar")) {
+		if (commandLine[j].contains("jar")) {
 			jars = java.util.Arrays.asList(commandLine[j].split(";"));
 			break;
 		}
 	}
 
 
-	if(jarsToRegister!=null && jars!=null) {
+	if (jarsToRegister!=null && jars!=null) {
 %>
 		routines.system.GetJarsToRegister getJarsToRegister_<%=cid %> = new routines.system.GetJarsToRegister();
 <%
 		for(int i=0; i<jarsToRegister.size(); i++) {
 			String jarToRegister = jarsToRegister.get(i);
 			for(int j=0; j<jars.size(); j++) {
-				if(jars.get(j).contains(jarToRegister)) {
+				if (jars.get(j).contains(jarToRegister)) {
+				    if (hiveDistrib.isExecutedThroughWebHCat()) {
 %>
-					bw_<%=cid%>.write("ADD JAR " + wasbPath_<%=cid%> + new java.io.File(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>")).getName() + ";");
-					libjars_<%=cid%>.append(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>") + ",");
+                        bw_<%=cid%>.write("ADD JAR " + wasbPath_<%=cid%> + new java.io.File(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>")).getName() + ";");
+                        libjars_<%=cid%>.append(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>") + ",");
 <%
+                    } else { // dataproc
+                        if (isLog4jEnabled) {
+%>
+                            log.debug("Query for <%=cid%>: " + "ADD JAR " + stagingBucketPath_<%=cid%> + new java.io.File(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>")).getName() + ";");
+<%
+                        }
+%>
+                        instance_<%=cid%>.addQuery("ADD JAR " + stagingBucketPath_<%=cid%> + new java.io.File(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>")).getName() + ";");
+                        libjars_<%=cid%>.append(getJarsToRegister_<%=cid %>.replaceJarPaths("<%=jars.get(j)%>") + ",");
+<%
+                    }
 				}
 			}
 		}
 	}
 
 	// End of parquet format handling.
+	if (hiveDistrib.isExecutedThroughWebHCat()) {
 %>
+        bw_<%=cid%>.write(<%=dbquery%> + ";");
+        globalMap.put("<%=cid.replaceAll("tHiveIn", "tHiveInput")%>_QUERY", <%=dbquery%>);
 
-	bw_<%=cid%>.write(<%=dbquery%> + ";");
-	globalMap.put("<%=cid.replaceAll("tHiveIn", "tHiveInput")%>_QUERY", <%=dbquery%>);
+        bw_<%=cid%>.close();
 
-	bw_<%=cid%>.close();
-	if(libjars_<%=cid%>.length() > 0) {
-			instance_<%=cid%>.setLibJars(libjars_<%=cid%>.toString().substring(0, libjars_<%=cid%>.length()-1));
-	}
-	instance_<%=cid%>.callWS(instance_<%=cid%>.sendFiles());
-	int exitCode_<%=cid%> = instance_<%=cid%>.execute();
-	if(exitCode_<%=cid%> > 0) {
+        if (libjars_<%=cid%>.length() > 0) {
+            instance_<%=cid%>.setLibJars(libjars_<%=cid%>.toString().substring(0, libjars_<%=cid%>.length()-1));
+        }
+        instance_<%=cid%>.callWS(instance_<%=cid%>.sendFiles());
+        int exitCode_<%=cid%> = instance_<%=cid%>.execute();
+        if (exitCode_<%=cid%> > 0) {
 
 <%
-		if(("true").equals(dieOnError)) {
+            if (("true").equals(dieOnError)) {
 %>
-			throw new Exception("The Hive job failed. Please read the logs for more details");
+                throw new Exception("The Hive job failed. Please read the logs for more details");
 <%
-		} else {
+            } else {
+                if (isLog4jEnabled) {
 %>
-			System.err.println("The Hive job failed. Please read the logs for more details");
+                    log.error("<%=cid%> - The Hive job failed. Please read the logs for more details");
 <%
-			if(isLog4jEnabled) {
+                } else {
 %>
-				log.error("<%=cid%> - The Hive job failed. Please read the logs for more details");
+                    System.err.println("The Hive job failed. Please read the logs for more details");
 <%
-			}
-		}
+                }
+            }
 %>
-	}
+        }
+        java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> = instance_<%=cid%>.getStdOut();
+<%
+    } else { // dataproc
+        if (isLog4jEnabled) {
+%>
+            log.debug("Query for <%=cid%>: " + <%=dbquery%>.replace("';'", "'\\;'") + ";");
+<%
+        }
+%>
+        // First we dump the select query of the user into google storage
+        // In order to do that we modify the query to add as a prefix:
+        // INSERT OVERWRITE DIRECTORY '$GOOGLE_JARS_BUCKET/hivetmp/' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 
-	java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> = instance_<%=cid%>.getStdOut();
+        <%
+        String gsTempDir = "";
+        if(ElementParameterParser.getBooleanValue(node,"__USE_EXISTING_CONNECTION__")) {
+            String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+            for (INode pNode : node.getProcess().getNodesOfType("tHiveConnection")) {
+                if (connection != null && connection.equals(pNode.getUniqueName())) {
+                    gsTempDir = ElementParameterParser.getValue(pNode, "__GOOGLE_JARS_BUCKET__");
+                    break;
+                }
+            }
+        } else {
+            gsTempDir = ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__");
+        }
+        if (gsTempDir.endsWith("/\"")) {
+            gsTempDir = gsTempDir + " + \"hivetemp\" ";
+        } else {
+            gsTempDir = gsTempDir + " + \"/hivetemp\" ";            
+        }
+        %>
+        instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' "
+                + <%=dbquery%>.replace("';'", "'\\;'") + ";");
+        if (libjars_<%=cid%>.length() > 0) {
+            instance_<%=cid%>.addLibJars(libjars_<%=cid%>.toString().substring(0, libjars_<%=cid%>.length()-1));
+        }
+        int exitCode_<%=cid%> = instance_<%=cid%>.executeJob();
+        System.out.println(instance_<%=cid%>.getJobLog());
+
+        if (exitCode_<%=cid%> > 0) {
+<%
+            if (("true").equals(dieOnError)) {
+%>
+                throw new Exception("The Hive job failed. Please read the logs for more details");
+<%
+            } else {
+                if (isLog4jEnabled) {
+%>
+                    log.error("<%=cid%> - The Hive job failed. Please read the logs for more details");
+<%
+                } else {
+%>
+                    System.err.println("The Hive job failed. Please read the logs for more details");
+<%
+                }
+            }
+%>
+        }
+
+        // We have the Hive table dump on google storage, we now need to retrieve it and transmit it to the tFileInputDelimtied
+        <%
+        String accessKey = ElementParameterParser.getValue(node,"__ACCESS_KEY__");
+        String passwordFieldName = "__SECRET_KEY__";
+        %>
+        org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
+        java.util.List<java.io.InputStream> inputStreamList_<%=cid%> = new java.util.ArrayList<>();
+        try {
+            <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet" %>
+
+            org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
+
+            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
+            service_<%=cid%>.getAccountOwner();
+
+            java.util.regex.Matcher m = org.talend.bigdata.launcher.google.dataproc.DataprocSparkJobUtil.GS_URI_PATTERN.matcher(<%=gsTempDir%>);
+            if (m.find()) {
+                String bucketName_<%=cid%> = m.group(1);
+                String objectKey_<%=cid%> = m.group(2);
+
+                org.jets3t.service.model.GSObject[] objects_<%=cid%> = service_<%=cid%>.listObjects(
+                    bucketName_<%=cid%>,
+                    objectKey_<%=cid%>,
+                    null
+                    );
+                for (org.jets3t.service.model.GSObject objectSummary_<%=cid%> : objects_<%=cid%>) {
+                    String objkey_<%=cid%> = objectSummary_<%=cid%>.getKey();
+                    org.jets3t.service.model.GSObject obj_<%=cid%> = service_<%=cid%>.getObject(bucketName_<%=cid%>, objkey_<%=cid%>);
+                    System.out.println(obj_<%=cid%>);
+                    if (obj_<%=cid%> != null) {
+                        if (!obj_<%=cid%>.isDirectoryPlaceholder()) {
+                            inputStreamList_<%=cid%>.add(obj_<%=cid%>.getDataInputStream());
+                        }
+                    }
+                }
+            }
+        } catch (java.lang.Exception e_<%=cid%>) {
+            <%
+            if (("true").equals(dieOnError)) {
+            %>
+                throw(e_<%=cid%>);
+            <%
+            } else {
+            %>
+                if (e_<%=cid%> instanceof org.jets3t.service.ServiceException) {
+                    org.jets3t.service.ServiceException servError_<%=cid%> = (org.jets3t.service.ServiceException)e_<%=cid%>;
+                    <%
+                    if (isLog4jEnabled) {
+                    %>
+                        log.error("<%=cid%> - " + servError_<%=cid%>.getErrorCode());
+                    <%
+                    } else {
+                    %>
+                        System.err.println("Exception in component <%=cid%>:");
+                        System.err.println(servError_<%=cid%>.getMessage());
+                    <%
+                    }
+                    %>
+                    if (servError_<%=cid%>.getErrorCode() != null) {
+                        <%
+                        if (isLog4jEnabled) {
+                        %>
+                            log.error("<%=cid%> - " + servError_<%=cid%>.getErrorMessage());
+                        <%
+                        } else {
+                        %>
+                            System.err.println(servError_<%=cid%>.getErrorCode());
+                        <%
+                        }
+                        %>
+                    }
+                    if (servError_<%=cid%>.getErrorMessage() != null) {
+                        <%
+                        if (isLog4jEnabled) {
+                        %>
+                            log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+                        <%
+                        } else {
+                        %>
+                            System.err.println(servError_<%=cid%>.getErrorMessage());
+                        <%
+                        }
+                        %>
+                    }
+                } else {
+                    <%
+                    if (isLog4jEnabled) {
+                    %>
+                        log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+                    <%
+                    } else {
+                    %>
+                        System.err.println(e_<%=cid%>.getMessage());
+                    <%
+                    }
+                    %>
+                }
+            <%
+            }
+            %>
+        } finally {
+            if (service_<%=cid%> != null) {
+                service_<%=cid%>.shutdown();
+            }
+        }
+        java.io.InputStream <%=ElementParameterParser.getValue(node, "__INPUT_STREAM_NAME__")%> =
+                new java.io.SequenceInputStream(java.util.Collections.enumeration(inputStreamList_<%=cid%>));
+<%
+    }
+%>
