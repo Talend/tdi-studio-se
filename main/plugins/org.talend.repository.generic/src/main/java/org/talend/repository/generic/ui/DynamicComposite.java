@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -155,7 +156,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
         }
-
+        
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
@@ -425,4 +426,16 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     public void setConnectionItem(ConnectionItem connectionItem) {
         this.connectionItem = connectionItem;
     }
+
+    @Override
+    protected boolean isShouldDisParameter(IElementParameter curParam) {
+        if (EParameterFieldType.PROPERTY_TYPE.equals(curParam.getFieldType())) {
+            IElementParameter compRefParameter = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_REFERENCE);
+            GenericElementParameter gParam = (GenericElementParameter) compRefParameter;
+            ComponentReferenceProperties props = (ComponentReferenceProperties) gParam.getWidget().getContent();
+            return props.getReference() == null;
+        }
+        return true;
+    }
+
 }

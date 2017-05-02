@@ -21,7 +21,8 @@ Require-Bundle: org.eclipse.ui,
  jackson-core-asl,
  org.apache.servicemix.bundles.avro,
  org.talend.metadata.managment.ui,
- org.slf4j.api
+ org.slf4j.api,
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.
 Export-Package: org.talend.designer.core.generic.constants,
