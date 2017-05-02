@@ -316,7 +316,9 @@ if (metadatas != null && metadatas.size()>0) {
               %>
         <%}//end partial%>
     } catch (java.lang.Exception e) {
+      <%if (isMassInsert) {%>
       miList_<%=cid %>.clear();
+      <%}%>
       <% logUtil.error("\"Unexpected error:\"+e.getMessage()");%>
       <%if (dieOnError) {%>
         throw(e);
