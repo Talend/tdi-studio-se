@@ -1194,20 +1194,33 @@ skeleton="../templates/db_output_bulk.skeleton"
                     <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                     pstmt_<%=cid %>.executeBatch();
                     <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                    <%
-                    if(("true").equals(dieOnError)) {
-                    %>
-                        throw(e_<%=cid%>);
-                    <%
-                    }else {
-                        dbLog.logPrintedException("e_"+cid+".getMessage()");
-                        %>
-                        System.err.println(e_<%=cid%>.getMessage());
-                    <%
-                    }
-                    %>
-                }
+                }catch (java.sql.BatchUpdateException e){
+			        java.sql.SQLException ne = e.getNextException(),sqle=null;
+			    	String errormessage_<%=cid%>;
+					if (ne != null) {
+						// build new exception to provide the original cause
+						sqle = new java.sql.SQLException(e.getMessage() + "\ncaused by: " + ne.getMessage(), ne.getSQLState(), ne.getErrorCode(), ne);
+						errormessage_<%=cid%> = sqle.getMessage();
+					}else{
+						errormessage_<%=cid%> = e.getMessage();
+					}
+	            	<%
+	            	if(("true").equals(dieOnError)) {
+	           		%>
+			    		if (ne != null) {
+			    			throw(sqle);
+			    		}else{
+			            	throw(e);
+			            }
+	            	<%
+	            	}else {
+	    			    dbLog.logPrintedException("errormessage_"+cid);
+	    				%>
+	                	System.err.println(errormessage_<%=cid%>);
+	            	<%
+	            	}
+	            	%>
+	        	}
                 tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
                 <%
                 if (("INSERT").equals(dataAction)) {
@@ -1245,20 +1258,33 @@ skeleton="../templates/db_output_bulk.skeleton"
                             <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                             pstmt_<%=cid %>.executeBatch();
                             <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                        }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                            <%
-                            if(("true").equals(dieOnError)) {
-                            %>
-                                throw(e_<%=cid%>);
-                            <%
-                            }else {
-                                dbLog.logPrintedException("e_"+cid+".getMessage()");
-                                %>
-                                System.err.println(e_<%=cid%>.getMessage());
-                            <%
-                            }
-                            %>
-                        }
+                        }catch (java.sql.BatchUpdateException e){
+					        java.sql.SQLException ne = e.getNextException(),sqle=null;
+					    	String errormessage_<%=cid%>;
+							if (ne != null) {
+								// build new exception to provide the original cause
+								sqle = new java.sql.SQLException(e.getMessage() + "\ncaused by: " + ne.getMessage(), ne.getSQLState(), ne.getErrorCode(), ne);
+								errormessage_<%=cid%> = sqle.getMessage();
+							}else{
+								errormessage_<%=cid%> = e.getMessage();
+							}
+			            	<%
+			            	if(("true").equals(dieOnError)) {
+			           		%>
+					    		if (ne != null) {
+					    			throw(sqle);
+					    		}else{
+					            	throw(e);
+					            }
+			            	<%
+			            	}else {
+			    			    dbLog.logPrintedException("errormessage_"+cid);
+			    				%>
+			                	System.err.println(errormessage_<%=cid%>);
+			            	<%
+			            	}
+			            	%>
+			        	}
                         tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
                         <%
                         if (("INSERT").equals(dataAction)) {

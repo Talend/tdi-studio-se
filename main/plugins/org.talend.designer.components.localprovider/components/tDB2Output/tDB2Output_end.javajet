@@ -89,16 +89,28 @@ imports="
 	    	<%
 	    	}%>
     }catch (java.sql.BatchUpdateException e){
-    	
+    
+    	java.sql.SQLException ne = e.getNextException(),sqle=null;
+    	String errormessage_<%=cid%>;
+		if (ne != null) {
+			// build new exception to provide the original cause
+			sqle = new java.sql.SQLException(e.getMessage() + "\ncaused by: " + ne.getMessage(), ne.getSQLState(), ne.getErrorCode(), ne);
+			errormessage_<%=cid%> = sqle.getMessage();
+		}else{
+			errormessage_<%=cid%> = e.getMessage();
+		}
+		
     	<%if(("true").equals(dieOnError)) {
     	%>
-            String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,true);
-            <%dbLog.logPrintedException("errormessage_"+cid);%>
-            throw(e);
+    		if (ne != null) {
+    			throw(sqle);
+    		}else{
+            	throw(e);
+            }
     	<%
     	}else {
     	%>
-    	String errormessage_<%=cid%> = printSQLException_<%=cid%>.getSQLException(e,false);
+    	System.err.println(errormessage_<%=cid%>);
     	int countSum_<%=cid%> = 0;
 		for(int countEach_<%=cid%>: e.getUpdateCounts()) {
 			if(countEach_<%=cid%> == java.sql.Statement.SUCCESS_NO_INFO ){
@@ -122,6 +134,7 @@ imports="
     	}
     	dbLog.logPrintedException("errormessage_"+cid);
     	}%>
+    	
 	}
     <%
     }%>
