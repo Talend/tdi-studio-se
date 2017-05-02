@@ -32,6 +32,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.RGB;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.resource.BundleFileUtil;
@@ -1587,6 +1588,15 @@ public class Component extends AbstractBasicComponent {
             return technical;
         }
         return false;
+    }
+
+    @Override
+    public String getVersion() {
+        Version version = FrameworkUtil.getBundle(componentDefinition.getClass()).getVersion();
+        if (version != null) {
+            return version.toString();
+        }
+        return super.getVersion();
     }
 
 }
