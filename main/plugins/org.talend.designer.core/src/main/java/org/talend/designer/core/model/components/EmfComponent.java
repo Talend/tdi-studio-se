@@ -1610,6 +1610,7 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
             newParam.setGroup(xmlParam.getGROUP());
             newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
+            newParam.setRepositoryProperty(parentParam.getRepositoryProperty());
             newParam.setRepositoryValue(componentType.getDistributionRepositoryValueParameter());
 
             listParam.add(newParam);
@@ -1677,6 +1678,7 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setNotShowIf(xmlParam.getNOTSHOWIF());
             newParam.setGroup(xmlParam.getGROUP());
             newParam.setGroupDisplayName(parentParam.getGroupDisplayName());
+            newParam.setRepositoryProperty(parentParam.getRepositoryProperty());
             newParam.setRepositoryValue(componentType.getVersionRepositoryValueParameter());
             for (DistributionBean b : hadoopDistributions) {
                 IElementParameterDefaultValue defaultType = new ElementParameterDefaultValue();
