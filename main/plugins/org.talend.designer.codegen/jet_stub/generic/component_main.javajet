@@ -101,7 +101,7 @@ if(hasInput){
                                 dm_<%=cid%>.getDescription(),
                                 dm_<%=cid%>.isNullable());
                     }
-                    current_<%=cid%>.recreateRuntimeSchema();
+                    current_<%=cid%>.createRuntimeSchema();
                 }
                 <%
             }
