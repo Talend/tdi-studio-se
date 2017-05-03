@@ -200,17 +200,12 @@ imports="
             String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
             for (INode pNode : node.getProcess().getNodesOfType("tHiveConnection")) {
                 if (connection != null && connection.equals(pNode.getUniqueName())) {
-                    gsTempDir = ElementParameterParser.getValue(pNode, "__GOOGLE_JARS_BUCKET__");
+                    gsTempDir = ElementParameterParser.getValue(pNode, "__GOOGLE_JARS_BUCKET__") + " + \"hivetemp\" ";
                     break;
                 }
             }
         } else {
-            gsTempDir = ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__");
-        }
-        if (gsTempDir.endsWith("/\"")) {
-            gsTempDir = gsTempDir + " + \"hivetemp\" ";
-        } else {
-            gsTempDir = gsTempDir + " + \"/hivetemp\" ";            
+            gsTempDir = ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__") + " + \"hivetemp\" ";
         }
         %>
         instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' "

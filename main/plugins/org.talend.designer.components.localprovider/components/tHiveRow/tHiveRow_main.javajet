@@ -91,6 +91,7 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 <%
     }
 %>
+    query_<%=cid %> = <%=dbquery%>;
     instance_<%=cid%>.addQuery(query_<%=cid %>.replace("';'", "'\\;'") + ";");
     globalMap.put("<%=cid%>_QUERY", query_<%=cid %>);
     int exitCode_<%=cid%> = instance_<%=cid%>.executeJob();
