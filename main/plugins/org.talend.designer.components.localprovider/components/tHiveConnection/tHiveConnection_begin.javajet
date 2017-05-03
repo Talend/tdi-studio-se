@@ -1,11 +1,11 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
     java.util.Map
-" 
+"
 %>
 <%
 	CodeGeneratorArgument theCodeGenArgument = (CodeGeneratorArgument) argument;
@@ -21,13 +21,13 @@ imports="
 		e.printStackTrace();
 		return "";
 	}
-	boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;	
-	
+	boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
+
     if(hiveDistrib.isExecutedThroughWebHCat()) { // Execution through WebHCat
 %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_azure.javajet"%>
 <%
-    } else  if(hiveDistrib.isGoogleDataprocDistribution()) { // Execution through WebHCat
+    } else  if(hiveDistrib.isGoogleDataprocDistribution()) { // Execution through Dataproc
 %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_dataproc.javajet"%>
 <%
