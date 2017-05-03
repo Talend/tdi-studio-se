@@ -47,7 +47,6 @@ import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.internal.Workbench;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -58,6 +57,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.helper.LocalComponentInstallHelper;
 import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.runtime.utils.io.SHA1Util;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -290,10 +290,17 @@ public class ComponentsFactory implements IComponentsFactory {
                             final String message = "Have done to install some components:\n" + component.getInstalledMessages()
                                     + "\nIn order to apply the new components, need restart product first.";
                             if (!CommonUIPlugin.isFullyHeadless()) {
-                                boolean confirm = MessageDialog.openConfirm(null, "Install new components", message);
-                                if (confirm && Workbench.getInstance() != null) {
-                                    PlatformUI.getWorkbench().restart();
-                                }
+                                DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+                                    @Override
+                                    public void run() {
+                                        boolean confirm = MessageDialog.openConfirm(null, "Install new components", message);
+                                        if (confirm && PlatformUI.isWorkbenchRunning()) {
+                                            PlatformUI.getWorkbench().restart();
+                                        }
+
+                                    }
+                                });
                             }
                             log.warn(message);
                         }
