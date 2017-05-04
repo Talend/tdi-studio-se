@@ -571,4 +571,14 @@ public class BusinessDiagramEditor extends FileDiagramEditor implements IGotoMar
         }
         return image;
     }
+
+
+    @Override
+    public String getPartName() {
+        String title = null;
+        if (repositoryEditorInput != null) {
+            title = super.getPartName() + " " + repositoryEditorInput.getItem().getProperty().getVersion();
+        }
+        return title;
+    }
 }
