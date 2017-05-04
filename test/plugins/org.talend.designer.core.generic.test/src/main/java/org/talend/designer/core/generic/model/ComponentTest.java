@@ -72,6 +72,8 @@ public class ComponentTest {
                 ComponentReferenceProperties crp = (ComponentReferenceProperties) properties;
                 assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
                 assertEquals(Boolean.TRUE, crp.referenceDefinitionName.getTaggedValue(IGenericConstants.ADD_QUOTES));
+                //please see ComponentRefController class, the reference will be set when some ui action happen, so expect the value is null as no any ui action here
+                assertNull(crp.getReference());
             }
         }
     }

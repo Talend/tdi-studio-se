@@ -1336,7 +1336,6 @@ public class Component extends AbstractBasicComponent {
                     ComponentReferenceProperties crp = (ComponentReferenceProperties) prop;
                     crp.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                     crp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
-                    crp.setReference(null);
                 }
                 CodegenPropInfo childPropInfo = new CodegenPropInfo();
                 if (fieldString.equals("")) {//$NON-NLS-1$
