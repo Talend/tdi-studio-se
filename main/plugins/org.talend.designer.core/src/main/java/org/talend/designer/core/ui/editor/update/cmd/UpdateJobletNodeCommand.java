@@ -121,10 +121,14 @@ public class UpdateJobletNodeCommand extends Command {
                                 Node currentNode = getOriginalNodeFromProcess(node);
                                 boolean neesPro = needPropagate(currentNode);
                                 if (currentNode.isJoblet() || currentNode.isMapReduce()) {// maybe no need modify
+                                    List<IElementParameter> tempList = new ArrayList<IElementParameter>(currentNode.getElementParameters());
                                     if (result.isNeedReloadJoblet()) {
                                         reloadNode(currentNode, newComponent);
                                     }
                                     if (currentNode.getNodeContainer() instanceof AbstractJobletContainer) {
+                                        for(IElementParameter para : tempList){
+                                            currentNode.getElementParameter(para.getName()).setValue(para.getValue());
+                                        }
                                         ((AbstractJobletContainer) currentNode.getNodeContainer()).updateJobletNodes(true);
                                     }
                                 } else {
