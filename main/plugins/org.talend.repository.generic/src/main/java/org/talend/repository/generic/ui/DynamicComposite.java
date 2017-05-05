@@ -156,7 +156,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
         }
-        
+
         for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
@@ -431,9 +431,11 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     protected boolean isShouldDisParameter(IElementParameter curParam) {
         if (EParameterFieldType.PROPERTY_TYPE.equals(curParam.getFieldType())) {
             IElementParameter compRefParameter = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_REFERENCE);
-            GenericElementParameter gParam = (GenericElementParameter) compRefParameter;
-            ComponentReferenceProperties props = (ComponentReferenceProperties) gParam.getWidget().getContent();
-            return props.getReference() == null;
+            if (compRefParameter != null) {
+                GenericElementParameter gParam = (GenericElementParameter) compRefParameter;
+                ComponentReferenceProperties props = (ComponentReferenceProperties) gParam.getWidget().getContent();
+                return props.getReference() == null;
+            }
         }
         return true;
     }
