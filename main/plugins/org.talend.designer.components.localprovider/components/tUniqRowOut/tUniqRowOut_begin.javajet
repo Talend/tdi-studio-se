@@ -60,7 +60,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
 %>
 
 //////////////////////////
-int nb_<%=cid %> = 0;
+long nb_<%=cid %> = 0;
 
 int bufferSize_<%=cid %> = <%=bufferSize %>;
 <%
@@ -72,13 +72,13 @@ if (isLog4jEnabled) {
 %>
 class rowStruct_<%=cid %> extends <%=connName %>Struct {
 
-    int id_<%=cid %>;
+    long id_<%=cid %>;
 
     @Override
     public void readData(ObjectInputStream dis) {
         super.readData(dis);
         try {
-			this.id_<%=cid %> = dis.readInt();
+			this.id_<%=cid %> = dis.readLong();
         } catch (IOException e) {
 			throw new RuntimeException(e);
         }
@@ -94,7 +94,7 @@ class rowStruct_<%=cid %> extends <%=connName %>Struct {
         super.writeData(dos);
         try {
 			// Integer
-			dos.writeInt(this.id_<%=cid %>);
+			dos.writeLong(this.id_<%=cid %>);
 
         } catch (IOException e) {
 			throw new RuntimeException(e);
@@ -522,8 +522,7 @@ class Comparator_1_<%=cid %> implements Comparator<rowStruct_<%=cid %>> {
 	}//HSS_____0_____3
 	
 %>
-
-        return arg0.id_<%=cid %> - arg1.id_<%=cid %>;
+        return Long.compare(arg0.id_<%=cid %>, arg1.id_<%=cid %>);
     }
 
 }
