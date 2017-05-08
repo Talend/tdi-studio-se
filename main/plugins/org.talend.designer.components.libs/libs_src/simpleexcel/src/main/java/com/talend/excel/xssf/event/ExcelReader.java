@@ -14,6 +14,7 @@ package com.talend.excel.xssf.event;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
@@ -120,7 +121,8 @@ public class ExcelReader implements Callable {
             parser.setContentHandler(handler);
 
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
-            List<InputStream> iss = new ArrayList<InputStream>();
+//            List<InputStream> iss = new ArrayList<InputStream>();
+            LinkedHashMap<String,InputStream> issmap = new LinkedHashMap<String,InputStream>();
             while (sheets.hasNext()) {
                 InputStream sheet = sheets.next();
                 String sheetName = sheets.getSheetName();
@@ -131,7 +133,8 @@ public class ExcelReader implements Callable {
                     if ((asRegexs.get(i) && sheetName.matches(sheetNames.get(i)))
                             || (!asRegexs.get(i) && sheetName.equals(sheetNames.get(i)))) {
                         match = true;
-                        iss.add(sheet);
+//                        iss.add(sheet);
+                        issmap.put(sheetName, sheet);
                         break;
                     }
                 }
@@ -141,11 +144,11 @@ public class ExcelReader implements Callable {
                 }
             }
 
-            if (iss.size() < 1) {
+            if (issmap.size() < 1) {
                 throw new RuntimeException("No match sheets");
             }
 
-            for (InputStream is : iss) {
+            for (InputStream is : issmap.values()) {
                 try {
                     InputSource sheetSource = new InputSource(is);
                     sheetSource.setEncoding(charset);
