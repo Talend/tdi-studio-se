@@ -65,6 +65,8 @@ public class ExcelTool {
 	boolean recalculateFormula = false;
 
 	private int rowAccessWindowSize = SXSSFWorkbook.DEFAULT_WINDOW_SIZE;//used in auto flush
+	
+	private boolean isTrackAllColumns = false;
 
 	public ExcelTool() {
 		cellStylesMapping = new HashMap<String, CellStyle>();
@@ -272,7 +274,17 @@ public class ExcelTool {
 	}
 
 	public void setColAutoSize(int colNum) {
+		if(!isTrackAllColumns){
+			trackAllColumnsForAutoSizing();
+		}
 		sheet.autoSizeColumn(startX + colNum, true);
+	}
+	
+	public void trackAllColumnsForAutoSizing() {
+		if (sheet instanceof SXSSFSheet) {
+			((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
+		}
+		isTrackAllColumns = true;
 	}
 
 	public void setRowAccessWindowSize(int rowAccessWindowSize) {
