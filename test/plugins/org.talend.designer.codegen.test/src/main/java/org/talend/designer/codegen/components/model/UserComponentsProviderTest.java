@@ -85,6 +85,8 @@ public class UserComponentsProviderTest {
         if (installationFolder != null && installationFolder.exists()) {
             FilesUtils.copyFolder(backupFolder, installationFolder, true, null, null, true);
         }
+        FilesUtils.deleteFolder(backupFolder, true);
+
         cleanInstalledSetting();
         cleanComponentFactorySetting();
     }
@@ -397,5 +399,7 @@ public class UserComponentsProviderTest {
         Assert.assertEquals(1, jsonArray.length());
         final String path = jsonArray.getString(0);
         Assert.assertEquals(target.getAbsolutePath(), path);
+
+        provider.resetNewComponentsCache();
     }
 }

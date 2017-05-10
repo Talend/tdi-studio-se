@@ -537,9 +537,11 @@ public class ComponentsFactory implements IComponentsFactory {
             isCustom = true;
         }
         if (provider instanceof AbstractCustomComponentsProvider) {
-            final JSONObject providerNeeded = ((AbstractCustomComponentsProvider) provider).getNeedInstalledNewCFComponents();
+            final AbstractCustomComponentsProvider customProvider = (AbstractCustomComponentsProvider) provider;
+            final JSONObject providerNeeded = customProvider.getNeedInstalledNewCFComponents();
             if (providerNeeded != null) {
                 this.needInstalledNewCFComponents = JSONUtil.merge(providerNeeded, this.needInstalledNewCFComponents);
+                customProvider.resetNewComponentsCache();
             }
         }
 

@@ -82,7 +82,6 @@ public class UserComponentsProvider extends AbstractCustomComponentsProvider {
 
         // 2. copy old CF components from <project>/components
         final File installationFolder = getInstallationFolder();
-        needInstalledNewCFComponents = new JSONObject();// reset the record json
 
         String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
                 .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
@@ -136,10 +135,10 @@ public class UserComponentsProvider extends AbstractCustomComponentsProvider {
                                     }
 
                                     if (!found) {
-                                        if (!needInstalledNewCFComponents.has(projectLabel)) {
-                                            needInstalledNewCFComponents.put(projectLabel, new JSONArray());
+                                        if (!getNeedInstalledNewCFComponents().has(projectLabel)) {
+                                            getNeedInstalledNewCFComponents().put(projectLabel, new JSONArray());
                                         }
-                                        final JSONArray array = needInstalledNewCFComponents.getJSONArray(projectLabel);
+                                        final JSONArray array = getNeedInstalledNewCFComponents().getJSONArray(projectLabel);
                                         array.put(file.getAbsolutePath());
                                     } // else { //if found, will ignore to install.
 
