@@ -214,11 +214,8 @@ public class UpdateMainParameterCommand extends Command {
                                                     } else {
                                                         process.setPropertyValue(param.getName(), objectValue);
                                                     }
-                                                    if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(
-                                                            param.getName())) {
-                                                        param.setRepositoryValueUsed(true);
-                                                        param.setReadOnly(true);
-                                                    }
+                                                    param.setRepositoryValueUsed(true);
+                                                    param.setReadOnly(true);
                                                     repository = true;
                                                 }
                                             }
@@ -229,8 +226,8 @@ public class UpdateMainParameterCommand extends Command {
                         }
 
                     }
-                    IElementParameter property = process.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE,
-                            category);
+                    IElementParameter property = process
+                            .getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE, category);
                     Map<String, IElementParameter> childParameters = null;
                     if (property != null) {
                         childParameters = property.getChildParameters();
@@ -275,10 +272,10 @@ public class UpdateMainParameterCommand extends Command {
                         }
                     } else {
                         if (childParameters != null) {
-                            IElementParameter elementParameter = childParameters
-                                    .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                            ConnectionItem connItem = UpdateRepositoryUtils
-                                    .getConnectionItemByItemId((String) elementParameter.getValue());
+                            IElementParameter elementParameter = childParameters.get(EParameterName.REPOSITORY_PROPERTY_TYPE
+                                    .getName());
+                            ConnectionItem connItem = UpdateRepositoryUtils.getConnectionItemByItemId((String) elementParameter
+                                    .getValue());
                             ConnectionContextHelper.addContextForProcessParameter(process, connItem, category, false);
                         }
                     }

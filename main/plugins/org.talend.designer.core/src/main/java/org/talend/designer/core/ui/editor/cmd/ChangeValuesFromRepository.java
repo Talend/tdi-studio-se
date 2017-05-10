@@ -550,9 +550,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             }
                             elem.setPropertyValue(param.getName(), objectValue);
                         }
-                        if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(param.getName())) {
-                            param.setRepositoryValueUsed(true);
-                        }
+                        param.setRepositoryValueUsed(true);
                     } else if (param.getFieldType().equals(EParameterFieldType.TABLE)
                             && param.getRepositoryValue().equals("XML_MAPPING")) { //$NON-NLS-1$
 
@@ -656,14 +654,14 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 table.setListColumns((((IMetadataTable) schemaParam.getValue()).clone(true)).getListColumns());
             }
             ((Process) ((Node) elem).getProcess()).checkProcess();
-            //Added TDQ-11688 show regex when "built-in"
+            // Added TDQ-11688 show regex when "built-in"
             ITDQPatternService service = null;
-            if(GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)){
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
                 service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
             }
-            if (service != null&& service.isSinglePatternNode(elem)){
+            if (service != null && service.isSinglePatternNode(elem)) {
                 IElementParameter regexParameter = ((Node) elem).getElementParameter("PATTERN_REGEX");
-                if(regexParameter !=null){
+                if (regexParameter != null) {
                     regexParameter.setShow(EmfComponent.BUILTIN.equals(this.value));
                 }
             }
