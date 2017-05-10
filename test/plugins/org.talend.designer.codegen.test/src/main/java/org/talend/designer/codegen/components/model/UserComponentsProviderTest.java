@@ -27,6 +27,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.commons.utils.resource.BundleFileUtil;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.codegen.CodeGeneratorActivator;
@@ -69,6 +72,9 @@ public class UserComponentsProviderTest {
         if (installationFolder != null && installationFolder.exists()) {
             FilesUtils.copyFolder(installationFolder, backupFolder, false, null, null, true);
         }
+
+        cleanInstalledSetting();
+        cleanComponentFactorySetting();
     }
 
     @AfterClass
@@ -79,6 +85,20 @@ public class UserComponentsProviderTest {
         if (installationFolder != null && installationFolder.exists()) {
             FilesUtils.copyFolder(backupFolder, installationFolder, true, null, null, true);
         }
+        cleanInstalledSetting();
+        cleanComponentFactorySetting();
+    }
+
+    private static void cleanComponentFactorySetting() {
+        // remove all
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsService.class)) {
+            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
+                    IComponentsService.class);
+            IComponentsFactory componentsFactory = compService.getComponentsFactory();
+            if (componentsFactory instanceof ComponentsFactory) {
+                ((ComponentsFactory) componentsFactory).resetNewComponentsCache();
+            }
+        }
     }
 
     File workFolder;
@@ -87,9 +107,7 @@ public class UserComponentsProviderTest {
     public void setup() throws Exception {
         workFolder = FileUtils.createTmpFolder("UserComponentsProviderTest", "");
 
-        // set empty first
-        CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
+        cleanInstalledSetting();
 
         final Project currentProject = ProjectManager.getInstance().getCurrentProject();
         final IProject project = ResourceUtils.getProject(currentProject);
@@ -107,6 +125,10 @@ public class UserComponentsProviderTest {
         if (workFolder != null) {
             FilesUtils.deleteFolder(workFolder, true);
         }
+        cleanInstalledSetting();
+    }
+
+    private static void cleanInstalledSetting() {
         // set empty first
         CodeGeneratorActivator.getDefault().getPreferenceStore()
                 .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());

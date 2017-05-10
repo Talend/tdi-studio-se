@@ -158,6 +158,10 @@ public class ComponentsFactory implements IComponentsFactory {
     public ComponentsFactory() {
     }
 
+    public void resetNewComponentsCache() {
+        needInstalledNewCFComponents = new JSONObject();
+    }
+
     private void init(boolean duringLogon) {
         removeOldComponentsUserFolder(); // not used anymore
         long startTime = System.currentTimeMillis();
@@ -166,7 +170,7 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.displaySteps = true;
         // TimeMeasure.measureActive = true;
         // TimeMeasure.begin("initComponents");
-        needInstalledNewCFComponents = new JSONObject();
+        resetNewComponentsCache();
         componentList = Collections.synchronizedSet(new HashSet<IComponent>());
         customComponentList = new HashSet<IComponent>();
         skeletonList = new ArrayList<String>();
@@ -308,6 +312,8 @@ public class ComponentsFactory implements IComponentsFactory {
                         return; // nothing to install successfully.
                     }
                 } finally {
+                    // after install, clean it.
+                    resetNewComponentsCache();
                     // after install, clear the setting for service.
                     component.setComponentFolder(null);
                 }
@@ -1049,6 +1055,7 @@ public class ComponentsFactory implements IComponentsFactory {
         componentList = null;
         skeletonList = null;
         customComponentList = null;
+        resetNewComponentsCache();
         Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
         for (IComponentFactoryFilter filter : filters) {
             filter.cleanCache();
