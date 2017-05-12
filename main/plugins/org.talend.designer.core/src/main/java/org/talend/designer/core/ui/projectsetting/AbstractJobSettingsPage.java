@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -403,6 +405,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
             @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+
                 monitor.beginTask(getTaskMessages(), (checkedNodeObject.size()) * 100);
                 final Map<String, Set<String>> contextVars = DetectContextVarsUtils.detectByPropertyType(elem, true);
 
@@ -420,14 +423,15 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                         IElementParameter propertyElem = ptParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName());
                         Object proValue = propertyElem.getValue();
                         if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
-                            IElementParameter repositoryElem = ptParam.getChildParameters().get(
-                                    EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                            IElementParameter repositoryElem = ptParam.getChildParameters()
+                                    .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                             String value = (String) repositoryElem.getValue();
                             ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
                             connection = connectionItem.getConnection();
                             if (connection != null && connection.isContextMode()) {
                                 addContextModel = true;
-                                // ContextItem contextItem = ContextUtils.getContextItemById(connection.getContextId());
+                                // ContextItem contextItem =
+                                // ContextUtils.getContextItemById(connection.getContextId());
                                 // for (IProcess process : openedProcessList) {
                                 // Set<String> addedContext =
                                 // ConnectionContextHelper.checkAndAddContextVariables(contextItem,
@@ -461,10 +465,15 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                     }
                 }
                 monitor.worked(10);
+                IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
 
-                for (IRepositoryViewObject object : checkedNodeObject) {
-                    saveProcess(object, addContextModel, contextVars, monitor);
-                }
+                    @Override
+                    public void run(IProgressMonitor monitor) throws CoreException {
+                        for (IRepositoryViewObject object : checkedNodeObject) {
+                            saveProcess(object, addContextModel, contextVars, monitor);
+                        }
+                    }
+                };
                 monitor.done();
             }
         };
