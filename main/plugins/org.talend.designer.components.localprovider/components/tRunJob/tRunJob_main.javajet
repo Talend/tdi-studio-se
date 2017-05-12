@@ -324,8 +324,12 @@ String inputConnName = null;
 		java.util.Enumeration<?> propertyNames_<%=cid %> = <%=localContext%>.propertyNames();
 		while (propertyNames_<%=cid %>.hasMoreElements()) {
 			String key_<%=cid %> = (String) propertyNames_<%=cid %>.nextElement();
-			Object value_<%=cid %> = (Object) <%=localContext%>.get(key_<%=cid %>);       
-			paraList_<%=cid %>.add("--context_param " + key_<%=cid %> + "=" + value_<%=cid %>);
+			Object value_<%=cid %> = (Object) <%=localContext%>.get(key_<%=cid %>);
+			if(value_<%=cid %>!=null) {  
+				paraList_<%=cid %>.add("--context_param " + key_<%=cid %> + "=" + value_<%=cid %>);
+			} else {
+				paraList_<%=cid %>.add("--context_param " + key_<%=cid %> + "=" + NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY);
+			}
 			<%
 			if(printParameter) {
 			%>
@@ -355,7 +359,11 @@ String inputConnName = null;
 		}
 		%>
 		obj_<%=cid%> = <%=value %>;
-		paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+		if(obj_<%=cid%>!=null) {
+			paraList_<%=cid %>.add("--context_param <%=name %>=" + RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>));
+		} else {
+			paraList_<%=cid %>.add("--context_param <%=name %>=" + NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY);
+		}
 		<% if(printParameter){ %>
 		if(parametersToEncrypt_<%=cid %> .contains("<%=name %>") && obj_<%=cid%> != null) {
 			paraListForLog_<%=cid %>.add("--context_param <%=name %>=" + routines.system.PasswordEncryptUtil.encryptPassword(String.valueOf(RuntimeUtils.tRunJobConvertContext(obj_<%=cid%>))));
