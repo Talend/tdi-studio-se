@@ -81,7 +81,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
 	/* Create a connection instance */
 		<%if(isLog4jEnabled){%>
-			log.info("<%=cid%> - Connection attempt to '" +hostname_<%=cid%> + "' on the port '<%=port%>' as '" + username_<%=cid%> + "'.");
+			log.info("<%=cid%> - Connection attempt to '" +hostname_<%=cid%> + "' on the port '"+<%=port%>+"' as '" + username_<%=cid%> + "'.");
 		<%}%>
 <%
         if(("").equals(port)){
