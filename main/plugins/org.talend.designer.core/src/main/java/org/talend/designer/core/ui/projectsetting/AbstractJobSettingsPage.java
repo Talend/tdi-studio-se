@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -403,69 +405,76 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
             @Override
             public void run(final IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                monitor.beginTask(getTaskMessages(), (checkedNodeObject.size()) * 100);
-                final Map<String, Set<String>> contextVars = DetectContextVarsUtils.detectByPropertyType(elem, true);
+                IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
 
-                addContextModel = false; // must init this
-                if (!contextVars.isEmpty()) {
-                    // boolean showDialog = false;
-                    Set<String> contextSet = new HashSet<String>();
-                    for (String key : contextVars.keySet()) {
-                        contextSet = contextVars.get(key);
-                        break;
-                    }
-                    Connection connection = null;
-                    IElementParameter ptParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-                    if (ptParam != null) {
-                        IElementParameter propertyElem = ptParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName());
-                        Object proValue = propertyElem.getValue();
-                        if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
-                            IElementParameter repositoryElem = ptParam.getChildParameters().get(
-                                    EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                            String value = (String) repositoryElem.getValue();
-                            ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
-                            connection = connectionItem.getConnection();
-                            if (connection != null && connection.isContextMode()) {
-                                addContextModel = true;
-                                // ContextItem contextItem = ContextUtils.getContextItemById(connection.getContextId());
-                                // for (IProcess process : openedProcessList) {
-                                // Set<String> addedContext =
-                                // ConnectionContextHelper.checkAndAddContextVariables(contextItem,
-                                // contextSet, process.getContextManager(), false);
-                                // if (addedContext != null && !addedContext.isEmpty()) {
-                                // showDialog = true;
-                                // break;
-                                // }
-                                // }
+                    @Override
+                    public void run(IProgressMonitor monitor) throws CoreException {
+                        monitor.beginTask(getTaskMessages(), (checkedNodeObject.size()) * 100);
+                        final Map<String, Set<String>> contextVars = DetectContextVarsUtils.detectByPropertyType(elem, true);
+
+                        addContextModel = false; // must init this
+                        if (!contextVars.isEmpty()) {
+                            // boolean showDialog = false;
+                            Set<String> contextSet = new HashSet<String>();
+                            for (String key : contextVars.keySet()) {
+                                contextSet = contextVars.get(key);
+                                break;
                             }
-                        }
-                    }
-                    if (addContextModel) {
+                            Connection connection = null;
+                            IElementParameter ptParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+                            if (ptParam != null) {
+                                IElementParameter propertyElem = ptParam.getChildParameters()
+                                        .get(EParameterName.PROPERTY_TYPE.getName());
+                                Object proValue = propertyElem.getValue();
+                                if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
+                                    IElementParameter repositoryElem = ptParam.getChildParameters()
+                                            .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                                    String value = (String) repositoryElem.getValue();
+                                    ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
+                                    connection = connectionItem.getConnection();
+                                    if (connection != null && connection.isContextMode()) {
+                                        addContextModel = true;
+                                        // ContextItem contextItem =
+                                        // ContextUtils.getContextItemById(connection.getContextId());
+                                        // for (IProcess process : openedProcessList) {
+                                        // Set<String> addedContext =
+                                        // ConnectionContextHelper.checkAndAddContextVariables(contextItem,
+                                        // contextSet, process.getContextManager(), false);
+                                        // if (addedContext != null && !addedContext.isEmpty()) {
+                                        // showDialog = true;
+                                        // break;
+                                        // }
+                                        // }
+                                    }
+                                }
+                            }
+                            if (addContextModel) {
 
-                        // if the context is not existed in job, will add or not.
-                        Display disp = Display.getCurrent();
-                        if (disp == null) {
-                            disp = Display.getDefault();
-                        }
-                        if (disp != null) {
-                            disp.syncExec(new Runnable() {
+                                // if the context is not existed in job, will add or not.
+                                Display disp = Display.getCurrent();
+                                if (disp == null) {
+                                    disp = Display.getDefault();
+                                }
+                                if (disp != null) {
+                                    disp.syncExec(new Runnable() {
 
-                                @Override
-                                public void run() {
+                                        @Override
+                                        public void run() {
+                                            showContextAndCheck(contextVars);
+                                        }
+                                    });
+                                } else {
                                     showContextAndCheck(contextVars);
                                 }
-                            });
-                        } else {
-                            showContextAndCheck(contextVars);
+                            }
                         }
+                        monitor.worked(10);
+                        for (IRepositoryViewObject object : checkedNodeObject) {
+                            saveProcess(object, addContextModel, contextVars, monitor);
+                        }
+                        monitor.done();
                     }
-                }
-                monitor.worked(10);
-
-                for (IRepositoryViewObject object : checkedNodeObject) {
-                    saveProcess(object, addContextModel, contextVars, monitor);
-                }
-                monitor.done();
+                };
             }
         };
 
