@@ -1925,6 +1925,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     private void saveRoutinesDependencies(ProcessType process) {
+        routinesDependencies = new ArrayList<RoutinesParameterType>();;
         /* if process is joblet,parameters will be null,so that create a new parametertype for joblet */
         if (process.getParameters() == null) {
             ParametersType parameterType = TalendFileFactory.eINSTANCE.createParametersType();
