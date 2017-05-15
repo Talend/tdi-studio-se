@@ -105,7 +105,7 @@ if(mode == UNIQUE){//HSS_____0
                 if (rowsInBuffer_2_<%=cid %> >= bufferSize_2_<%=cid %>) {// buffer is full do sort and
 
                     java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0, bufferSize_2_<%=cid %>, comparator_2_<%=cid %>);
-                    java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_uniq_" + files_2_<%=cid %>.size());
+                    java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "uniq_" + files_2_<%=cid %>.size());
                     <%
 					if (isLog4jEnabled) {
 					%>
@@ -182,7 +182,7 @@ if(mode == UNIQUE){//HSS_____0
                 
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0, rowsInBuffer_2_<%=cid %>, comparator_2_<%=cid %>);
                 
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_uniq_" + files_2_<%=cid %>.size());
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "uniq_" + files_2_<%=cid %>.size());
                 
                 <%
 				if (isLog4jEnabled) {
@@ -329,7 +329,7 @@ if(mode == UNIQUE){//HSS_____0
 
                     java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0,
                             bufferSize_2_<%=cid %>, comparator_2_<%=cid %>);
-                    java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_uniq_"
+                    java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "uniq_"
                             + files_2_<%=cid %>.size());
                    	<%
 					if (isLog4jEnabled) {
@@ -384,7 +384,7 @@ if(mode == UNIQUE){//HSS_____0
 
                             java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                                     bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-                            java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                            java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                                     + files_3_<%=cid %>.size());
                             <%
 							if (isLog4jEnabled) {
@@ -434,7 +434,7 @@ if(mode == UNIQUE){//HSS_____0
 
                                     java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                                             bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-                                    java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                                    java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                                             + files_3_<%=cid %>.size());
                                     <%
 									if (isLog4jEnabled) {
@@ -493,7 +493,7 @@ if(mode == UNIQUE){//HSS_____0
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0,
                         rowsInBuffer_2_<%=cid %>, comparator_2_<%=cid %>);
 
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_uniq_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "uniq_"
                         + files_2_<%=cid %>.size());
 
 				<%
@@ -540,7 +540,7 @@ if(mode == UNIQUE){//HSS_____0
 
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                         rowsInBuffer_3_<%=cid %>, comparator_3_<%=cid %>);
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                         + files_3_<%=cid %>.size());
                 <%
 				if (isLog4jEnabled) {
@@ -870,7 +870,7 @@ if(mode == UNIQUE){//HSS_____0
 
 	                        java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0,
 	                                bufferSize_2_<%=cid %>, comparator_2_<%=cid %>);
-	                        java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_unique_"
+	                        java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "unique_"
 	                                + files_2_<%=cid %>.size());
 	                        <%
 							if (isLog4jEnabled) {
@@ -920,7 +920,7 @@ if(mode == UNIQUE){//HSS_____0
 	
 	                        java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
 	                                bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-	                        java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+	                        java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
 	                                + files_3_<%=cid %>.size());
 	                        <%
 							if (isLog4jEnabled) {
@@ -1000,7 +1000,7 @@ if(mode == UNIQUE){//HSS_____0
 
                         java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0,
                                 bufferSize_2_<%=cid %>, comparator_2_<%=cid %>);
-                        java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_unique_"
+                        java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "unique_"
                                 + files_2_<%=cid %>.size());
                         <%
 						if (isLog4jEnabled) {
@@ -1055,7 +1055,7 @@ if(mode == UNIQUE){//HSS_____0
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_2_<%=cid %>, 0,
                         rowsInBuffer_2_<%=cid %>, comparator_2_<%=cid %>);
 
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_uniq_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "uniq_"
                         + files_2_<%=cid %>.size());
                         
                 <%
@@ -1103,7 +1103,7 @@ if(mode == UNIQUE){//HSS_____0
 
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                         rowsInBuffer_3_<%=cid %>, comparator_3_<%=cid %>);
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                         + files_3_<%=cid %>.size());
                 <%
 				if (isLog4jEnabled) {
@@ -1437,7 +1437,7 @@ if(mode == UNIQUE){//HSS_____0
 
                             java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                                     bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-                            java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                            java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                                     + files_3_<%=cid %>.size());
                             <%
 							if (isLog4jEnabled) {
@@ -1487,7 +1487,7 @@ if(mode == UNIQUE){//HSS_____0
 
                                     java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                                             bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-                                    java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                                    java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                                             + files_3_<%=cid %>.size());
                                     <%
 									if (isLog4jEnabled) {
@@ -1546,7 +1546,7 @@ if(mode == UNIQUE){//HSS_____0
 
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                         rowsInBuffer_3_<%=cid %>, comparator_3_<%=cid %>);
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                         + files_3_<%=cid %>.size());
                 <%
 				if (isLog4jEnabled) {
@@ -1699,7 +1699,7 @@ if(mode == UNIQUE){//HSS_____0
 	
 	                        java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
 	                                bufferSize_3_<%=cid %>, comparator_3_<%=cid %>);
-	                        java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+	                        java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
 	                                + files_3_<%=cid %>.size());
 	                        <%
 							if (isLog4jEnabled) {
@@ -1791,7 +1791,7 @@ if(mode == UNIQUE){//HSS_____0
 
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_3_<%=cid %>, 0,
                         rowsInBuffer_3_<%=cid %>, comparator_3_<%=cid %>);
-                java.io.File file = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_duplicate_"
+                java.io.File file = new java.io.File(temp_file_path_prefix_<%=cid %> + "duplicate_"
                         + files_3_<%=cid %>.size());
                 <%
 				if (isLog4jEnabled) {

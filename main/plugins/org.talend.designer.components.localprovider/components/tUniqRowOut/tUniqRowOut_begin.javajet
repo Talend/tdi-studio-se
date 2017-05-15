@@ -541,7 +541,7 @@ Comparator<rowStruct_<%=cid %>> comparator_1_<%=cid %> = new Comparator_1_<%=cid
 
 java.util.ArrayList<java.io.File> files_1_<%=cid %> = new java.util.ArrayList<java.io.File>();
 
-String workDirectory_<%=cid %> = <%=directory %>;
+String temp_file_path_prefix_<%=cid %> = <%=directory %> + "/" + jobName + "_<%=cid %>_" + Thread.currentThread().getId() + "_" + pid  + "_";
 
 <%
 }//HSS_____0
