@@ -3596,7 +3596,8 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
         if (isJoblet) { // bug 12764
-            List<? extends IConnection> outgoingConnections = this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            List<IConnection> outgoingConnections = (List<IConnection>) this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections.addAll(this.getOutgoingConnections(EConnectionType.FLOW_REF));
             for (IConnection con : outgoingConnections) {
                 INodeConnector connector = this.getConnectorFromName(con.getConnectorName());
                 if (connector == null && con instanceof Connection) { // connector is lost.
@@ -3605,7 +3606,8 @@ public class Node extends Element implements IGraphicalNode {
             }
 
             String typeName = "Row"; //$NON-NLS-1$
-            outgoingConnections = this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections = (List<IConnection>) this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections.addAll(this.getOutgoingConnections(EConnectionType.FLOW_REF));
             if (outgoingConnections.size() > jobletBuildConnectorNum) {
                 String errorMessage = Messages.getString("Node.tooMuchTypeOutput", typeName); //$NON-NLS-1$
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
