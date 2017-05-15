@@ -1015,9 +1015,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 if (e.button == 3 && getZone() == Zone.OUTPUTS) {
                     Menu mainMenu = new Menu(tableForEntries);
                     tableForEntries.setMenu(mainMenu);
-                    // Custom
+                    // menu:apply routines
                     MenuItem customItem = new MenuItem(mainMenu, SWT.PUSH);
-                    customItem.setText("Custom");
+                    customItem.setText("Apply Routines");
                     // Add menu listeners
                     final IService service = GlobalServiceRegister.getDefault().getService(IExpressionBuilderDialogService.class);
                     customItem.addListener(SWT.Selection, new Listener() {
