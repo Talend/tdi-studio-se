@@ -196,7 +196,9 @@ if(columnList != null && columnList.size() > 0) {
             <%
             if(("true").equals(useExistingConn) || (!("true").equals(useExistingConn) && !("").equals(commitEvery) && !("0").equals(commitEvery))) {
                 %>
-                conn_<%=cid%>.commit();
+                if(!conn_<%=cid%>.getAutoCommit()){
+                    conn_<%=cid%>.commit();
+                }
                 <%
             }
         } else if(("CREATE").equals(tableAction)) {
@@ -208,7 +210,9 @@ if(columnList != null && columnList.size() > 0) {
             <%
             if(("true").equals(useExistingConn) || (!("true").equals(useExistingConn) && !("").equals(commitEvery) && !("0").equals(commitEvery))) {
                 %>
-                conn_<%=cid%>.commit();
+                if(!conn_<%=cid%>.getAutoCommit()){
+                    conn_<%=cid%>.commit();
+                }
                 <%
             }
         } else if(("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {
@@ -249,7 +253,9 @@ if(columnList != null && columnList.size() > 0) {
             }
             if(("true").equals(useExistingConn) || (!("true").equals(useExistingConn) && !("").equals(commitEvery) && !("0").equals(commitEvery))) {
                 %>
-                conn_<%=cid%>.commit();
+                if(!conn_<%=cid%>.getAutoCommit()){
+                    conn_<%=cid%>.commit();
+                }
                 <%
             }
         } else if(("CLEAR").equals(tableAction)) {
