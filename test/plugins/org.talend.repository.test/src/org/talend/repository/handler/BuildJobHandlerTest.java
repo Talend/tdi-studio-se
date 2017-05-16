@@ -1,12 +1,18 @@
 package org.talend.repository.handler;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -97,17 +103,95 @@ public class BuildJobHandlerTest {
         BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
         assertTrue(new File(destinationPath).exists());
-        ZipFile zip = new ZipFile(destinationPath);
+        ZipFile zip = null;
+        try {
+            zip = new ZipFile(destinationPath);
 
-        // if the tdm is load
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
-            ZipEntry tdm = zip.getEntry("testBuildJob/__tdm/");
-            assertTrue("build job with tdm failure", tdm != null && tdm.isDirectory());
+            // jobInfo
+            ZipEntry jobInfoEntry = zip.getEntry("jobInfo.properties");
+            assertNotNull("Can't find the jobInfo.properties", jobInfoEntry);
+            final InputStream jobInfoStream = zip.getInputStream(jobInfoEntry);
+            Properties jobInfoProp = new Properties();
+            jobInfoProp.load(jobInfoStream);
+            assertEquals("testBuildJob", jobInfoProp.getProperty("job"));
+            assertEquals("0.1", jobInfoProp.getProperty("jobVersion"));
+            assertEquals("Default", jobInfoProp.getProperty("contextName"));
+            assertEquals("_bWyBUAYbEeapTZ0aKwL_YA", jobInfoProp.getProperty("jobId"));
+            assertEquals("Standard", jobInfoProp.getProperty("jobType"));
+            final String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+            assertEquals(technicalLabel, jobInfoProp.getProperty("project"));
 
+            ZipEntry libEntry = zip.getEntry("lib");
+            assertNotNull("No lib folder", libEntry);
+
+            // log4j
+            ZipEntry log4jXmlEntry = zip.getEntry("testBuildJob/log4j.xml");
+            assertNotNull("No log4j.xml", log4jXmlEntry);
+
+            // shell+bat
+            ZipEntry batEntry = zip.getEntry("testBuildJob/testBuildJob_run.bat");
+            assertNotNull("No bat file", batEntry);
+
+            ZipEntry shEntry = zip.getEntry("testBuildJob/testBuildJob_run.sh");
+            assertNotNull("No shell file", shEntry);
+
+            ZipEntry jarEntry = zip.getEntry("testBuildJob/testbuildjob_0_1.jar");
+            assertNotNull("No shell file", jarEntry);
+
+            // src
+            ZipEntry javaEntry = zip.getEntry("testBuildJob/src/main/java/" + technicalLabel.toLowerCase()
+                    + "/testbuildjob_0_1/testBuildJob.java");
+            assertNotNull("No job source code file", javaEntry);
+
+            ZipEntry routinesEntry = zip.getEntry("testBuildJob/src/main/java/routines/");
+            assertNotNull("No routines source code files", routinesEntry);
+            assertTrue(routinesEntry.isDirectory());
+
+            ZipEntry contextEntry = zip.getEntry("testBuildJob/src/main/resources/" + technicalLabel.toLowerCase()
+                    + "/testbuildjob_0_1/contexts/Default.properties");
+            assertNotNull("No context file", contextEntry);
+
+            // dq
+            ZipEntry tdq = zip.getEntry("testBuildJob/items/reports/");
+            assertNotNull("Can't find the dq reports items", tdq);
+            assertTrue(tdq.isDirectory());
+
+            // if the tdm is load
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
+                ITransformService tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(
+                        ITransformService.class);
+                if (tdmService.isTransformItem(processItem)) {
+                    ZipEntry tdmSettingEntry = zip.getEntry("testBuildJob/items/" + technicalLabel.toLowerCase()
+                            + "/.settings/com.oaklandsw.base.projectProps");
+                    assertNotNull("Can't export tdm rightly", tdmSettingEntry);
+
+                    /*
+                     * the __tdm has been moved into job jar. so need test it in jar.
+                     */
+                    // ZipEntry tdmEntry = zip.getEntry("testBuildJob/__tdm/");
+                    // assertNotNull("Can't export tdm rightly", tdmEntry);
+                    // assertTrue("build job with tdm failure", tdmEntry.isDirectory());
+
+                    // testbuildjob_0_1.jar!/__tdm/TEST_NOLOGIN.zip
+                    final JarInputStream jarStream = new JarInputStream(zip.getInputStream(jarEntry));
+                    boolean found = false;
+                    JarEntry entry;
+                    while ((entry = jarStream.getNextJarEntry()) != null) {
+                        final String name = entry.getName();
+                        if (name.contains("__tdm") && name.endsWith(technicalLabel + ".zip")) {
+                            found = true;
+                        }
+                    }
+                    jarStream.close();
+                    assertTrue("Can't find the __tdm in job jar after build", found);
+                }
+            }
+
+        } finally {
+            if (zip != null) {
+                zip.close();
+            }
         }
-        ZipEntry tdq = zip.getEntry("testBuildJob/items/reports/");
-        assertTrue(tdq != null && tdq.isDirectory());
-        zip.close();
     }
 
     @After
