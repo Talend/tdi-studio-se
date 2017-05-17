@@ -78,7 +78,6 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
-import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -949,7 +948,7 @@ public class Component extends AbstractBasicComponent {
             INodeConnector connector = null;
             connector = addStandardType(listConnector, EConnectionType.FLOW_MAIN, parentNode);
             connector.setMaxLinkInput(0);
-            connector.setMaxLinkOutput(0);
+            connector.setMaxLinkOutput(1);
         } else {
             for (Connector connector : inputConnectors) {
                 addGenericType(listConnector, EConnectionType.FLOW_MAIN, connector.getName(), parentNode, componentProperties,
