@@ -609,7 +609,7 @@ class GenerateToolByDom4j{
 
 //----------** add by wliu dom4j to genenrate get function for node **-------//
 class GenerateExprCmpByDom4j{
-//	String cid = null;
+	String cid = null;
 	XMLTool tool = null;
 	XMLNode groupNode = null;
 	boolean needEmptyNode = true;
@@ -625,19 +625,19 @@ class GenerateExprCmpByDom4j{
 		if(node.relatedColumn != null){
 %> && (<%
 			if(!needEmptyNode){
-%>(<%tool.getValue(node); %>==null && <%generateCmnExpr(arrNames, parentName); %> == null) || (true &&
+%>(<%tool.getValue(node); %>==null && <%generateCmnExpr(arrNames, parentName,cid); %> == null) || (true &&
 <%			}%>
- <%generateCmnExpr(arrNames, parentName); %>!=null
+ <%generateCmnExpr(arrNames, parentName,cid); %>!=null
  <%
  if(isSaveDocAsNode && "id_Document".equals(node.relatedColumn.getTalendType())){
  %>
- && <%generateCmnExpr(arrNames, parentName); %>.hasContent()
- && ((org.dom4j.Node)<%generateCmnExpr(arrNames, parentName); %>.content().get(0)).asXML().equals(<%tool.getValue(node); %>)
+ && <%generateCmnExpr(arrNames, parentName,cid); %>.hasContent()
+ && ((org.dom4j.Node)<%generateCmnExpr(arrNames, parentName,cid); %>.content().get(0)).asXML().equals(<%tool.getValue(node); %>)
 <%
 }else{
 %>
- && <%generateCmnExpr(arrNames, parentName); %>.getText()!=null
- && <%generateCmnExpr(arrNames, parentName); %>.getText().equals(<%tool.getValue(node); %>)
+ && <%generateCmnExpr(arrNames, parentName,cid); %>.getText()!=null
+ && <%generateCmnExpr(arrNames, parentName,cid); %>.getText().equals(<%tool.getValue(node); %>)
 <%
 }
 %>
@@ -652,11 +652,11 @@ class GenerateExprCmpByDom4j{
 				if(attri.relatedColumn !=null){
 %> && (<%
 					if(!needEmptyNode){
-%>(<%tool.getValue(attri); %>==null && <%generateCmnExpr(arrNames, parentName); %>.attribute("<%=attri.name %>") == null) || (true && 
+%>(<%tool.getValue(attri); %>==null && <%generateCmnExpr(arrNames, parentName,cid); %>.attribute("<%=attri.name %>") == null) || (true && 
 <%					}%>
- <%generateCmnExpr(arrNames, parentName); %>.attribute("<%=attri.name %>")!=null
-&& <%generateCmnExpr(arrNames, parentName); %>.attribute("<%=attri.name %>").getText()!=null
-&& <%generateCmnExpr(arrNames, parentName); %>.attribute("<%=attri.name %>").getText().equals(<%tool.getValue(attri); %>)
+ <%generateCmnExpr(arrNames, parentName,cid); %>.attribute("<%=attri.name %>")!=null
+&& <%generateCmnExpr(arrNames, parentName,cid); %>.attribute("<%=attri.name %>").getText()!=null
+&& <%generateCmnExpr(arrNames, parentName,cid); %>.attribute("<%=attri.name %>").getText().equals(<%tool.getValue(attri); %>)
 <%
 					if(!needEmptyNode){%>)<%}
 %>)<%
@@ -673,14 +673,24 @@ class GenerateExprCmpByDom4j{
 		}		
 	}
 	
-	private void generateCmnExpr(String[] arrNames, String parentName){
-%>
-<%=parentName %>
-<%
+	private void generateCmnExpr(String[] arrNames, String parentName,String cid){
+	%>
+		nestXMLTool_<%=cid%>.getElement(<%=parentName %>,new String[]{
+		<%
 		for(int i=1;arrNames != null && i<arrNames.length; i++){
-%>.element(<%=parentName%>.getQName("<%=arrNames[i]%>"))
-<%
+			if(i!=1){
+			%>
+				,"<%=arrNames[i]%>"
+			<%
+			}else{
+			%>		
+				"<%=arrNames[i]%>"
+			<%
+			}
 		}
+		%>
+		})
+		<%
 	}
 }
 
