@@ -1015,12 +1015,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 if (e.button == 3 && getZone() == Zone.OUTPUTS) {
                     Menu mainMenu = new Menu(tableForEntries);
                     tableForEntries.setMenu(mainMenu);
-                    // menu:apply routines
-                    MenuItem customItem = new MenuItem(mainMenu, SWT.PUSH);
-                    customItem.setText("Apply Routines");
+                    // menu:apply routine
+                    MenuItem applyRoutineItem = new MenuItem(mainMenu, SWT.PUSH);
+                    applyRoutineItem.setText(Messages.getString("DataMapTableView.menu.applyRoutine"));
                     // Add menu listeners
                     final IService service = GlobalServiceRegister.getDefault().getService(IExpressionBuilderDialogService.class);
-                    customItem.addListener(SWT.Selection, new Listener() {
+                    applyRoutineItem.addListener(SWT.Selection, new Listener() {
 
                         public void handleEvent(Event event) {
                             IExpressionBuilderDialogController dialogForTable = ((IExpressionBuilderDialogService) service)
