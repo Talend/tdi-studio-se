@@ -30,6 +30,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.IReplaceNodeInProcess;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.update.UpdateResult;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -100,6 +101,10 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
     public void loadComponentsFromExtensionPoint() {
         // do nothing.
     }
+    
+    public void loadComponentsFromExtensionPoint(ERepositoryObjectType type) {
+        // do nothing.
+    }
 
     public abstract Process buildNewGraphicProcess(Item node);
 
@@ -113,6 +118,21 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
     public static void loadComponentsFromProviders() {
         for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
             processProvider.loadComponentsFromExtensionPoint();
+        }
+    }
+    
+    /**
+     * DOC hwang Comment method "loadComponentsFromProviders".
+     * 
+     * @return
+     */
+    public static void loadComponentsFromProviders(ERepositoryObjectType type) {
+        for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
+            if(type == null){
+                processProvider.loadComponentsFromExtensionPoint();
+            }else{
+                processProvider.loadComponentsFromExtensionPoint(type);
+            }
         }
     }
 

@@ -65,6 +65,7 @@ import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsHandler;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.TalendPaletteGroup;
 import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
@@ -1220,7 +1221,7 @@ public final class TalendEditorPaletteFactory {
     public static PaletteRoot createPalette(final IComponentsFactory compFac, PaletteRoot root) {// ing
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
         palette = root;
-        AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractProcessProvider.loadComponentsFromProviders(getJobletObjectType(compFac.getComponentsHandler()));
         GenericProcessProvider.getInstance().loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, histate);
         return palette;
@@ -1235,7 +1236,7 @@ public final class TalendEditorPaletteFactory {
     public static PaletteRoot createPalette(final IComponentsFactory compFac, PaletteRoot root, boolean isFavorite) {// after
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
         palette = root;
-        AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractProcessProvider.loadComponentsFromProviders(getJobletObjectType(compFac.getComponentsHandler()));
         GenericProcessProvider.getInstance().loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, isFavorite, histate);
         return palette;
@@ -1243,7 +1244,7 @@ public final class TalendEditorPaletteFactory {
 
     public static PaletteRoot getAllNodeStructure(final IComponentsFactory compFac) {
         palette = new PaletteRoot();
-        AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractProcessProvider.loadComponentsFromProviders(getJobletObjectType(compFac.getComponentsHandler()));
         GenericProcessProvider.getInstance().loadComponentsFromProviders();
         createComponentsDrawer(compFac, true, 0);
         return palette;
@@ -1252,7 +1253,7 @@ public final class TalendEditorPaletteFactory {
     public static PaletteRoot createPalletteForMapReduce(IComponentsFactory compFac, PaletteRoot root) {
         palette = root;
         int histate = DesignerPlugin.getDefault().getPreferenceStore().getInt("HiddenState"); //$NON-NLS-1$
-        AbstractProcessProvider.loadComponentsFromProviders();
+        AbstractProcessProvider.loadComponentsFromProviders(getJobletObjectType(compFac.getComponentsHandler()));
         GenericProcessProvider.getInstance().loadComponentsFromProviders();
         createComponentsDrawer(compFac, false, histate);
         return palette;
@@ -1335,6 +1336,28 @@ public final class TalendEditorPaletteFactory {
         return toolGroup;
     }
 
+    private static ERepositoryObjectType getJobletObjectType(IComponentsHandler handler){
+        if(handler == null){
+            return null;
+        }
+        ComponentCategory category = handler.extractComponentsCategory();
+        ERepositoryObjectType type = ERepositoryObjectType.JOBLET;
+        if(category == null){
+            return type;
+        }
+        switch (category) {
+        case CATEGORY_4_SPARK:
+            type = ERepositoryObjectType.SPARK_JOBLET;
+            break;
+        case CATEGORY_4_SPARKSTREAMING:
+            type = ERepositoryObjectType.SPARK_STREAMING_JOBLET;
+            break;
+        default:
+            break;
+        }
+        return type;
+    }
+    
     /** Utility class. */
     private TalendEditorPaletteFactory() {
         // Utility class
