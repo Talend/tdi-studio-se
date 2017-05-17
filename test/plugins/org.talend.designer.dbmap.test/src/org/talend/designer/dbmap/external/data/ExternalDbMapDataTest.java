@@ -25,6 +25,8 @@ import org.junit.Test;
  */
 public class ExternalDbMapDataTest {
     
+    
+    
     @Test
     public void testEquals() {
         ExternalDbMapData mapper1 = new ExternalDbMapData();
@@ -128,6 +130,43 @@ public class ExternalDbMapDataTest {
         externalData.setVarsTables(externalTables);
         
         return externalData;
+    }
+    
+    @Test
+    public void testEquals2() {
+        ExternalDbMapData mapper1 = new ExternalDbMapData();
+        
+        List<ExternalDbMapTable> externalTables = new ArrayList<ExternalDbMapTable>();
+        
+        // input
+        ExternalDbMapTable externalTable = new ExternalDbMapTable();
+        externalTable.setName("pTableName");
+        externalTable.setMinimized(true);
+        externalTable.setAlias("pTableAlias");
+        externalTable.setJoinType("JoinType");
+        externalTable.setTableName("pTableTableName");
+        externalTable.setMetadataTableEntries(new ArrayList<ExternalDbMapEntry>());
+        externalTable.setCustomOtherConditionsEntries(new ArrayList<ExternalDbMapEntry>());
+        externalTable.setCustomWhereConditionsEntries(new ArrayList<ExternalDbMapEntry>());
+        externalTables.add(externalTable);
+        mapper1.setInputTables(externalTables);
+        
+        
+        ExternalDbMapData mapper2 = new ExternalDbMapData();
+        
+        List<ExternalDbMapTable> externalTables2 = new ArrayList<ExternalDbMapTable>();
+        
+        // input
+        ExternalDbMapTable externalTable2 = new ExternalDbMapTable();
+        externalTable2.setName("pTableName");
+        externalTable2.setMinimized(true);
+        externalTable2.setAlias("pTableAlias");
+        externalTable2.setJoinType("JoinType");
+        externalTable2.setTableName("pTableTableName");
+        externalTables2.add(externalTable2);
+        mapper2.setInputTables(externalTables2);
+        
+        assertTrue(mapper1.equals(mapper2));
     }
 
 }

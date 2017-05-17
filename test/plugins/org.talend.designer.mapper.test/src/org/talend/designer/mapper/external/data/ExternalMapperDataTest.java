@@ -26,6 +26,60 @@ import org.junit.Test;
 public class ExternalMapperDataTest {
     
     @Test
+    public void testEquals2() {
+        ExternalMapperData mapper1 = new ExternalMapperData();
+        
+        List<ExternalMapperTable> externalTables = new ArrayList<ExternalMapperTable>();
+        // input
+        ExternalMapperTable externalTable = new ExternalMapperTable();
+        externalTable.setActivateCondensedTool(true);
+        externalTable.setActivateExpressionFilter(false);
+        externalTable.setActivateColumnNameFilter(true);
+        externalTable.setExpressionFilter("ddd");
+        externalTable.setSizeState("ddd");
+        externalTable.setMinimized(false);
+        externalTable.setName("ddd");
+        
+        externalTable.setId("id1");
+        externalTable.setLookupMode("ddd");
+        externalTable.setMatchingMode("ddd");
+        externalTable.setInnerJoin(false);
+        externalTable.setPersistent(true);
+        
+        externalTable.setGlobalMapKeysValues(new ArrayList<ExternalMapperTableEntry>());
+        externalTable.setConstraintTableEntries(new ArrayList<ExternalMapperTableEntry>());
+        externalTable.setMetadataTableEntries(new ArrayList<ExternalMapperTableEntry>());
+        externalTables.add(externalTable);
+        mapper1.setInputTables(externalTables);
+        
+        
+        ExternalMapperData mapper2 = new ExternalMapperData();
+        
+        List<ExternalMapperTable> externalTables2 = new ArrayList<ExternalMapperTable>();
+        // input
+        ExternalMapperTable externalTable2 = new ExternalMapperTable();
+        externalTable2.setActivateCondensedTool(true);
+        externalTable2.setActivateExpressionFilter(false);
+        externalTable2.setActivateColumnNameFilter(true);
+        externalTable2.setExpressionFilter("ddd");
+        externalTable2.setSizeState("ddd");
+        externalTable2.setMinimized(false);
+        externalTable2.setName("ddd");
+        
+        
+        externalTable2.setId("id1");
+        externalTable2.setLookupMode("ddd");
+        externalTable2.setMatchingMode("ddd");
+        externalTable2.setInnerJoin(false);
+        externalTable2.setPersistent(true);
+        
+        
+        externalTables2.add(externalTable2);
+        mapper2.setInputTables(externalTables2);
+        assertTrue(mapper1.equals(mapper2));
+    }
+    
+    @Test
     public void testEquals() {
         ExternalMapperData mapper1 = new ExternalMapperData();
         ExternalMapperData mapper2 = new ExternalMapperData();
