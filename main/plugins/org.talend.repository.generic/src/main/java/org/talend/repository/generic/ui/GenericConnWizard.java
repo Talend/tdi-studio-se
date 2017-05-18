@@ -105,8 +105,6 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
 
     private ComponentService compService;
 
-    private List<ElementParameter> parameters = new ArrayList<>();
-
     public GenericConnWizard(IWorkbench workbench, boolean creation, RepositoryNode node, String[] existingNames) {
         super(workbench, creation);
         this.existingNames = existingNames;
@@ -224,13 +222,6 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
     @Override
     public boolean performFinish() {
         if (wizPage.isPageComplete()) {
-            IWizardPage[] pages = getPages();
-            for (IWizardPage page : pages) {
-                if (page instanceof GenericConnWizardPage) {
-                    GenericConnWizardPage gPage = (GenericConnWizardPage) page;
-                    parameters.addAll(gPage.getParameters());
-                }
-            }
             try {
                 createOrUpdateConnectionItem();
             } catch (Throwable e) {

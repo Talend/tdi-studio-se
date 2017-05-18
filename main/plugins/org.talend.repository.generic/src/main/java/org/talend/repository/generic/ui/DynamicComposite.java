@@ -87,6 +87,8 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     private IGenericWizardInternalService internalService;
 
     private boolean drivedByForm;
+    
+    private PropertyChangeListener wizardPropertyChangeListener;
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
             boolean isCompactView, Color backgroundColor, Form form) {
@@ -165,6 +167,9 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 genericElementParameter.callBeforePresent();
                 genericElementParameter.removePropertyChangeListener(this);
                 genericElementParameter.addPropertyChangeListener(this);
+                if (wizardPropertyChangeListener != null && IGenericConstants.NAME_PROPERTY.equals(parameter.getName())) {
+                    genericElementParameter.addPropertyChangeListener(wizardPropertyChangeListener);
+                }
                 if (EParameterFieldType.SCHEMA_REFERENCE.equals(genericElementParameter.getFieldType())) {
                     if (genericElementParameter.getChildParameters().size() == 0) {
                         IElementParameter schemaParameter = element.getElementParameterFromField(
@@ -438,6 +443,15 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             }
         }
         return true;
+    }
+
+    
+    /**
+     * Sets the wizardPropertyChangeListener.
+     * @param wizardPropertyChangeListener the wizardPropertyChangeListener to set
+     */
+    public void setWizardPropertyChangeListener(PropertyChangeListener wizardPropertyChangeListener) {
+        this.wizardPropertyChangeListener = wizardPropertyChangeListener;
     }
 
 }

@@ -21,6 +21,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -46,7 +48,7 @@ import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
  */
 public abstract class GenericWizardPage extends AbstractNamedWizardPage {
 
-    protected List<ElementParameter> parameters = new ArrayList<>();
+    protected Element baseElement;
 
     protected ConnectionItem connectionItem;
 
@@ -168,13 +170,13 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
         checker.setListener(checkListener);
     }
 
-    public List<ElementParameter> getParameters() {
-        return this.parameters;
+    public List<? extends IElementParameter> getParameters() {
+        return baseElement.getElementParameters();
     }
 
-    public List<ElementParameter> getContextParameters() {
-        List<ElementParameter> contextParameters = new ArrayList<>();
-        for (ElementParameter parameter : parameters) {
+    public List<IElementParameter> getContextParameters() {
+        List<IElementParameter> contextParameters = new ArrayList<>();
+        for (IElementParameter parameter : baseElement.getElementParameters()) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
                 if (genericElementParameter.isSupportContext()) {
