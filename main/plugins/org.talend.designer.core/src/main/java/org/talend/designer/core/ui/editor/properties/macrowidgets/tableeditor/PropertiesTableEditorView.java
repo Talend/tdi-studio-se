@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColorCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
@@ -184,7 +183,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
             final int curCol = i;
             final IElementParameter currentParam = (IElementParameter) itemsValue[i];
             // if all is empty, show it always.
-            boolean toDisplay = StringUtils.isEmpty(currentParam.getShowIf()) && StringUtils.isEmpty(currentParam.getNotShowIf());
+            boolean toDisplay = currentParam.isShow(currentParam.getShowIf(), currentParam.getNotShowIf(),
+                    element.getElementParameters());
             if (!toDisplay) {
                 List<Map<String, Object>> fullTable = (List<Map<String, Object>>) param.getValue();
                 for (int curLine = 0; curLine < fullTable.size(); curLine++) {
