@@ -3357,14 +3357,28 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         // check not startable components not linked
-        if ((getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
-                && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
-            if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
-                String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
-                Problems.add(ProblemStatus.WARNING, this, errorMessage);
+        if (getComponentProperties() == null) {
+            if ((getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
+                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
+                if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
+                    String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
+                    Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                }
+            }
+        } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
+            for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
+                if ((connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                    if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
+                        String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
+                        Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                    }
+                }
             }
         }
 
