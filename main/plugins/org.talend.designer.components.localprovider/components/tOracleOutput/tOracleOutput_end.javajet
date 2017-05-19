@@ -189,23 +189,23 @@ imports="
 					pstmt_<%=cid %>.executeBatch();
 					<%dbLog.batch().executeDone(dbLog.str(dataAction));%>
         	    }
-            }catch (java.sql.BatchUpdateException e){
-		        java.sql.SQLException ne = e.getNextException(),sqle=null;
+            }catch (java.sql.BatchUpdateException e_<%=cid%>){
+		        java.sql.SQLException ne_<%=cid%> = e_<%=cid%>.getNextException(),sqle_<%=cid%>=null;
 		    	String errormessage_<%=cid%>;
-				if (ne != null) {
+				if (ne_<%=cid%> != null) {
 					// build new exception to provide the original cause
-					sqle = new java.sql.SQLException(e.getMessage() + "\ncaused by: " + ne.getMessage(), ne.getSQLState(), ne.getErrorCode(), ne);
-					errormessage_<%=cid%> = sqle.getMessage();
+					sqle_<%=cid%> = new java.sql.SQLException(e_<%=cid%>.getMessage() + "\ncaused by: " + ne_<%=cid%>.getMessage(), ne_<%=cid%>.getSQLState(), ne_<%=cid%>.getErrorCode(), ne_<%=cid%>);
+					errormessage_<%=cid%> = sqle_<%=cid%>.getMessage();
 				}else{
-					errormessage_<%=cid%> = e.getMessage();
+					errormessage_<%=cid%> = e_<%=cid%>.getMessage();
 				}
             	<%
             	if(("true").equals(dieOnError)) {
            		%>
-		    		if (ne != null) {
-		    			throw(sqle);
+		    		if (ne_<%=cid%> != null) {
+		    			throw(sqle_<%=cid%>);
 		    		}else{
-		            	throw(e);
+		            	throw(e_<%=cid%>);
 		            }
             	<%
             	}else {
