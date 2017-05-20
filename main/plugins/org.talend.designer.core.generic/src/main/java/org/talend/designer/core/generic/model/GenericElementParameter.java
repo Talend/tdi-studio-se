@@ -554,6 +554,20 @@ public class GenericElementParameter extends ElementParameter {
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.talend.designer.core.model.components.ElementParameter#getRepositoryValue()
+     */
+    @Override
+    public String getRepositoryValue() {
+        if (isRepositoryValueUsed() && super.getRepositoryValue() == null) {
+            Property property = getProperty();
+            if (property != null) {
+                super.setRepositoryValue((String)property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
+            }
+        }
+        return super.getRepositoryValue();
+    }
+
     @Override
     public void setContextMode(boolean mode) {
         super.setContextMode(mode);
