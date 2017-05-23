@@ -101,6 +101,8 @@ public class JobErrorsChecker {
                             Item routinesitem = property.getItem();
                             IFile routineFile = synchronizer.getFile(routinesitem);
                             Problems.addJobRoutineFile(routineFile, ProblemType.ROUTINE, routinesitem, true);
+                        } else {
+                        	Problems.clearAllComliationError(property.getLabel());
                         }
                     }
                 }
@@ -335,21 +337,22 @@ public class JobErrorsChecker {
             }
         }
 
-        /*
-         * ignore the routine errors.
-         */
         // if no error for job, check codes.
-        // checkRoutinesCompilationError();
+        checkRoutinesCompilationError();
 
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {
+        Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
+                LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
+                LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
+    	
         // from Problems
         List<Problem> errors = Problems.getProblemList().getProblemsBySeverity(ProblemStatus.ERROR);
         for (Problem p : errors) {
             if (p instanceof TalendProblem) {
                 TalendProblem talendProblem = (TalendProblem) p;
-                if (talendProblem.getType() == ProblemType.ROUTINE) {
+                if (talendProblem.getType() == ProblemType.ROUTINE && dependentRoutines.contains(talendProblem.getJavaUnitName())) {
                     int line = talendProblem.getLineNumber();
                     String errorMessage = talendProblem.getDescription();
                     throw new ProcessorException(Messages.getString(
@@ -357,6 +360,9 @@ public class JobErrorsChecker {
                             + Messages.getString("JobErrorsChecker_compile_error_line") + ':' + ' ' + line + '\n' //$NON-NLS-1$
                             + Messages.getString("JobErrorsChecker_compile_error_detailmessage") + ':' + ' ' + errorMessage); //$NON-NLS-1$
                 }
+            } else {
+                throw new ProcessorException(Messages.getString("JobErrorsChecker_jobDesign_errors", p.getType().getTypeName(), //$NON-NLS-1$
+                        p.getJobInfo().getJobName(), p.getComponentName(), p.getDescription()));
             }
         }
 
@@ -369,6 +375,9 @@ public class JobErrorsChecker {
             if (routinesObjects != null) {
                 for (IRepositoryViewObject obj : routinesObjects) {
                     Property property = obj.getProperty();
+                    if (!dependentRoutines.contains(property.getLabel())) {
+                    	continue;
+                    }
                     Item routinesitem = property.getItem();
                     IFile routinesFile = synchronizer.getFile(routinesitem);
                     IMarker[] markers = routinesFile.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ONE);
