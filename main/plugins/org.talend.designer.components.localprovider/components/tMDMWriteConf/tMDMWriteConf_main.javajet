@@ -255,6 +255,9 @@ if (metadatas != null && metadatas.size()>0) {
           %>
       <%}//end partial%>
     } catch (java.lang.Exception e) {
+      <%if (!usePartialUpdate && isMassInsert) {%>
+        miList_<%=cid %>.clear();
+      <%}%>
       <%if (dieOnError) {%>
         throw(e);
       <%} else {
