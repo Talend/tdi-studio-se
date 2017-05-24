@@ -29,6 +29,7 @@ if (count_<%=cid%> % <%=arraySize%> == 0) {
 	if(inputStreamMerger_<%=cid%> != null)
 		inputStreamMerger_<%=cid%>.close();
 	inputStreamMerger_<%=cid%> = bulkloadClient_<%=cid %>.load();
+        resourceMap.put("mdmBulkStream<%=cid %>", inputStreamMerger_<%=cid%>);
 }
 
 if(<%=conn.getName()%>.<%=xmlField %>!=null){

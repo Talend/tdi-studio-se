@@ -1,34 +1,30 @@
 <%@ jet 
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
-    org.talend.designer.codegen.config.CodeGeneratorArgument
-" 
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 
 <%
-    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-    INode node = (INode)codeGenArgument.getArgument();
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
 
-    String cid = node.getUniqueName();
-
-    String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
-
-    boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
-
-    String conn = "xtentisWS_" + connection;
-	String mdmTransaction = "mdmTransaction_" + connection;
+String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
+boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
+String conn = "xtentisWS_" + connection;
+String trans = "mdmTrans_" + connection;
 %>
 
-org.talend.mdm.webservice.XtentisPort_PortType conn_<%=cid%> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>");
-if(conn_<%=cid%> != null)
-{
-	com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=mdmTransaction%>");
-	if(mdmTransaction_<%=cid%>!=null) {
-		mdmTransaction_<%=cid%>.rollback();
-	}
-<%  if(close){%>
-    conn_<%=cid%>.logout(new org.talend.mdm.webservice.WSLogout());
-<% }%>
+com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
+if(mdmTransaction_<%=cid%> != null) {
+    mdmTransaction_<%=cid%>.rollback();
 }
 
+<% if(close){%>
+    org.talend.mdm.webservice.XtentisPort_PortType conn_<%=cid%> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName());
+    if(conn_<%=cid%> != null) {
+        conn_<%=cid%>.logout(new org.talend.mdm.webservice.WSLogout());
+    }
+<% }%>

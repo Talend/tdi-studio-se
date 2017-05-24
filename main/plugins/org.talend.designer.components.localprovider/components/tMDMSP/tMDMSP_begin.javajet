@@ -1,59 +1,81 @@
-<%@ jet 
+<%@ jet
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
-		"
-%>
-<%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
-	boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
-	String conn = "xtentisWS_" + connection;
-	String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
-	String username = ElementParameterParser.getValue(node, "__USERNAME__");
-
-	String universe = ElementParameterParser.getValue(node, "__UNIVERSE__");
-	String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
-	boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
-	String spName = ElementParameterParser.getValue(node, "__SPNAME__");
-%>       
-	int nb_line_<%=cid %> = 0;
-
-	<%if(!useExistingConn){%>
-		org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
-		xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
-		org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();    
-		org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
-	
-		// Authentification
-		<%if(universe==null || ("").equals(universe.trim())){%>
-		stub_<%=cid %>.setUsername(<%=username %>);
-		<%}else{%>
-		stub_<%=cid %>.setUsername(<%=universe%> + "/" + <%=username %>);
-		<%}%>
-		
-        <%
-        String passwordFieldName = "__PASSWORD__";
-        %>
-        
-        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>	
-		
-		stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
-<%
-	}else{
-%>
-		org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>");
-<%
-	}
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        "
 %>
 
-	org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+boolean useExistingConn = ("true").equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String conn = "xtentisWS_" + connection;
+String trans = "mdmTrans_" + connection;
+String mdmUrl = ElementParameterParser.getValue(node, "__MDMURL__");
+String username = ElementParameterParser.getValue(node, "__USERNAME__");
 
-	org.talend.mdm.webservice.WSExecuteStoredProcedure wsExeProc_<%=cid %> = new org.talend.mdm.webservice.WSExecuteStoredProcedure();
-	wsExeProc_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
-	org.talend.mdm.webservice.WSStoredProcedurePK wsStoredProcPK_<%=cid %> = new org.talend.mdm.webservice.WSStoredProcedurePK();
-	wsStoredProcPK_<%=cid %>.setPk(<%=spName %>);
-	wsExeProc_<%=cid %>.setWsStoredProcedurePK(wsStoredProcPK_<%=cid %>);
+String universe = ElementParameterParser.getValue(node, "__UNIVERSE__");
+String dataCluster = ElementParameterParser.getValue(node, "__DATACLUSTER__");
+boolean isStaging = "STAGING".equalsIgnoreCase(ElementParameterParser.getValue(node, "__CONTAINER_TYPE__"));
+String spName = ElementParameterParser.getValue(node, "__SPNAME__");
+%>
+
+int nb_line_<%=cid %> = 0;
+<%if(!useExistingConn){%>
+    org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
+    xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
+    org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();
+    org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
+
+    <%if(universe==null || ("").equals(universe.trim())){%>
+        stub_<%=cid %>.setUsername(<%=username %>);
+    <%}else{%>
+        stub_<%=cid %>.setUsername(<%=universe%> + "/" + <%=username %>);
+    <%}%>
+
+    <% String passwordFieldName = "__PASSWORD__"; %>
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+    stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
+<%}else{%>
+    org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = (org.talend.mdm.webservice.XtentisPort_PortType)globalMap.get("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName());
+    if(xtentisWS_<%=cid %> == null) {
+        String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
+        org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
+        xtentisService_<%=cid %>.setXtentisPortEndpointAddress(murl_<%=cid %>);
+        xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();
+        org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
+        stub_<%=cid %>.setUsername((String)globalMap.get("username_<%=connection %>"));
+        stub_<%=cid %>.setPassword((String)globalMap.get("password_<%=connection %>"));
+        if((Boolean)globalMap.get("useTransaction_<%=connection %>")) {
+            String turl_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>);
+            com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid%> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName());
+            if(mdmTransaction_<%=cid%> == null) {
+                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
+                    mdmTransaction_<%=cid%> = new com.talend.mdm.transaction.client.MDMTransaction();
+                    mdmTransaction_<%=cid%>.setUrl(turl_<%=cid%>);
+                    mdmTransaction_<%=cid%>.setId("<%=cid%>_" + java.util.UUID.randomUUID());
+                    mdmTransaction_<%=cid%>.setUsername(stub_<%=cid %>.getUsername());
+                    mdmTransaction_<%=cid%>.setPassword(stub_<%=cid %>.getPassword());
+                } else {
+                    mdmTransaction_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid%>,stub_<%=cid %>.getUsername(),stub_<%=cid %>.getPassword());
+                }
+                stub_<%=cid %>.setHeader(new org.apache.axis.message.SOAPHeaderElement("http://www.talend.com/mdm", "transaction-id", mdmTransaction_<%=cid%>.getId()));
+                globalMap.put("<%=trans%>_" + Thread.currentThread().getThreadGroup().getName(), mdmTransaction_<%=cid %>);
+            }
+        }
+        stub_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());<%//For TDI-26109%>
+        globalMap.put("<%=conn%>_" + Thread.currentThread().getThreadGroup().getName(), xtentisWS_<%=cid %>);
+    }
+<%}%>
+
+org.talend.mdm.webservice.WSDataClusterPK dataCluster_<%=cid %> = new org.talend.mdm.webservice.WSDataClusterPK(<%=dataCluster %> + "<%=isStaging?"#STAGING":""%>");
+
+org.talend.mdm.webservice.WSExecuteStoredProcedure wsExeProc_<%=cid %> = new org.talend.mdm.webservice.WSExecuteStoredProcedure();
+wsExeProc_<%=cid %>.setWsDataClusterPK(dataCluster_<%=cid %>);
+org.talend.mdm.webservice.WSStoredProcedurePK wsStoredProcPK_<%=cid %> = new org.talend.mdm.webservice.WSStoredProcedurePK();
+wsStoredProcPK_<%=cid %>.setPk(<%=spName %>);
+wsExeProc_<%=cid %>.setWsStoredProcedurePK(wsStoredProcPK_<%=cid %>);

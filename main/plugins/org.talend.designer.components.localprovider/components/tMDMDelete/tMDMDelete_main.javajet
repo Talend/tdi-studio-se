@@ -1,15 +1,16 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.core.model.process.ElementParameterParser 
-		org.talend.core.model.metadata.IMetadataTable 
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.process.IConnectionCategory
-		java.util.List
-		java.util.Map
-		"
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        java.util.List
+        java.util.Map
+        "
 %>
+
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -33,61 +34,61 @@ String sourceName = ElementParameterParser.getValue(node,"__SOURCE__");
 String needCheck = ElementParameterParser.getValue(node,"__ISINVOKE__");
 
 if(spellThrehold==null || ("").equals(spellThrehold)){
-	spellThrehold = "0";
-} 
+    spellThrehold = "0";
+}
 List<IMetadataTable> metadatas = node.getMetadataList();
 if ((metadatas!=null)&&(metadatas.size()>0)) {//1
     IMetadataTable metadata = metadatas.get(0);
     if (metadata!=null) {//2
 
-    	List< ? extends IConnection> conns = node.getIncomingConnections();
-    	for (IConnection conn : conns) {//3
-    		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
-    			if(!useMultConditions){//5
+        List< ? extends IConnection> conns = node.getIncomingConnections();
+        for (IConnection conn : conns) {//3
+            if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {//4
+                if(!useMultConditions){//5
 %>
 String[] wsIds_<%=cid %> = {
 <%
-			    for(int i=0;i<keyValues.size();i++){
-			    	String columnName=keyValues.get(i).get("KEY");
+                for(int i=0;i<keyValues.size();i++){
+                    String columnName=keyValues.get(i).get("KEY");
 %>
 <%=i==0?"":","%><%=conn.getName()%>.<%=columnName %>
 <%
-			    }
+                }
 %>};
 org.talend.mdm.webservice.WSItemPK wsPK_<%=cid %> = new org.talend.mdm.webservice.WSItemPK(dataCluster_<%=cid %>,<%=dataModule %>,wsIds_<%=cid %>);
-///////////////////////	
+///////////////////////
 
 try{
-	<%
-	if(isDropItem){
-	%>
-		org.talend.mdm.webservice.WSDropItem item_<%=cid %> = new org.talend.mdm.webservice.WSDropItem();
-		item_<%=cid %>.setPartPath(<%=partPath %>);
-	<%
-	}else{
-	%>
-		org.talend.mdm.webservice.WSDeleteItem item_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItem();
-	<%
-	}
-	%>
-	item_<%=cid %>.setWsItemPK(wsPK_<%=cid %>);
-	item_<%=cid %>.setOverride(false);
-	<%
-	if (!isStaging && withReport) {
-	%>
-		item_<%=cid %>.setWithReport(true);
-		item_<%=cid %>.setSource(<%=sourceName%>);
-		item_<%=cid %>.setInvokeBeforeDeleting(<%=needCheck%>);
-	<%
-	}
-	if(isDropItem){
-	%>
-		
-		xtentisWS_<%=cid %>.dropItem(item_<%=cid %>);
-	<%
-	}else{
-	%>
-		xtentisWS_<%=cid %>.deleteItem(item_<%=cid %>);
+    <%
+    if(isDropItem){
+    %>
+        org.talend.mdm.webservice.WSDropItem item_<%=cid %> = new org.talend.mdm.webservice.WSDropItem();
+        item_<%=cid %>.setPartPath(<%=partPath %>);
+    <%
+    }else{
+    %>
+        org.talend.mdm.webservice.WSDeleteItem item_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItem();
+    <%
+    }
+    %>
+    item_<%=cid %>.setWsItemPK(wsPK_<%=cid %>);
+    item_<%=cid %>.setOverride(false);
+    <%
+    if (!isStaging && withReport) {
+    %>
+        item_<%=cid %>.setWithReport(true);
+        item_<%=cid %>.setSource(<%=sourceName%>);
+        item_<%=cid %>.setInvokeBeforeDeleting(<%=needCheck%>);
+    <%
+    }
+    if(isDropItem){
+    %>
+
+        xtentisWS_<%=cid %>.dropItem(item_<%=cid %>);
+    <%
+    }else{
+    %>
+        xtentisWS_<%=cid %>.deleteItem(item_<%=cid %>);
     <%
     }
     %>
@@ -95,78 +96,78 @@ try{
 <%
 if(dieOnError){
 %>
-	throw(e);
+    throw(e);
 <%
 }else{
 %>
-	System.err.println(e.getMessage());
+    System.err.println(e.getMessage());
 <%
 }
 %>
 }
-nb_line_<%=cid %>++;    			
+nb_line_<%=cid %>++;
 
-///////////////////////    			
+///////////////////////
 <%
-				}
-    		}//4
-    	}//3
+                }
+            }//4
+        }//3
     }//2
 }//1
 %>
 <%
-	if(useMultConditions){
+    if(useMultConditions){
 %>
-	org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
-	java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
+    org.talend.mdm.webservice.WSWhereCondition wc_<%=cid %> = null;
+    java.util.List<org.talend.mdm.webservice.WSWhereItem> conditions_<%=cid %> = new java.util.ArrayList<org.talend.mdm.webservice.WSWhereItem>();
 <%
-		boolean isOnlyOrPredicate=true;
-		for(int i=0; i < operations.size(); i++){
-			Map<String, String> map= operations.get(i);
-			String xpath=map.get("XPATH");
-			String operator=map.get("FUNCTION");
-			String value = map.get("VALUE");
-			String predicate = map.get("PREDICATE");
-			if((i < operations.size()-1) && (!"OR".equals(predicate))){
-				isOnlyOrPredicate = false;
-			}
+        boolean isOnlyOrPredicate=true;
+        for(int i=0; i < operations.size(); i++){
+            Map<String, String> map= operations.get(i);
+            String xpath=map.get("XPATH");
+            String operator=map.get("FUNCTION");
+            String value = map.get("VALUE");
+            String predicate = map.get("PREDICATE");
+            if((i < operations.size()-1) && (!"OR".equals(predicate))){
+                isOnlyOrPredicate = false;
+            }
 %>
-	wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>,false);
-	org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>_<%=cid %>=new org.talend.mdm.webservice.WSWhereItem(wc_<%=cid %>,null,null);
-	conditions_<%=cid %>.add(wsItem_<%=i %>_<%=cid %>);
+    wc_<%=cid %> =new org.talend.mdm.webservice.WSWhereCondition(<%=xpath %>,org.talend.mdm.webservice.WSWhereOperator.<%=operator %>, <%="EMPTY_NULL".equals(operator)? null:value %>, org.talend.mdm.webservice.WSStringPredicate.<%=predicate %>,false);
+    org.talend.mdm.webservice.WSWhereItem wsItem_<%=i %>_<%=cid %>=new org.talend.mdm.webservice.WSWhereItem(wc_<%=cid %>,null,null);
+    conditions_<%=cid %>.add(wsItem_<%=i %>_<%=cid %>);
 <%
-		}//for
+        }//for
 %>
-	org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
-	if(conditions_<%=cid %>.size() > 0){
+    org.talend.mdm.webservice.WSWhereItem wsItem_<%=cid %> = null;
+    if(conditions_<%=cid %>.size() > 0){
 <%
-		if(!isOnlyOrPredicate){
+        if(!isOnlyOrPredicate){
 %>
-		wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]),null);
+        wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]),null);
 <%
-		}else{
+        }else{
 %>
-		wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]));
+        wsItem_<%=cid %> =new org.talend.mdm.webservice.WSWhereItem(null,null,conditions_<%=cid %>.toArray(new org.talend.mdm.webservice.WSWhereItem[conditions_<%=cid %>.size()]));
 <%
-		}
+        }
 %>
-	}
-	try{
-		org.talend.mdm.webservice.WSDeleteItems items_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItems(dataCluster_<%=cid %>,<%=dataModule %>,wsItem_<%=cid %>,<%=spellThrehold%>,false);
-		xtentisWS_<%=cid %>.deleteItems(items_<%=cid %>);
-	}catch(java.lang.Exception e_<%=cid%>){
+    }
+    try{
+        org.talend.mdm.webservice.WSDeleteItems items_<%=cid %> = new org.talend.mdm.webservice.WSDeleteItems(dataCluster_<%=cid %>,<%=dataModule %>,wsItem_<%=cid %>,<%=spellThrehold%>,false);
+        xtentisWS_<%=cid %>.deleteItems(items_<%=cid %>);
+    }catch(java.lang.Exception e_<%=cid%>){
 <%
-		if(dieOnError){
+        if(dieOnError){
 %>
-		throw(e_<%=cid%>);
+        throw(e_<%=cid%>);
 <%
-		}else{
+        }else{
 %>
-		System.err.println(e_<%=cid%>.getMessage());
+        System.err.println(e_<%=cid%>.getMessage());
 <%
-		}
+        }
 %>
-	}
+    }
 <%
-	}
+    }
 %>

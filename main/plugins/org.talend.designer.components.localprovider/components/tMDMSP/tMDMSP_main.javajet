@@ -1,82 +1,81 @@
 <%@ jet 
 imports="
-    	org.talend.core.model.process.INode 
-    	org.talend.designer.codegen.config.CodeGeneratorArgument
-    	org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         java.util.List
         java.util.Map
-		" 
+        "
 %>
-<%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	String cid = node.getUniqueName();
 
-	String spName = ElementParameterParser.getValue(node, "__SPNAME__");
-	
-	List<Map<String, String>> spArgs = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
 
-	List<? extends IConnection> inConnections = node.getIncomingConnections();
-	IConnection inConnection = null;
-	IMetadataTable metadata = null;
-	if (inConnections != null) {
-		for (int i = 0; i < inConnections.size(); i++) {
-			IConnection connection = inConnections.get(i);
-			if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
-				inConnection = connection;
-				metadata=connection.getMetadataTable();
-				break;
-			}
-		}
-	}
+String spName = ElementParameterParser.getValue(node, "__SPNAME__");
 
-	List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
-	if(inConnection!=null){
-		if(spArgs.size()>0){
+List<Map<String, String>> spArgs = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SP_ARGS__");
+
+List<? extends IConnection> inConnections = node.getIncomingConnections();
+IConnection inConnection = null;
+IMetadataTable metadata = null;
+if (inConnections != null) {
+    for (int i = 0; i < inConnections.size(); i++) {
+        IConnection connection = inConnections.get(i);
+        if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+            inConnection = connection;
+            metadata=connection.getMetadataTable();
+            break;
+        }
+    }
+}
+
+List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+if(inConnection!=null){
+    if(spArgs.size()>0){
 %>
-			wsExeProc_<%=cid %>.setParameters(new String[]{
+        wsExeProc_<%=cid %>.setParameters(new String[]{
 <%
-		}
-		for(int i=0;i<spArgs.size();i++){
-			Map<String, String> map = spArgs.get(i);
-			String clmName = map.get("COLUMN");
-			for(IMetadataColumn column:metadata.getListColumns()){
-				if(column.getLabel().equals(clmName)){
+    }
+    for(int i=0;i<spArgs.size();i++){
+        Map<String, String> map = spArgs.get(i);
+        String clmName = map.get("COLUMN");
+        for(IMetadataColumn column:metadata.getListColumns()){
+            if(column.getLabel().equals(clmName)){
 %>
-					<%=i==0?"":","%><%=inConnection.getName()%>.<%=column.getLabel() %>
+                <%=i==0?"":","%><%=inConnection.getName()%>.<%=column.getLabel() %>
 <%
-    				}
-    			}
-    		}
-    		if(spArgs.size()>0){
+                }
+            }
+        }
+        if(spArgs.size()>0){
 %>
-			});
+        });
 <%
-		}
-	}
-	// if output columns are defined
-	if (outgoingConns != null && outgoingConns.size() > 0){
-		IConnection outgoingConn = outgoingConns.get(0);
-		String outputCol = null;
-		if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
+    }
+}
+// if output columns are defined
+if (outgoingConns != null && outgoingConns.size() > 0){
+    IConnection outgoingConn = outgoingConns.get(0);
+    String outputCol = null;
+    if(outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) { // start 1
 %>
-			for(String xmlField_<%=cid %> : xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>)){
-				<%=outgoingConn.getName()%>.xmlField = xmlField_<%=cid %>;
+        for(String xmlField_<%=cid %> : xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>)){
+            <%=outgoingConn.getName()%>.xmlField = xmlField_<%=cid %>;
 <%
-		} else {
+    } else {
 %>
-			xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+        xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
 <%
-		}
-	} else {
+    }
+} else {
 %>
-		xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
+    xtentisWS_<%=cid %>.executeStoredProcedure(wsExeProc_<%=cid %>);
 <%
-	}
+}
 %>
-          
-            
