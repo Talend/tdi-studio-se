@@ -63,7 +63,6 @@ import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.language.LanguageProvider;
 import org.talend.designer.mapper.language.generation.JavaGenerationManager.PROBLEM_KEY_FIELD;
 import org.talend.designer.mapper.model.table.AbstractInOutTable;
-import org.talend.designer.mapper.model.table.IUIMatchingMode;
 import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
 import org.talend.designer.mapper.model.table.TMAP_LOOKUP_MODE;
@@ -1131,13 +1130,7 @@ public class MapperManager extends AbstractMapperManager {
     public Map<String, Object> getDefaultSetting() {
         if (defaultSettingMap.isEmpty()) {
             defaultSettingMap.put(DataMapTableView.LOOKUP_MODEL_SETTING, TMAP_LOOKUP_MODE.LOAD_ONCE);
-            if (isMRProcess) {
-                defaultSettingMap.put(DataMapTableView.MATCH_MODEL_SETTING, new IUIMatchingMode[] { TMAP_MATCHING_MODE.ALL_ROWS,
-                        TMAP_MATCHING_MODE.ALL_MATCHES });
-            } else {
-                defaultSettingMap.put(DataMapTableView.MATCH_MODEL_SETTING, new IUIMatchingMode[] { TMAP_MATCHING_MODE.ALL_ROWS,
-                        TMAP_MATCHING_MODE.UNIQUE_MATCH });
-            }
+            defaultSettingMap.put(DataMapTableView.MATCH_MODEL_SETTING, TMAP_MATCHING_MODE.ALL_ROWS);
             defaultSettingMap.put(DataMapTableView.JOIN_MODEL_SETTING, false);
             defaultSettingMap.put(DataMapTableView.PERSISTENCE_MODEL_SETTING, false);
             defaultSettingMap.put(DataMapTableView.OUTPUT_REJECT, false);

@@ -1417,10 +1417,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (schemaIDMapEntry != null) {
                 IDataMapTable parent = schemaIDMapEntry.getParent();
                 AbstractInOutTable table = (AbstractInOutTable) parent;
-                String previous = table.getId();
                 table.setId(null);
                 tableMapSettingEntriesModel.remove(schemaIDMapEntry);
-                refreshCondensedImage(table, schemaIDMapEntry.getName(), previous);
+                refreshCondensedImage(table, schemaIDMapEntry.getName());
             }
         }
         mapSettingViewerCreator.layout();
@@ -3417,7 +3416,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         this.previousStateCheckFilter = previousStateCheckFilter;
     }
 
-    protected void refreshCondensedImage(AbstractInOutTable table, String option, Object previousValue) {
+    protected void refreshCondensedImage(AbstractInOutTable table, String option) {
     }
 
     /**

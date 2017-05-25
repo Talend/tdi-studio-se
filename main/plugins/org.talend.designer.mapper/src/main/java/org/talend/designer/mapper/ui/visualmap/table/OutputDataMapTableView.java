@@ -201,37 +201,32 @@ public class OutputDataMapTableView extends DataMapTableView {
                 }
                 IDataMapTable parent = bean.getParent();
                 OutputTable outputTable = (OutputTable) parent;
-                Object previous = null;
                 if (OUTPUT_REJECT.equals(bean.getName())) {
-                    previous = outputTable.isReject();
                     outputTable.setReject(Boolean.valueOf(value.toString()));
                 } else if (LOOK_UP_INNER_JOIN_REJECT.equals(bean.getName())) {
-                    previous = outputTable.isRejectInnerJoin();
                     outputTable.setRejectInnerJoin(Boolean.valueOf(value.toString()));
                 } else if (SCHEMA_TYPE.equals(bean.getName())) {
-                    previous = outputTable.isRepository();
                     outputTable.setRepository(REPOSITORY.equals(value));
                     showSchemaIDSetting(REPOSITORY.equals(value));
                     enableDiaplayViewer(REPOSITORY.equals(value));
                 } else if (SCHEMA_ID.equals(bean.getName())) {
-                    previous = outputTable.getId();
                     outputTable.setId(String.valueOf(value));
                 }
 
-                refreshCondensedImage(outputTable, bean.getName(), previous);
+                refreshCondensedImage(outputTable, bean.getName());
             }
         };
     }
 
     @Override
-    protected void refreshCondensedImage(AbstractInOutTable absTable, String option, Object previousValue) {
+    protected void refreshCondensedImage(AbstractInOutTable absTable, String option) {
         OutputTable table = (OutputTable) absTable;
         if (OUTPUT_REJECT.equals(option)) {
             if (mapperManager.getDefaultSetting().get(OUTPUT_REJECT).equals(table.isReject())) {
                 if (changedOptions > 0) {
                     changedOptions--;
                 }
-            } else if (mapperManager.getDefaultSetting().get(OUTPUT_REJECT).equals(previousValue)) {
+            } else {
                 if (changedOptions < 6) {
                     changedOptions++;
                 }
@@ -241,7 +236,7 @@ public class OutputDataMapTableView extends DataMapTableView {
                 if (changedOptions > 0) {
                     changedOptions--;
                 }
-            } else if (mapperManager.getDefaultSetting().get(LOOK_UP_INNER_JOIN_REJECT).equals(previousValue)) {
+            } else {
                 if (changedOptions < 6) {
                     changedOptions++;
                 }
@@ -251,7 +246,7 @@ public class OutputDataMapTableView extends DataMapTableView {
                 if (changedOptions > 0) {
                     changedOptions--;
                 }
-            } else if (mapperManager.getDefaultSetting().get(SCHEMA_TYPE).equals(previousValue)) {
+            } else {
                 if (changedOptions < 6) {
                     changedOptions++;
                 }
@@ -261,7 +256,7 @@ public class OutputDataMapTableView extends DataMapTableView {
                 if (changedOptions > 0) {
                     changedOptions--;
                 }
-            } else if (mapperManager.getDefaultSetting().get(SCHEMA_ID) == previousValue) {
+            } else {
                 if (changedOptions < 6) {
                     changedOptions++;
                 }
