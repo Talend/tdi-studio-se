@@ -1035,7 +1035,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                                     for (TableItem tableItem : selectedTableItems) {
                                         ITableEntry currentModifiedEntry = (ITableEntry) tableItem.getData();
                                         String currentExpr = currentModifiedEntry.getExpression();
-                                        if (expressionForTable != null && !expressionForTable.equals(currentExpr)) {
+                                        if (StringUtils.isNotEmpty(expressionForTable) && !expressionForTable.equals(currentExpr)) {
                                             String replacedExpression = expressionForTable;
                                             if (!StringUtils.isEmpty(currentExpr)) {
                                                 replacedExpression = expressionForTable.replace("${0}", currentExpr);//$NON-NLS-1$
