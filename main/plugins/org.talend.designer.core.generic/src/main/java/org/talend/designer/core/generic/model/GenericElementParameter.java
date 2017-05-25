@@ -194,7 +194,7 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private void fireValidateStatusEvent() {
-        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT) {
+        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT && this.getFieldType() != EParameterFieldType.TABLE) {
             this.pcs.firePropertyChange(IElementParameterEventProperties.EVENT_VALIDATE_RESULT_UPDATE, null, getSubProperties()
                     .getValidationResult());
         }
