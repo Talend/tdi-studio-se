@@ -191,13 +191,13 @@ public final class TalendEditorPaletteFactory {
             // if (xmlComponent.isTechnical() || !xmlComponent.isVisible()) {
             // continue;
             // }
+            oraFamily = xmlComponent.getOriginalFamilyName();
+            family = xmlComponent.getTranslatedFamilyName();
+            if (oraFamily == null || oraFamily.trim().isEmpty()) {
+                continue;
+            }
 
             if (xmlComponent.isLoaded()) {
-                oraFamily = xmlComponent.getOriginalFamilyName();
-                if (oraFamily == null || oraFamily.trim().isEmpty()) {
-                    continue;
-                }
-                family = xmlComponent.getTranslatedFamilyName();
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
@@ -772,13 +772,13 @@ public final class TalendEditorPaletteFactory {
             if (xmlComponent.isTechnical()) {
                 continue;
             }
+            oraFamily = xmlComponent.getOriginalFamilyName();
+            family = xmlComponent.getTranslatedFamilyName();
+            if (oraFamily == null || oraFamily.trim().isEmpty()) {
+                continue;
+            }
 
             if (xmlComponent.isLoaded()) {
-                oraFamily = xmlComponent.getOriginalFamilyName();
-                if (oraFamily == null || oraFamily.trim().isEmpty()) {
-                    continue;
-                }
-                family = xmlComponent.getTranslatedFamilyName();
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
@@ -942,8 +942,10 @@ public final class TalendEditorPaletteFactory {
                     component.setDescription(longName);
                     if (a == 0) {
                         componentsDrawer = ht.get(strings[j]);
-                        component.setParent(componentsDrawer);
-                        componentsDrawer.add(component);
+                        if (componentsDrawer != null) {
+                            component.setParent(componentsDrawer);
+                            componentsDrawer.add(component);
+                        }
                     } else if (a == 1) {
                         boolean canAdd = true;
                         // listName = paGroup.getChildren();
