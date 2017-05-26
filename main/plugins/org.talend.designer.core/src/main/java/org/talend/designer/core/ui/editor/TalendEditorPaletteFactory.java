@@ -193,8 +193,11 @@ public final class TalendEditorPaletteFactory {
             // }
 
             if (xmlComponent.isLoaded()) {
-                family = xmlComponent.getTranslatedFamilyName();
                 oraFamily = xmlComponent.getOriginalFamilyName();
+                if (oraFamily == null || oraFamily.trim().isEmpty()) {
+                    continue;
+                }
+                family = xmlComponent.getTranslatedFamilyName();
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
@@ -771,9 +774,11 @@ public final class TalendEditorPaletteFactory {
             }
 
             if (xmlComponent.isLoaded()) {
-                family = xmlComponent.getTranslatedFamilyName();
                 oraFamily = xmlComponent.getOriginalFamilyName();
-
+                if (oraFamily == null || oraFamily.trim().isEmpty()) {
+                    continue;
+                }
+                family = xmlComponent.getTranslatedFamilyName();
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
