@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
@@ -27,11 +26,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
-import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.commons.utils.resource.UpdatesHelper;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.PluginChecker;
 import org.talend.core.model.components.AbstractCustomComponentsProvider;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.IComponentsFactory;
@@ -41,9 +38,6 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.codegen.CodeGeneratorActivator;
 import org.talend.designer.codegen.components.ui.IComponentPreferenceConstant;
 import org.talend.repository.ProjectManager;
-import org.talend.utils.json.JSONArray;
-import org.talend.utils.json.JSONException;
-import org.talend.utils.json.JSONObject;
 
 /***/
 public class UserComponentsProvider extends AbstractCustomComponentsProvider {
@@ -83,73 +77,25 @@ public class UserComponentsProvider extends AbstractCustomComponentsProvider {
         // 2. copy old CF components from <project>/components
         final File installationFolder = getInstallationFolder();
 
-        String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONArray installedNewCFComponentsJson = new JSONArray();
-        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            try {
-                installedNewCFComponentsJson = new JSONArray(installedComponentsValues);
-            } catch (JSONException e) {
-                ExceptionHandler.process(e);
-            }
-        }
-
         // synchroniz shared custom component
-        if (PluginChecker.isSVNProviderPluginLoaded()) {
-            Set<Project> allProjects = new HashSet<Project>();
-            allProjects.add(ProjectManager.getInstance().getCurrentProject());
-            allProjects.addAll(ProjectManager.getInstance().getAllReferencedProjects());
-            for (Project project : allProjects) {
-                String projectLabel = project.getTechnicalLabel();
-                IProject eclipseProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectLabel);
-                String sourcePath = eclipseProject.getLocation().toString() + "/"
-                        + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
-                File source = new File(sourcePath);
-                if (source.exists()) {
-                    final File[] listFiles = source.listFiles(ff);
-                    if (listFiles != null) {
-                        for (File file : listFiles) {
-                            if (file.isFile() && UpdatesHelper.isComponentUpdateSite(file)) {
-                                String componentZipName = file.getName();
-
-                                try {
-                                    boolean found = false;
-                                    for (int i = 0; i < installedNewCFComponentsJson.length(); i++) {
-                                        final JSONObject jsonObj = installedNewCFComponentsJson.getJSONObject(i);
-                                        if (jsonObj.has(IComponentPreferenceConstant.JSON_KEY_FILE_NAME)) {
-                                            final String filename = jsonObj
-                                                    .getString(IComponentPreferenceConstant.JSON_KEY_FILE_NAME);
-                                            if (filename.equals(componentZipName)) { // same name
-                                                final long filechecksum = org.talend.utils.io.FilesUtils.getChecksumAlder32(file);
-                                                final JSONArray jsonArray = jsonObj
-                                                        .getJSONArray(IComponentPreferenceConstant.JSON_KEY_CHECKSUM);
-                                                for (int csIndex = 0; csIndex < jsonArray.length(); csIndex++) {
-                                                    if (filechecksum == jsonArray.getLong(csIndex)) {
-                                                        found = true;
-                                                    }
-                                                }
-                                                // same contents
-                                            }
-                                        }
-
-                                    }
-
-                                    if (!found) {
-                                        if (!getNeedInstalledNewCFComponents().has(projectLabel)) {
-                                            getNeedInstalledNewCFComponents().put(projectLabel, new JSONArray());
-                                        }
-                                        final JSONArray array = getNeedInstalledNewCFComponents().getJSONArray(projectLabel);
-                                        array.put(file.getAbsolutePath());
-                                    } // else { //if found, will ignore to install.
-
-                                } catch (JSONException e) {
-                                    ExceptionHandler.process(e);
-                                }
-
-                            } else if (UpdatesHelper.isOldComponent(file)) {
-                                FilesUtils.copyFolder(file, new File(installationFolder.getAbsolutePath(), file.getName()), true,
-                                        ff, null, true, false);
-                            }
+        Set<Project> allProjects = new HashSet<Project>();
+        allProjects.add(ProjectManager.getInstance().getCurrentProject());
+        allProjects.addAll(ProjectManager.getInstance().getAllReferencedProjects());
+        for (Project project : allProjects) {
+            String projectLabel = project.getTechnicalLabel();
+            IProject eclipseProject = ResourcesPlugin.getWorkspace().getRoot().getProject(projectLabel);
+            String sourcePath = eclipseProject.getLocation().toString() + "/"
+                    + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
+            File source = new File(sourcePath);
+            if (source.exists()) {
+                final File[] listFiles = source.listFiles(ff);
+                if (listFiles != null) {
+                    for (File file : listFiles) {
+                        if (file.isFile() && UpdatesHelper.isComponentUpdateSite(file)) {
+                            // TUP-17680, won't support to install the new CF from project
+                        } else if (UpdatesHelper.isOldComponent(file)) {
+                            FilesUtils.copyFolder(file, new File(installationFolder.getAbsolutePath(), file.getName()), true, ff,
+                                    null, true, false);
                         }
                     }
                 }
