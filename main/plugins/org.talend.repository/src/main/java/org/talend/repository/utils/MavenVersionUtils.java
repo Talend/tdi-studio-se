@@ -15,26 +15,39 @@ package org.talend.repository.utils;
 import java.util.ArrayList;
 
 import org.eclipse.emf.common.util.EMap;
+import org.osgi.framework.Version;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.maven.MavenConstants;
 
 public class MavenVersionUtils {
+    
+    public final static String DOT_SNAPSHOT = ".SNAPSHOT"; //$NON-NLS-1$
 
-    public static final String DEFAULT_MAVEN_VERSION = "1.0.0"; //$NON-NLS-1$
+    public final static String SLASH_SNAPSHOT = "-SNAPSHOT"; //$NON-NLS-1$
+
+    public final static String DEFAULT_MAVEN_VERSION = "1.0.0"; //$NON-NLS-1$
 
     private static ArrayList<ERepositoryObjectType> versioningTypes;
 
     private static ArrayList<ERepositoryObjectType> hasSubjobTypes;
 
-    public static boolean isValidMavenVersion(String version) {
-        String mavenVersionPattern = "\\d+\\.\\d+\\.\\d+.*"; //$NON-NLS-1$
-        String[] fragments = version.split(" "); //$NON-NLS-1$
-        if (fragments.length > 1) {
+    public static boolean isValidMavenVersion(String version, boolean isSnapshot) {
+        if (version == null || version.trim().equals("")) { //$NON-NLS-1$
             return false;
         }
-        return version.matches(mavenVersionPattern);
+        version = version.trim();
+        if (isSnapshot) {
+            version += MavenVersionUtils.DOT_SNAPSHOT;
+        }
+        try {
+            Version.parseVersion(version);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     public static String getItemMavenVersion(Property property) {
@@ -77,9 +90,7 @@ public class MavenVersionUtils {
             if (ERepositoryObjectType.PROCESS_ROUTE != null) {
                 versioningTypes.add(ERepositoryObjectType.PROCESS_ROUTE);
             }
-            if (ERepositoryObjectType.TEST_CONTAINER != null) {
-                versioningTypes.add(ERepositoryObjectType.TEST_CONTAINER);
-            }
+
         }
         return versioningTypes.contains(type);
     }
@@ -106,6 +117,51 @@ public class MavenVersionUtils {
     public static String getDefaultVersion(String version) {
         String defaultVersion = VersionUtils.getPublishVersion(version);
         return defaultVersion == null ? "" : defaultVersion; //$NON-NLS-1$
+    }
+
+    public static synchronized boolean containsKey(Object object, Object key) {
+        if (object instanceof IProcess2) {
+            return ((IProcess2) object).getAdditionalProperties().containsKey(key);
+        }
+        if (object instanceof Property) {
+            return ((Property) object).getAdditionalProperties().containsKey(key);
+        }
+        return false;
+    }
+
+    public static synchronized void remove(Object object, Object key) {
+        if (object instanceof IProcess2) {
+            ((IProcess2) object).getAdditionalProperties().remove(key);
+        } else if (object instanceof Property) {
+            ((Property) object).getAdditionalProperties().remove(key);
+        }
+    }
+    
+    public static synchronized Object get(Object object, Object key) {
+        if (object instanceof IProcess2) {
+            return ((IProcess2) object).getAdditionalProperties().get(key);
+        } else if (object instanceof Property) {
+            return ((Property) object).getAdditionalProperties().get(key);
+        }
+        return null;
+    }
+
+    public static synchronized void put(Object object, Object key, Object value) {
+        if (object instanceof IProcess2) {
+            ((IProcess2) object).getAdditionalProperties().put(key, value);
+        } else if (object instanceof Property) {
+            ((Property) object).getAdditionalProperties().put(key, value);
+        }
+    }
+    
+    public static synchronized boolean isAdditionalPropertiesNull(Object object) {
+        if (object instanceof IProcess2) {
+            return ((IProcess2) object).getAdditionalProperties() == null;
+        } 
+        if (object instanceof Property) {
+            return ((Property) object).getAdditionalProperties() == null;
+        }
+        return true;
     }
 
 }
