@@ -122,4 +122,93 @@ public class FunctionManagerExtTest {
         }
     }
 
+    @Test
+    public void testGetOneColDataNull1() {
+        FunctionManagerExt functionManagerExt = new FunctionManagerExt();
+        assertNull(functionManagerExt.getOneColData(null));
+        assertNull(functionManagerExt.getOneColData(null, true));
+        assertNull(functionManagerExt.getOneColData(null, true, true));
+    }
+
+    @Test
+    public void testGetOneColDataNull2() {
+        // test function/function name as null or ""
+        FunctionManagerExt functionManagerExt = new FunctionManagerExt();
+        MetadataColumn newColumn = new MetadataColumn();
+        newColumn.setLabel("newColumn"); //$NON-NLS-1$
+        newColumn.setTalendType(JavaTypesManager.STRING.getId());
+        MetadataColumnExt columnExt = new MetadataColumnExt(newColumn);
+        assertNull(functionManagerExt.getOneColData(columnExt));
+
+        Function function = new Function();
+        columnExt.setFunction(function);
+        String value = functionManagerExt.getOneColData(columnExt);
+        assertEquals(value, "");//$NON-NLS-1$
+    }
+
+    @Test
+    public void testGetOneColDataDefaultFunction() {
+        FunctionManagerExt functionManagerExt = new FunctionManagerExt();
+        MetadataColumn newColumn = new MetadataColumn();
+        newColumn.setLabel("newColumn"); //$NON-NLS-1$
+        newColumn.setTalendType(JavaTypesManager.STRING.getId());
+        MetadataColumnExt columnExt = new MetadataColumnExt(newColumn);
+
+        // Function name as "PURE_PERL_NAME"
+        Function function = new Function();
+        function.setName(PURE_PERL_NAME);
+        function.setDescription(PURE_PERL_DESC);
+
+        StringParameter param = new StringParameter();
+        param.setName(PURE_PERL_PARAM);
+        param.setValue("value1");//$NON-NLS-1$
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(param);
+        function.setParameters(params);
+        columnExt.setFunction(function);
+
+        String value = functionManagerExt.getOneColData(columnExt);
+        assertEquals(value, param.getValue());
+    }
+
+    @Test
+    public void testGetOneColData() {
+        FunctionManagerExt functionManagerExt = new FunctionManagerExt();
+        MetadataColumn newColumn = new MetadataColumn();
+        newColumn.setLabel("newColumn"); //$NON-NLS-1$
+        newColumn.setTalendType(JavaTypesManager.STRING.getId());
+        MetadataColumnExt columnExt = new MetadataColumnExt(newColumn);
+
+        Function function = new Function();
+        function.setName("UPCASE");//$NON-NLS-1$
+        function.setDescription(PURE_PERL_DESC);
+        function.setClassName("StringHandling");//$NON-NLS-1$
+
+        StringParameter param = new StringParameter();
+        param.setName("string");//$NON-NLS-1$
+        param.setValue("\"Hello\"");//$NON-NLS-1$
+        param.setType(JavaTypesManager.STRING.getId());
+        param.setComment("String");//$NON-NLS-1$
+        List<Parameter> params = new ArrayList<Parameter>();
+        params.add(param);
+        function.setParameters(params);
+        columnExt.setFunction(function);
+
+        // replace as false
+        String value = functionManagerExt.getOneColData(columnExt);
+        assertEquals(value, "StringHandling.UPCASE(\"Hello\")");//$NON-NLS-1$
+
+        value = functionManagerExt.getOneColData(columnExt, false);
+        assertEquals(value, "StringHandling.UPCASE(\"Hello\")");//$NON-NLS-1$
+
+        value = functionManagerExt.getOneColData(columnExt, false, false);
+        assertEquals(value, "StringHandling.UPCASE(\"Hello\")");//$NON-NLS-1$
+
+        // replace as true
+        value = functionManagerExt.getOneColData(columnExt, true);
+        assertEquals(value, "StringHandling.UPCASE(${0})");//$NON-NLS-1$
+
+        value = functionManagerExt.getOneColData(columnExt, false, true);
+        assertEquals(value, "StringHandling.UPCASE(${0})");//$NON-NLS-1$
+    }
 }
