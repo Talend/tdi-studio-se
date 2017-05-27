@@ -1595,7 +1595,22 @@ public class Component extends AbstractBasicComponent {
     @Override
     public boolean isTechnical() {
         if (technical != null) {
-            return technical;
+            if (technical) {
+                return true;
+            } else {
+                if (isFamilyNameEmpty()) {// TUP-17720 when family name is null, should not show component
+                    return true;
+                }
+            }
+        } else {
+            return isFamilyNameEmpty();
+        }
+        return false;
+    }
+
+    public boolean isFamilyNameEmpty() {
+        if (getOriginalFamilyName() == null || getOriginalFamilyName().trim().isEmpty()) {
+            return true;
         }
         return false;
     }
