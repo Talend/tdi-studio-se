@@ -293,6 +293,7 @@ public class ExcelTool {
 
 	public void writeExcel(OutputStream outputStream) throws Exception {
 		wb.write(outputStream);
+		outputStream.close();
 	}
 
 	public void writeExcel(String fileName, boolean createDir) throws Exception {
