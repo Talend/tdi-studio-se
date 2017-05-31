@@ -79,12 +79,14 @@ if("".equals(tempPath))tempPath="\"\"";
 	config_<%=cid%>.setKeyStorePwd(System.getProperty("javax.net.ssl.keyStorePassword"));
 
 <%
-passwordFieldName = "__AUTH_PASSWORD__";
+if(needAuth || useNTLM){
+	passwordFieldName = "__AUTH_PASSWORD__";
 %>
 
-<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 <%
+}
 if (needSSLtoTrustServer) {
 %>
     System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");

@@ -14,6 +14,7 @@ package org.talend.repository.generic.ui.dnd;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avro.Schema;
@@ -23,6 +24,7 @@ import org.junit.Test;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.salesforce.SalesforceConnectionProperties;
 import org.talend.components.salesforce.SalesforceModuleProperties;
 import org.talend.core.context.Context;
@@ -34,6 +36,7 @@ import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.metadata.types.JavaTypesManager;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -47,8 +50,11 @@ import org.talend.core.model.update.UpdateResult;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.daikon.properties.presentation.Form;
+import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository;
 import org.talend.designer.core.ui.editor.cmd.RepositoryChangeMetadataCommand;
@@ -107,7 +113,42 @@ public class RepositoryUpdateTest {
             }
         }
     }
-    
+
+    @Test
+    public void testRepositoryResetParams() throws PersistenceException {
+        String id = "testId"; //$NON-NLS-1$
+        try {
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tSalesforceInput", "DI"); //$NON-NLS-1$ //$NON-NLS-2$
+            Node node = new Node(component, new Process(new FakePropertyImpl()));
+
+            GenericConnection connection = (GenericConnection) createBasicConnection(id).getConnection();
+            setupPropertiesWithoutProxy(id);
+            updateNode(id, node, connection);
+
+            testRepositoryValue(node, "connection.userPassword.userId", "\"myUser\""); //$NON-NLS-1$  //$NON-NLS-2$
+            
+            IElementParameter param = node.getElementParameter("connection.userPassword.userId");
+            assertTrue(param.isRepositoryValueUsed());
+            assertNotNull(param.getRepositoryValue());
+            Form form = node.getComponentProperties().getForm(Form.MAIN);
+            
+            List<ElementParameter> parameters = new ArrayList<>();
+            parameters = ComponentsUtils.getParametersFromForm(node, false, EComponentCategory.BASIC, node.getComponentProperties(),
+                    form);
+
+            node.setElementParameters(parameters);
+            param = node.getElementParameter("connection.userPassword.userId");
+            assertTrue(param.isRepositoryValueUsed());
+            assertNotNull(param.getRepositoryValue());
+            
+        } finally {
+            IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getLastVersion(id);
+            if (object != null) {
+                ProxyRepositoryFactory.getInstance().deleteObjectPhysical(object);
+            }
+        }
+    }
+
     @Test
     public void testRepositoryChangeFromConnection() throws PersistenceException {
         String id = "testId"; //$NON-NLS-1$

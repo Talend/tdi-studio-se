@@ -548,34 +548,45 @@ skeleton="../templates/db_output_bulk.skeleton"
                     }
                 }
 %>
-				exInsertColValue<%=cid%> = new BufferLine_<%=cid%>(
+				exInsertColValue<%=cid%> = new BufferLine_<%=cid%>();
 <%
-	                int count =0;
-	                for(Column column : colStruct) {
-	                    if(column.isInsertable()) {
-	                        if(count != 0) {
+                int count = 0;
+                for(Column column : colStruct) {
+                    if(column.isInsertable()) {
+                    	if(count==0) {
+                    	%>
+                    	exInsertColValue<%=cid%>
+                    	<%
+                    	}
 %>
-	                            ,
+                        .c<%=count%>(<%=incomingConnName%>.<%=column.getName()%>)
 <%
-	                        }
-%>
-	                        <%=incomingConnName%>.<%=column.getName()%>
-<%
-	                        count++;
-	                    }
-	                }
+                        count++;
+                    }
+                }
 
-	                if(isDynamic) {
-	                    Column dynamicColumn = getColumn(getDynamicColumn());
-		                String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-		                if("Dynamic".equals(typeToGenerate)) {
-		                %>
-                    	<%if(count>0){%>,<%}%> <%=incomingConnName%>.<%=dynamicColumn.getName()%>.clone()
-	                	<%
-	                	}
-           	 		}
+                if(isDynamic) {
+                    Column dynamicColumn = getColumn(getDynamicColumn());
+	                String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
+	                if("Dynamic".equals(typeToGenerate)) {
+						if(count==0){
+						%>
+						exInsertColValue<%=cid%>
+						<%
+						}
 %>
-				);
+						.c<%=count%>(<%=incomingConnName%>.<%=dynamicColumn.getName()%>.clone())
+<%
+                		count++;
+                	}
+       	 		}
+       	 		
+       	 		if(count > 0) {
+%>
+				;
+<%
+       	 		}
+%>
 
 				exInsertColValueList<%=cid%>.add(exInsertColValue<%=cid%>);
 				rowCount<%=cid%>++;

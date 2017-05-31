@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nl
 Bundle-SymbolicName: org.talend.repository.ftp.nl
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Fragment-Host: org.talend.repository.ftp

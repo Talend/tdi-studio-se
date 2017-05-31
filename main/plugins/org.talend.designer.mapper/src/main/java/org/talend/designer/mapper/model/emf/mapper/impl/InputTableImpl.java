@@ -380,5 +380,69 @@ public class InputTableImpl extends AbstractInOutTableImpl implements InputTable
         result.append(')');
         return result.toString();
     }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        InputTableImpl other = (InputTableImpl) obj;
+        if (this.innerJoin != other.innerJoin) {
+            return false;
+        }
+        
+        if (this.persistent != other.persistent) {
+            return false;
+        }
+        
+        if (this.lookupMode == null) {
+            if (other.lookupMode != null) {
+                return false;
+            }
+        } else if (!this.lookupMode.equals(other.lookupMode)) {
+            return false;
+        }
+        
+        if (this.matchingMode == null) {
+            if (other.matchingMode != null) {
+                return false;
+            }
+        } else if (!this.matchingMode.equals(other.matchingMode)) {
+            return false;
+        }
+        
+        EList<MapperTableEntry> otherEntries = other.getGlobalMapKeysValues();
+        if(getGlobalMapKeysValues().size() != otherEntries.size()){
+            return false;
+        }
+        for(MapperTableEntry entry:getGlobalMapKeysValues()){
+            boolean found = false;
+            for(MapperTableEntry otherEntry:otherEntries){
+                if(entry.getName().equals(otherEntry.getName())){
+                    found = true;
+                    if(!entry.equals(otherEntry)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+
+        return super.equals(obj);
+    }
 
 } //InputTableImpl

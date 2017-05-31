@@ -22,7 +22,6 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.talend.designer.core.model.utils.emf.talendfile.impl.AbstractExternalDataImpl;
-
 import org.talend.designer.mapper.model.emf.mapper.InputTable;
 import org.talend.designer.mapper.model.emf.mapper.MapperData;
 import org.talend.designer.mapper.model.emf.mapper.MapperPackage;
@@ -297,4 +296,83 @@ public class MapperDataImpl extends AbstractExternalDataImpl implements MapperDa
         return super.eIsSet(featureID);
     }
 
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MapperDataImpl dbObj = (MapperDataImpl) obj;
+        EList<InputTable> inputs = dbObj.getInputTables();
+        EList<OutputTable> outputs =dbObj.getOutputTables();
+        EList<VarTable> vars =dbObj.getVarTables();
+        if(inputs.size() != getInputTables().size()){
+            return false;
+        }
+        if(outputs.size() != getOutputTables().size()){
+            return false;
+        }
+        if(vars.size() != getVarTables().size()){
+            return false;
+        }
+        for(InputTable inputTable:inputTables){
+            boolean found = false;
+            for(InputTable input:inputs){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(OutputTable outputTable:outputTables){
+            boolean found = false;
+            for(OutputTable output:outputs){
+                if(outputTable.getName().equals(output.getName())){
+                    found = true;
+                    if(!outputTable.equals(output)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(VarTable varTable:varTables){
+            boolean found = false;
+            for(VarTable var:vars){
+                if(varTable.getName().equals(var.getName())){
+                    found = true;
+                    if(!varTable.equals(var)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
+    }
 } //MapperDataImpl

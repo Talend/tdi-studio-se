@@ -79,13 +79,12 @@ public class GenericWizardInternalService implements IGenericWizardInternalServi
     @Override
     public ERepositoryObjectType createRepositoryType(String type, String label, String alias, String folder, int ordinal) {
         Constructor<ERepositoryObjectType> dynamicConstructor = getConstructor(ERepositoryObjectType.class, new Class[] {
-                String.class, String.class, String.class, String.class, int.class, boolean.class, String.class, String[].class,
-                boolean.class, String[].class, boolean[].class });
+                String.class, String.class, String.class, String.class, int.class, String[].class });
         ERepositoryObjectType typeObject = null;
         try {
             dynamicConstructor.setAccessible(true);
-            typeObject = dynamicConstructor.newInstance(type, label, folder, type, ordinal, false, alias,
-                    new String[] { ERepositoryObjectType.PROD_DI }, false, new String[0], new boolean[] { true });
+            typeObject = dynamicConstructor.newInstance(type, label, alias, folder, ordinal,
+                    new String[] { ERepositoryObjectType.PROD_DI });
             typeObject.setAParent(ERepositoryObjectType.METADATA);
         } catch (Exception e) {
             ExceptionHandler.process(e);

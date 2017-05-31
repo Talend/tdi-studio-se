@@ -84,7 +84,39 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 %>
 	}
 <%
-} else {
+} else if(hiveDistrib.isGoogleDataprocDistribution()) {
+    if(isLog4jEnabled) {
+%>
+        log.debug("Query for <%=cid%>: " + query_<%=cid %>.replace("';'", "'\\;'") + ";");
+<%
+    }
+%>
+    query_<%=cid %> = <%=dbquery%>;
+    instance_<%=cid%>.addQuery(query_<%=cid %>.replace("';'", "'\\;'") + ";");
+    globalMap.put("<%=cid%>_QUERY", query_<%=cid %>);
+    int exitCode_<%=cid%> = instance_<%=cid%>.executeJob();
+    System.out.println(instance_<%=cid%>.getJobLog());
+    if(exitCode_<%=cid%> > 0) {
+
+<%
+        if(("true").equals(dieOnError)) {
+%>
+            throw new Exception("The Hive job failed. Please read the logs for more details");
+<%
+        } else {
+%>
+            System.err.println("The Hive job failed. Please read the logs for more details");
+<%
+            if(isLog4jEnabled) {
+%>
+                log.error("<%=cid%> - The Hive job failed. Please read the logs for more details");
+<%
+            }
+        }
+%>
+    }
+<%
+} else { // normal mode
 	List<Map<String, String>> prepareStatementParameters = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SET_PREPAREDSTATEMENT_PARAMETERS__");  
 	
 	String incomingConnName = null;

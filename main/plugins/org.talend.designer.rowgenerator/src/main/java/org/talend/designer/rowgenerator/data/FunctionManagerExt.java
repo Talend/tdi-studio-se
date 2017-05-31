@@ -278,7 +278,7 @@ public class FunctionManagerExt extends FunctionManager {
         if (bean != null && bean.getFunction() != null) {
             String newValue = addPreSuffix ? PERL_FUN_PREFIX : ""; //$NON-NLS-1$
             String name = bean.getFunction().getName();
-            if (name.equals(PURE_PERL_NAME)) {
+            if (PURE_PERL_NAME.equals(name)) {
                 newValue = ((StringParameter) bean.getFunction().getParameters().get(0)).getValue();
             } else {
                 if (name == null || "".equals(name)) { //$NON-NLS-1$

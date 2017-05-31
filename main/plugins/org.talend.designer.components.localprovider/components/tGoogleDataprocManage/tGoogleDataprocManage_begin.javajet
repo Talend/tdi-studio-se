@@ -1,0 +1,117 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		java.util.Map
+		java.util.HashMap
+		java.util.List
+		java.util.ArrayList
+	"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+
+	String projectId = ElementParameterParser.getValue(node, "__GOOGLE_PROJECT_ID__");
+	String clusterId = ElementParameterParser.getValue(node, "__GOOGLE_CLUSTER_ID__");
+	
+	boolean useServiceAccount = ElementParameterParser.getBooleanValue(node, "__DEFINE_PATH_TO_GOOGLE_CREDENTIALS__");
+	String serviceAccountCredentialsPath = ElementParameterParser.getValue(node, "__PATH_TO_GOOGLE_CREDENTIALS__");
+	
+	String action = ElementParameterParser.getValue(node, "__ACTION__");
+	String version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
+	String zone = ElementParameterParser.getValue(node, "__ZONE__");
+			
+	String masterNumInstances = ElementParameterParser.getValue(node, "__MASTER_NUM_INSTANCES__");
+	String masterInstanceType = ElementParameterParser.getValue(node, "__MASTER_INSTANCE_TYPE__");
+	String workerNumInstances = ElementParameterParser.getValue(node, "__WORKER_NUM_INSTANCES__");
+	String workerInstanceType = ElementParameterParser.getValue(node, "__WORKER_INSTANCE_TYPE__");
+	String secondaryWorkerNumInstances = ElementParameterParser.getValue(node, "__SECONDARY_WORKER_NUM_INSTANCES__");
+	
+	boolean waitForClusterReady = ElementParameterParser.getBooleanValue(node, "__WAIT_FOR_CLUSTER_READY__");
+	
+	String masterDiskSize = ElementParameterParser.getValue(node, "__MASTER_DISK_SIZE__");
+	String masterSsdNb = ElementParameterParser.getValue(node, "__MASTER_SSD_NB__");
+	String workerDiskSize = ElementParameterParser.getValue(node, "__WORKER_DISK_SIZE__");
+	String workerSsdNb = ElementParameterParser.getValue(node, "__WORKER_SSD_NB__");
+	
+	boolean defineNetwork = ElementParameterParser.getBooleanValue(node, "__DEFINE_NETWORK__");
+	boolean defineSubnetwork = ElementParameterParser.getBooleanValue(node, "__DEFINE_SUBNETWORK__");
+	String network = ElementParameterParser.getValue(node, "__NETWORK__");
+	String subnetwork = ElementParameterParser.getValue(node, "__SUBNETWORK__");
+	
+	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	
+	List<Map<String, String>> initializationActions = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__INITIALIZATION_ACTIONS__");
+%>
+
+<%
+	if("START".equals(action)) {
+%>
+		java.util.List<org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.InitializationActionHolder> <%=cid%>_initializationActions = new java.util.ArrayList<>();
+<%
+	   for (Map<String, String> initializationAction : initializationActions) {
+%>
+			<%=cid%>_initializationActions.add(new org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.InitializationActionHolder(<%=initializationAction.get("EXECUTABLE_FILE")%>, <%=initializationAction.get("EXECUTABLE_TIMEOUT")%>));
+<%
+		}
+%>
+		org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.newBuilder() //
+         .withProjectId(<%=projectId%>) //
+			.withClusterName(<%=clusterId%>) //
+         .withRegion("global") //
+         .withZone(<%=zone%>) //
+         .withVersion(<%=version%>) //
+         .withMasterNumInstances(<%=masterNumInstances%>) //
+         .withMasterBootDiskSizeGb(<%=masterDiskSize%>) //
+         .withMasterNumLocalSsds(<%=masterSsdNb%>) //
+         .withMasterInstanceType(<%=masterInstanceType%>) //
+         .withWorkerNumInstances(<%=workerNumInstances%>) //
+         .withWorkerBootDiskSizeGb(<%=workerDiskSize%>) //
+         .withWorkerInstanceType(<%=workerInstanceType%>) //
+         .withSecondaryWorkerNumInstances(<%=secondaryWorkerNumInstances%>) //
+         .withTalendJobName(projectName + "_" + jobName + "_" + jobVersion.replace(".","_") + "_" + pid) //
+         .withWaitForClusterReady(<%=waitForClusterReady%>) //
+<%
+			if(defineNetwork) {
+%>
+         	.withNetworkName(<%=network%>) //
+<%
+			} else if(defineSubnetwork) {
+%>
+         	.withSubnetworkName(<%=subnetwork%>) //
+<%
+			}
+			
+			if(useServiceAccount) {
+%>
+				.withServiceAccountCredentialsPath(<%=serviceAccountCredentialsPath%>) //
+<%
+			}
+%>
+         .withInitializationActions(<%=cid%>_initializationActions) //
+         .build() //
+         .run();
+<%
+	} else if("STOP".equals(action)) {
+%>
+		org.talend.bigdata.manage.google.dataproc.DataprocDeleteCluster.newBuilder() //
+         .withProjectId(<%=projectId%>) //
+			.withClusterName(<%=clusterId%>) //
+			.withRegion("global") //
+         .withTalendJobName(projectName + "_" + jobName + "_" + jobVersion.replace(".","_") + "_" + pid) //
+<%
+			if(useServiceAccount) {
+%>
+				.withServiceAccountCredentialsPath(<%=serviceAccountCredentialsPath%>) //
+<%
+			}
+%>
+			.build() //
+			.run();
+<%
+	}
+%>

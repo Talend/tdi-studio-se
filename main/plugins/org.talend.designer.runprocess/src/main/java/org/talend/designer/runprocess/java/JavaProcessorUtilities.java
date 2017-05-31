@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -55,7 +54,6 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -208,16 +206,8 @@ public class JavaProcessorUtilities {
             }
         } else {
             if (property != null && property.getItem() instanceof ProcessItem) {
-                List<ModuleNeeded> modulesNeededs = ModulesNeededProvider.getModulesNeededForRoutines(
-                        (ProcessItem) property.getItem(), ERepositoryObjectType.ROUTINES);
-                for (ModuleNeeded moduleNeeded : modulesNeededs) {
-                    neededLibraries.add(moduleNeeded);
-                }
-                List<ModuleNeeded> modulesForPigudf = ModulesNeededProvider.getModulesNeededForRoutines(
-                        (ProcessItem) property.getItem(), ERepositoryObjectType.PIG_UDF);
-                for (ModuleNeeded moduleNeeded : modulesForPigudf) {
-                    neededLibraries.add(moduleNeeded);
-                }
+                neededLibraries
+                        .addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) property.getItem(), process));
 
             } else {
                 for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
@@ -335,7 +325,7 @@ public class JavaProcessorUtilities {
         Set<ModuleNeeded> optionalJarsOnlyForRoutines = new HashSet<ModuleNeeded>();
 
         // only for wizards or additional jars only to make the java project compile without any error.
-        for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getRunningModules()) {
+        for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getSystemRunningModules()) {
             optionalJarsOnlyForRoutines.add(moduleNeeded);
         }
 

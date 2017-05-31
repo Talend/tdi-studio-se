@@ -21,7 +21,8 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
+import org.talend.designer.xmlmap.model.emf.xmlmap.Connection;
+import org.talend.designer.xmlmap.model.emf.xmlmap.FilterConnection;
 import org.talend.designer.xmlmap.model.emf.xmlmap.LookupConnection;
 import org.talend.designer.xmlmap.model.emf.xmlmap.NodeType;
 import org.talend.designer.xmlmap.model.emf.xmlmap.TreeNode;
@@ -884,6 +885,100 @@ public class TreeNodeImpl extends AbstractNodeImpl implements TreeNode {
         result.append(optional);
         result.append(')');
         return result.toString();
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        TreeNodeImpl other = (TreeNodeImpl) obj;
+        if (this.xpath == null) {
+            if (other.xpath != null) {
+                return false;
+            }
+        } else if (!this.xpath.equals(other.xpath)) {
+            return false;
+        }
+        if (this.pattern == null) {
+            if (other.pattern != null) {
+                return false;
+            }
+        } else if (!this.pattern.equals(other.pattern)) {
+            return false;
+        }
+        if (this.nodeType == null) {
+            if (other.nodeType != null) {
+                return false;
+            }
+        } else if (this.nodeType.getValue() != other.nodeType.getValue()) {
+            return false;
+        }else if (!this.nodeType.getLiteral().equals(other.nodeType.getLiteral())) {
+            return false;
+        }else if (!this.nodeType.getName().equals(other.nodeType.getName())) {
+            return false;
+        }
+        if(this.group != other.group){
+            return false;
+        }
+        if(this.nullable != other.nullable){
+            return false;
+        }
+        if(this.key != other.key){
+            return false;
+        }
+        if(this.choice != other.choice){
+            return false;
+        }
+        if(this.optional != other.optional){
+            return false;
+        }
+        if(this.loop != other.loop){
+            return false;
+        }
+        if(this.main != other.main){
+            return false;
+        }
+        if(this.substitution != other.substitution){
+            return false;
+        }
+        if(this.getChildren().size() != this.getChildren().size()){
+            return false;
+        }
+        if(this.getLookupIncomingConnections().size() != this.getLookupIncomingConnections().size()){
+            return false;
+        }
+        if(this.getLookupOutgoingConnections().size() != this.getLookupOutgoingConnections().size()){
+            return false;
+        }
+        
+        for(TreeNode inputTable:getChildren()){
+            boolean found = false;
+            for(TreeNode input:other.getChildren()){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return super.equals(obj);
     }
 
 } //TreeNodeImpl

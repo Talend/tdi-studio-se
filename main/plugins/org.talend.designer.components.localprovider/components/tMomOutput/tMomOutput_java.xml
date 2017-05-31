@@ -414,12 +414,12 @@
   <CODEGENERATION>
     <IMPORTS>
       <!-- ActiveMQ -->
-      <IMPORT NAME="activemq-client-5.14.4.jar" MODULE="activemq-client-5.14.4.jar" MVN="mvn:org.talend.libraries/activemq-client-5.14.4/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
+      <IMPORT NAME="activemq-client-5.14.5.jar" MODULE="activemq-client-5.14.5.jar" MVN="mvn:org.talend.libraries/activemq-client-5.14.5/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       <IMPORT NAME="geronimo-jms_1.1_spec-1.1.1.jar" MODULE="geronimo-jms_1.1_spec-1.1.1.jar" MVN="mvn:org.talend.libraries/geronimo-jms_1.1_spec-1.1.1/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       <IMPORT NAME="geronimo-j2ee-management_1.1_spec-1.0.1.jar" MODULE="geronimo-j2ee-management_1.1_spec-1.0.1.jar" MVN="mvn:org.talend.libraries/geronimo-j2ee-management_1.1_spec-1.0.1/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       <IMPORT NAME="hawtbuf-1.11.jar" MODULE="hawtbuf-1.11.jar" MVN="mvn:org.talend.libraries/hawtbuf-1.11/6.3.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
-      <IMPORT NAME="slf4j-api-1.7.10.jar" MODULE="slf4j-api-1.7.10.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.10.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.10/6.1.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
-      <IMPORT NAME="slf4j-log4j12-1.7.10.jar" MODULE="slf4j-log4j12-1.7.10.jar" UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.10.jar" MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.10/6.1.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
+      <IMPORT NAME="slf4j-api-1.7.16.jar" MODULE="slf4j-api-1.7.16.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.16/6.0.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
+      <IMPORT NAME="slf4j-log4j12-1.7.16.jar" MODULE="slf4j-log4j12-1.7.16.jar" MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.16/6.0.0" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'ACTIVEMQ')" />
       
       <!-- JBOSS -->
       <IMPORT NAME="JAVA_SSIST" MODULE="javassist.jar" MVN="mvn:org.talend.libraries/javassist/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'JBOSS')" />

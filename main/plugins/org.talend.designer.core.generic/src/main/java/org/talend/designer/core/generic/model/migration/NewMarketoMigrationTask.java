@@ -56,6 +56,20 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
             if ("OPERATION".equals(paramName) && "getMutipleLeads".equals(String.valueOf(value))) {
                 paramType.setValue("getMultipleLeads");
             }
+            // Correct ListOperation value
+            if ("OPERATION".equals(paramName) && "tMarketoListOperation".equals(componentName)) {
+                switch(String.valueOf(value)){
+                case "ADDTOLIST":
+                    paramType.setValue("addTo");
+                    break;
+                case "ISMEMBEROFLIST":
+                    paramType.setValue("isMemberOf");
+                    break;
+                case "REMOVEFROMLIST":
+                    paramType.setValue("removeFrom");
+                    break;
+                }
+            }
             // MAX_RETURN should be taken in account when
             // OPERATION=getMutipleLeads and LEAD_SELECTOR=LeadKeySelector
             // Otherwise, we feed the value with BATCH_SIZE.

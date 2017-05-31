@@ -7,13 +7,14 @@
 package org.talend.designer.dbmap.model.emf.dbmap.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
+import org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
 import org.talend.designer.dbmap.model.emf.dbmap.InputTable;
+import org.talend.designer.dbmap.model.emf.dbmap.VarTable;
 
 /**
  * <!-- begin-user-doc -->
@@ -216,5 +217,41 @@ public class InputTableImpl extends AbstaceDBInOutTableImpl implements InputTabl
         result.append(')');
         return result.toString();
     }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        InputTableImpl other = (InputTableImpl) obj;
+        if (this.alias == null) {
+            if (other.alias != null) {
+                return false;
+            }
+        } else if (!this.alias.equals(other.alias)) {
+            return false;
+        }
+        
+        if (this.joinType == null) {
+            if (other.joinType != null) {
+                return false;
+            }
+        } else if (!this.joinType.equals(other.joinType)) {
+            return false;
+        }
 
+        return super.equals(obj);
+    }
+    
 } //InputTableImpl

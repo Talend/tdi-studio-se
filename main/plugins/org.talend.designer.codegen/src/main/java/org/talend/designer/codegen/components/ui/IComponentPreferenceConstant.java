@@ -29,8 +29,6 @@ public interface IComponentPreferenceConstant {
 
     public static final String LINK_STYLE = "LINK_STYLE"; //$NON-NLS-1$
 
-    static final String INSTALLED_USER_COMPONENTS = "InstalledUserComponents"; //$NON-NLS-1$
-
     static final String JSON_KEY_FILE_NAME = "filename"; //$NON-NLS-1$
 
     static final String JSON_KEY_PROJECT_NAME = "projectname"; //$NON-NLS-1$

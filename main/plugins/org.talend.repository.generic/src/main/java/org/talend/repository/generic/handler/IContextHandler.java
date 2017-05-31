@@ -15,8 +15,8 @@ package org.talend.repository.generic.handler;
 import java.util.List;
 import java.util.Set;
 
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
-import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.metadata.managment.ui.model.IConnParamName;
 
 /**
@@ -31,6 +31,6 @@ public interface IContextHandler {
 
     public boolean revertContext(ConnectionItem connectionItem);
 
-    public void setParameters(List<ElementParameter> parameters);
+    public void setParameters(List<IElementParameter> parameters);
 
 }

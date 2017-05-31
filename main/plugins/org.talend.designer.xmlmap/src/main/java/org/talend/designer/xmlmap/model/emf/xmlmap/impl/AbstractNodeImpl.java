@@ -383,4 +383,55 @@ public abstract class AbstractNodeImpl extends EObjectImpl implements AbstractNo
         return result.toString();
     }
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractNodeImpl other = (AbstractNodeImpl) obj;
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.expression == null) {
+            if (other.expression != null) {
+                return false;
+            }
+        } else if (!this.expression.equals(other.expression)) {
+            return false;
+        }
+        if (this.type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!this.type.equals(other.type)) {
+            return false;
+        }
+        
+        if(this.getFilterOutGoingConnections().size() != this.getFilterOutGoingConnections().size()){
+            return false;
+        }
+        if(this.getIncomingConnections().size() != this.getIncomingConnections().size()){
+            return false;
+        }
+        if(this.getOutgoingConnections().size() != this.getOutgoingConnections().size()){
+            return false;
+        }
+       
+        return true;
+    }
 } //AbstractNodeImpl

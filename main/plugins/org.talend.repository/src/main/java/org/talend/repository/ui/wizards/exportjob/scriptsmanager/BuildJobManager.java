@@ -178,7 +178,7 @@ public class BuildJobManager {
 
         try {
             final int scale = 1000;
-            int total = 3;
+            int total = 4;
             pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * total); //$NON-NLS-1$
             ProcessItem processItem = itemToExport;
             // get correct version
@@ -195,17 +195,21 @@ public class BuildJobManager {
                 @Override
                 public void run(IProgressMonitor wrMonitor) throws CoreException {
                     try {
+                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
+                                scale * 3);
                         TimeMeasure.step(timeMeasureId, "prepare to build job");
 
                         buildJobHandler.generateItemFiles(true, new SubProgressMonitor(wrMonitor, scale));
+                        wrMonitor.worked(scale);
                         TimeMeasure.step(timeMeasureId, "generateItemFiles");
 
                         buildJobHandler.generateJobFiles(new SubProgressMonitor(wrMonitor, scale));
+                        wrMonitor.worked(scale);
                         TimeMeasure.step(timeMeasureId, "generateJobFiles");
 
-                        wrMonitor.setTaskName(Messages.getString("BuildJobManager.building", label));//$NON-NLS-1$
                         buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
                         TimeMeasure.step(timeMeasureId, "build and package");
+                        wrMonitor.done();
                     } catch (Exception e) {
                         throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
                                 this.getClass()).getSymbolicName(), "Error", e));

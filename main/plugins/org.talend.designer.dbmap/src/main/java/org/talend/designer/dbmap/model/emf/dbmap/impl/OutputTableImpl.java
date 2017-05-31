@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
+import org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.DbmapPackage;
 import org.talend.designer.dbmap.model.emf.dbmap.FilterEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.OutputTable;
@@ -145,6 +146,48 @@ public class OutputTableImpl extends AbstaceDBInOutTableImpl implements OutputTa
             return filterEntries != null && !filterEntries.isEmpty();
         }
         return super.eIsSet(featureID);
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OutputTableImpl other = (OutputTableImpl) obj;
+        
+        EList<FilterEntry> otherFilters = other.getFilterEntries();
+        
+        if (getFilterEntries().size() != otherFilters.size()) {
+            return false;
+        }
+        
+        for(FilterEntry filter:getFilterEntries()){
+            boolean found = false;
+            for(FilterEntry otherFilter:otherFilters){
+                if(filter.getName().equals(otherFilter.getName())){
+                    found = true;
+                    if(!filter.equals(otherFilter)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return super.equals(obj);
     }
 
 } // OutputTableImpl

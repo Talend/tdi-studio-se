@@ -40,7 +40,6 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.core.IDesignerCoreService;
@@ -155,16 +154,7 @@ public class JavaProcessUtil {
         if (process instanceof IProcess2) {
             Item item = ((IProcess2) process).getProperty().getItem();
             if (item instanceof ProcessItem) {
-                List<ModuleNeeded> modulesNeededForRoutines = ModulesNeededProvider.getModulesNeededForRoutines(
-                        (ProcessItem) item, ERepositoryObjectType.ROUTINES);
-                if (modulesNeededForRoutines != null) {
-                    modulesNeeded.addAll(modulesNeededForRoutines);
-                }
-                List<ModuleNeeded> modulesNeededForPigudf = ModulesNeededProvider.getModulesNeededForRoutines((ProcessItem) item,
-                        ERepositoryObjectType.PIG_UDF);
-                if (modulesNeededForPigudf != null) {
-                    modulesNeeded.addAll(modulesNeededForPigudf);
-                }
+                modulesNeeded.addAll(ModulesNeededProvider.getModulesNeededForProcess((ProcessItem) item, process));
             }
         }
 

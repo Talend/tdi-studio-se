@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -86,6 +87,8 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     private IGenericWizardInternalService internalService;
 
     private boolean drivedByForm;
+    
+    private PropertyChangeListener wizardPropertyChangeListener;
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
             boolean isCompactView, Color backgroundColor, Form form) {
@@ -164,6 +167,9 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 genericElementParameter.callBeforePresent();
                 genericElementParameter.removePropertyChangeListener(this);
                 genericElementParameter.addPropertyChangeListener(this);
+                if (wizardPropertyChangeListener != null && IGenericConstants.NAME_PROPERTY.equals(parameter.getName())) {
+                    genericElementParameter.addPropertyChangeListener(wizardPropertyChangeListener);
+                }
                 if (EParameterFieldType.SCHEMA_REFERENCE.equals(genericElementParameter.getFieldType())) {
                     if (genericElementParameter.getChildParameters().size() == 0) {
                         IElementParameter schemaParameter = element.getElementParameterFromField(
@@ -425,4 +431,27 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     public void setConnectionItem(ConnectionItem connectionItem) {
         this.connectionItem = connectionItem;
     }
+
+    @Override
+    protected boolean isShouldDisParameter(IElementParameter curParam) {
+        if (EParameterFieldType.PROPERTY_TYPE.equals(curParam.getFieldType())) {
+            IElementParameter compRefParameter = elem.getElementParameterFromField(EParameterFieldType.COMPONENT_REFERENCE);
+            if (compRefParameter != null) {
+                GenericElementParameter gParam = (GenericElementParameter) compRefParameter;
+                ComponentReferenceProperties props = (ComponentReferenceProperties) gParam.getWidget().getContent();
+                return props.getReference() == null;
+            }
+        }
+        return true;
+    }
+
+    
+    /**
+     * Sets the wizardPropertyChangeListener.
+     * @param wizardPropertyChangeListener the wizardPropertyChangeListener to set
+     */
+    public void setWizardPropertyChangeListener(PropertyChangeListener wizardPropertyChangeListener) {
+        this.wizardPropertyChangeListener = wizardPropertyChangeListener;
+    }
+
 }

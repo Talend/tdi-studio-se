@@ -2908,6 +2908,14 @@
               name="Set FailOn property to true if copy directory else set to false"
               version="6.4.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.1.0"
+              class="org.talend.repository.model.migration.spark.SetSparkDataframeAlphabeticalSortOrder"
+              id="org.talend.repository.model.migration.SetSparkDataframeAlphabeticalSortOrder"
+              name="Set the Spark Dataframe Alphabatical sort order in tHiveOutput and tFileOutputParquet"
+              version="6.1.0">
+        </projecttask>
    </extension>
 
    <extension

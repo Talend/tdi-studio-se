@@ -13,11 +13,14 @@
 package org.talend.repository.preference;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.repository.i18n.Messages;
@@ -43,11 +46,15 @@ public class JavaVersionProjectSettingPage extends AbstractProjectSettingPage {
         parent.setLayout(new GridLayout(2, true));
         Label label = new Label(parent, SWT.NONE);
         label.setText(Messages.getString("JavaVersionProjectSettingPage.versionLabel")); //$NON-NLS-1$
-        GridData labelData = new GridData(GridData.BEGINNING, GridData.CENTER, true, false, 1, 1);
+        GridData labelData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
         label.setLayoutData(labelData);
         combo = new Combo(parent, SWT.READ_ONLY);
-        GridData comboData = new GridData(GridData.HORIZONTAL_ALIGN_END);
-        comboData.widthHint = 30;
+        GridData comboData = new GridData(GridData.BEGINNING, GridData.CENTER, false, false, 1, 1);
+        GC gc = new GC(combo);
+        Point labelSize = gc.stringExtent(JavaUtils.DEFAULT_VERSION);
+        gc.dispose();
+        int hint = labelSize.x + (ITabbedPropertyConstants.HSPACE * 14);
+        comboData.widthHint = hint;
         combo.setLayoutData(comboData);
         combo.setItems(JavaUtils.AVAILABLE_VERSIONS.toArray(new String[] {}));
         combo.select(JavaUtils.AVAILABLE_VERSIONS.indexOf(version));

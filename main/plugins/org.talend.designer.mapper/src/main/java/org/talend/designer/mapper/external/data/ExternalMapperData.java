@@ -140,26 +140,62 @@ public class ExternalMapperData implements IExternalData {
             return false;
         }
         final ExternalMapperData other = (ExternalMapperData) obj;
-        if (this.inputTables == null) {
-            if (other.inputTables != null) {
-                return false;
-            }
-        } else if (!this.inputTables.equals(other.inputTables)) {
+        if(this.inputTables.size() != other.inputTables.size()){
             return false;
         }
-        if (this.outputTables == null) {
-            if (other.outputTables != null) {
-                return false;
-            }
-        } else if (!this.outputTables.equals(other.outputTables)) {
+        if(this.outputTables.size() != other.outputTables.size()){
             return false;
         }
-        if (this.varsTables == null) {
-            if (other.varsTables != null) {
+        if(this.varsTables.size() != other.varsTables.size()){
+            return false;
+        }
+        
+        for(ExternalMapperTable inTable:inputTables){
+            boolean found = false;
+            for(ExternalMapperTable otherTable:other.inputTables){
+                if(inTable.getName().equals(otherTable.getName())){
+                    found = true;
+                    if(!inTable.equals(otherTable)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
                 return false;
             }
-        } else if (!this.varsTables.equals(other.varsTables)) {
-            return false;
+        }
+        
+        for(ExternalMapperTable outTable:outputTables){
+            boolean found = false;
+            for(ExternalMapperTable otherTable:other.outputTables){
+                if(outTable.getName().equals(otherTable.getName())){
+                    found = true;
+                    if(!outTable.equals(otherTable)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(ExternalMapperTable varTable:varsTables){
+            boolean found = false;
+            for(ExternalMapperTable var:other.varsTables){
+                if(varTable.getName().equals(var.getName())){
+                    found = true;
+                    if(!varTable.equals(var)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
         }
         return true;
     }

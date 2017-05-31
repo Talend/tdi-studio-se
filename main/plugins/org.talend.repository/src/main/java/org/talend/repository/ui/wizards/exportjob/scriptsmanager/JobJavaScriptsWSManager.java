@@ -304,7 +304,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
             String jobFolderName = JavaResourcesHelper.getJobFolderName(escapeFileNameSpace(processItem), selectedProcessVersion);
 
-            String classRoot = getClassRootLocation();
+            String classRoot = FilesUtils.getFileRealPath(getClassRootLocation());
 
             String wsdlFilePath = getTmpFolder() + PATH_SEPARATOR + jobName + ".wsdl"; //$NON-NLS-1$
             String classFileName = classRoot + PATH_SEPARATOR + projectName + PATH_SEPARATOR + jobFolderName + PATH_SEPARATOR

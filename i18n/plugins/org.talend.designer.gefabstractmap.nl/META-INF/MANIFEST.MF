@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nl Fragment
 Bundle-SymbolicName: org.talend.designer.gefabstractmap.nl
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Fragment-Host: org.talend.designer.gefabstractmap

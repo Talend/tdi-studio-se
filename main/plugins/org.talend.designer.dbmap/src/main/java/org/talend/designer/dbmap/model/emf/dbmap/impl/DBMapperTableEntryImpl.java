@@ -433,5 +433,62 @@ public class DBMapperTableEntryImpl extends EObjectImpl implements DBMapperTable
         result.append(')');
         return result.toString();
     }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DBMapperTableEntryImpl other = (DBMapperTableEntryImpl) obj;
+        if(this.join != other.join){
+            return false;   
+        }
+        if(this.nullable != other.nullable){
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        
+        if (this.expression == null) {
+            if (other.expression != null) {
+                return false;
+            }
+        } else if (!this.expression.equals(other.expression)) {
+            return false;
+        }
+        
+        if (this.operator == null) {
+            if (other.operator != null) {
+                return false;
+            }
+        } else if (!this.operator.equals(other.operator)) {
+            return false;
+        }
+        
+        if (this.type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!this.type.equals(other.type)) {
+            return false;
+        }
+        return true;
+    }
 
 } //DBMapperTableEntryImpl

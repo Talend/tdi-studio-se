@@ -19,4 +19,9 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface IConnection extends EObject {
+    /**
+     * <!-- begin-user-doc -->
+     * @generated not
+     */
+    String getName();
 } // IConnection

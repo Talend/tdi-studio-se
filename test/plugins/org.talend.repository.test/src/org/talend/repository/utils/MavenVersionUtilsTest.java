@@ -63,5 +63,14 @@ public class MavenVersionUtilsTest {
         assertFalse(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.JOBLET));
         assertFalse(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.PROCESS_ROUTELET));
     }
+    
+    @Test
+    public void testGetDefaultVersion() {
+        assertEquals("", MavenVersionUtils.getDefaultVersion(null));
+        assertEquals("a.b", MavenVersionUtils.getDefaultVersion("a.b"));
+        assertEquals("1.1.0", MavenVersionUtils.getDefaultVersion("1.1"));
+        assertEquals("1.0.0", MavenVersionUtils.getDefaultVersion("1.0.0"));
+        
+    }
 
 }

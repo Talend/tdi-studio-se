@@ -879,10 +879,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             if (param.isShow(getProcess().getElementParameters()) && (repositoryValue != null)
                                     && (!param.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                                     && param.getCategory() == category) {
-                                if (!EParameterName.SPARK_ADVANCED_PROPERTIES.getName().equals(param.getName())) {
-                                    param.setRepositoryValueUsed(true);
-                                    param.setReadOnly(true);
-                                }
+                                param.setRepositoryValueUsed(true);
+                                param.setReadOnly(true);
                             }
                         }
                         // for context mode(bug 5198)

@@ -90,23 +90,25 @@ if(hasInput){
 
             if (dynamicPos != -1)  {
                 %>
-                if (current_<%=cid%>.needsInitDynamicColumns()) {
+                if (!current_<%=cid%>.areDynamicFieldsInitialized()) {
                     // Initialize the dynamic columns when they are first encountered.
                     for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
-                        current_<%=cid%>.initDynamicColumn(
-                                dm_<%=cid%>.getName(), dm_<%=cid%>.getDbName(),
-                                dm_<%=cid%>.getType(), dm_<%=cid%>.getDbType(),
-                                dm_<%=cid%>.getDbTypeId(), dm_<%=cid%>.getLength(),
-                                dm_<%=cid%>.getPrecision(), dm_<%=cid%>.getFormat(),
-                                dm_<%=cid%>.getDescription(), dm_<%=cid%>.isKey(),
-                                dm_<%=cid%>.isNullable(),
-                                dm_<%=cid%>.getRefFieldName(), dm_<%=cid%>.getRefModuleName());
+                        current_<%=cid%>.addDynamicField(
+                                dm_<%=cid%>.getName(),
+                                dm_<%=cid%>.getType(),
+                                dm_<%=cid%>.getLogicalType(),
+                                dm_<%=cid%>.getFormat(),
+                                dm_<%=cid%>.getDescription(),
+                                dm_<%=cid%>.isNullable());
                     }
-                    current_<%=cid%>.initDynamicColumnsFinished();
+                    current_<%=cid%>.createRuntimeSchema();
                 }
                 <%
             }
 
+            %>
+            current_<%=cid%>.createNewRecord();
+            <%
             for (int i = 0; i < input_columnList.size(); i++) { // column
                 IMetadataColumn column = input_columnList.get(i);
                 if (dynamicPos != i) {
@@ -134,7 +136,7 @@ if(hasInput){
             // connections.
 
             %>
-            Object data_<%=cid%> = current_<%=cid%>.createIndexedRecord();
+            org.apache.avro.generic.IndexedRecord data_<%=cid%> = current_<%=cid%>.getCurrentRecord();
 
             writer_<%=cid%>.write(data_<%=cid%>);
             

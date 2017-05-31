@@ -118,16 +118,16 @@ public class JMXRunStatManager {
 
     class JMXRunStat implements Runnable {
 
-        private MBeanServerConnection server;
-
         private boolean stopTracing = false;
+
+        private IESBRunContainerService service;
 
         public JMXRunStat() {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRunContainerService.class)) {
                 IESBRunContainerService runContainerService = (IESBRunContainerService) GlobalServiceRegister.getDefault()
                         .getService(IESBRunContainerService.class);
                 if (runContainerService != null) {
-                    this.server = runContainerService.getJMXServerConnection();
+                    this.service = runContainerService;
                 }
             }
         }
@@ -135,41 +135,46 @@ public class JMXRunStatManager {
         @Override
         public void run() {
             stopTracing = false;
+            MBeanServerConnection jmxConn = service.getJMXServerConnection();
             Map<String, Integer> completedHistory = new HashMap();
-            while (server != null && !stopTracing) {
+            final String query = "org.apache.camel:context=" + projectLabel + ".*,type=processors,name=*";
+            // org.apache.camel:context=local_project.let1-local_project.let1_0_1.let1,type=processors,name="let1_cLog_1"
+            while (service != null && !stopTracing) {
                 if (listeners.size() > 0) {
-                    try {
-                        // for camel route
-                        Set<ObjectName> components = server.queryNames(new ObjectName("org.apache.camel:context=" + projectLabel
-                                + ".*,type=processors,name=*"), null);
-                        // org.apache.camel:context=local_project.let1-local_project.let1_0_1.let1,type=processors,name="let1_cLog_1"
-                        for (ObjectName component : components) {
-                            int completed = Integer
-                                    .parseInt(String.valueOf(server.getAttribute(component, "ExchangesCompleted")));
+                    if (jmxConn == null) {
+                        jmxConn = service.getJMXServerConnection();
+                    } else {
+                        try {
+                            // for camel route
+                            Set<ObjectName> components = jmxConn.queryNames(new ObjectName(query), null);
+                            for (ObjectName component : components) {
+                                int completed = Integer.parseInt(String.valueOf(jmxConn.getAttribute(component,
+                                        "ExchangesCompleted")));
 
-                            String camelID = String.valueOf(server.getAttribute(component, "CamelId"));
-                            String processorId = String.valueOf(server.getAttribute(component, "ProcessorId"));
+                                String camelID = String.valueOf(jmxConn.getAttribute(component, "CamelId"));
+                                String processorId = String.valueOf(jmxConn.getAttribute(component, "ProcessorId"));
 
-                            for (JMXPerformanceChangeListener listener : listeners) {
-                                if (listener.getProcessName().equals(camelID.substring(camelID.lastIndexOf('.') + 1))) {
-                                    if (completedHistory.get(processorId) != null
-                                            && completed == completedHistory.get(processorId)) {
-                                        continue;
-                                    } else {
-                                        completedHistory.put(processorId, completed);
-                                        listener.performancesChanged(targetNodeToConnectionMap.get(processorId), completed);
+                                for (JMXPerformanceChangeListener listener : listeners) {
+                                    if (listener.getProcessName().equals(camelID.substring(camelID.lastIndexOf('.') + 1))) {
+                                        if (completedHistory.get(processorId) != null
+                                                && completed == completedHistory.get(processorId)) {
+                                            continue;
+                                        } else {
+                                            completedHistory.put(processorId, completed);
+                                            listener.performancesChanged(targetNodeToConnectionMap.get(processorId), completed);
+                                        }
                                     }
                                 }
                             }
+                            TimeUnit.MILLISECONDS.sleep(100);
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
                         }
-                        TimeUnit.MILLISECONDS.sleep(100);
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
                     }
-
                 }
             }
-            ;
+            completedHistory.clear();
+            completedHistory = null;
         }
 
         /**

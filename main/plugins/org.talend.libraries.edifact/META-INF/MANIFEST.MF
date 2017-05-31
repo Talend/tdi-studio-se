@@ -2,6 +2,6 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Edifact
 Bundle-SymbolicName: org.talend.libraries.edifact;singleton:=true
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir

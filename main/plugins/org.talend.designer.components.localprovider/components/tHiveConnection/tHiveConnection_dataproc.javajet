@@ -1,0 +1,76 @@
+<%@ jet
+imports="
+    java.util.List
+    java.util.Map
+    org.talend.core.model.process.ElementParameterParser
+    org.talend.core.model.process.INode
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+"
+%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+%>
+
+java.util.List<String> connectionCommandList_<%=cid%> = new java.util.ArrayList<String>();
+<%
+    boolean setMemory = "true".equals(ElementParameterParser.getValue(node, "__SET_MEMORY__"));
+    if(setMemory) {
+        String mapMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_MAP_MEMORY_MB__");
+        String reduceMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_REDUCE_MEMORY_MB__");
+        String amMemory = ElementParameterParser.getValue(node,"__YARN_APP_MAPREDUCE_AM_RESOURCE_MB__");
+%>
+        connectionCommandList_<%=cid%>.add("SET mapreduce.map.memory.mb=" + <%=mapMemory%> + ";");
+        connectionCommandList_<%=cid%>.add("SET mapreduce.reduce.memory.mb=" + <%=reduceMemory%> + ";");
+        connectionCommandList_<%=cid%>.add("SET yarn.app.mapreduce.am.resource.mb=" + <%=amMemory%> + ";");
+<%
+    }
+
+    List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__");
+    if(advProps!=null) {
+        for(Map<String, String> item : advProps){
+%>
+            connectionCommandList_<%=cid%>.add("SET "+<%=item.get("PROPERTY")%>+"="+<%=item.get("VALUE")%> + ";");
+<%
+        }
+    }
+%>
+
+    String dbname_<%=cid%> = <%=dbname%>;
+    if(dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
+        connectionCommandList_<%=cid%>.add("use " + dbname_<%=cid%> + ";");
+    }
+
+    org.talend.bigdata.launcher.google.dataproc.DataprocHiveJob instance_<%=cid%> =
+        new org.talend.bigdata.launcher.google.dataproc.DataprocHiveJob.Builder()
+        .withTalendJobName(projectName + "_" + jobName + "_" + jobVersion.replace(".","_") + "_" + pid)
+        .withClusterName(<%=ElementParameterParser.getValue(node, "__GOOGLE_CLUSTER_ID__")%>)
+        .withRegion(<%=ElementParameterParser.getValue(node, "__GOOGLE_REGION__")%>)
+        .withProjectId(<%=ElementParameterParser.getValue(node, "__GOOGLE_PROJECT_ID__")%>)
+        .withJarsBucket(<%=ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__")%>)
+        <%
+            if(ElementParameterParser.getBooleanValue(node, "__DEFINE_PATH_TO_GOOGLE_CREDENTIALS__")) {
+        %>
+                .withServiceAccountCredentialsPath(<%=ElementParameterParser.getValue(node, "__PATH_TO_GOOGLE_CREDENTIALS__")%>)
+        <%
+            }
+        %>
+
+        .withInitialisationQueries(connectionCommandList_<%=cid%>)
+        .build();
+<%
+    if(isLog4jEnabled) {
+%>
+        for (String command: connectionCommandList_<%=cid%> ) {
+            log.debug("Initialization command from <%=cid%>: " + command);
+        }
+<%
+    }
+%>
+
+    globalMap.put("conn_<%=cid%>", instance_<%=cid%>);
+    // Will be used to put additionals jars on google storage
+    globalMap.put("stagingBucket_<%=cid%>", <%=ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__")%>);

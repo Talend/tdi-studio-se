@@ -28,7 +28,7 @@ imports="
 	}
 
 	String conn = "conn_" + connection;
-	if(hiveDistrib != null && !hiveDistrib.isExecutedThroughWebHCat()) {
+	if(hiveDistrib != null && !hiveDistrib.useCloudLauncher()) {
 %>
 		java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
 		if(conn_<%=cid%> != null && !conn_<%=cid%>.isClosed())

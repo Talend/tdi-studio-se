@@ -37,7 +37,7 @@ imports="
     }
     boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
 
-	if(!hiveDistrib.isExecutedThroughWebHCat()) {
+	if(!hiveDistrib.useCloudLauncher()) {
 		if (usePrepareStatement) {
 %>
 			pstmt_<%=cid %>.close();	

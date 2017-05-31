@@ -7,7 +7,7 @@
 package org.talend.designer.mapper.model.emf.mapper.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
@@ -378,6 +378,61 @@ public class MapperTableEntryImpl extends EObjectImpl implements MapperTableEntr
         result.append(operator);
         result.append(')');
         return result.toString();
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        MapperTableEntryImpl other = (MapperTableEntryImpl) obj;
+        if(this.nullable != other.nullable){
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        
+        if (this.expression == null) {
+            if (other.expression != null) {
+                return false;
+            }
+        } else if (!this.expression.equals(other.expression)) {
+            return false;
+        }
+        
+        if (this.type == null) {
+            if (other.type != null) {
+                return false;
+            }
+        } else if (!this.type.equals(other.type)) {
+            return false;
+        }
+        
+        if (this.operator == null) {
+            if (other.operator != null) {
+                return false;
+            }
+        } else if (!this.operator.equals(other.operator)) {
+            return false;
+        }
+        
+        return true;
     }
 
 } //MapperTableEntryImpl

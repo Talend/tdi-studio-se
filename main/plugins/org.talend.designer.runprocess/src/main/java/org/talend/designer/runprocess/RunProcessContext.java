@@ -689,7 +689,7 @@ public class RunProcessContext {
     }
 
     protected PerformanceMonitor getPerformanceMonitor() {
-        if (isESBRuntimeProcessor()) {
+        if (isESBRuntimeProcessor() && ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
             return new JMXPerformanceMonitor();
         }
         return new PerformanceMonitor();

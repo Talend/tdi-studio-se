@@ -529,5 +529,88 @@ public class InputXmlTreeImpl extends AbstractInOutTreeImpl implements InputXmlT
         result.append(')');
         return result.toString();
     }
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        InputXmlTreeImpl other = (InputXmlTreeImpl) obj;
+        if (this.matchingMode == null) {
+            if (other.matchingMode != null) {
+                return false;
+            }
+        } else if (!this.matchingMode.equals(other.matchingMode)) {
+            return false;
+        }
+        if (this.lookupMode == null) {
+            if (other.lookupMode != null) {
+                return false;
+            }
+        } else if (!this.lookupMode.equals(other.lookupMode)) {
+            return false;
+        }
+        if (this.lookup != other.lookup) {
+            return false;
+        }
+        if (this.innerJoin != other.innerJoin) {
+            return false;
+        }
+        if (this.persistent != other.persistent) {
+            return false;
+        }
+        if (this.activateGlobalMap != other.activateGlobalMap) {
+            return false;
+        }
+        
+        if(this.getNodes().size() != other.getNodes().size()){
+            return false;
+        }
+        for(TreeNode inputTable:nodes){
+            boolean found = false;
+            for(TreeNode input:other.nodes){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        if(this.getGlobalMapKeysValues().size() != other.getGlobalMapKeysValues().size()){
+            return false;
+        }
+        for(GlobalMapNode inputTable:globalMapKeysValues){
+            boolean found = false;
+            for(GlobalMapNode input:other.globalMapKeysValues){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return super.equals(obj);
+    }
 
 } //InputXmlTreeImpl

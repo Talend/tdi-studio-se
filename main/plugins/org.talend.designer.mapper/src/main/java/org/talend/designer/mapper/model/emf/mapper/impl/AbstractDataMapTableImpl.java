@@ -310,4 +310,64 @@ public abstract class AbstractDataMapTableImpl extends EObjectImpl implements Ab
         return result.toString();
     }
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractDataMapTableImpl other = (AbstractDataMapTableImpl) obj;
+        if(this.minimized != other.minimized){
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.sizeState == null) {
+            if (other.sizeState != null) {
+                return false;
+            }
+        } else if (!this.sizeState.getName().equals(other.sizeState.getName())) {
+            return false;
+        }else if (this.sizeState.getValue() != other.sizeState.getValue()) {
+            return false;
+        }else if (!this.sizeState.getLiteral().equals(other.sizeState.getLiteral())) {
+            return false;
+        }
+        
+        EList<MapperTableEntry> otherEntries = other.getMapperTableEntries();
+        if(getMapperTableEntries().size() != otherEntries.size()){
+            return false;
+        }
+        for(MapperTableEntry entry:mapperTableEntries){
+            boolean found = false;
+            for(MapperTableEntry otherEntry:otherEntries){
+                if(entry.getName().equals(otherEntry.getName())){
+                    found = true;
+                    if(!entry.equals(otherEntry)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
+    }
 } // AbstractDataMapTableImpl

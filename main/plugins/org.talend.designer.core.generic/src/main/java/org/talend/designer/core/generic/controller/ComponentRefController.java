@@ -27,8 +27,10 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.IControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -86,6 +89,8 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                     if (!newValue.equals(elem.getPropertyValue(name))) {
                         String value = ""; //$NON-NLS-1$
                         List<? extends IElementParameter> params = elem.getElementParametersWithChildrens();
+                        IElementParameter propertyParameter = elem
+                                .getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
                         boolean done = false;
                         for (int i = 0; i < params.size() && !done; i++) {
                             IElementParameter param = params.get(i);
@@ -100,6 +105,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                                                     .setValue(ComponentReferenceProperties.ReferenceType.THIS_COMPONENT);
                                             props.componentInstanceId.setValue(null);
                                             props.setReference(null);
+                                            propertyParameter.setShow(true);
                                         } else {
                                             props.referenceType
                                                     .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
@@ -116,6 +122,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                                                     }
                                                 }
                                             }
+                                            propertyParameter.setShow(false);
                                         }
                                         done = true;
                                         break;
@@ -200,11 +207,40 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
             combo.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
         }
 
+        CLabel labelLabel = getWidgetFactory().createCLabel(subComposite,
+                Messages.getString("ComponentRefController.connectionLabel"));
         data = new FormData();
         if (lastControl != null) {
             data.left = new FormAttachment(lastControl, 0);
         } else {
             data.left = new FormAttachment((((numInRow - 1) * MAX_PERCENT) / nbInRow), 0);
+        }
+        data.top = new FormAttachment(0, top);
+        labelLabel.setLayoutData(data);
+
+        if (numInRow != 1) {
+            labelLabel.setAlignment(SWT.RIGHT);
+        }
+
+        data = new FormData();
+        int currentLabelWidth = STANDARD_LABEL_WIDTH;
+        GC gc = new GC(labelLabel);
+        Point labelSize = gc.stringExtent(Messages.getString("ComponentRefController.connectionLabel"));
+        gc.dispose();
+
+        if ((labelSize.x + ITabbedPropertyConstants.HSPACE) > currentLabelWidth) {
+            currentLabelWidth = labelSize.x + ITabbedPropertyConstants.HSPACE;
+        }
+
+        if (numInRow == 1) {
+            if (lastControl != null) {
+                data.left = new FormAttachment(lastControl, currentLabelWidth);
+            } else {
+                data.left = new FormAttachment(0, currentLabelWidth);
+            }
+
+        } else {
+            data.left = new FormAttachment(labelLabel, 0, SWT.RIGHT);
         }
         data.top = new FormAttachment(0, top);
         cLayout.setLayoutData(data);
@@ -289,6 +325,7 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
             combo.setText(iLabel);
             combo.select(selection);
         }
+
     }
 
     private List<INode> getRefNodes(IElementParameter param, ComponentReferenceProperties props) {

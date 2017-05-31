@@ -21,7 +21,7 @@ import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
+import org.talend.designer.xmlmap.model.emf.xmlmap.TreeNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.VarNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.VarTable;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapPackage;
@@ -277,4 +277,52 @@ public class VarTableImpl extends EObjectImpl implements VarTable {
         return result.toString();
     }
 
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VarTableImpl other = (VarTableImpl) obj;
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if(this.minimized != other.minimized){
+            return false;
+        }
+        if(this.getNodes().size() != other.getNodes().size()){
+            return false;
+        }
+        
+        for(VarNode inputTable:getNodes()){
+            boolean found = false;
+            for(VarNode input:other.getNodes()){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
+    }
 } //VarTableImpl

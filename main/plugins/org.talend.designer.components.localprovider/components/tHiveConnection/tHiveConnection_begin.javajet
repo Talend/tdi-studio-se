@@ -1,17 +1,18 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
     java.util.List
     java.util.Map
-" 
+"
 %>
 <%
 	CodeGeneratorArgument theCodeGenArgument = (CodeGeneratorArgument) argument;
 	INode theNode = (INode)theCodeGenArgument.getArgument();
 	String theDistribution = ElementParameterParser.getValue(theNode, "__DISTRIBUTION__");
 	String theVersion = ElementParameterParser.getValue(theNode, "__HIVE_VERSION__");
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(theNode.getProcess(), "__LOG4J_ACTIVATE__"));
 
 	org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;
 	try {
@@ -20,13 +21,17 @@ imports="
 		e.printStackTrace();
 		return "";
 	}
-	boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;	
-	
-	if(hiveDistrib.isExecutedThroughWebHCat()) { // Execution through WebHCat
+	boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
+
+    if(hiveDistrib.isExecutedThroughWebHCat()) { // Execution through WebHCat
 %>
-		<%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_azure.javajet"%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_azure.javajet"%>
 <%
-	} else { // JDBC execution
+    } else  if(hiveDistrib.isGoogleDataprocDistribution()) { // Execution through Dataproc
+%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_dataproc.javajet"%>
+<%
+    } else { // JDBC execution
 %>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_jdbc.javajet"%>
 <%

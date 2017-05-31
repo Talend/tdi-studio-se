@@ -20,10 +20,10 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 
 import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
-
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputLoopNodesTable;
 import org.talend.designer.xmlmap.model.emf.xmlmap.OutputTreeNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.OutputXmlTree;
+import org.talend.designer.xmlmap.model.emf.xmlmap.TreeNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapPackage;
 
 /**
@@ -473,6 +473,62 @@ public class OutputXmlTreeImpl extends AbstractInOutTreeImpl implements OutputXm
         result.append(enableEmptyElement);
         result.append(')');
         return result.toString();
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OutputXmlTreeImpl other = (OutputXmlTreeImpl) obj;
+        if(this.reject != other.reject){
+            return false;
+        }
+        if(this.rejectInnerJoin != other.rejectInnerJoin){
+            return false;
+        }
+        if(this.errorReject != other.errorReject){
+            return false;
+        }
+        if(this.allInOne != other.allInOne){
+            return false;
+        }
+        if(this.enableEmptyElement != other.enableEmptyElement){
+            return false;
+        }
+        if(this.getNodes().size() != other.getNodes().size()){
+            return false;
+        }
+        if(this.getInputLoopNodesTables().size() != other.getInputLoopNodesTables().size()){
+            return false;
+        }
+        for(TreeNode tree:nodes){
+            boolean found = false;
+            for(TreeNode otherTree:other.nodes){
+                if(tree.getName().equals(otherTree.getName())){
+                    found = true;
+                    if(!tree.equals(otherTree)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return super.equals(obj);
     }
 
 } //OutputXmlTreeImpl

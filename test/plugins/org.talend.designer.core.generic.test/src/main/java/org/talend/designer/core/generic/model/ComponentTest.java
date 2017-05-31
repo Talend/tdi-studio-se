@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.designer.core.generic.model;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -33,6 +35,7 @@ import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.Component.CodegenPropInfo;
 import org.talend.designer.core.generic.utils.TestComponentDefinition;
 import org.talend.designer.core.generic.utils.TestProperties;
+import org.talend.designer.core.generic.utils.TestReferencedProperties;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -63,7 +66,7 @@ public class ComponentTest {
     }
 
     @Test
-    public void testGetCodegenPropInfos() {
+    public void testGetCodegenPropInfosWithoutReferenceObject() {
         ComponentProperties props = (ComponentProperties) new TestProperties("test").init(); //$NON-NLS-1$
         List<CodegenPropInfo> propInfos = component.getCodegenPropInfos(props);
         for (CodegenPropInfo propInfo : propInfos) {
@@ -72,6 +75,25 @@ public class ComponentTest {
                 ComponentReferenceProperties crp = (ComponentReferenceProperties) properties;
                 assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
                 assertEquals(Boolean.TRUE, crp.referenceDefinitionName.getTaggedValue(IGenericConstants.ADD_QUOTES));
+                //please see ComponentRefController class, the reference will be set when some ui action happen, so expect the value is null as no any ui action here
+                assertNull(crp.getReference());
+            }
+        }
+    }
+    
+    @Test
+    public void testGetCodegenPropInfosWithReferencePropertiesObject() {
+        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
+        props.referencePros.setReference(new TestReferencedProperties("reference").init());
+        
+        List<CodegenPropInfo> propInfos = component.getCodegenPropInfos(props);
+        for (CodegenPropInfo propInfo : propInfos) {
+            Properties properties = propInfo.props;
+            if (properties instanceof ComponentReferenceProperties) {
+                ComponentReferenceProperties crp = (ComponentReferenceProperties) properties;
+                assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
+                assertEquals(Boolean.TRUE, crp.referenceDefinitionName.getTaggedValue(IGenericConstants.ADD_QUOTES));
+                assertNotNull(crp.getReference());
             }
         }
     }

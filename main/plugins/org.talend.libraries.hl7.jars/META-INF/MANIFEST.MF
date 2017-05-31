@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jars
 Bundle-SymbolicName: org.talend.libraries.hl7.jars
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Bundle-ClassPath: .,
  lib/hapi-base-1.0.1.jar,
  lib/hapi-structures-v21-1.0.1.jar,

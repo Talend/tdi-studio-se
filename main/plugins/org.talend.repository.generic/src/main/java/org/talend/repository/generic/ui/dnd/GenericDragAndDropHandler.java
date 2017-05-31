@@ -56,7 +56,6 @@ import org.talend.repository.generic.internal.service.GenericWizardInternalServi
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.model.RepositoryNode;
-
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -136,19 +135,25 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     @Override
     public boolean isGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName) {
+        return getGenericRepositoryValue(componentProperties, paramName) != null;
+    }
+
+    @Override
+    public Object getGenericRepositoryValue(List<ComponentProperties> componentProperties, String paramName) {
         if (componentProperties != null && paramName != null) {
             for (ComponentProperties compPro : componentProperties) {
                 Property property = compPro.getValuedProperty(paramName);
                 if (property != null) {
-                    return property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null;
+                    return property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE);
                 }
             }
             if (paramName.indexOf(IGenericConstants.EXP_SEPARATOR) != -1) {
-                return isGenericRepositoryValue(componentProperties,
+                return getGenericRepositoryValue(componentProperties,
                         paramName.substring(paramName.indexOf(IGenericConstants.EXP_SEPARATOR) + 1));
             }
         }
-        return false;
+        return null;
+
     }
 
     @Override

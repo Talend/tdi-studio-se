@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: W3C
 Bundle-SymbolicName: org.talend.libraries.w3c
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
 Bundle-ClassPath: lib/sac-1.3.jar,

@@ -30,7 +30,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
             if (rowsInBuffer_1_<%=cid %> > 0) {
                 java.util.Arrays.<rowStruct_<%=cid %>> sort(buffer_1_<%=cid %>, 0, rowsInBuffer_1_<%=cid %>, comparator_1_<%=cid %>);
                 
-                java.io.File file_<%=cid %> = new java.io.File(workDirectory_<%=cid %> + "/<%=cid %>_TEMP_" + files_1_<%=cid %>.size());
+                java.io.File file_<%=cid %> = new java.io.File(temp_file_path_prefix_<%=cid %> + files_1_<%=cid %>.size());
                 <%
 				if (isLog4jEnabled) {
 				%>

@@ -98,28 +98,26 @@ if(("false").equals(ElementParameterParser.getValue(node,"__ADVANCED_USE__"))) {
 					<%log.info(log.str("Set ssl."));%>
 				<% 
 				}
-				%>
-				
-                <%
+				if(needAuth){
                 passwordFieldName = "__AUTH_PASSWORD__";
                 %>
                 
                 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>				
 								
-				<%
-				if (needAuth&&!winAuth) {
-				%>        	   
-	        		org.talend.DynamicInvoker.setAuth(true, <%=username %>, decryptedPassword_<%=cid%>);
-					<%log.info(log.str("Set username and password."));%>
-				<%
-	  			}
-	  			if (needAuth&&winAuth){
-	  				String domain_username = "\""+TalendTextUtils.removeQuotes(domain)+"\\\\"+TalendTextUtils.removeQuotes(username)+"\"";
-					%>
-					org.talend.DynamicInvoker.setWINAuth(true, <%=domain_username %>, decryptedPassword_<%=cid%>);
-					<%log.info(log.str("Set username, password and domain."));%>	
-				<%
-	  			}
+					<%
+					if (!winAuth) {
+					%>        	   
+		        		org.talend.DynamicInvoker.setAuth(true, <%=username %>, decryptedPassword_<%=cid%>);
+						<%log.info(log.str("Set username and password."));%>
+					<%
+		  			}else{
+		  				String domain_username = "\""+TalendTextUtils.removeQuotes(domain)+"\\\\"+TalendTextUtils.removeQuotes(username)+"\"";
+						%>
+						org.talend.DynamicInvoker.setWINAuth(true, <%=domain_username %>, decryptedPassword_<%=cid%>);
+						<%log.info(log.str("Set username, password and domain."));%>	
+					<%
+		  			}
+		  		}
 				if (useProxy) {
 				%>  
 				

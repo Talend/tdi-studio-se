@@ -1381,6 +1381,8 @@ if (execStat) {
 		}
 
     }
+    
+    private static final String NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY = "<TALEND_NULL>";
 
     private final String[][] escapeChars = {
         {"\\\\","\\"},{"\\n","\n"},{"\\'","\'"},{"\\r","\r"},

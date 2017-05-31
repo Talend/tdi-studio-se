@@ -20,6 +20,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.runtime.xml.XmlUtil;
+import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -43,6 +45,7 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.seeker.RepositorySeekerManager;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.SAPBWTableHelper;
 import org.talend.cwm.helper.TaggedValueHelper;
@@ -234,11 +237,27 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                         && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
                                 .getValue())) {
                     IElementParameter module = node.getElementParameter("module.moduleName");
-                    if (module != null && module.getRepositoryValue() != null) {
-                        Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), module.getRepositoryValue(),
-                                newOutputMetadata, node.getComponent().getName());
-                        if (objectValue != null) {
-                            module.setValue(objectValue);
+                    if (module != null) {
+                        String repositoryValue = module.getRepositoryValue();
+                        if (repositoryValue == null) {
+                            List<ComponentProperties> componentProperties = null;
+                            IGenericWizardService wizardService = null;
+                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                                wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+                                        IGenericWizardService.class);
+                            }
+                            if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
+                                componentProperties = wizardService.getAllComponentProperties(getConnection(), null);
+                            }
+                            repositoryValue = String.valueOf(RepositoryToComponentProperty.getGenericRepositoryValue(
+                                    getConnection(), componentProperties, module.getName()));
+                        }
+                        if (repositoryValue != null) {
+                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), repositoryValue,
+                                    newOutputMetadata, node.getComponent().getName());
+                            if (objectValue != null) {
+                                module.setValue(objectValue);
+                            }
                         }
                     }
                 }

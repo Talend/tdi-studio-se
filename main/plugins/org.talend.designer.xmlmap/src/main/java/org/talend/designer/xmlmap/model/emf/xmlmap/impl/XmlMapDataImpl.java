@@ -19,7 +19,6 @@ import org.eclipse.emf.ecore.util.EObjectContainmentEList;
 import org.eclipse.emf.ecore.util.InternalEList;
 
 import org.talend.designer.core.model.utils.emf.talendfile.impl.AbstractExternalDataImpl;
-
 import org.talend.designer.xmlmap.model.emf.xmlmap.IConnection;
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputXmlTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.OutputXmlTree;
@@ -262,6 +261,90 @@ public class XmlMapDataImpl extends AbstractExternalDataImpl implements XmlMapDa
                 return connections != null && !connections.isEmpty();
         }
         return super.eIsSet(featureID);
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        XmlMapDataImpl dbObj = (XmlMapDataImpl) obj;
+        EList<InputXmlTree> inputs = dbObj.getInputTrees();
+        EList<OutputXmlTree> outputs =dbObj.getOutputTrees();
+        EList<VarTable> vars =dbObj.getVarTables();
+        EList<IConnection> conns = dbObj.getConnections();
+        if(inputs.size() != getInputTrees().size()){
+            return false;
+        }
+        if(outputs.size() != getOutputTrees().size()){
+            return false;
+        }
+        if(vars.size() != getVarTables().size()){
+            return false;
+        }
+        if(getConnections().size() != conns.size()){
+            return false;
+        }
+        
+        for(InputXmlTree inputTable:inputTrees){
+            boolean found = false;
+            for(InputXmlTree input:inputs){
+                if(inputTable.getName().equals(input.getName())){
+                    found = true;
+                    if(!inputTable.equals(input)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(OutputXmlTree outputTable:outputTrees){
+            boolean found = false;
+            for(OutputXmlTree output:outputs){
+                if(outputTable.getName().equals(output.getName())){
+                    found = true;
+                    if(!outputTable.equals(output)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(VarTable varTable:varTables){
+            boolean found = false;
+            for(VarTable var:vars){
+                if(varTable.getName().equals(var.getName())){
+                    found = true;
+                    if(!varTable.equals(var)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
     }
 
 } //XmlMapDataImpl

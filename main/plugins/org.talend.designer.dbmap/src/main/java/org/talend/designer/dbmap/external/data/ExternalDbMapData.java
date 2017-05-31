@@ -119,5 +119,82 @@ public class ExternalDbMapData implements IExternalData {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ExternalDbMapData other = (ExternalDbMapData) obj;
+        if(this.inputTables.size() != other.inputTables.size()){
+            return false;
+        }
+        if(this.outputTables.size() != other.outputTables.size()){
+            return false;
+        }
+        if(this.varsTables.size() != other.varsTables.size()){
+            return false;
+        }
+        
+        for(ExternalDbMapTable inTable:inputTables){
+            boolean found = false;
+            for(ExternalDbMapTable otherTable:other.inputTables){
+                if(inTable.getName().equals(otherTable.getName())){
+                    found = true;
+                    if(!inTable.equals(otherTable)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(ExternalDbMapTable outTable:outputTables){
+            boolean found = false;
+            for(ExternalDbMapTable otherTable:other.outputTables){
+                if(outTable.getName().equals(otherTable.getName())){
+                    found = true;
+                    if(!outTable.equals(otherTable)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        for(ExternalDbMapTable varTable:varsTables){
+            boolean found = false;
+            for(ExternalDbMapTable var:other.varsTables){
+                if(varTable.getName().equals(var.getName())){
+                    found = true;
+                    if(!varTable.equals(var)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

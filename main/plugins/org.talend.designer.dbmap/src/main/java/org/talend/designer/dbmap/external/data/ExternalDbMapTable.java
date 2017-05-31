@@ -194,5 +194,154 @@ public class ExternalDbMapTable extends AbstractExternalMapTable implements Seri
         }
         return cloned;
     }
+    
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ExternalDbMapTable other = (ExternalDbMapTable) obj;
+        
+        if (this.minimized != other.minimized) {
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.joinType == null) {
+            if (other.joinType != null) {
+                return false;
+            }
+        } else if (!this.joinType.equals(other.joinType)) {
+            return false;
+        }
+        if (this.alias == null) {
+            if (other.alias != null) {
+                return false;
+            }
+        } else if (!this.alias.equals(other.alias)) {
+            return false;
+        }
+        if (this.tableName == null) {
+            if (other.tableName != null) {
+                return false;
+            }
+        } else if (!this.tableName.equals(other.tableName)) {
+            return false;
+        }
+        
+        List<ExternalDbMapEntry> this_customOtherConditionsEntries = null;
+        if(this.customOtherConditionsEntries == null){
+            this_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            this_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>(this.customOtherConditionsEntries);
+        }
+        List<ExternalDbMapEntry> this_metadataTableEntries = null;
+        if(this.metadataTableEntries == null){
+            this_metadataTableEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            this_metadataTableEntries = new ArrayList<ExternalDbMapEntry>(this.metadataTableEntries);
+        }
+        List<ExternalDbMapEntry> this_customWhereConditionsEntries = null;
+        if(this.customWhereConditionsEntries == null){
+            this_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            this_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>(this.customWhereConditionsEntries);
+        }
+        
+        List<ExternalDbMapEntry> other_customOtherConditionsEntries = null;
+        if(other.customOtherConditionsEntries == null){
+            other_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            other_customOtherConditionsEntries = new ArrayList<ExternalDbMapEntry>(other.customOtherConditionsEntries);
+        }
+        List<ExternalDbMapEntry> other_metadataTableEntries = null;
+        if(other.metadataTableEntries == null){
+            other_metadataTableEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            other_metadataTableEntries = new ArrayList<ExternalDbMapEntry>(other.metadataTableEntries);
+        }
+        List<ExternalDbMapEntry> other_customWhereConditionsEntries = null;
+        if(other.customWhereConditionsEntries == null){
+            other_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>();
+        }else{
+            other_customWhereConditionsEntries = new ArrayList<ExternalDbMapEntry>(other.customWhereConditionsEntries);
+        }
+        
+        if(this_customOtherConditionsEntries.size() != other_customOtherConditionsEntries.size()){
+            return false;
+        }
+        for(ExternalDbMapEntry oriObj:this_customOtherConditionsEntries){
+            boolean found = false;
+            for(ExternalDbMapEntry otherObj:other_customOtherConditionsEntries){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        if(this_customWhereConditionsEntries.size() != other_customWhereConditionsEntries.size()){
+            return false;
+        }
+        for(ExternalDbMapEntry oriObj:this_customWhereConditionsEntries){
+            boolean found = false;
+            for(ExternalDbMapEntry otherObj:other_customWhereConditionsEntries){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        if(this_metadataTableEntries.size() != other_metadataTableEntries.size()){
+            return false;
+        }
+        for(ExternalDbMapEntry oriObj:this_metadataTableEntries){
+            boolean found = false;
+            for(ExternalDbMapEntry otherObj:other_metadataTableEntries){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
 }

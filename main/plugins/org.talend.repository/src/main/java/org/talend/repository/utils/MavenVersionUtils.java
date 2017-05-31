@@ -104,7 +104,8 @@ public class MavenVersionUtils {
     }
 
     public static String getDefaultVersion(String version) {
-        return VersionUtils.getPublishVersion(version);
+        String defaultVersion = VersionUtils.getPublishVersion(version);
+        return defaultVersion == null ? "" : defaultVersion; //$NON-NLS-1$
     }
 
 }

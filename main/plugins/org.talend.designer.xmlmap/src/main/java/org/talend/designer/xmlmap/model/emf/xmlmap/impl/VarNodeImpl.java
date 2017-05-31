@@ -162,5 +162,28 @@ public class VarNodeImpl extends AbstractNodeImpl implements VarNode {
         result.append(')');
         return result.toString();
     }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        VarNodeImpl other = (VarNodeImpl) obj;
+        if(this.nullable != other.nullable){
+            return false;
+        }
+        return super.equals(obj);
+    }
 
 } //VarNodeImpl

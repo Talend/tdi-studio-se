@@ -240,6 +240,7 @@ if(groupTable.size()>0){					//init the generate tool.
 			generateExprCmpByDom4j.groupNode = groupNode;
 			generateExprCmpByDom4j.isSaveDocAsNode = isSaveDocAsNode;
 			generateExprCmpByDom4j.needEmptyNode = ("true").equals(allowEmpty);
+			generateExprCmpByDom4j.cid=cid;
 %>
 		if(bl_<%=cid %>==false){
 			java.util.List<org.dom4j.Element> listNodes= <%generateToolByDom4j.touchXMLNode.getXMLElement("subTreeRootParent");%>.elements();

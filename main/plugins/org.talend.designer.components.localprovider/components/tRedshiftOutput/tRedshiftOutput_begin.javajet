@@ -281,45 +281,22 @@ if(columnList != null && columnList.size()>0) {
 			int rowCount<%=cid%> = 0;
 			class BufferLine_<%=cid%> {
 <%
-    	        for(Column column : stmtStructure) {
-    	            if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-						String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-%>
-                            <%=typeToGenerate%> <%=column.getName()%>;
+                int count = 0;
+                for(Column column : stmtStructure) {
+                    if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
+                    	String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
+%>				
+						<%=typeToGenerate%> <%=column.getName()%>;
+						
+	            		public BufferLine_<%=cid%> c<%=count%>(<%=typeToGenerate%> <%=column.getName()%>){
+							this.<%=column.getName()%> = <%=column.getName()%>;
+							return this;
+						}
 <%
+						count++;
                     }
                 }
-%>
-
-	            public BufferLine_<%=cid%>(
-<%
-                    int count = 0;
-                    for(Column column : stmtStructure) {
-                        if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-                            if(count != 0) {
-%>
-                                ,
-<%
-							}
-                            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-%>
-                            <%=typeToGenerate%> <%=column.getName()%>
-<%
-                            count++;
-                        }
-                    }
-%>
-				){
-<%
-					for(Column column : stmtStructure) {
-						if(!column.isReplaced() && !column.isAddCol() && column.isInsertable()) {
-%>
-							this.<%=column.getName()%> = <%=column.getName()%>;
-<%
-						}
-					}
-%>
-				}
+%>		
 			}
 
 			java.util.List<BufferLine_<%=cid%>> exInsertColValueList<%=cid%> = new java.util.ArrayList();
@@ -364,75 +341,37 @@ if(isDynamic) {
 %>
 	class BufferLine_<%=cid%> {
     <%
+    int count = 0;
     for(Column column : stmtStructure) {
         if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-            %>
-            <%=typeToGenerate%> <%=column.getName()%>;
-            <%
+    		String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
+%>
+			<%=typeToGenerate%> <%=column.getName()%>;
+			
+    		public BufferLine_<%=cid%> c<%=count%>(<%=typeToGenerate%> <%=column.getName()%>){
+				this.<%=column.getName()%> = <%=column.getName()%>;
+				return this;
+			}
+<%
+			count++;
         }
     }
 
-    if(isDynamic) {
+	if(isDynamic) {
     	Column dynamicColumn = getColumn(getDynamicColumn());
 		String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
 		if("Dynamic".equals(typeToGenerate)) {
 		%>
 			routines.system.Dynamic <%=dynamicColumn.getName()%>;
+			
+			public BufferLine_<%=cid%> c<%=count%>(routines.system.Dynamic <%=dynamicColumn.getName()%>){
+				this.<%=dynamicColumn.getName()%> = <%=dynamicColumn.getName()%>;
+				return this;
+			}
 		<%
 		}
-    }
-	%>
-
-	    public BufferLine_<%=cid%>(
-	    <%
-	    int count = 0;
-	    for(Column column : stmtStructure) {
-	        if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-	            if(count != 0) {
-	                %>
-	                ,
-	                <%
-	            }
-	            String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
-	            %>
-	            <%=typeToGenerate%> <%=column.getName()%>
-	            <%
-	            count++;
-	        }
-	    }
-
-		if(isDynamic) {
-	    	Column dynamicColumn = getColumn(getDynamicColumn());
-			String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-			if("Dynamic".equals(typeToGenerate)) {
-			%>
-				<%if(count>0){%>,<%}%> routines.system.Dynamic <%=dynamicColumn.getName()%>
-			<%
-			}
-		}
-	    %>
-	    ){
-	        <%
-	        for(Column column : stmtStructure) {
-	            if(!column.isReplaced() && !column.isAddCol() && column.isInsertable() && !column.isDynamic()) {
-	                %>
-	                this.<%=column.getName()%> = <%=column.getName()%>;
-	                <%
-	            }
-	        }
-
-			if(isDynamic) {
-		    	Column dynamicColumn = getColumn(getDynamicColumn());
-				String typeToGenerate = JavaTypesManager.getTypeToGenerate(dynamicColumn.getColumn().getTalendType(), dynamicColumn.getColumn().isNullable());
-				if("Dynamic".equals(typeToGenerate)) {
-				%>
-					this.<%=dynamicColumn.getName()%>=<%=dynamicColumn.getName()%>;
-				<%
-				}
-    		}
-            %>
-        }
+	}
+    %>
     }
 
     java.util.List<BufferLine_<%=cid%>> exInsertColValueList<%=cid%> = new java.util.ArrayList();

@@ -18,7 +18,6 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
 
 import org.eclipse.emf.ecore.util.EObjectResolvingEList;
-
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractInOutTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.FilterConnection;
 import org.talend.designer.xmlmap.model.emf.xmlmap.XmlmapPackage;
@@ -474,6 +473,57 @@ public abstract class AbstractInOutTreeImpl extends EObjectImpl implements Abstr
         result.append(multiLoops);
         result.append(')');
         return result.toString();
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractInOutTreeImpl other = (AbstractInOutTreeImpl) obj;
+        if(this.getFilterIncomingConnections().size() != other.getFilterIncomingConnections().size()){
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        if (this.expressionFilter == null) {
+            if (other.expressionFilter != null) {
+                return false;
+            }
+        } else if (!this.expressionFilter.equals(other.expressionFilter)) {
+            return false;
+        }
+        
+        if(this.activateExpressionFilter != other.activateExpressionFilter){
+            return false;
+        }
+        if(this.activateCondensedTool != other.activateCondensedTool){
+            return false;
+        }
+        if(this.minimized != other.minimized){
+            return false;
+        }
+        if(this.multiLoops != other.multiLoops){
+            return false;
+        }
+        
+        return true;
     }
 
 } //AbstractInOutTreeImpl

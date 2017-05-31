@@ -48,13 +48,12 @@ public class AddFailOnErrorOnTFileCopyTDI38441 extends AbstractJobMigrationTask 
                         ComponentUtilities.addNodeProperty(node, propertyName, propertyType);
                     }
                     ElementParameterType copyingDirectory = ComponentUtilities.getNodeProperty(node, isCopyDirectoryPropertyName);
-                    if (copyingDirectory != null) {
-                        if ("true".equals(copyingDirectory.getValue())) { //$NON-NLS-1$
-                            ComponentUtilities.setNodeValue(node, propertyName, "false"); //$NON-NLS-1$
-                            return;
-                        }
-                        ComponentUtilities.setNodeValue(node, propertyName, "true"); //$NON-NLS-1$
+                    if ((copyingDirectory != null) && ("true".equals(copyingDirectory.getValue()))) { //$NON-NLS-1$
+                        ComponentUtilities.setNodeValue(node, propertyName, "false"); //$NON-NLS-1$
+                        return;
                     }
+
+                    ComponentUtilities.setNodeValue(node, propertyName, "true"); //$NON-NLS-1$
 
                 }
 

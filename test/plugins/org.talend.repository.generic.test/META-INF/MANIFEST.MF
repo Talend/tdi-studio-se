@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Repository Generic Plugin Test
 Bundle-SymbolicName: org.talend.repository.generic.test
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.1.qualifier
 Bundle-Vendor: .Talend SA.
 Fragment-Host: org.talend.repository.generic
 Require-Bundle: org.junit,

@@ -25,6 +25,7 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.process.IGenericProvider;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.ui.process.IGEFProcess;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
@@ -144,5 +145,10 @@ public class DesignerCoreUIService implements IDesignerCoreUIService {
     @Override
     public Command crateMavenDeploymentValueChangeCommand(IProcess2 process, String type, String value) {
         return new MavenDeploymentValueChangeCommand(process, type, value);
+    }
+
+    @Override
+    public void loadComponentsFromProviders(ERepositoryObjectType type) {
+        AbstractProcessProvider.loadComponentsFromProviders(type);
     }
 }

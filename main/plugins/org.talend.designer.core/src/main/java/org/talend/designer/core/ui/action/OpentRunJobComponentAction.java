@@ -24,9 +24,11 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.ui.editor.IJobEditorHandler;
+import org.talend.core.ui.editor.JobEditorHandlerManager;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.ui.MultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
@@ -98,7 +100,10 @@ public class OpentRunJobComponentAction extends SelectionAction {
                         IEditorPart editorPart = page.findEditor(fileEditorInput);
 
                         if (editorPart == null) {
-                            page.openEditor(fileEditorInput, MultiPageTalendEditor.ID, true);
+                            ERepositoryObjectType repObjType = ERepositoryObjectType.getItemType(processItem);
+                            IJobEditorHandler editorInputFactory = JobEditorHandlerManager.getInstance()
+                                    .extractEditorInputFactory(repObjType.getType());
+                            editorInputFactory.openJobEditor(editorInputFactory.createJobEditorInput(processItem, true));
                         } else {
                             page.activate(editorPart);
                         }

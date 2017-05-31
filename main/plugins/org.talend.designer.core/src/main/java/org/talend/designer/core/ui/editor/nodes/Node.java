@@ -3357,14 +3357,28 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         // check not startable components not linked
-        if ((getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
-                && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
-            if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
-                    && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
-                String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
-                Problems.add(ProblemStatus.WARNING, this, errorMessage);
+        if (getComponentProperties() == null) {
+            if ((getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
+                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
+                if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
+                        && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
+                    String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
+                    Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                }
+            }
+        } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
+            for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
+                if ((connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                    if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
+                            && (getCurrentActiveLinksNbOutput(EConnectionType.ITERATE) == 0)) {
+                        String errorMessage = Messages.getString("Node.noOutputLink"); //$NON-NLS-1$
+                        Problems.add(ProblemStatus.WARNING, this, errorMessage);
+                    }
+                }
             }
         }
 
@@ -3596,7 +3610,8 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
         if (isJoblet) { // bug 12764
-            List<? extends IConnection> outgoingConnections = this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            List<IConnection> outgoingConnections = (List<IConnection>) this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections.addAll(this.getOutgoingConnections(EConnectionType.FLOW_REF));
             for (IConnection con : outgoingConnections) {
                 INodeConnector connector = this.getConnectorFromName(con.getConnectorName());
                 if (connector == null && con instanceof Connection) { // connector is lost.
@@ -3605,7 +3620,8 @@ public class Node extends Element implements IGraphicalNode {
             }
 
             String typeName = "Row"; //$NON-NLS-1$
-            outgoingConnections = this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections = (List<IConnection>) this.getOutgoingConnections(EConnectionType.FLOW_MAIN);
+            outgoingConnections.addAll(this.getOutgoingConnections(EConnectionType.FLOW_REF));
             if (outgoingConnections.size() > jobletBuildConnectorNum) {
                 String errorMessage = Messages.getString("Node.tooMuchTypeOutput", typeName); //$NON-NLS-1$
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -3632,7 +3648,7 @@ public class Node extends Element implements IGraphicalNode {
     private static void getAllMainConnSourceNode(INode source, List<INode> list) {
         List<? extends IConnection> connections = source.getIncomingConnections();
         for (IConnection connection : connections) {
-            if(connection.getLineStyle() != EConnectionType.FLOW_MAIN){
+            if (connection.getLineStyle() != EConnectionType.FLOW_MAIN) {
                 continue;
             }
             INode node = connection.getSource();

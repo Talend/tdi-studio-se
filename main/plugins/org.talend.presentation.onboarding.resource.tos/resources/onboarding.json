@@ -27,7 +27,7 @@
 						"content": "<internationalization id='onboarding.page1.content'/>"
 					},
 					{
-					    "size": "500,300",
+					    "size": "500,320",
 						"cssIds": "#navigatorLayout || .MPart#org-talend-repository-cnf-view",
                         "onShow": null,
                         "onShowAnimationDone": {
@@ -45,7 +45,7 @@
 						"content": "<internationalization id='onboarding.page2.content'/>"
 					},
 					{
-						"size": "600,300",
+						"size": "600,320",
 						"cssIds": ".MPlaceholder#org-eclipse-ui-editorss",
                         "onShow": null,
                         "onShowAnimationDone": {
@@ -63,7 +63,7 @@
 						"content": "<internationalization id='onboarding.page3.content'/>"
 					},
 					{
-						"size": "600,320",
+						"size": "600,425",
 						"cssIds": "#bottomLayout",
                         "onShow": null,
                         "onShowAnimationDone": {
@@ -81,7 +81,7 @@
 						"content": "<internationalization id='onboarding.page4.content'/><br/><internationalization id='onboarding.page4_1.content'/><a href='http://org.eclipse.ui.intro/runAction?pluginId=org.talend.rcp&amp;class=org.talend.rcp.intro.starting.ShowViewsAction&amp;id=org.talend.rcp.intro.starting.ShowViewsAction&amp;type=SHOW_RUN_JOB' ><internationalization id='onboarding.page4_2.content'/> </a><internationalization id='onboarding.page4_3.content'/>"
 					},
 					{
-						"size": "570,355",
+						"size": "570,425",
 						"cssIds": "#paletteLayout || .MPart#org-eclipse-gef-ui-palette_view",
                         "onShow": null,
                         "onShowAnimationDone": {

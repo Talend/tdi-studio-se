@@ -15,7 +15,6 @@ package org.talend.designer.codegen.components.model;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,13 +28,9 @@ import org.talend.commons.utils.resource.BundleFileUtil;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.designer.codegen.CodeGeneratorActivator;
-import org.talend.designer.codegen.components.ui.IComponentPreferenceConstant;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.files.FileUtils;
 import org.talend.utils.io.FilesUtils;
-import org.talend.utils.json.JSONArray;
-import org.talend.utils.json.JSONObject;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -69,16 +64,18 @@ public class UserComponentsProviderTest {
         if (installationFolder != null && installationFolder.exists()) {
             FilesUtils.copyFolder(installationFolder, backupFolder, false, null, null, true);
         }
+
     }
 
     @AfterClass
-    public static void restore() throws IOException {
+    public static void tearDown() throws Exception {
         // backup old
         UserComponentsProviderTestClass provider = new UserComponentsProviderTestClass();
         File installationFolder = provider.getInstallationFolder();
         if (installationFolder != null && installationFolder.exists()) {
             FilesUtils.copyFolder(backupFolder, installationFolder, true, null, null, true);
         }
+        FilesUtils.deleteFolder(backupFolder, true);
     }
 
     File workFolder;
@@ -87,10 +84,19 @@ public class UserComponentsProviderTest {
     public void setup() throws Exception {
         workFolder = FileUtils.createTmpFolder("UserComponentsProviderTest", "");
 
-        // set empty first
-        CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
+        cleanComponentsInProject();
 
+    }
+
+    @After
+    public void clean() throws Exception {
+        if (workFolder != null) {
+            FilesUtils.deleteFolder(workFolder, true);
+        }
+        cleanComponentsInProject();
+    }
+
+    private void cleanComponentsInProject() throws Exception {
         final Project currentProject = ProjectManager.getInstance().getCurrentProject();
         final IProject project = ResourceUtils.getProject(currentProject);
         final IFolder projectComponentsFolder = project.getFolder(ERepositoryObjectType
@@ -99,17 +105,6 @@ public class UserComponentsProviderTest {
             FilesUtils.deleteFolder(projectComponentsFolder.getLocation().toFile(), false);
         }
         projectComponentsFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
-
-    }
-
-    @After
-    public void clean() {
-        if (workFolder != null) {
-            FilesUtils.deleteFolder(workFolder, true);
-        }
-        // set empty first
-        CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
     }
 
     protected File getTestDataFile(String bundlePath) throws IOException {
@@ -121,17 +116,6 @@ public class UserComponentsProviderTest {
         Assert.assertTrue(installationFolder.exists());
         Assert.assertEquals(0, installationFolder.list().length);
 
-        String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONArray newCFComponentsJson = new JSONArray();
-        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONArray(installedComponentsValues);
-        }
-        Assert.assertEquals(0, newCFComponentsJson.length());
-
-        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
-        Assert.assertNotNull(needInstalledNewCFComponents);
-        Assert.assertEquals(0, needInstalledNewCFComponents.length());
     }
 
     @Test
@@ -332,8 +316,7 @@ public class UserComponentsProviderTest {
     }
 
     @Test
-    public void test_preComponentsLoad_newComponentsInProject() throws Exception {
-
+    public void test_preComponentsLoad_contain_newComponentsInProject() throws Exception {
         File testDataFile = getTestDataFile(PATH_NEW_COMPONENT);
         Assert.assertTrue(testDataFile.exists());
 
@@ -354,26 +337,8 @@ public class UserComponentsProviderTest {
         };
         provider.preComponentsLoad();
 
-        File installationFolder = provider.getInstallationFolder();
-        Assert.assertTrue(installationFolder.exists());
-        Assert.assertEquals(0, installationFolder.list().length);
+        testEmpty(provider);
 
-        String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONArray newCFComponentsJson = new JSONArray();
-        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONArray(installedComponentsValues);
-        }
-        Assert.assertEquals(0, newCFComponentsJson.length());
-
-        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
-        Assert.assertNotNull(needInstalledNewCFComponents);
-        final String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        Assert.assertTrue(needInstalledNewCFComponents.has(technicalLabel));
-        final JSONArray jsonArray = needInstalledNewCFComponents.getJSONArray(technicalLabel);
-        Assert.assertNotNull(jsonArray);
-        Assert.assertEquals(1, jsonArray.length());
-        final String path = jsonArray.getString(0);
-        Assert.assertEquals(target.getAbsolutePath(), path);
+        FilesUtils.deleteFolder(target.getParentFile(), false);
     }
 }

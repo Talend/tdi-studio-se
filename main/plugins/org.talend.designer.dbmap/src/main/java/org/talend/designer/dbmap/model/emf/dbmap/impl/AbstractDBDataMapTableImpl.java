@@ -384,5 +384,63 @@ public class AbstractDBDataMapTableImpl extends EObjectImpl implements AbstractD
         result.append(')');
         return result.toString();
     }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AbstractDBDataMapTableImpl other = (AbstractDBDataMapTableImpl) obj;
+        if(this.minimized != other.minimized){
+            return false;
+        }
+        if (this.name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!this.name.equals(other.name)) {
+            return false;
+        }
+        
+        if (this.tableName == null) {
+            if (other.tableName != null) {
+                return false;
+            }
+        } else if (!this.tableName.equals(other.tableName)) {
+            return false;
+        }
+        
+        EList<DBMapperTableEntry> otherEntriss = other.getDBMapperTableEntries();
+        if(getDBMapperTableEntries().size() != otherEntriss.size()){
+            return false;
+        }
+        for(DBMapperTableEntry entry:dbMapperTableEntries){
+            boolean found = false;
+            for(DBMapperTableEntry otherEntry:otherEntriss){
+                if(entry.getName().equals(otherEntry.getName())){
+                    found = true;
+                    if(!entry.equals(otherEntry)){
+                        return false;
+                    }
+                    break;
+                }
+            }
+            if(found == false){
+                return false;
+            }
+        }
+        return true;
+    }
 
 } //AbstractDBDataMapTableImpl

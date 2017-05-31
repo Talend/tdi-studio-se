@@ -21,6 +21,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
@@ -262,6 +263,10 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         }
         otherArgsBuffer.append(" -Dmaven.main.skip=true");
 
+        // if debug
+        if (CommonsPlugin.isDebugMode()) {
+            otherArgsBuffer.append(" -X");
+        }
         return otherArgsBuffer;
     }
 

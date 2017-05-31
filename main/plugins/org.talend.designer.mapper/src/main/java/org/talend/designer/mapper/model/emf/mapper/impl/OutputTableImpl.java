@@ -7,11 +7,10 @@
 package org.talend.designer.mapper.model.emf.mapper.impl;
 
 import org.eclipse.emf.common.notify.Notification;
-
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
-
 import org.talend.designer.mapper.model.emf.mapper.MapperPackage;
 import org.talend.designer.mapper.model.emf.mapper.OutputTable;
 
@@ -323,6 +322,52 @@ public class OutputTableImpl extends AbstractInOutTableImpl implements OutputTab
         result.append(isJoinTableOf);
         result.append(')');
         return result.toString();
+    }
+    
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated not
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        OutputTableImpl other = (OutputTableImpl) obj;
+        if(this.isErrorRejectTable != other.isErrorRejectTable){
+            return false;
+        }
+        if(this.reject != other.reject){
+            return false;
+        }
+        if(this.rejectInnerJoin != other.rejectInnerJoin){
+            return false;
+        }
+        if(this.rejectInnerJoin != other.rejectInnerJoin){
+            return false;
+        }
+        if (this.isJoinTableOf == null) {
+            if (other.isJoinTableOf != null) {
+                return false;
+            }
+        } else if (!this.isJoinTableOf.equals(other.isJoinTableOf)) {
+            return false;
+        }
+        if (this.expressionFilter == null) {
+            if (other.expressionFilter != null) {
+                return false;
+            }
+        } else if (!this.expressionFilter.equals(other.expressionFilter)) {
+            return false;
+        }
+        return super.equals(obj);
     }
 
 } //OutputTableImpl

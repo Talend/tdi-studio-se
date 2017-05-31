@@ -194,7 +194,7 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private void fireValidateStatusEvent() {
-        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT) {
+        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT && this.getFieldType() != EParameterFieldType.TABLE) {
             this.pcs.firePropertyChange(IElementParameterEventProperties.EVENT_VALIDATE_RESULT_UPDATE, null, getSubProperties()
                     .getValidationResult());
         }
@@ -552,6 +552,20 @@ public class GenericElementParameter extends ElementParameter {
         if (property != null) {
             property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, repositoryUsed ? property.getName() : null);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.designer.core.model.components.ElementParameter#getRepositoryValue()
+     */
+    @Override
+    public String getRepositoryValue() {
+        if (isRepositoryValueUsed() && super.getRepositoryValue() == null) {
+            Property property = getProperty();
+            if (property != null) {
+                super.setRepositoryValue((String)property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
+            }
+        }
+        return super.getRepositoryValue();
     }
 
     @Override

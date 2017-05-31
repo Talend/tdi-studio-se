@@ -1,0 +1,229 @@
+<COMPONENT>
+	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.101" STATUS="ALPHA"
+		COMPATIBILITY="ALL" AUTHOR="Talend" RELEASE_DATE="20151016A"
+		STARTABLE="true" LOG4J_ENABLED="true">
+		<SIGNATURE></SIGNATURE>
+	</HEADER>
+
+	<FAMILIES>
+		<FAMILY>Cloud/Google/Dataproc</FAMILY>
+	</FAMILIES>
+
+	<DOCUMENTATION>
+		<URL />
+	</DOCUMENTATION>
+
+	<CONNECTORS>
+		<CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0" />
+		<CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="COMPONENT_OK" />
+		<CONNECTOR CTYPE="COMPONENT_ERROR" />
+		<CONNECTOR CTYPE="RUN_IF" />
+	</CONNECTORS>
+
+	<PARAMETERS>
+		<PARAMETER NAME="GOOGLE_PROJECT_ID" FIELD="TEXT" REQUIRED="true"
+			NUM_ROW="5" GROUP="CONFIGURATION">
+			<DEFAULT>"my-google-project"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="GOOGLE_CLUSTER_ID" FIELD="TEXT" NUM_ROW="10"
+			GROUP="CONFIGURATION">
+			<DEFAULT>"my-cluster-id"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="DEFINE_PATH_TO_GOOGLE_CREDENTIALS"
+			REPOSITORY_VALUE="DEFINE_PATH_TO_GOOGLE_CREDENTIALS" FIELD="CHECK"
+			REQUIRED="true" NUM_ROW="15" GROUP="CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="PATH_TO_GOOGLE_CREDENTIALS"
+			REPOSITORY_VALUE="PATH_TO_GOOGLE_CREDENTIALS" FIELD="TEXT" REQUIRED="true"
+			NUM_ROW="16" GROUP="CONFIGURATION"
+			SHOW_IF="((isShow[DEFINE_PATH_TO_GOOGLE_CREDENTIALS]) AND DEFINE_PATH_TO_GOOGLE_CREDENTIALS=='true')">
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="ACTION" FIELD="CLOSED_LIST" NUM_ROW="20"
+			REQUIRED="true" GROUP="CONFIGURATION">
+			<ITEMS DEFAULT="START">
+				<ITEM NAME="START" VALUE="START" />
+				<ITEM NAME="STOP" VALUE="STOP" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="CLUSTER_VERSION" FIELD="OPENED_LIST"
+			NUM_ROW="21" SHOW_IF="ACTION=='START'" REQUIRED="true" GROUP="CONFIGURATION">
+			<ITEMS DEFAULT="LATEST">
+				<ITEM NAME="LATEST" VALUE="&quot;latest&quot;" />
+				<ITEM NAME="DATAPROC_1_1_0" VALUE="&quot;1.1&quot;" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="ZONE" FIELD="OPENED_LIST" NUM_ROW="25"
+			REQUIRED="true" SHOW_IF="ACTION=='START'" GROUP="CONFIGURATION">
+			<ITEMS DEFAULT="US_CENTRAL1_A">
+				<ITEM NAME="US_WEST1_A" VALUE="&quot;us-west1-a&quot;" />
+				<ITEM NAME="US_WEST1_B" VALUE="&quot;us-west1-b&quot;" />
+				<ITEM NAME="US_CENTRAL1_A" VALUE="&quot;us-central1-a&quot;" />
+				<ITEM NAME="US_CENTRAL1_B" VALUE="&quot;us-central1-b&quot;" />
+				<ITEM NAME="US_CENTRAL1_C" VALUE="&quot;us-central1-c&quot;" />
+				<ITEM NAME="US_CENTRAL1_F" VALUE="&quot;us-central1-f&quot;" />
+				<ITEM NAME="US_EAST1_B" VALUE="&quot;us-east1-b&quot;" />
+				<ITEM NAME="US_EAST1_C" VALUE="&quot;us-east1-c&quot;" />
+				<ITEM NAME="US_EAST1_D" VALUE="&quot;us-east1-d&quot;" />
+				<ITEM NAME="EUROPE_WEST1_B" VALUE="&quot;europe-west1-b&quot;" />
+				<ITEM NAME="EUROPE_WEST1_C" VALUE="&quot;europe-west1-c&quot;" />
+				<ITEM NAME="EUROPE_WEST1_D" VALUE="&quot;europe-west1-d&quot;" />
+				<ITEM NAME="ASIA_SOUTHEAST1_A" VALUE="&quot;asia-southeast1-a&quot;" />
+				<ITEM NAME="ASIA_SOUTHEAST1_B" VALUE="&quot;asia-southeast1-b&quot;" />
+				<ITEM NAME="ASIA_EAST1_A" VALUE="&quot;asia-east1-a&quot;" />
+				<ITEM NAME="ASIA_EAST1_B" VALUE="&quot;asia-east1-b&quot;" />
+				<ITEM NAME="ASIA_EAST1_C" VALUE="&quot;asia-east1-c&quot;" />
+				<ITEM NAME="ASIA_NORTHEAST1_A" VALUE="&quot;asia-northeast1-a&quot;" />
+				<ITEM NAME="ASIA_NORTHEAST1_B" VALUE="&quot;asia-northeast1-b&quot;" />
+				<ITEM NAME="ASIA_NORTHEAST1_C" VALUE="&quot;asia-northeast1-c&quot;" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="MASTER_NUM_INSTANCES" FIELD="TEXT" NUM_ROW="30"
+			REQUIRED="true" SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			<DEFAULT>1</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="MASTER_INSTANCE_TYPE" FIELD="OPENED_LIST"
+			REQUIRED="true" NUM_ROW="30" SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			<ITEMS DEFAULT="n1-standard-2">
+				<ITEM NAME="n1-standard-1" VALUE="&quot;n1-standard-1&quot;" />
+				<ITEM NAME="n1-standard-2" VALUE="&quot;n1-standard-2&quot;" />
+				<ITEM NAME="n1-standard-4" VALUE="&quot;n1-standard-4&quot;" />
+				<ITEM NAME="n1-standard-8" VALUE="&quot;n1-standard-8&quot;" />
+				<ITEM NAME="n1-standard-16" VALUE="&quot;n1-standard-16&quot;" />
+				<ITEM NAME="n1-standard-32" VALUE="&quot;n1-standard-32&quot;" />
+				<ITEM NAME="n1-standard-64" VALUE="&quot;n1-standard-64&quot;" />
+				<ITEM NAME="n1-highmem-1" VALUE="&quot;n1-highmem-1&quot;" />
+				<ITEM NAME="n1-highmem-2" VALUE="&quot;n1-highmem-2&quot;" />
+				<ITEM NAME="n1-highmem-4" VALUE="&quot;n1-highmem-4&quot;" />
+				<ITEM NAME="n1-highmem-8" VALUE="&quot;n1-highmem-8&quot;" />
+				<ITEM NAME="n1-highmem-16" VALUE="&quot;n1-highmem-16&quot;" />
+				<ITEM NAME="n1-highmem-32" VALUE="&quot;n1-highmem-32&quot;" />
+				<ITEM NAME="n1-highmem-64" VALUE="&quot;n1-highmem-64&quot;" />
+				<ITEM NAME="n1-highcpu-1" VALUE="&quot;n1-highcpu-1&quot;" />
+				<ITEM NAME="n1-highcpu-2" VALUE="&quot;n1-highcpu-2&quot;" />
+				<ITEM NAME="n1-highcpu-4" VALUE="&quot;n1-highcpu-4&quot;" />
+				<ITEM NAME="n1-highcpu-8" VALUE="&quot;n1-highcpu-8&quot;" />
+				<ITEM NAME="n1-highcpu-16" VALUE="&quot;n1-highcpu-16&quot;" />
+				<ITEM NAME="n1-highcpu-32" VALUE="&quot;n1-highcpu-32&quot;" />
+				<ITEM NAME="n1-highcpu-64" VALUE="&quot;n1-highcpu-64&quot;" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="WORKER_NUM_INSTANCES" FIELD="TEXT" NUM_ROW="35"
+			REQUIRED="true" SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			<DEFAULT>2</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="WORKER_INSTANCE_TYPE" FIELD="OPENED_LIST"
+			REQUIRED="true" NUM_ROW="35" SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			<ITEMS DEFAULT="n1-standard-2">
+				<ITEM NAME="n1-standard-1" VALUE="&quot;n1-standard-1&quot;" />
+				<ITEM NAME="n1-standard-2" VALUE="&quot;n1-standard-2&quot;" />
+				<ITEM NAME="n1-standard-4" VALUE="&quot;n1-standard-4&quot;" />
+				<ITEM NAME="n1-standard-8" VALUE="&quot;n1-standard-8&quot;" />
+				<ITEM NAME="n1-standard-16" VALUE="&quot;n1-standard-16&quot;" />
+				<ITEM NAME="n1-standard-32" VALUE="&quot;n1-standard-32&quot;" />
+				<ITEM NAME="n1-standard-64" VALUE="&quot;n1-standard-64&quot;" />
+				<ITEM NAME="n1-highmem-1" VALUE="&quot;n1-highmem-1&quot;" />
+				<ITEM NAME="n1-highmem-2" VALUE="&quot;n1-highmem-2&quot;" />
+				<ITEM NAME="n1-highmem-4" VALUE="&quot;n1-highmem-4&quot;" />
+				<ITEM NAME="n1-highmem-8" VALUE="&quot;n1-highmem-8&quot;" />
+				<ITEM NAME="n1-highmem-16" VALUE="&quot;n1-highmem-16&quot;" />
+				<ITEM NAME="n1-highmem-32" VALUE="&quot;n1-highmem-32&quot;" />
+				<ITEM NAME="n1-highmem-64" VALUE="&quot;n1-highmem-64&quot;" />
+				<ITEM NAME="n1-highcpu-1" VALUE="&quot;n1-highcpu-1&quot;" />
+				<ITEM NAME="n1-highcpu-2" VALUE="&quot;n1-highcpu-2&quot;" />
+				<ITEM NAME="n1-highcpu-4" VALUE="&quot;n1-highcpu-4&quot;" />
+				<ITEM NAME="n1-highcpu-8" VALUE="&quot;n1-highcpu-8&quot;" />
+				<ITEM NAME="n1-highcpu-16" VALUE="&quot;n1-highcpu-16&quot;" />
+				<ITEM NAME="n1-highcpu-32" VALUE="&quot;n1-highcpu-32&quot;" />
+				<ITEM NAME="n1-highcpu-64" VALUE="&quot;n1-highcpu-64&quot;" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="SECONDARY_WORKER_NUM_INSTANCES" FIELD="TEXT"
+			REQUIRED="true" NUM_ROW="40" SHOW_IF="ACTION=='START'" GROUP="INSTANCE_CONFIGURATION">
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
+	</PARAMETERS>
+
+	<ADVANCED_PARAMETERS>
+		<PARAMETER NAME="WAIT_FOR_CLUSTER_READY" FIELD="CHECK"
+			NUM_ROW="5" SHOW_IF="(ACTION=='START')" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>true</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="MASTER_DISK_SIZE" FIELD="TEXT" NUM_ROW="10"
+			SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>500</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="MASTER_SSD_NB" FIELD="TEXT" NUM_ROW="15"
+			SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="WORKER_DISK_SIZE" FIELD="TEXT" NUM_ROW="20"
+			SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>500</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="WORKER_SSD_NB" FIELD="TEXT" NUM_ROW="25"
+			SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="DEFINE_NETWORK" FIELD="CHECK" REQUIRED="true"
+			NUM_ROW="30" SHOW_IF="(ACTION=='START') AND (DEFINE_SUBNETWORK=='false')"
+			GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="NETWORK" FIELD="TEXT" NUM_ROW="30"
+			SHOW_IF="(ACTION=='START') AND (DEFINE_NETWORK=='true')" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>"default"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="DEFINE_SUBNETWORK" FIELD="CHECK" REQUIRED="true"
+			NUM_ROW="35" SHOW_IF="(ACTION=='START') AND (DEFINE_NETWORK=='false')"
+			GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="SUBNETWORK" FIELD="TEXT" NUM_ROW="35"
+			SHOW_IF="(ACTION=='START') AND (DEFINE_SUBNETWORK=='true')" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>"default"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="INITIALIZATION_ACTIONS" FIELD="TABLE"
+			SHOW_IF="ACTION=='START'" NUM_ROW="40" NB_LINES="5"
+			GROUP="ADVANCED_CONFIGURATION">
+			<ITEMS>
+				<ITEM NAME="EXECUTABLE_FILE" />
+				<ITEM NAME="EXECUTABLE_TIMEOUT" />
+			</ITEMS>
+		</PARAMETER>
+	</ADVANCED_PARAMETERS>
+
+	<CODEGENERATION>
+		<IMPORTS>
+			<IMPORT MODULE_GROUP="BIGDATA-LAUNCHER-LIB-DATAPROC11"
+				REQUIRED="true" />
+		</IMPORTS>
+	</CODEGENERATION>
+	
+	<RETURNS/>
+
+</COMPONENT>
