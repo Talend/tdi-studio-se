@@ -167,7 +167,7 @@ int nb_duplicates_<%=cid %> = 0;
 <%
 if (isLog4jEnabled) {
 %>
-	log.info("<%=cid%> - Start to process the data from datasource.");
+	log.debug("<%=cid%> - Start to process the data from datasource.");
 <%
 }
 if(hasKey){%>

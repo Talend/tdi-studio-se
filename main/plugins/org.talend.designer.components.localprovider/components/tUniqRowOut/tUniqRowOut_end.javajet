@@ -34,7 +34,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
                 <%
 				if (isLog4jEnabled) {
 				%>
-					log.info("<%=cid%> - Invoke request to delete file: "+file_<%=cid %>.getPath()+" When VM exit.");
+					log.debug("<%=cid%> - Invoke request to delete file: "+file_<%=cid %>.getPath()+" When VM exit.");
 				<%
 				}
 				%>
@@ -42,7 +42,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
                 <%
 				if (isLog4jEnabled) {
 				%>
-					log.info("<%=cid%> - Writing the data into: "+file_<%=cid %>.getPath());
+					log.debug("<%=cid%> - Writing the data into: "+file_<%=cid %>.getPath());
 				<%
 				}
 				%>
@@ -56,7 +56,7 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
 				<%
 				if (isLog4jEnabled) {
 				%>
-					log.info("<%=cid%> - Wrote successfully.");
+					log.debug("<%=cid%> - Wrote successfully.");
 				<%
 				}
 				%>
