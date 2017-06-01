@@ -93,12 +93,11 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
         if (nodes.length > 0) {
 
             manager = new JobHTMLScriptsManager(new HTMLDocGenerator(nodes[0].getRoot().getProject(),
-                    ERepositoryObjectType.JOB_DOC), true);
+                    ERepositoryObjectType.JOB_DOC, ERepositoryObjectType.PROCESS), true);
         }
 
         List<ExportFileResource> list = new ArrayList<ExportFileResource>();
-        for (int i = 0; i < nodes.length; i++) {
-            RepositoryNode node = nodes[i];
+        for (RepositoryNode node : nodes) {
             if (node.getType() == ENodeType.SYSTEM_FOLDER || node.getType() == ENodeType.SIMPLE_FOLDER) {
                 addTreeNode(node, node.getProperties(EProperties.LABEL).toString(), list);
             }
@@ -130,9 +129,9 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
         if (nodes.length <= 0) {
             return;
         }
-        for (int i = 0; i < nodes.length; i++) {
-            addTreeNode((RepositoryNode) nodes[i], path + "/" //$NON-NLS-1$
-                    + ((RepositoryNode) nodes[i]).getProperties(EProperties.LABEL).toString(), list);
+        for (Object node2 : nodes) {
+            addTreeNode((RepositoryNode) node2, path + "/" //$NON-NLS-1$
+                    + ((RepositoryNode) node2).getProperties(EProperties.LABEL).toString(), list);
         }
     }
 
@@ -151,6 +150,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
     /**
      * (non-Javadoc) Method declared on IDialogPage.
      */
+    @Override
     public void createControl(Composite parent) {
 
         initializeDialogUnits(parent);
@@ -203,6 +203,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
     private void addDocumentListener() {
         button.addSelectionListener(new SelectionAdapter() {
 
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 cssField.setEditable(button.getSelection());
                 if (button.getSelection()) {
@@ -214,6 +215,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
         });
         cssField.addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 cssFilePath = cssField.getText();
                 updatePageCompletion();
@@ -260,6 +262,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
      * 
      * @see org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1#validateSourceGroup()
      */
+    @Override
     protected boolean validateSourceGroup() {
         return true;
     }
@@ -358,6 +361,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
      * 
      * @returns boolean
      */
+    @Override
     public boolean finish() {
         String topFolder = getRootFolderName();
         String destinationFilename = getDestinationValue();
@@ -401,8 +405,8 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
             String[] directoryNames = settings.getArray(STORE_DESTINATION_NAMES_ID);
             if (directoryNames != null) {
                 boolean isExist = false;
-                for (int i = 0; i < directoryNames.length; i++) {
-                    if (directoryNames[i].equals(runnable.getDestinationFilename())) {
+                for (String directoryName : directoryNames) {
+                    if (directoryName.equals(runnable.getDestinationFilename())) {
                         isExist = true;
                     }
                 }
@@ -447,6 +451,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
      * 
      * @return java.lang.String
      */
+    @Override
     protected String getDestinationLabel() {
         // return DataTransferMessages.ArchiveExport_destinationLabel;
         return Messages.getString("DataTransferMessages.ArchiveExport_destinationLabel"); //$NON-NLS-1$
@@ -465,6 +470,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
      * Answer the contents of self's destination specification widget. If this value does not have a suffix then add it
      * first.
      */
+    @Override
     protected String getDestinationValue() {
         String idealSuffix = getOutputSuffix();
         String destinationText = super.getDestinationValue();
@@ -501,6 +507,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
     /**
      * Open an appropriate destination browser so that the user can specify a source to import from.
      */
+    @Override
     protected void handleDestinationBrowseButtonPressed() {
 
         FileDialog dialog = new FileDialog(getContainer().getShell(), SWT.SAVE);
@@ -518,11 +525,11 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
             setErrorMessage(null);
             setDestinationValue(selectedFileName);
             if (getDialogSettings() != null) {
-                IDialogSettings section = getDialogSettings().getSection(DESTINATION_FILE);//$NON-NLS-1$
+                IDialogSettings section = getDialogSettings().getSection(DESTINATION_FILE);
                 if (section == null) {
-                    section = getDialogSettings().addNewSection(DESTINATION_FILE);//$NON-NLS-1$
+                    section = getDialogSettings().addNewSection(DESTINATION_FILE);
                 }
-                section.put(DESTINATION_FILE, selectedFileName);//$NON-NLS-1$//$NON-NLS-1$
+                section.put(DESTINATION_FILE, selectedFileName);
             }
         }
     }
@@ -534,11 +541,11 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
         if (source instanceof Combo) {
             String destination = ((Combo) source).getText();
             if (getDialogSettings() != null) {
-                IDialogSettings section = getDialogSettings().getSection(DESTINATION_FILE);//$NON-NLS-1$
+                IDialogSettings section = getDialogSettings().getSection(DESTINATION_FILE);
                 if (section == null) {
-                    section = getDialogSettings().addNewSection(DESTINATION_FILE);//$NON-NLS-1$
+                    section = getDialogSettings().addNewSection(DESTINATION_FILE);
                 }
-                section.put(DESTINATION_FILE, destination);//$NON-NLS-1$
+                section.put(DESTINATION_FILE, destination);
             }
         }
     }
@@ -546,6 +553,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
     /**
      * Hook method for saving widget values for restoration by the next instance of this class.
      */
+    @Override
     protected void internalSaveWidgetValues() {
         // update directory names history
         IDialogSettings settings = getDialogSettings();
@@ -575,6 +583,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
     // }
     // }
     // }
+    @Override
     protected void restoreWidgetValues() {
         IDialogSettings settings = getDialogSettings();
         if (settings != null) {
@@ -586,12 +595,12 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
                 String filterName = ".zip"; //$NON-NLS-1$
                 String userDir = System.getProperty("user.dir"); //$NON-NLS-1$
                 IPath path = new Path(userDir).append(getDefaultFileName() + getOutputSuffix());
-                for (int i = 0; i < directoryNames.length; i++) {
-                    addDestinationItem(directoryNames[i]);
-                    if (directoryNames[i].substring(directoryNames[i].lastIndexOf('.')).equalsIgnoreCase(filterName)
-                            && path.toOSString().equals(directoryNames[i])) {
+                for (String directoryName : directoryNames) {
+                    addDestinationItem(directoryName);
+                    if (directoryName.substring(directoryName.lastIndexOf('.')).equalsIgnoreCase(filterName)
+                            && path.toOSString().equals(directoryName)) {
                         if (!isFirstValid) {
-                            setDestinationValue(directoryNames[i]);
+                            setDestinationValue(directoryName);
                             isFirstValid = true;
                         }
                         destinationValid = true;
@@ -611,6 +620,7 @@ public class GenerateDocAsHTMLWizardPage extends WizardFileSystemResourceExportP
      * 
      * @see org.eclipse.ui.wizards.datatransfer.WizardFileSystemResourceExportPage1#destinationEmptyMessage()
      */
+    @Override
     protected String destinationEmptyMessage() {
         return ""; //$NON-NLS-1$
     }

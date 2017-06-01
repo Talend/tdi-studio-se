@@ -148,6 +148,8 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     private ERepositoryObjectType repositoryObjectType;
 
+    private ERepositoryObjectType itemType;
+
     private static Map<Integer, ByteArrayOutputStream> logoImageCache = new HashMap<Integer, ByteArrayOutputStream>();
 
     private static String userDocImageOldPath = ""; //$NON-NLS-1$
@@ -158,13 +160,14 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
     private boolean generateStatsLogsSetting = true;
 
-    public HTMLDocGenerator(Project project, ERepositoryObjectType repositoryObjectType) {
+    public HTMLDocGenerator(Project project, ERepositoryObjectType docType, ERepositoryObjectType itemType) {
         this.project = project;
         this.designerCoreService = CorePlugin.getDefault().getDesignerCoreService();
         this.mapList = designerCoreService.getMaps();
         this.repositoryConnectionItemMap = mapList.get(0);
         this.repositoryDBIdAndNameMap = mapList.get(1);
-        this.repositoryObjectType = repositoryObjectType;
+        this.repositoryObjectType = docType;
+        this.itemType = itemType;
     }
 
     /*
@@ -175,6 +178,16 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
     @Override
     public ERepositoryObjectType getRepositoryObjectType() {
         return this.repositoryObjectType;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.repository.documentation.generation.IDocumentationGenerator#getItemType()
+     */
+    @Override
+    public ERepositoryObjectType getItemType() {
+        return itemType;
     }
 
     @Override
@@ -467,31 +480,34 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
             picList.add(new File(picFolderPath + File.separatorChar + "pdf_" + picName).toURL()); //$NON-NLS-1$
             pdfImage.dispose();
         }
-        for (NodeType node : (List<NodeType>) processType.getNode()) {
-            String uniqueName = ""; //$NON-NLS-1$
-            for (Object o : node.getElementParameter()) {
-                if (o instanceof ElementParameterType) {
-                    if ("UNIQUE_NAME".equals(((ElementParameterType) o).getName())) { //$NON-NLS-1$
-                        uniqueName = ((ElementParameterType) o).getValue();
-                        break;
+        if (processType != null) {
+            for (NodeType node : (List<NodeType>) processType.getNode()) {
+                String uniqueName = ""; //$NON-NLS-1$
+                for (Object o : node.getElementParameter()) {
+                    if (o instanceof ElementParameterType) {
+                        if ("UNIQUE_NAME".equals(((ElementParameterType) o).getName())) { //$NON-NLS-1$
+                            uniqueName = ((ElementParameterType) o).getValue();
+                            break;
+                        }
                     }
                 }
-            }
-            byte[] screenshot = (byte[]) processType.getScreenshots().get(uniqueName);
-            if (screenshot != null && screenshot.length != 0) {
-                String picName = IHTMLDocConstants.EXTERNAL_NODE_PREVIEW + uniqueName + IHTMLDocConstants.JOB_PREVIEW_PIC_SUFFIX;
-                ImageUtils.save(screenshot, picFolderPath + File.separatorChar + picName, SWT.IMAGE_PNG);
-                picList.add(new File(picFolderPath + File.separatorChar + picName).toURL());
+                byte[] screenshot = (byte[]) processType.getScreenshots().get(uniqueName);
+                if (screenshot != null && screenshot.length != 0) {
+                    String picName = IHTMLDocConstants.EXTERNAL_NODE_PREVIEW + uniqueName
+                            + IHTMLDocConstants.JOB_PREVIEW_PIC_SUFFIX;
+                    ImageUtils.save(screenshot, picFolderPath + File.separatorChar + picName, SWT.IMAGE_PNG);
+                    picList.add(new File(picFolderPath + File.separatorChar + picName).toURL());
 
-                // need to generate externalNode pic for pdf
-                ByteArrayInputStream bais = new ByteArrayInputStream(screenshot);
-                Image pdfImage = new Image(null, bais);
-                int width = pdfImage.getImageData().width;
-                int percent = 22 * 32 * 100 / width;
-                ImageUtils.save(ImageUtils.scale(pdfImage, percent), picFolderPath + File.separatorChar + "pdf_" + picName, //$NON-NLS-1$
-                        SWT.IMAGE_PNG);
-                picList.add(new File(picFolderPath + File.separatorChar + picName).toURL());
-                pdfImage.dispose();
+                    // need to generate externalNode pic for pdf
+                    ByteArrayInputStream bais = new ByteArrayInputStream(screenshot);
+                    Image pdfImage = new Image(null, bais);
+                    int width = pdfImage.getImageData().width;
+                    int percent = 22 * 32 * 100 / width;
+                    ImageUtils.save(ImageUtils.scale(pdfImage, percent), picFolderPath + File.separatorChar + "pdf_" + picName, //$NON-NLS-1$
+                            SWT.IMAGE_PNG);
+                    picList.add(new File(picFolderPath + File.separatorChar + picName).toURL());
+                    pdfImage.dispose();
+                }
             }
         }
 
