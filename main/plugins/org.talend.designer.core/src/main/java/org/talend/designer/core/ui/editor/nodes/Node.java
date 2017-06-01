@@ -2227,6 +2227,14 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
         }
+
+        if (EConnectionType.FLOW_MAIN.equals(EConnectionType.getTypeFromName(connector))) {
+            for (IMetadataTable table : metadataList) {
+                if (table != null && EConnectionType.getTypeFromName(table.getAttachedConnector()) == null) {
+                    return table;
+                }
+            }
+        }
         return null;
     }
 
