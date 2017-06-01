@@ -244,7 +244,7 @@
               context="plugin:org.talend.libraries.edifact"
               language="java"
               message="Needed for EDIFACT"
-              name="milyn-smooks-all-1.7.0.jar" mvn_uri="mvn:org.talend.libraries/milyn-smooks-all-1.7.0/6.0.0" 
+              name="milyn-smooks-all-1.4.jar" mvn_uri="mvn:org.talend.libraries/milyn-smooks-all-1.4/6.0.0" 
               required="true">
       </libraryNeeded>
    </extension>
