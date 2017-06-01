@@ -250,7 +250,7 @@ public class UIManager extends AbstractUIManager {
             previousSelectedTableView = this.currentSelectedInputTableView;
             this.currentSelectedInputTableView = (InputDataMapTableView) dataMapTableView;
             metadataTableEditorView.setReadOnly(this.currentSelectedInputTableView.getInputTable().hasReadOnlyMetadataColumns()
-                    || mapperManager.componentIsReadOnly());
+                    || mapperManager.componentIsReadOnly() || this.currentSelectedInputTableView.getInputTable().isReadOnly());
         } else if (currentZone == Zone.OUTPUTS) {
             metadataTableEditorView = tabFolderEditors.getOutputMetaEditorView();
             otherMetadataTableEditorView = tabFolderEditors.getInputMetaEditorView();

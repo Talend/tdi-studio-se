@@ -1397,7 +1397,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         if (mapperManager.componentIsReadOnly()) {
             metadataEditorView.setReadOnly(true);
         } else {
-            metadataEditorView.setReadOnly(isRepository);
+            metadataEditorView.setReadOnly(isRepository || metadataEditorView.isReadOnly());
         }
     }
 
