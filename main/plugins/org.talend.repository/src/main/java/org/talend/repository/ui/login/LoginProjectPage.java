@@ -1918,13 +1918,13 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 projectBranches.add("trunk"); //$NON-NLS-1$
                 branchesViewer.setInput(projectBranches);
                 branchesViewer.setSelection(new StructuredSelection(new Object[] { "trunk" })); //$NON-NLS-1$
-            } else if ("git".equals(storage)) {
-                List<String> branches = getBranches(project);
-                projectBranches.addAll(branches);
+            } else if ("git".equals(storage)) { //$NON-NLS-1$
+                String master = "master"; //$NON-NLS-1$
+                projectBranches.add(master);
                 branchesViewer.setInput(projectBranches);
                 if (projectBranches.size() != 0) {
                     branchesViewer.setSelection(new StructuredSelection(
-                            new Object[] { projectBranches.contains("master") ? "master" : projectBranches.get(0) }));
+                            new Object[] { projectBranches.contains(master) ? master : projectBranches.get(0) }));
                 }
 
             }
