@@ -155,8 +155,8 @@ public final class CodeGeneratorEmittersPoolFactory {
 
                 long startTime = System.currentTimeMillis();
 
-                defaultTemplate = TemplateUtil.RESOURCES_DIRECTORY + TemplateUtil.DIR_SEP + EInternalTemplate.DEFAULT_TEMPLATE
-                        + TemplateUtil.EXT_SEP + codeLanguage.getExtension() + TemplateUtil.TEMPLATE_EXT;
+                
+                defaultTemplate = templatesFactory.getTemplatesFromType(EInternalTemplate.DEFAULT_TEMPLATE).get(0).getTemplateRelativeUri();
 
                 List<JetBean> jetBeans = new ArrayList<JetBean>();
                 List<TemplateUtil> templates = templatesFactory.getTemplates();
@@ -388,9 +388,8 @@ public final class CodeGeneratorEmittersPoolFactory {
      * @return
      */
     private static JetBean initializeUtilTemplate(TemplateUtil template, ECodeLanguage codeLanguage) {
-        JetBean jetBean = new JetBean(CodeGeneratorActivator.PLUGIN_ID,
-                TemplateUtil.RESOURCES_DIRECTORY + TemplateUtil.DIR_SEP + template.getResourceName() + TemplateUtil.EXT_SEP
-                        + codeLanguage.getExtension() + TemplateUtil.TEMPLATE_EXT,
+        JetBean jetBean = new JetBean(template.getJetPluginRepository(),
+                template.getTemplateRelativeUri(),
                 template.getResourceName(), template.getVersion(), codeLanguage.getName(), ""); //$NON-NLS-1$
         jetBean.addClassPath("CORERUNTIME_LIBRARIES", "org.talend.core.runtime"); //$NON-NLS-1$ //$NON-NLS-2$
         jetBean.addClassPath("MANAGEMENT_LIBRARIES", "org.talend.metadata.managment"); //$NON-NLS-1$ //$NON-NLS-2$

@@ -78,7 +78,6 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
-import org.talend.core.runtime.services.IMavenUIService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -1384,8 +1383,12 @@ public class Component extends AbstractBasicComponent {
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
-            return "\"" + org.apache.commons.lang3.StringEscapeUtils.escapeJson(value) + "\"";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-}
+            return "\"" + org.apache.commons.lang3.StringEscapeUtils.escapeJson(value) + "\"";//$NON-NLS-1$ //$NON-NLS-2$
+                                                                                              // //$NON-NLS-3$
+                                                                                              // //$NON-NLS-4$
+                                                                                              // //$NON-NLS-5$
+                                                                                              // //$NON-NLS-6$
+        }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";
         }
@@ -1450,6 +1453,16 @@ public class Component extends AbstractBasicComponent {
                         }
 
                     }).object);
+//            ComponentReferenceProperties<?> properties = (ComponentReferenceProperties<?>) node.getComponentProperties()
+//                    .getProperties("connection.referencedComponent");
+//            if (properties != null) {
+//                String name = (String) properties.getValuedProperty("componentInstanceId").getValue();
+//                for (INode curNode : node.getProcess().getGraphicalNodes()) {
+//                    if (curNode.getUniqueName().equals(name)) {
+//                        properties.setReference(curNode.getComponentProperties());
+//                    }
+//                }
+//            }
         }
     }
 

@@ -12,17 +12,10 @@
 // ============================================================================
 package org.talend.designer.codegen.additionaljet;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.net.URL;
+import java.util.List;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.commons.utils.io.FilesUtils;
-import org.talend.designer.codegen.CodeGeneratorActivator;
+import org.talend.designer.codegen.config.TemplateUtil;
+import org.talend.designer.codegen.model.CodeGeneratorInternalTemplatesFactory;
 
 /**
  * DOC wyang class global comment. Detailled comment
@@ -39,36 +32,12 @@ public abstract class AbstractJetFileProvider {
         this.id = id;
     }
 
-    public void overwriteStubAdditionalFile() throws IOException {
-        File installationFolder = getInstallationFolder();
-
-        File externalFrameLocation = getExternalFrameLocation();
-        if (externalFrameLocation != null) {
-            if (externalFrameLocation.exists()) {
-                try {
-                    final FileFilter sourceFolderFilter = new FileFilter() {
-
-                        public boolean accept(File pathname) {
-                            return false;
-                        }
-                    };
-                    FilesUtils.copyFolder(externalFrameLocation, installationFolder, false, sourceFolderFilter, null, true);
-                } catch (Throwable e) {
-                    ExceptionHandler.process(e);
-                }
-            }
-        }
+    public List<TemplateUtil> initializeStubAdditionalJetFile() {
+        return CodeGeneratorInternalTemplatesFactory.getTemplatesFrom(getBundleId(), getJetPath());
     }
 
-    protected abstract File getExternalFrameLocation();
+    protected abstract String getBundleId();
 
-    public File getInstallationFolder() throws IOException {
+    protected abstract String getJetPath();
 
-        File installationFolder = null;
-        URL url = FileLocator.find(Platform.getBundle(CodeGeneratorActivator.PLUGIN_ID), new Path("resources"), null); //$NON-NLS-1$
-        URL fileUrl = FileLocator.toFileURL(url);
-        installationFolder = new File(fileUrl.getPath());
-
-        return installationFolder;
-    }
 }

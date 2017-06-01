@@ -20,8 +20,6 @@ package org.talend.designer.codegen.config;
  */
 public class TemplateUtil {
 
-    public static final String RESOURCES_DIRECTORY = "resources"; //$NON-NLS-1$
-
     public static final String JET_STUB_DIRECTORY = "jet_stub"; //$NON-NLS-1$
 
     // TODO SML Replace by File.separator
@@ -36,6 +34,12 @@ public class TemplateUtil {
     private String version = ""; //$NON-NLS-1$
 
     public static final String RESOURCES_DIRECTORY_GENERIC = "generic"; //$NON-NLS-1$
+    
+    private String jetPluginRepository;
+
+    private String templateRelativeUri;
+    
+    private EInternalTemplate template;
 
     /**
      * Constructor.
@@ -43,6 +47,7 @@ public class TemplateUtil {
      * @param resourceName
      */
     public TemplateUtil(EInternalTemplate template) {
+        this.template = template;
         this.resourceName = template.getTemplateName();
         this.version = template.getVersion();
     }
@@ -104,4 +109,46 @@ public class TemplateUtil {
         }
         return false;
     }
+
+    /**
+     * Getter for jetPluginRepository.
+     * @return the jetPluginRepository
+     */
+    public String getJetPluginRepository() {
+        return jetPluginRepository;
+    }
+
+    /**
+     * Sets the jetPluginRepository.
+     * @param jetPluginRepository the jetPluginRepository to set
+     */
+    public void setJetPluginRepository(String jetPluginRepository) {
+        this.jetPluginRepository = jetPluginRepository;
+    }
+
+    /**
+     * Getter for templateRelativeUri.
+     * @return the templateRelativeUri
+     */
+    public String getTemplateRelativeUri() {
+        return templateRelativeUri;
+    }
+
+    /**
+     * Sets the templateRelativeUri.
+     * @param templateRelativeUri the templateRelativeUri to set
+     */
+    public void setTemplateRelativeUri(String templateRelativeUri) {
+        this.templateRelativeUri = templateRelativeUri;
+    }
+
+   
+    /**
+     * Getter for template.
+     * @return the template
+     */
+    public EInternalTemplate getType() {
+        return this.template;
+    }
+    
 }

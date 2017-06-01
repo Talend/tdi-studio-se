@@ -39,8 +39,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.osgi.framework.Bundle;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.utils.io.IOUtils;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.components.ComponentCompilations;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -255,20 +255,21 @@ public final class JetSkeletonManager {
 
         };
 
-        Bundle b = Platform.getBundle(CodeGeneratorActivator.PLUGIN_ID);
-        URL resourcesUrl = null;
-        try {
-            resourcesUrl = FileLocator.toFileURL(FileLocator.find(b, new Path(TemplateUtil.RESOURCES_DIRECTORY), null));
-        } catch (IOException e) {
-            // e.printStackTrace();
-            ExceptionHandler.process(e);
-        }
-        if (resourcesUrl != null) {
-            File resourcesDir = new File(resourcesUrl.getFile());
-            File[] skeletonFiles = resourcesDir.listFiles(skeletonFilter);
-            if (skeletonFiles != null) {
-                for (File file : skeletonFiles) {
-                    skeletonList.add(file.getAbsolutePath()); // path
+        for (TemplateUtil template : CodeGeneratorInternalTemplatesFactoryProvider.getInstance().getTemplates()) {
+            Bundle b = Platform.getBundle(template.getJetPluginRepository());
+            URL resourcesUrl = null;
+            try {
+                resourcesUrl = FileLocator.toFileURL(FileLocator.find(b, new Path(template.getTemplateRelativeUri()), null));
+            } catch (IOException e) {
+                ExceptionHandler.process(e);
+            }
+            if (resourcesUrl != null) {
+                File resourcesDir = new File(resourcesUrl.getFile());
+                File[] skeletonFiles = resourcesDir.listFiles(skeletonFilter);
+                if (skeletonFiles != null) {
+                    for (File file : skeletonFiles) {
+                        skeletonList.add(file.getAbsolutePath()); // path
+                    }
                 }
             }
         }
