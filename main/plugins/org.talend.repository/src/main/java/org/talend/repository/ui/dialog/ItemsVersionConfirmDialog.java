@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.ItemVersionObject;
@@ -42,12 +43,15 @@ import org.talend.repository.model.ItemVersionObject;
 public class ItemsVersionConfirmDialog extends Dialog {
 
     private static final String TITLE = Messages.getString("ItemsVersionChangedDialog.Title"); //$NON-NLS-1$
+    
+    private boolean showSnapshot;
 
     private List<ItemVersionObject> modifiedVersionItems;
 
-    public ItemsVersionConfirmDialog(Shell parentShell, List<ItemVersionObject> modifiedVersionItems) {
+    public ItemsVersionConfirmDialog(Shell parentShell, List<ItemVersionObject> modifiedVersionItems, boolean showSnapshot) {
         super(parentShell);
         this.modifiedVersionItems = modifiedVersionItems;
+        this.showSnapshot = showSnapshot;
     }
 
     @Override
@@ -63,8 +67,8 @@ public class ItemsVersionConfirmDialog extends Dialog {
         GridData data = new GridData(GridData.FILL_BOTH);
         data.minimumHeight = 200;
         data.heightHint = 200;
-        data.minimumWidth = 350;
-        data.widthHint = 350;
+        data.minimumWidth = 450;
+        data.widthHint = 450;
         viewer.getControl().setLayoutData(data);
         final Table table = viewer.getTable();
         table.setHeaderVisible(true);
@@ -81,6 +85,12 @@ public class ItemsVersionConfirmDialog extends Dialog {
         column = new TableColumn(table, SWT.NONE);
         column.setText(Messages.getString("VersionManagementDialog.NewVersion")); //$NON-NLS-1$
         column.setWidth(90);
+
+        if (showSnapshot) {
+            column = new TableColumn(table, SWT.NONE);
+            column.setText(Messages.getString("VersionManagementDialog.snapshot")); //$NON-NLS-1$
+            column.setWidth(80);
+        }
 
         viewer.setContentProvider(ArrayContentProvider.getInstance());
         viewer.setLabelProvider(new ITableLabelProvider() {
@@ -99,12 +109,19 @@ public class ItemsVersionConfirmDialog extends Dialog {
                 case 0:
                     return object.getItem().getProperty().getLabel();
                 case 1:
-                    return object.getOldVersion();
+                    return object.getOldVersion().replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
                 case 2:
                     if (object.getOldVersion().equals(object.getNewVersion())) {
                         return "-"; //$NON-NLS-1$
                     }
-                    return object.getNewVersion();
+                    return object.getNewVersion().replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
+                case 3:
+                    if (object.getOldVersion().endsWith(MavenConstants.SNAPSHOT) == object.getNewVersion()
+                            .endsWith(MavenConstants.SNAPSHOT)) {
+                        return "-"; //$NON-NLS-1$
+                    }
+                    boolean useSnapshot = object.getNewVersion().endsWith(MavenConstants.SNAPSHOT);
+                    return Boolean.toString(useSnapshot);
                 default:
                 }
                 return null;
@@ -130,7 +147,21 @@ public class ItemsVersionConfirmDialog extends Dialog {
         for (TableItem item : table.getItems()) {
             ItemVersionObject object = (ItemVersionObject) item.getData();
             if (!object.getOldVersion().equals(object.getNewVersion())) {
-                item.setForeground(2, Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                if (showSnapshot) {
+                    String oldVersion = object.getOldVersion().replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
+                    String newVersion = object.getNewVersion().replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
+                    if (!oldVersion.equals(newVersion)) {
+                        item.setForeground(2, Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                    }
+                } else {
+                    item.setForeground(2, Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                }
+            }
+            if (showSnapshot) {
+                if (object.getOldVersion().endsWith(MavenConstants.SNAPSHOT) != object.getNewVersion()
+                        .endsWith(MavenConstants.SNAPSHOT)) {
+                    item.setForeground(3, Display.getDefault().getSystemColor(SWT.COLOR_RED));
+                }
             }
         }
         return composite;

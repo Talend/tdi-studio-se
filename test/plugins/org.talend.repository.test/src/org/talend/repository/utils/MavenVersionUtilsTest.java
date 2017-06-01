@@ -3,6 +3,7 @@ package org.talend.repository.utils;
 import static org.junit.Assert.*;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -53,7 +54,7 @@ public class MavenVersionUtilsTest {
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_MR));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_STORM));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_ROUTE));
-        assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.TEST_CONTAINER));
+        assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.TEST_CONTAINER));
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.JOBLET));
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.ROUTINES));
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_ROUTELET));
@@ -64,7 +65,7 @@ public class MavenVersionUtilsTest {
         assertTrue(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.PROCESS));
         assertTrue(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.PROCESS_MR));
         assertTrue(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.PROCESS_ROUTE));
-        assertTrue(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.TEST_CONTAINER));
+        assertFalse(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.TEST_CONTAINER));
         assertFalse(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.JOBLET));
         assertFalse(MavenVersionUtils.isHasSubjobType(ERepositoryObjectType.PROCESS_ROUTELET));
     }
@@ -77,5 +78,30 @@ public class MavenVersionUtilsTest {
         assertEquals("1.0.0", MavenVersionUtils.getDefaultVersion("1.0.0"));
         
     }
+    
+    @Test
+    public void testGetAndSetItemUseSnapshot() {
+        MavenVersionUtils.setItemUseSnapshot(property, Boolean.toString(Boolean.TRUE));
+        assertTrue(property.getAdditionalProperties().containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT));
+        assertTrue(MavenVersionUtils.isItemUseSnapshot(property));
+    }
 
+    @Test
+    public void testCompareVersion() {
+        assertEquals(1, MavenVersionUtils.compareVersion("2.0.0", "1.0.0"));
+        assertEquals(1, MavenVersionUtils.compareVersion("1.2.0", "1.1.0"));
+        assertEquals(1, MavenVersionUtils.compareVersion("1.0.2", "1.0.1"));
+        assertEquals(0, MavenVersionUtils.compareVersion("1.0.0", "1.0.0"));
+        assertEquals(-1, MavenVersionUtils.compareVersion("1.0.0", "2.0.0"));
+        assertEquals(-1, MavenVersionUtils.compareVersion("1.1.0", "1.2.0"));
+        assertEquals(-1, MavenVersionUtils.compareVersion("1.0.1", "2.0.2"));
+    }
+    
+    @Test
+    @Ignore
+    public void testIncreaseVersion() {
+        //TODO
+    }
+    
+    
 }
