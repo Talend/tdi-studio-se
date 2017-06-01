@@ -44,9 +44,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -54,11 +51,7 @@ import org.osgi.service.packageadmin.PackageAdmin;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.runtime.helper.LocalComponentInstallHelper;
-import org.talend.commons.runtime.service.ComponentsInstallComponent;
 import org.talend.commons.runtime.utils.io.SHA1Util;
-import org.talend.commons.ui.gmf.util.DisplayUtils;
-import org.talend.commons.ui.runtime.CommonUIPlugin;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.LanguageManager;
@@ -67,7 +60,6 @@ import org.talend.core.model.component_cache.ComponentInfo;
 import org.talend.core.model.component_cache.ComponentsCache;
 import org.talend.core.model.component_cache.util.ComponentCacheResourceFactoryImpl;
 import org.talend.core.model.components.AbstractComponentsProvider;
-import org.talend.core.model.components.AbstractCustomComponentsProvider;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.ComponentManager;
 import org.talend.core.model.components.ComponentProviderInfo;
@@ -85,7 +77,6 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.utils.TalendCacheUtils;
 import org.talend.designer.codegen.CodeGeneratorActivator;
-import org.talend.designer.codegen.components.ui.IComponentPreferenceConstant;
 import org.talend.designer.codegen.i18n.Messages;
 import org.talend.designer.core.ITisLocalProviderService;
 import org.talend.designer.core.ITisLocalProviderService.ResClassLoader;
@@ -95,11 +86,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.process.AbstractProcessProvider;
 import org.talend.designer.core.model.process.GenericProcessProvider;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
-import org.talend.utils.files.FileUtils;
-import org.talend.utils.json.JSONArray;
-import org.talend.utils.json.JSONException;
-import org.talend.utils.json.JSONObject;
-import org.talend.utils.json.JSONUtil;
 
 /**
  * Component factory that look for each component and load their information. <br/>
@@ -153,13 +139,7 @@ public class ComponentsFactory implements IComponentsFactory {
 
     protected static Map<String, Map<String, Set<IComponent>>> componentNameMap;
 
-    protected JSONObject needInstalledNewCFComponents;
-
     public ComponentsFactory() {
-    }
-
-    public void resetNewComponentsCache() {
-        needInstalledNewCFComponents = new JSONObject();
     }
 
     private void init(boolean duringLogon) {
@@ -170,7 +150,6 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.displaySteps = true;
         // TimeMeasure.measureActive = true;
         // TimeMeasure.begin("initComponents");
-        resetNewComponentsCache();
         componentList = Collections.synchronizedSet(new HashSet<IComponent>());
         customComponentList = new HashSet<IComponent>();
         skeletonList = new ArrayList<String>();
@@ -212,9 +191,6 @@ public class ComponentsFactory implements IComponentsFactory {
         // init component name map, used to pick specified component immediately
         initComponentNameMap();
 
-        // load new CF components
-        installNewCFComponents();
-
         // TimeMeasure.step("initComponents", "createCache");
         log.debug(componentList.size() + " components loaded in " + (System.currentTimeMillis() - startTime) + " ms"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -222,165 +198,6 @@ public class ComponentsFactory implements IComponentsFactory {
         // TimeMeasure.display = false;
         // TimeMeasure.displaySteps = false;
         // TimeMeasure.measureActive = false;
-    }
-
-    protected void installNewCFComponents() {
-        // install the new components via P2
-        ComponentsInstallComponent component = LocalComponentInstallHelper.getComponent();
-        if (component != null) {
-            File workFolder = FileUtils.createTmpFolder("NewComponents", ""); //$NON-NLS-1$  //$NON-NLS-2$
-
-            // workfile <--> checksum
-            Map<File, Long> copiedFiles = new HashMap<File, Long>();
-            // workfile <--> originalname
-            Map<File, String> duplicatedNameFiles = new HashMap<File, String>();
-            try {
-                // 1. copy all new components to work folder
-                if (needInstalledNewCFComponents != null) {
-                    final Iterator keys = needInstalledNewCFComponents.keys();
-                    while (keys.hasNext()) {
-                        String projectName = keys.next().toString();
-                        if (needInstalledNewCFComponents.has(projectName)) {
-                            try {
-                                JSONArray jsonArray = needInstalledNewCFComponents.getJSONArray(projectName);
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    final String compZipPath = jsonArray.get(i).toString();
-
-                                    final File compZipFile = new File(compZipPath);
-                                    if (compZipFile.exists()) {
-                                        final long checksumAlder32 = org.talend.utils.io.FilesUtils
-                                                .getChecksumAlder32(compZipFile);
-                                        boolean needCopy = true;
-
-                                        File workZipFile = new File(workFolder, compZipFile.getName());
-                                        if (copiedFiles.containsKey(workZipFile)) {
-                                            final Long checksum = copiedFiles.get(workZipFile);
-                                            // not same content, need rename and copy still.
-                                            if (checksumAlder32 != checksum) {
-                                                workZipFile = new File(workFolder, System.currentTimeMillis()
-                                                        + compZipFile.getName()); // new name
-
-                                                duplicatedNameFiles.put(workZipFile, compZipFile.getName());
-                                            } else { // same content, only install once, so ignore.
-                                                needCopy = false;
-                                            }
-                                        }
-                                        if (needCopy) {
-                                            org.talend.utils.io.FilesUtils.copyFile(compZipFile, workZipFile);
-                                            copiedFiles.put(workZipFile, checksumAlder32);
-                                        }
-
-                                    }
-                                }
-                            } catch (JSONException e) {
-                                ExceptionHandler.process(e);
-                            } catch (IOException e) {
-                                ExceptionHandler.process(e);
-                            }
-                        }
-                    }
-                }
-
-                if (copiedFiles.isEmpty()) { // nothing to do
-                    return;
-                }
-
-                // 2. do install via p2
-                try {
-                    component.setComponentFolder(workFolder);
-                    if (component.install()) {
-
-                        if (component.needRelaunch()) {
-                            final String message = "Have done to install some components:\n" + component.getInstalledMessages()
-                                    + "\nIn order to apply the new components, need restart product first.";
-                            if (!CommonUIPlugin.isFullyHeadless()) {
-                                DisplayUtils.getDisplay().syncExec(new Runnable() {
-
-                                    @Override
-                                    public void run() {
-                                        boolean confirm = MessageDialog.openConfirm(null, "Install new components", message);
-                                        if (confirm && PlatformUI.isWorkbenchRunning()) {
-                                            PlatformUI.getWorkbench().restart();
-                                        }
-
-                                    }
-                                });
-                            }
-                            log.warn(message);
-                        }
-                    } else {
-                        return; // nothing to install successfully.
-                    }
-                } finally {
-                    // after install, clean it.
-                    resetNewComponentsCache();
-                    // after install, clear the setting for service.
-                    component.setComponentFolder(null);
-                }
-
-                // 3. add the installed components to record
-                final List<File> failedComponents = component.getFailedComponents();
-                List<File> doneFiles = new ArrayList<File>(copiedFiles.keySet());
-                doneFiles.removeAll(failedComponents);
-
-                try {
-                    if (!doneFiles.isEmpty()) {
-                        final IPreferenceStore preferenceStore = CodeGeneratorActivator.getDefault().getPreferenceStore();
-                        String installedComponentsValues = preferenceStore
-                                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-                        JSONArray installedNewCFComponentsJson = new JSONArray();
-                        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-                            installedNewCFComponentsJson = new JSONArray(installedComponentsValues);
-
-                        }
-                        for (File f : doneFiles) {
-                            String name = duplicatedNameFiles.get(f);
-                            if (name == null) { // use the real name directly.
-                                name = f.getName();
-                            } // else{ //use original name
-                            final Long checksum = copiedFiles.get(f);
-
-                            JSONObject jsonObj = new JSONObject();
-                            for (int i = 0; i < installedNewCFComponentsJson.length(); i++) {
-                                final JSONObject object = installedNewCFComponentsJson.getJSONObject(i);
-                                if (jsonObj.has(IComponentPreferenceConstant.JSON_KEY_FILE_NAME)) {
-                                    final String filename = jsonObj.getString(IComponentPreferenceConstant.JSON_KEY_FILE_NAME);
-                                    if (filename.equals(name)) {
-                                        jsonObj = object;
-                                        break;
-                                    }
-                                }
-                            }
-                            JSONArray jsonArray = new JSONArray();
-                            if (jsonObj.has(IComponentPreferenceConstant.JSON_KEY_CHECKSUM)) {
-                                jsonArray = jsonObj.getJSONArray(IComponentPreferenceConstant.JSON_KEY_CHECKSUM);
-                            }
-                            jsonArray.put(checksum);
-                        }
-
-                        preferenceStore.putValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS,
-                                installedNewCFComponentsJson.toString());
-                    }
-                } catch (JSONException e) {
-                    ExceptionHandler.process(e);
-                }
-
-                if (!failedComponents.isEmpty()) {
-                    StringBuffer messages = new StringBuffer(200);
-                    for (File f : failedComponents) {
-                        String name = duplicatedNameFiles.get(f);
-                        if (name == null) { // use the real name directly.
-                            name = f.getName();
-                        }
-                        messages.append(name + ',' + ' ');
-                    }
-                    log.error("ERROR: Some components are not installed successfully: " + messages);
-                }
-            } finally {
-                org.talend.utils.io.FilesUtils.deleteFolder(workFolder, true);
-                needInstalledNewCFComponents = new JSONObject(); // clean
-            }
-        }
     }
 
     protected void initComponentNameMap() {
@@ -535,14 +352,6 @@ public class ComponentsFactory implements IComponentsFactory {
         if ("org.talend.designer.components.model.UserComponentsProvider".equals(provider.getId())
                 || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(provider.getId())) {
             isCustom = true;
-        }
-        if (provider instanceof AbstractCustomComponentsProvider) {
-            final AbstractCustomComponentsProvider customProvider = (AbstractCustomComponentsProvider) provider;
-            final JSONObject providerNeeded = customProvider.getNeedInstalledNewCFComponents();
-            if (providerNeeded != null) {
-                this.needInstalledNewCFComponents = JSONUtil.merge(providerNeeded, this.needInstalledNewCFComponents);
-                customProvider.resetNewComponentsCache();
-            }
         }
 
         File source;
@@ -1057,7 +866,6 @@ public class ComponentsFactory implements IComponentsFactory {
         componentList = null;
         skeletonList = null;
         customComponentList = null;
-        resetNewComponentsCache();
         Collection<IComponentFactoryFilter> filters = ComponentsFactoryProviderManager.getInstance().getProviders();
         for (IComponentFactoryFilter filter : filters) {
             filter.cleanCache();

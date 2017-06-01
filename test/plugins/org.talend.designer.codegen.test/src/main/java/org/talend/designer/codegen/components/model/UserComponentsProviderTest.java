@@ -15,7 +15,6 @@ package org.talend.designer.codegen.components.model;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -27,18 +26,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.commons.utils.resource.BundleFileUtil;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.components.IComponentsFactory;
-import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.designer.codegen.CodeGeneratorActivator;
-import org.talend.designer.codegen.components.ui.IComponentPreferenceConstant;
 import org.talend.repository.ProjectManager;
 import org.talend.utils.files.FileUtils;
 import org.talend.utils.io.FilesUtils;
-import org.talend.utils.json.JSONArray;
-import org.talend.utils.json.JSONObject;
 
 /**
  * DOC ggu class global comment. Detailled comment
@@ -73,8 +65,6 @@ public class UserComponentsProviderTest {
             FilesUtils.copyFolder(installationFolder, backupFolder, false, null, null, true);
         }
 
-        cleanInstalledSetting();
-        cleanComponentFactorySetting();
     }
 
     @AfterClass
@@ -86,21 +76,6 @@ public class UserComponentsProviderTest {
             FilesUtils.copyFolder(backupFolder, installationFolder, true, null, null, true);
         }
         FilesUtils.deleteFolder(backupFolder, true);
-
-        cleanInstalledSetting();
-        cleanComponentFactorySetting();
-    }
-
-    private static void cleanComponentFactorySetting() {
-        // remove all
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IComponentsService.class)) {
-            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-                    IComponentsService.class);
-            IComponentsFactory componentsFactory = compService.getComponentsFactory();
-            if (componentsFactory instanceof ComponentsFactory) {
-                ((ComponentsFactory) componentsFactory).resetNewComponentsCache();
-            }
-        }
     }
 
     File workFolder;
@@ -109,7 +84,6 @@ public class UserComponentsProviderTest {
     public void setup() throws Exception {
         workFolder = FileUtils.createTmpFolder("UserComponentsProviderTest", "");
 
-        cleanInstalledSetting();
         cleanComponentsInProject();
 
     }
@@ -119,14 +93,7 @@ public class UserComponentsProviderTest {
         if (workFolder != null) {
             FilesUtils.deleteFolder(workFolder, true);
         }
-        cleanInstalledSetting();
         cleanComponentsInProject();
-    }
-
-    private static void cleanInstalledSetting() {
-        // set empty first
-        CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .setValue(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS, new JSONArray().toString());
     }
 
     private void cleanComponentsInProject() throws Exception {
@@ -149,17 +116,6 @@ public class UserComponentsProviderTest {
         Assert.assertTrue(installationFolder.exists());
         Assert.assertEquals(0, installationFolder.list().length);
 
-        String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONArray newCFComponentsJson = new JSONArray();
-        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONArray(installedComponentsValues);
-        }
-        Assert.assertEquals(0, newCFComponentsJson.length());
-
-        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
-        Assert.assertNotNull(needInstalledNewCFComponents);
-        Assert.assertEquals(0, needInstalledNewCFComponents.length());
     }
 
     @Test
@@ -361,7 +317,6 @@ public class UserComponentsProviderTest {
 
     @Test
     public void test_preComponentsLoad_contain_newComponentsInProject() throws Exception {
-
         File testDataFile = getTestDataFile(PATH_NEW_COMPONENT);
         Assert.assertTrue(testDataFile.exists());
 
@@ -382,29 +337,8 @@ public class UserComponentsProviderTest {
         };
         provider.preComponentsLoad();
 
-        File installationFolder = provider.getInstallationFolder();
-        Assert.assertTrue(installationFolder.exists());
-        Assert.assertEquals(0, installationFolder.list().length);
+        testEmpty(provider);
 
-        String installedComponentsValues = CodeGeneratorActivator.getDefault().getPreferenceStore()
-                .getString(IComponentPreferenceConstant.INSTALLED_USER_COMPONENTS);
-        JSONArray newCFComponentsJson = new JSONArray();
-        if (StringUtils.isNotEmpty(installedComponentsValues)) {
-            newCFComponentsJson = new JSONArray(installedComponentsValues);
-        }
-        Assert.assertEquals(0, newCFComponentsJson.length());
-
-        final JSONObject needInstalledNewCFComponents = provider.getNeedInstalledNewCFComponents();
-        Assert.assertNotNull(needInstalledNewCFComponents);
-        final String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
-        Assert.assertTrue(needInstalledNewCFComponents.has(technicalLabel));
-        final JSONArray jsonArray = needInstalledNewCFComponents.getJSONArray(technicalLabel);
-        Assert.assertNotNull(jsonArray);
-        Assert.assertEquals(1, jsonArray.length());
-        final String path = jsonArray.getString(0);
-        Assert.assertEquals(target.getAbsolutePath(), path);
-
-        provider.resetNewComponentsCache();
         FilesUtils.deleteFolder(target.getParentFile(), false);
     }
 }

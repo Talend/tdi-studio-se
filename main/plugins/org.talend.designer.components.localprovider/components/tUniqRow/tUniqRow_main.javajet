@@ -131,7 +131,7 @@ new_<%=cid %>.<%=column.getLabel() %> = <%=connName %>.<%=column.getLabel() %>;
 	<%
 	if(isLog4jEnabled){
 	%>
-		log.info("<%=cid%> - Writing the unique record " + (nb_uniques_<%=cid %>+1) + " into <%=conn.getName() %>.");
+		log.trace("<%=cid%> - Writing the unique record " + (nb_uniques_<%=cid %>+1) + " into <%=conn.getName() %>.");
 	<%
 	}
 	%>
@@ -196,7 +196,7 @@ if(<%=conn.getName() %> == null){
 	<%
 	if(isLog4jEnabled){
 	%>
-		log.info("<%=cid%> - Writing the duplicate record " + (nb_duplicates_<%=cid %>+1) + " into <%=conn.getName() %>.");
+		log.trace("<%=cid%> - Writing the duplicate record " + (nb_duplicates_<%=cid %>+1) + " into <%=conn.getName() %>.");
 	<%
 	}
 	%>

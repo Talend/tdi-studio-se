@@ -48,10 +48,13 @@
 			SHOW_IF="USER_IDENTITY == 'true'">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
+		<PARAMETER NAME="USE_JNDI_LOOKUP" FIELD="CHECK" NUM_ROW="26">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
 		 <PARAMETER
 	      NAME="MSGTYPE"
 	      FIELD="CLOSED_LIST"
-	      NUM_ROW="26">
+	      NUM_ROW="28">
 	      <ITEMS DEFAULT="TOPIC">
 	        <ITEM NAME="TOPIC"   VALUE="Topic" />
 	        <ITEM NAME="QUEUE"   VALUE="Queue" />

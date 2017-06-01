@@ -66,7 +66,7 @@ int bufferSize_<%=cid %> = <%=bufferSize %>;
 <%
 if (isLog4jEnabled) {
 %>
-	log.info("<%=cid%> - Start to process the data from datasource.");
+	log.debug("<%=cid%> - Start to process the data from datasource.");
 <%
 }
 %>
@@ -541,7 +541,7 @@ Comparator<rowStruct_<%=cid %>> comparator_1_<%=cid %> = new Comparator_1_<%=cid
 
 java.util.ArrayList<java.io.File> files_1_<%=cid %> = new java.util.ArrayList<java.io.File>();
 
-String workDirectory_<%=cid %> = <%=directory %>;
+String temp_file_path_prefix_<%=cid %> = <%=directory %> + "/" + jobName + "_<%=cid %>_" + Thread.currentThread().getId() + "_" + pid  + "_";
 
 <%
 }//HSS_____0

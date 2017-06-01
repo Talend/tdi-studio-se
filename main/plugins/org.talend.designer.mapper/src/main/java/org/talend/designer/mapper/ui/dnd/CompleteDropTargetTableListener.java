@@ -377,7 +377,6 @@ public class CompleteDropTargetTableListener extends DefaultDropTargetListener {
         }
 
         uiManager.applyActivatedCellEditors(tableViewerCreatorTarget);
-
         // MapperDropCommand dropCommand = new MapperDropCommand();
 
         // MetadataEditorEvent metadataEditorEvent = new MetadataEditorEvent(MetadataEditorEvent.TYPE.ADD);

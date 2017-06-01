@@ -350,7 +350,7 @@ public abstract class AbstractDataMapTableImpl extends EObjectImpl implements Ab
         }
         
         EList<MapperTableEntry> otherEntries = other.getMapperTableEntries();
-        if(mapperTableEntries.size() != otherEntries.size()){
+        if(getMapperTableEntries().size() != otherEntries.size()){
             return false;
         }
         for(MapperTableEntry entry:mapperTableEntries){

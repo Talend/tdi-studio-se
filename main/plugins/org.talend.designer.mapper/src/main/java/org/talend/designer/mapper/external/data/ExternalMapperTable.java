@@ -402,13 +402,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         if (this.activateExpressionFilter != other.activateExpressionFilter) {
             return false;
         }
-        if (this.constraintTableEntries == null) {
-            if (other.constraintTableEntries != null) {
-                return false;
-            }
-        } else if (!this.constraintTableEntries.equals(other.constraintTableEntries)) {
-            return false;
-        }
+        
         if (this.expressionFilter == null) {
             if (other.expressionFilter != null) {
                 return false;
@@ -433,13 +427,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         } else if (!this.lookupMode.equals(other.lookupMode)) {
             return false;
         }
-        if (this.metadataTableEntries == null) {
-            if (other.metadataTableEntries != null) {
-                return false;
-            }
-        } else if (!this.metadataTableEntries.equals(other.metadataTableEntries)) {
-            return false;
-        }
+        
         if (this.minimized != other.minimized) {
             return false;
         }
@@ -476,74 +464,99 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         } else if (!this.id.equals(other.id)) {
             return false;
         }
-        if (this.globalMapKeysValues == null) {
-            if (other.globalMapKeysValues != null) {
-                return false;
-            }
-        } else if (!this.globalMapKeysValues.equals(other.globalMapKeysValues)) {
+        
+        List<ExternalMapperTableEntry> this_constraintTableEntries = null;
+        if(this.constraintTableEntries == null){
+            this_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            this_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>(this.constraintTableEntries);
+        }
+        List<ExternalMapperTableEntry> this_metadataTableEntries = null;
+        if(this.metadataTableEntries == null){
+            this_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            this_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>(this.metadataTableEntries);
+        }
+        List<ExternalMapperTableEntry> this_globalMapKeysValues = null;
+        if(this.globalMapKeysValues == null){
+            this_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            this_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>(this.globalMapKeysValues);
+        }
+        
+        List<ExternalMapperTableEntry> other_constraintTableEntries = null;
+        if(other.constraintTableEntries == null){
+            other_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            other_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>(other.constraintTableEntries);
+        }
+        List<ExternalMapperTableEntry> other_metadataTableEntries = null;
+        if(other.metadataTableEntries == null){
+            other_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            other_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>(other.metadataTableEntries);
+        }
+        List<ExternalMapperTableEntry> other_globalMapKeysValues = null;
+        if(other.globalMapKeysValues == null){
+            other_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>();
+        }else{
+            other_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>(other.globalMapKeysValues);
+        }
+        
+        if(this_constraintTableEntries.size() != other_constraintTableEntries.size()){
             return false;
         }
-        
-        if(constraintTableEntries!=null && other.constraintTableEntries!=null){
-            if(constraintTableEntries.size() != other.constraintTableEntries.size()){
-                return false;
-            }
-            for(ExternalMapperTableEntry oriObj:constraintTableEntries){
-                boolean found = false;
-                for(ExternalMapperTableEntry otherObj:other.constraintTableEntries){
-                    if(oriObj.getName().equals(otherObj.getName())){
-                        found = true;
-                        if(!oriObj.equals(otherObj)){
-                            return false;
-                        }
-                        break;
+        for(ExternalMapperTableEntry oriObj:this_constraintTableEntries){
+            boolean found = false;
+            for(ExternalMapperTableEntry otherObj:other_constraintTableEntries){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
                     }
+                    break;
                 }
-                if(found == false){
-                    return false;
-                }
+            }
+            if(found == false){
+                return false;
             }
         }
         
-        if(metadataTableEntries!=null && other.metadataTableEntries!=null){
-            if(metadataTableEntries.size() != other.metadataTableEntries.size()){
-                return false;
-            }
-            for(ExternalMapperTableEntry oriObj:metadataTableEntries){
-                boolean found = false;
-                for(ExternalMapperTableEntry otherObj:other.metadataTableEntries){
-                    if(oriObj.getName().equals(otherObj.getName())){
-                        found = true;
-                        if(!oriObj.equals(otherObj)){
-                            return false;
-                        }
-                        break;
+        if(this_metadataTableEntries.size() != other_metadataTableEntries.size()){
+            return false;
+        }
+        for(ExternalMapperTableEntry oriObj:this_metadataTableEntries){
+            boolean found = false;
+            for(ExternalMapperTableEntry otherObj:other_metadataTableEntries){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
                     }
+                    break;
                 }
-                if(found == false){
-                    return false;
-                }
+            }
+            if(found == false){
+                return false;
             }
         }
         
-        if(globalMapKeysValues!=null && other.globalMapKeysValues!=null){
-            if(globalMapKeysValues.size() != other.globalMapKeysValues.size()){
-                return false;
-            }
-            for(ExternalMapperTableEntry oriObj:globalMapKeysValues){
-                boolean found = false;
-                for(ExternalMapperTableEntry otherObj:other.globalMapKeysValues){
-                    if(oriObj.getName().equals(otherObj.getName())){
-                        found = true;
-                        if(!oriObj.equals(otherObj)){
-                            return false;
-                        }
-                        break;
+        if(this_globalMapKeysValues.size() != other_globalMapKeysValues.size()){
+            return false;
+        }
+        for(ExternalMapperTableEntry oriObj:this_globalMapKeysValues){
+            boolean found = false;
+            for(ExternalMapperTableEntry otherObj:other_globalMapKeysValues){
+                if(oriObj.getName().equals(otherObj.getName())){
+                    found = true;
+                    if(!oriObj.equals(otherObj)){
+                        return false;
                     }
+                    break;
                 }
-                if(found == false){
-                    return false;
-                }
+            }
+            if(found == false){
+                return false;
             }
         }
         return true;

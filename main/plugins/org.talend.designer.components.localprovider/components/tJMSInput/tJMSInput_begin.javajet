@@ -29,6 +29,7 @@ String timeout=ElementParameterParser.getValue(node, "__TIMEOUT__");
 String messageSelector=ElementParameterParser.getValue(node, "__MSG_SELECTOR__");
 String processingMode = ElementParameterParser.getValue(node, "__PROCESSING_MODE__");
 String msgType = ElementParameterParser.getValue(node, "__MSGTYPE__");
+boolean useJNDILookup="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_JNDI_LOOKUP__"));
 
 List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__");
 
@@ -77,9 +78,16 @@ if(advProps.size() > 0){
 	%>
 	
 	javax.jms.Session session_<%=cid%> = connection_<%=cid%>.createSession(false, javax.jms.Session.CLIENT_ACKNOWLEDGE);
-	javax.jms.Destination dest_<%=cid%> = session_<%=cid%>.create<%=msgType%>(<%=from %>);
-
 	<%
+	if(useJNDILookup){
+	%>
+	javax.jms.Destination dest_<%=cid%> = (javax.jms.Destination)context_<%=cid%>.lookup(<%=from %>);
+	<%
+	}else{
+	%>
+	javax.jms.Destination dest_<%=cid%> = session_<%=cid%>.create<%=msgType%>(<%=from %>);
+	<%
+	}
 	if(enableSubscription){
 	%>
 	javax.jms.MessageConsumer consumer_<%=cid%> = session_<%=cid%>.createDurableSubscriber((javax.jms.Topic)dest_<%=cid%>,<%=subscriberName%>,<%=messageSelector%>,false);

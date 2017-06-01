@@ -1015,12 +1015,12 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 if (e.button == 3 && getZone() == Zone.OUTPUTS) {
                     Menu mainMenu = new Menu(tableForEntries);
                     tableForEntries.setMenu(mainMenu);
-                    // Custom
-                    MenuItem customItem = new MenuItem(mainMenu, SWT.PUSH);
-                    customItem.setText("Custom");
+                    // menu:apply routine
+                    MenuItem applyRoutineItem = new MenuItem(mainMenu, SWT.PUSH);
+                    applyRoutineItem.setText(Messages.getString("DataMapTableView.menu.applyRoutine"));
                     // Add menu listeners
                     final IService service = GlobalServiceRegister.getDefault().getService(IExpressionBuilderDialogService.class);
-                    customItem.addListener(SWT.Selection, new Listener() {
+                    applyRoutineItem.addListener(SWT.Selection, new Listener() {
 
                         public void handleEvent(Event event) {
                             IExpressionBuilderDialogController dialogForTable = ((IExpressionBuilderDialogService) service)
@@ -1035,7 +1035,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                                     for (TableItem tableItem : selectedTableItems) {
                                         ITableEntry currentModifiedEntry = (ITableEntry) tableItem.getData();
                                         String currentExpr = currentModifiedEntry.getExpression();
-                                        if (expressionForTable != null && !expressionForTable.equals(currentExpr)) {
+                                        if (StringUtils.isNotEmpty(expressionForTable) && !expressionForTable.equals(currentExpr)) {
                                             String replacedExpression = expressionForTable;
                                             if (!StringUtils.isEmpty(currentExpr)) {
                                                 replacedExpression = expressionForTable.replace("${0}", currentExpr);//$NON-NLS-1$
@@ -1417,10 +1417,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             if (schemaIDMapEntry != null) {
                 IDataMapTable parent = schemaIDMapEntry.getParent();
                 AbstractInOutTable table = (AbstractInOutTable) parent;
-                String previous = table.getId();
                 table.setId(null);
                 tableMapSettingEntriesModel.remove(schemaIDMapEntry);
-                refreshCondensedImage(table, schemaIDMapEntry.getName(), previous);
+                refreshCondensedImage(table, schemaIDMapEntry.getName());
             }
         }
         mapSettingViewerCreator.layout();
@@ -3417,7 +3416,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
         this.previousStateCheckFilter = previousStateCheckFilter;
     }
 
-    protected void refreshCondensedImage(AbstractInOutTable table, String option, Object previousValue) {
+    protected void refreshCondensedImage(AbstractInOutTable table, String option) {
     }
 
     /**

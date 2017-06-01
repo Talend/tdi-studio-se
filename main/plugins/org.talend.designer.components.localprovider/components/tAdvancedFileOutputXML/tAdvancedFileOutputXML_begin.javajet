@@ -219,6 +219,22 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 						}
 					}
 				}
+				/**
+				 * Get element by QNames which get from the path
+				 */
+				public org.dom4j.Element getElement(org.dom4j.Element parent,String[] elemNames){
+					if(parent==null){
+						return null;
+					}
+					org.dom4j.Element tempElem = parent;
+					for(int i=0;elemNames != null && i<elemNames.length; i++){
+						tempElem=tempElem.element(parent.getQName(elemNames[i]));
+						if(tempElem==null){
+							return null;
+						}
+					}
+					return tempElem;
+				}
 			}
 
 			final NestXMLTool_<%=cid%> nestXMLTool_<%=cid%> = new NestXMLTool_<%=cid%>();
@@ -509,6 +525,7 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 										generateExprCmpByDom4j.groupNode = groupNode;
 										generateExprCmpByDom4j.isSaveDocAsNode = isSaveDocAsNode;
 										generateExprCmpByDom4j.needEmptyNode = ("true").equals(allowEmpty);
+										generateExprCmpByDom4j.cid=cid;
 								
 %>
 				public boolean generateCodeDom4j_FindInsertNode<%=i%>(org.dom4j.Element tempElem,java.util.Map<String,String> valueMap_<%=cid%>){

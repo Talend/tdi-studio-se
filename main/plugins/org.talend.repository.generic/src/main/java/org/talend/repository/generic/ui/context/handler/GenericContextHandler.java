@@ -43,7 +43,7 @@ import org.talend.repository.generic.i18n.Messages;
  */
 public class GenericContextHandler implements IContextHandler {
 
-    private List<ElementParameter> parameters;
+    private List<IElementParameter> parameters;
 
     @Override
     public boolean exportContext(ConnectionItem connectionItem) {
@@ -122,7 +122,7 @@ public class GenericContextHandler implements IContextHandler {
     }
 
     @Override
-    public void setParameters(List<ElementParameter> parameters) {
+    public void setParameters(List<IElementParameter> parameters) {
         this.parameters = parameters;
     }
 

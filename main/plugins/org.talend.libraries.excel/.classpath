@@ -5,7 +5,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/poi-ooxml-schemas-3.16-20170419.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/poi-scratchpad-3.16-20170419.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections4-4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/simpleexcel.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/simpleexcel-1.1-20170505.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="class"/>

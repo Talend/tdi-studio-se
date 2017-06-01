@@ -1671,6 +1671,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
         boolean samEnabled = false;
         boolean slEnabled = false;
+        boolean oidcEnabled = false;
         for (INode node : graphicalNodes) {
             if (node.isActivate()) {
                 final String nodeName = node.getComponent().getName();
@@ -1685,6 +1686,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     if (!samEnabled) {
                         samValue = node.getPropertyValue("SERVICE_ACTIVITY_MONITOR"); //$NON-NLS-1$
                     }
+                    oidcEnabled = true;
                 } else if ("cSOAP".equals(nodeName)) { //$NON-NLS-1$
                     if (!slEnabled) {
                         slValue = node.getPropertyValue("ENABLE_SL"); //$NON-NLS-1$
@@ -1699,13 +1701,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 if (null != samValue) {
                     samEnabled = (Boolean) samValue;
                 }
-                if (samEnabled && slEnabled) {
+                if (samEnabled && slEnabled && oidcEnabled) {
                     break;
                 }
             }
         }
 
-        if (samEnabled || slEnabled) {
+        if (samEnabled || slEnabled || oidcEnabled) {
             File esbConfigsSourceFolder = EsbConfigUtils.getEclipseEsbFolder();
             if (!esbConfigsSourceFolder.exists()) {
                 RunProcessPlugin
@@ -1729,6 +1731,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             // add SL config file to classpath
             if (slEnabled) {
                 copyEsbConfigFile(esbConfigsSourceFolder, esbConfigsTargetFolder, "locator.properties"); //$NON-NLS-1$
+            }
+            
+            // add OIDC config file to classpath
+            if (oidcEnabled) {
+                copyEsbConfigFile(esbConfigsSourceFolder, esbConfigsTargetFolder, "oidc.properties"); //$NON-NLS-1$
             }
         }
     }

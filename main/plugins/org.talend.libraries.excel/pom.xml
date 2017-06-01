@@ -51,9 +51,19 @@
 									<artifactId>poi-ooxml-3.16-20170419_modified_talend</artifactId>
 									<version>${talend.version.600}</version>
 								</artifactItem>
+								<artifactItem>
+                                    <groupId>${talend.groupid}</groupId>
+                                    <artifactId>simpleexcel-1.1-20170505</artifactId>
+                                    <version>${talend.version.600}</version>
+                                </artifactItem>
                                 <artifactItem>
                                     <groupId>${talend.groupid}</groupId>
                                     <artifactId>talendMsgMailUtil-1.1-20170419</artifactId>
+                                    <version>${talend.version.600}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>${talend.groupid}</groupId>
+                                    <artifactId>talendExcel-1.1-20170504</artifactId>
                                     <version>${talend.version.600}</version>
                                 </artifactItem>
 							</artifactItems>

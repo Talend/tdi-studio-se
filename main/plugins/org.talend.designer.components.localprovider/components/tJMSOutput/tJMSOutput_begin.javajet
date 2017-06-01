@@ -24,6 +24,7 @@ String user=ElementParameterParser.getValue(node, "__USER__");
 String to=ElementParameterParser.getValue(node, "__TO__");
 String deliverMode = ElementParameterParser.getValue(node, "__DELIVERY_MODE__");
 String msgType = ElementParameterParser.getValue(node, "__MSGTYPE__");
+boolean useJNDILookup="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_JNDI_LOOKUP__"));
 
 List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__"); 
 
@@ -59,7 +60,17 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	connection_<%=cid %>.start();
 
 	javax.jms.Session session_<%=cid %> = connection_<%=cid %>.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+	<%
+	if(useJNDILookup){
+	%>
+	javax.jms.Destination dest_<%=cid%> = (javax.jms.Destination)context_<%=cid%>.lookup(<%=to %>);
+	<%
+	}else{
+	%>
 	javax.jms.Destination dest_<%=cid %> = session_<%=cid %>.create<%=msgType%>(<%=to %>);
+	<%
+	}
+	%>
 
 	javax.jms.MessageProducer producer_<%=cid %> = session_<%=cid %>.createProducer(dest_<%=cid %>);
 
