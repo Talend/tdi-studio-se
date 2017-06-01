@@ -4643,6 +4643,10 @@ public class Node extends Element implements IGraphicalNode {
         this.listConnector = listConnector;
     }
 
+    private boolean isELTSAPMapComponent() {
+        return "tELTSAPMap".equals(this.getComponent().getName());
+    }
+    
     /**
      * Test if the current node can be the start of the job not.
      *
@@ -4650,19 +4654,19 @@ public class Node extends Element implements IGraphicalNode {
      */
     @Override
     public boolean checkIfCanBeStart() {
-        if (isELTComponent()) {
+        //tELTSAPMap component is more like a input component than ELT component as it output a flow stream.
+        if(isELTSAPMapComponent()) {
+            if (!isThereConditionLink() && isOnMainBranch()) {
+                return true;
+            }
+            
+            return false;
+        } else if (isELTComponent()) {
             if (this.checkELTTableReference()) {
                 return false;
             }
-            // is there condition link, then can't set the start.
-            boolean isThereConditionLink = false;
-            for (int j = 0; j < getIncomingConnections().size() && !isThereConditionLink; j++) {
-                IConnection connection = getIncomingConnections().get(j);
-                if (connection.isActivate() && connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DEPENDENCY)) {
-                    isThereConditionLink = true;
-                }
-            }
-            return !isThereConditionLink;
+            
+            return !isThereConditionLink();
         } else {
             boolean canBeStart = false;
             boolean isActivatedConnection = false;
@@ -4674,18 +4678,13 @@ public class Node extends Element implements IGraphicalNode {
                     isActivatedConnection = true;
                 }
             }
-            boolean isOnMainBranch = true;
-            Map<INode, Integer> mergeInfo = getLinkedMergeInfo();
-            for (INode node : mergeInfo.keySet()) {
-                if (mergeInfo.get(node) != 1) {
-                    isOnMainBranch = false;
-                }
-            }
+            boolean isOnMainBranch = isOnMainBranch();
             if (!isActivatedConnection) {
                 if (!getProcess().isThereLinkWithHash(this) && isOnMainBranch) {
                     canBeStart = true;
                 }
             } else {
+                //TODO remove it as this expression will be always false
                 if (getIncomingConnections().size() == 0 && isOnMainBranch) {
                     if (!getProcess().isThereLinkWithHash(this)) {
                         canBeStart = true;
@@ -4694,6 +4693,29 @@ public class Node extends Element implements IGraphicalNode {
             }
             return canBeStart;
         }
+    }
+
+    private boolean isOnMainBranch() {
+        boolean isOnMainBranch = true;
+        Map<INode, Integer> mergeInfo = getLinkedMergeInfo();
+        for (INode node : mergeInfo.keySet()) {
+            if (mergeInfo.get(node) != 1) {
+                isOnMainBranch = false;
+            }
+        }
+        return isOnMainBranch;
+    }
+
+    private boolean isThereConditionLink() {
+        // is there condition link, then can't set the start.
+        boolean isThereConditionLink = false;
+        for (int j = 0; j < getIncomingConnections().size() && !isThereConditionLink; j++) {
+            IConnection connection = getIncomingConnections().get(j);
+            if (connection.isActivate() && connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DEPENDENCY)) {
+                isThereConditionLink = true;
+            }
+        }
+        return isThereConditionLink;
     }
 
     /**

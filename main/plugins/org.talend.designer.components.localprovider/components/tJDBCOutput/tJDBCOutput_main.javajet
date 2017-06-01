@@ -687,7 +687,13 @@ skeleton="../templates/db_output_bulk.skeleton"
                         <%
                         }%>
                     }
-                    tmp_batchUpdateCount_<%=cid%> = countSum_<%=cid%>;
+                    try {
+                        tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
+                    }catch (java.sql.SQLException e){
+                        <%dbLog.logPrintedException("e.getMessage()");%>
+                        System.err.println(e.getMessage());
+                    }
+                    tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
                     <%if (("INSERT").equals(dataAction)) {
                     %>
                         insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;

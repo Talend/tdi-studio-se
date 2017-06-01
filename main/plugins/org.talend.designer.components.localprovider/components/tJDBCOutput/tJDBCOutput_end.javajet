@@ -108,7 +108,12 @@ if(("INSERT_OR_UPDATE").equals(dataAction)) {
                 	%>
             	}
             	if(pstmt_<%=cid %>!=null && batchSizeCounter_<%=cid%> > 0 ){
-                    tmp_batchUpdateCount_<%=cid%> = countSum_<%=cid%>;
+        			try {
+        				tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
+					}catch (java.sql.SQLException e){
+
+					}
+					tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
         	    	<%if (("INSERT").equals(dataAction)) {
         	    	%>
         	    		insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;

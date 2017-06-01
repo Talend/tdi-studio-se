@@ -2172,68 +2172,40 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             service = (ITDQPatternService) GlobalServiceRegister.getDefault()
                                     .getService(ITDQPatternService.class);
                         }
-                        if (service != null) {
-                            if (node.getLabel().startsWith("tMultiPattern")) {// TDQ-13437 tMultiPattern
-                                IElementParameter schemasTableParam = node.getElementParameter("SCHEMA_PATTERN_CHECK");
-                                if (schemasTableParam != null) {
-
-                                    ElementParameter newValueParameter = new ElementParameter(schemasTableParam.getElement());
-                                    newValueParameter.setName(schemasTableParam.getName());
-                                    List<Map> newValueList = new ArrayList<>();
-                                    newValueParameter.setValue(newValueList);
-                                    List<Map> listValue = (List<Map>) schemasTableParam.getValue();
-                                    for (Map onePattern : listValue) {
-                                        // firstly, need to check if the pattern id is equal
-                                        Map newListMap = new HashMap();
-                                        newListMap.putAll(onePattern);
-                                        newValueList.add(newListMap);
-                                        if (StringUtils.equals(item.getProperty().getId(), (String) onePattern.get("PATTERN_ID"))) {
-                                            if (!service.isSameName(item, (String) onePattern.get("PATTERN_NAME"))) {
-                                                String name = getItemNewName(item);
-                                                newListMap.put("PATTERN_NAME", name);
-                                                result = createUpdateCheckResult(node, propertiesResults, schemasTableParam);
-                                            }
-                                            String regex = service.getRegex(node, item);
-                                            if (!StringUtils.equals(regex, (String) onePattern.get("PATTERN_REGEX"))) {
-                                                newListMap.put("PATTERN_REGEX", regex);
-                                                if (result != null) {
-                                                    propertiesResults.add(result);
-                                                }
-                                                result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
-                                            }
-                                        }
-                                    }
+                        // for single pattern component
+                        if (service != null && node.getComponent().getName().startsWith("tPattern")) {
+                            // check pattern name
+                            IElementParameter nameParam = node.getElementParameter(ITDQPatternService.PATTERN_NAME);
+                            if (!service.isSameName(item, (String) nameParam.getValue())) {
+                                String newVlaue = getItemNewName(item);
+                                ElementParameter newValueParameter = new ElementParameter(nameParam.getElement());
+                                newValueParameter.setName(nameParam.getName());
+                                newValueParameter.setValue(newVlaue);
+                                result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
+                            }
+                            // check pattern regex
+                            String regex = service.getRegex(node, item);
+                            IElementParameter reParam = node.getElementParameter(ITDQPatternService.PATTERN_REGEX);
+                            if (!StringUtils.equals(regex, (String) reParam.getValue())) {
+                                ElementParameter newValueParameter = new ElementParameter(reParam.getElement());
+                                newValueParameter.setName(reParam.getName());
+                                newValueParameter.setValue(regex);
+                                if (result != null) {
+                                    propertiesResults.add(result);
                                 }
-                            } else {// for single pattern component
-                                // check pattern name
-                                IElementParameter nameParam = node.getElementParameter("PATTERN_NAME");
-                                if (!service.isSameName(item, (String) nameParam.getValue())) {
-                                    String newVlaue = getItemNewName(item);
-                                    // nameParam.setValue(newVlaue);
-                                    ElementParameter newValueParameter = new ElementParameter(nameParam.getElement());
-                                    newValueParameter.setName(nameParam.getName());
-                                    newValueParameter.setValue(newVlaue);
-                                    result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
-                                }
-                                // check pattern regex
-                                String regex = service.getRegex(node, item);
-                                IElementParameter reParam = node.getElementParameter("PATTERN_REGEX");
-                                if (!StringUtils.equals(regex, (String) reParam.getValue())) {
-                                    // reParam.setValue(regex);
-                                    ElementParameter newValueParameter = new ElementParameter(reParam.getElement());
-                                    newValueParameter.setName(reParam.getName());
-                                    newValueParameter.setValue(regex);
-                                    if (result != null) {
-                                        propertiesResults.add(result);
-                                    }
-                                    result = new UpdateCheckResult(node);
-                                    result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, newValueParameter);
-                                }
+                                result = new UpdateCheckResult(node);
+                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, newValueParameter);
                             }
                         }
                     } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
+                    }
+
+                    // TDQ-13685 check for multi patterns : when used patterns in table is changed or deleted
+                    if (node.getComponent().getName().startsWith("tMultiPattern")) {
+                        // go through every pattern to check if it is deleted or not.
+                        checkMultiPattern(node, propertiesResults);
                     }
 
                     // add the check result to resultList, hold the value.
@@ -2251,14 +2223,51 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         return propertiesResults;
     }
 
+    @SuppressWarnings("unchecked")
+    private void checkMultiPattern(final Node node, List<UpdateResult> propertiesResults) {
+        ITDQPatternService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
+            service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
+        }
+        if (service != null) {
+            IElementParameter schemasTableParam = node.getElementParameter("SCHEMA_PATTERN_CHECK");
+            if (schemasTableParam != null) {
+                boolean isChanged = false;
+                for (Map onePattern : (List<Map>) schemasTableParam.getValue()) {
+                    IRepositoryViewObject lastVersion = UpdateRepositoryUtils.getRepositoryObjectById((String) onePattern
+                            .get(ITDQPatternService.PATTERN_ID));
+                    if (lastVersion == null) {// this pattern is deleted, change this pattern to builtin
+                        onePattern.put("PATTERN_PROPERTY", EmfComponent.BUILTIN);
+                    } else {
+                        Item item = lastVersion.getProperty().getItem();
+                        if (item != null) {
+                            if (!service.isSameName(item, (String) onePattern.get(ITDQPatternService.PATTERN_NAME))) {
+                                String name = getItemNewName(item);
+                                onePattern.put(ITDQPatternService.PATTERN_NAME, name);
+                                isChanged = true;
+                            }
+                            String regex = service.getRegex(node, item);
+                            if (!StringUtils.equals(regex, (String) onePattern.get(ITDQPatternService.PATTERN_REGEX))) {
+                                onePattern.put(ITDQPatternService.PATTERN_REGEX, regex);
+                                isChanged = true;
+                            }
+                        }
+                    }
+                }
+                if (isChanged) {
+                    createUpdateCheckResult(node, propertiesResults, schemasTableParam);
+                }
+            }
+        }
+    }
+
     private String getItemNewName(Item item) {
         return item.getState().getPath().replaceFirst("Regex", "") + File.separator + item.getProperty().getDisplayName();
     }
 
     private UpdateCheckResult createUpdateCheckResult(final Node node, List<UpdateResult> propertiesResults,
             IElementParameter schemasTableParam) {
-        UpdateCheckResult result;
-        result = new UpdateCheckResult(node);
+        UpdateCheckResult result = new UpdateCheckResult(node);
         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, schemasTableParam);
         propertiesResults.add(result);
         return result;
