@@ -30,7 +30,6 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -248,8 +247,9 @@ public class ConnectionCreateCommand extends Command {
     public boolean canExecute() {
 
         if (target != null) {
-            if (source.getConnectorFromName(connectorName)!=null&&!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
-                    .getDefaultConnectionType(), connectorName, connectionName)) {
+            if (source.getConnectorFromName(connectorName) != null
+                    && !ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
+                            .getDefaultConnectionType(), connectorName, connectionName)) {
                 creatingConnection = false;
                 return false;
             }
@@ -264,9 +264,10 @@ public class ConnectionCreateCommand extends Command {
 
     public boolean canExecute(boolean refactorJoblet) {
 
-        if (target != null ) {
-            if (source.getConnectorFromName(connectorName)!=null&&!ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
-                    .getDefaultConnectionType(), connectorName, connectionName, refactorJoblet)) {
+        if (target != null) {
+            if (source.getConnectorFromName(connectorName) != null
+                    && !ConnectionManager.canConnectToTarget(source, null, target, source.getConnectorFromName(connectorName)
+                            .getDefaultConnectionType(), connectorName, connectionName, refactorJoblet)) {
                 creatingConnection = false;
                 return false;
             }
@@ -284,8 +285,6 @@ public class ConnectionCreateCommand extends Command {
         // All component types use the same MetadataTable implementation.
         return new MetadataTable();
     }
-    
-
 
     @Override
     public void execute() {
@@ -398,6 +397,15 @@ public class ConnectionCreateCommand extends Command {
         }
         if (connection == null) {
             if (newMetadata != null) {
+                // add for eltmap
+                if (source instanceof Node && source.isELTMapComponent()) {
+                    for (IMetadataTable metaTable : source.getMetadataList()) {
+                        String tableName = metaTable.getTableName();
+                        if (tableName != null && source.getProcess().checkValidConnectionName(tableName)) {
+                            source.getProcess().addUniqueConnectionName(tableName);
+                        }
+                    }
+                }
                 source.getMetadataList().add(newMetadata);
                 this.connection = new Connection(source, target, newLineStyle, connectorName, metaName, connectionName,
                         monitorConnection);

@@ -64,7 +64,7 @@ public class ConnectionDeleteCommand extends Command {
             connectionDeletedInfosMap.put(connection, deletedInfo);
 
             INode source = connection.getSource();
-            if (source != null) {
+            if (source != null && source instanceof Node && !(((Node) source).isELTMapComponent())) {
                 deletedInfo.metadataTable = connection.getMetadataTable();
                 List<IMetadataTable> metaList = source.getMetadataList();
                 if (metaList != null && deletedInfo.metadataTable != null) {

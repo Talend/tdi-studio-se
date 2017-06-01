@@ -121,6 +121,8 @@ public class ExternalDataConverter {
                     outputTable = new OutputTable(this.mapperManager, table, persistentTable.getName(),
                             persistentTable.getTableName());
                     outputTable.initFromExternalData(persistentTable);
+                } else {
+                    outputTable = new OutputTable(this.mapperManager, table, table.getTableName(), table.getLabel());
                 }
             }
             if (outputTable != null) {

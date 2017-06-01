@@ -87,7 +87,7 @@ public class DeleteNodeContainerCommand extends Command {
                     if (!nodeList.contains(jobletnode)) {
                         boolean builtInJobletNode = jobletnode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
                                 | node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
-                        storeMetadata(connection, jobletnode);
+                        storeMetadata(connection, jobletnode, true);
                         jobletnode.removeOutput(connection);
                         if (!builtInJobletNode) {
                             process.removeUniqueConnectionName(connection.getUniqueName());
@@ -97,9 +97,13 @@ public class DeleteNodeContainerCommand extends Command {
                 if (!nodeList.contains(prevNode)) {
                     boolean builtInPrevNode = prevNode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
                             | node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
-                    storeMetadata(connection, prevNode);
+                    boolean remove = true;
+                    if ((prevNode instanceof Node) && ((Node) prevNode).isELTMapComponent()) {
+                        remove = false;
+                    }
+                    storeMetadata(connection, prevNode, remove);
                     prevNode.removeOutput(connection);
-                    if (!builtInPrevNode) {
+                    if (!builtInPrevNode && remove) {
                         process.removeUniqueConnectionName(connection.getUniqueName());
                     }
                 }
@@ -263,12 +267,12 @@ public class DeleteNodeContainerCommand extends Command {
         this.execute();
     }
 
-    private void storeMetadata(IConnection connection, INode node) {
+    private void storeMetadata(IConnection connection, INode node, boolean remove) {
         ConnectionDeletedInfo deletedInfo = new ConnectionDeletedInfo();
         connectionDeletedInfosMap.put(connection, node, deletedInfo);
 
         INode source = connection.getSource();
-        if (source != null) {
+        if (source != null && remove) {
             deletedInfo.metadataTable = connection.getMetadataTable();
             List<IMetadataTable> metaList = source.getMetadataList();
             if (metaList != null && deletedInfo.metadataTable != null) {
