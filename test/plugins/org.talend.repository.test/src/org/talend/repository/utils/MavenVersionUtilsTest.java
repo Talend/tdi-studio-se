@@ -94,14 +94,14 @@ public class MavenVersionUtilsTest {
         assertEquals(0, MavenVersionUtils.compareVersion("1.0.0", "1.0.0"));
         assertEquals(-1, MavenVersionUtils.compareVersion("1.0.0", "2.0.0"));
         assertEquals(-1, MavenVersionUtils.compareVersion("1.1.0", "1.2.0"));
-        assertEquals(-1, MavenVersionUtils.compareVersion("1.0.1", "2.0.2"));
+        assertEquals(-1, MavenVersionUtils.compareVersion("1.0.1", "1.0.2"));
     }
     
     @Test
-    @Ignore
     public void testIncreaseVersion() {
-        //TODO
+        assertEquals("1.0.1", MavenVersionUtils.increaseVersion("1.0.0"));
+        assertEquals("1.1.1", MavenVersionUtils.increaseVersion("1.1.0"));
+        assertEquals("1.1.2", MavenVersionUtils.increaseVersion("1.1.1"));
     }
-    
     
 }

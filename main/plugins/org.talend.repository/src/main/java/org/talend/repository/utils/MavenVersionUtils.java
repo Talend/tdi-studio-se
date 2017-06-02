@@ -213,7 +213,6 @@ public class MavenVersionUtils {
         int b = Integer.valueOf(versionFragments[1]);
         int c = Integer.valueOf(versionFragments[2]);
 
-        //TODO what's the rule?
         return a + DOT + b + DOT + (c + 1);
     }
 
