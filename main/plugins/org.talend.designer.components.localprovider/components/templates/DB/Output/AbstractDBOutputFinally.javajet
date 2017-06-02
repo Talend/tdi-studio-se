@@ -1,14 +1,21 @@
 <%@ jet 
 imports="
-	org.talend.designer.codegen.config.CodeGeneratorArgument
-	org.talend.core.model.process.INode
-	org.talend.core.model.process.ElementParameterParser
-	org.talend.core.model.process.IConnection
-    java.util.List
-	org.talend.core.model.metadata.IMetadataColumn
-	org.talend.core.model.metadata.IMetadataTable
-	org.talend.core.model.process.IProcess
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.metadata.MappingTypeRetriever
+        org.talend.core.model.metadata.MetadataTalendType
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.process.IConnectionCategory
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.utils.NodeUtil
+		java.util.List
+		java.util.ArrayList
+		java.util.Map
+		java.util.HashMap
 "
+skeleton="../../db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
@@ -20,7 +27,9 @@ imports="
 	if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
 	     cid = cid.substring(0,cid.length()-4);
 	}
-
+	
+	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+	
 	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 %>
 	<%
@@ -31,6 +40,15 @@ imports="
 			if(resourceMap.get("conn_<%=cid%>")!=null){
 				try {
 					<%dbLog.conn().closeTry(null);%>
+					
+					<%
+					//need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
+					//maybe we need to rollback it when expcetion appear, but like all other db output components, we may commit something before it, so use commit here.
+					if(DB2.equalsIgnoreCase(dbmsId)){
+					%>
+                	((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).commit();
+            		<%}%>
+            		
 					((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).close();
 					<%dbLog.conn().closeDone(null);%>
 				} catch (java.sql.SQLException sqlEx_<%=cid %>) {
