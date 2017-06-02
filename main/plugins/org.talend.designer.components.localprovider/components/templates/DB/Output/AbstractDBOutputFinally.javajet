@@ -41,12 +41,16 @@ skeleton="../../db_output_bulk.skeleton"
 				try {
 					<%dbLog.conn().closeTry(null);%>
 					
+					java.sql.Connection ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>");
+					
 					<%
 					//need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
 					//maybe we need to rollback it when expcetion appear, but like all other db output components, we may commit something before it, so use commit here.
 					if(DB2.equalsIgnoreCase(dbmsId)){
 					%>
-                	((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).commit();
+					if(!ctn_<%=cid%>.getAutoCommit() && !ctn_<%=cid%>.isClosed()) {
+                		((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).commit();
+                	}
             		<%}%>
             		
 					((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).close();

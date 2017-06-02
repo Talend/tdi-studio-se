@@ -154,8 +154,13 @@ imports="
         <%
         }
         %>
-        <%dbLog.conn().closeTry(null);%>
-        conn_<%=cid%>.commit();//need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
+        <%
+        dbLog.conn().closeTry(null);
+        //need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
+        %>
+        if(!ctn_<%=cid%>.getAutoCommit()) {
+        	conn_<%=cid%>.commit();
+        }
         conn_<%=cid%> .close();
         <%dbLog.conn().closeDone(null);%>
         resourceMap.put("finish_<%=cid%>", true);
