@@ -15,7 +15,7 @@ imports="
 		java.util.Map
 		java.util.HashMap
 "
-skeleton="../../db_output_bulk.skeleton"
+skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
