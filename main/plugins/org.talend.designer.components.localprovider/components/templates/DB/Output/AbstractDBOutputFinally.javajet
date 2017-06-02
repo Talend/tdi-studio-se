@@ -49,11 +49,11 @@ skeleton="../../db_output_bulk.skeleton"
 					if(DB2.equalsIgnoreCase(dbmsId)){
 					%>
 					if(!ctn_<%=cid%>.getAutoCommit() && !ctn_<%=cid%>.isClosed()) {
-                		((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).commit();
+                		ctn_<%=cid%>.commit();
                 	}
             		<%}%>
             		
-					((java.sql.Connection)resourceMap.get("conn_<%=cid%>")).close();
+					ctn_<%=cid%>.close();
 					<%dbLog.conn().closeDone(null);%>
 				} catch (java.sql.SQLException sqlEx_<%=cid %>) {
 					String errorMessage_<%=cid%> = "failed to close the connection in <%=cid %> :" + sqlEx_<%=cid %>.getMessage();
