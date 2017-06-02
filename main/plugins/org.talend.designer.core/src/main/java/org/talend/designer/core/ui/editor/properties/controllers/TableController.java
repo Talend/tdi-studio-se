@@ -46,6 +46,7 @@ import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
+import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
@@ -56,7 +57,6 @@ import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorModel;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableEditorView;
 import org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor.PropertiesTableToolbarEditorView;
@@ -683,18 +683,19 @@ public class TableController extends AbstractElementPropertySectionController {
         }
 
         ProcessItem processItem = ItemCacheManager.getProcessItem(processId, (String) jobVersionParam.getValue());
-        Process process = null;
         String[] contextParameterNames = null;
         if (processItem != null) {
             // achen modify to fix bug 0006107
             IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
-            process = (Process) service.getProcessFromItem(processItem);
             // process = new Process(processItem.getProperty());
             // process.loadXmlFile();
-            IContext context = process.getContextManager().getContext(contextName);
+            IContextManager contextManager = service.getProcessContextFromItem(processItem);
+            if (contextManager != null) {
+                IContext context = contextManager.getContext(contextName);
 
-            for (IContextParameter contextParam : context.getContextParameterList()) {
-                contextParameterNamesList.add(contextParam.getName());
+                for (IContextParameter contextParam : context.getContextParameterList()) {
+                    contextParameterNamesList.add(contextParam.getName());
+                }
             }
 
             contextParameterNames = contextParameterNamesList.toArray(new String[0]);
