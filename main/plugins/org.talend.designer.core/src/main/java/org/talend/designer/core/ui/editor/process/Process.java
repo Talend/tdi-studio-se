@@ -4308,7 +4308,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         // ProcessType process = this.getProcessType();
         // process.getParameters().getRoutinesParameter().addAll(parameters.getRoutinesParameter());
         // }
-
+        routinesDependencies.clear();
+        List newRoutinesList = parameters.getRoutinesParameter();
+        if (newRoutinesList != null) {
+            routinesDependencies.addAll(newRoutinesList);
+        }
     }
 
     private void updateProSetingParameters(EList listParamType) {
