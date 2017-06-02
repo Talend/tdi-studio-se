@@ -198,14 +198,14 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         projectVersionText.setText(projectPreferenceManager.getValue(MavenConstants.PROJECT_VERSION));
 
         globalSnapshotCheckbox = new Button(projectVersionComposite, SWT.CHECK);
-        globalSnapshotCheckbox.setText(Messages.getString("VersionManagementDialog.publishAsSNAPSHOT")); //$NON-NLS-1$
+        globalSnapshotCheckbox.setText(Messages.getString("VersionManagementDialog.useSnapshot")); //$NON-NLS-1$
         GridData globalSnapshotCheckboxData = new GridData();
         globalSnapshotCheckboxData.horizontalIndent = 10;
         globalSnapshotCheckbox.setLayoutData(globalSnapshotCheckboxData);
         globalSnapshotCheckbox.setSelection(projectPreferenceManager.getBoolean(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT));
 
         fixedVersionButton = new Button(option, SWT.RADIO);
-        fixedVersionButton.setText(Messages.getString("VersionManagementDialog.FixedVersion")); //$NON-NLS-1$
+        fixedVersionButton.setText(Messages.getString("VersionManagementDialog.useProjectVersion")); //$NON-NLS-1$
         fixedVersionButton.setSelection(true); // default
 
         applyVersionButton = new Button(option, SWT.NONE);
@@ -216,7 +216,7 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         subjobs.setEnabled(false);
 
         eachVersionButton = new Button(option, SWT.RADIO);
-        eachVersionButton.setText(Messages.getString("VersionManagementDialog.EachVersion")); //$NON-NLS-1$
+        eachVersionButton.setText(Messages.getString("VersionManagementDialog.eachMavenVersion")); //$NON-NLS-1$
         GridData eachVersionButtonData = new GridData();
         eachVersionButtonData.horizontalSpan = 3;
         eachVersionButton.setLayoutData(eachVersionButtonData);
@@ -242,11 +242,15 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             public void modifyText(ModifyEvent e) {
                 String version = projectVersionText.getText();
                 if (MavenVersionUtils.isValidMavenVersion(version, useSnapshot())) {
-                    applyVersionButton.setEnabled(true);
+                    if (fixedVersionButton.getSelection()) {
+                        applyVersionButton.setEnabled(true);
+                    }
                     projectVersionText.setBackground(COLOR_WHITE);
                     projectVersionText.setToolTipText(""); //$NON-NLS-1$
                 } else {
-                    applyVersionButton.setEnabled(false);
+                    if (fixedVersionButton.getSelection()) {
+                        applyVersionButton.setEnabled(false);
+                    }
                     projectVersionText.setBackground(COLOR_RED);
                     projectVersionText.setToolTipText(Messages.getString("VersionManagementDialog.valueWarning")); //$NON-NLS-1$
                 }
@@ -368,7 +372,6 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             } else if (useJobVersionButton.getSelection()) {
                 String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(item.getProperty().getVersion());
                 tableItem.setText(2, jobDefaultVersion);
-                object.setNewVersion(jobDefaultVersion);
                 text = null;
             } else {
                 // new version
@@ -389,13 +392,13 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                 String newVersion = object.getNewVersion();
                 if (newVersion == null || "".equals(newVersion.trim())) { //$NON-NLS-1$
                     newVersion = appliedFixedVersion;
-                    object.setNewVersion(newVersion);
                 } else if (newVersion.endsWith(MavenConstants.SNAPSHOT)) {
                     newVersion = newVersion.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
                 }
                 if (newVersion.equals(object.getOldVersion().replace(MavenConstants.SNAPSHOT, ""))) { //$NON-NLS-1$
                     newVersion = MavenVersionUtils.increaseVersion(newVersion);
                 }
+                object.setNewVersion(newVersion);
                 text.setText(newVersion);
                 checkVersionPattern(text, newVersion);
 
