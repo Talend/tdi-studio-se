@@ -19,6 +19,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
+import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 
 public class AddJavaVersionMigrationTask extends AbstractProjectMigrationTask {
 
@@ -26,7 +28,9 @@ public class AddJavaVersionMigrationTask extends AbstractProjectMigrationTask {
     public ExecutionResult execute(Project project) {
         String javaVersion = JavaUtils.getProjectJavaVersion();
         if (javaVersion == null || !JavaUtils.AVAILABLE_VERSIONS.contains(javaVersion)) {
-            JavaUtils.updateProjectJavaVersion(JavaCore.VERSION_1_7);
+            ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID);
+            manager.setValue(JavaUtils.PROJECT_JAVA_VERSION_KEY, JavaCore.VERSION_1_7);
+            manager.save();
             return ExecutionResult.SUCCESS_NO_ALERT;
         }
         return ExecutionResult.NOTHING_TO_DO;
