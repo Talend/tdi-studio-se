@@ -182,6 +182,13 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         java.sql.Statement statement_<%=cid%> = connection_<%=cid%>.createStatement();
         java.sql.ResultSet resultSet_<%=cid%> = statement_<%=cid%>.executeQuery(search_<%=cid %>);
         java.util.Map<SCDSK_<%=cid%>, SCDStruct_<%=cid%>> cache_<%=cid%> = new java.util.HashMap<SCDSK_<%=cid%>, SCDStruct_<%=cid%>>();
+        
+        class ResultSet2Cache_<%=cid%> {
+        	void fill(java.sql.ResultSet resultSet_<%=cid%>, java.util.Map<SCDSK_<%=cid%>, SCDStruct_<%=cid%>> cache_<%=cid%>) throws java.lang.Exception {
+        
+        java.sql.Timestamp timestamp_<%=cid%> = null;
+    	String tmpValue_<%=cid%> = null;
+    
         while(resultSet_<%=cid%>.next()) {
             SCDSK_<%=cid%> sk_<%=cid%> = new SCDSK_<%=cid%>();
             SCDStruct_<%=cid%> row_<%=cid%> = new SCDStruct_<%=cid%>();
@@ -268,7 +275,12 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
             }
             %>
             cache_<%=cid%>.put(sk_<%=cid%>, row_<%=cid%>);
-        }
+        }//end while
+        }//end method
+        }//end class
+        
+        new ResultSet2Cache_<%=cid%>().fill(resultSet_<%=cid%>, cache_<%=cid%>);
+        
         resultSet_<%=cid%>.close();
         statement_<%=cid%>.close();
         <%

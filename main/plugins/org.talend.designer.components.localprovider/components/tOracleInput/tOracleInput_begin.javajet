@@ -197,14 +197,7 @@ imports="
 				}
 <%
 			} else {
-%>
-			 	    tmpContent_<%=cid%> = rs_<%=cid %>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
-			        if(tmpContent_<%=cid%> != null) {
-			            <%=firstConnName%>.<%=column.getLabel()%> = tmpContent_<%=cid%><%=trimMethod%>;
-			        } else {
-			            <%=firstConnName%>.<%=column.getLabel()%> = null;
-			        }
-<%
+				super.generateStringResultSet(firstConnName, column, currentColNo, trimMethod);
 			}
 	    }
 
@@ -259,7 +252,7 @@ imports="
                 }
     		<%
     		}else{
-	    		if(noNullValues){
+	    		if(noNullValues){//FIXME any difference when the value of the parameter is true and false?
 				%>
 					java.sql.Timestamp timestamp = rs_<%=cid %>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
 					if(timestamp != null) {
@@ -269,18 +262,36 @@ imports="
 					}
 				<%
 				}else{
-				//super.generateTimestampResultSet(firstConnName,column,currentColNo);
-				%>
-					if(rs_<%=cid %>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>) != null) {
-					    <%=firstConnName%>.<%=column.getLabel()%> = new java.util.Date(rs_<%=cid %>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>).getTime());
-					} else {
-					    <%=firstConnName%>.<%=column.getLabel()%> =  null;
-					}
-				<%
+					super.generateTimestampResultSet(firstConnName,column,currentColNo);
 				}
 			}
 	    }
 
+		public void generateDoubleResultSet(String firstConnName, IMetadataColumn column, int currentColNo) {
+			boolean noNullValues = ("true").equals(ElementParameterParser.getValue(node, "__NO_NULL_VALUES__"));
+	    	if(noNullValues){
+	    		if(column.isNullable()) {
+%>
+				<%=firstConnName%>.<%=column.getLabel()%> = routines.system.JDBCUtil.getDoubleObject2(rs_<%=cid %>, <%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+<%
+				} else {
+%>
+				<%=firstConnName%>.<%=column.getLabel()%> = routines.system.JDBCUtil.getDouble2(rs_<%=cid %>, <%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+<%
+				}
+	    	} else {
+	    		if(column.isNullable()) {
+%>
+				<%=firstConnName%>.<%=column.getLabel()%> = routines.system.JDBCUtil.getDoubleObject(rs_<%=cid %>, <%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+<%
+				} else {
+%>
+				<%=firstConnName%>.<%=column.getLabel()%> = routines.system.JDBCUtil.getDouble(rs_<%=cid %>, <%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+<%
+				}
+	    	}
+	    }
+	    
 	   	public void generateOthersResultSet(String firstConnName, IMetadataColumn column, int currentColNo, String typeToGenerate) {
 		   	boolean noNullValues = ("true").equals(ElementParameterParser.getValue(node, "__NO_NULL_VALUES__"));
 	   		boolean isConvert = ("true").equals(ElementParameterParser.getValue(node, "__IS_CONVERT_XMLTYPE__"));
@@ -340,7 +351,7 @@ imports="
 					%>
 						if(<%=firstConnName%>.<%=column.getLabel()%> == null){
 					<%
-					}else if(("Byte").equals(typeToGenerate) || ("Double").equals(typeToGenerate) || ("Float").equals(typeToGenerate) || ("Int").equals(typeToGenerate) || ("Long").equals(typeToGenerate) || ("Short").equals(typeToGenerate)){
+					}else if(("Byte").equals(typeToGenerate) || ("Float").equals(typeToGenerate) || ("Int").equals(typeToGenerate) || ("Long").equals(typeToGenerate) || ("Short").equals(typeToGenerate)){
 					%>
 						if(<%=firstConnName%>.<%=column.getLabel()%> == 0 && rs_<%=cid %>.getObject(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>) == null){
 					<%
