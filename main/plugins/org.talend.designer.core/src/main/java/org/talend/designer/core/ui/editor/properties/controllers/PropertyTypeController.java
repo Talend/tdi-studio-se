@@ -125,11 +125,8 @@ public class PropertyTypeController extends AbstractRepositoryController {
     @Override
     public void refresh(IElementParameter param, boolean check) {
         // judge only pattern mode
-        if (elem instanceof Node) {
-            String componentName = ((Node) elem).getComponent().getName();
-            if ("tPatternExtract".equals(componentName) || "tPatternCheck".equals(componentName)) { //$NON-NLS-1$ //$NON-NLS-2$
-
-                IElementParameter patternPropertyTypeElementParameter = param.getChildParameters()
+        if ("TDQ:PATTERN".equals(param.getRepositoryValue())) {
+            IElementParameter patternPropertyTypeElementParameter = param.getChildParameters()
                         .get("REPOSITORY_PROPERTY_TYPE");//$NON-NLS-1$
                 if (patternPropertyTypeElementParameter.getListItemsDisplayName().length == 0
                         && patternPropertyTypeElementParameter.getListItemsValue().length == 0) {
@@ -137,6 +134,14 @@ public class PropertyTypeController extends AbstractRepositoryController {
                             .getPropertyValue("PATTERN_NAME").toString() }); //$NON-NLS-1$
                     patternPropertyTypeElementParameter.setListItemsValue(new String[] { patternPropertyTypeElementParameter
                             .getValue().toString() });
+                }
+
+            // TDQ-13705 Added 20170606 yyin: when built-in, make the regex field show.
+            IElementParameter propertyTypeParameter = param.getChildParameters().get(getRepositoryTypeParamName());
+            if (EmfComponent.BUILTIN.equals(propertyTypeParameter.getValue()) && elem instanceof Node) {
+                IElementParameter parameter_regex = ((Node) elem).getElementParameter("PATTERN_REGEX");
+                if (parameter_regex != null) {
+                    parameter_regex.setShow(true);
                 }
             }
         }
