@@ -45,6 +45,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.context.JobContext;
+import org.talend.core.model.context.JobContextManager;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
@@ -377,6 +378,14 @@ public final class UpdateManagerUtils {
                                         result.setJob(process);
                                     } else {
                                         process = (IProcess) result.getJob();
+                                    }
+                                    if (result.getRepositoryUpdateManager() != null) {
+                                        Map<IContext, String> renameContextGroup = result.getRepositoryUpdateManager().getRenameContextGroup();
+                                        if (renameContextGroup != null && !renameContextGroup.isEmpty()) {
+                                            if (process.getContextManager() instanceof JobContextManager) {
+                                                ((JobContextManager) process.getContextManager()).setRenameGroupContext(renameContextGroup);
+                                            }
+                                        }
                                     }
                                     IUpdateItemType jobletContextType = UpdateManagerProviderDetector.INSTANCE
                                             .getUpdateItemType(UpdateManagerHelper.TYPE_JOBLET_CONTEXT);
