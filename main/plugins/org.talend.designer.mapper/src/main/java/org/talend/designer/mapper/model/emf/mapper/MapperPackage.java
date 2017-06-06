@@ -319,13 +319,22 @@ public interface MapperPackage extends EPackage {
     int ABSTRACT_IN_OUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 3;
 
     /**
+     * The feature id for the '<em><b>Column Name Filter</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int ABSTRACT_IN_OUT_TABLE__COLUMN_NAME_FILTER = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 4;
+
+    /**
      * The feature id for the '<em><b>Id</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ABSTRACT_IN_OUT_TABLE__ID = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 4;
+    int ABSTRACT_IN_OUT_TABLE__ID = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 5;
 
     /**
      * The number of structural features of the '<em>Abstract In Out Table</em>' class.
@@ -334,7 +343,7 @@ public interface MapperPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ABSTRACT_IN_OUT_TABLE_FEATURE_COUNT = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 5;
+    int ABSTRACT_IN_OUT_TABLE_FEATURE_COUNT = ABSTRACT_DATA_MAP_TABLE_FEATURE_COUNT + 6;
 
     /**
      * The meta object id for the '{@link org.talend.designer.mapper.model.emf.mapper.impl.UiPropertiesImpl <em>Ui Properties</em>}' class.
@@ -502,6 +511,15 @@ public interface MapperPackage extends EPackage {
     int OUTPUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER = ABSTRACT_IN_OUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER;
 
     /**
+     * The feature id for the '<em><b>Column Name Filter</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int OUTPUT_TABLE__COLUMN_NAME_FILTER = ABSTRACT_IN_OUT_TABLE__COLUMN_NAME_FILTER;
+
+    /**
      * The feature id for the '<em><b>Id</b></em>' attribute.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -636,6 +654,15 @@ public interface MapperPackage extends EPackage {
      * @ordered
      */
     int INPUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER = ABSTRACT_IN_OUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER;
+
+    /**
+     * The feature id for the '<em><b>Column Name Filter</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int INPUT_TABLE__COLUMN_NAME_FILTER = ABSTRACT_IN_OUT_TABLE__COLUMN_NAME_FILTER;
 
     /**
      * The feature id for the '<em><b>Id</b></em>' attribute.
@@ -946,6 +973,17 @@ public interface MapperPackage extends EPackage {
      * @generated
      */
     EAttribute getAbstractInOutTable_ActivateColumnNameFilter();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getColumnNameFilter <em>Column Name Filter</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Column Name Filter</em>'.
+     * @see org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getColumnNameFilter()
+     * @see #getAbstractInOutTable()
+     * @generated
+     */
+    EAttribute getAbstractInOutTable_ColumnNameFilter();
 
     /**
      * Returns the meta object for the attribute '{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getId <em>Id</em>}'.
@@ -1325,6 +1363,14 @@ public interface MapperPackage extends EPackage {
          * @generated
          */
         EAttribute ABSTRACT_IN_OUT_TABLE__ACTIVATE_COLUMN_NAME_FILTER = eINSTANCE.getAbstractInOutTable_ActivateColumnNameFilter();
+
+        /**
+         * The meta object literal for the '<em><b>Column Name Filter</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute ABSTRACT_IN_OUT_TABLE__COLUMN_NAME_FILTER = eINSTANCE.getAbstractInOutTable_ColumnNameFilter();
 
         /**
          * The meta object literal for the '<em><b>Id</b></em>' attribute feature.

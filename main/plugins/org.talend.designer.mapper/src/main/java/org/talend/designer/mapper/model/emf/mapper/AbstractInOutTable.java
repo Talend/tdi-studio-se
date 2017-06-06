@@ -19,6 +19,7 @@ package org.talend.designer.mapper.model.emf.mapper;
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateExpressionFilter <em>Activate Expression Filter</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateCondensedTool <em>Activate Condensed Tool</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#isActivateColumnNameFilter <em>Activate Column Name Filter</em>}</li>
+ *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getColumnNameFilter <em>Column Name Filter</em>}</li>
  *   <li>{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getId <em>Id</em>}</li>
  * </ul>
  * </p>
@@ -131,6 +132,32 @@ public interface AbstractInOutTable extends AbstractDataMapTable {
      * @generated
      */
     void setActivateColumnNameFilter(boolean value);
+
+    /**
+     * Returns the value of the '<em><b>Column Name Filter</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Column Name Filter</em>' attribute isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Column Name Filter</em>' attribute.
+     * @see #setColumnNameFilter(String)
+     * @see org.talend.designer.mapper.model.emf.mapper.MapperPackage#getAbstractInOutTable_ColumnNameFilter()
+     * @model
+     * @generated
+     */
+    String getColumnNameFilter();
+
+    /**
+     * Sets the value of the '{@link org.talend.designer.mapper.model.emf.mapper.AbstractInOutTable#getColumnNameFilter <em>Column Name Filter</em>}' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @param value the new value of the '<em>Column Name Filter</em>' attribute.
+     * @see #getColumnNameFilter()
+     * @generated
+     */
+    void setColumnNameFilter(String value);
 
     /**
      * Returns the value of the '<em><b>Id</b></em>' attribute.

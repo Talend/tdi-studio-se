@@ -298,6 +298,7 @@ public class MapperComponentDocumentation implements IComponentDocumentation {
         tableElement.addAttribute("activateExpressionFilter", String.valueOf(table.isActivateExpressionFilter())); //$NON-NLS-1$
         tableElement.addAttribute("activateCondensedTool", String.valueOf(table.isActivateCondensedTool()));
         tableElement.addAttribute("activateColumnNameFilter", String.valueOf(table.isActivateColumnNameFilter())); //$NON-NLS-1$
+        tableElement.addAttribute("columnNameFilter", String.valueOf(table.getColumnNameFilter())); //$NON-NLS-1$
     }
 
     /**

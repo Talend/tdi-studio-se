@@ -352,6 +352,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
 
     public static final String DEFAULT_OUT_EXPRESSION_FILTER = "";
 
+    public static final String DEFAULT_FILTER = "";//$NON-NLS-1$
+
     //     Messages.getString("DataMapTableView.defaultOutputFilterExpression"); //$NON-NLS-1$
 
     private static final String EXPRESSION_FILTER_ENTRY = "EXPRESSION_FILTER_ENTRY"; //$NON-NLS-1$
@@ -2787,13 +2789,42 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             nameFilterTextGridData.minimumWidth = 25;
             nameFilterTextGridData.widthHint = 50;
             columnNameTextFilter.setLayoutData(nameFilterTextGridData);
-            columnNameTextFilter.setText("");
+
+            String columnNameFilter = table.getColumnNameFilter();
+            if (columnNameFilter != null && !DEFAULT_FILTER.equals(columnNameFilter.trim())) {
+                columnNameTextFilter.setText(columnNameFilter);
+            } else {
+                columnNameTextFilter.setText(DEFAULT_FILTER);
+            }
 
             columnNameTextFilter.setVisible(table.isActivateColumnNameFilter());
             nameFilterTextGridData.exclude = !table.isActivateColumnNameFilter();
             //
             columnNameTextFilter.setBackground(ColorProviderMapper.getColor(ColorInfo.COLOR_BACKGROUND_VALID_EXPRESSION_CELL));
             columnNameTextFilter.setForeground(ColorProviderMapper.getColor(ColorInfo.COLOR_FOREGROUND_VALID_EXPRESSION_CELL));
+
+            columnNameTextFilter.addFocusListener(new FocusListener() {
+
+                public void focusGained(FocusEvent e) {
+                    redrawColumnNameFilter();
+                    Control text = (Control) e.getSource();
+                    if (DEFAULT_FILTER.equals(ControlUtils.getText(text))) {
+                        ControlUtils.setText(text, DEFAULT_FILTER);
+                    }
+                }
+
+                public void focusLost(FocusEvent e) {
+                    Control text = (Control) e.getSource();
+                    String currentContent = ControlUtils.getText(text);
+                    if (currentContent != null && DEFAULT_FILTER.equals(currentContent.trim())) {
+                        ControlUtils.setText(text, DEFAULT_FILTER);
+                        table.setColumnNameFilter(DEFAULT_FILTER);
+                    } else {
+                        table.setColumnNameFilter(currentContent);
+                    }
+                }
+
+            });
             columnNameTextFilter.addControlListener(new ControlListener() {
 
                 public void controlMoved(ControlEvent e) {

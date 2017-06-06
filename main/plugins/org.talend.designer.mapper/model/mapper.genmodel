@@ -43,6 +43,7 @@
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateExpressionFilter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateCondensedTool"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/activateColumnNameFilter"/>
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/columnNameFilter"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute mapper.ecore#//AbstractInOutTable/id"/>
     </genClasses>
     <genClasses ecoreClass="mapper.ecore#//UiProperties">

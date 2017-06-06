@@ -90,10 +90,11 @@ public class MapperHelper {
         }
         return hasPersistentSortedLookup;
     }
-    
+
     public static boolean isMapperOnBigDataProcess(String componentType) {
         return ComponentCategory.CATEGORY_4_SPARK.getName().equals(componentType)
-                || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(componentType) || ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(componentType);
+                || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(componentType)
+                || ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(componentType);
     }
 
     public static void saveDataToEmf(ExternalMapperData externalData, MapperData emfMapperData) {
@@ -162,6 +163,7 @@ public class MapperHelper {
         persistentTable.setActivateExpressionFilter(table.isActivateExpressionFilter());
         persistentTable.setActivateColumnNameFilter(table.isActivateColumnNameFilter());
         persistentTable.setExpressionFilter(table.getExpressionFilter());
+        persistentTable.setColumnNameFilter(table.getColumnNameFilter());
         persistentTable.setMinimized(table.isMinimized());
         persistentTable.setName(table.getName());
         persistentTable.setSizeState(getSizeState(table.getSizeState()));

@@ -49,8 +49,10 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
     private boolean activateExpressionFilter;
 
     private boolean activateColumnNameFilter;
-    
+
     private boolean activateCondensedTool;
+
+    private String columnNameFilter;
 
     protected List<GlobalMapEntry> mapSettingEntries = new ArrayList<GlobalMapEntry>();
 
@@ -104,6 +106,7 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
         tableMapSettingEntriesModel = new ExtendedTableModel<GlobalMapEntry>("Model for map setting", mapSettingEntries);
         if (externalMapperTable != null) {
             this.expressionFilterEntry.setExpression(externalMapperTable.getExpressionFilter());
+            this.setColumnNameFilter(externalMapperTable.getColumnNameFilter());
             this.activateExpressionFilter = externalMapperTable.isActivateExpressionFilter();
             this.activateCondensedTool = externalMapperTable.isActivateCondensedTool();
             this.activateColumnNameFilter = externalMapperTable.isActivateColumnNameFilter();
@@ -213,6 +216,14 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
         this.activateColumnNameFilter = activateColumnNameFilter;
     }
 
+    public String getColumnNameFilter() {
+        return this.columnNameFilter;
+    }
+
+    public void setColumnNameFilter(String columnNameFilter) {
+        this.columnNameFilter = columnNameFilter;
+    }
+
     public boolean isActivateCondensedTool() {
         return this.activateCondensedTool;
     }
@@ -256,5 +267,4 @@ public abstract class AbstractInOutTable extends AbstractDataMapTable {
     public void setRepository(boolean isRepository) {
         this.isRepository = isRepository;
     }
-
 }

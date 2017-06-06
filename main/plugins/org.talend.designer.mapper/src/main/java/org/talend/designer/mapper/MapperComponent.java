@@ -442,6 +442,7 @@ public class MapperComponent extends AbstractMapComponent implements IHashableIn
         externalTable.setActivateExpressionFilter(pTable.isActivateExpressionFilter());
         externalTable.setActivateColumnNameFilter(pTable.isActivateColumnNameFilter());
         externalTable.setExpressionFilter(pTable.getExpressionFilter());
+        externalTable.setColumnNameFilter(pTable.getColumnNameFilter());
         externalTable.setSizeState(pTable.getSizeState().getLiteral());
         externalTable.setMinimized(pTable.isMinimized());
         externalTable.setName(pTable.getName());

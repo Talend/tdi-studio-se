@@ -83,6 +83,8 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     private boolean activateColumnNameFilter;
 
+    private String columnNameFilter;
+
     private String matchingMode;
 
     private String lookupMode;
@@ -369,6 +371,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         result = prime * result + (this.activateExpressionFilter ? 1231 : 1237);
         result = prime * result + ((this.constraintTableEntries == null) ? 0 : this.constraintTableEntries.hashCode());
         result = prime * result + ((this.expressionFilter == null) ? 0 : this.expressionFilter.hashCode());
+        result = prime * result + ((this.columnNameFilter == null) ? 0 : this.columnNameFilter.hashCode());
         result = prime * result + (this.innerJoin ? 1231 : 1237);
         result = prime * result + (this.persistent ? 1231 : 1237);
         result = prime * result + ((this.matchingMode == null) ? 0 : this.matchingMode.hashCode());
@@ -402,7 +405,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         if (this.activateExpressionFilter != other.activateExpressionFilter) {
             return false;
         }
-        
+
         if (this.expressionFilter == null) {
             if (other.expressionFilter != null) {
                 return false;
@@ -427,7 +430,7 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         } else if (!this.lookupMode.equals(other.lookupMode)) {
             return false;
         }
-        
+
         if (this.minimized != other.minimized) {
             return false;
         }
@@ -464,98 +467,105 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
         } else if (!this.id.equals(other.id)) {
             return false;
         }
-        
+        if (this.columnNameFilter == null) {
+            if (other.columnNameFilter != null) {
+                return false;
+            }
+        } else if (!this.columnNameFilter.equals(other.columnNameFilter)) {
+            return false;
+        }
+
         List<ExternalMapperTableEntry> this_constraintTableEntries = null;
-        if(this.constraintTableEntries == null){
+        if (this.constraintTableEntries == null) {
             this_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             this_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>(this.constraintTableEntries);
         }
         List<ExternalMapperTableEntry> this_metadataTableEntries = null;
-        if(this.metadataTableEntries == null){
+        if (this.metadataTableEntries == null) {
             this_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             this_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>(this.metadataTableEntries);
         }
         List<ExternalMapperTableEntry> this_globalMapKeysValues = null;
-        if(this.globalMapKeysValues == null){
+        if (this.globalMapKeysValues == null) {
             this_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             this_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>(this.globalMapKeysValues);
         }
-        
+
         List<ExternalMapperTableEntry> other_constraintTableEntries = null;
-        if(other.constraintTableEntries == null){
+        if (other.constraintTableEntries == null) {
             other_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             other_constraintTableEntries = new ArrayList<ExternalMapperTableEntry>(other.constraintTableEntries);
         }
         List<ExternalMapperTableEntry> other_metadataTableEntries = null;
-        if(other.metadataTableEntries == null){
+        if (other.metadataTableEntries == null) {
             other_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             other_metadataTableEntries = new ArrayList<ExternalMapperTableEntry>(other.metadataTableEntries);
         }
         List<ExternalMapperTableEntry> other_globalMapKeysValues = null;
-        if(other.globalMapKeysValues == null){
+        if (other.globalMapKeysValues == null) {
             other_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>();
-        }else{
+        } else {
             other_globalMapKeysValues = new ArrayList<ExternalMapperTableEntry>(other.globalMapKeysValues);
         }
-        
-        if(this_constraintTableEntries.size() != other_constraintTableEntries.size()){
+
+        if (this_constraintTableEntries.size() != other_constraintTableEntries.size()) {
             return false;
         }
-        for(ExternalMapperTableEntry oriObj:this_constraintTableEntries){
+        for (ExternalMapperTableEntry oriObj : this_constraintTableEntries) {
             boolean found = false;
-            for(ExternalMapperTableEntry otherObj:other_constraintTableEntries){
-                if(oriObj.getName().equals(otherObj.getName())){
+            for (ExternalMapperTableEntry otherObj : other_constraintTableEntries) {
+                if (oriObj.getName().equals(otherObj.getName())) {
                     found = true;
-                    if(!oriObj.equals(otherObj)){
+                    if (!oriObj.equals(otherObj)) {
                         return false;
                     }
                     break;
                 }
             }
-            if(found == false){
+            if (found == false) {
                 return false;
             }
         }
-        
-        if(this_metadataTableEntries.size() != other_metadataTableEntries.size()){
+
+        if (this_metadataTableEntries.size() != other_metadataTableEntries.size()) {
             return false;
         }
-        for(ExternalMapperTableEntry oriObj:this_metadataTableEntries){
+        for (ExternalMapperTableEntry oriObj : this_metadataTableEntries) {
             boolean found = false;
-            for(ExternalMapperTableEntry otherObj:other_metadataTableEntries){
-                if(oriObj.getName().equals(otherObj.getName())){
+            for (ExternalMapperTableEntry otherObj : other_metadataTableEntries) {
+                if (oriObj.getName().equals(otherObj.getName())) {
                     found = true;
-                    if(!oriObj.equals(otherObj)){
+                    if (!oriObj.equals(otherObj)) {
                         return false;
                     }
                     break;
                 }
             }
-            if(found == false){
+            if (found == false) {
                 return false;
             }
         }
-        
-        if(this_globalMapKeysValues.size() != other_globalMapKeysValues.size()){
+
+        if (this_globalMapKeysValues.size() != other_globalMapKeysValues.size()) {
             return false;
         }
-        for(ExternalMapperTableEntry oriObj:this_globalMapKeysValues){
+        for (ExternalMapperTableEntry oriObj : this_globalMapKeysValues) {
             boolean found = false;
-            for(ExternalMapperTableEntry otherObj:other_globalMapKeysValues){
-                if(oriObj.getName().equals(otherObj.getName())){
+            for (ExternalMapperTableEntry otherObj : other_globalMapKeysValues) {
+                if (oriObj.getName().equals(otherObj.getName())) {
                     found = true;
-                    if(!oriObj.equals(otherObj)){
+                    if (!oriObj.equals(otherObj)) {
                         return false;
                     }
                     break;
                 }
             }
-            if(found == false){
+            if (found == false) {
                 return false;
             }
         }
@@ -632,5 +642,13 @@ public class ExternalMapperTable extends AbstractExternalMapTable implements Ser
 
     public void setActivateColumnNameFilter(boolean activateColumnNameFilter) {
         this.activateColumnNameFilter = activateColumnNameFilter;
+    }
+
+    public String getColumnNameFilter() {
+        return this.columnNameFilter;
+    }
+
+    public void setColumnNameFilter(String columnNameFilter) {
+        this.columnNameFilter = columnNameFilter;
     }
 }

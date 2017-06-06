@@ -419,6 +419,11 @@ public class ExternalDataConverter {
             expressionFilter = table.getExpressionFilter().getExpression();
         }
         externalMapperTable.setExpressionFilter(expressionFilter);
+        String columnNameFilter = null;
+        if (table.getColumnNameFilter() != null) {
+            columnNameFilter = table.getColumnNameFilter();
+        }
+        externalMapperTable.setColumnNameFilter(columnNameFilter);
         String matchingMode = null;
         if (table.getMatchingMode() != null) {
             matchingMode = table.getMatchingMode().toString();
@@ -473,6 +478,7 @@ public class ExternalDataConverter {
         externalMapperTable.setExpressionFilter(table.getExpressionFilter() != null
                 && isFilterEqualsToDefault(table.getExpressionFilter().getExpression()) ? null : table.getExpressionFilter()
                 .getExpression());
+        externalMapperTable.setColumnNameFilter(table.getColumnNameFilter());
         externalMapperTable.setId(table.getId());
         if (mapperManager.isAdvancedMap()) {
             externalMapperTable.setConstraintTableEntries(null);
