@@ -18,8 +18,8 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/MS_SQL_Server</FAMILY>
-    <FAMILY>Cloud/SQL Data Warehouse</FAMILY>
+    <FAMILY>Databases/Azure/SQL Data Warehouse</FAMILY>
+    <FAMILY>Cloud/Azure/SQL Data Warehouse</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>
