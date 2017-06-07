@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Color;
@@ -87,7 +88,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     private IGenericWizardInternalService internalService;
 
     private boolean drivedByForm;
-    
+
     private PropertyChangeListener wizardPropertyChangeListener;
 
     public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
@@ -157,9 +158,25 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                     form);
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
+            if (element instanceof INode) {
+                ComponentReferenceProperties<?> refProperties = (ComponentReferenceProperties<?>) properties
+                        .getProperties("connection.referencedComponent"); //$NON-NLS-1$
+                if (refProperties != null && refProperties.getReference() == null) {
+                    String refComponentName = (String) properties.getValuedProperty("componentInstanceId").getValue(); //$NON-NLS-1$
+                    if (!StringUtils.isEmpty(refComponentName)) {
+                        for (INode curNode : ((INode) element).getProcess().getGeneratingNodes()) {
+                            if (curNode.getUniqueName().equals(refComponentName)) {
+                                refProperties.setReference(curNode.getComponentProperties());
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        for (ElementParameter parameter : parameters) {
+        for (
+
+        ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
                 genericElementParameter.setComponentService(componentService);
@@ -172,8 +189,8 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 }
                 if (EParameterFieldType.SCHEMA_REFERENCE.equals(genericElementParameter.getFieldType())) {
                     if (genericElementParameter.getChildParameters().size() == 0) {
-                        IElementParameter schemaParameter = element.getElementParameterFromField(
-                                EParameterFieldType.SCHEMA_REFERENCE, section);
+                        IElementParameter schemaParameter = element
+                                .getElementParameterFromField(EParameterFieldType.SCHEMA_REFERENCE, section);
                         genericElementParameter.getChildParameters().putAll(schemaParameter.getChildParameters());
                     }
                 } else if (EParameterFieldType.NAME_SELECTION_AREA.equals(genericElementParameter.getFieldType())
@@ -197,8 +214,8 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                     if (genericElementParameter.isShow(currentParameters) && (repositoryValue != null)
                             && (!genericElementParameter.getName().equals(EParameterName.PROPERTY_TYPE.getName()))
                             && genericElementParameter.getCategory() == section) {
-                        org.talend.daikon.properties.property.Property property = properties.getValuedProperty(genericElementParameter
-                                .getName());
+                        org.talend.daikon.properties.property.Property property = properties
+                                .getValuedProperty(genericElementParameter.getName());
                         if (property != null && property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null) {
                             genericElementParameter.setRepositoryValueUsed(true);
                             genericElementParameter.setReadOnly(true);
@@ -209,7 +226,9 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         }
 
         boolean added = false;
-        for (ElementParameter currentParameter : currentParameters) {
+        for (
+
+        ElementParameter currentParameter : currentParameters) {
             if (EParameterName.UPDATE_COMPONENTS.getName().equals(currentParameter.getName())) {
                 currentParameter.setValue(true);
             }
@@ -445,9 +464,9 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         return true;
     }
 
-    
     /**
      * Sets the wizardPropertyChangeListener.
+     * 
      * @param wizardPropertyChangeListener the wizardPropertyChangeListener to set
      */
     public void setWizardPropertyChangeListener(PropertyChangeListener wizardPropertyChangeListener) {
