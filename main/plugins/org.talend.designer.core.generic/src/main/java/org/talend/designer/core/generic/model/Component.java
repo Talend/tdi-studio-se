@@ -1366,7 +1366,7 @@ public class Component extends AbstractBasicComponent {
             return ElementParameterParser.getEncryptedValue(value);
         }
         if (Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
-            return "\"" + value + "\"";//$NON-NLS-1$ //$NON-NLS-2$
+            return TalendQuoteUtils.addQuotesIfNotExist(value);
         }
         if (GenericTypeUtils.isEnumType(property)) {
             if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {
@@ -1453,16 +1453,6 @@ public class Component extends AbstractBasicComponent {
                         }
 
                     }).object);
-//            ComponentReferenceProperties<?> properties = (ComponentReferenceProperties<?>) node.getComponentProperties()
-//                    .getProperties("connection.referencedComponent");
-//            if (properties != null) {
-//                String name = (String) properties.getValuedProperty("componentInstanceId").getValue();
-//                for (INode curNode : node.getProcess().getGraphicalNodes()) {
-//                    if (curNode.getUniqueName().equals(name)) {
-//                        properties.setReference(curNode.getComponentProperties());
-//                    }
-//                }
-//            }
         }
     }
 
