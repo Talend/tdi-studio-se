@@ -17,10 +17,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
@@ -160,7 +160,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
                 List<JetBean> jetBeans = new ArrayList<JetBean>();
                 List<TemplateUtil> templates = templatesFactory.getTemplates();
-                Set<IComponent> components = componentsFactory.getComponents();
+                Collection<IComponent> components = componentsFactory.readComponents();
                 List<IComponent> genericComponents = new ArrayList<IComponent>();// generic components
                 TimeMeasure.step("initialize Jet Emitters", "getComponents"); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -181,7 +181,7 @@ public final class CodeGeneratorEmittersPoolFactory {
 
                 if (components != null) {
                     ECodePart codePart = ECodePart.MAIN;
-                    for (IComponent component : new ArrayList<IComponent>(components)) {
+                    for (IComponent component : components) {
                         // don't do anything for generic component?
                         if (EComponentType.GENERIC.equals(component.getComponentType())) {
                             genericComponents.add(component);

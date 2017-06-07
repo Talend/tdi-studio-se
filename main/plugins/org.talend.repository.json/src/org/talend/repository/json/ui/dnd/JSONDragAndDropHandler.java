@@ -13,10 +13,10 @@
 package org.talend.repository.json.ui.dnd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
@@ -259,7 +259,7 @@ public class JSONDragAndDropHandler extends AbstractDragAndDropServiceHandler {
             return neededComponents;
         }
         IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-        Set<IComponent> components = service.getComponentsFactory().getComponents();
+        Collection<IComponent> components = service.getComponentsFactory().readComponents();
         JSONFileConnection connection = (JSONFileConnection) ((JSONFileConnectionItem) item).getConnection();
         for (IComponent component : components) {
             if (!connection.isInputModel()) {

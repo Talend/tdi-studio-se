@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -830,6 +831,16 @@ public class ComponentsFactory implements IComponentsFactory {
             init(false);
         }
         return componentList;
+    }
+
+    @Override
+    public Collection<IComponent> readComponents() {
+        Set<IComponent> components = getComponents();
+        Collection<IComponent> readComponents = null;
+        synchronized (components) {
+            readComponents = Arrays.asList(components.toArray(new IComponent[0]));
+        }
+        return readComponents;
     }
 
     @Override
