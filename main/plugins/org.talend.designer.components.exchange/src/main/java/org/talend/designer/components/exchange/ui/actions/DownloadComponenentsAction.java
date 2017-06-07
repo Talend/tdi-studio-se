@@ -326,6 +326,9 @@ public class DownloadComponenentsAction extends Action implements IIntroAction {
 
                                 if (component.needRelaunch()) {
                                     askReboot();
+                                } else {
+                                    MessageDialog.openInformation(DisplayUtils.getDefaultShell(), "Install components",
+                                            component.getInstalledMessages());
                                 }
                             } else {// install failure
                                 MessageDialog.openWarning(DisplayUtils.getDefaultShell(),
