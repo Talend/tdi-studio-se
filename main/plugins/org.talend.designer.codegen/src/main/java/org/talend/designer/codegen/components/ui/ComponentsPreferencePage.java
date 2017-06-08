@@ -432,7 +432,8 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                                                     }
                                                 }
                                                 if (StringUtils.isNotEmpty(component.getFailureMessage())) {
-                                                    MessageDialog.openError(getShell(), "Install components failure",
+                                                    MessageDialog.openError(getShell(), Messages
+                                                            .getString("ComponentsPreferencePage.installComponentsFailure"),//$NON-NLS-1$
                                                             component.getFailureMessage());
                                                 }
                                             } finally {
