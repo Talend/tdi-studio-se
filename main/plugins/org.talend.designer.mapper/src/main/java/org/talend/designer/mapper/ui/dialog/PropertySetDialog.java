@@ -35,6 +35,7 @@ import org.talend.commons.ui.swt.formtools.LabelledDirectoryField;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.mapper.i18n.Messages;
@@ -242,7 +243,11 @@ public class PropertySetDialog extends Dialog {
         currentModel.setDieOnError(dieOnErrorButton.getSelection());
         currentModel.setLookInParallel(lookupInParallelButton.getSelection());
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
-        currentModel.setTempDataDir(directoryField.getText());
+        String tempDir = currentModel.getTempDataDir();
+        if (!ContextParameterUtils.isContainContextParam(tempDir)) {
+            tempDir = directoryField.getText();
+        }
+        currentModel.setTempDataDir(tempDir);
         currentModel.setRowBufferSize(sizeField.getText());
 
         if (dieOnErrorButton.getSelection()) {
