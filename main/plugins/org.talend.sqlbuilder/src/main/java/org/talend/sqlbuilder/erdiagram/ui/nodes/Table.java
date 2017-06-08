@@ -147,6 +147,10 @@ public class Table extends Element {
 
         fireStructureChange(PROP_COLUMNS, this.columns);
     }
+    
+    public MetadataTable getMetadataTable() {
+        return metadataTable;
+    }
 
     public ErDiagram getErDiagram() {
         return erDiagram;

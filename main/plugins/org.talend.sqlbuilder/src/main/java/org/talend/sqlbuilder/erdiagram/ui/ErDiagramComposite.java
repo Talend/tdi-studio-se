@@ -46,6 +46,7 @@ import org.talend.core.repository.utils.DatabaseConnectionParameterUtil;
 import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.cwm.helper.SchemaHelper;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.erdiagram.ui.editor.ErdiagramDiagramEditor;
@@ -243,6 +244,18 @@ public class ErDiagramComposite extends SashForm {
         }
         return dbType;
     }
+    
+    private String getModelSchema(ModelElement element) {
+        DatabaseConnection connection = (DatabaseConnection) ((ConnectionItem) rootNode.getObject().getProperty().getItem())
+                .getConnection();
+        if (ConnectionUtils.isCacheDB(connection.getURL())) {
+            Schema schema = SchemaHelper.getParentSchema(element);
+            if (schema != null) {
+                return schema.getName();
+            }
+        }
+        return null;
+    }
 
     private String getSchema() {
         DatabaseConnection connection = (DatabaseConnection) ((ConnectionItem) rootNode.getObject().getProperty().getItem())
@@ -275,6 +288,12 @@ public class ErDiagramComposite extends SashForm {
                     if (object instanceof TablePart) {
                         TablePart tablePart = (TablePart) object;
                         Table table = (Table) tablePart.getModel();
+                        String modelSchema = getModelSchema(table.getMetadataTable());
+                        if (modelSchema != null) {
+                            schemaPrefix = "".equals(modelSchema) ? "" : modelSchema + "."; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            schemaPrefixWithDoubleQuotes = "".equals(modelSchema) ? "" : "\"" + modelSchema + "\"."; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        }
+                        
                         if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) { //$NON-NLS-1$
                             tables.add(schemaPrefixWithDoubleQuotes + "\"" + table.getElementName() + "\"");
                         } else {
