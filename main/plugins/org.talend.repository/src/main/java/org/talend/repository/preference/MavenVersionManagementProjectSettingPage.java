@@ -544,13 +544,13 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     
     @Override
     public boolean performOk() {
-        if (super.performOk()) {
+        super.performOk();
+        if (projectPreferenceManager != null && projectVersionText != null && globalSnapshotCheckbox != null) {
             projectPreferenceManager.setValue(MavenConstants.PROJECT_VERSION, projectVersionText.getText());
             projectPreferenceManager.setValue(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, useSnapshot());
             projectPreferenceManager.save();
-            return true;
         }
-        return false;
+        return true;
     }
 
     protected void updateItemsVersion() {
