@@ -22,7 +22,7 @@
 	   
 	org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = 
-		new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
+		new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)",null);
 	service_<%=cid%>.getAccountOwner();
 	globalMap.put("service_" + "<%=cid%>",service_<%=cid%>);
 	
