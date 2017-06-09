@@ -931,6 +931,7 @@ public class DataProcess implements IGeneratingProcess {
             curNode.setProcess(graphicalNode.getProcess());
             curNode.setVirtualGenerateNode(true);
             addDataNode(curNode);
+            curNode.setRealGraphicalNode(graphicalNode);
             itemsMap.put(curItem, curNode);
         }
     }

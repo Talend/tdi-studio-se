@@ -87,6 +87,7 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataSchemaType;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -3557,9 +3558,26 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         generatingNodes = (List<INode>) getGeneratingNodes();
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
 
+        generatingNodes = (List<INode>) getRealGraphicalNodesFromVirtrualNodes(generatingNodes);
+        getMatchingNodes(componentName, matchingNodes, generatingNodes);
+
         generatingNodes = (List<INode>) getGraphicalNodes();
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
+
         return matchingNodes;
+    }
+    
+    private List<INode> getRealGraphicalNodesFromVirtrualNodes(List<INode> generatingNodes) {
+        Set<INode> set = new HashSet<INode>();
+        if (generatingNodes != null) {
+            for (INode node : generatingNodes) {
+                if (node.isVirtualGenerateNode() && node instanceof AbstractNode
+                        && ((AbstractNode) node).getRealGraphicalNode() != null) {
+                    set.add(((AbstractNode) node).getRealGraphicalNode());
+                }
+            }
+        }
+        return new ArrayList<INode>(set);
     }
 
     private void getMatchingNodes(String componentName, List<INode> matchingNodes, List<INode> generatingNodes) {
