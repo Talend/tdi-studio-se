@@ -509,7 +509,8 @@ String inputConnName = null;
 	%>
 		Runtime runtime_<%=cid %> = Runtime.getRuntime();
 		final Process ps_<%=cid %>;
-		ps_<%=cid %> = runtime_<%=cid %>.exec((String[])paraList_<%=cid %>.toArray(new String[paraList_<%=cid %>.size()]));
+		final java.util.List<String> runtimeExecCommandArgs_<%=cid %> = routines.system.ProcessUtils.escapeRuntimeExecCommandArgs(paraList_<%=cid %>);
+		ps_<%=cid %> = runtime_<%=cid %>.exec((String[]) runtimeExecCommandArgs_<%=cid %>.toArray(new String[runtimeExecCommandArgs_<%=cid %>.size()]));
 
 		Thread normal_<%=cid %> = new Thread() {
 			public void run() {
