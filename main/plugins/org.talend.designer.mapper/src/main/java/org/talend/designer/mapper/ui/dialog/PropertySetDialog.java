@@ -235,19 +235,19 @@ public class PropertySetDialog extends Dialog {
     @Override
     protected void okPressed() {
         // bug TDI-19070
-        if (directoryField.getText() != null && StringUtils.trimToNull(directoryField.getText()) != null
-                && (!directoryField.getText().startsWith(QUOTATION_MARK) || !directoryField.getText().endsWith(QUOTATION_MARK))) {
-            directoryField.setText(TalendQuoteUtils.addQuotesIfNotExist(directoryField.getText()));
+        String directory = directoryField.getText();
+        if (!ContextParameterUtils.isContainContextParam(directory)) {
+            if (directoryField.getText() != null && StringUtils.trimToNull(directoryField.getText()) != null
+                    && (!directoryField.getText().startsWith(QUOTATION_MARK)
+                            || !directoryField.getText().endsWith(QUOTATION_MARK))) {
+                directory = TalendQuoteUtils.addQuotesIfNotExist(directory);
+            }
         }
         MapperSettingModel currentModel = settingsManager.getCurrnentModel();
         currentModel.setDieOnError(dieOnErrorButton.getSelection());
         currentModel.setLookInParallel(lookupInParallelButton.getSelection());
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
-        String tempDir = currentModel.getTempDataDir();
-        if (!ContextParameterUtils.isContainContextParam(tempDir)) {
-            tempDir = directoryField.getText();
-        }
-        currentModel.setTempDataDir(tempDir);
+        currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
 
         if (dieOnErrorButton.getSelection()) {
