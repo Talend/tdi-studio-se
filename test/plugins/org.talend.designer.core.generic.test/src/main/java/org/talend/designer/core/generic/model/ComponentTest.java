@@ -31,6 +31,7 @@ import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.Component.CodegenPropInfo;
 import org.talend.designer.core.generic.utils.TestComponentDefinition;
@@ -75,17 +76,18 @@ public class ComponentTest {
                 ComponentReferenceProperties crp = (ComponentReferenceProperties) properties;
                 assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
                 assertEquals(Boolean.TRUE, crp.referenceDefinitionName.getTaggedValue(IGenericConstants.ADD_QUOTES));
-                //please see ComponentRefController class, the reference will be set when some ui action happen, so expect the value is null as no any ui action here
+                // please see ComponentRefController class, the reference will be set when some ui action happen, so
+                // expect the value is null as no any ui action here
                 assertNull(crp.getReference());
             }
         }
     }
-    
+
     @Test
     public void testGetCodegenPropInfosWithReferencePropertiesObject() {
         TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
         props.referencePros.setReference(new TestReferencedProperties("reference").init());
-        
+
         List<CodegenPropInfo> propInfos = component.getCodegenPropInfos(props);
         for (CodegenPropInfo propInfo : propInfos) {
             Properties properties = propInfo.props;
@@ -96,6 +98,25 @@ public class ComponentTest {
                 assertNotNull(crp.getReference());
             }
         }
+    }
+
+    @Test
+    public void testGetCodegenValue_quotesTag() {
+        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
+        Property userIdProperty = props.userId;
+
+        // without add quotes tag
+        String codegenValue = component.getCodegenValue(userIdProperty, "id1");
+        assertEquals("id1", codegenValue);
+
+        // with add quotes tag
+        userIdProperty.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+
+        codegenValue = component.getCodegenValue(userIdProperty, "id1");
+        assertEquals("\"id1\"", codegenValue);
+
+        codegenValue = component.getCodegenValue(userIdProperty, "\"id1\"");
+        assertEquals("\"id1\"", codegenValue);
     }
 
 }

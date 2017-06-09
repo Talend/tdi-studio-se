@@ -12,33 +12,33 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
+import static org.talend.repository.utils.MavenVersionUtils.*;
 import org.eclipse.gef.commands.Command;
-import org.talend.core.model.process.IProcess2;
 
 public class MavenDeploymentValueChangeCommand extends Command {
 
-    private IProcess2 process;
+    private Object object;
 
     private String type;
 
     private String newValue;
 
-    public MavenDeploymentValueChangeCommand(IProcess2 process, String type, String value) {
-        this.process = process;
+    public MavenDeploymentValueChangeCommand(Object object, String type, String value) {
+        this.object = object;
         this.type = type;
         newValue = value;
     }
 
     @Override
     public void execute() {
-        if (process != null) {
+        if (object != null) {
             if (newValue == null || newValue.trim().equals("")) { //$NON-NLS-1$
                 // if empty, remove key
-                if (process.getAdditionalProperties().containsKey(type)) {
-                    process.getAdditionalProperties().remove(type);
+                if (containsKey(object, type)) {
+                    remove(object, type);
                 }
             } else {
-                process.getAdditionalProperties().put(type, newValue);
+                put(object, type, newValue);
             }
         }
     }

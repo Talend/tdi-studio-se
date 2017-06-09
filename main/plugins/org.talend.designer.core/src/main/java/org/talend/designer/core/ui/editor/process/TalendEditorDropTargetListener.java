@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.process;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -200,6 +201,7 @@ import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -1921,7 +1923,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(
                     IComponentsService.class);
             String componentProductname = null;
-            Set<IComponent> components = service.getComponentsFactory().getComponents();
+            Collection<IComponent> components = service.getComponentsFactory().readComponents();
             for (IComponent component : components) {
                 componentProductname = component.getRepositoryType();
                 if (componentProductname != null && componentProductname.contains(hbaseName)

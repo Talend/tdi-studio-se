@@ -44,6 +44,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.language.ECodeLanguage;
@@ -579,8 +580,9 @@ public class RunProcessContext {
                                 // catch any Exception or Error to kill the process,
                                 // see bug 0003567
                                 running = true;
-                                ExceptionHandler.process(e);
+                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
                                 kill();
+                                return;
                             } finally {
                                 progressMonitor.done();
                                 // System.out.println("exitValue:" +

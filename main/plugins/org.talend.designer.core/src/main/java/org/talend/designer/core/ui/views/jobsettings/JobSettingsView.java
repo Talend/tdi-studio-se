@@ -28,7 +28,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.talend.commons.exception.ExceptionHandler;
@@ -38,6 +40,7 @@ import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.business.BusinessType;
 import org.talend.core.model.components.ComponentCategory;
@@ -54,6 +57,7 @@ import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
+import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
@@ -126,6 +130,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     private IGITProviderService gitService;
 
     private IGitUIProviderService gitUIService;
+    
+    private IESBService esbService;
 
     public JobSettingsView() {
         tabFactory = new HorizontalTabFactory();
@@ -145,6 +151,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         if (PluginChecker.isGITProviderPluginLoaded()) {
             gitService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
             gitUIService = (IGitUIProviderService) GlobalServiceRegister.getDefault().getService(IGitUIProviderService.class);
+        }
+        
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
         }
     }
 
@@ -355,8 +365,13 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         } else if (obj instanceof IEditorPart) {
             if (CorePlugin.getDefault().getDiagramModelService().isBusinessDiagramEditor((IEditorPart) obj)) {
                 categories = getCategories(obj);
+            } else if (esbService != null && esbService.isWSDLEditor((IWorkbenchPart) obj)) {
+                IEditorInput input = ((IEditorPart) obj).getEditorInput();
+                if (input instanceof RepositoryEditorInput) {
+                    categories = getCategories(obj);
+                    obj = ((RepositoryEditorInput) input).getRepositoryNode().getObject();
+                }
             }
-
         } else {
             BusinessType type = CorePlugin.getDefault().getDiagramModelService().getBusinessModelType(obj);
             if (BusinessType.NOTE.equals(type) || BusinessType.SHAP.equals(type) || BusinessType.CONNECTION.equals(type)) {
@@ -565,6 +580,12 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 if (allowVerchange) {
                     category.add(EComponentCategory.VERSIONS);
                 }
+            } else if (esbService != null && esbService.isWSDLEditor((IWorkbenchPart) obj)) {
+                category.add(EComponentCategory.MAIN);
+                if (allowVerchange) {
+                    category.add(EComponentCategory.VERSIONS);
+                }
+                category.add(EComponentCategory.DEPLOYMENT);
             }
         } else {
             BusinessType type = CorePlugin.getDefault().getDiagramModelService().getBusinessModelType(obj);
@@ -649,6 +670,21 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                         Object type = object.getRepositoryObjectType();
                         setElement(activeEditor, type + SEPARATOR + title, null);
                     }
+                    return;
+                }
+                if (esbService != null && esbService.isWSDLEditor(activeEditor)) {
+                    ERepositoryObjectType type = esbService.getServicesType();
+                    Property serviceProperty = esbService.getWSDLEditorItem(activeEditor).getProperty();
+                    String title = serviceProperty.getLabel() + " " + serviceProperty.getVersion(); //$NON-NLS-1$
+                    Image jobSettingImage = null;
+                    jobSettingImage = getImageFromFramework(type);
+                    if (jobSettingImage == null) {
+                        if (activeEditor.getEditorInput() instanceof RepositoryEditorInput) {
+                            RepositoryEditorInput input = (RepositoryEditorInput) activeEditor.getEditorInput();
+                            jobSettingImage = ImageProvider.getImage(input.getRepositoryNode().getIcon());
+                        }
+                    }
+                    setElement(activeEditor, type + SEPARATOR + title, jobSettingImage);
                     return;
                 }
             }
@@ -756,7 +792,16 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 if (jobSettingImage == null) {
                     jobSettingImage = ImageProvider.getImage(repositoryNode.getIcon());
                 }
-
+                if (esbService != null && esbService.getServicesType() == repositoryObjectType) {
+                    IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+                    if (esbService.isWSDLEditor(editor)) {
+                        Item item = esbService.getWSDLEditorItem(editor);
+                        if (repositoryObject.getId().equals(item.getProperty().getId())) {
+                            setElement(editor, type + SEPARATOR + title, jobSettingImage);
+                            return;
+                        }
+                    }
+                }
                 setElement(repositoryObject, type + SEPARATOR + title, jobSettingImage);
             }
         }

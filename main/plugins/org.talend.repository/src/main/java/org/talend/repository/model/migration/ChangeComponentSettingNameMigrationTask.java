@@ -13,10 +13,10 @@
 package org.talend.repository.model.migration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Set;
 
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.Project;
@@ -40,7 +40,7 @@ public class ChangeComponentSettingNameMigrationTask extends AbstractProjectMigr
     public ExecutionResult execute(Project project) {
         List<ComponentSetting> components = project.getEmfProject().getComponentsSettings();
         List<ComponentSetting> newAdded = new ArrayList<ComponentSetting>();
-        Set<IComponent> componentList = ComponentsFactoryProvider.getInstance().getComponents();
+        Collection<IComponent> componentList = ComponentsFactoryProvider.getInstance().readComponents();
         for (ComponentSetting componentSetting : components) {
             for (IComponent comp : componentList) {
                 if (comp != null && comp.getName().equals(componentSetting.getName())) {

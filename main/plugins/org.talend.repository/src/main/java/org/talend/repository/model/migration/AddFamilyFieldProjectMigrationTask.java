@@ -12,9 +12,9 @@
 // ============================================================================
 package org.talend.repository.model.migration;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -40,6 +40,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
      * 
      * @see org.talend.core.model.migration.IProjectMigrationTask#execute(org.talend.core.model.general.Project)
      */
+    @Override
     public ExecutionResult execute(Project project) {
         boolean needReset = false;
         EList list = project.getEmfProject().getComponentsSettings();
@@ -64,7 +65,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
     private void resetFamily(EList list) {
 
         IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
-        Set<IComponent> components = componentsFactory.getComponents();
+        Collection<IComponent> components = componentsFactory.readComponents();
 
         list.clear();
 
@@ -94,6 +95,7 @@ public class AddFamilyFieldProjectMigrationTask extends AbstractProjectMigration
      * 
      * @see org.talend.core.model.migration.IProjectMigrationTask#getOrder()
      */
+    @Override
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2008, 7, 7, 13, 0, 0);
         return gc.getTime();
