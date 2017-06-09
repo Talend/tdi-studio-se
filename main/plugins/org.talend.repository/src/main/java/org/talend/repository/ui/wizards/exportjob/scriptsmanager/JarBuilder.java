@@ -16,13 +16,11 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,6 +40,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.utils.ZipFileUtils;
+import org.talend.utils.files.FileUtils;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -246,7 +245,7 @@ public class JarBuilder {
                 }
             }
             // First we remove the signature files from the META-INF folder (see TBD-5163 for example)
-            removeJarSignature(tempFolderPath);
+            FileUtils.deleteFiles(new File(tempFolderPath + "/META-INF"), name -> name.endsWith(".RSA") || name.endsWith(".SF")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             // Then we archive
             ZipFileUtils.zip(tempFolderPath, jarFile.getPath(), false);
         } else {
@@ -273,33 +272,6 @@ public class JarBuilder {
             } finally {
                 if (jarOut != null) {
                     jarOut.close();
-                }
-            }
-        }
-    }
-
-    /**
-     * Fat jars are used for Big Data jobs and they contain a merge of all the job dependencies. If one of this
-     * depedency is not correctly signed, the library that will try to run this jar could fail because of a signature
-     * issue. We don't need this signature in our case. Then, we can remove it in order to avoid such a failure.
-     * 
-     * @param folder the folder that contains the content of the fat jar before it's archived.
-     */
-    private void removeJarSignature(String folder) {
-        if (folder != null) {
-            File metaInfFolder = new File(folder + "/META-INF"); //$NON-NLS-1$
-            if (metaInfFolder.exists()) {
-                List<File> filesToRemove = Arrays.asList(metaInfFolder.listFiles(new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(File _dir, String name) {
-                        // All the .RSA and .SF files from the META-INF folder can be removed safely.
-                        return name.endsWith(".RSA") || name.endsWith(".SF"); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-
-                }));
-                for (File fileToRemove : filesToRemove) {
-                    fileToRemove.delete();
                 }
             }
         }
