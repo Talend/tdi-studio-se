@@ -237,9 +237,8 @@ public class PropertySetDialog extends Dialog {
         // bug TDI-19070
         String directory = directoryField.getText();
         if (!ContextParameterUtils.isContainContextParam(directory)) {
-            if (directoryField.getText() != null && StringUtils.trimToNull(directoryField.getText()) != null
-                    && (!directoryField.getText().startsWith(QUOTATION_MARK)
-                            || !directoryField.getText().endsWith(QUOTATION_MARK))) {
+            if (directory != null && StringUtils.trimToNull(directory) != null
+                    && (!directory.startsWith(QUOTATION_MARK) || !directory.endsWith(QUOTATION_MARK))) {
                 directory = TalendQuoteUtils.addQuotesIfNotExist(directory);
             }
         }
