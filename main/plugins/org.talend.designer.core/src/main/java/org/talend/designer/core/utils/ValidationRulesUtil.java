@@ -13,8 +13,8 @@
 package org.talend.designer.core.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.commands.Command;
@@ -251,7 +251,7 @@ public class ValidationRulesUtil {
             }
         }
 
-        Set<IComponent> components = ComponentsFactoryProvider.getInstance().getComponents();
+        Collection<IComponent> components = ComponentsFactoryProvider.getInstance().readComponents();
         List<IComponent> neededComponents = new ArrayList<IComponent>();
 
         EmfComponent emfComponent = null;

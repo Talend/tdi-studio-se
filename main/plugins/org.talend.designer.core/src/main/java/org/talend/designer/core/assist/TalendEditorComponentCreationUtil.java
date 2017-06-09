@@ -1,8 +1,8 @@
 package org.talend.designer.core.assist;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.gef.GraphicalViewer;
@@ -134,7 +134,7 @@ public class TalendEditorComponentCreationUtil {
      */
     private static void readComponentsInCategory(String categoryName, Map<String, IComponent> entries) {
         IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
-        Set<IComponent> allComponents = componentsFactory.getComponents();
+        Collection<IComponent> allComponents = componentsFactory.readComponents();
         for (IComponent component : allComponents) {
             String compType = component.getPaletteType();
             if (!component.isTechnical() && compType != null && categoryName.equals(compType)) {

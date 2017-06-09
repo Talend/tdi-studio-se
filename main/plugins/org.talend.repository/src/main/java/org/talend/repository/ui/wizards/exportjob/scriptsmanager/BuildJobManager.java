@@ -65,6 +65,8 @@ import org.talend.utils.io.FilesUtils;
 public class BuildJobManager {
 
     private static BuildJobManager instance = null;
+    
+    public final static String MAVEN_ERROR_MSG = Messages.getString("BuildJobManager.mavenErrorMessage"); //$NON-NLS-1$
 
     private BuildJobManager() {
     }
@@ -271,9 +273,8 @@ public class BuildJobManager {
                 }
                 FilesUtils.copyFile(jobZipFile, jobFileTarget);
                 TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
-            } else if (jobTargetFile != null) {
-                throw new Exception(
-                        "Job was not built successfully, please check the logs for more details available on the workspace/.Java/lastGenerated.log");
+            } else {
+                throw new Exception(MAVEN_ERROR_MSG);
             }
             if (checkCompilationError) {
                 CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);

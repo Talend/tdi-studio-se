@@ -59,7 +59,7 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
 
 	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=accessToken%>);
 	 com.google.api.services.drive.Drive <%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
-	.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" "+jobName+"/"+jobVersion+" (GPN:Talend)").build();
+	.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
 	
 	globalMap.put("conn_<%=cid%>",  <%=cid%>_client);
 }

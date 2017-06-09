@@ -13,8 +13,8 @@
 package org.talend.designer.core.ui.editor.process;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.eclipse.emf.common.util.EList;
@@ -44,6 +44,7 @@ import org.talend.repository.model.RepositoryNode;
  * @deprecated replaced by RepositoryComponentManager
  */
 
+@Deprecated
 final class TalendDndHelper {
 
     private static final String MAP = "MAP";//$NON-NLS-1$
@@ -89,7 +90,7 @@ final class TalendDndHelper {
             }
         }
 
-        Set<IComponent> components = ComponentsFactoryProvider.getInstance().getComponents();
+        Collection<IComponent> components = ComponentsFactoryProvider.getInstance().readComponents();
 
         EmfComponent emfComponent = null;
         for (IComponent component : components) {

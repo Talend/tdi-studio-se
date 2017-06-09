@@ -314,47 +314,54 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.talend.components.splunk"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.talend.components.jira"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.talend.components.snowflake"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.talend.components.azurestorage"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-                  
+
    <plugin
          id="org.talend.components.netsuite"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
    <plugin
          id="org.talend.components.marketo"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-         
+
+   <plugin
+         id="joda-time"
+         download-size="0"
+         install-size="0"
+         version="2.8.2"
+         unpack="false"/>
+
 </feature>

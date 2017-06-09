@@ -84,7 +84,7 @@ com.google.api.services.drive.Drive <%=cid%>_client;
 
 	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=helper.getStringParam("__ACCESS_TOKEN__")%>);
 	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
-		.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" "+jobName+"/"+jobVersion+" (GPN:Talend)").build();
+		.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
 }
 <%
 		}else {

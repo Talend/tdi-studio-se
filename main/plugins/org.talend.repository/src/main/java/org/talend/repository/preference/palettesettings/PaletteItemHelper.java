@@ -13,8 +13,8 @@
 package org.talend.repository.preference.palettesettings;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.core.runtime.AssertionFailedException;
 import org.talend.core.model.components.ComponentCategory;
@@ -33,7 +33,7 @@ public class PaletteItemHelper {
 
     public static List<IPaletteItem> buildFullPaletteItemList() {
         List<IPaletteItem> paletteItems = new ArrayList<IPaletteItem>();
-        Set<IComponent> components = ComponentsFactoryProvider.getInstance().getComponents();
+        Collection<IComponent> components = ComponentsFactoryProvider.getInstance().readComponents();
         // for family folders
         for (IComponent component : components) {
             if (component.isTechnical() || component.getComponentType() == EComponentType.JOBLET) {

@@ -16,14 +16,14 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.designer.maven.DesignerMavenPlugin;
-import org.talend.repository.utils.MavenVersionUtils;
+import org.talend.designer.maven.utils.PomUtil;
 
 public class MavenVersionManagementProjectSettingPageInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore preferenceStore = DesignerMavenPlugin.getPlugin().getProjectPreferenceManager().getPreferenceStore();
-        preferenceStore.setDefault(MavenConstants.PROJECT_VERSION, MavenVersionUtils.DEFAULT_MAVEN_VERSION);
+        preferenceStore.setDefault(MavenConstants.PROJECT_VERSION, PomUtil.getDefaultMavenVersion());
         preferenceStore.setDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, false);
     }
 

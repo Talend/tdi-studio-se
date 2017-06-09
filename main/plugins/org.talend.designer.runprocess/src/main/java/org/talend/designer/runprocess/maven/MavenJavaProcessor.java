@@ -21,6 +21,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -51,6 +52,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
+import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager;
 
 /**
  * created by ggu on 2 Feb 2015 Detailled comment
@@ -318,7 +320,16 @@ public class MavenJavaProcessor extends JavaProcessor {
     public void build(IProgressMonitor monitor) throws Exception {
         final ITalendProcessJavaProject talendJavaProject = getTalendJavaProject();
         // compile with JDT first in order to make the maven packaging work with a JRE.
-        if (TalendMavenConstants.GOAL_PACKAGE.equals(getGoals())) {
+        boolean isGoalPackage = TalendMavenConstants.GOAL_PACKAGE.equals(getGoals());
+        IFile jobJarFile = null;
+        if (isGoalPackage) {
+            String jobJarName = JavaResourcesHelper.getJobJarName(property.getLabel(), property.getVersion())
+                    + FileExtensions.JAR_FILE_SUFFIX;
+            jobJarFile = talendJavaProject.getTargetFolder().getFile(jobJarName);
+            if (jobJarFile != null && jobJarFile.exists()) {
+                jobJarFile.delete(true, null);
+                jobJarFile.refreshLocal(IResource.DEPTH_ONE, null);
+            }
             talendJavaProject.buildModules(monitor, null, null);
         }
 
@@ -327,6 +338,14 @@ public class MavenJavaProcessor extends JavaProcessor {
         argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-Dmaven.main.skip=true -P !" //$NON-NLS-1$
                 + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY);
         talendJavaProject.buildModules(monitor, null, argumentsMap);
+        if (isGoalPackage) {
+            if (jobJarFile != null) {
+                jobJarFile.refreshLocal(IResource.DEPTH_ONE, null);
+            }
+            if (jobJarFile == null || !jobJarFile.exists()) {
+                throw new Exception(BuildJobManager.MAVEN_ERROR_MSG);
+            }
+        }
     }
 
     protected String getGoals() {

@@ -12,7 +12,14 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings.tabs;
 
+import static org.talend.repository.utils.MavenVersionUtils.containsKey;
+import static org.talend.repository.utils.MavenVersionUtils.get;
+import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
+import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
+import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
@@ -46,6 +53,8 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -57,7 +66,6 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
-import static org.talend.repository.utils.MavenVersionUtils.*;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
@@ -95,6 +103,8 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private boolean isService;
 
+    private boolean isDataServiceJob; // Is ESB SOAP Service Job
+
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
         super(parent, style, widgetFactory, repositoryViewObject);
@@ -105,6 +115,19 @@ public class DeploymentComposite extends AbstractTabComposite {
             process = (Process) repositoryViewObject;
             commandStack = process.getCommandStack();
             defaultVersion = getDefaultVersion(process.getVersion());
+
+            isDataServiceJob = false;
+            // Disable widgests in case of the job is for ESB data service
+            if (!process.getComponentsType().equals(ComponentCategory.CATEGORY_4_CAMEL.getName())) {
+                List<INode> nodes = (List<INode>) process.getGraphicalNodes();
+                for (INode node : nodes) {
+                    if ("tESBProviderRequest".equals(node.getComponent().getName())) {
+                        isDataServiceJob = true;
+                        defaultVersion = "";
+                        break;
+                    }
+                }
+            }
         } else {
             IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
             if (esbService.isWSDLEditor(editor) && esbService.getServicesType() == repositoryViewObject.getRepositoryObjectType()) {
@@ -123,10 +146,11 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void checkReadOnly() {
         try {
             String currentVersion = isService ? serviceItem.getProperty().getVersion() : process.getVersion();
-            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance()
-                    .getLastVersion(isService ? serviceItem.getProperty().getId() : process.getId());
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(
+                    isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
-            if (!currentVersion.equals(latestVersion)) {
+
+            if (!currentVersion.equals(latestVersion) || isDataServiceJob) {
                 groupIdCheckbox.setEnabled(false);
                 groupIdText.setEnabled(false);
                 versionCheckbox.setEnabled(false);
@@ -145,7 +169,16 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void createControl() {
         setLayout(new GridLayout());
         setBackground(getParent().getBackground());
-
+        if (isDataServiceJob) {
+            Composite messageComposite = new Composite(this, SWT.NONE);
+            GridLayout layout = new GridLayout(1, false);
+            layout.horizontalSpacing = 10;
+            layout.verticalSpacing = 10;
+            messageComposite.setLayout(layout);
+            messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            widgetFactory.createLabel(messageComposite,
+                    "SOAP data service cannot be published, deployment setting is \naccording to the defined service.");
+        }
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         layout.horizontalSpacing = 10;
@@ -203,7 +236,7 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void initialize() {
         if (!isAdditionalPropertiesNull(getObject())) {
             // TODO get from PublishPlugin.getDefault().getPreferenceStore();
-            defaultGroupId = "org.example"; // $NON-NLS-1$
+            defaultGroupId = isDataServiceJob ? "" : "org.example"; // $NON-NLS-1$
             if (groupId == null) {
                 groupId = (String) get(getObject(), MavenConstants.NAME_GROUP_ID);
                 if (groupId == null) {
@@ -238,7 +271,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 versionText.setText(defaultVersion);
                 versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$ ;
             }
-            
+
             boolean useSnapshot = containsKey(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
             snapshotCheckbox.setSelection(useSnapshot);
 
@@ -272,7 +305,7 @@ public class DeploymentComposite extends AbstractTabComposite {
     }
 
     private boolean isShowBuildType() {
-        //TODO need to add support for ESB Service.
+        // TODO need to add support for ESB Service.
         if (!PluginChecker.isTIS() || isService) {
             return false;
         }
@@ -317,8 +350,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     } else {
                         currentGroupId = null;
                     }
-                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID,
-                            currentGroupId);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, currentGroupId);
                     getCommandStack().execute(cmd);
                 } else {
                     groupIdText.setBackground(COLOR_RED);
