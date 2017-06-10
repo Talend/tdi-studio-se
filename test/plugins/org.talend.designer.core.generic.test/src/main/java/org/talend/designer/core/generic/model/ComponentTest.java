@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,6 +99,28 @@ public class ComponentTest {
                 assertNotNull(crp.getReference());
             }
         }
+    }
+
+    @Test
+    public void testGetCodegenValue_schemaType_forJson() {
+        String testValue = "{\"type\":\"record\",\"name\":\"STUDENTS\",\"fields\":[{\"name\":\"ID\",\"type\":{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"},\"default\":\"\",\"di.table.comment\":\"\",\"di.prop.FUNCTION_INFO\":\"{\\\"NAME\\\":\\\"sequence\\\",\\\"PARAMETERS\\\":[{\\\"PARAMETER_NAME\\\":\\\"sequence identifier\\\",\\\"PARAMETER_VALUE\\\":\\\"\\\\\\\"s1\\\\\\\" \\\"},{\\\"PARAMETER_NAME\\\":\\\"start value\\\",\\\"PARAMETER_VALUE\\\":\\\"1 \\\"},{\\\"PARAMETER_NAME\\\":\\\"step\\\",\\\"PARAMETER_VALUE\\\":\\\"1 \\\"}],\\\"PARAMETER_CLASS_NAME\\\":\\\"Numeric\\\"}\",\"talend.field.default\":\"\",\"talend.field.dbColumnName\":\"ID\",\"di.column.talendType\":\"id_BigDecimal\",\"talend.field.pattern\":\"\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"ID\",\"di.column.relatedEntity\":\"\"}],\"di.table.name\":\"out1\",\"di.table.label\":\"STUDENTS\"}";
+        String expectedValue = "{\"type\":\"record\",\"name\":\"STUDENTS\",\"fields\":[{\"name\":\"ID\",\"type\":{\"type\":\"string\",\"java-class\":\"java.math.BigDecimal\"},\"default\":\"\",\"di.table.comment\":\"\",\"di.prop.FUNCTION_INFO\":\"{\\\"NAME\\\":\\\"sequence\\\",\\\"PARAMETERS\\\":[{\\\"PARAMETER_NAME\\\":\\\"sequence identifier\\\",\\\"PARAMETER_VALUE\\\":\\\"\\\\\\\"s1\\\\\\\" \\\"},{\\\"PARAMETER_NAME\\\":\\\"start value\\\",\\\"PARAMETER_VALUE\\\":\\\"1 \\\"},{\\\"PARAMETER_NAME\\\":\\\"step\\\",\\\"PARAMETER_VALUE\\\":\\\"1 \\\"}],\\\"PARAMETER_CLASS_NAME\\\":\\\"Numeric\\\"}\",\"talend.field.default\":\"\",\"talend.field.dbColumnName\":\"ID\",\"di.column.talendType\":\"id_BigDecimal\",\"talend.field.pattern\":\"\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"ID\",\"di.column.relatedEntity\":\"\"}],\"di.table.name\":\"out1\",\"di.table.label\":\"STUDENTS\"}";
+        expectedValue = "\"" + StringEscapeUtils.escapeJava(expectedValue) + "\"";
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        Property schemaProperty = props.schema.schema;
+        String codegenValue = component.getCodegenValue(schemaProperty, testValue);
+        assertEquals(expectedValue, codegenValue);
+    }
+
+    @Test
+    public void testGetCodegenValue_schemaType_forJava() {
+        String testValue = "{\"type\":\"record\",\"name\":\"CaseFeed\",\"fields\":[{\"name\":\"Id\",\"type\":\"string\",\"di.table.comment\":\"this is a \n id\",\"talend.field.dbColumnName\":\"Id\",\"di.column.talendType\":\"id_String\",\"talend.field.pattern\":\"\",\"talend.field.length\":\"18\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"Id\",\"di.column.relatedEntity\":\"\"},{\"name\":\"ParentId\",\"type\":\"string\",\"di.table.comment\":\"xx/dd\",\"talend.field.dbColumnName\":\"ParentId\",\"di.column.talendType\":\"id_String\",\"talend.field.pattern\":\"\",\"talend.field.length\":\"18\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"ParentId\",\"di.column.relatedEntity\":\"\"}],\"di.table.name\":\"MAIN\",\"di.table.label\":\"CaseFeed\"}";
+        String expectedValue = "{\"type\":\"record\",\"name\":\"CaseFeed\",\"fields\":[{\"name\":\"Id\",\"type\":\"string\",\"di.table.comment\":\"this is a \n id\",\"talend.field.dbColumnName\":\"Id\",\"di.column.talendType\":\"id_String\",\"talend.field.pattern\":\"\",\"talend.field.length\":\"18\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"Id\",\"di.column.relatedEntity\":\"\"},{\"name\":\"ParentId\",\"type\":\"string\",\"di.table.comment\":\"xx/dd\",\"talend.field.dbColumnName\":\"ParentId\",\"di.column.talendType\":\"id_String\",\"talend.field.pattern\":\"\",\"talend.field.length\":\"18\",\"di.column.relationshipType\":\"\",\"di.table.label\":\"ParentId\",\"di.column.relatedEntity\":\"\"}],\"di.table.name\":\"MAIN\",\"di.table.label\":\"CaseFeed\"}";
+        expectedValue = "\"" + StringEscapeUtils.escapeJava(expectedValue) + "\"";
+        TestProperties props = (TestProperties) new TestProperties("test").init();
+        Property schemaProperty = props.schema.schema;
+        String codegenValue = component.getCodegenValue(schemaProperty, testValue);
+        assertEquals(expectedValue, codegenValue);
     }
 
     @Test

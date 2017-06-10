@@ -53,16 +53,17 @@ public class UnifyPasswordEncryption4ContextMigrationTask extends UnifyPasswordE
                     List<ContextParameterType> paramTypes = type.getContextParameter();
                     if (paramTypes != null) {
                         for (ContextParameterType param : paramTypes) {
-                            try {
-                                String value = param.getValue();
-                                if (value != null && PasswordEncryptUtil.isPasswordType(param.getType())) {
-                                    String rawPassword = PasswordEncryptUtil.decryptPassword(value);
+                            String value = param.getValue();
+                            if (value != null && PasswordEncryptUtil.isPasswordType(param.getType())) {
+                                String rawPassword;
+                                try {
+                                    rawPassword = PasswordEncryptUtil.decryptPassword(value);
                                     param.setRawValue(rawPassword);
                                     modify = true;
+                                } catch (Exception e) {
+                                    param.setRawValue(value);
+                                    modify = true;
                                 }
-                            } catch (Exception e) {
-                                ExceptionHandler.process(e);
-                                return ExecutionResult.FAILURE;
                             }
                         }
                     }
