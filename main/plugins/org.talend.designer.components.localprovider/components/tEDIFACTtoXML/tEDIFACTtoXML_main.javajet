@@ -31,10 +31,17 @@ routines.system.Document d_<%=cid%>=new routines.system.Document();
 java.io.FileInputStream fis_<%=cid%> = new java.io.FileInputStream(<%=filename%>);
 
 try {
-	parser_<%=cid%>.addMappingModels(modelURI_<%=cid%>, new java.net.URI("/"));
+	org.milyn.edisax.registry.DefaultMappingsRegistry mappingsRegistry_<%=cid%> = new org.milyn.edisax.registry.DefaultMappingsRegistry();
+	mappingsRegistry_<%=cid%>.addModelReferences(modelURI_<%=cid%>, new java.net.URI("/"));
+	parser_<%=cid%>.setMappingsRegistry(mappingsRegistry_<%=cid%>);
 	parser_<%=cid%>.setFeature(org.milyn.edisax.EDIParser.FEATURE_IGNORE_NEWLINES, <%="true".equals(ignoreNewLines)?"true":"false"%>);
+	parser_<%=cid%>.setFeature(org.milyn.edisax.EDIParser.FEATURE_IGNORE_EMPTY_NODES, false);
 	org.dom4j.io.SAXContentHandler handler_<%=cid%> = new org.dom4j.io.SAXContentHandler();
-	parser_<%=cid%>.setContentHandler(handler_<%=cid%>);
+	parser_<%=cid%>.setContentHandler(new routines.system.xml.sax.NamespaceFilter(handler_<%=cid%>, new routines.system.xml.sax.NamespaceFilter.Matcher() {
+		public boolean matches(String uri) {
+			return uri.startsWith("urn:org.milyn.edi.");
+		}
+	}));
 	parser_<%=cid%>.parse(new org.xml.sax.InputSource(fis_<%=cid%>));
 
 	d_<%=cid%>.setDocument((org.dom4j.Document)handler_<%=cid%>.getDocument());

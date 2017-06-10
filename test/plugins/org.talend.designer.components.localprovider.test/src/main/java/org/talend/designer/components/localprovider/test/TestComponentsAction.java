@@ -29,8 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.FileLocator;
@@ -109,7 +109,7 @@ public class TestComponentsAction extends Action {
                     // IProgressMonitor monitorWrap = new CodeGeneratorProgressMonitor(monitor);
                     monitor.beginTask("Component Test Running", 1100); //$NON-NLS-1$
                     IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
-                    Set<IComponent> components = componentsFactory.getComponents();
+                    Collection<IComponent> components = componentsFactory.readComponents();
                     monitor.worked(100);
 
                     RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(

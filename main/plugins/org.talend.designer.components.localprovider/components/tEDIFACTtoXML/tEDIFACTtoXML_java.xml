@@ -172,7 +172,7 @@
 				REQUIRED="true" />
 			<IMPORT NAME="d99b-mapping-1.4" MODULE="d99b-mapping-1.4-20101231.032348-1.jar" MVN="mvn:org.talend.libraries/d99b-mapping-1.4-20101231.032348-1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.edifact/lib/d99b-mapping-1.4-20101231.032348-1.jar"
 				REQUIRED="true" />
-			<IMPORT NAME="mylin-smooks" MODULE="milyn-smooks-all-1.4.jar" MVN="mvn:org.talend.libraries/milyn-smooks-all-1.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.edifact/lib/milyn-smooks-all-1.4.jar"
+			<IMPORT NAME="mylin-smooks" MODULE="milyn-smooks-all-1.7.0.jar" MVN="mvn:org.talend.libraries/milyn-smooks-all-1.7.0/6.0.0"
 				REQUIRED="true" />
 			<IMPORT NAME="jaxen" MODULE="jaxen-1.1.1.jar" MVN="mvn:org.talend.libraries/jaxen-1.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.dom4j-jaxen/lib/jaxen-1.1.1.jar" BundleID="org.apache.servicemix.bundles.jaxen"
 				REQUIRED="true" />

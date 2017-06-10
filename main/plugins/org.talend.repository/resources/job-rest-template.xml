@@ -23,6 +23,7 @@
     <!-- CXF Swagger2Feature -->
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
         <property name="basePath" value="${endpoint.originalAddress}"/>
+        <property name="usePathBasedConfig" value="true"/>
         <property name="scan" value="false"/>
         <property name="title" value="${job.name} REST Application"/>
         <property name="description" value="${endpoint.description}"/>

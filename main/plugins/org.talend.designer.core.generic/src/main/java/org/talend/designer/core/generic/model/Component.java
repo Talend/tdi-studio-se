@@ -1375,7 +1375,7 @@ public class Component extends AbstractBasicComponent {
             return ElementParameterParser.getEncryptedValue(value);
         }
         if (Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
-            return "\"" + value + "\"";//$NON-NLS-1$ //$NON-NLS-2$
+            return TalendQuoteUtils.addQuotesIfNotExist(value);
         }
         if (GenericTypeUtils.isEnumType(property)) {
             if (ContextParameterUtils.isContainContextParam(value) || value.indexOf("globalMap.get") > -1) {

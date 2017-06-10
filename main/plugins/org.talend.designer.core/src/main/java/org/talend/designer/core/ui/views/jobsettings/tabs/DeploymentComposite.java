@@ -12,7 +12,14 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings.tabs;
 
+import static org.talend.repository.utils.MavenVersionUtils.containsKey;
+import static org.talend.repository.utils.MavenVersionUtils.get;
+import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
+import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
+import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.gef.commands.Command;
@@ -38,10 +45,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -52,7 +66,6 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.repository.utils.MavenVersionUtils;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
@@ -65,6 +78,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     private Button versionCheckbox;
 
     private Text versionText;
+
+    private Button snapshotCheckbox;
 
     private Label buildTypeLabel;
 
@@ -80,17 +95,48 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private Process process;
 
+    private Item serviceItem;
+
     private CommandStack commandStack;
+
+    private IESBService esbService;
+
+    private boolean isService;
+
+    private boolean isDataServiceJob; // Is ESB SOAP Service Job
 
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
         super(parent, style, widgetFactory, repositoryViewObject);
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+        }
+        if (repositoryViewObject instanceof Process) {
+            process = (Process) repositoryViewObject;
+            commandStack = process.getCommandStack();
+            defaultVersion = getDefaultVersion(process.getVersion());
 
-        assert (repositoryViewObject instanceof Process);
-        process = (Process) repositoryViewObject;
-        commandStack = process.getCommandStack();
-        defaultVersion = MavenVersionUtils.getDefaultVersion(process.getVersion());
-
+            isDataServiceJob = false;
+            // Disable widgests in case of the job is for ESB data service
+            if (!process.getComponentsType().equals(ComponentCategory.CATEGORY_4_CAMEL.getName())) {
+                List<INode> nodes = (List<INode>) process.getGraphicalNodes();
+                for (INode node : nodes) {
+                    if ("tESBProviderRequest".equals(node.getComponent().getName())) {
+                        isDataServiceJob = true;
+                        defaultVersion = "";
+                        break;
+                    }
+                }
+            }
+        } else {
+            IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (esbService.isWSDLEditor(editor) && esbService.getServicesType() == repositoryViewObject.getRepositoryObjectType()) {
+                serviceItem = esbService.getWSDLEditorItem(editor);
+                commandStack = (CommandStack) editor.getAdapter(CommandStack.class);
+                defaultVersion = getDefaultVersion(serviceItem.getProperty().getVersion());
+                isService = true;
+            }
+        }
         createControl();
         initialize();
         addListeners();
@@ -99,14 +145,17 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private void checkReadOnly() {
         try {
-            String currentVersion = process.getVersion();
-            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(process.getId());
+            String currentVersion = isService ? serviceItem.getProperty().getVersion() : process.getVersion();
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(
+                    isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
-            if (!currentVersion.equals(latestVersion)) {
+
+            if (!currentVersion.equals(latestVersion) || isDataServiceJob) {
                 groupIdCheckbox.setEnabled(false);
                 groupIdText.setEnabled(false);
                 versionCheckbox.setEnabled(false);
                 versionText.setEnabled(false);
+                snapshotCheckbox.setEnabled(false);
                 if (buildTypeCombo != null) {
                     buildTypeCombo.getCCombo().setEnabled(false);
                 }
@@ -114,13 +163,22 @@ public class DeploymentComposite extends AbstractTabComposite {
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
         }
-        
+
     }
 
     private void createControl() {
         setLayout(new GridLayout());
         setBackground(getParent().getBackground());
-
+        if (isDataServiceJob) {
+            Composite messageComposite = new Composite(this, SWT.NONE);
+            GridLayout layout = new GridLayout(1, false);
+            layout.horizontalSpacing = 10;
+            layout.verticalSpacing = 10;
+            messageComposite.setLayout(layout);
+            messageComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+            widgetFactory.createLabel(messageComposite,
+                    "SOAP data service cannot be published, deployment setting is \naccording to the defined service.");
+        }
         Composite composite = new Composite(this, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         layout.horizontalSpacing = 10;
@@ -146,6 +204,12 @@ public class DeploymentComposite extends AbstractTabComposite {
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);
 
+        snapshotCheckbox = widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.snapshotLabel"), //$NON-NLS-1$
+                SWT.CHECK);
+        GridData snapshotCheckboxData = new GridData(GridData.FILL_HORIZONTAL);
+        snapshotCheckboxData.horizontalSpan = 2;
+        snapshotCheckbox.setLayoutData(snapshotCheckboxData);
+
         buildTypeLabel = widgetFactory.createLabel(composite, Messages.getString("DeploymentComposite.buildTypeLabel")); //$NON-NLS-1$
         buildTypeLabel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
@@ -170,12 +234,11 @@ public class DeploymentComposite extends AbstractTabComposite {
     }
 
     private void initialize() {
-        Map<Object, Object> processAdditionalProperties = this.process.getAdditionalProperties();
-        if (processAdditionalProperties != null) {
+        if (!isAdditionalPropertiesNull(getObject())) {
             // TODO get from PublishPlugin.getDefault().getPreferenceStore();
-            defaultGroupId = "org.example"; // $NON-NLS-1$
+            defaultGroupId = isDataServiceJob ? "" : "org.example"; // $NON-NLS-1$
             if (groupId == null) {
-                groupId = (String) processAdditionalProperties.get(MavenConstants.NAME_GROUP_ID);
+                groupId = (String) get(getObject(), MavenConstants.NAME_GROUP_ID);
                 if (groupId == null) {
                     groupId = defaultGroupId;
                 }
@@ -191,7 +254,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 groupIdText.setEnabled(false);
             }
             if (version == null) {
-                version = (String) processAdditionalProperties.get(MavenConstants.NAME_USER_VERSION);
+                version = (String) get(getObject(), MavenConstants.NAME_USER_VERSION);
                 if (version == null) {
                     version = defaultVersion;
                 }
@@ -209,6 +272,9 @@ public class DeploymentComposite extends AbstractTabComposite {
                 versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$ ;
             }
 
+            boolean useSnapshot = containsKey(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
+            snapshotCheckbox.setSelection(useSnapshot);
+
             final boolean showBuildType = isShowBuildType();
             final Control buildTypeControl = buildTypeCombo.getControl();
             buildTypeControl.setVisible(showBuildType);
@@ -216,11 +282,11 @@ public class DeploymentComposite extends AbstractTabComposite {
 
             if (showBuildType) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put(IBuildParametes.PROCESS, this.process);
+                parameters.put(getObjectType(), getObject());
                 final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
                 buildTypeCombo.setInput(validBuildTypes);
                 buildTypeControl.setEnabled(true);
-                String buildType = (String) processAdditionalProperties.get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+                String buildType = (String) get(getObject(), TalendProcessArgumentConstant.ARG_BUILD_TYPE);
                 BuildType foundType = null;
                 if (buildType != null) {
                     for (BuildType t : validBuildTypes) {
@@ -239,11 +305,12 @@ public class DeploymentComposite extends AbstractTabComposite {
     }
 
     private boolean isShowBuildType() {
-        if (!PluginChecker.isTIS()) {
+        // TODO need to add support for ESB Service.
+        if (!PluginChecker.isTIS() || isService) {
             return false;
         }
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(IBuildParametes.PROCESS, this.process);
+        parameters.put(getObjectType(), getObject());
         final BuildType[] validBuildTypes = BuildExportManager.getInstance().getValidBuildTypes(parameters);
         if (validBuildTypes != null && validBuildTypes.length > 1) {// TUP-17276
             return true;
@@ -263,7 +330,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     groupIdText.setEnabled(false);
                     groupIdText.setText(defaultGroupId);
                     // remove key, so will be default groupId
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID, null);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, null);
                     getCommandStack().execute(cmd);
                 }
             }
@@ -274,7 +341,7 @@ public class DeploymentComposite extends AbstractTabComposite {
 
             @Override
             public void modifyText(ModifyEvent e) {
-                String currentGroupId =  groupIdText.getText();
+                String currentGroupId = groupIdText.getText();
                 if (currentGroupId != null && !currentGroupId.trim().equals("")) { //$NON-NLS-1$
                     groupIdText.setBackground(getBackground());
                     groupIdText.setToolTipText(""); //$NON-NLS-1$
@@ -283,7 +350,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     } else {
                         currentGroupId = null;
                     }
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_GROUP_ID, currentGroupId);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, currentGroupId);
                     getCommandStack().execute(cmd);
                 } else {
                     groupIdText.setBackground(COLOR_RED);
@@ -303,7 +370,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     versionText.setEnabled(false);
                     versionText.setText(defaultVersion);
                     // remove key, so will be default version
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION, null);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_USER_VERSION, null);
                     getCommandStack().execute(cmd);
                 }
             }
@@ -316,7 +383,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             public void modifyText(ModifyEvent e) {
                 String currentVersion = versionText.getText();
                 if (currentVersion != null && !currentVersion.trim().equals("") //$NON-NLS-1$
-                        && !MavenVersionUtils.isValidMavenVersion(currentVersion)) {
+                        && !isValidMavenVersion(currentVersion, snapshotCheckbox.getSelection())) {
                     versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$
                     versionText.setBackground(COLOR_RED);
                 } else {
@@ -328,9 +395,23 @@ public class DeploymentComposite extends AbstractTabComposite {
                         currentVersion = null;
                     }
                     // if empty, remove it from job, else will set the new value
-                    Command cmd = new MavenDeploymentValueChangeCommand(process, MavenConstants.NAME_USER_VERSION, currentVersion);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_USER_VERSION,
+                            currentVersion);
                     getCommandStack().execute(cmd);
                 }
+            }
+
+        });
+
+        snapshotCheckbox.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // if unchecked then remove key.
+                String useSnapshot = snapshotCheckbox.getSelection() ? String.valueOf(true) : null;
+                Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT,
+                        useSnapshot);
+                getCommandStack().execute(cmd);
             }
 
         });
@@ -343,7 +424,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                 if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
                     final Object elem = ((IStructuredSelection) selection).getFirstElement();
                     if (elem instanceof BuildType) {
-                        Command cmd = new MavenDeploymentValueChangeCommand(process,
+                        Command cmd = new MavenDeploymentValueChangeCommand(getObject(),
                                 TalendProcessArgumentConstant.ARG_BUILD_TYPE, ((BuildType) elem).getName());
                         getCommandStack().execute(cmd);
                     }
@@ -355,6 +436,14 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private CommandStack getCommandStack() {
         return commandStack;
+    }
+
+    private Object getObject() {
+        return isService ? serviceItem.getProperty() : process;
+    }
+
+    private String getObjectType() {
+        return isService ? IBuildParametes.SERVICE : IBuildParametes.PROCESS;
     }
 
 }

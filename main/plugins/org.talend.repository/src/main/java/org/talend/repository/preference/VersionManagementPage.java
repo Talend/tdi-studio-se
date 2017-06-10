@@ -92,6 +92,8 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
 
     private Button versionLatest;
 
+    private Text fixedVersionText;
+
     public VersionManagementPage() {
         super();
         this.noDefaultAndApplyButton();

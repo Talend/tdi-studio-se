@@ -35,6 +35,7 @@ import org.talend.commons.ui.swt.formtools.LabelledDirectoryField;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.mapper.i18n.Messages;
@@ -234,15 +235,18 @@ public class PropertySetDialog extends Dialog {
     @Override
     protected void okPressed() {
         // bug TDI-19070
-        if (directoryField.getText() != null && StringUtils.trimToNull(directoryField.getText()) != null
-                && (!directoryField.getText().startsWith(QUOTATION_MARK) || !directoryField.getText().endsWith(QUOTATION_MARK))) {
-            directoryField.setText(TalendQuoteUtils.addQuotesIfNotExist(directoryField.getText()));
+        String directory = directoryField.getText();
+        if (!ContextParameterUtils.isContainContextParam(directory)) {
+            if (directory != null && StringUtils.trimToNull(directory) != null
+                    && (!directory.startsWith(QUOTATION_MARK) || !directory.endsWith(QUOTATION_MARK))) {
+                directory = TalendQuoteUtils.addQuotesIfNotExist(directory);
+            }
         }
         MapperSettingModel currentModel = settingsManager.getCurrnentModel();
         currentModel.setDieOnError(dieOnErrorButton.getSelection());
         currentModel.setLookInParallel(lookupInParallelButton.getSelection());
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
-        currentModel.setTempDataDir(directoryField.getText());
+        currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
 
         if (dieOnErrorButton.getSelection()) {

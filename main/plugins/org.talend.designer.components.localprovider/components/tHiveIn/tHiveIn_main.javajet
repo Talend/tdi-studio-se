@@ -248,7 +248,7 @@ imports="
 
             org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 
-            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>,jobName+"/"+jobVersion+" (GPN:Talend)",null);
+            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)",null);
             service_<%=cid%>.getAccountOwner();
 
             java.util.regex.Matcher m = org.talend.bigdata.launcher.google.dataproc.DataprocJobUtil.GS_URI_PATTERN.matcher(<%=gsTempDir%>);

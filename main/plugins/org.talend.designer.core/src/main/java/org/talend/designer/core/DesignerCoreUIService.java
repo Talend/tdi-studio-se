@@ -143,8 +143,8 @@ public class DesignerCoreUIService implements IDesignerCoreUIService {
     }
 
     @Override
-    public Command crateMavenDeploymentValueChangeCommand(IProcess2 process, String type, String value) {
-        return new MavenDeploymentValueChangeCommand(process, type, value);
+    public Command createMavenDeploymentValueChangeCommand(Object object, String type, String value) {
+        return new MavenDeploymentValueChangeCommand(object, type, value);
     }
 
     @Override

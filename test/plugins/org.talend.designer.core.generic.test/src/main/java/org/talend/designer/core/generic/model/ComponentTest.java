@@ -123,4 +123,23 @@ public class ComponentTest {
         assertEquals(expectedValue, codegenValue);
     }
 
+    @Test
+    public void testGetCodegenValue_quotesTag() {
+        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
+        Property userIdProperty = props.userId;
+
+        // without add quotes tag
+        String codegenValue = component.getCodegenValue(userIdProperty, "id1");
+        assertEquals("id1", codegenValue);
+
+        // with add quotes tag
+        userIdProperty.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+
+        codegenValue = component.getCodegenValue(userIdProperty, "id1");
+        assertEquals("\"id1\"", codegenValue);
+
+        codegenValue = component.getCodegenValue(userIdProperty, "\"id1\"");
+        assertEquals("\"id1\"", codegenValue);
+    }
+
 }

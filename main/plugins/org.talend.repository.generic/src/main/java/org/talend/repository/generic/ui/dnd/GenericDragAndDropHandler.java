@@ -13,8 +13,8 @@
 package org.talend.repository.generic.ui.dnd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
@@ -56,6 +56,7 @@ import org.talend.repository.generic.internal.service.GenericWizardInternalServi
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.model.RepositoryNode;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 
 /**
@@ -164,7 +165,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return neededComponents;
         }
         IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(IComponentsService.class);
-        Set<IComponent> components = service.getComponentsFactory().getComponents();
+        Collection<IComponent> components = service.getComponentsFactory().readComponents();
         for (IComponent component : components) {
             if (EComponentType.GENERIC.equals(component.getComponentType())) {
                 if (!neededComponents.contains(component) && isValid(seletetedNode, component)) {

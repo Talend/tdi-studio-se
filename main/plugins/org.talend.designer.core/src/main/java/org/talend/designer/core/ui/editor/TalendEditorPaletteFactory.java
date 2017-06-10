@@ -374,7 +374,7 @@ public final class TalendEditorPaletteFactory {
 
     protected static List<IComponent> getRelatedComponents(final IComponentsFactory compFac, String keyword,
             boolean needCheckVisible) {
-        Set<IComponent> componentSet = null;
+        Collection<IComponent> componentSet = null;
         IComponentsHandler componentsHandler = compFac.getComponentsHandler();
         String lowerCasedKeyword = null;
         if (keyword != null) {
@@ -472,7 +472,7 @@ public final class TalendEditorPaletteFactory {
                 }
             }
         } else if (compFac != null) {
-            componentSet = compFac.getComponents();
+            componentSet = compFac.readComponents();
         }
 
         List<IComponent> relatedComponents = null;
@@ -573,14 +573,14 @@ public final class TalendEditorPaletteFactory {
         return canUse;
     }
 
-    protected static void addComponentsByNameFilter(final IComponentsFactory compFac, Set<IComponent> componentSet,
+    protected static void addComponentsByNameFilter(final IComponentsFactory compFac, Collection<IComponent> componentSet,
             String nameFilter) {
         if (compFac == null || componentSet == null) {
             return;
         }
 
         if (nameFilter != null && !nameFilter.trim().isEmpty()) {
-            Set<IComponent> components = compFac.getComponents();
+            Collection<IComponent> components = compFac.readComponents();
             Iterator<IComponent> iter = components.iterator();
             String regex = getFilterRegex(nameFilter);
             Pattern pattern = Pattern.compile(regex);
@@ -614,7 +614,7 @@ public final class TalendEditorPaletteFactory {
         }
     }
 
-    private static void addComponents(Set<IComponent> componentSet, ComponentHit[] hitArray) {
+    private static void addComponents(Collection<IComponent> componentSet, ComponentHit[] hitArray) {
         for (ComponentHit ch : hitArray) {
             componentSet.add(ch.getComponent());
         }

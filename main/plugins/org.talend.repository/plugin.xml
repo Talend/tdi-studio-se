@@ -3002,6 +3002,9 @@
       <initializer
             class="org.talend.repository.preference.initializer.JavaVersionProjectSettingPageInitializer">
       </initializer>
+      <initializer
+            class="org.talend.repository.preference.initializer.MavenVersionManagementProjectSettingPageInitializer">
+      </initializer>
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">

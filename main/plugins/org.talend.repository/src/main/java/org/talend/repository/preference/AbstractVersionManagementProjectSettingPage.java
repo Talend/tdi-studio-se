@@ -95,13 +95,13 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
 
     protected Button fixedVersionButton;
 
-    protected Text fixedVersionText;
-
     protected Button alldependcies;
 
     protected Button subjobs;
 
     protected Button eachVersionButton;
+    
+    protected Button useJobVersionButton;
 
     private Map<IImage, Image> cacheItemImages = new HashMap<IImage, Image>();
 
@@ -495,7 +495,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     }
 
     protected void okPressed() {
-        if (fixedVersionText == null) {
+        if (treeViewer == null) {
             return;
         }
         boolean modified = false;
@@ -512,7 +512,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
             boolean confirm = false;
             if (fixedVersionButton.getSelection()) {
                 confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
-                        Messages.getString("VersionManagementDialog.ConfirmMessage", newVersion)); //$NON-NLS-1$
+                        Messages.getString("VersionManagementDialog.confirmMessage", newVersion)); //$NON-NLS-1$
                 if (confirm && newVersion != null) {
                     // set all items for new version
                     for (ItemVersionObject object : checkedObjects) {
@@ -520,7 +520,13 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                     }
                 }
             } else {
-                ItemsVersionConfirmDialog chanedDialog = new ItemsVersionConfirmDialog(getShell(), checkedObjects);
+                if (useJobVersionButton != null && useJobVersionButton.getSelection()) {
+                    for (ItemVersionObject object : checkedObjects) {
+                        newVersion = getNewVersionWithOption(object);
+                        object.setNewVersion(newVersion);
+                    }
+                }
+                ItemsVersionConfirmDialog chanedDialog = new ItemsVersionConfirmDialog(getShell(), checkedObjects, useJobVersionButton != null);
                 confirm = (chanedDialog.open() == Window.OK);
             }
 
