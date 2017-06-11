@@ -15,6 +15,7 @@ package org.talend.designer.core.generic.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -84,7 +85,7 @@ import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyVa
  */
 public class ComponentsUtils {
 
-    private static List<IComponent> components = null;
+    private static Set<IComponent> components = null;
 
     public static ComponentService getComponentService() {
         ComponentService compService = null;
@@ -120,16 +121,18 @@ public class ComponentsUtils {
         }
         Set<IComponent> componentsList = componentsFactory.getComponents();
         if (components == null) {
-            components = new ArrayList<IComponent>();
+            components = new HashSet<>();
         } else {
             componentsList.removeAll(components);
+            components.clear();
         }
 
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
-            loadComponents(componentsList, componentDefinition);
+            loadComponents(components, componentDefinition);
         }
+        componentsList.addAll(components);
     }
 
     private static void loadComponents(Set<IComponent> componentsList, ComponentDefinition componentDefinition) {
