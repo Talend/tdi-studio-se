@@ -451,6 +451,15 @@
             products="DI"
             type="SQLPATTERNS">
       </repositoryNode>
+      <repositoryNode
+            alias="repository.metadataRulesManagement.alias"
+            isResouce="false"
+            key="repository.metadataRulesManagement"
+            label="%NavigatorContent.rulesManagement"
+            parentNodeType="METADATA"
+            products="DI"
+            type="METADATA_RULES_MANAGEMENT">
+      </repositoryNode>
    </extension>
    <extension
          point="org.talend.repository.items.importexport.handler">
