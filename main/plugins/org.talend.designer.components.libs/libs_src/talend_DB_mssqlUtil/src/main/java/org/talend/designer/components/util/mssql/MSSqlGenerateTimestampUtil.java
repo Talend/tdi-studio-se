@@ -99,6 +99,18 @@ public class MSSqlGenerateTimestampUtil {
             } else if ("datetime".equals(rsmd.getColumnTypeName(index)) || "smalldatetime".equals(rsmd.getColumnTypeName(index))) {
             	columnDBTypeMapping.put(index, JAVA_SQL_DATE);
                 return new java.util.Date(rs.getTimestamp(index).getTime());
+            } else if ("time".equals(rsmd.getColumnTypeName(index))){
+        		columnDBTypeMapping.put(index, STRING_TO_JAVA_SQL_TIME);
+        		return new java.util.Date(rs.getTime(index).getTime());
+            }else if("date".equals(rsmd.getColumnTypeName(index))){
+                columnDBTypeMapping.put(index, STRING_TO_JAVA_SQL_DATE);
+                return new java.util.Date(rs.getDate(index).getTime());
+            }else if("datetimeoffset".equals(rsmd.getColumnTypeName(index))){
+            	columnDBTypeMapping.put(index, DB_TYPE_DATETIMEOFFSET);
+        		return parseDatetimeOffset(rs.getString(index));
+            }else if("datetime2".equals(rsmd.getColumnTypeName(index))){
+            	columnDBTypeMapping.put(index, STRING_TO_JAVA_SQL_TIMESTAMP);
+                return new java.util.Date(rs.getTimestamp(index).getTime());
             }
         }
         return null;
