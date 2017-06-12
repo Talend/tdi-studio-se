@@ -287,7 +287,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                         if (element instanceof Node) {
                                             List<IConnection> listConnection = (List<IConnection>) ((Node) element).getInputs();
                                             for (IConnection con : listConnection) {
-                                                if (con.getName().equals(value)) {
+                                                if (con.getName().equals(value) && con.getMetadataTable() != null) {
                                                     List<IMetadataColumn> columns = con.getMetadataTable().getListColumns();
                                                     columnItems = new String[columns.size()];
                                                     for (int i = 0; i < columns.size(); i++) {

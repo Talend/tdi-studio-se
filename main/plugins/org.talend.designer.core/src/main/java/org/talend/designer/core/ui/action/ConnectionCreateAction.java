@@ -199,7 +199,7 @@ public class ConnectionCreateAction extends SelectionAction {
                         boolean nameUsed = false;
                         for (Connection connec : (List<Connection>) node.getOutgoingConnections()) {
                             if (connec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
-                                if (connec.getMetadataTable().getTableName().equals(table.getTableName())) {
+                                if (connec.getMetadataTable() != null && connec.getMetadataTable().getTableName().equals(table.getTableName())) {
                                     nameUsed = true;
                                 }
                             }

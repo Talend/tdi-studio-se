@@ -1577,16 +1577,18 @@ public class Node extends Element implements IGraphicalNode {
             List<Map<String, String>> vlist = (List<Map<String, String>>) elementParameter.getValue();
 
             IMetadataTable table = conn.getMetadataTable();
-            table.setTableName(conn.getName());
-            String label = table.getTableName();
-            IMetadataTable metadataTable = MetadataToolHelper.getMetadataTableFromNode(target, label);
-            if (metadataTable == null) {
-                table.setLabel(label);
-                target.metadataList.add(table);
-                Map<String, String> map = new HashMap<String, String>();
-                map.put(IEbcdicConstant.FIELD_SCHEMA, label);
-                // map.put(EParameterName.CONNECTION.getName(), conn.getName());
-                vlist.add(map);
+            if (table != null) {
+                table.setTableName(conn.getName());
+                String label = table.getTableName();
+                IMetadataTable metadataTable = MetadataToolHelper.getMetadataTableFromNode(target, label);
+                if (metadataTable == null) {
+                    table.setLabel(label);
+                    target.metadataList.add(table);
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put(IEbcdicConstant.FIELD_SCHEMA, label);
+                    // map.put(EParameterName.CONNECTION.getName(), conn.getName());
+                    vlist.add(map);
+                }
             }
         }
         calculateSubtreeStartAndEnd();
@@ -3432,7 +3434,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                         for (IMetadataTable nodeTable : tables) {
                             if (nodeTable.getTableName() != null && nodeTable.getTableName().equals(schemaName)) {
-                                if (!metadataTable.sameMetadataAs(nodeTable, IMetadataColumn.OPTIONS_NONE)) {
+                                if (metadataTable != null && !metadataTable.sameMetadataAs(nodeTable, IMetadataColumn.OPTIONS_NONE)) {
                                     String errorMessage = Messages.getString("Node.schemaNotSynchronized"); //$NON-NLS-1$
                                     Problems.add(ProblemStatus.ERROR, this, errorMessage);
                                 }

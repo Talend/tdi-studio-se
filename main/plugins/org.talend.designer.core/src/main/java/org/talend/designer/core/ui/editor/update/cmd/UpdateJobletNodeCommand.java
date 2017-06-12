@@ -327,12 +327,14 @@ public class UpdateJobletNodeCommand extends Command {
                         IConnection connection = incomingConnections.get(i);
                         Node source = (Node) connection.getSource();
                         IMetadataTable metadataTable = connection.getMetadataTable();
-                        IMetadataTable newInputMetadataTable = UpdateManagerUtils.getNewInputTableForConnection(
-                                newInputTableList, metadataTable.getAttachedConnector());
-                        if (newInputMetadataTable != null && !metadataTable.sameMetadataAs(newInputMetadataTable)) {
-                            IElementParameter elementParam = source.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
-                            command = new ChangeMetadataCommand(source, elementParam, metadataTable, newInputMetadataTable);
-                            command.execute(Boolean.FALSE);
+                        if (metadataTable != null) {
+                            IMetadataTable newInputMetadataTable = UpdateManagerUtils.getNewInputTableForConnection(
+                                    newInputTableList, metadataTable.getAttachedConnector());
+                            if (newInputMetadataTable != null && !metadataTable.sameMetadataAs(newInputMetadataTable)) {
+                                IElementParameter elementParam = source.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
+                                command = new ChangeMetadataCommand(source, elementParam, metadataTable, newInputMetadataTable);
+                                command.execute(Boolean.FALSE);
+                            }
                         }
                     }
                 } else {

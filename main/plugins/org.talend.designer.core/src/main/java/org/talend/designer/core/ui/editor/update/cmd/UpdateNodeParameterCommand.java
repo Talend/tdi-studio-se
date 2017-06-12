@@ -1016,7 +1016,7 @@ public class UpdateNodeParameterCommand extends Command {
             if (conn.getLineStyle() == EConnectionType.FLOW_MAIN) {
                 IMetadataTable metadataTable = null;
                 for (IMetadataTable table : node.getMetadataList()) {
-                    if (table.getTableName() != null && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
+                    if (table.getTableName() != null && conn.getMetadataTable() != null && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
                         metadataTable = table;
                     }
                 }
