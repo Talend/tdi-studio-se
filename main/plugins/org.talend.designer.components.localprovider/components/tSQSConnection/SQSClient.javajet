@@ -58,10 +58,9 @@
 		}
 		%>
 		com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
+		cc_<%=cid%>.setUserAgent("Talend/6.4.1");
 		<%
-		boolean configClientPresent = false;
 		if(configClient && clientConfiguration.size()>0){
-			configClientPresent = true;
 			boolean setBuffer = false;
 			for(Map<String,String> map :clientConfiguration){
 				String client_parameter = map.get("CLIENT_PARAMETER");
@@ -110,13 +109,8 @@
 				stsBuilder_<%=cid%>.withServiceEndpoint(<%=stsEndpoint%>);
 			<%
 			}
-			
-			if(configClientPresent) {
 			%>
-				stsBuilder_<%=cid%>.withClientConfiguration(cc_<%=cid%>);
-			<%
-			}
-			%>
+			stsBuilder_<%=cid%>.withClientConfiguration(cc_<%=cid%>);
 			
 			credentialsProvider_<%=cid%> = stsBuilder_<%=cid%>.build();
 			

@@ -3,7 +3,10 @@
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/CredentialsProvider.javajet"%>
 	
-	com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient emr_<%=cid%> = new com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient(credentialsProvider_<%=cid%>);
+	com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient emr_<%=cid%> = new com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient(
+		credentialsProvider_<%=cid%>,
+		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent("Talend/6.4.1")
+	);
 	
 	<%
 	if(region!=null && !region.isEmpty() && !"DEFAULT".equalsIgnoreCase(region)){

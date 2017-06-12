@@ -53,7 +53,10 @@
 	        
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/CredentialsProvider.javajet"%>
    	
-	com.amazonaws.services.redshift.AmazonRedshiftClient client_<%=cid%> = new com.amazonaws.services.redshift.AmazonRedshiftClient(credentialsProvider_<%=cid%>);
+	com.amazonaws.services.redshift.AmazonRedshiftClient client_<%=cid%> = new com.amazonaws.services.redshift.AmazonRedshiftClient(
+		credentialsProvider_<%=cid%>,
+		new com.amazonaws.ClientConfiguration().withUserAgent("Talend/6.4.1")
+	);
 
 	<%
 	if(region!=null && !region.isEmpty() && !"DEFAULT".equalsIgnoreCase(region)){
