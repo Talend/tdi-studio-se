@@ -55,7 +55,7 @@
    	
 	com.amazonaws.services.redshift.AmazonRedshiftClient client_<%=cid%> = new com.amazonaws.services.redshift.AmazonRedshiftClient(
 		credentialsProvider_<%=cid%>,
-		new com.amazonaws.ClientConfiguration().withUserAgent("Talend/6.4.1")
+		new com.amazonaws.ClientConfiguration().withUserAgent(routines.system.Constant.TALEND_USER_AGENT)
 	);
 
 	<%

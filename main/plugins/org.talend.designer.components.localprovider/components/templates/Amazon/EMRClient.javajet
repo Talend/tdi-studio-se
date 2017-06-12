@@ -5,7 +5,7 @@
 	
 	com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient emr_<%=cid%> = new com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient(
 		credentialsProvider_<%=cid%>,
-		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent("Talend/6.4.1")
+		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent(routines.system.Constant.TALEND_USER_AGENT)
 	);
 	
 	<%

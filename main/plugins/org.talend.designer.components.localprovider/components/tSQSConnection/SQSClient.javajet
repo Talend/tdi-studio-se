@@ -58,7 +58,7 @@
 		}
 		%>
 		com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
-		cc_<%=cid%>.setUserAgent("Talend/6.4.1");
+		cc_<%=cid%>.setUserAgent(routines.system.Constant.TALEND_USER_AGENT);
 		<%
 		if(configClient && clientConfiguration.size()>0){
 			boolean setBuffer = false;
