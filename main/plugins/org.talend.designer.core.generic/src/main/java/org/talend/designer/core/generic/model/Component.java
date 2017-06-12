@@ -25,6 +25,11 @@ import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.JavaUnicodeEscaper;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -1361,6 +1366,10 @@ public class Component extends AbstractBasicComponent {
         return propsList;
     }
 
+    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(
+            new CharSequenceTranslator[] { new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
+                    new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
+
     public String getCodegenValue(Property property, String value) {
         if (property.isFlag(Property.Flags.ENCRYPT)) {
             return ElementParameterParser.getEncryptedValue(value);
@@ -1383,11 +1392,7 @@ public class Component extends AbstractBasicComponent {
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
-            return "\"" + org.apache.commons.lang3.StringEscapeUtils.escapeJson(value) + "\"";//$NON-NLS-1$ //$NON-NLS-2$
-                                                                                              // //$NON-NLS-3$
-                                                                                              // //$NON-NLS-4$
-                                                                                              // //$NON-NLS-5$
-                                                                                              // //$NON-NLS-6$
+            return "\"" + ESCAPE_SCHEMA.translate(value) + "\"";
         }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";
