@@ -154,15 +154,10 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 if (component instanceof AbstractBasicComponent) {
                     isInitializing = ((AbstractBasicComponent) component).isInitializing();
                 }
-
-                ComponentReferenceProperties<?> refProperties = (ComponentReferenceProperties<?>) properties
-                        .getProperties("connection.referencedComponent"); //$NON-NLS-1$
-                if (refProperties != null && refProperties.getReference() == null) {
-                    try {
-                        GenericConnectionUtil.synRefProperty(refProperties, node.getProcess());
-                    } catch (Exception e) {
-                        ExceptionHandler.process(e);
-                    }
+                try {
+                    GenericConnectionUtil.synRefProperties(properties, node.getProcess());
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
                 }
             }
             parameters = ComponentsUtils.getParametersFromForm(element, isInitializing, section, (ComponentProperties) properties,
@@ -463,7 +458,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
 
     /**
      * Sets the wizardPropertyChangeListener.
-     * 
+     *
      * @param wizardPropertyChangeListener the wizardPropertyChangeListener to set
      */
     public void setWizardPropertyChangeListener(PropertyChangeListener wizardPropertyChangeListener) {
