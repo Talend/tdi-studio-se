@@ -28,7 +28,6 @@ import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.context.ContextUtils;
-import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.QueryUtil;
@@ -229,30 +228,14 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
         if (propertyName.split(":")[1].equals(propertyTypeName)) { //$NON-NLS-1$
             elem.setPropertyValue(propertyName, value);
             if (allowAutoSwitch) {
-                // Update spark mode to YARN_CLIENT if repository
-                if (elem instanceof IProcess) {
-                    if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(((IProcess) elem).getComponentsType())
-                            || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName()
-                                    .equals(((IProcess) elem).getComponentsType())) {
-                        if (EmfComponent.REPOSITORY.equals(value)) {
-                            IElementParameter sparkLocalParam = ((IProcess) elem)
-                                    .getElementParameter(HadoopConstants.SPARK_LOCAL_MODE);
-                            IElementParameter sparkParam = ((IProcess) elem).getElementParameter(HadoopConstants.SPARK_MODE);
-                            if (sparkLocalParam != null && (Boolean) (sparkLocalParam.getValue())) {
-                                sparkLocalParam.setValue(false);
-                            }
-                            if (sparkParam != null && !HadoopConstants.SPARK_MODE_YARN_CLIENT.equals(sparkParam.getValue())) {
-                                sparkParam.setValue(HadoopConstants.SPARK_MODE_YARN_CLIENT);
-                            }
-                        }
-                    }
-                }
+                updateSparkParameters();
                 setOtherProperties();
             }
         } else {
             oldMetadata = (String) elem.getPropertyValue(propertyName);
             elem.setPropertyValue(propertyName, value);
             if (allowAutoSwitch) {
+                updateSparkParameters();
                 setOtherProperties();
             }
         }
@@ -670,6 +653,27 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 IElementParameter regexParameter = ((Node) elem).getElementParameter("PATTERN_REGEX");
                 if (regexParameter != null) {
                     regexParameter.setShow(EmfComponent.BUILTIN.equals(this.value));
+                }
+            }
+        }
+    }
+
+    private void updateSparkParameters() {
+        // Update spark mode to YARN_CLIENT if repository
+        if (elem instanceof IProcess) {
+            if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(((IProcess) elem).getComponentsType())
+                    || ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(((IProcess) elem).getComponentsType())) {
+                IElementParameter propertyParam = elem
+                        .getElementParameter(propertyName.split(":")[0] + ":" + EParameterName.PROPERTY_TYPE.getName());//$NON-NLS-1$//$NON-NLS-2$
+                if (propertyParam != null && EmfComponent.REPOSITORY.equals(String.valueOf(propertyParam.getValue()))) {
+                    IElementParameter sparkLocalParam = ((IProcess) elem).getElementParameter(HadoopConstants.SPARK_LOCAL_MODE);
+                    IElementParameter sparkParam = ((IProcess) elem).getElementParameter(HadoopConstants.SPARK_MODE);
+                    if (sparkLocalParam != null && (Boolean) (sparkLocalParam.getValue())) {
+                        sparkLocalParam.setValue(false);
+                    }
+                    if (sparkParam != null && !HadoopConstants.SPARK_MODE_YARN_CLIENT.equals(sparkParam.getValue())) {
+                        sparkParam.setValue(HadoopConstants.SPARK_MODE_YARN_CLIENT);
+                    }
                 }
             }
         }
