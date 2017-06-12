@@ -254,7 +254,7 @@ public class LoginHelper {
     }
 
     public static boolean isRemoteConnection() {
-        return isRemoteConnection(getConnection());
+        return isRemoteConnection(LoginHelper.getInstance().getCurrentSelectedConnBean());
     }
 
     protected static boolean needRestartForLocal(ConnectionBean curConnection) {
