@@ -74,8 +74,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
      * */
     public static enum JobExportType {
         POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
-        WSWAR(Messages.getString("JavaJobScriptsExportWSWizardPage.WSWAR"), false), //$NON-NLS-1$
-        WSZIP(Messages.getString("JavaJobScriptsExportWSWizardPage.WSZIP"), false), //$NON-NLS-1$
+        WSWAR(Messages.getString("JavaJobScriptsExportWSWizardPage.WSWAR") + " (Deprecated)", false), //$NON-NLS-1$
+        WSZIP(Messages.getString("JavaJobScriptsExportWSWizardPage.WSZIP") + " (Deprecated)", false), //$NON-NLS-1$
         OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false);//$NON-NLS-1$
 
         public final String label;
