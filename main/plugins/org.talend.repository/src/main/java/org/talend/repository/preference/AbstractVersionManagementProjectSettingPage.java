@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
 import org.talend.commons.exception.ExceptionHandler;
@@ -92,6 +91,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected Button removeBtn;
 
     protected Table itemTable;
+    
+    protected Button globalSnapshotCheckbox;
 
     protected Button fixedVersionButton;
 
@@ -517,6 +518,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                     // set all items for new version
                     for (ItemVersionObject object : checkedObjects) {
                         object.setNewVersion(newVersion);
+                        if (globalSnapshotCheckbox != null) {
+                            object.setUseSnapshotNew(globalSnapshotCheckbox.getSelection());
+                        }
                     }
                 }
             } else {
@@ -524,6 +528,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                     for (ItemVersionObject object : checkedObjects) {
                         newVersion = getNewVersionWithOption(object);
                         object.setNewVersion(newVersion);
+                        if (globalSnapshotCheckbox != null) {
+                            object.setUseSnapshotNew(globalSnapshotCheckbox.getSelection());
+                        }
                     }
                 }
                 ItemsVersionConfirmDialog chanedDialog = new ItemsVersionConfirmDialog(getShell(), checkedObjects, useJobVersionButton != null);

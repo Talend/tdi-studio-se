@@ -54,6 +54,10 @@ public class MavenVersionUtilsTest {
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_MR));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_STORM));
         assertTrue(MavenVersionUtils.isVersioningType(ERepositoryObjectType.PROCESS_ROUTE));
+        ERepositoryObjectType serviceType = ERepositoryObjectType.valueOf("SERVICES");
+        if (serviceType != null) {
+            assertTrue(MavenVersionUtils.isVersioningType(serviceType));
+        }
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.TEST_CONTAINER));
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.JOBLET));
         assertFalse(MavenVersionUtils.isVersioningType(ERepositoryObjectType.ROUTINES));

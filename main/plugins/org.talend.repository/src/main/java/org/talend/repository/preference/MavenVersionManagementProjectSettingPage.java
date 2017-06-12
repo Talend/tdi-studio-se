@@ -15,29 +15,25 @@ package org.talend.repository.preference;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
-import org.eclipse.emf.common.util.EMap;
 import org.eclipse.gef.commands.Command;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -49,6 +45,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -62,8 +60,6 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.model.process.IProcess2;
@@ -105,8 +101,12 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     private String appliedFixedVersion;
 
     private Text projectVersionText;
-
-    private Button globalSnapshotCheckbox;
+    
+    private Text newVersionText;
+    
+    private Button useSnapshot;
+    
+    private Button applyDetail;
     
     private ProjectPreferenceManager projectPreferenceManager;
     
@@ -161,6 +161,92 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected void addItemTableViewer(Composite rightComposite) {
+
+        Composite composite = new Composite(rightComposite, SWT.NONE);
+        composite.setLayout(new GridLayout());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
+
+        addItemsOption(composite);
+
+        Composite tableComposite = new Composite(composite, SWT.BORDER);
+        tableComposite.setLayout(new GridLayout(2, false));
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(tableComposite);
+        itemTable = new Table(tableComposite, SWT.MULTI | SWT.BORDER);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(itemTable);
+        itemTable.setHeaderVisible(true);
+        itemTable.setLinesVisible(true);
+        itemTable.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (fixedVersionButton.getSelection()) {
+                    updateFixedVersionSelection();
+                } else if (eachVersionButton.getSelection()) {
+                    updateEachVersionSelection();
+                } else if (useJobVersionButton.getSelection()) {
+                    updateUseJobVersionSelection();
+                }
+            }
+            
+        });
+
+        MenuManager manager = new MenuManager();
+        manager.add(new RemoveAction());
+        Menu menu = manager.createContextMenu(itemTable);
+        itemTable.setMenu(menu);
+        
+        Composite detailComposite = new Composite(tableComposite, SWT.NONE);
+        detailComposite.setLayout(new GridLayout(2, false));
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(detailComposite);
+        Label newVersionLabel = new Label(detailComposite, SWT.NONE);
+        newVersionLabel.setText(Messages.getString("VersionManagementDialog.NewVersion")); //$NON-NLS-1$
+        newVersionText = new Text(detailComposite, SWT.BORDER);
+        newVersionText.setText(appliedFixedVersion);
+        newVersionText.setEnabled(false);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(newVersionText);
+        useSnapshot = new Button(detailComposite, SWT.CHECK);
+        useSnapshot.setText(Messages.getString("VersionManagementDialog.useSnapshot")); //$NON-NLS-1$
+        GridData gridData = new GridData();
+        gridData.horizontalSpan = 2;
+        useSnapshot.setLayoutData(gridData);
+        useSnapshot.setSelection(false);
+        useSnapshot.setVisible(false);
+        
+        applyDetail = new Button(detailComposite, SWT.NONE);
+        applyDetail.setText(Messages.getString("VersionManagementDialog.applyDetail")); //$NON-NLS-1$
+        applyDetail.setVisible(false);
+        createItemTableColumns();
+        
+        newVersionText.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(ModifyEvent e) {
+                String version = newVersionText.getText();
+                if (newVersionText.isEnabled()) {
+                    applyDetail.setEnabled(checkVersionPattern(newVersionText, version));
+                }
+            }
+        });
+        
+        applyDetail.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                for(TableItem tableItem : itemTable.getSelection()) {
+                    ItemVersionObject object = (ItemVersionObject) tableItem.getData();
+                    object.setNewVersion(newVersionText.getText());
+                    object.setUseSnapshotNew(useSnapshot.getSelection());
+                    tableItem.setText(1, newVersionText.getText());
+                }
+                itemTable.layout();
+                checkValid();
+            }
+        });
+        
     }
 
     @Override
@@ -231,8 +317,11 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                applyVersionButton.setEnabled(fixedVersionButton.getSelection());
-                refreshTableItems();
+                if (fixedVersionButton.getSelection()) {
+                    updateFixedVersionSelection();
+                } else {
+                    applyVersionButton.setEnabled(false);
+                }
             }
         });
 
@@ -263,9 +352,13 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             @Override
             public void widgetSelected(SelectionEvent e) {
                 String version = projectVersionText.getText();
-                if (version != null && !"".equals(version.trim())) { //$NON-NLS-1$
+                if (itemTable.getItemCount() > 0 && !StringUtils.isBlank(version)) {
                     appliedFixedVersion = version;
-                    refreshTableItems();
+                    newVersionText.setText(appliedFixedVersion);
+                    for(TableItem tableItem : itemTable.getItems()) {
+                        tableItem.setText(1, appliedFixedVersion);
+                    }
+                    itemTable.layout();
                 }
             }
         });
@@ -282,7 +375,11 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                refreshTableItems();
+                useSnapshot.setVisible(eachVersionButton.getSelection());
+                applyDetail.setVisible(eachVersionButton.getSelection());
+                if (eachVersionButton.getSelection()) {
+                    updateEachVersionSelection();
+                }
             }
         });
 
@@ -290,12 +387,66 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                refreshTableItems();
+                if (useJobVersionButton.getSelection()) {
+                    updateUseJobVersionSelection();
+                    for (TableItem tableItem : itemTable.getItems()) {
+                        ItemVersionObject object = (ItemVersionObject) tableItem.getData();
+                        String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(object.getItem().getProperty().getVersion());
+                        tableItem.setText(1, jobDefaultVersion);
+                    }
+                    itemTable.layout();
+                }
             }
         });
 
     }
 
+    private void updateFixedVersionSelection() {
+        applyVersionButton.setEnabled(true);
+        newVersionText.setEnabled(false);
+        if (itemTable.getSelectionCount() > 0) {
+            newVersionText.setText(appliedFixedVersion);
+        }
+    }
+
+    private void updateUseJobVersionSelection() {
+        newVersionText.setEnabled(false);
+        if (itemTable.getSelectionCount() > 0) {
+            if (itemTable.getSelectionCount() == 1) {
+                ItemVersionObject object = getSelectedTableItem().get(0);
+                String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(object.getItem().getProperty().getVersion());
+                newVersionText.setText(jobDefaultVersion);
+            } else {
+                newVersionText.setText(""); //$NON-NLS-1$
+            }
+        }
+    }
+
+    private void updateEachVersionSelection() {
+        if (itemTable.getSelectionCount() > 0) {
+            newVersionText.setEnabled(true);
+            useSnapshot.setEnabled(true);
+            if (itemTable.getSelectionCount() == 1) {
+                ItemVersionObject object = getSelectedTableItem().get(0);
+                String newVersion = object.getNewVersion();
+                if (newVersion.equals(object.getOldVersion())) {
+                    newVersion = MavenVersionUtils.increaseVersion(newVersion);
+                }
+                newVersionText.setText(newVersion);
+                useSnapshot.setSelection(object.isUseSnapshotNew());
+            } else {
+                newVersionText.setText(""); //$NON-NLS-1$
+                useSnapshot.setSelection(false);
+            }
+        } else {
+            newVersionText.setEnabled(false);
+            useSnapshot.setEnabled(false);
+            applyDetail.setEnabled(false);
+            newVersionText.setText(""); //$NON-NLS-1$
+            useSnapshot.setSelection(false);
+        }
+    }
+    
     @Override
     protected void createItemTableColumns() {
         TableColumn itemColumn = new TableColumn(itemTable, SWT.CENTER);
@@ -305,38 +456,6 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         TableColumn oldVersionColumn = new TableColumn(itemTable, SWT.CENTER);
         oldVersionColumn.setText(Messages.getString("VersionManagementDialog.Version")); //$NON-NLS-1$
         oldVersionColumn.setWidth(100);
-
-        TableColumn versionColumn = new TableColumn(itemTable, SWT.CENTER);
-        versionColumn.setText(Messages.getString("VersionManagementDialog.NewVersion")); //$NON-NLS-1$
-        versionColumn.setWidth(100);
-
-        TableColumn snapshotColumn = new TableColumn(itemTable, SWT.CENTER);
-        snapshotColumn.setText(Messages.getString("VersionManagementDialog.snapshot")); //$NON-NLS-1$
-        snapshotColumn.setWidth(80);
-
-        final TableColumn delColumn = new TableColumn(itemTable, SWT.CENTER);
-        delColumn.setText(""); //$NON-NLS-1$
-        delColumn.setWidth(26);
-        delColumn.setResizable(false);
-
-        versionColumn.addControlListener(new ControlAdapter() {
-
-            @Override
-            public void controlResized(ControlEvent e) {
-                if (eachVersionButton.getSelection()) {
-                    refreshTableItems();
-                }
-            }
-
-        });
-        itemTable.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                checkButtonsState();
-            }
-        });
-
     }
 
     @Override
@@ -361,133 +480,10 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
             }
             tableItem.setImage(itemsImage);
             tableItem.setText(item.getProperty().getLabel());
-            // old version
-            tableItem.setText(1, MavenVersionUtils.getItemMavenVersion(item.getProperty()));
-
-            TableEditor versionEditor = null;
-            final Text text;
-            if (fixedVersionButton.getSelection()) {
-                tableItem.setText(2, appliedFixedVersion);
-                text = null;
-            } else if (useJobVersionButton.getSelection()) {
-                String jobDefaultVersion = MavenVersionUtils.getDefaultVersion(item.getProperty().getVersion());
-                tableItem.setText(2, jobDefaultVersion);
-                text = null;
-            } else {
-                // new version
-                versionEditor = new TableEditor(itemTable);
-
-                Composite versionComposite = new Composite(itemTable, SWT.NONE);
-                GridLayout layout = new GridLayout(1, false);
-                layout.marginHeight = 0;
-                layout.marginWidth = 0;
-                layout.marginLeft = 0;
-                layout.marginRight = 1;
-                versionComposite.setLayout(layout);
-
-                text = new Text(versionComposite, SWT.CENTER | SWT.BORDER);
-
-                GridData data = new GridData(GridData.FILL_BOTH);
-                text.setLayoutData(data);
-                String newVersion = object.getNewVersion();
-                if (newVersion == null || "".equals(newVersion.trim())) { //$NON-NLS-1$
-                    newVersion = appliedFixedVersion;
-                } else if (newVersion.endsWith(MavenConstants.SNAPSHOT)) {
-                    newVersion = newVersion.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
-                }
-                if (newVersion.equals(object.getOldVersion().replace(MavenConstants.SNAPSHOT, ""))) { //$NON-NLS-1$
-                    newVersion = MavenVersionUtils.increaseVersion(newVersion);
-                }
-                object.setNewVersion(newVersion);
-                text.setText(newVersion);
-                checkVersionPattern(text, newVersion);
-
-                versionEditor.minimumWidth = itemTable.getColumn(2).getWidth();
-                versionEditor.setEditor(versionComposite, tableItem, 2);
-            }
-            
-            TableEditor snapshotEditor = new TableEditor(itemTable);
-            final Button snapshotCheckbox = new Button(itemTable, SWT.CHECK);
-            snapshotCheckbox.pack();
-            if (eachVersionButton.getSelection()) {
-                snapshotCheckbox.setSelection(object.getOldVersion().endsWith(MavenConstants.SNAPSHOT));
-                snapshotCheckbox.setEnabled(true);
-            } else {
-                snapshotCheckbox.setSelection(false);
-                snapshotCheckbox.setEnabled(false);
-            }
-            if (text != null) {
-                text.addModifyListener(new ModifyListener() {
-
-                    @Override
-                    public void modifyText(ModifyEvent e) {
-                        String version = text.getText();
-                        checkVersionPattern(text, version);
-                        if (snapshotCheckbox.getSelection()) {
-                            if (!version.endsWith(MavenConstants.SNAPSHOT)) {
-                                version += MavenConstants.SNAPSHOT; 
-                            }
-                        } else {
-                            if (version.endsWith(MavenConstants.SNAPSHOT)) {
-                                version = version.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
-                            }
-                        }
-                        object.setNewVersion(version);
-                        checkValid();
-                    }
-                });
-            }
-            
-            snapshotCheckbox.addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    String version = object.getNewVersion();
-                    if (snapshotCheckbox.getSelection()) {
-                        if (!version.endsWith(MavenConstants.SNAPSHOT)) {
-                            version += MavenConstants.SNAPSHOT;
-                        }
-                    } else {
-                        if (version.endsWith(MavenConstants.SNAPSHOT)) {
-                            version = version.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
-                        }
-                    }
-                    object.setNewVersion(version);
-                }
-                
-            });
-            snapshotEditor.minimumWidth = snapshotCheckbox.getSize().x;
-            snapshotEditor.setEditor(snapshotCheckbox, tableItem, 3);
-            
-            TableEditor delEditor = new TableEditor(itemTable);
-            Label delLabel = new Label(itemTable, SWT.CENTER);
-            delLabel.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            delLabel.setImage(ImageProvider.getImage(EImage.DELETE_ICON));
-            delLabel.setToolTipText(Messages.getString("VersionManagementDialog.DeletedTip")); //$NON-NLS-1$
-            delLabel.pack();
-            delLabel.addMouseListener(new MouseAdapter() {
-
-                @Override
-                public void mouseDown(MouseEvent e) {
-                    checkedObjects.remove(object);
-                    removeTableItem(tableItem);
-                    refreshCheckedTreeView();
-                    checkButtonsState();
-                    checkButtonsState(false);
-                }
-
-            });
-
-            delEditor.minimumWidth = 25;
-            delEditor.horizontalAlignment = SWT.CENTER;
-            delEditor.setEditor(delLabel, tableItem, 4);
-            if (fixedVersionButton.getSelection() || useJobVersionButton.getSelection()) {
-                tableItem.setData(ITEM_EDITOR_KEY, new TableEditor[] { snapshotEditor, delEditor });
-            } else if (versionEditor != null) {
-                tableItem.setData(ITEM_EDITOR_KEY, new TableEditor[] { versionEditor, snapshotEditor, delEditor });
-            }
-            itemTable.setRedraw(true);
+            // version
+            tableItem.setText(1, object.getNewVersion());
         }
+        itemTable.setRedraw(true);
     }
     
     private boolean useSnapshot() {
@@ -512,36 +508,30 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
         setValid(true);
     }
 
-    private void checkVersionPattern(Text text, String version) {
-        if (MavenVersionUtils.isValidMavenVersion(version, useSnapshot())) {
+    private boolean checkVersionPattern(Text text, String version) {
+        boolean isValid = MavenVersionUtils.isValidMavenVersion(version, useSnapshot());
+        if (isValid) {
             text.setBackground(COLOR_WHITE);
             text.setToolTipText(""); //$NON-NLS-1$
         } else {
             text.setBackground(COLOR_RED);
             text.setToolTipText(Messages.getString("VersionManagementDialog.valueWarning")); //$NON-NLS-1$
         }
+        return isValid;
     }
 
     protected String getNewVersionWithOption(ItemVersionObject object) {
         String newVersion;
         if (fixedVersionButton.getSelection()) {
             newVersion = appliedFixedVersion;
-            if (useSnapshot()) {
-                newVersion += MavenConstants.SNAPSHOT;
-            }
         } else if (eachVersionButton.getSelection()) {
             newVersion = object.getNewVersion();
         } else {
             newVersion = MavenVersionUtils.getDefaultVersion(object.getItem().getProperty().getVersion());
-            if (useSnapshot()) {
-                newVersion += MavenConstants.SNAPSHOT;
-            }
         }
         return newVersion;
     }
 
-    
-    
     @Override
     public boolean performOk() {
         super.performOk();
@@ -589,65 +579,58 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                             String id = null;
                             
                             String defaultVersion = null;
-                            boolean useSnapshotDefault = false;
                             IEditorPart editor = editorRef.getEditor(false);
                             if (editor instanceof IMultiPageTalendEditor) {
                                 IProcess2 process = ((IMultiPageTalendEditor) editor).getProcess();
                                 object = process;
                                 id = process.getId();
                                 defaultVersion = process.getProperty().getVersion();
-                                Map<Object, Object> additionalProperties = process.getAdditionalProperties();
-                                if (additionalProperties != null && !additionalProperties.isEmpty()) {
-                                    if (additionalProperties.containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT)) {
-                                        useSnapshotDefault = true;
-                                    }
-                                }
                             } else if (esbService != null && esbService.isWSDLEditor(editor)) {
                                 Item serviceItem = esbService.getWSDLEditorItem(editor);
                                 object = serviceItem.getProperty();
                                 id = serviceItem.getProperty().getId();
                                 defaultVersion = serviceItem.getProperty().getVersion();
-                                EMap additionalProperties = serviceItem.getProperty().getAdditionalProperties();
-                                if (additionalProperties != null && !additionalProperties.isEmpty()) {
-                                    if (additionalProperties.containsKey(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT)) {
-                                        useSnapshotDefault = true;
-                                    }
-                                }
                             }
-                            String version = null;
+                            String newVersion = null;
+                            boolean useSnapshotOld = false;
+                            Boolean useSnapshotNew = null;
                             for (ItemVersionObject itemVersionObject : JobsOpenedInEditor) {
                                 if (itemVersionObject.getItem().getProperty().getId().equals(id)) {
-                                    version = itemVersionObject.getNewVersion();
+                                    newVersion = itemVersionObject.getNewVersion();
+                                    useSnapshotOld = itemVersionObject.isUseSnapshotOld();
+                                    useSnapshotNew = itemVersionObject.isUseSnapshotNew();
                                     break;
                                 }
                             }
-                            if (version != null) {
+                            if (newVersion != null) {
                                 defaultVersion = MavenVersionUtils
                                         .getDefaultVersion(defaultVersion);
-                                if (useSnapshotDefault) {
-                                    defaultVersion += MavenConstants.SNAPSHOT;
-                                }
-                                Boolean useSnapshotNew = null;
-                                if (version.equals(defaultVersion)) {
+                                if (newVersion.equals(defaultVersion)) {
                                     // if default, set null to remove key from property.
-                                    version = null;
-                                } else {
-                                    if (version.endsWith(MavenConstants.SNAPSHOT)) {
-                                        version = version.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
-                                        useSnapshotNew = true;
-                                    }
+                                    newVersion = null;
                                 }
                                 Command command1 = service.createMavenDeploymentValueChangeCommand(object,
-                                        MavenConstants.NAME_USER_VERSION, version);
-                                Command command2 = service.createMavenDeploymentValueChangeCommand(object,
-                                        MavenConstants.NAME_PUBLISH_AS_SNAPSHOT,
-                                        useSnapshotNew == null ? null : Boolean.toString(useSnapshotNew));
+                                        MavenConstants.NAME_USER_VERSION, newVersion);
+                                
+                                Command command2 = null;
+                                if (useSnapshotOld != useSnapshotNew) {
+                                    String useSnapshotStr = null;
+                                    if (!useSnapshotOld && useSnapshotNew) {
+                                        useSnapshotStr = Boolean.toString(Boolean.TRUE);
+                                    }
+                                    command2 = service.createMavenDeploymentValueChangeCommand(object,
+                                            MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, useSnapshotStr);
+                                }
                                 if (object instanceof IGEFProcess) {
                                     service.executeCommand((IGEFProcess) object, command1);
-                                    service.executeCommand((IGEFProcess) object, command2);
+                                    if (command2 != null) {
+                                        service.executeCommand((IGEFProcess) object, command2);
+                                    }
                                 } else if (object instanceof Property) {
                                     esbService.executeCommand(editor, command1);
-                                    esbService.executeCommand(editor, command2);
+                                    if (command2 != null) {
+                                        esbService.executeCommand(editor, command2);
+                                    }
                                 }
                             }
                         }
@@ -668,14 +651,15 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
                         for (ItemVersionObject object : closedJobs) {
                             final Item item = object.getItem();
                             Property itemProperty = item.getProperty();
-                            String newVersion = object.getNewVersion();
-                            String useSnapshot = null;
-                            if (newVersion.endsWith(MavenConstants.SNAPSHOT)) {
-                                useSnapshot = Boolean.toString(Boolean.TRUE);
-                                newVersion = newVersion.replace(MavenConstants.SNAPSHOT, ""); //$NON-NLS-1$
+                            MavenVersionUtils.setItemMavenVersion(itemProperty, object.getNewVersion());
+                            
+                            if (object.isUseSnapshotNew() != object.isUseSnapshotOld()) {
+                                String useSnapshotStr = null;
+                                if (!object.isUseSnapshotOld() && object.isUseSnapshotNew()) {
+                                    useSnapshotStr = Boolean.toString(Boolean.TRUE);
+                                }
+                                MavenVersionUtils.setItemUseSnapshot(itemProperty, useSnapshotStr);
                             }
-                            MavenVersionUtils.setItemMavenVersion(itemProperty, newVersion);
-                            MavenVersionUtils.setItemUseSnapshot(itemProperty, useSnapshot);
                             monitor.subTask(itemProperty.getLabel());
                             FACTORY.save(project, itemProperty);
                             monitor.worked(1);
@@ -721,11 +705,55 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
     @Override
     protected ItemVersionObject createItemVersionObject(RepositoryNode node, Property property) {
         String version = MavenVersionUtils.getItemMavenVersion(property);
-        if (version != null && MavenVersionUtils.isItemUseSnapshot(property)) {
-            version += MavenConstants.SNAPSHOT;
-        }
-        ItemVersionObject object = new ItemVersionObject(property, node, version);
-        return object;
+        boolean useSnapshot = MavenVersionUtils.isItemUseSnapshot(property);
+        return new ItemVersionObject(property, node, version, useSnapshot);
+    }
+    
+    @Override
+    protected void checkButtonsState() {
+        // do nothing.
     }
 
+    @Override
+    protected void checkButtonsState(boolean isEnable) {
+        super.checkButtonsState(isEnable);
+        if (itemTable.getSelectionCount() == 0) {
+            if (eachVersionButton.getSelection()) {
+                newVersionText.setEnabled(false);
+                useSnapshot.setEnabled(false);
+                applyDetail.setEnabled(false);
+            }
+            newVersionText.setText(""); //$NON-NLS-1$
+        }
+    }
+
+    private List<ItemVersionObject> getSelectedTableItem() {
+        List<ItemVersionObject> selectedObjects = new ArrayList<>();
+        if (itemTable.getSelectionCount() > 0) {
+            for (TableItem item : itemTable.getSelection()) {
+                selectedObjects.add((ItemVersionObject) item.getData());
+            }
+        }
+        return selectedObjects;
+    }
+
+    class RemoveAction extends Action {
+
+        public RemoveAction() {
+            this.setText(Messages.getString("VersionManagementDialog.remove")); //$NON-NLS-1$
+        }
+
+        @Override
+        public void run() {
+            if (itemTable.getSelection().length > 0) {
+                for (TableItem tableItem : itemTable.getSelection()) {
+                    checkedObjects.remove((ItemVersionObject) tableItem.getData());
+                    removeTableItem(tableItem);
+                }
+            }
+            refreshCheckedTreeView();
+            checkButtonsState(false);
+        }
+    }
+    
 }
