@@ -207,7 +207,7 @@ public class NewNetsuiteMigrationTask extends NewComponentFrameworkMigrationTask
         GenericTableUtils.setTableValues(searchQueryProps, tableEntries, param);
 
         Property<String> fieldProp = (Property<String>) searchQueryProps.getProperty("field");
-        fieldProp.setPossibleValues(Arrays.asList("type"));
+        fieldProp.setPossibleValues(fieldPropPossibleValues);
 
         Property<String> operatorProp = (Property<String>) searchQueryProps.getProperty("operator");
         List<String> operatorPropPossibleValues = new ArrayList<String>(searchOperatorMapping.values());
