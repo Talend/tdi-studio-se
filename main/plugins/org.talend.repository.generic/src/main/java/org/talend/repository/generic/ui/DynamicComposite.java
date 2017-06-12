@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
@@ -69,6 +69,7 @@ import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
+import org.talend.repository.generic.util.GenericConnectionUtil;
 
 /**
  *
@@ -153,25 +154,21 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 if (component instanceof AbstractBasicComponent) {
                     isInitializing = ((AbstractBasicComponent) component).isInitializing();
                 }
+
+                ComponentReferenceProperties<?> refProperties = (ComponentReferenceProperties<?>) properties
+                        .getProperties("connection.referencedComponent"); //$NON-NLS-1$
+                if (refProperties != null && refProperties.getReference() == null) {
+                    try {
+                        GenericConnectionUtil.synRefProperty(refProperties, node.getProcess());
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
+                    }
+                }
             }
             parameters = ComponentsUtils.getParametersFromForm(element, isInitializing, section, (ComponentProperties) properties,
                     form);
             addUpdateParameterIfNotExist(parameters);
             properties.setValueEvaluator(evaluator);
-            if (element instanceof INode) {
-                ComponentReferenceProperties<?> refProperties = (ComponentReferenceProperties<?>) properties
-                        .getProperties("connection.referencedComponent"); //$NON-NLS-1$
-                if (refProperties != null && refProperties.getReference() == null) {
-                    String refComponentName = (String) properties.getValuedProperty("componentInstanceId").getValue(); //$NON-NLS-1$
-                    if (!StringUtils.isEmpty(refComponentName)) {
-                        for (INode curNode : ((INode) element).getProcess().getGeneratingNodes()) {
-                            if (curNode.getUniqueName().equals(refComponentName)) {
-                                refProperties.setReference(curNode.getComponentProperties());
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         for (

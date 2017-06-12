@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.repository.generic.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -56,4 +60,23 @@ public class GenericConnectionUtil {
         return false;
     }
 
+    public static void synRefProperty(ComponentReferenceProperties<?> refProperties, IProcess process) throws Exception {
+
+        String refCompInstId = null;
+        Property<String> refCompInstIdProp = refProperties.componentInstanceId;
+        if (refCompInstIdProp != null) {
+            refCompInstId = refCompInstIdProp.getValue();
+        }
+        if (refCompInstId != null && StringUtils.isNotEmpty(refCompInstId)) {
+            for (INode curNode : process.getGeneratingNodes()) {
+                if (curNode.getUniqueName().equals(refCompInstId)) {
+                    refProperties.setReference(curNode.getComponentProperties());
+                    break;
+                }
+            }
+        } else {
+            refProperties.setReference(null);
+        }
+
+    }
 }
