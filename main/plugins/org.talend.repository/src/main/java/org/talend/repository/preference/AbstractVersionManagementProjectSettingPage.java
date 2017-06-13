@@ -504,8 +504,21 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         for (ItemVersionObject object : checkedObjects) {
             newVersion = getNewVersionWithOption(object);
             if (!newVersion.equals(object.getOldVersion())) {
-                isApplied = false;
                 modified = true;
+            }
+            if (!modified && globalSnapshotCheckbox != null) {
+                boolean useSnapshotNew;
+                if (eachVersionButton.getSelection()) {
+                    useSnapshotNew = object.isUseSnapshotNew();
+                } else {
+                    useSnapshotNew = globalSnapshotCheckbox.getSelection();
+                }
+                if(object.isUseSnapshotOld() != useSnapshotNew) {
+                    modified = true;
+                }
+            }
+            if (modified) {
+                isApplied = false;
                 break;
             }
         }

@@ -96,8 +96,6 @@ public class MavenVersionManagementProjectSettingPage extends AbstractVersionMan
 
     private Button applyVersionButton;
 
-    private Button eachVersionButton;
-
     private String appliedFixedVersion;
 
     private Text projectVersionText;
