@@ -648,8 +648,10 @@ public class PropertyChangeCommand extends Command {
         if (elementParameters == null) {
             return;
         }
+        if (!testedParam.isShow(elementParameters)) {
+            return;
+        }
         boolean contains = false;
-
         // zli
         for (IElementParameterDefaultValue value : testedParam.getDefaultValues()) {
             if (value.getIfCondition() != null) {
@@ -695,6 +697,7 @@ public class PropertyChangeCommand extends Command {
                         if (isValid) {
                             int index = ArrayUtils.indexOf(testedParam.getListItemsShowIf(), condition);
                             testedParam.setValue(testedParam.getListItemsValue()[index]);
+                            isCurrentComboValid = true;
                             break;
                         }
                     }

@@ -175,6 +175,7 @@ import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
+import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -1354,6 +1355,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         }
+
+        for (IElementParameter param : elemParam.getElementParameters()) {
+            UpdateParameterUtils.setDefaultValues(param, elemParam);
+        }
+
     }
 
     private void loadElementParameters(Element elemParam, ElementParameterType pType, IElementParameter param, String key,
@@ -3558,7 +3564,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         generatingNodes = (List<INode>) getGeneratingNodes();
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
 
-        generatingNodes = (List<INode>) getRealGraphicalNodesFromVirtrualNodes(generatingNodes);
+        generatingNodes = getRealGraphicalNodesFromVirtrualNodes(generatingNodes);
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
 
         generatingNodes = (List<INode>) getGraphicalNodes();

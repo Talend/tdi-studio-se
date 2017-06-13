@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.runtime.xml.XmlUtil;
@@ -28,7 +27,6 @@ import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.context.ContextUtils;
-import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.QueryUtil;
@@ -52,7 +50,6 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
-import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -67,7 +64,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
-import org.talend.designer.core.model.components.Expression;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -77,6 +73,7 @@ import org.talend.designer.core.ui.views.jobsettings.JobSettings;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.SAPParametersUtils;
+import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.UpdateRepositoryUtils;
 
@@ -642,7 +639,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                     }
                 }
             }
-            setDefaultValues(curParam, elem);
+            UpdateParameterUtils.setDefaultValues(curParam, elem);
         }
 
         if (elem instanceof Node) {
@@ -1200,94 +1197,5 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
     public void setTable(IMetadataTable table) {
         this.table = table;
-    }
-
-    /**
-     * Reset the values to default only for combo boxes, if the values set are not valid.<br>
-     * This avoids to have some invalid setup after drag&drop / setup a component from repository.
-     *
-     * @param currentParam Current parameter that has been modified in the interface
-     * @param testedParam Tested parameter, to know if there is a link for the default values between this parameter and
-     * the current.
-     */
-    private void setDefaultValues(IElementParameter testedParam, IElement referenceNode) {
-        List<? extends IElementParameter> elementParameters = referenceNode.getElementParameters();
-        if (elementParameters == null) {
-            return;
-        }
-        // if not a combo box or if this parameter is linked to repository, just skip
-        if (!testedParam.getFieldType().equals(EParameterFieldType.CLOSED_LIST) || testedParam.getRepositoryValue() != null) {
-            return;
-        }
-        boolean contains = false;
-
-        for (IElementParameter currentParam : elementParameters) {
-            for (IElementParameterDefaultValue value : testedParam.getDefaultValues()) {
-                if (value.getIfCondition() != null) {
-                    if (value.getIfCondition().contains(currentParam.getName())) {
-                        contains = true;
-                        break;
-                    }
-                }
-                if (value.getNotIfCondition() != null) {
-                    if (value.getNotIfCondition().contains(currentParam.getName())) {
-                        contains = true;
-                        break;
-                    }
-                }
-            }
-            if (contains) {
-                // check if current parameter for combo is valid for new parameters value
-                // if not, it will try to choose another value from combo box list.
-                boolean isCurrentComboValid = true;
-                if (testedParam.getListItemsShowIf() != null || testedParam.getListItemsNotShowIf() != null) {
-                    String value = (String) testedParam.getValue();
-                    int index = ArrayUtils.indexOf(testedParam.getListItemsValue(), value);
-                    // TUP-671:if find this testParam's value,just do show if
-                    if (index != -1) {
-                        if (testedParam.getListItemsShowIf() != null) {
-                            String conditionShowIf = testedParam.getListItemsShowIf()[index];
-                            if (conditionShowIf != null) {
-                                isCurrentComboValid = Expression.evaluate(conditionShowIf, elementParameters);
-                            }
-                        }
-                        if (testedParam.getListItemsNotShowIf() != null) {
-                            String conditionNotShowIf = testedParam.getListItemsNotShowIf()[index];
-                            if (conditionNotShowIf != null) {
-                                isCurrentComboValid = !Expression.evaluate(conditionNotShowIf, elementParameters);
-                            }
-                        }
-                    }
-                }
-                if (!isCurrentComboValid && testedParam.getListItemsShowIf() != null) {
-                    for (String condition : testedParam.getListItemsShowIf()) {
-                        if (condition != null && condition.contains(currentParam.getName())) {
-                            boolean isValid = Expression.evaluate(condition, elementParameters);
-                            if (isValid) {
-                                int index = ArrayUtils.indexOf(testedParam.getListItemsShowIf(), condition);
-                                testedParam.setValue(testedParam.getListItemsValue()[index]);
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (!isCurrentComboValid && !contains && testedParam.getListItemsNotShowIf() != null) {
-                    for (String condition : testedParam.getListItemsNotShowIf()) {
-                        if (condition != null && condition.contains(currentParam.getName())) {
-                            boolean isValid = !Expression.evaluate(condition, elementParameters);
-                            if (isValid) {
-                                int index = ArrayUtils.indexOf(testedParam.getListItemsNotShowIf(), condition);
-                                testedParam.setValue(testedParam.getListItemsValue()[index]);
-                                break;
-                            }
-                        } else if (condition == null) {
-                            int index = ArrayUtils.indexOf(testedParam.getListItemsNotShowIf(), condition);
-                            testedParam.setValue(testedParam.getListItemsValue()[index]);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
     }
 }
