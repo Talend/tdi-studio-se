@@ -42,6 +42,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -66,7 +67,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
  * created by ycbai on 2015年9月24日 Detailled comment
  *
  */
-public class GenericElementParameter extends ElementParameter {
+public class GenericElementParameter extends ElementParameter implements IGenericElementParameter {
 
     private ComponentProperties rootProperties;
 
@@ -579,6 +580,7 @@ public class GenericElementParameter extends ElementParameter {
         }
     }
 
+    @Override
     public void setAskPropagate(Boolean askPropagate) {
         this.askPropagate = askPropagate;
     }
