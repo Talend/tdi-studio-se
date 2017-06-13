@@ -64,7 +64,7 @@ imports="
 				}
 			%>
 		    }
-		    url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
+		    url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
 		<%
 		}
 		
