@@ -3083,6 +3083,9 @@
             class="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             id="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             title="%projectSetting.versioning">
+         <tester
+               class="org.talend.repository.preference.MavenVersionManagementProjectSettingPageTester">
+         </tester>
       </page>
       <page
             category="projectsetting.Build"

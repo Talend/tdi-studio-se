@@ -91,6 +91,14 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
         return false;
     }
 
+    public static boolean isExtensionProcess(IProcess process, String pid) {
+        AbstractProcessProvider findProcessProvider = findProcessProviderFromPID(pid);
+        if (findProcessProvider != null) {
+            return findProcessProvider.isExtensionProcess(process);
+        }
+        return false;
+    }
+
     /**
      * DOC qzhang Comment method "openNewProcessEditor".
      */
@@ -101,7 +109,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
     public void loadComponentsFromExtensionPoint() {
         // do nothing.
     }
-    
+
     public void loadComponentsFromExtensionPoint(ERepositoryObjectType type) {
         // do nothing.
     }
@@ -120,7 +128,7 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
             processProvider.loadComponentsFromExtensionPoint();
         }
     }
-    
+
     /**
      * DOC hwang Comment method "loadComponentsFromProviders".
      * 
@@ -128,9 +136,9 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
      */
     public static void loadComponentsFromProviders(ERepositoryObjectType type) {
         for (AbstractProcessProvider processProvider : findAllProcessProviders()) {
-            if(type == null){
+            if (type == null) {
                 processProvider.loadComponentsFromExtensionPoint();
-            }else{
+            } else {
                 processProvider.loadComponentsFromExtensionPoint(type);
             }
         }

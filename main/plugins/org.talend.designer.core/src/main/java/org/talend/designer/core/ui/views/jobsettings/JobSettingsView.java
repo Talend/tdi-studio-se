@@ -44,6 +44,7 @@ import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.business.BusinessType;
 import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IProcess;
@@ -130,7 +131,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     private IGITProviderService gitService;
 
     private IGitUIProviderService gitUIService;
-    
+
     private IESBService esbService;
 
     public JobSettingsView() {
@@ -152,7 +153,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             gitService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
             gitUIService = (IGitUIProviderService) GlobalServiceRegister.getDefault().getService(IGitUIProviderService.class);
         }
-        
+
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
             esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
         }
@@ -443,7 +444,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.eclipse.ui.part.ViewPart#setPartName(java.lang.String)
      */
     @Override
@@ -505,12 +506,48 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         }
         tabFactory.setTitle(title, icon);
         super.setTitleImage(icon);
-        if (gitService!=null && gitService.isProjectInGitMode()) {
+        if (gitService != null && gitService.isProjectInGitMode()) {
             return;
         }
 
         // This invocation below will bring in refresh issue for git.
         super.setPartName(viewName);
+    }
+
+    private boolean enableDeployment(Object obj) {
+        if (!PluginChecker.isTIS()) {
+            return false;
+        }
+        if (obj instanceof Process) {
+            Process process = (Process) obj;
+            // joblet
+            if (AbstractProcessProvider.isExtensionProcess(process, IComponent.JOBLET_PID)) {
+                return false;
+            }
+            // spark joblet
+            if (AbstractProcessProvider.isExtensionProcess(process, IComponent.SPARK_JOBLET_PID)) {
+                return false;
+            }
+            // spark streaming joblet
+            if (AbstractProcessProvider.isExtensionProcess(process, IComponent.SPARK_JOBLET_STREAMING_PID)) {
+                return false;
+            }
+            // routelet
+            if (ERepositoryObjectType.PROCESS_ROUTELET != null && ERepositoryObjectType.PROCESS_ROUTELET
+                    .equals(ERepositoryObjectType.getItemType(process.getProperty().getItem()))) {
+                return false;
+            }
+            // test case
+            if (ProcessUtils.isTestContainer(process)) {
+                return false;
+            }
+            return true;
+        } else if (obj instanceof IWorkbenchPart) {
+            if (esbService != null && esbService.isWSDLEditor((IWorkbenchPart) obj)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -534,8 +571,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             if (allowVerchange) {
                 category.add(EComponentCategory.VERSIONS);
             }
-            if (!isJoblet && !ProcessUtils.isTestContainer(process) && ERepositoryObjectType
-                    .getItemType(process.getProperty().getItem()) != ERepositoryObjectType.PROCESS_ROUTELET) {
+            if (enableDeployment(obj)) {
                 category.add(EComponentCategory.DEPLOYMENT);
             }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {
@@ -585,7 +621,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 if (allowVerchange) {
                     category.add(EComponentCategory.VERSIONS);
                 }
-                category.add(EComponentCategory.DEPLOYMENT);
+                if (enableDeployment(obj)) {
+                    category.add(EComponentCategory.DEPLOYMENT);
+                }
             }
         } else {
             BusinessType type = CorePlugin.getDefault().getDiagramModelService().getBusinessModelType(obj);
@@ -714,7 +752,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.eclipse.ui.part.WorkbenchPart#dispose()
      */
     @Override
@@ -731,7 +769,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.
      * SelectionChangedEvent )
      */
@@ -835,7 +873,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.designer.core.ui.views.properties.IJobSettingsView#getSelection()
      */
     @Override
@@ -865,7 +903,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.designer.core.ui.views.properties.IJobSettingsView#refreshCurrentViewTab()
      */
     @Override
