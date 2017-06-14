@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
@@ -92,6 +93,10 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
                 } else {
                     paramType.setValue(String.valueOf(batchSizeValue));
                 }
+            }
+
+            if ("LEAD_KEYVALUES".equals(paramName)) {
+                paramType.setValue(TalendQuoteUtils.addQuotesIfNotExist(String.valueOf(value)));
             }
         }
         return paramType;
