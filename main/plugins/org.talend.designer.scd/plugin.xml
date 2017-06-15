@@ -9,4 +9,11 @@
    <extension point="org.eclipse.help.contexts">
      <contexts file="contexts.xml"/> 
    </extension>
+   <extension
+         point="org.talend.core.runtime.service">
+      <Service
+            class="org.talend.designer.scd.ScdComponentService"
+            serviceId="IScdComponentService">
+      </Service>
+   </extension>
 </plugin>
