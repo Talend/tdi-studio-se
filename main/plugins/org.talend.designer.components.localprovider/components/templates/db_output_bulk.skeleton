@@ -2656,6 +2656,27 @@ public class CLASS {
             return true;
         }
         
+        protected String generateSetBooleanForNullableKeyStmt(String dynCol,Column column, int index, String incomingConnName, String cid,
+                int actionType) {
+            String dynamicIndex=""+index;
+            if(dynCol!=null){
+                dynamicIndex = incomingConnName+"."+dynCol+".getColumnCount()+"+index;
+            }
+            String prefix = null;
+            if (actionType == NORMAL_TYPE) {
+                prefix = "pstmt_";
+            } else if (actionType == INSERT_TYPE) {
+                prefix = "pstmtInsert_";
+            } else if (actionType == UPDATE_TYPE) {
+                prefix = "pstmtUpdate_";
+            }
+            StringBuilder setStmt = new StringBuilder();
+
+            setStmt.append(prefix + cid + ".setInt(" + dynamicIndex + ", ((" + incomingConnName + "." + column.getName()+"==null) "
+                    +"|| (" + incomingConnName + "." + column.getName()+".equals(\"\")))?1:0);\r\n");
+            return setStmt.toString();
+        }
+
         public void whereStmtSupportNull(StringBuilder updateWhereStmt, Column column) {
             boolean whereSupportNull = false;
             String columnName = column.getColumnName();
