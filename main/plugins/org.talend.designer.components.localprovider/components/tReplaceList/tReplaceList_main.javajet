@@ -93,11 +93,11 @@ if (metadatas != null && metadatas.size() > 0) {
 <%
 							}else if("BigDecimal".equals(typeToGenerate)){
 %>
-								<%=main%>.<%=columnname%> = new <%=typeToGenerate%>(inputFlow_<%=cid%>_<%=columnname%>);
+								<%=main%>.<%=columnname%> = new BigDecimal(inputFlow_<%=cid%>_<%=columnname%>);
 <%
 							}else if("Character".equals(typeToGenerate)){
 %>
-								<%=main%>.<%=columnname%> = new <%=typeToGenerate%>(inputFlow_<%=cid%>_<%=columnname%>.toCharArray()[0]);
+								<%=main%>.<%=columnname%> = new Character(inputFlow_<%=cid%>_<%=columnname%>.toCharArray()[0]);
 <%
 							}else{
 %>
