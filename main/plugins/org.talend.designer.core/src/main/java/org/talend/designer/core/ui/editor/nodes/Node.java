@@ -3345,7 +3345,8 @@ public class Node extends Element implements IGraphicalNode {
 
         // check not startable components not linked
         if (getComponentProperties() == null) {
-            if ((getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
+            if (getConnectorFromType(EConnectionType.FLOW_MAIN) != null 
+                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
                     && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
                 if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                         && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
