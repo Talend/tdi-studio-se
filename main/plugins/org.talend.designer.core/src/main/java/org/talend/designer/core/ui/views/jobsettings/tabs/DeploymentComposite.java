@@ -130,7 +130,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             }
         } else {
             IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-            if (esbService.isWSDLEditor(editor) && esbService.getServicesType() == repositoryViewObject.getRepositoryObjectType()) {
+            if (esbService != null && esbService.isWSDLEditor(editor)) {
                 serviceItem = esbService.getWSDLEditorItem(editor);
                 commandStack = (CommandStack) editor.getAdapter(CommandStack.class);
                 defaultVersion = getDefaultVersion(serviceItem.getProperty().getVersion());
