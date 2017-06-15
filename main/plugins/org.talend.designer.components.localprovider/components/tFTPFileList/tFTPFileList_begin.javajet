@@ -225,7 +225,11 @@ if (sftp) {// *** sftp *** //
       continue;
     }
     String currentFileName_<%=cid%> = sftpFile_<%=cid %>; 
-    String currentFilePath_<%=cid%> = remotedir_<%=cid %> + "/" + sftpFile_<%=cid %>;
+    String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
+	if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
+		currentFilePath_<%=cid%> += "/";
+	}
+	currentFilePath_<%=cid%> += sftpFile_<%=cid %>;
 	<%if(isLog4jEnabled){%>
 		log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
 	<%}%> 
@@ -315,7 +319,11 @@ if (sftp) {// *** sftp *** //
 	<%}%> 
 	while (++i_<%=cid %> < fileListTemp_<%=cid %>.size()) {
 	    String currentFileName_<%=cid%> = fileListTemp_<%=cid %>.get(i_<%=cid %>); 
-	    String currentFilePath_<%=cid%> = remotedir_<%=cid %> + "/" + fileListTemp_<%=cid %>.get(i_<%=cid %>);
+	    String currentFilePath_<%=cid%> = remotedir_<%=cid %>;
+		if(!remotedir_<%=cid%>.endsWith("/")&&!remotedir_<%=cid%>.endsWith("\\")){
+			currentFilePath_<%=cid%> += "/";
+		}
+		currentFilePath_<%=cid%> += fileListTemp_<%=cid%>.get(i_<%=cid%>);
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - List file : '" + currentFilePath_<%=cid%> + "' .");
 		<%}%> 
