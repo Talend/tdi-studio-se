@@ -171,9 +171,6 @@ org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.ex
 <%     if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
 <%     } %>
-<%     if (fileOptColumnEnclosure != null && fileOptColumnEnclosure.trim().isEmpty() == false) { %>
-<%=cid%>.setFileOptColumnEnclosure(<%=fileOptColumnEnclosure%>);
-<%     } %>
 <%     if (fileOptColumnSeparator != null && fileOptColumnSeparator.trim().isEmpty() == false) { %>
 <%=cid%>.setFileOptColumnSeparator(<%=fileOptColumnSeparator%>);
 <%     } %>
