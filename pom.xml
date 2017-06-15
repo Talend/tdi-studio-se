@@ -159,6 +159,7 @@
 		<module>test/plugins/org.talend.designer.core.generic.test</module>
 		<module>test/plugins/org.talend.repository.view.di.test</module>
 		<module>test/plugins/org.talend.designer.webservice.test</module>
+		<module>test/plugins/org.talend.designer.scd.test</module>
 	</modules>
 	<build>
 		<plugins>

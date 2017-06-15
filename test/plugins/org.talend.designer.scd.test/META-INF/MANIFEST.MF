@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: org.talend.designer.scd.test
+Bundle-Version: 6.4.1.qualifier
+Fragment-Host: org.talend.designer.scd
+Require-Bundle: org.talend.testutils
