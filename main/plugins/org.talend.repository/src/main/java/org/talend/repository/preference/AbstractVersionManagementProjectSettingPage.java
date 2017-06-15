@@ -491,13 +491,12 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
 
     @Override
     public boolean performOk() {
-        okPressed();
-        return super.performOk();
+        return okPressed();
     }
 
-    protected void okPressed() {
+    protected boolean okPressed() {
         if (treeViewer == null) {
-            return;
+            return true;
         }
         boolean modified = false;
         String newVersion = null;
@@ -522,8 +521,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 break;
             }
         }
+        boolean confirm = false;
         if (modified) {
-            boolean confirm = false;
             if (fixedVersionButton.getSelection()) {
                 confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
                         Messages.getString("VersionManagementDialog.confirmMessage", newVersion)); //$NON-NLS-1$
@@ -559,6 +558,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                         Messages.getString("VersionManagementDialog.WarningMessages")); //$NON-NLS-1$
             }
         }
+        return confirm;
 
     }
 
