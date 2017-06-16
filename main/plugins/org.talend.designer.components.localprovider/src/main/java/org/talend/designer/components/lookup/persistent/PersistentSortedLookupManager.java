@@ -55,10 +55,10 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
         implements IPersistentLookupManager<B>, Cloneable {
 
     /**
-     * 
      * DOC amaumont PersistentSortedLookupManager class global comment. Detailled comment
+     * Check property type
      */
-    public enum CHECK_PROPERTY_TYPE {
+    private enum CPT {
         CHECK_WHILE_NULL,
         CHECK_ALWAYS,
         CHECK_ALWAYS_INHERITED,
@@ -68,13 +68,13 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
             Boolean.class, byte.class, Byte.class, byte[].class, short.class, Short.class, int.class, Integer.class, long.class,
             Long.class, float.class, Float.class, double.class, Double.class, String.class, };
 
-    private static final Set<Class<?>> CUSTOM_SERIALIZATION_CLASSES_SET = new HashSet<Class<?>>(Arrays
-            .asList(CUSTOM_SERIALIZATION_CLASSES));
+    private static final Set<Class<?>> CUSTOM_SERIALIZATION_CLASSES_SET = new HashSet<Class<?>>(
+            Arrays.asList(CUSTOM_SERIALIZATION_CLASSES));
 
     private static final Class<?>[] WRITE_WARNING_IF_INHERITED = new Class[] { BigDecimal.class };
 
-    private static final Set<Class<?>> WRITE_WARNING_IF_INHERITED_SET = new HashSet<Class<?>>(Arrays
-            .asList(WRITE_WARNING_IF_INHERITED));
+    private static final Set<Class<?>> WRITE_WARNING_IF_INHERITED_SET = new HashSet<Class<?>>(
+            Arrays.asList(WRITE_WARNING_IF_INHERITED));
 
     private static final Set<String> ALREADY_PROCESSED_PROPERTY_TO_WARN_CHANGE_TO_OBJECT = new HashSet<String>();
 
@@ -196,8 +196,11 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
                     } else {
                         bufferMarkLimit = (int) v10P;
                     }
-                    System.out
-                            .println("Warning: to avoid a Memory heap space error the buffer of the lookup has been limited to a size of " + bufferMarkLimit + " , try to reduce the advanced parameter \"Max buffer size\" (~100000 or at least less than " + bufferMarkLimit + "), then if needed try to increase the JVM Xmx parameter."); //$NON-NLS-1$
+                    System.out.println(
+                            "Warning: to avoid a Memory heap space error the buffer of the lookup has been limited to a size of " //$NON-NLS-1$
+                                    + bufferMarkLimit
+                                    + " , try to reduce the advanced parameter \"Max buffer size\" (~100000 or at least less than "
+                                    + bufferMarkLimit + "), then if needed try to increase the JVM Xmx parameter.");
                     bufferIsMarked = true;
                 }
             }
@@ -226,7 +229,8 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
             if (Modifier.isPublic(fieldModifier)) {
                 Class<?> clazzOfBeanProperty = propertyDescriptor.getType();
                 String propertyName = propertyDescriptor.getName();
-                if (!FIELDS_TO_OMIT_SET.contains(propertyName) && !CUSTOM_SERIALIZATION_CLASSES_SET.contains(clazzOfBeanProperty)) {
+                if (!FIELDS_TO_OMIT_SET.contains(propertyName)
+                        && !CUSTOM_SERIALIZATION_CLASSES_SET.contains(clazzOfBeanProperty)) {
                     // if (WRITE_WARNING_IF_INHERITED_SET.contains(clazzOfBeanProperty)) {
                     // propNameToCheckIsInherited.add(propertyDescriptor);
                     // } else {
@@ -272,21 +276,21 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
             int propNameToCheckIsInheritedListSize = propNameToCheckIsInherited.size();
             for (int i = 0; i < propNameToCheckIsInheritedListSize; i++) {
                 Field propertyName = propNameToCheckIsInherited.get(i);
-                checkProperty(bean, propertyName, CHECK_PROPERTY_TYPE.CHECK_ALWAYS_INHERITED);
+                checkProperty(bean, propertyName, CPT.CHECK_ALWAYS_INHERITED);
             }
         }
         // if (propNameToCheckAtEachLine.size() > 0) {
         // int propNameToCheckAtEachLineListSize = propNameToCheckAtEachLine.size();
         // for (int i = 0; i < propNameToCheckAtEachLineListSize; i++) {
         // Field propertyName = propNameToCheckAtEachLine.get(i);
-        // checkProperty(bean, propertyName, CHECK_PROPERTY_TYPE.CHECK_ALWAYS);
+        // checkProperty(bean, propertyName, CPT.CHECK_ALWAYS);
         // }
         // }
         // if (propNameToCheckWhileValueIsNull.size() > 0) {
         // for (Iterator<Field> iterator = propNameToCheckWhileValueIsNull.iterator(); iterator.hasNext();) {
         // Field propertyName = iterator.next();
         // boolean propertyNameToRemoveFromList = checkProperty(bean, propertyName,
-        // CHECK_PROPERTY_TYPE.CHECK_WHILE_NULL);
+        // CPT.CHECK_WHILE_NULL);
         // if (propertyNameToRemoveFromList) {
         // iterator.remove();
         // }
@@ -303,7 +307,7 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
      * @param checkType
      * @return true if property has to be removed from list <code>propNameToCheckWhileValueIsNull</code>
      */
-    private boolean checkProperty(B bean, Field property, CHECK_PROPERTY_TYPE checkType) {
+    private boolean checkProperty(B bean, Field property, CPT checkType) {
         Object propertyValue = null;
         try {
             propertyValue = property.get(bean);
@@ -315,18 +319,17 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
         if (propertyValue != null) {
             String propertyName = property.getName();
             String propertyClassName = propertyValue.getClass().getName();
-            if (checkType == CHECK_PROPERTY_TYPE.CHECK_ALWAYS_INHERITED
-                    && propertyValue.getClass().isInstance(propertyName.getClass())
+            if (checkType == CPT.CHECK_ALWAYS_INHERITED && propertyValue.getClass().isInstance(propertyName.getClass())
                     && !ALREADY_PROCESSED_PROPERTY_TO_WARN_CHANGE_TO_OBJECT.contains(propertyName)) {
                 ALREADY_PROCESSED_PROPERTY_TO_WARN_CHANGE_TO_OBJECT.add(propertyName);
                 System.out.println("To avoid some serialization error, we advice you to declare the field name '" + propertyName //$NON-NLS-1$
                         + "' with the type 'Object'"); //$NON-NLS-1$
             }
-            if ((checkType == CHECK_PROPERTY_TYPE.CHECK_ALWAYS_INHERITED || checkType == CHECK_PROPERTY_TYPE.CHECK_ALWAYS)
+            if ((checkType == CPT.CHECK_ALWAYS_INHERITED || checkType == CPT.CHECK_ALWAYS)
                     && !objectsToWriteAtBeginningOfValuesFile.containsKey(propertyClassName)) {
                 objectsToWriteAtBeginningOfValuesFile.put(propertyClassName, propertyValue);
             }
-            // if (checkType == CHECK_PROPERTY_TYPE.CHECK_WHILE_NULL
+            // if (checkType == CPT.CHECK_WHILE_NULL
             // && !objectsToWriteAtBeginningOfValuesFile.containsKey(propertyClassName)) {
             // objectsToWriteAtBeginningOfValuesFile.put(propertyClassName, propertyValue);
             // removePropertyName = true;
@@ -471,11 +474,11 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
                 if (lookupKey.compareTo(key) == 0 && previousResultRetrieved) {
                     nextIsPreviousResult = true;
                 } else {
-                	previousResultRetrieved = false;
+                    previousResultRetrieved = false;
                     previousResult = null;
                 }
             } catch (NullPointerException e) {
-            	previousResultRetrieved = false;
+                previousResultRetrieved = false;
                 previousResult = null;
             }
             noMoreNext = false;
