@@ -109,6 +109,10 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected List<ItemVersionObject> versionObjects = new ArrayList<ItemVersionObject>();
 
     protected List<ItemVersionObject> checkedObjects = new ArrayList<ItemVersionObject>();
+    
+    private boolean countSubjobs;
+    
+    private List<ItemVersionObject> newAddedSubjobs = new ArrayList<ItemVersionObject>();
 
     protected ICheckStateListener checkStateListener = new ICheckStateListener() {
 
@@ -324,6 +328,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     }
 
     protected void selectSubjob() {
+        countSubjobs = true;
+        newAddedSubjobs.clear();
         List<ItemVersionObject> jobList = new ArrayList<ItemVersionObject>();
 
         for (ItemVersionObject object : checkedObjects) {
@@ -345,6 +351,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                                     ItemVersionObject relat = obj2;
                                     if (!checkedObjects.contains(relat)) {
                                         checkedObjects.add(relat);
+                                        if (countSubjobs) {
+                                            newAddedSubjobs.add(relat);
+                                        }
                                         checkAllVerSionLatest(checkedObjects, relat);
                                     }
                                     break;
@@ -357,8 +366,12 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 }
             }
         }
-        refreshTableItems();
-        refreshCheckedTreeView();
+        countSubjobs = false;
+        if (!newAddedSubjobs.isEmpty()) {
+            addItemElements(newAddedSubjobs);
+            checkButtonsState();
+            refreshCheckedTreeView();
+        }
     }
 
     protected void checkAllVerSionLatest(List<ItemVersionObject> tableList, ItemVersionObject object) {
@@ -374,6 +387,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                                 ItemVersionObject relat = obj2;
                                 if (!tableList.contains(relat)) {
                                     tableList.add(relat);
+                                    if (countSubjobs) {
+                                        newAddedSubjobs.add(relat);
+                                    }
                                     checkAllVerSionLatest(tableList, relat);
                                 }
                                 break;
