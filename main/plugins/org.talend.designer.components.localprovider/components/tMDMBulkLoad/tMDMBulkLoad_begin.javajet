@@ -35,7 +35,7 @@ String trans = "mdmTrans_" + connection;
 <% logUtil.info("\"Initializing bulkload client with URL: \"", mdmUrl);%>
 org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org.talend.mdm.bulkload.client.BulkloadClient(<%=mdmUrl %>, <%=username %>, decryptedPassword_<%=cid %>, null, <%=dataCluster %> + "<%=isStaging?"#STAGING":""%>", <%=dataEntity %>, <%=dataModule %>);
 
-<%if(useTransaction) {%>
+if(<%=useTransaction %> && (Boolean)globalMap.get("useTransaction_<%=connection %>")) {
     String transKey_<%=cid %> = "<%=trans%>_" + Thread.currentThread().getThreadGroup().getName();
     com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
     if(mdmTransaction_<%=cid %> == null) {
@@ -63,8 +63,8 @@ org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org
     }
     bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid %>.getId());
     bulkloadClient_<%=cid %>.setSessionId(mdmTransaction_<%=cid%>.getSessionId());
-<%}%>
-
+}
+        
 bulkloadClient_<%=cid %>.startThreadCount();
 bulkloadClient_<%=cid %>.setOptions(new org.talend.mdm.bulkload.client.BulkloadOptions(<%=isGenerateId %>, <%=validate %>, <%=arraySize %>, <%=insertOnly %>));
 int count_<%=cid %> = 0;
