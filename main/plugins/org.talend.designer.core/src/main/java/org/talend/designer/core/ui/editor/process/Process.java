@@ -98,6 +98,7 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
@@ -1301,7 +1302,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
                         param = elemParam.getElementParameter(pType.getName());
                         if (param != null) {
-                            if ((param.isReadOnly() && !isJunitLoad)
+                            if ((param.isReadOnly() && !isJunitLoad && noNeedSetValue(param, pType.getValue()))
                                     && !(param.getName().equals(EParameterName.UNIQUE_NAME.getName()) || param.getName().equals(
                                             EParameterName.VERSION.getName()))) {
                                 continue;
@@ -1339,12 +1340,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         tempParaName = pType.getName();
                     }
                     if (param != null) {
-                        if ((param.isReadOnly() && !isJunitLoad)
+                        String paraValue = pType.getValue();
+                        if ((param.isReadOnly() && !isJunitLoad && noNeedSetValue(param, paraValue))
                                 && !(param.getName().equals(EParameterName.UNIQUE_NAME.getName()) || param.getName().equals(
                                         EParameterName.VERSION.getName()))) {
                             continue;
                         }
-                        String paraValue = pType.getValue();
                         if (pType.getName().equals(EParameterName.LABEL.getName()) && tempLabel != null) {
                             if (tempParaName != null && pType.getValue().equals(DesignerUtilities.getParameterVar(tempParaName))) {
                                 paraValue = tempLabel;
@@ -1360,6 +1361,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             UpdateParameterUtils.setDefaultValues(param, elemParam);
         }
 
+    }
+    
+    protected boolean noNeedSetValue(IElementParameter param, String paraValue){
+        if(paraValue == null){
+            return true;
+        }
+        for(IElementParameterDefaultValue defaultValue : param.getDefaultValues()){
+            if(defaultValue.getDefaultValue() != null &&  defaultValue.getDefaultValue().equals(paraValue)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void loadElementParameters(Element elemParam, ElementParameterType pType, IElementParameter param, String key,
