@@ -48,8 +48,8 @@
     <IMPORTS>
       <IMPORT
         NAME="Advanced_Persistent_Lookup"
-        MODULE="advancedPersistentLookupLib-1.0.jar" MVN="mvn:org.talend.libraries/advancedPersistentLookupLib-1.0/6.0.0" 
-        UrlPath="platform:/plugin/org.talend.libraries.persist.lookup/lib/advancedPersistentLookupLib-1.0.jar" 
+        MODULE="advancedPersistentLookupLib-1.1.jar" MVN="mvn:org.talend.libraries/advancedPersistentLookupLib-1.1/6.0.0" 
+        UrlPath="platform:/plugin/org.talend.libraries.persist.lookup/lib/advancedPersistentLookupLib-1.1.jar" 
         REQUIRED="true"
       />
       <IMPORT
