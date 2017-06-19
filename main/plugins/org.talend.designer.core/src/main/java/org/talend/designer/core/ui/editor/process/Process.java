@@ -2546,7 +2546,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             if (!listNames.contains(metadataTable.getTableName())) {
                 listNames.add(metadataTable.getTableName());
                 listMetaData.add(metadataTable);
-                if (nc.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
+                if (nc.getConnectorFromType(EConnectionType.FLOW_MAIN) != null
+                        && nc.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
                         && checkValidConnectionName(metadataTable.getTableName())) {
                     addUniqueConnectionName(metadataTable.getTableName());
                     // for tmap 11884
