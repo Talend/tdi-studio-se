@@ -366,6 +366,12 @@
 		}
 
 		com.google.api.services.bigquery.model.Job doneJob_<%=cid%> = pollJob_<%=cid%>;
+
+		if ((doneJob_<%=cid%>.getStatus() != null) && (doneJob_<%=cid%>.getStatus().getErrors() != null)) {
+			status = "failure";
+			throw new Exception(doneJob_<%=cid%>.getStatus().getErrors().toString());
+		}
+
 		System.out.println("Done: " + doneJob_<%=cid%>.toString());
 		com.google.api.services.bigquery.model.JobStatistics jobStatistics_<%=cid%>= doneJob_<%=cid%>.getStatistics();
 		if(jobStatistics_<%=cid%>!=null && jobStatistics_<%=cid%>.getLoad() != null){
