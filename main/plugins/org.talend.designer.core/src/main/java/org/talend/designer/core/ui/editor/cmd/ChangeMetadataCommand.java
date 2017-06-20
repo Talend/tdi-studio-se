@@ -324,6 +324,7 @@ public class ChangeMetadataCommand extends Command {
                     }
                 }
             }
+            Boolean doPropagate = null;
             for (IODataComponent currentIO : outputdataContainer.getOuputs()) {
                 INodeConnector nodeConnector = null;
                 String baseConnector = null;
@@ -348,7 +349,10 @@ public class ChangeMetadataCommand extends Command {
                     targetNode.metadataInputChanged(currentIO, currentIO.getUniqueName());
                     if (isExecute) {
                         if (targetNode instanceof Node) {
-                            if (((Node) targetNode).getComponent().isSchemaAutoPropagated() && getPropagate()
+                            if(doPropagate == null){
+                                doPropagate = getPropagate();
+                            }
+                            if (((Node) targetNode).getComponent().isSchemaAutoPropagated() && doPropagate
                                     && targetNode.getMetadataList().size() > 0) {
                                 IMetadataTable tmpClone;
                                 if (sourceIsBuiltIn) {
@@ -412,7 +416,10 @@ public class ChangeMetadataCommand extends Command {
                         currentIO.setColumnNameChanged(null);
                     } else {
                         if (targetNode instanceof Node) {
-                            if (!targetIsBuiltIn && getPropagate()) {
+                            if(doPropagate == null){
+                                doPropagate = getPropagate();
+                            }
+                            if (!targetIsBuiltIn && doPropagate) {
                                 if (((Node) targetNode).getComponent().isSchemaAutoPropagated()) {
                                     if (outputdataContainer.getOuputs().size() > 0) {
                                         List<ColumnNameChanged> columnNameChanged = outputdataContainer.getOuputs().get(0)
