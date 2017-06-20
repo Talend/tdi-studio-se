@@ -2163,7 +2163,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         if (contextResults != null) {
                             propertiesResults.addAll(contextResults);
                         }
-
+                    } else if (item != null && item instanceof RulesItem) {
+                        // if the RulesItem is not null, that means the Rule exist, so do nothing
                     } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
