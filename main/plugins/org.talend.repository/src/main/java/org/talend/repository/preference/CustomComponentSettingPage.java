@@ -399,45 +399,41 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
 
                         @Override
                         public void run(IProgressMonitor subMonitor) throws CoreException {
-
+                            if (subMonitor == null) {
+                                subMonitor = new NullProgressMonitor();
+                            }
                             ISVNProviderService service = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(
                                     ISVNProviderService.class);
                             String projectLabel = pro.getTechnicalLabel();
                             IWorkspace workspace = ResourcesPlugin.getWorkspace();
                             IProject eclipseProject = workspace.getRoot().getProject(projectLabel);
-                            String targetRoot = eclipseProject.getLocation().toString() + "/"
-                                    + ERepositoryObjectType.getFolderName(ERepositoryObjectType.COMPONENTS);
-                            File componentFolder = new File(targetRoot);
-                            URL url = null;
+                            IFolder componentsFolder = eclipseProject.getFolder(ERepositoryObjectType
+                                    .getFolderName(ERepositoryObjectType.COMPONENTS));
+                            File componentFolder = componentsFolder.getLocation().toFile();
                             try {
                                 if (!componentFolder.exists()) {
-                                    FilesUtils.createFoldersIfNotExists(targetRoot, false);
+                                    org.talend.utils.io.FilesUtils.createFoldersIfNotExists(componentFolder.getAbsolutePath(),
+                                            false);
                                 }
-                                Bundle b = Platform.getBundle(IComponentsFactory.COMPONENTS_LOCATION);
-                                url = FileLocator.toFileURL(FileLocator.find(b, new Path(""), null));
-
-                                String sourceRoot = url.getFile();
 
                                 // delete share
-                                for (IComponent component : backAdded.keySet()) {
-                                    String componentFullPath = targetRoot + File.separator + component.getName();
-                                    if (service.isSVNProject(pro)) {
-                                        service.svnEclipseHandlerDelete(eclipseProject, pro, componentFullPath);
-                                        if (subMonitor != null) {
-                                            subMonitor.worked(10);
-                                        }
-                                    } else {
-                                        File file = new File(componentFullPath);
-                                        if (file != null && file.exists()) {
-                                            org.talend.utils.io.FilesUtils.deleteFolder(file, true);
+                                if (!backAdded.isEmpty()) {
+                                    for (IComponent component : backAdded.keySet()) {
+                                        File targetCompFolder = new File(componentFolder, component.getName());
+                                        if (targetCompFolder.exists()) {// real existed
+                                            if (service.isSVNProject(pro)) {
+                                                service.svnEclipseHandlerDelete(eclipseProject, pro,
+                                                        targetCompFolder.getAbsolutePath());
+                                                subMonitor.worked(10);
+                                            } else {
+                                                org.talend.utils.io.FilesUtils.deleteFolder(targetCompFolder, true);
+                                            }
                                         }
                                     }
-                                }
-                                if (!backAdded.isEmpty()) {
                                     getCustomComponentSettings().removeAll(backAdded.values());
                                 }
 
-                                FileFilter ff = new FileFilter() {
+                                final FileFilter ff = new FileFilter() {
 
                                     @Override
                                     public boolean accept(File pathname) {
@@ -450,17 +446,16 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
                                 };
 
                                 // share
-                                for (IComponent component : sharedAdded.keySet()) {
-                                    String sourcePath = sourceRoot + component.getPathSource() + File.separator
-                                            + component.getName();
-                                    File sourceFile = new File(sourcePath);
+                                Bundle b = Platform.getBundle(IComponentsFactory.COMPONENTS_LOCATION);
+                                URL url = FileLocator.toFileURL(FileLocator.find(b, new Path(""), null)); //$NON-NLS-1$
+                                String sourceRoot = url.getFile();
 
-                                    String targetPath = targetRoot + File.separatorChar + component.getName();
-                                    File targetFile = new File(targetPath);
-                                    FilesUtils.copyFolder(sourceFile, targetFile, true, ff, null, true, false);
-                                    if (subMonitor != null) {
-                                        subMonitor.worked(10);
-                                    }
+                                for (IComponent component : sharedAdded.keySet()) {
+                                    File sourceFolder = new File(sourceRoot + component.getPathSource(), component.getName());
+
+                                    File targetCompFolder = new File(componentFolder, component.getName());
+                                    FilesUtils.copyFolder(sourceFolder, targetCompFolder, true, ff, null, true, false);
+                                    subMonitor.worked(10);
                                 }
 
                             } catch (Exception e) {
@@ -474,7 +469,7 @@ public class CustomComponentSettingPage extends ProjectSettingPage {
                             }
 
                             try {
-                                eclipseProject.refreshLocal(IResource.DEPTH_INFINITE, subMonitor);
+                                componentsFolder.refreshLocal(IResource.DEPTH_INFINITE, subMonitor);
                             } catch (CoreException e1) {
                                 ExceptionHandler.process(e1);
                             }
