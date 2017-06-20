@@ -537,7 +537,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 break;
             }
         }
-        boolean confirm = false;
+        boolean confirm = true;
         if (modified) {
             if (fixedVersionButton.getSelection()) {
                 confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
