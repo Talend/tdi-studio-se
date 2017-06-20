@@ -1684,6 +1684,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         List<UpdateResult> propertiesResults = new ArrayList<UpdateResult>();
 
+
         for (IElementParameter curPropertyParam : node.getElementParametersFromField(EParameterFieldType.PROPERTY_TYPE)) {
             String propertyType = (String) curPropertyParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
                     .getValue();
@@ -2197,6 +2198,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, newValueParameter);
                             }
                         }
+                    } else if (item != null && item instanceof RulesItem) {
+                        // if the RulesItem is not null, that means the Rule exist, so do nothing
                     } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
