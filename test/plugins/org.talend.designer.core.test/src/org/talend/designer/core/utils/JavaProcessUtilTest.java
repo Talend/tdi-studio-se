@@ -12,8 +12,13 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +30,7 @@ import org.junit.Test;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -102,6 +108,12 @@ public class JavaProcessUtilTest {
         Process process = new Process(TestUtils.createDefaultProperty());
         Node simpleInputNode = NodeTestCreator.createSimpleInputNode(process);
 
+        // If use existing connection, then return null.
+        IElementParameter uecParam = createUECParameter(simpleInputNode);
+        uecParam.setValue(true);
+        simpleInputNode.addElementParameter(uecParam);
+        assertNull(JavaProcessUtil.getHadoopClusterItemId(simpleInputNode));
+
         // Built in mode
         assertNull(JavaProcessUtil.getHadoopClusterItemId(simpleInputNode));
 
@@ -112,6 +124,30 @@ public class JavaProcessUtilTest {
                 .setValue(EmfComponent.REPOSITORY);
         propertyElementParameter.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName()).setValue(null);
         assertNull(JavaProcessUtil.getHadoopClusterItemId(simpleInputNode));
+    }
+
+    @Test
+    public void testIsUseExistingConnection() {
+        Process process = new Process(TestUtils.createDefaultProperty());
+        Node simpleInputNode = NodeTestCreator.createSimpleInputNode(process);
+
+        assertFalse(JavaProcessUtil.isUseExistingConnection(simpleInputNode));
+
+        IElementParameter uecParam = createUECParameter(simpleInputNode);
+        simpleInputNode.addElementParameter(uecParam);
+        assertFalse(JavaProcessUtil.isUseExistingConnection(simpleInputNode));
+
+        simpleInputNode.setPropertyValue(EParameterName.USE_EXISTING_CONNECTION.getName(), Boolean.TRUE);
+        assertTrue(JavaProcessUtil.isUseExistingConnection(simpleInputNode));
+    }
+
+    private IElementParameter createUECParameter(INode node) {
+        ElementParameter param = new ElementParameter(node);
+        param.setName(EParameterName.USE_EXISTING_CONNECTION.getName());
+        param.setDisplayName(EParameterName.USE_EXISTING_CONNECTION.getDisplayName());
+        param.setFieldType(EParameterFieldType.CHECK);
+        param.setCategory(EComponentCategory.BASIC);
+        return param;
     }
 
 }

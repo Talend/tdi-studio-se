@@ -184,8 +184,8 @@ public class JavaProcessUtil {
         if (hadoopItemId == null) { // Incase it is a bigdata process.
             IElementParameter propertyParam = process.getElementParameter("MR_PROPERTY"); //$NON-NLS-1$
             if (propertyParam != null) {
-                IElementParameter repositoryParam = propertyParam.getChildParameters().get(
-                        EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                IElementParameter repositoryParam = propertyParam.getChildParameters()
+                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                 if (repositoryParam != null) {
                     hadoopItemId = String.valueOf(repositoryParam.getValue());
                 }
@@ -200,6 +200,9 @@ public class JavaProcessUtil {
     public static String getHadoopClusterItemId(INode node) {
         IHadoopClusterService hadoopClusterService = HadoopRepositoryUtil.getHadoopClusterService();
         if (hadoopClusterService == null) {
+            return null;
+        }
+        if (isUseExistingConnection(node)) {
             return null;
         }
         IElementParameter propertyElementParameter = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
@@ -225,6 +228,14 @@ public class JavaProcessUtil {
             return id;
         }
         return null;
+    }
+
+    public static boolean isUseExistingConnection(INode node) {
+        IElementParameter elementParameter = node.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
+        if (elementParameter != null) {
+            return Boolean.valueOf(String.valueOf(elementParameter.getValue()));
+        }
+        return false;
     }
 
     public static Set<ModuleNeeded> getNeededModules(final INode node, boolean withChildrens, boolean forMR) {
@@ -304,12 +315,13 @@ public class JavaProcessUtil {
         addNodeRelatedModules(process, modulesNeeded, node, false);
     }
 
-    public static void addNodeRelatedModules(final IProcess process, List<ModuleNeeded> modulesNeeded, INode node, boolean onlyMR) {
+    public static void addNodeRelatedModules(final IProcess process, List<ModuleNeeded> modulesNeeded, INode node,
+            boolean onlyMR) {
         if (!node.isActivate()) {
             // if node is deactivated, we don't need at all its dependencies.
             return;
         }
-        
+
         List<ModuleNeeded> moduleList = node.getModulesNeeded();
         for (ModuleNeeded needed : moduleList) {
             if (needed != null) {
@@ -396,10 +408,11 @@ public class JavaProcessUtil {
 
                                 } else {
                                     ModuleNeeded mn = getModuleValue(process, moduleName);
-                                    
-                                    if(line.get("JAR_NEXUS_VERSION") != null){
+
+                                    if (line.get("JAR_NEXUS_VERSION") != null) {
                                         String a = moduleName.replaceFirst("[.][^.]+$", "");
-                                        mn.setMavenUri("mvn:org.talend.libraries/"+a+"/"+line.get("JAR_NEXUS_VERSION")+"/jar");
+                                        mn.setMavenUri(
+                                                "mvn:org.talend.libraries/" + a + "/" + line.get("JAR_NEXUS_VERSION") + "/jar");
                                     }
                                     modulesNeeded.add(mn);
                                 }

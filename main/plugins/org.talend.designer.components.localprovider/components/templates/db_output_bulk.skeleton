@@ -1961,7 +1961,6 @@ public class CLASS {
                     MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
                     dbType = mappingType.getDefaultSelectedDbType(column.getColumn().getTalendType());
                 }
-                boolean isMSSQL = "id_MSSQL".equals(this.getDBMSId());
                 if("true".equals(ignoreDateOutOfRange) &&("DATE".equals(dbType) || "DATETIME2".equals(dbType) || "DATETIMEOFFSET".equals(dbType))){                    
                     String pattern = column.getColumn().getPattern();
                     setStmt.append("if(" + incomingConnName + "." + column.getName() +"!=null && "+ incomingConnName + "." + column.getName() + ".getTime() < year2_"+cid+"){");
@@ -1977,7 +1976,7 @@ public class CLASS {
                     }
                     setStmt.append(");\r\n");
                     setStmt.append("}\r\n");
-                }else if(isMSSQL && "TIME".equals(dbType)){//TDI-30431 begin
+                }else if("TIME".equals(dbType)){//TDI-30431 begin
                     String timePattern = column.getColumn().getPattern();
                     //Compatible with Time,Date and String,it will fail if Time contain fractional seconds.(Solution:Use sqljdbc.jar and setTime() instead)
                     //setStmt.append(prefix + cid + ".setString(" + index + dynamic + "," + incomingConnName + "." + column.getName()+".toString()");// For Time and String
