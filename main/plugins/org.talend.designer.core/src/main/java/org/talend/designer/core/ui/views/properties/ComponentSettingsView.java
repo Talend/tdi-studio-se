@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.properties;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,6 +60,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.core.ui.properties.tab.HorizontalTabFactory;
@@ -79,12 +82,13 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.designer.core.ui.views.subjob.SubjobBasicComposite;
+import org.talend.repository.RepositoryPlugin;
 
 /**
  * nrousseau class global comment. Detailled comment <br/>
  * 
  */
-public class ComponentSettingsView extends ViewPart implements IComponentSettingsView {
+public class ComponentSettingsView extends ViewPart implements IComponentSettingsView, PropertyChangeListener {
 
     private static final String PARENT = "parent"; //$NON-NLS-1$
 
@@ -143,6 +147,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
         tabFactory = new HorizontalTabFactory();
         parentMap = new HashMap<String, Composite>();
         categoryMap = new HashMap<String, EComponentCategory>();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
     }
 
     /**
@@ -804,4 +809,16 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
     // public Map<String, Element> getElementMap() {
     // return this.elementMap;
     // }
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("view_refresh")) { //$NON-NLS-1$
+            RepositoryPlugin.getDefault().getDesignerCoreService().switchToCurComponentSettingsView();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        ProxyRepositoryFactory.getInstance().removePropertyChangeListener(this);
+        super.dispose();
+    }
 }

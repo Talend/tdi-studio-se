@@ -467,6 +467,8 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                                                     // version,
                                                     // means the editor/process will be refreshed to the latest version
                                                     refreshProcess(item, false);
+                                                    ProxyRepositoryFactory.getInstance().fireRepositoryPropertyChange(
+                                                            "view_refresh", null, item); //$NON-NLS-1$
                                                 }
 
                                                 Property property = processEditorInput.getItem().getProperty();
