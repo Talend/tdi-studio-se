@@ -88,7 +88,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 			nzloadThread_<%=cid%>.join(0);
 			<%
 		}
-				if(isLog4jEnabled){%>
+%>
+		globalMap.put("<%=cid%>_NB_LINE", nb_line_<%=cid%>.get());
+<%
+		if(isLog4jEnabled){%>
 					log.info("<%=cid%> - Execute '"+command_<%=cid %>.toString()+"' has finished.");
 				<%}
 	}

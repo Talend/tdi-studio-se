@@ -357,7 +357,8 @@
 	
 	<CODEGENERATION> 
 		<IMPORTS> 
-			<IMPORT MODULE="namedpipe-1.0.jar" MVN="mvn:org.talend.libraries/namedpipe-1.0/6.0.0"  NAME="namedpipe-1.0.jar" REQUIRED="true"/> 
+			<IMPORT MODULE="namedpipe-1.0.jar" MVN="mvn:org.talend.libraries/namedpipe-1.0/6.0.0"  NAME="namedpipe-1.0.jar" REQUIRED="true"/>
+			<IMPORT MODULE="commons-io-2.4.jar" MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0"  NAME="commons-io-2.4.jar" REQUIRED="true"/>
 			<IMPORT NAME="Driver-Netezza" MODULE="nzjdbc.jar" MVN="mvn:org.talend.libraries/nzjdbc/6.0.0"  REQUIRED="true" />
 			<IMPORT MODULE="namedpipe_jni_64bit.dll" MVN="mvn:org.talend.libraries/namedpipe_jni_64bit/6.0.0/dll"  NAME="namedpipe_jni_64bit.dll" REQUIRED="false"/> 
 			<IMPORT MODULE="namedpipe_jni.dll" MVN="mvn:org.talend.libraries/namedpipe_jni/6.0.0/dll"  NAME="namedpipe_jni.dll" REQUIRED="false"/> 
