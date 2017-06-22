@@ -228,6 +228,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
      */
     public ProcessComposite(Composite parent, int style) {
         super(parent, style);
+        this.setMinSize(400, 300);
         initGraphicComponents(parent);
         processManager = ProcessManager.getInstance();
         this.composite = parent;
