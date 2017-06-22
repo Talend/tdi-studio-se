@@ -6,13 +6,13 @@
 	<name>Codegen Utilities</name>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-codegen-utils</artifactId>
-	<version>0.17.0-SNAPSHOT</version>
+	<version>0.17.0</version>
 	<packaging>jar</packaging>
 	
 	<properties>
 		<avro.version>1.8.0</avro.version>
-		<components.version>0.17.0-SNAPSHOT</components.version>
-		<daikon.version>0.15.0-SNAPSHOT</daikon.version>
+		<components.version>0.17.0</components.version>
+		<daikon.version>0.15.0</daikon.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<junit.version>4.12</junit.version>
 		<java-formatter.plugin.version>0.1.0</java-formatter.plugin.version>
