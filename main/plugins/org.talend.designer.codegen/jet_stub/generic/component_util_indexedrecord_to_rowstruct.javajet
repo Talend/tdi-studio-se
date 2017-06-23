@@ -157,38 +157,54 @@ class IndexedRecordToRowStructGenerator {
         for (int i = 0; i < columnsToGenerate.size(); i++) {
             IMetadataColumn column = columnsToGenerate.get(i);
             String columnName = column.getLabel();
-            JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
             String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
             if (columnName.equals(dynamicColName)) {
-                %>
+            %>
                 java.util.Map<String, Object> dynamicValue_<%=cid%> = (java.util.Map<String, Object>) <%=codeVarSchemaEnforcer%>.get(<%=i%>);
                 for (java.util.Map.Entry<String, Object> dynamicValueEntry_<%=cid%> : dynamicValue_<%=cid%>.entrySet()) {
                     <%=codeVarDynamic%>.setColumnValue(<%=codeVarDynamic%>.getIndex(dynamicValueEntry_<%=cid%>.getKey()), dynamicValueEntry_<%=cid%>.getValue());
                 }
                 <%=codeVarRowStruct%>.<%=dynamicColName%> = <%=codeVarDynamic%>;
-                <%
+            <%
             } else {
-                %>
+            %>
                 Object columnValue_<%=i%>_<%=cid%> = <%=codeVarSchemaEnforcer%>.get(<%=i%>);
-                if (columnValue_<%=i%>_<%=cid%> == null) {
-                     <%=codeVarRowStruct%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
-                } else {
+                <%
+                if (JavaTypesManager.NULL.equals(JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate))) {
+                    // there is no default value, so just assign data value to RowStruct
+                %>
                     <%
                     if ("id_Document".equals(column.getTalendType())) {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
-                        <%
-                    } else {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
-                        <%
-                    }
                     %>
-                }
+                        <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
+                    <%
+                    } else {
+                    %>
+                        <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
+                    <%
+                    }
+                } else {
+                    // there is default value, so check on null and set default value instead of null
+                %>
+                    if (columnValue_<%=i%>_<%=cid%> == null) {
+                        <%=codeVarRowStruct%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+                    } else {
+                        <%
+                        if ("id_Document".equals(column.getTalendType())) {
+                        %>
+                            <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
+                        <%
+                        } else {
+                        %>
+                            <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
+                        <%
+                        }
+                        %>
+                    }
                 <%
+                }
             }
         }
     }
-
 }
 %>
