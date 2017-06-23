@@ -753,6 +753,16 @@ public class DesignerCoreService implements IDesignerCoreService {
         return 0;
     }
 
+    @Override
+    public int getDBConnectionLimit() {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore != null && preferenceStore.getBoolean(ITalendCorePrefConstants.DB_CONNECTION_LIMIT_ACTIVED)) {
+            return preferenceStore.getInt(ITalendCorePrefConstants.DB_CONNECTION_LIMIT);
+        }
+        // disable
+        return 0;
+    }
+
     /*
      * (non-Javadoc)
      * 
