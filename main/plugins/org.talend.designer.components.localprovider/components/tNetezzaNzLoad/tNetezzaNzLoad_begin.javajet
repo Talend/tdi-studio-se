@@ -427,17 +427,21 @@ skeleton="../templates/db_output_bulk.skeleton"
 					<% } %>
 				}
 <%
+				String actualLogFilePath;
 				if (isLogFilePathSpecified) {
-%>
-					nb_line_<%=cid%>.set(getProcessedRowsCount(<%=parametersList.get(parametersList.indexOf("\"-lf\"") + 1)%>));
-<%
+					actualLogFilePath = parametersList.get(parametersList.indexOf("\"-lf\"") + 1);
 				} else {
-%>
-					String defaultLogFilePath = new StringBuilder().append(<%=dbtable.toUpperCase()%>).append(".").append(<%=dbuser.toUpperCase()%>).append(".").append(<%=dbname.toUpperCase()%>).append(".nzlog").toString();
-					nb_line_<%=cid%>.set(getProcessedRowsCount(defaultLogFilePath));
-<%
+					actualLogFilePath = new StringBuilder("\"")
+										.append(dbtable.toUpperCase().replaceAll("\"", ""))
+										.append(".")
+										.append(dbuser.toUpperCase().replaceAll("\"", ""))
+										.append(".")
+										.append(dbname.toUpperCase().replaceAll("\"", ""))
+										.append(".nzlog\"").toString();
 				}
 %>
+				nb_line_<%=cid%>.set(getProcessedRowsCount(<%=actualLogFilePath%>));
+
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_NZLOAD_ERROR",e.getMessage());
@@ -456,8 +460,19 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 			}
 			catch(IOException e) {
-			System.err.println("Can't get NB_LINE value from log file");
-			return -1;
+<%
+				String warningMessage = "Can't get NB_LINE value from log file";
+				if (isLog4jEnabled) {
+%>
+					log.warn("<%=warningMessage%>");
+<%
+				} else {
+%>
+					System.err.println("<%=warningMessage%>");
+<%
+				}
+%>
+				return 0;
 			}
 			return processedRowsCount;
 		}
