@@ -66,7 +66,7 @@ class IndexedRecordToRowStructGenerator {
         }
 
         %>
-        org.talend.daikon.di.DiOutgoingSchemaEnforcer <%=codeVarSchemaEnforcer%> = org.talend.daikon.di.EnforcerCreator.createOutgoingEnforcer(<%=codeVarSchemaToEnforce%>, <%=dynamicByPosition%>);
+        org.talend.codegen.enforcer.OutgoingSchemaEnforcer <%=codeVarSchemaEnforcer%> = org.talend.codegen.enforcer.EnforcerCreator.createOutgoingEnforcer(<%=codeVarSchemaToEnforce%>, <%=dynamicByPosition%>);
 
         // Create a reusable factory that converts the output of the reader to an IndexedRecord.
         org.talend.daikon.avro.converter.IndexedRecordConverter<Object, ? extends org.apache.avro.generic.IndexedRecord> <%=codeVarIndexedRecordAdapter%> = null;
@@ -111,7 +111,7 @@ class IndexedRecordToRowStructGenerator {
         if (dynamicColName != null) {
             %>
             if (!<%=codeVarIsDynamicInitialized%>) {
-                org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.daikon.di.DiOutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
+                org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.codegen.enforcer.OutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
                 for (org.apache.avro.Schema.Field dynamicField_<%=cid%> : dynSchema_<%=cid%>.getFields()){
                     routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
                     // set name and db name
