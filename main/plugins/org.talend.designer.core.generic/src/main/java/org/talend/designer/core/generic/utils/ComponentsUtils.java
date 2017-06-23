@@ -49,6 +49,7 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
@@ -331,7 +332,7 @@ public class ComponentsUtils {
             } else if (widgetProperty instanceof Property) {
                 Property property = (Property) widgetProperty;
                 param.setRequired(property.isRequired());
-                param.setValue(getParameterValue(element, property, fieldType));
+                param.setValue(getParameterValue(element, property, fieldType, parameterName));
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
                         || EParameterFieldType.CLOSED_LIST.equals(fieldType) || EParameterFieldType.CHECK.equals(fieldType)
@@ -493,7 +494,7 @@ public class ComponentsUtils {
         return params;
     }
 
-    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType) {
+    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType, String parameterName) {
         Object paramValue = property.getStoredValue();
         if (paramValue instanceof List) {
             return null;
@@ -507,10 +508,23 @@ public class ComponentsUtils {
                 }
             }
         } else if (GenericTypeUtils.isStringType(property)) {
+            boolean needInitializeProperty = false;
+            IElementParameter oldParam = null;
+            if (element.getElementParameters() != null) {
+                oldParam = element.getElementParameter(parameterName);
+            }
+            if (oldParam == null || oldParam.getValue() == null || !StringUtils.equals((String) oldParam.getValue(), (String) property.getStoredValue())) {
+                // if parameter is not setup yet (= initialization)
+                // then we set the value and check if we need to add quotes.
+                //
+                // if parameter value / property value are not the same
+                // then the component updated the property in it's own code, so we need to add quotes/initialize.
+                needInitializeProperty = true;
+            }
+
             String value = (String) paramValue;
             // If value is not context mode and is not in wizard and is not changed by user then add double quotes.
-            if (!(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value)
-                    || isPropertyChangedByUser(property))) {
+            if (needInitializeProperty && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
                 if (value == null) {
                     value = StringUtils.EMPTY;
                 }
