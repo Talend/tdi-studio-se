@@ -523,7 +523,8 @@ public class ComponentsUtils {
             }
 
             String value = (String) paramValue;
-            // If value is not context mode and is not in wizard and is not changed by user then add double quotes.
+            // If property is not initialized by client and value is not context mode and is not in wizard then add
+            // double quotes.
             if (needInitializeProperty && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
                 if (value == null) {
                     value = StringUtils.EMPTY;
