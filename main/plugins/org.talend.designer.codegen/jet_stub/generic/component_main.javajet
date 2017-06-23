@@ -90,10 +90,10 @@ if(hasInput){
 
             if (dynamicPos != -1)  {
                 %>
-                if (!current_<%=cid%>.areDynamicFieldsInitialized()) {
+                if (!incomingEnforcer_<%=cid%>.areDynamicFieldsInitialized()) {
                     // Initialize the dynamic columns when they are first encountered.
                     for (routines.system.DynamicMetadata dm_<%=cid%> : <%=inputConn.getName()%>.<%=input_columnList.get(dynamicPos).getLabel()%>.metadatas) {
-                        current_<%=cid%>.addDynamicField(
+                        incomingEnforcer_<%=cid%>.addDynamicField(
                                 dm_<%=cid%>.getName(),
                                 dm_<%=cid%>.getType(),
                                 dm_<%=cid%>.getLogicalType(),
@@ -101,24 +101,24 @@ if(hasInput){
                                 dm_<%=cid%>.getDescription(),
                                 dm_<%=cid%>.isNullable());
                     }
-                    current_<%=cid%>.createRuntimeSchema();
+                    incomingEnforcer_<%=cid%>.createRuntimeSchema();
                 }
                 <%
             }
 
             %>
-            current_<%=cid%>.createNewRecord();
+            incomingEnforcer_<%=cid%>.createNewRecord();
             <%
             for (int i = 0; i < input_columnList.size(); i++) { // column
                 IMetadataColumn column = input_columnList.get(i);
                 if (dynamicPos != i) {
                     %>
-                    current_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
+                    incomingEnforcer_<%=cid%>.put("<%=column.getLabel()%>", <%=inputConn.getName()%>.<%=column.getLabel()%>);
                     <%
                 } else {
                     %>
                     for (int i = 0; i < <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnCount(); i++) {
-                        current_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
+                        incomingEnforcer_<%=cid%>.put(<%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnMetadata(i).getName(),
                                 <%=inputConn.getName()%>.<%=column.getLabel()%>.getColumnValue(i));
                     }
                     <%
@@ -136,7 +136,7 @@ if(hasInput){
             // connections.
 
             %>
-            org.apache.avro.generic.IndexedRecord data_<%=cid%> = current_<%=cid%>.getCurrentRecord();
+            org.apache.avro.generic.IndexedRecord data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
 
             writer_<%=cid%>.write(data_<%=cid%>);
             

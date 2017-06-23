@@ -43,7 +43,7 @@ class IndexedRecordToRowStructGenerator {
         }
         dynamicColName = tmpDynamicColName;
 
-        this.codeVarSchemaEnforcer = "current_" + cid;
+        this.codeVarSchemaEnforcer = "outgoingEnforcer_" + cid;
         this.codeVarIsDynamicInitialized = "initDyn_" + cid;
         this.codeVarDynamic = "dynamic_" + cid;
         this.codeVarIndexedRecordAdapter = "factory_" + cid;
