@@ -451,7 +451,11 @@ public class CLASS {
                             createSQL.append(getAutoIncrement(column.getStartValue(), column.getStep()));
                         } else {
                             createSQL.append(setDefaultValue(column.getColumn().getDefault(), dataType));
-                            createSQL.append(setNullable(column.getColumn().isNullable()));
+                            if("ibmdb2_id".equalsIgnoreCase(getDBMSId())&&column.isKey()){
+                            	createSQL.append(" not null ");
+                            }else{
+                                createSQL.append(setNullable(column.getColumn().isNullable()));
+                            }
                         }
 
                         createSQL.append(ending);
