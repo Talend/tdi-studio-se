@@ -307,6 +307,11 @@ public class ComponentsUtilsTest {
         node.setPropertyValue(testParamName, "user");
         parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("user", parameterValue); //$NON-NLS-1$
+
+        // If old parameter value is not null but property value is NULL, return "".
+        testProperty.setValue(null);
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals("\"\"", parameterValue); //$NON-NLS-1$
     }
 
     @After
