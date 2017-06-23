@@ -169,24 +169,16 @@ class IndexedRecordToRowStructGenerator {
                 <%
             } else {
                 %>
-				Object columnValue_<%=i%>_<%=cid%> = <%=codeVarSchemaEnforcer%>.get(<%=i%>);
+                Object columnValue_<%=i%>_<%=cid%> = <%=codeVarSchemaEnforcer%>.get(<%=i%>);
                 if (columnValue_<%=i%>_<%=cid%> == null) {
                      <%=codeVarRowStruct%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
                 } else {
                     <%
-                    if (javaType == JavaTypesManager.STRING) {
+                    if ("id_Document".equals(column.getTalendType())) {
                         %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(columnValue_<%=i%>_<%=cid%>);
+                        <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
                         <%
-                    } else if (javaType == JavaTypesManager.CHARACTER) {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(columnValue_<%=i%>_<%=cid%>).charAt(0);
-                        <%
-                    } else if("id_Document".equals(column.getTalendType())){
-                    	%>
-                    	<%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
-                    	<%
-                    } else  {
+                    } else {
                         %>
                         <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
                         <%
