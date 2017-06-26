@@ -34,9 +34,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
 
     private IntegerFieldEditor dbConnTimeout;
 
-    private CheckBoxFieldEditor dbConnLimitActive;
-
-    private IntegerFieldEditor dbConnLimit;
+    private IntegerFieldEditor hadoopFetchLimit;
 
     public PerformancePreferencePage() {
         super(GRID);
@@ -87,26 +85,6 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             textControl.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.DB_CONNECTION_TIMEOUT_ACTIVED));
             addField(dbConnTimeoutActive);
             addField(dbConnTimeout);
-
-            dbConnLimitActive = new CheckBoxFieldEditor(ITalendCorePrefConstants.DB_CONNECTION_LIMIT_ACTIVED,
-                    Messages.getString("PerformancePreferencePage.ActivedLimitSetting"), getFieldEditorParent()); //$NON-NLS-1$
-            dbConnLimitActive.getButton().addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    checkDBLimit();
-                }
-            });
-            dbConnLimit = new IntegerFieldEditor(ITalendCorePrefConstants.DB_CONNECTION_LIMIT,
-                    Messages.getString("PerformancePreferencePage.ConnectionLimit"), //$NON-NLS-1$
-                    getFieldEditorParent());
-            Text limitTextControl = dbConnLimit.getTextControl(getFieldEditorParent());
-            limitTextControl.setToolTipText(Messages.getString("PerformancePreferencePage.ConnectionLimitTip")); //$NON-NLS-1$
-            dbConnLimit.setValidRange(0, Short.MAX_VALUE);
-            limitTextControl.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.DB_CONNECTION_LIMIT_ACTIVED));
-            addField(dbConnLimitActive);
-            addField(dbConnLimit);
-
             addSVNInforAutoCheckFiled();
         } else {
             addField(new BooleanFieldEditor(ITalendCorePrefConstants.DEACTIVE_REPOSITORY_UPDATE,
@@ -144,25 +122,6 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             addField(dbConnTimeoutActive);
             addField(dbConnTimeout);
 
-            dbConnLimitActive = new CheckBoxFieldEditor(ITalendCorePrefConstants.DB_CONNECTION_LIMIT_ACTIVED,
-                    Messages.getString("PerformancePreferencePage.ActivedLimitSetting"), getFieldEditorParent()); //$NON-NLS-1$
-            dbConnLimitActive.getButton().addSelectionListener(new SelectionAdapter() {
-
-                @Override
-                public void widgetSelected(SelectionEvent e) {
-                    checkDBLimit();
-                }
-            });
-            dbConnLimit = new IntegerFieldEditor(ITalendCorePrefConstants.DB_CONNECTION_LIMIT,
-                    Messages.getString("PerformancePreferencePage.ConnectionLimit"), //$NON-NLS-1$
-                    getFieldEditorParent());
-            Text limitTextControl = dbConnLimit.getTextControl(getFieldEditorParent());
-            limitTextControl.setToolTipText(Messages.getString("PerformancePreferencePage.ConnectionLimitTip")); //$NON-NLS-1$
-            dbConnLimit.setValidRange(0, Short.MAX_VALUE);
-            limitTextControl.setEnabled(getPreferenceStore().getBoolean(ITalendCorePrefConstants.DB_CONNECTION_LIMIT_ACTIVED));
-            addField(dbConnLimitActive);
-            addField(dbConnLimit);
-
             addField(new BooleanFieldEditor(ITalendCorePrefConstants.ADD_USER_ROUTINES,
                     Messages.getString("PerformancePreferencePage.addAllUserRoutines"), //$NON-NLS-1$
                     getFieldEditorParent()));
@@ -178,6 +137,14 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
                 getFieldEditorParent());
         codeFormatTimeout.setValidRange(1, Short.MAX_VALUE);
         addField(codeFormatTimeout);
+
+        hadoopFetchLimit = new IntegerFieldEditor(ITalendCorePrefConstants.HADOOP_FETCH_LIMIT,
+                Messages.getString("PerformancePreferencePage.HadoopFetchLimit"), //$NON-NLS-1$
+                getFieldEditorParent());
+        Text limitTextControl = hadoopFetchLimit.getTextControl(getFieldEditorParent());
+        limitTextControl.setToolTipText(Messages.getString("PerformancePreferencePage.HadoopFetchLimitTip")); //$NON-NLS-1$
+        hadoopFetchLimit.setValidRange(0, Short.MAX_VALUE);
+        addField(hadoopFetchLimit);
     }
 
     private void addSVNInforAutoCheckFiled() {
@@ -244,15 +211,6 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
             Text textControl = dbConnTimeout.getTextControl(getFieldEditorParent());
             if (textControl != null && dbConnTimeoutActive != null) {
                 textControl.setEnabled(dbConnTimeoutActive.getBooleanValue());
-            }
-        }
-    }
-
-    private void checkDBLimit() {
-        if (dbConnLimit != null) {
-            Text textControl = dbConnLimit.getTextControl(getFieldEditorParent());
-            if (textControl != null && dbConnLimitActive != null) {
-                textControl.setEnabled(dbConnLimitActive.getBooleanValue());
             }
         }
     }
