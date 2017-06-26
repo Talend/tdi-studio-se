@@ -12,10 +12,7 @@
 // ============================================================================
 package org.talend.repository.generic.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -46,8 +43,8 @@ public class GenericConnectionUtilTest {
     @Test
     public void testSynNamePropertyWithItem() {
         String namePropertyValue = "test"; //$NON-NLS-1$
-        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        props.name.setValue(namePropertyValue);
+        ComponentProperties props = ComponentsUtils.getComponentProperties("tSalesforceConnection"); //$NON-NLS-1$
+        props.setValue(IGenericConstants.NAME_PROPERTY, namePropertyValue);
         String serializedProps = props.toSerialized();
         GenericConnectionItem testItem = createTestItem(namePropertyValue, serializedProps);
         GenericConnection testConn = (GenericConnection) testItem.getConnection();
