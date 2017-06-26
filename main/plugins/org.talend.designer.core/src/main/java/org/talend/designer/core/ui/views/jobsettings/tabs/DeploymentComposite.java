@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -236,41 +237,25 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void initialize() {
         if (!isAdditionalPropertiesNull(getObject())) {
             // TODO get from PublishPlugin.getDefault().getPreferenceStore();
-            defaultGroupId = isDataServiceJob ? "" : "org.example"; // $NON-NLS-1$
-            if (groupId == null) {
-                groupId = (String) get(getObject(), MavenConstants.NAME_GROUP_ID);
-                if (groupId == null) {
-                    groupId = defaultGroupId;
-                }
+            defaultGroupId = isDataServiceJob ? "" : "org.example"; //$NON-NLS-1$ //$NON-NLS-2$
+            groupId = (String) get(getObject(), MavenConstants.NAME_GROUP_ID);
+            boolean isCustomGroupId = groupId != null;
+            if (!isCustomGroupId) {
+                groupId = defaultGroupId;
             }
-            if (groupId != null) {
-                boolean isDefaultGroupId = groupId.equals(defaultGroupId);
-                groupIdCheckbox.setSelection(!isDefaultGroupId);
-                groupIdText.setEnabled(!isDefaultGroupId);
-                groupIdText.setText(groupId);
-            } else {
-                groupIdText.setText(defaultGroupId);
-                groupIdCheckbox.setSelection(false);
-                groupIdText.setEnabled(false);
+            groupIdText.setText(groupId);
+            groupIdCheckbox.setSelection(isCustomGroupId);
+            groupIdText.setEnabled(isCustomGroupId);
+            
+            version = (String) get(getObject(), MavenConstants.NAME_USER_VERSION);
+            boolean isCustomVersion = version != null;
+            if (!isCustomVersion) {
+                version = defaultVersion;
             }
-            if (version == null) {
-                version = (String) get(getObject(), MavenConstants.NAME_USER_VERSION);
-                if (version == null) {
-                    version = defaultVersion;
-                }
-            }
-            if (version != null) {
-                boolean isDefaultVersion = version.equals(defaultVersion);
-                versionCheckbox.setSelection(!isDefaultVersion);
-                versionText.setEnabled(!isDefaultVersion);
-                versionText.setText(version);
-                versionText.setToolTipText(""); //$NON-NLS-1$
-            } else {
-                versionCheckbox.setSelection(false);
-                versionText.setEnabled(false);
-                versionText.setText(defaultVersion);
-                versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$ ;
-            }
+            versionText.setText(version);
+            versionCheckbox.setSelection(isCustomVersion);
+            versionText.setEnabled(isCustomVersion);
+            versionText.setToolTipText(""); //$NON-NLS-1$
 
             boolean useSnapshot = containsKey(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
             snapshotCheckbox.setSelection(useSnapshot);
@@ -329,9 +314,6 @@ public class DeploymentComposite extends AbstractTabComposite {
                 } else {
                     groupIdText.setEnabled(false);
                     groupIdText.setText(defaultGroupId);
-                    // remove key, so will be default groupId
-                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, null);
-                    getCommandStack().execute(cmd);
                 }
             }
 
@@ -342,14 +324,17 @@ public class DeploymentComposite extends AbstractTabComposite {
             @Override
             public void modifyText(ModifyEvent e) {
                 String currentGroupId = groupIdText.getText();
-                if (currentGroupId != null && !currentGroupId.trim().equals("")) { //$NON-NLS-1$
+                if (!StringUtils.isBlank(currentGroupId)) {
                     groupIdText.setBackground(getBackground());
                     groupIdText.setToolTipText(""); //$NON-NLS-1$
                     if (!defaultGroupId.equals(currentGroupId)) {
                         groupId = currentGroupId;
                     } else {
-                        currentGroupId = null;
+                        if (!groupIdCheckbox.getSelection()) {
+                            currentGroupId = null;
+                        }
                     }
+                    // if empty, remove it from job, else will set the new value
                     Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, currentGroupId);
                     getCommandStack().execute(cmd);
                 } else {
@@ -369,9 +354,6 @@ public class DeploymentComposite extends AbstractTabComposite {
                 } else {
                     versionText.setEnabled(false);
                     versionText.setText(defaultVersion);
-                    // remove key, so will be default version
-                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_USER_VERSION, null);
-                    getCommandStack().execute(cmd);
                 }
             }
 
@@ -382,8 +364,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             @Override
             public void modifyText(ModifyEvent e) {
                 String currentVersion = versionText.getText();
-                if (currentVersion != null && !currentVersion.trim().equals("") //$NON-NLS-1$
-                        && !isValidMavenVersion(currentVersion, snapshotCheckbox.getSelection())) {
+                if (StringUtils.isBlank(currentVersion) || !isValidMavenVersion(currentVersion, snapshotCheckbox.getSelection())) {
                     versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$
                     versionText.setBackground(COLOR_RED);
                 } else {
@@ -392,7 +373,9 @@ public class DeploymentComposite extends AbstractTabComposite {
                     if (!defaultVersion.equals(currentVersion)) {
                         version = currentVersion;
                     } else {
-                        currentVersion = null;
+                        if (!versionCheckbox.getSelection()) {
+                            currentVersion = null;
+                        }
                     }
                     // if empty, remove it from job, else will set the new value
                     Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_USER_VERSION,
