@@ -34,7 +34,7 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
 
     private IntegerFieldEditor dbConnTimeout;
 
-    private IntegerFieldEditor hadoopFetchLimit;
+    private IntegerFieldEditor hbaseOrMaprDBScanLimit;
 
     public PerformancePreferencePage() {
         super(GRID);
@@ -138,13 +138,13 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
         codeFormatTimeout.setValidRange(1, Short.MAX_VALUE);
         addField(codeFormatTimeout);
 
-        hadoopFetchLimit = new IntegerFieldEditor(ITalendCorePrefConstants.HADOOP_FETCH_LIMIT,
-                Messages.getString("PerformancePreferencePage.HadoopFetchLimit"), //$NON-NLS-1$
+        hbaseOrMaprDBScanLimit = new IntegerFieldEditor(ITalendCorePrefConstants.HBASE_OR_MAPRDB_SCAN_LIMIT,
+                Messages.getString("PerformancePreferencePage.HBaseOrMaprDBScanLimit"), //$NON-NLS-1$
                 getFieldEditorParent());
-        Text limitTextControl = hadoopFetchLimit.getTextControl(getFieldEditorParent());
-        limitTextControl.setToolTipText(Messages.getString("PerformancePreferencePage.HadoopFetchLimitTip")); //$NON-NLS-1$
-        hadoopFetchLimit.setValidRange(0, Short.MAX_VALUE);
-        addField(hadoopFetchLimit);
+        Text limitTextControl = hbaseOrMaprDBScanLimit.getTextControl(getFieldEditorParent());
+        limitTextControl.setToolTipText(Messages.getString("PerformancePreferencePage.HBaseOrMaprDBScanLimitTip")); //$NON-NLS-1$
+        hbaseOrMaprDBScanLimit.setValidRange(0, Short.MAX_VALUE);
+        addField(hbaseOrMaprDBScanLimit);
     }
 
     private void addSVNInforAutoCheckFiled() {

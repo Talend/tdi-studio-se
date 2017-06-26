@@ -144,8 +144,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(ITalendCorePrefConstants.DB_CONNECTION_TIMEOUT, 15);
         // store.setDefault(ITalendCorePrefConstants.ITEM_INDEX, false);
 
-        // hadoop fetch limit
-        store.setDefault(ITalendCorePrefConstants.HADOOP_FETCH_LIMIT, 50);
+        // HBase or MaprDB scan limit
+        store.setDefault(ITalendCorePrefConstants.HBASE_OR_MAPRDB_SCAN_LIMIT, 50);
 
         // Add dependencies routines for job
         store.setDefault(ITalendCorePrefConstants.ADD_USER_ROUTINES, false);

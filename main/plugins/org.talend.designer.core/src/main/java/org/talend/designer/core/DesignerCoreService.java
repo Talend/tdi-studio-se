@@ -754,10 +754,10 @@ public class DesignerCoreService implements IDesignerCoreService {
     }
 
     @Override
-    public int getHadoopFetchLimit() {
+    public int getHBaseOrMaprDBScanLimit() {
         final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
         if (preferenceStore != null) {
-            return preferenceStore.getInt(ITalendCorePrefConstants.HADOOP_FETCH_LIMIT);
+            return preferenceStore.getInt(ITalendCorePrefConstants.HBASE_OR_MAPRDB_SCAN_LIMIT);
         }
         // disable
         return 0;
