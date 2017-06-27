@@ -33,7 +33,6 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.repository.FakePropertyImpl;
-import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.NamedThing;
@@ -249,18 +248,6 @@ public class ComponentsUtilsTest {
                 }
             }
         }
-    }
-
-    @Test
-    public void testIsPropertyChangedByUser() {
-        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
-
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
-        assertTrue(ComponentsUtils.isPropertyChangedByUser(props.userId));
-
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, false);
-        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
     }
 
     @Test

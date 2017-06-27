@@ -48,7 +48,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDbMapDesignerService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.Expression;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
@@ -220,10 +219,6 @@ public class PropertyChangeCommand extends Command {
         oldElementValues.clear();
         if (currentParam == null) {
             return;
-        }
-
-        if (currentParam instanceof ElementParameter) {
-            ((ElementParameter) currentParam).setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
         }
 
         if (currentParam.isRepositoryValueUsed()) {

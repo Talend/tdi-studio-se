@@ -48,7 +48,6 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.process.IGraphicalNode;
@@ -586,7 +585,6 @@ public class NodesPasteCommand extends Command {
                                     elementParameter.setRepositoryValueUsed(param.isRepositoryValueUsed());
                                 }
                             }
-                            ((ElementParameter) elementParameter).setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
                         }
                     }
                 }

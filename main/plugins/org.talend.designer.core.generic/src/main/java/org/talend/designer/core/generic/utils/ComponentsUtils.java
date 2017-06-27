@@ -53,7 +53,6 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
-import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -539,10 +538,6 @@ public class ComponentsUtils {
             }
         }
         return paramValue;
-    }
-
-    public static boolean isPropertyChangedByUser(Property property) {
-        return Boolean.valueOf(String.valueOf(property.getTaggedValue(UpdatesConstants.CHANGED_BY_USER)));
     }
 
     public static String unescapeForJava(String input) {
