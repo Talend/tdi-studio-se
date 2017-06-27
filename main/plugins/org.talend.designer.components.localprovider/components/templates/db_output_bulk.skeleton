@@ -15,7 +15,7 @@ public class CLASS {
     public static final int UPDATE_TYPE = 2;
     public static final String ACCESS = "access_id";
     public static final String AS400 = "as400_id";
-    public static final String DB2 = "ibmdb2_id";
+    public static final String DBf2 = "ibmdb2_id";
     public static final String FIREBIRD = "firebird_id";
     public static final String GREENPLUM = "greenplum_id";
     public static final String HSQLDB = "hsqldb_id";
@@ -363,9 +363,9 @@ public class CLASS {
                             dataType = column.getColumn().getType();
                         }
                         Integer length = column.getColumn().getLength() == null ? 0 : column.getColumn().getLength();
-                        if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
+                        if (MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
                             createSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ;                            
-                        }else if("oracle_id".equalsIgnoreCase(getDBMSId()) && dataType.matches("TIMESTAMP WITH TIME ZONE")){
+                        }else if(ORACLE.equalsIgnoreCase(getDBMSId()) && dataType.matches("TIMESTAMP WITH TIME ZONE")){
                             createSQL.append("TIMESTAMP("+length+") WITH TIME ZONE");
                         }else{                            
                             createSQL.append(dataType);
@@ -377,12 +377,12 @@ public class CLASS {
                         String suffix = "";
                         String comma = "";
                         
-                        if ( ("oracle_id".equalsIgnoreCase(getDBMSId()))
+                        if ( (ORACLE.equalsIgnoreCase(getDBMSId()))
                                 && (("NUMBER".equalsIgnoreCase(dataType)) || ("CHAR".equalsIgnoreCase(dataType)) || ("NCHAR".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
                         ){} 
-                        else if ((("mysql_id".equalsIgnoreCase(getDBMSId()))||("as400_id".equalsIgnoreCase(getDBMSId())))
+                        else if (((MYSQL.equalsIgnoreCase(getDBMSId()))||(AS400.equalsIgnoreCase(getDBMSId())))
                                 && (("DECIMAL".equalsIgnoreCase(dataType)) || ("NUMERIC".equalsIgnoreCase(dataType))||(("FLOAT".equalsIgnoreCase(dataType)))||("DOUBLE".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
@@ -408,7 +408,7 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
+                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
@@ -426,11 +426,11 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
+                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
                                 } else {
                                     createSQL.append(suffix);
                                 }
-                                if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
+                                if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
                             }                            
@@ -438,7 +438,7 @@ public class CLASS {
                         }
                         if(column.isAutoIncrement()) {
                             // move the autoincrease key column to the first index in the primary defination. Otherwise, it will throw exception
-                            if("mysql_id".equalsIgnoreCase(getDBMSId()) ) {
+                            if(MYSQL.equalsIgnoreCase(getDBMSId()) ) {
                                 String columnStr = getLProtectedChar( column.getColumnName() ) + column.getColumnName() + getRProtectedChar( column.getColumnName() );
                                 int index = pkList.indexOf(columnStr);
                                 if(index !=-1){
@@ -451,7 +451,7 @@ public class CLASS {
                             createSQL.append(getAutoIncrement(column.getStartValue(), column.getStep()));
                         } else {
                             createSQL.append(setDefaultValue(column.getColumn().getDefault(), dataType));
-                            if("ibmdb2_id".equalsIgnoreCase(getDBMSId())&&column.isKey()){
+                            if(DBf2.equalsIgnoreCase(getDBMSId())&&column.isKey()){
                             	createSQL.append(" not null ");
                             }else{
                                 createSQL.append(setNullable(column.getColumn().isNullable()));
@@ -479,13 +479,13 @@ public class CLASS {
             return createSQL.toString();
         }
         protected String getAutoIncrement(int startValue, int step) {
-            if("sybase_id".equalsIgnoreCase(getDBMSId()) || "Exasol_id".equalsIgnoreCase(getDBMSId())){
+            if(SYBASE.equalsIgnoreCase(getDBMSId()) || EXASOL.equalsIgnoreCase(getDBMSId())){
                 return " IDENTITY NOT NULL";
-            } else if("mysql_id".equalsIgnoreCase(getDBMSId()) ) {
+            } else if(MYSQL.equalsIgnoreCase(getDBMSId()) ) {
                 return " AUTO_INCREMENT";
-            } else if("ibmdb2_id".equalsIgnoreCase(getDBMSId())){
+            } else if(DBf2.equalsIgnoreCase(getDBMSId())){
                 return " Generated by default AS IDENTITY(START WITH "+startValue+", INCREMENT BY "+step+", NO CACHE )";
-            } else if("teradata_id".equalsIgnoreCase(getDBMSId())){
+            } else if(TERADATA.equalsIgnoreCase(getDBMSId())){
                 return " generated by default as identity (start with " + startValue + " increment by " + step + " no cycle) not null";
             }else {
                 return " IDENTITY (" + startValue + ", " + step + ") NOT NULL";
@@ -1486,7 +1486,7 @@ public class CLASS {
                         } else {
                             dataType = column.getColumn().getType();
                         }
-                        if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
+                        if (MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
                             createSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ;                            
                         }else {                            
                             createSQL.append(dataType);
@@ -1499,12 +1499,12 @@ public class CLASS {
                         String suffix = "";
                         String comma = "";
                         
-                        if ( ("oracle_id".equalsIgnoreCase(getDBMSId()))
+                        if ( (ORACLE.equalsIgnoreCase(getDBMSId()))
                                 && (("NUMBER".equalsIgnoreCase(dataType)) || ("CHAR".equalsIgnoreCase(dataType)) || ("NCHAR".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
                         ){} 
-                        else if (("mysql_id".equalsIgnoreCase(getDBMSId()))
+                        else if ((MYSQL.equalsIgnoreCase(getDBMSId()))
                                 && (("DECIMAL".equalsIgnoreCase(dataType)) || ("NUMERIC".equalsIgnoreCase(dataType))||(("FLOAT".equalsIgnoreCase(dataType)))||("DOUBLE".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
@@ -1530,7 +1530,7 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
+                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
@@ -1548,11 +1548,11 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
+                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
                                 } else {
                                     createSQL.append(suffix);
                                 }
-                                if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
+                                if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
                             }                            
@@ -1585,7 +1585,7 @@ public class CLASS {
             }
             
             // add VectorWise option
-            if ("vectorwise_id".equalsIgnoreCase(getDBMSId())){
+            if (VECTORWISE.equalsIgnoreCase(getDBMSId())){
                 createSQL.append("WITH STRUCTURE = VECTORWISE");
             }
             
@@ -2056,7 +2056,7 @@ public class CLASS {
                         } else {
                             dataType = column.getColumn().getType();
                         }
-                        if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
+                        if (MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
                             createSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ;                            
                         }else {                            
                             createSQL.append(dataType);
@@ -2079,12 +2079,12 @@ public class CLASS {
                         }
                         // end bug0016707
                         
-                        if ( ("oracle_id".equalsIgnoreCase(getDBMSId()))
+                        if ( (ORACLE.equalsIgnoreCase(getDBMSId()))
                                 && (("NUMBER".equalsIgnoreCase(dataType)) || ("CHAR".equalsIgnoreCase(dataType)) || ("NCHAR".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
                         ){} 
-                        else if (("mysql_id".equalsIgnoreCase(getDBMSId()))
+                        else if ((MYSQL.equalsIgnoreCase(getDBMSId()))
                                 && (("DECIMAL".equalsIgnoreCase(dataType)) || ("NUMERIC".equalsIgnoreCase(dataType))||(("FLOAT".equalsIgnoreCase(dataType)))||("DOUBLE".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
@@ -2110,7 +2110,7 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
+                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
@@ -2128,11 +2128,11 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
+                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
                                 } else {
                                     createSQL.append(suffix);
                                 }
-                                if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
+                                if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
                             }                            
@@ -3583,7 +3583,7 @@ public class CLASS {
                         } else {
                             dataType = column.getColumn().getType();
                         }
-                        if ("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
+                        if (MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {                            
                             createSQL.append(dataType.substring(0,dataType.indexOf("UNSIGNED"))) ;                            
                         }else {                            
                             createSQL.append(dataType);
@@ -3596,12 +3596,12 @@ public class CLASS {
                         String suffix = "";
                         String comma = "";
                         
-                        if ( ("oracle_id".equalsIgnoreCase(getDBMSId()))
+                        if ( (ORACLE.equalsIgnoreCase(getDBMSId()))
                                 && (("NUMBER".equalsIgnoreCase(dataType)) || ("CHAR".equalsIgnoreCase(dataType)) || ("NCHAR".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
                         ){} 
-                        else if (("mysql_id".equalsIgnoreCase(getDBMSId()))
+                        else if ((MYSQL.equalsIgnoreCase(getDBMSId()))
                                 && (("DECIMAL".equalsIgnoreCase(dataType)) || ("NUMERIC".equalsIgnoreCase(dataType))||(("FLOAT".equalsIgnoreCase(dataType)))||("DOUBLE".equalsIgnoreCase(dataType)))
                                 && (column.getColumn().getLength() == null || 0 == column.getColumn().getLength())
                                 && (column.getColumn().getPrecision() == null || 0 == column.getColumn().getPrecision())
@@ -3627,7 +3627,7 @@ public class CLASS {
                                 createSQL.append(suffix);
                             } else {
                                 if (!lengthIgnored) {
-                                    if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
+                                    if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                    
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
@@ -3645,11 +3645,11 @@ public class CLASS {
                                     }
                                     createSQL.append(comma + precision);
                                 }
-                                if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
+                                if ((POSTGRESQL.equalsIgnoreCase(getDBMSId()) || POSTGREPLUS.equalsIgnoreCase(getDBMSId()) ) && column.getColumn().getLength() == null) {                                
                                 } else {
                                     createSQL.append(suffix);
                                 }
-                                if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
+                                if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                                     createSQL.append("UNSIGNED");
                                 }
                             }                            
