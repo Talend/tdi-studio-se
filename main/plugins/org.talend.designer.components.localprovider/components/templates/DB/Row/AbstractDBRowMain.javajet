@@ -93,11 +93,7 @@ if(("true").equals(propagateRecordset)){
 try {
 <%
 	if (usePrepareStatement) {
-		if(prepareStatementParameters.size()>0){
-			log4jCodeGenerateUtil.logInfo(node,"debug","| Prameter Index | Prameter Type | Parameter Value |");
-		}
 		for (Map<String, String> param : prepareStatementParameters) {
-			log4jCodeGenerateUtil.logInfo(node,"debug",cid+" - | "+param.get("PARAMETER_INDEX")+" | "+param.get("PARAMETER_TYPE")+" | \"+"+param.get("PARAMETER_VALUE")+"+\" |");
 			if ("Date".equals(param.get("PARAMETER_TYPE"))) {
 %>
 			pstmt_<%=cid %>.setTimestamp(<%=param.get("PARAMETER_INDEX")%>,new java.sql.Timestamp(<%=param.get("PARAMETER_VALUE")%>.getTime()));
