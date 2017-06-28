@@ -321,8 +321,8 @@ public class ImportTreeFromRepository extends SelectionAction {
             } else if (node.getAttribute().equals("ns")) {
                 this.addAttributeNamespace(current, currentPath, newPath, type, NodeType.NAME_SPACE, defaultValue);
             } else {
-                String columnPattern = getColumnPatternFromMetadataTable(node, metaTable);
-                temp = this.addElement(current, currentPath, newPath, type, columnPattern, NodeType.ELEMENT, node.getOrder());
+                temp = this.addElement(current, currentPath, newPath, type,
+                        XmlMapUtil.getColumnPatternFromMetadataTable(node, metaTable), NodeType.ELEMENT, node.getOrder());
                 if (rootNode == null) {
                     rootNode = temp;
                 }
@@ -352,8 +352,8 @@ public class ImportTreeFromRepository extends SelectionAction {
             } else if (node.getAttribute().equals("ns")) {
                 this.addAttributeNamespace(current, currentPath, newPath, type, NodeType.NAME_SPACE, defaultValue);
             } else {
-                String columnPattern = getColumnPatternFromMetadataTable(node, metaTable);
-                temp = this.addElement(current, currentPath, newPath, type, columnPattern, NodeType.ELEMENT, node.getOrder());
+                temp = this.addElement(current, currentPath, newPath, type,
+                        XmlMapUtil.getColumnPatternFromMetadataTable(node, metaTable), NodeType.ELEMENT, node.getOrder());
                 groupElements.add(temp);
                 if (node.getAttribute().equals("main")) {
                     temp.setMain(true);
@@ -380,8 +380,8 @@ public class ImportTreeFromRepository extends SelectionAction {
             } else if (node.getAttribute().equals("ns")) {
                 this.addAttributeNamespace(current, currentPath, newPath, type, NodeType.NAME_SPACE, defaultValue);
             } else {
-                String columnPattern = getColumnPatternFromMetadataTable(node, metaTable);
-                temp = this.addElement(current, currentPath, newPath, type, columnPattern, NodeType.ELEMENT, node.getOrder());
+                temp = this.addElement(current, currentPath, newPath, type,
+                        XmlMapUtil.getColumnPatternFromMetadataTable(node, metaTable), NodeType.ELEMENT, node.getOrder());
                 // if root node is loop
                 if (rootNode == null) {
                     rootNode = temp;
@@ -408,24 +408,6 @@ public class ImportTreeFromRepository extends SelectionAction {
             fillGroup(loopNode, groupElements);
         }
 
-    }
-
-    private String getColumnPatternFromMetadataTable(XMLFileNode node, MetadataTable metaTable) {
-        if (node == null || metaTable == null) {
-            return null;
-        }
-        String pattern = null;
-        EList<MetadataColumn> columns = metaTable.getColumns();
-        for (MetadataColumn column : columns) {
-            if (column.getLabel() != null && column.getLabel().equals(node.getRelatedColumn())) {
-                String colPattern = column.getPattern();
-                if (colPattern != null && !colPattern.isEmpty()) {
-                    pattern = colPattern;
-                    break;
-                }
-            }
-        }
-        return pattern;
     }
 
     private void addAttributeNamespace(TreeNode current, String currentPath, String newPath, String type, NodeType nodeType,

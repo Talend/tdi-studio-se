@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
 
 import org.eclipse.emf.common.util.EList;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.connection.MetadataColumn;
+import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.metadata.builder.connection.XMLFileNode;
 import org.talend.designer.xmlmap.i18n.Messages;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractInOutTree;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractNode;
@@ -78,9 +81,9 @@ public class XmlMapUtil {
     public static final String VAR_TABLE_NAME = "Var";
 
     /**
-     * 
+     *
      * DOC talend Comment method "getXPathLength".
-     * 
+     *
      * @param xPath
      * @return if return >2 , TreeNode is a child of document node.
      */
@@ -506,9 +509,9 @@ public class XmlMapUtil {
     }
 
     /**
-     * 
+     *
      * get filter connections with a InputXmlTree target
-     * 
+     *
      * @param abstractTree
      * @return
      */
@@ -847,9 +850,9 @@ public class XmlMapUtil {
     }
 
     /**
-     * 
+     *
      * DOC WCHEN Remove source loops refrenced from input main
-     * 
+     *
      * @param mapData
      * @param mainInput
      * @param oldLoopsFromInput
@@ -942,6 +945,24 @@ public class XmlMapUtil {
         }
 
         return changed;
+    }
+
+    public static String getColumnPatternFromMetadataTable(XMLFileNode node, MetadataTable metaTable) {
+        if (node == null || metaTable == null) {
+            return null;
+        }
+        String pattern = null;
+        EList<MetadataColumn> columns = metaTable.getColumns();
+        for (MetadataColumn column : columns) {
+            if (column.getLabel() != null && column.getLabel().equals(node.getRelatedColumn())) {
+                String colPattern = column.getPattern();
+                if (colPattern != null && !colPattern.isEmpty()) {
+                    pattern = colPattern;
+                    break;
+                }
+            }
+        }
+        return pattern;
     }
 
 }
