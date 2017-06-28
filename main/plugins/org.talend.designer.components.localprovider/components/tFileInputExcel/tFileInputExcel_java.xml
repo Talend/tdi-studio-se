@@ -178,7 +178,7 @@
             <IMPORT NAME="poi-ooxml-schemas" MODULE="poi-ooxml-schemas-3.16-20170419.jar" MVN="mvn:org.talend.libraries/poi-ooxml-schemas-3.16-20170419/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-ooxml-schemas-3.16-20170419.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
             <IMPORT NAME="poi-scratchpad" MODULE="poi-scratchpad-3.16-20170419.jar" MVN="mvn:org.talend.libraries/poi-scratchpad-3.16-20170419/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/poi-scratchpad-3.16-20170419.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
 			<IMPORT NAME="xmlbeans" MODULE="xmlbeans-2.6.0.jar" MVN="mvn:org.talend.libraries/xmlbeans-2.6.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.xml/lib/xmlbeans-2.6.0.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
-			<IMPORT NAME="simpleexcel" MODULE="simpleexcel-1.1-20170505.jar" MVN="mvn:org.talend.libraries/simpleexcel-1.1-20170505/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.excel/lib/simpleexcel-1.1-20170505.jar" REQUIRED_IF="(VERSION_2007 == 'true') AND GENERATION_MODE == 'EVENT_MODE')" />
+			<IMPORT NAME="simpleexcel" MODULE="simpleexcel-1.1-20170628.jar" MVN="mvn:org.talend.libraries/simpleexcel-1.1-20170628/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.excel/lib/simpleexcel-1.1-20170628.jar" REQUIRED_IF="(VERSION_2007 == 'true') AND GENERATION_MODE == 'EVENT_MODE')" />
 			<IMPORT NAME="commons-collections4" MODULE="commons-collections4-4.1.jar" MVN="mvn:org.talend.libraries/commons-collections4-4.1/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.excel/lib/commons-collections4-4.1.jar" REQUIRED_IF="(VERSION_2007 == 'true')" />
 		</IMPORTS>
 	</CODEGENERATION>
