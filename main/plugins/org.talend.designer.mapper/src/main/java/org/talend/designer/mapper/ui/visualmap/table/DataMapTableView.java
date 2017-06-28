@@ -2489,7 +2489,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             expressionImageLabel = new Label(getCenterComposite(), SWT.NONE);
             expressionImageLabel.setImage(ImageProviderMapper.getImage(ImageInfo.ACTIVATE_FILTER_ICON));
             expressionImageLabel.setVisible(table.isActivateExpressionFilter());
-            // //$NON-NLS-1$
 
             expressionFilterText = new UnnotifiableColorStyledText(getCenterComposite(), SWT.BORDER | SWT.V_SCROLL,
                     preferenceStore, LanguageManager.getCurrentLanguage().getName());
