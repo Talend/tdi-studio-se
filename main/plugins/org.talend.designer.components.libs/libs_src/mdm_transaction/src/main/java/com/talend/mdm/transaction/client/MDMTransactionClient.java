@@ -28,7 +28,7 @@ public class MDMTransactionClient {
         try {
             client.executeMethod(put);
             tid = put.getResponseBodyAsString();
-            cookies = parseCookie(put);
+            cookies = parseCookies(put);
         } catch (HttpException e) {
             throw e;
         } catch (IOException e) {
@@ -84,7 +84,7 @@ public class MDMTransactionClient {
         List<String> cookies;
         try {
             client.executeMethod(get);
-            cookies = parseCookie(get);
+            cookies = parseCookies(get);
         } catch (HttpException e) {
             throw e;
         } catch (IOException e) {
@@ -95,7 +95,7 @@ public class MDMTransactionClient {
         return cookies;
     }
 
-    private static List<String> parseCookie(HttpMethod method) {
+    private static List<String> parseCookies(HttpMethod method) {
         List<String> cookies = new ArrayList<String>();
         Header[] setCookie = method.getResponseHeaders("Set-Cookie");
         for (Header header : setCookie) {
