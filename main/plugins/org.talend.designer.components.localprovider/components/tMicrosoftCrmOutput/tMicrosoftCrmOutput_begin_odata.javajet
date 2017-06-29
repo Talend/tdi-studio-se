@@ -1,10 +1,3 @@
-<%@ jet
-imports="
-        org.talend.core.model.process.ElementParameterParser
-        org.talend.core.model.process.INode
-        org.talend.designer.codegen.config.CodeGeneratorArgument
-		"
-%>
 <%
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 	String userName = ElementParameterParser.getValue(node, "__USERNAME__");
@@ -29,6 +22,32 @@ imports="
 		String entitySetName_<%=cid%>="<%=entitySetName%>";
 	<%	
 	}
+	 String action = ElementParameterParser.getValue(node,"__ACTION__");
+	 if("update".equals(action)){
+	    List<IMetadataTable> metadatas = node.getMetadataList();
+	    if ((metadatas!=null)&&(metadatas.size()>0)) {
+	        IMetadataTable metadata = metadatas.get(0);
+	        if (metadata!=null) {
+			      List<IMetadataColumn> columns = metadata.getListColumns();
+			      int sizeColumns = columns.size();
+			      boolean hasKeyColumn=false;
+			      for(int i = 0; i < sizeColumns; i++){
+	        		    IMetadataColumn column = columns.get(i);
+                   if(column.isKey()){
+                        hasKeyColumn = true;
+                        break;
+                    }
+                }
+                if(!hasKeyColumn){
+                %>
+                    if(true){
+                        throw new RuntimeException("No key column is specified in the schema!");
+                    }
+                <%
+                }
+            }
+        }
+    }
 	%>
 
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>

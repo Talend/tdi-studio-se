@@ -6,6 +6,8 @@ imports="
         org.talend.core.model.process.ElementParameterParser
         org.talend.core.model.process.INode
         org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
         "
 %>
 
