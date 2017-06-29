@@ -643,9 +643,6 @@ public class PropertyChangeCommand extends Command {
         if (elementParameters == null) {
             return;
         }
-        if (!testedParam.isShow(elementParameters)) {
-            return;
-        }
         boolean contains = false;
         // zli
         for (IElementParameterDefaultValue value : testedParam.getDefaultValues()) {
