@@ -19,13 +19,17 @@ public class DbMapServiceTest {
     private String oldValue = "table";
 
     private String newValue = "context.schema.context.table";
+    
+    private InputTable input;
+    
+    private DBMapperTableEntry outEntry;
 
     @Before
     public void setUp() throws Exception {
         nodeType = TalendFileFactory.eINSTANCE.createNodeType();
         DBMapData data = DbmapFactory.eINSTANCE.createDBMapData();
         nodeType.setNodeData(data);
-        InputTable input = DbmapFactory.eINSTANCE.createInputTable();
+        input = DbmapFactory.eINSTANCE.createInputTable();
         input.setName(oldValue);
         input.setTableName(oldValue);
         DBMapperTableEntry inputEntry = DbmapFactory.eINSTANCE.createDBMapperTableEntry();
@@ -35,7 +39,7 @@ public class DbMapServiceTest {
         OutputTable out = DbmapFactory.eINSTANCE.createOutputTable();
         out.setName("output");
         out.setTableName("output");
-        DBMapperTableEntry outEntry = DbmapFactory.eINSTANCE.createDBMapperTableEntry();
+        outEntry = DbmapFactory.eINSTANCE.createDBMapperTableEntry();
         outEntry.setName("column");
         outEntry.setExpression(oldValue + ".column");
         out.getDBMapperTableEntries().add(outEntry);
@@ -55,6 +59,39 @@ public class DbMapServiceTest {
         assertEquals("output", out.getName());
         DBMapperTableEntry outEntry = out.getDBMapperTableEntries().get(0);
         assertEquals("context.schema.context.table.column", outEntry.getExpression());
+    }
+    
+    @Test
+    public void testUpdateEMFDBMapDataWithAliasSameWithTable() {
+        input.setAlias(oldValue);
+        DbMapService service = new DbMapService();
+        service.updateEMFDBMapData(nodeType, oldValue, newValue);
+        DBMapData data = (DBMapData) nodeType.getNodeData();
+        InputTable input = data.getInputTables().get(0);
+        assertEquals("context.schema.context.table", input.getName());
+        assertEquals("context.schema.context.table", input.getTableName());
+        OutputTable out = data.getOutputTables().get(0);
+        // output connection name should not be updated.
+        assertEquals("output", out.getName());
+        DBMapperTableEntry outEntry = out.getDBMapperTableEntries().get(0);
+        assertEquals(oldValue + ".column", outEntry.getExpression());
+    }
+    
+    @Test
+    public void testUpdateEMFDBMapDataWithAlias() {
+        input.setAlias("alias");
+        outEntry.setExpression("alias.column");
+        DbMapService service = new DbMapService();
+        service.updateEMFDBMapData(nodeType, oldValue, newValue);
+        DBMapData data = (DBMapData) nodeType.getNodeData();
+        InputTable input = data.getInputTables().get(0);
+        assertEquals("context.schema.context.table", input.getName());
+        assertEquals("context.schema.context.table", input.getTableName());
+        OutputTable out = data.getOutputTables().get(0);
+        // output connection name should not be updated.
+        assertEquals("output", out.getName());
+        DBMapperTableEntry outEntry = out.getDBMapperTableEntries().get(0);
+        assertEquals("alias.column", outEntry.getExpression());
     }
 
 }

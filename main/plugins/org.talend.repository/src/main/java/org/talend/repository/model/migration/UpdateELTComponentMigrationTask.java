@@ -53,20 +53,19 @@ public class UpdateELTComponentMigrationTask extends AbstractJobMigrationTask {
                 if (connection.getLabel().equals(tableName)) {
                     connection.setLabel(connectionName);
                     isModified = true;
+                } else {
+                    // if user custom connection name, keep everything currently they had.
+                    break;
                 }
-                List<MetadataTypeImpl> tables = eltInputNode.getMetadata();
-                for (MetadataTypeImpl table : tables) {
-                    if (table.getLabel().equals(tableName)) {
-                        table.setLabel(connectionName);
-                        isModified = true;
-                    }
+                MetadataTypeImpl table = (MetadataTypeImpl) eltInputNode.getMetadata().get(0);
+                if (table.getLabel().equals(tableName)) {
+                    table.setLabel(connectionName);
                 }
 
                 NodeType eltMapNode = getNodeTypeByUniqueName(nodes, targetNodeName);
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapService.class)) {
                     IDbMapService service = (IDbMapService) GlobalServiceRegister.getDefault().getService(IDbMapService.class);
                     service.updateEMFDBMapData(eltMapNode, tableName, connectionName);
-                    isModified = true;
                 }
             }
         }
