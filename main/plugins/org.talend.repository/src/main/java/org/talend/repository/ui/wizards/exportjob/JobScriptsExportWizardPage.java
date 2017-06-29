@@ -76,7 +76,6 @@ import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IContext;
-import org.talend.core.model.properties.FolderItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -91,7 +90,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.i18n.Messages;
-import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
@@ -216,36 +214,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
     protected ProcessItem getProcessItem() {
         if ((processItem == null) && (nodes != null) && (nodes.length >= 1)) {
-            IRepositoryViewObject repositoryObject = nodes[0].getObject();
-            // add for bug TDI-20132
-            List<IRepositoryNode> nodesChildren = nodes[0].getChildren();
-            IRepositoryViewObject childObject = null;
-            if ((nodesChildren != null) && (nodesChildren.size() >= 1)) {
-                childObject = nodesChildren.get(0).getObject();
-            }
-            if (repositoryObject == null && childObject != null && childObject.getProperty().getItem() instanceof ProcessItem) {
-                processItem = (ProcessItem) childObject.getProperty().getItem();
-            }
-            if (repositoryObject != null && repositoryObject.getProperty().getItem() instanceof ProcessItem) {
-                processItem = (ProcessItem) repositoryObject.getProperty().getItem();
-            } else if (repositoryObject != null && repositoryObject.getProperty().getItem() instanceof FolderItem) {
-                processItem = getProcessItemIfSelectFolder(repositoryObject);
-            }
-        }
-        return processItem;
-    }
-
-    protected ProcessItem getProcessItemIfSelectFolder(IRepositoryViewObject repositoryObject) {
-        List<IRepositoryNode> children = repositoryObject.getRepositoryNode().getChildren();
-        for (IRepositoryNode object : children) {
-            if (object.getObject().getProperty().getItem() instanceof FolderItem) {
-                processItem = getProcessItemIfSelectFolder(object.getObject());
-                if (processItem != null) {
-                    return processItem;
-                }
-            } else if (object.getObject().getProperty().getItem() instanceof ProcessItem) {
-                return (ProcessItem) object.getObject().getProperty().getItem();
-            }
+            processItem = ExportJobUtil.getProcessItem(Arrays.asList(nodes));
         }
         return processItem;
     }
@@ -1484,8 +1453,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             }
             Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
             exportChoiceMap.put(ExportChoice.addStatistics, Boolean.TRUE);
-            return BuildJobManager.getInstance().buildJobs(destination, Arrays.asList(getCheckNodes()), getDefaultFileName(), getSelectedJobVersion(), 
-                    context, exportChoiceMap, jobExportType, monitor);
+            return BuildJobManager.getInstance().buildJobs(destination, Arrays.asList(getCheckNodes()), getDefaultFileName(),
+                    getSelectedJobVersion(), context, exportChoiceMap, jobExportType, monitor);
 
         } catch (Exception e) {
             MessageBoxExceptionHandler.process(e, getShell());
