@@ -2924,6 +2924,14 @@
               name="Set the 'skip tailing zeros for BigDecimal' setting to false if it was null"
               version="6.5.0">
 		</projecttask>
+		<projecttask
+		beforeLogon="false"
+		breaks="6.5.0"
+		class="org.talend.repository.model.migration.DecodeURIInTFileFetch"
+        id="org.talend.repository.model.migration.DecodeURIInTFileFetch"
+        name="Decode URI to save functionality of component correct"
+        version="6.5.0">
+		</projecttask>
    </extension>
 
    <extension
