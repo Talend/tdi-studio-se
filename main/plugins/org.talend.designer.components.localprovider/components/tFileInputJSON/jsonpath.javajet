@@ -31,9 +31,9 @@ java.util.List<Object> resultset_<%=cid%> = new java.util.ArrayList<Object>();
 
 java.io.InputStream is_<%=cid%> = null;
 com.jayway.jsonpath.ParseContext parseContext_<%=cid%> = com.jayway.jsonpath.JsonPath.using(com.jayway.jsonpath.Configuration.defaultConfiguration());
-Object filename_<%=cid %> = null;
+Object filenameOrStream_<%=cid %> = null;
         try {
-            filename_<%=cid %> = <%=filename %>;
+            filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
 <%
 			if (dieOnError) {
@@ -52,11 +52,11 @@ Object filename_<%=cid %> = null;
         }
         
 try {
-     if(filename_<%=cid %> instanceof java.io.InputStream){
-         is_<%=cid%> = (java.io.InputStream)filename_<%=cid %>;
+     if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+         is_<%=cid%> = (java.io.InputStream)filenameOrStream_<%=cid %>;
      }else{
 	    <%if(!isUseUrl){//read from a file%>
-	        is_<%=cid%> = new java.io.FileInputStream((String)filename_<%=cid %>);
+	        is_<%=cid%> = new java.io.FileInputStream((String)filenameOrStream_<%=cid %>);
 	    <%}else{ //read from internet%>
 	        java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
 	        java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();

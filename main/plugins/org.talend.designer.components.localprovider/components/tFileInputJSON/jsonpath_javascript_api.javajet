@@ -151,9 +151,9 @@ if (jsEngine_<%=cid%> == null) {
     if(jsonpathjsUrl_<%=cid%>!=null) {
 		jsEngine_<%=cid%>.eval(new java.io.BufferedReader(new java.io.InputStreamReader(jsonpathjsUrl_<%=cid%>.openStream())));
 	}
-	    Object filename_<%=cid %> = null;
+	    Object filenameOrStream_<%=cid %> = null;
         try {
-            filename_<%=cid %> = <%=filename %>;
+            filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
 <%
 			if (dieOnError) {
@@ -177,11 +177,11 @@ if (jsEngine_<%=cid%> == null) {
 	java.io.InputStreamReader fr_<%=cid %> = null;
 <%}%>
 	try{
-	        if(filename_<%=cid %> instanceof java.io.InputStream){
-                fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>,<%=encoding%>));
+	        if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+                fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>));
             }else{
 	              <%if(!isUseUrl){//read from a file%>
-		               fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream((String)filename_<%=cid %>),<%=encoding %>));
+		               fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream((String)filenameOrStream_<%=cid %>),<%=encoding %>));
 	              <%}else{ //read from internet%>
 		               java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
 		               java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
@@ -190,7 +190,7 @@ if (jsEngine_<%=cid%> == null) {
 	       }
 		jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
 		if(jsonText_<%=cid%> == null) {
-			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
+			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filenameOrStream %> <%} else {%> <%=urlpath %> <%}%>);
 		}
 	} catch(java.lang.Exception e_<%=cid%>) {
 	<%if (dieOnError) {%>
