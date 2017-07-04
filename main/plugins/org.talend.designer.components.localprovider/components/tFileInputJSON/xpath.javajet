@@ -195,9 +195,9 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
 %>        
         
         org.dom4j.io.SAXReader reader_<%=cid%> = new org.dom4j.io.SAXReader();
-        Object filename_<%=cid %> = null;
+        Object filenameOrStream_<%=cid %> = null;
         try {
-            filename_<%=cid %> = <%=filename %>;
+            filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
         } catch(java.lang.Exception e_<%=cid%>) {
 <%
 			if (dieOnError) {
@@ -228,13 +228,13 @@ boolean checkDate = (checkDateStr!=null&&!("").equals(checkDateStr))?("true").eq
         java.io.ByteArrayOutputStream  baos_<%=cid %> = new java.io.ByteArrayOutputStream();
             
         try{
-            if(filename_<%=cid %> instanceof java.io.InputStream){
-                br_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filename_<%=cid %>,<%=encoding%>));
+            if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+                br_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>));
             }else{
 <%
 				if(!isUseUrl){//read from a file
 %>
-            	    br_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
+            	    br_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filenameOrStream_<%=cid %>)), <%=encoding %>));
 <%
 				}else{ //read from internet
 %>
