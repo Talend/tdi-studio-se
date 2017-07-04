@@ -366,4 +366,9 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         this.synchronizer.regenerateMainProjectPom(monitor, null);
     }
 
+    @Override
+    public void setSynchronizerArgumentMap(Map<String, Object> argumentsMap) {
+        synchronizer.setArgumentsMap(argumentsMap);
+    }
+
 }
