@@ -22,7 +22,10 @@ String maxMsg=ElementParameterParser.getValue(node, "__MAX_MSG__");
 	
 }
 consumer_<%=cid%>.close();
+globalMap.remove("consumer_<%=cid%>");
 session_<%=cid%>.close();
+globalMap.remove("session_<%=cid%>");
 connection_<%=cid%>.close();
+globalMap.remove("connection_<%=cid%>");
 <%log.info(log.str("Retrieved records count: "), log.var("nbline"), log.str("."));%>
 globalMap.put("<%=cid %>_NB_LINE", nbline_<%=cid%>);

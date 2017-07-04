@@ -58,8 +58,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	
 	javax.jms.Connection connection_<%=cid %> = factory_<%=cid %>.createConnection(<%if("true".equals(userIdentity)){%><%=user %>, decryptedPassword_<%=cid%><%}%>);
 	connection_<%=cid %>.start();
+    globalMap.put("connection_<%=cid%>",connection_<%=cid%>);
 
 	javax.jms.Session session_<%=cid %> = connection_<%=cid %>.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+    globalMap.put("session_<%=cid%>",session_<%=cid%>);
 	<%
 	if(useJNDILookup){
 	%>
@@ -73,6 +75,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	%>
 
 	javax.jms.MessageProducer producer_<%=cid %> = session_<%=cid %>.createProducer(dest_<%=cid %>);
+    globalMap.put("producer_<%=cid%>",producer_<%=cid%>);
 
 	producer_<%=cid %>.setDeliveryMode(javax.jms.DeliveryMode.<%=deliverMode%>);
 
