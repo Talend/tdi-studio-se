@@ -2930,7 +2930,7 @@
               class="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               name="reset the 'COLUMN_DELIMITER' parameter"
-              version="6.5.1">
+              version="6.5.0">
 		</projecttask>
    </extension>
 
