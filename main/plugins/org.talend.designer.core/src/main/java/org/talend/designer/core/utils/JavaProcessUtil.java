@@ -42,6 +42,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -178,6 +179,9 @@ public class JavaProcessUtil {
             Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, withChildrens, forMR);
             if (nodeNeededModules != null) {
                 modulesNeeded.addAll(nodeNeededModules);
+                if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
+                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
+                }
             }
         }
 

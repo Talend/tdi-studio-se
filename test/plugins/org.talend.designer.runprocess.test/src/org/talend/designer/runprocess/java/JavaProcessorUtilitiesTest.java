@@ -15,11 +15,13 @@ package org.talend.designer.runprocess.java;
 import static org.junit.Assert.*;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -27,8 +29,11 @@ import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.process.EConnectionType;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -108,6 +113,63 @@ public class JavaProcessorUtilitiesTest {
             }
         } finally {
             CommonsPlugin.setHeadless(headless);
+        }
+    }
+
+    @Test
+    public void testGetNeededModulesForProcess() {
+        String jobId = ProxyRepositoryFactory.getInstance().getNextId();
+        String jobVersion = VersionUtils.DEFAULT_VERSION;
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setId(jobId);
+        property.setVersion(jobVersion);
+        Process process = new Process(property);
+        ProcessItem item = PropertiesFactory.eINSTANCE.createProcessItem();
+        item.setProperty(property);
+
+        ModuleNeeded moduleNeeded_A = new ModuleNeeded(null, "a.jar", null, true);
+        ModuleNeeded moduleNeeded_B = new ModuleNeeded(null, "b.jar", null, true);
+        ModuleNeeded moduleNeeded_C = new ModuleNeeded(null, "c.jar", null, true);
+        ModuleNeeded moduleNeeded_D = new ModuleNeeded(null, "d.jar", null, true);
+        ModuleNeeded moduleNeeded_E = new ModuleNeeded(null, "e.jar", null, true);
+
+        Set<ModuleNeeded> neededModules = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(jobId, jobVersion);
+        neededModules.add(moduleNeeded_A);
+        neededModules.add(moduleNeeded_B);
+        neededModules.add(moduleNeeded_C);
+        neededModules.add(moduleNeeded_D);
+
+        Set<ModuleNeeded> highPriorityNeededModules = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
+        highPriorityNeededModules.clear();
+        highPriorityNeededModules.add(moduleNeeded_C);
+        highPriorityNeededModules.add(moduleNeeded_A);
+        highPriorityNeededModules.add(moduleNeeded_E);
+
+        Set<ModuleNeeded> result = JavaProcessorUtilities.getNeededModulesForProcess(process);
+        assertEquals(5, result.size());
+        int i = 0;
+        Iterator<ModuleNeeded> iterator = result.iterator();
+        while (iterator.hasNext()) {
+            ModuleNeeded moduleNeeded = iterator.next();
+            switch (i) {
+            case 0:
+                assertEquals(moduleNeeded, moduleNeeded_E);
+                break;
+            case 1:
+                assertEquals(moduleNeeded, moduleNeeded_A);
+                break;
+            case 2:
+                assertEquals(moduleNeeded, moduleNeeded_C);
+                break;
+            case 3:
+                assertEquals(moduleNeeded, moduleNeeded_B);
+                break;
+            case 4:
+                assertEquals(moduleNeeded, moduleNeeded_D);
+                break;
+            default:
+            }
+            i++;
         }
     }
 
