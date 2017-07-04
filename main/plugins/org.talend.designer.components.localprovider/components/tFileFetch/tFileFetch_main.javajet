@@ -47,7 +47,20 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 %>	
 	java.net.URI encodedURI_<%=cid %> = null;
 	try {
-		java.net.URL url_<%=cid %> = new java.net.URL(<%=uri %>);
+		//when user input already encoded (contains '%' uri - need try to decode it using URLDecoder for correct processing
+<%
+		if (uri.contains("%")) {
+%>
+			java.net.URL url_<%=cid %> = new java.net.URL(java.net.URLDecoder.decode(<%=uri %>, "UTF-8"));
+<%
+		} else {
+%>
+			java.net.URL url_<%=cid %> = new java.net.URL(<%=uri %>);
+<%
+		}
+%>
+		
+		
 		encodedURI_<%=cid %> = new java.net.URI(
                 url_<%=cid %>.getProtocol(),
                 url_<%=cid %>.getAuthority(),
@@ -55,7 +68,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
                 url_<%=cid %>.getQuery(),
                 url_<%=cid %>.getRef());
 	} 
-	catch (java.net.URISyntaxException | java.net.MalformedURLException e) {
+	catch (java.io.IOException e) {
 <%
 			String unsupportedEncodingErrorMessage = "URI is not correct, please input a valid one";
 		if (isLog4jEnabled) {

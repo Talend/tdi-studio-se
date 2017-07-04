@@ -2926,7 +2926,7 @@
 		</projecttask>
 		<projecttask
 		beforeLogon="false"
-		breaks="6.5.0"
+		breaks="6.4.1"
 		class="org.talend.repository.model.migration.DecodeURIInTFileFetch"
         id="org.talend.repository.model.migration.DecodeURIInTFileFetch"
         name="Decode URI to save functionality of component correct"
