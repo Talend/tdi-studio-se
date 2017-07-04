@@ -2165,7 +2165,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                         if (contextResults != null) {
                             propertiesResults.addAll(contextResults);
                         }
-
                     } else if (item != null && "pattern".equalsIgnoreCase(item.getFileExtension())) {
                         // Added TDQ-11688, check pattern update
                         ITDQPatternService service = null;
@@ -2182,7 +2181,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 ElementParameter newValueParameter = new ElementParameter(nameParam.getElement());
                                 newValueParameter.setName(nameParam.getName());
                                 newValueParameter.setValue(newVlaue);
-                                result = createUpdateCheckResult(node, propertiesResults, newValueParameter);
+                                createUpdateCheckResult(node, propertiesResults, newValueParameter, openedProcesses);
                             }
                             // check pattern regex
                             String regex = service.getRegex(node, item);
@@ -2194,12 +2193,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 if (result != null) {
                                     propertiesResults.add(result);
                                 }
-                                result = new UpdateCheckResult(node);
-                                result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, newValueParameter);
+                                createUpdateCheckResult(node, propertiesResults, newValueParameter, openedProcesses);
                             }
                         }
-                    } else if (item != null && item instanceof RulesItem) {
-                        // if the RulesItem is not null, that means the Rule exist, so do nothing
                     } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);
@@ -2208,7 +2204,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     // TDQ-13685 check for multi patterns : when used patterns in table is changed or deleted
                     if (node.getComponent().getName().startsWith("tMultiPattern")) {
                         // go through every pattern to check if it is deleted or not.
-                        checkMultiPattern(node, propertiesResults);
+                        checkMultiPattern(node, propertiesResults, openedProcesses);
                     }
 
                     // add the check result to resultList, hold the value.
@@ -2227,7 +2223,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     @SuppressWarnings("unchecked")
-    private void checkMultiPattern(final Node node, List<UpdateResult> propertiesResults) {
+    private void checkMultiPattern(final Node node, List<UpdateResult> propertiesResults, List<IProcess2> openedProcesses) {
         ITDQPatternService service = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQPatternService.class)) {
             service = (ITDQPatternService) GlobalServiceRegister.getDefault().getService(ITDQPatternService.class);
@@ -2258,7 +2254,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                     }
                 }
                 if (isChanged) {
-                    createUpdateCheckResult(node, propertiesResults, schemasTableParam);
+                    createUpdateCheckResult(node, propertiesResults, schemasTableParam, openedProcesses);
                 }
             }
         }
@@ -2269,9 +2265,14 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
     }
 
     private UpdateCheckResult createUpdateCheckResult(final Node node, List<UpdateResult> propertiesResults,
-            IElementParameter schemasTableParam) {
+            IElementParameter schemasTableParam, List<IProcess2> openedProcesses) {
         UpdateCheckResult result = new UpdateCheckResult(node);
         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.UPDATE, schemasTableParam);
+        if (!openedProcesses.contains(getProcess())) {
+            result.setFromItem(true);
+        }
+        result.setJob(getProcess());
+        setConfigrationForReadOnlyJob(result);
         propertiesResults.add(result);
         return result;
     }

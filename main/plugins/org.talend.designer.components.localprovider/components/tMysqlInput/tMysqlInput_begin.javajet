@@ -59,7 +59,11 @@ imports="
 			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__");
 		    if(("true").equals(enableStream)&&(!"MARIADB".equals(dbVersion))) {
 %>
-		        ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+		        if(stmt_<%=cid %> instanceof com.mysql.jdbc.Statement){
+				    ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+				}else if(stmt_<%=cid %> instanceof com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper){
+				    ((com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
+				}
 <%
 			}
 		}

@@ -49,7 +49,11 @@ imports="
 			String enableStream = ElementParameterParser.getValue(node, "__ENABLE_STREAM__");
 		    if(("true").equals(enableStream)) {
 %>
-		        ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+		        if(stmt_<%=cid %> instanceof com.mysql.jdbc.Statement){
+				    ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+				}else if(stmt_<%=cid %> instanceof com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper){
+				    ((com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
+				}
 <%
 			}
 		}
