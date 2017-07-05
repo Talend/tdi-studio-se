@@ -143,13 +143,13 @@ int nb_line_rejected_<%=cid %> = 0;
             com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
             if(mdmTransaction_<%=cid %> == null){
                 if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
-                    String sessionID_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+                    List<String> cookies_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getCookies(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
                     mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
                     mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
                     mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
                     mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
                     mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
-                    mdmTransaction_<%=cid %>.setSessionId(sessionID_<%=cid%>);
+                    mdmTransaction_<%=cid %>.setCookies(cookies_<%=cid%>);
                 }else{
                     <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
                     mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
@@ -161,8 +161,7 @@ int nb_line_rejected_<%=cid %> = 0;
                 context_<%=cid %>.put(org.apache.cxf.headers.Header.HEADER_LIST, soapHeaders_<%=cid %>);
 
                 java.util.Map<String, java.util.List<String>> httpHeaders_<%=cid %> = new java.util.HashMap<String, java.util.List<String>>();
-                String cookie_<%=cid %> = com.talend.mdm.transaction.client.MDMTransaction.getStickySession() + "=" + mdmTransaction_<%=cid%>.getSessionId();
-                httpHeaders_<%=cid %>.put("Cookie", java.util.Arrays.asList(cookie_<%=cid %>));
+                httpHeaders_<%=cid %>.put("Cookie", mdmTransaction_<%=cid %>.getCookies());
                 context_<%=cid %>.put(org.apache.cxf.message.Message.PROTOCOL_HEADERS, httpHeaders_<%=cid %>);
 
                 globalMap.put(transKey_<%=cid %>, mdmTransaction_<%=cid %>);
