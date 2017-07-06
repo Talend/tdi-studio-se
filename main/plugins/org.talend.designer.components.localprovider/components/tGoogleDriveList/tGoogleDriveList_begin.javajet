@@ -104,15 +104,15 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
     do {
       
       if(!<%=cid%>_folderName.equals("root")) {
-      		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "' and mimeType = 'application/vnd.google-apps.folder'");
+      		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "' and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
       } else {
       
 	  	<%if ("BOTH".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-	  		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents");
+	  		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents and trashed=false");
       	<%} else if ("FILES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents and mimeType != 'application/vnd.google-apps.folder'");
+      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'");
       	<%} else {%>
-      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents and mimeType = 'application/vnd.google-apps.folder'");
+      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
       	<%}%>
       }
         com.google.api.services.drive.model.FileList files = <%=cid%>_request.execute();
@@ -124,11 +124,11 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
 	        } else {
 	        	<%=cid%>_request = <%=cid%>_client.files().list();
 	        	<%if ("BOTH".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents");
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents and trashed=false");
 	        	<%} else if ("FILES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents and mimeType != 'application/vnd.google-apps.folder'");
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents and trashed=false and mimeType != 'application/vnd.google-apps.folder'");
 	        	<%} else {%>
-	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents and mimeType = 'application/vnd.google-apps.folder'");
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
 	        	<%}%>
 	        	files = <%=cid%>_request.execute();
 	        }
@@ -140,7 +140,7 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
    <%} else {%>
     java.util.List<String> subfolders_<%=cid %> = new java.util.ArrayList<String>(); 
     if(!<%=cid%>_folderName.equals("root")) {
-   		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "' and mimeType = 'application/vnd.google-apps.folder'");
+   		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "' and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
    		com.google.api.services.drive.model.FileList <%=cid%>_files = <%=cid%>_request.execute();
    		if (<%=cid%>_files.getItems().size() > 1) {
         	throw new Exception("More than one folder with name " + "\"" + <%=cid%>_folderName + "\" found!");
@@ -156,9 +156,9 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
 	while (subfolders_<%=cid %>.size()>0) {
     do {
 	  	<%if ("DIRECTORIES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-	  		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents and mimeType = 'application/vnd.google-apps.folder'");
+	  		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents and trashed=false and mimeType = 'application/vnd.google-apps.folder'");
      	<%} else {%>
-      		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents"); // check all files and folders
+      		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents and trashed=false"); // check all files and folders
       	<%}%>
         com.google.api.services.drive.model.FileList files = <%=cid%>_request.execute();
        
