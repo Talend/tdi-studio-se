@@ -233,10 +233,13 @@ public class UIManager {
         List<IMetadataColumn> exts = new ArrayList<IMetadataColumn>();
         for (int j = 0; j < outputMetaTable2.getListColumns().size(); j++) {
             IMetadataColumn column = outputMetaTable2.getListColumns().get(j);
+            MetadataColumnExt ext = null;
             if (column instanceof MetadataColumnExt) {
-                exts.add(column.clone());
+                ext = (MetadataColumnExt) column.clone();
             } else if (column instanceof MetadataColumn) {
-                MetadataColumnExt ext = new MetadataColumnExt((MetadataColumn) column);
+                ext = new MetadataColumnExt((MetadataColumn) column);
+            }
+            if (ext != null) {
                 List<Function> funs = functionManager.getFunctionsByType(ext.getTalendType());
                 ext.setArrayFunctions(functionManager.getFunctionArrays(funs));
                 if (!funs.isEmpty()) {
