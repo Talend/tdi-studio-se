@@ -29,7 +29,7 @@
                 <artifactItem>
                   <groupId>org.talend.libraries</groupId>
                   <artifactId>talend-codegen-utils</artifactId>
-                  <version>0.17.0-SNAPSHOT</version>
+                  <version>0.20.0</version>
                 </artifactItem>
               </artifactItems>
             </configuration>
