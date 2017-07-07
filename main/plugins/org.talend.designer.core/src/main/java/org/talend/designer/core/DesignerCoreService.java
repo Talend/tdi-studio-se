@@ -804,4 +804,16 @@ public class DesignerCoreService implements IDesignerCoreService {
         return timeOut;
     }
 
+    @Override
+    public int getTACReadTimeout() {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        int timeOut = -1;
+        if (preferenceStore != null && preferenceStore.contains(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT)) {
+            timeOut = preferenceStore.getInt(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT);
+        }
+        if (timeOut < 0) {
+            timeOut = 0;
+        }
+        return timeOut;
+    }
 }
