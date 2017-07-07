@@ -239,8 +239,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 			}
 		}
 		ExtendInsertOperation eiOperation = new ExtendInsertOperation();
+		
+		if(!("true").equals(useExistingConn)) {
+        	if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
+    	    %>
+            commitCounter_<%=cid%> = rowCount<%=cid%>;//correct the commit counter as commit can happen before executing the sql for extend insert
+            <%
+        	}
+        }
 	%>
-
 
 	    if(rowCount<%=cid%>!=0){
 
