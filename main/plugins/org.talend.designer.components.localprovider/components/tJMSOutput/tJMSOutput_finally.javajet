@@ -1,0 +1,34 @@
+<%@ jet
+    imports="
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+    "
+%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/LogUtil.javajet"%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+log = new LogUtil(node);
+%>
+if(resourceMap.containsKey("producer_<%=cid %>")) try {
+	((javax.jms.MessageProducer)resourceMap.get("producer_<%=cid %>")).close();
+} catch (Exception e){
+    log.error(currentComponent + " " + e.getMessage(), e);
+} finally {
+    resourceMap.remove("producer_<%=cid %>");
+}
+if(resourceMap.containsKey("session_<%=cid %>")) try {
+	((javax.jms.Session)resourceMap.get("session_<%=cid %>")).close();
+} catch (Exception e_<%=cid%>){
+    log.error(currentComponent + " " + e_<%=cid%>.getMessage(), e_<%=cid%>);
+} finally {
+    resourceMap.remove("session_<%=cid %>");
+}
+if(resourceMap.containsKey("connection_<%=cid %>")) try {
+	((javax.jms.Connection)resourceMap.get("connection_<%=cid %>")).close();
+} catch (Exception e_<%=cid%>){
+    log.error(currentComponent + " " + e_<%=cid%>.getMessage(), e_<%=cid%>);
+} finally {
+	resourceMap.remove("connection_<%=cid %>");
+}

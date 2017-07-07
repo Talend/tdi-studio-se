@@ -53,6 +53,7 @@
 				<property name="wrapperName" value="root" />
 				<property name="dropRootElement" value="${endpoint.unwrapJsonResponse}" />
 				<property name="convertTypesToStrings" value="${endpoint.convertTypesToStrings}" />
+				<property name="attributesToElements" value="true" />
 			</bean>
 			<bean class="org.apache.cxf.jaxrs.provider.dom4j.DOM4JProvider" />
 #if ($endpoint.useAuthentication && $endpoint.authenticationType == "BASIC")

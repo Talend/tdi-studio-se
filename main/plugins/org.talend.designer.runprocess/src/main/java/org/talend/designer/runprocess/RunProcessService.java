@@ -200,6 +200,11 @@ public class RunProcessService implements IRunProcessService {
         delegateService.refreshView();
     }
 
+    @Override
+    public void switchToCurProcessView() {
+        delegateService.switchToCurProcessView();
+    }
+
     /*
      * (non-Javadoc)
      * 

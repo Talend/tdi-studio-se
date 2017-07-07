@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,6 +60,7 @@ import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.utils.RepositoryManagerHelper;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.services.IGITProviderService;
@@ -83,6 +86,7 @@ import org.talend.designer.core.ui.views.jobsettings.tabs.MainComposite;
 import org.talend.designer.core.ui.views.jobsettings.tabs.ProcessVersionComposite;
 import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposite;
 import org.talend.designer.core.ui.views.statsandlogs.StatsAndLogsComposite;
+import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.views.IJobSettingsView;
@@ -91,7 +95,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 /**
  * DOC ggu class global comment. Detailled comment
  */
-public class JobSettingsView extends ViewPart implements IJobSettingsView, ISelectionChangedListener {
+public class JobSettingsView extends ViewPart implements IJobSettingsView, ISelectionChangedListener, PropertyChangeListener {
 
     /**
      *
@@ -141,6 +145,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 .getService(IBrandingService.class);
         allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
         initProviderServices();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
     }
 
     private void initProviderServices() {
@@ -757,6 +762,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
      */
     @Override
     public void dispose() {
+        ProxyRepositoryFactory.getInstance().removePropertyChangeListener(this);
         super.dispose();
         Display.getDefault().asyncExec(new Runnable() {
 
@@ -968,4 +974,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
         }
     }
 
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("view_refresh")) { //$NON-NLS-1$
+            RepositoryPlugin.getDefault().getDesignerCoreService().switchToCurJobSettingsView();
+        }
+    }
 }

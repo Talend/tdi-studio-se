@@ -7,7 +7,7 @@
 
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-db-exasol</artifactId>
-	<version>2.1.0</version>
+	<version>2.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>talend-db-exasol</name>
@@ -44,19 +44,39 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- ignore it as the license  
 		<dependency>
 			<groupId>exajdbc</groupId>
 			<artifactId>exajdbc</artifactId>
 			<version>5.0.13</version>
+			<scope>test</scope>
 		</dependency>
+		-->
 	</dependencies>
+	
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-			</resource>
-		</resources>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-surefire-plugin</artifactId>
+		        <version>2.12.4</version>
+		        <configuration>
+		          <skipTests>true</skipTests>
+		        </configuration>
+	      	</plugin>
+			
+			<!-- if you want to do the local deploy for test, uncomment it
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
@@ -67,11 +87,18 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>../../../org.talend.designer.components.localprovider/components/tEXABulkExec</outputDirectory>
+							<outputDirectory>../../../../../../tcommon-studio-se/main/plugins/org.talend.libraries.jdbc.exasol/lib</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
+		
+		<resources>
+			<resource>
+				<directory>src/main/java</directory>
+			</resource>
+		</resources>
 	</build>
 </project>

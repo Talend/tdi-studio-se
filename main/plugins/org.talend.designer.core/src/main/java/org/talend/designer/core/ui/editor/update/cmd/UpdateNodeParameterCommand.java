@@ -509,9 +509,15 @@ public class UpdateNodeParameterCommand extends Command {
                     if (service != null && (service.isSinglePatternNode(node) || service.isMultiPatternNode(node))
                             && parameter != null && parameter instanceof IElementParameter) {
                         IElementParameter elementParameter = node.getElementParameter(((IElementParameter) parameter).getName());
+                        // for single pattern
                         if (elementParameter != null
                                 && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
                             elementParameter.setValue(((IElementParameter) parameter).getValue());
+                        } else if ("SCHEMA_PATTERN_CHECK".equals(((IElementParameter) parameter).getName())) {// for
+                                                                                                              // multipattern
+                            if (elementParameter != null) {
+                                elementParameter.setValue(((IElementParameter) parameter).getValue());
+                            }
                         }
                         update = true;
                         Object regexValue = null;

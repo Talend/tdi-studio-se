@@ -254,4 +254,8 @@ public abstract class AbstractProcessProvider implements IReplaceNodeInProcess {
         AbstractProcessProvider.componentProcess = componentProcess;
     }
 
+    public boolean canHandleNode(INode node) {
+        return false;
+    }
+
 }

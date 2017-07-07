@@ -241,6 +241,11 @@ public class DesignerCoreService implements IDesignerCoreService {
     }
 
     @Override
+    public void switchToCurProcessView() {
+        DesignerPlugin.getDefault().getRunProcessService().switchToCurProcessView();
+    }
+
+    @Override
     public void saveJobBeforeRun(IProcess activeProcess) {
         new SaveJobBeforeRunAction(activeProcess).run();
     }

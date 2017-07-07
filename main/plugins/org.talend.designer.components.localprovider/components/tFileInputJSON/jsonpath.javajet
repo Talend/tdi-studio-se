@@ -31,14 +31,40 @@ java.util.List<Object> resultset_<%=cid%> = new java.util.ArrayList<Object>();
 
 java.io.InputStream is_<%=cid%> = null;
 com.jayway.jsonpath.ParseContext parseContext_<%=cid%> = com.jayway.jsonpath.JsonPath.using(com.jayway.jsonpath.Configuration.defaultConfiguration());
+Object filenameOrStream_<%=cid %> = null;
+        try {
+            filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
+        } catch(java.lang.Exception e_<%=cid%>) {
+<%
+			if (dieOnError) {
+%>
+            	throw(e_<%=cid%>);
+<%			
+			}else{
+%>
+				<%if(isLog4jEnabled){%>
+					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+				<%}%>
+	            System.err.println(e_<%=cid%>.getMessage());
+<%
+			}
+%>
+        }
+        
 try {
-	<%if(!isUseUrl){//read from a file%>
-	is_<%=cid%> = new java.io.FileInputStream(<%=filename %>);
-	<%}else{ //read from internet%>
-	java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
-	java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
-	is_<%=cid%> = urlConn_<%=cid %>.getInputStream();
-	<%}%>
+     if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+         is_<%=cid%> = (java.io.InputStream)filenameOrStream_<%=cid %>;
+     }else{
+	    <%if(!isUseUrl){//read from a file%>
+	        is_<%=cid%> = new java.io.FileInputStream((String)filenameOrStream_<%=cid %>);
+	    <%}else{ //read from internet%>
+	        java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
+	        java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
+	        is_<%=cid%> = urlConn_<%=cid %>.getInputStream();
+	    <%}%>
+	 }
+	
+	
 	com.jayway.jsonpath.ReadContext document_<%=cid%> = parseContext_<%=cid%>.parse(is_<%=cid%>,<%=encoding %>);
 	com.jayway.jsonpath.JsonPath compiledLoopPath_<%=cid%> = jsonPathCache_<%=cid%>.getCompiledJsonPath(loopPath_<%=cid%>);
 	Object result_<%=cid%> = document_<%=cid%>.read(compiledLoopPath_<%=cid%>,net.minidev.json.JSONObject.class);

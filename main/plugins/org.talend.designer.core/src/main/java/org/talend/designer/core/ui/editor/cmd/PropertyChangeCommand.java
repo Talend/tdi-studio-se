@@ -291,6 +291,10 @@ public class PropertyChangeCommand extends Command {
             }
             List<? extends IConnection> connections = ((Node) elem).getOutgoingConnections();
             for (IConnection connection : connections) {
+                if (!connection.getName().equals(oldELTValue)) {
+                    //do nothing when custom connection name.
+                    continue;
+                }
                 INode targetNode = connection.getTarget();
                 String componentName = targetNode.getComponent().getName();
                 if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
@@ -641,9 +645,6 @@ public class PropertyChangeCommand extends Command {
     private void setDefaultValues(IElementParameter currentParam, IElementParameter testedParam, IElement referenceNode) {
         List<? extends IElementParameter> elementParameters = referenceNode.getElementParameters();
         if (elementParameters == null) {
-            return;
-        }
-        if (!testedParam.isShow(elementParameters)) {
             return;
         }
         boolean contains = false;

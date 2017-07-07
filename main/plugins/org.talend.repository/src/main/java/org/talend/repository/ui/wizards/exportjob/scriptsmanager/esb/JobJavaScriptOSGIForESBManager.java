@@ -750,6 +750,12 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         }
 
 
+        if (requireBundle != null && !requireBundle.isEmpty()) {
+            requireBundle += (", org.ops4j.pax.logging.pax-logging-api");
+        } else {
+            requireBundle = "org.ops4j.pax.logging.pax-logging-api";
+        }
+
         if (requireBundle != null) {
             analyzer.setProperty(Analyzer.REQUIRE_BUNDLE, requireBundle);
         }

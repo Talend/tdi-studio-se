@@ -68,7 +68,7 @@ if(advProps.size() > 0){
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 	javax.jms.Connection connection_<%=cid%> = factory_<%=cid%>.createConnection(<%if("true".equals(userIdentity)){%><%=user %>, decryptedPassword_<%=cid%><%}%>);
-	
+    resourceMap.put("connection_<%=cid%>",connection_<%=cid%>);
 	<%
 	if(enableSubscription && clientID != null && clientID.length() > 0){
 	%>
@@ -78,6 +78,7 @@ if(advProps.size() > 0){
 	%>
 	
 	javax.jms.Session session_<%=cid%> = connection_<%=cid%>.createSession(false, javax.jms.Session.CLIENT_ACKNOWLEDGE);
+    resourceMap.put("session_<%=cid%>",session_<%=cid%>);
 	<%
 	if(useJNDILookup){
 	%>
@@ -98,7 +99,8 @@ if(advProps.size() > 0){
 	<%
 	}
 	%>
-	
+    resourceMap.put("consumer_<%=cid%>",consumer_<%=cid%>);
+
 	connection_<%=cid%>.start();
 
 	System.out.println("Ready to receive message");

@@ -44,9 +44,48 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean useProxy = "true".equals(ElementParameterParser.getValue(node, "__USE_PROXY__"));
 	boolean useProxyNTLM = "true".equals(ElementParameterParser.getValue(node, "__PROXY_NTLM__"));
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
-
+%>	
+	java.net.URI encodedURI_<%=cid %> = null;
+	try {
+		//when user input already encoded (contains '%' uri - need try to decode it using URLDecoder for correct processing
+<%
+		if (uri.contains("%")) {
+%>
+			java.net.URL url_<%=cid %> = new java.net.URL(java.net.URLDecoder.decode(<%=uri %>, "UTF-8"));
+<%
+		} else {
+%>
+			java.net.URL url_<%=cid %> = new java.net.URL(<%=uri %>);
+<%
+		}
+%>
+		
+		
+		encodedURI_<%=cid %> = new java.net.URI(
+                url_<%=cid %>.getProtocol(),
+                url_<%=cid %>.getAuthority(),
+                url_<%=cid %>.getPath(),
+                url_<%=cid %>.getQuery(),
+                url_<%=cid %>.getRef());
+	} 
+	catch (java.io.IOException e) {
+<%
+			String unsupportedEncodingErrorMessage = "URI is not correct, please input a valid one";
+		if (isLog4jEnabled) {
+%>
+			log.warn("<%=unsupportedEncodingErrorMessage %>");
+<%
+		} else {
+%>
+			System.err.println("<%= unsupportedEncodingErrorMessage %>");
+<%
+		}
+%>
+	}
+	<%
 	if ("https".equals(protocol)) {
 	%>
+	
 		class SocketFactory_<%=cid%> implements org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory {
 
 			private javax.net.ssl.SSLContext sslcontext = null;
@@ -127,11 +166,11 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			}
 		}
 
-		if ((<%=uri %>).toLowerCase().startsWith("https://")) {
 			org.apache.commons.httpclient.protocol.Protocol myhttps = new org.apache.commons.httpclient.protocol.Protocol("https", new SocketFactory_<%=cid%>(), 443);
 			org.apache.commons.httpclient.protocol.Protocol.registerProtocol("https", myhttps);
-		}
-	<%}%>
+<%
+	}
+%>
 	org.apache.commons.httpclient.HttpClient client_<%=cid %> = new org.apache.commons.httpclient.HttpClient();
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Connection attempt to '" + <%=uri %>);
@@ -234,7 +273,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 	if (post) {
 	%>
-		org.apache.commons.httpclient.methods.PostMethod method_<%=cid%> = new org.apache.commons.httpclient.methods.PostMethod(<%=uri %>);
+		org.apache.commons.httpclient.methods.PostMethod method_<%=cid%> = new org.apache.commons.httpclient.methods.PostMethod(encodedURI_<%=cid %>.toASCIIString());
 		<%
 		List<Map<String, String>> commonParams = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__COMMON_PARAMS__");	
 		List<String> varPartList = new ArrayList<String>();	//common string parameter part	
@@ -270,7 +309,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		org.apache.commons.httpclient.methods.multipart.Part[] parts_<%=cid %> = new org.apache.commons.httpclient.methods.multipart.Part[]{<%for(String var: varPartList){%><%=var %>,<%}%>};    
 		method_<%=cid%>.setRequestEntity(new org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity(parts_<%=cid %>, method_<%=cid%>.getParams()));          
 	<%} else {%>
-		org.apache.commons.httpclient.methods.GetMethod method_<%=cid%> = new org.apache.commons.httpclient.methods.GetMethod(<%=uri %>);
+		org.apache.commons.httpclient.methods.GetMethod method_<%=cid%> = new org.apache.commons.httpclient.methods.GetMethod(encodedURI_<%=cid %>.toASCIIString());
 	<%}
 
 	if (addHeader) {
@@ -285,7 +324,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	%>
 	boolean isContinue_<%=cid%> = true;
 	int status_<%=cid%>;
-	String finalURL_<%=cid%> = <%=uri%>;
+	String finalURL_<%=cid%> = encodedURI_<%=cid %>.toASCIIString();
 
 	try { // B_01
 		<%if (redirect) { //Bug13155, add support of redirection%>

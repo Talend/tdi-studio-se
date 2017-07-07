@@ -21,10 +21,6 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.core.commands.IHandler;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.viewers.ISelection;
@@ -69,6 +65,7 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.properties.tab.HorizontalTabFactory;
@@ -88,7 +85,7 @@ import org.talend.designer.runprocess.ui.ProcessManager;
 import org.talend.designer.runprocess.ui.TargetExecComposite;
 import org.talend.designer.runprocess.ui.TraceDebugProcessComposite;
 import org.talend.designer.runprocess.ui.actions.ClearPerformanceAction;
-import org.talend.designer.runtime.visualization.JvmModel;
+import org.talend.repository.RepositoryPlugin;
 
 /**
  * View showing the execution of a process. <br/>
@@ -96,7 +93,7 @@ import org.talend.designer.runtime.visualization.JvmModel;
  * $Id$
  * 
  */
-public class ProcessView extends ViewPart {
+public class ProcessView extends ViewPart implements PropertyChangeListener {
 
     public static final String ID = RunProcessPlugin.PLUGIN_ID + ".ui.views.processview"; //$NON-NLS-1$
 
@@ -203,6 +200,7 @@ public class ProcessView extends ViewPart {
             debugViewHelper = new DefaultDebugviewHelper();
         }
         rubjobManager = ProcessManager.getInstance();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
     }
 
     /*
@@ -551,6 +549,7 @@ public class ProcessView extends ViewPart {
         }
         // processComposite.dispose();
         // processComposite = null;
+        ProxyRepositoryFactory.getInstance().removePropertyChangeListener(this);
         super.dispose();
     }
 
@@ -580,6 +579,17 @@ public class ProcessView extends ViewPart {
     String oldJobType = null;
 
     public void refresh() {
+        refresh(false);
+    }
+
+    public void refresh(boolean force) {
+        if (force) {
+            if (currentSelectedTab != null) {
+                EComponentCategory currentCategory = currentSelectedTab.getCategory();
+                selectTab(EComponentCategory.BASICRUN);
+                selectTab(currentCategory);
+            }
+        }
         RunProcessContext activeContext = RunProcessPlugin.getDefault().getRunProcessContextManager().getActiveContext();
         boolean disableAll = false;
         if (activeContext != null) {
@@ -817,5 +827,11 @@ public class ProcessView extends ViewPart {
 	public ProcessContextComposite getContextComposite() {
 		return contextComposite;
 	}
-    
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals("view_refresh")) { //$NON-NLS-1$
+            RepositoryPlugin.getDefault().getDesignerCoreService().switchToCurProcessView();
+        }
+    }
 }

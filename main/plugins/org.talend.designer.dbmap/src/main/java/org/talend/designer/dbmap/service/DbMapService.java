@@ -14,6 +14,7 @@ package org.talend.designer.dbmap.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.service.IDbMapService;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
@@ -42,25 +43,28 @@ public class DbMapService implements IDbMapService {
         AbstractExternalData nodeData = nodeType.getNodeData();
         if (nodeData instanceof DBMapData) {
             DBMapData dbMapData = (DBMapData) nodeData;
+            // may have several tables with different aliases.
+            boolean isAliasIncludeTableName = false;
             for (InputTable input : dbMapData.getInputTables()) {
                 if (input.getName().equals(oldValue) || input.getTableName().equals(oldValue)) {
                     input.setName(newValue);
                     input.setTableName(newValue);
+                    String alias = input.getAlias();
+                    if (alias != null) {
+                        if (alias.contains(oldValue)) {
+                            isAliasIncludeTableName = true;
+                        }
+                    }
                 }
             }
+            
+            // do this when no alias in expression(or has alias which alias = old tableName, when tableName change to new, don't change alias in expression)
             for (OutputTable output : dbMapData.getOutputTables()) {
                 List<DBMapperTableEntry> entries = output.getDBMapperTableEntries();
                 for (DBMapperTableEntry entry : entries) {
                     String expression = entry.getExpression();
-                    if (expression != null && !"".equals(expression.trim())) { //$NON-NLS-1$
-                        int index = expression.lastIndexOf("."); //$NON-NLS-1$
-                        // at least "a.b"
-                        if (index > 0) {
-                            String connectionName = expression.substring(0, index);
-                            if (oldValue.equals(connectionName)) {
-                                entry.setExpression(newValue + expression.substring(index, expression.length()));
-                            }
-                        }
+                    if (!StringUtils.isBlank(expression) && expression.contains(oldValue) && !isAliasIncludeTableName) {
+                        entry.setExpression(expression.replace(oldValue, newValue));
                     }
                 }
             }

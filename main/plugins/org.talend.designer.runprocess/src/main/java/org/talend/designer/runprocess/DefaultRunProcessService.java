@@ -284,6 +284,13 @@ public class DefaultRunProcessService implements IRunProcessService {
         }
     }
 
+    @Override
+    public void switchToCurProcessView() {
+        ProcessView view = ProcessView.findProcessView();
+        if (view != null) {
+            view.refresh(true);
+        }
+    }
     /*
      * (non-Javadoc)
      * 

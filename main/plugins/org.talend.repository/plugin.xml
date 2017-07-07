@@ -2923,7 +2923,23 @@
               id="org.talend.repository.model.migration.UnselectChangeEqualsAndHashcodeForBigDecimalInTMap"
               name="Set the 'skip tailing zeros for BigDecimal' setting to false if it was null"
               version="6.5.0">
-		</projecttask>
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.1"
+              class="org.talend.repository.model.migration.DecodeURIInTFileFetch"
+              id="org.talend.repository.model.migration.DecodeURIInTFileFetch"
+              name="Decode URI to save functionality of component correct"
+              version="6.5.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
+              id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
+              name="reset the 'COLUMN_DELIMITER' parameter"
+              version="6.5.0">
+        </projecttask>
    </extension>
 
    <extension
