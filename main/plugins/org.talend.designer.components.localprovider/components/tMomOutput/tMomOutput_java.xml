@@ -159,7 +159,7 @@
     </PARAMETER>
 
     <PARAMETER NAME="IS_TRANSACTED" FIELD="CHECK" REQUIRED="false" NUM_ROW="45"
-        SHOW_IF="(SERVER == 'ACTIVEMQ') AND (USE_CONNECTION == 'false')">
+        SHOW_IF="(USE_CONNECTION == 'false')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
