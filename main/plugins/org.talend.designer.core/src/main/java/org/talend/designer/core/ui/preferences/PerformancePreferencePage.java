@@ -180,8 +180,15 @@ public class PerformancePreferencePage extends FieldEditorPreferencePage impleme
                     ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT,
                     Messages.getString("PerformancePreferencePage.tacTimeout"), //$NON-NLS-1$
                     getFieldEditorParent());
-            autoCheckTime.setValidRange(0, 3600);
+            tacConnectionTimeout.setValidRange(0, 3600);
             addField(tacConnectionTimeout);
+
+            final IntegerFieldEditor tacReadTimeout = new IntegerFieldEditor(
+                    ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT,
+                    Messages.getString("PerformancePreferencePage.tacTimeout.read"), //$NON-NLS-1$
+                    getFieldEditorParent());
+            tacReadTimeout.setValidRange(0, 3600);
+            addField(tacReadTimeout);
         }
 
     }

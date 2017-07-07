@@ -50,6 +50,8 @@ public class ExcelReader implements Callable {
 
     private List<String> sheetNames = new ArrayList<String>();
 
+    private List<Integer> sheetPositions = new ArrayList<Integer>();
+
     private List<Boolean> asRegexs = new ArrayList<Boolean>();
 
     DefaultTalendSheetContentsHandler sheetContentsHandler = null;
@@ -83,6 +85,13 @@ public class ExcelReader implements Callable {
     public void addSheetName(String name, Boolean asRegex) {
         this.sheetNames.add(name);
         this.asRegexs.add(asRegex);
+    }
+
+    public void addSheetName(int position, Boolean asRegex) {
+        // Keep "asRegex" here for code generated
+        if (!this.sheetPositions.contains(position)) {
+            this.sheetPositions.add(position);
+        }
     }
 
     public void stopRead() {
@@ -121,24 +130,34 @@ public class ExcelReader implements Callable {
             parser.setContentHandler(handler);
 
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
-//            List<InputStream> iss = new ArrayList<InputStream>();
-            LinkedHashMap<String,InputStream> issmap = new LinkedHashMap<String,InputStream>();
+            // List<InputStream> iss = new ArrayList<InputStream>();
+            LinkedHashMap<String, InputStream> issmap = new LinkedHashMap<String, InputStream>();
+            int sheetPosition = 0;
             while (sheets.hasNext()) {
                 InputStream sheet = sheets.next();
                 String sheetName = sheets.getSheetName();
-
                 boolean match = false;
-
-                for (int i = 0; i < sheetNames.size(); i++) {
-                    if ((asRegexs.get(i) && sheetName.matches(sheetNames.get(i)))
-                            || (!asRegexs.get(i) && sheetName.equals(sheetNames.get(i)))) {
-                        match = true;
-//                        iss.add(sheet);
-                        issmap.put(sheetName, sheet);
-                        break;
+                if (sheetNames.size() > 0) {
+                    for (int i = 0; i < sheetNames.size(); i++) {
+                        if ((asRegexs.get(i) && sheetName.matches(sheetNames.get(i)))
+                                || (!asRegexs.get(i) && sheetName.equals(sheetNames.get(i)))) {
+                            match = true;
+                            // iss.add(sheet);
+                            issmap.put(sheetName, sheet);
+                            break;
+                        }
                     }
                 }
 
+                if (sheetPositions.size() > 0) {
+                    if (sheetPositions.contains(sheetPosition)) {
+                        match = true;
+                        issmap.put(sheetName, sheet);
+                        // remove from the list for index out of range check.
+                        sheetPositions.remove(sheetPositions.indexOf(sheetPosition));
+                    }
+                }
+                sheetPosition++;
                 if (!match) {
                     sheet.close();
                 }
@@ -146,6 +165,12 @@ public class ExcelReader implements Callable {
 
             if (issmap.size() < 1) {
                 throw new RuntimeException("No match sheets");
+            }
+
+            // if the "sheetPositions" still not empty, means thsoe positions out of range.
+            if (sheetPositions.size() > 0) {
+                throw new IllegalArgumentException(
+                        "Sheet index " + sheetPositions + " is out of range (0.." + (sheetPosition - 1) + ")");
             }
 
             for (InputStream is : issmap.values()) {
