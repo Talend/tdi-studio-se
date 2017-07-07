@@ -406,8 +406,6 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
         getTextWidget().setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
     }
     
-
-
     /**
      * Example: configure(new TalendPerlSourceViewerConfiguration(PerlEditorPlugin .getDefault().getPreferenceStore(),
      * this));.
