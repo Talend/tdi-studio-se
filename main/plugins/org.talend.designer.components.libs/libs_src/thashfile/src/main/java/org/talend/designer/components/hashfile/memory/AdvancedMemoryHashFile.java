@@ -44,7 +44,7 @@ public class AdvancedMemoryHashFile<V> {
      * Place record to Cache.
      * <ul>
      * <li> MATCHING_MODE.KEEP_ALL: all records are stored</li>
-	 * <li> MATCHING_MODE.KEEP_FIRST: if several records have the same key, then only first record is stored</li>
+     * <li> MATCHING_MODE.KEEP_FIRST: if several records have the same key, then only first record is stored</li>
      * <li> MATCHING_MODE.KEEP_LAST: if several records have the same key, then only last record is stored</li>
      * </ul>
      * 
