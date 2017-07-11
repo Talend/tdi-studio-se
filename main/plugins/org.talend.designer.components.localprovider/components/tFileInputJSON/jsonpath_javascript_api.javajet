@@ -173,20 +173,23 @@ if (jsEngine_<%=cid%> == null) {
 
 <%if(!isUseUrl){//read from a file%>
 	java.io.BufferedReader fr_<%=cid%> = null;
+		try{
+	        if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+	            fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>));
+	        }else{
+	            fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream((String)filenameOrStream_<%=cid %>),<%=encoding %>));
+	        }
 <%}else{ //read from internet%>
 	java.io.InputStreamReader fr_<%=cid %> = null;
-<%}%>
-	try{
+		try{
 	        if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
-                fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>));
-            }else{
-	              <%if(!isUseUrl){//read from a file%>
-		               fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream((String)filenameOrStream_<%=cid %>),<%=encoding %>));
-	              <%}else{ //read from internet%>
-		               java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
+	            fr_<%=cid%> = new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>);
+	        }else{
+	        java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
 		               java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
 		               fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
-	              <%}%>
+	        
+<%}%>
 	       }
 		jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
 		if(jsonText_<%=cid%> == null) {
