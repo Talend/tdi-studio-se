@@ -43,6 +43,14 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
             ParameterUtilTool.addParameterType(node, "RADIO", "USE_SOAP_API", "true");
             paramType = ParameterUtilTool.findParameterType(node, paramName);
         }
+        // Parameter is unassigned, so "LEAD_SELECTOR" parameter isn't processed yet.
+        if ("LEAD_SELECTOR_REST".equals(paramName) && paramType == null) {
+            ElementParameterType leadSelector = ParameterUtilTool.findParameterType(node, "LEAD_SELECTOR");
+            Object selValue = ParameterUtilTool.convertParameterValue(leadSelector);
+            ParameterUtilTool.addParameterType(node, "CLOSED_LIST", "LEAD_SELECTOR_REST", String.valueOf(selValue));
+            paramType = ParameterUtilTool.findParameterType(node, paramName);
+        }
+        //
         if (node != null && paramType != null) {
             String componentName = node.getComponentName();
             Object value = ParameterUtilTool.convertParameterValue(paramType);
@@ -59,7 +67,7 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
             }
             // Correct ListOperation value
             if ("OPERATION".equals(paramName) && "tMarketoListOperation".equals(componentName)) {
-                switch(String.valueOf(value)){
+                switch (String.valueOf(value)) {
                 case "ADDTOLIST":
                     paramType.setValue("addTo");
                     break;
@@ -97,6 +105,10 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
 
             if ("LEAD_KEYVALUES".equals(paramName)) {
                 paramType.setValue(TalendQuoteUtils.addQuotesIfNotExist(String.valueOf(value)));
+            }
+            // creates a parameter for REST LeadSelector based on original value
+            if ("LEAD_SELECTOR".equals(paramName)) {
+                ParameterUtilTool.addParameterType(node, "CLOSED_LIST", "LEAD_SELECTOR_REST", String.valueOf(value));
             }
         }
         return paramType;

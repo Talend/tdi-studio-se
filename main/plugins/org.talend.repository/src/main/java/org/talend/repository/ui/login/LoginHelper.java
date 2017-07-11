@@ -388,6 +388,7 @@ public class LoginHelper {
         if (connBean == null || project == null || project.getLabel() == null) {
             return false;
         }
+        setCurrentSelectedConnBean(connBean);
         try {
             if (!project.getEmfProject().isLocal() && factory.isLocalConnectionProvider()) {
                 List<IRepositoryFactory> rfList = RepositoryFactoryProvider.getAvailableRepositories();

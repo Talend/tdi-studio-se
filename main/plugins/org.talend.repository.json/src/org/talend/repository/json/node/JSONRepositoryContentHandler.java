@@ -30,6 +30,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.model.metadata.MetadataManager;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.AbstractRepositoryContentHandler;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -39,6 +40,7 @@ import org.talend.core.repository.utils.RepositoryNodeManager;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.cwm.helper.SubItemHelper;
+import org.talend.repository.json.ui.wizards.FileJSONTableWizard;
 import org.talend.repository.json.util.JSONImage;
 import org.talend.repository.metadata.ui.actions.metadata.CreateTableAction;
 import org.talend.repository.model.IRepositoryNode;
@@ -48,7 +50,6 @@ import org.talend.repository.model.json.JSONFileConnection;
 import org.talend.repository.model.json.JSONFileConnectionItem;
 import org.talend.repository.model.json.JsonFactory;
 import org.talend.repository.model.json.JsonPackage;
-import org.talend.repository.model.json.util.JsonXMLProcessor;
 
 import orgomg.cwm.foundation.businessinformation.BusinessinformationPackage;
 
@@ -252,6 +253,20 @@ public class JSONRepositoryContentHandler extends AbstractRepositoryContentHandl
         }
         return null;
         // return new HDFSWizard(workbench, creation, node, existingNames);
+    }
+    
+    @Override
+    public IWizard newSchemaWizard(IWorkbench workbench, boolean creation, IRepositoryViewObject object,
+            MetadataTable metadataTable, String[] existingNames, boolean forceReadOnly) {
+        if (object == null) {
+            return null;
+        }
+        if (workbench == null) {
+            workbench = PlatformUI.getWorkbench();
+        }
+
+        return new FileJSONTableWizard(workbench, creation, (ConnectionItem) object.getProperty().getItem(),
+                metadataTable, forceReadOnly);
     }
 
     @Override
