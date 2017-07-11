@@ -71,6 +71,14 @@ public class ChangeValuesFromRepositoryTest {
 
     private INode target;
 
+    private INode newElemCDH;
+
+    private INode newElemEMR;
+
+    private HadoopClusterConnection hadoopClusterConnection;
+
+    private HadoopClusterConnection hadoopClusterConnection2;
+
     private static org.talend.core.model.metadata.builder.connection.Connection connection;
 
     private static DatabaseConnectionItem databaseConnItem;
@@ -93,71 +101,99 @@ public class ChangeValuesFromRepositoryTest {
      * @throws java.lang.Exception
      */
      @Before
-     public void setUp() throws Exception {
-     Property property = PropertiesFactory.eINSTANCE.createProperty();
-     IProcess2 process = new Process(property);
-     IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
-     ComponentCategory.CATEGORY_4_DI.getName());
-     IComponent targetCom = ComponentsFactoryProvider.getInstance().get("tMysqlOutput",
-     ComponentCategory.CATEGORY_4_DI.getName());
-     elem = new Node(sourceCom, process);
-     elem.setLabel("tMysqlInput_1");
-     target = new Node(targetCom, process);
-     IMetadataTable table = createSimpleMetadata();
-     table.setAttachedConnector("FLOW");
-     List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
-     metadataList.add(table);
-     elem.setMetadataList(metadataList);
-     Connection conn = new Connection(elem, target, EConnectionType.FLOW_MAIN, "FLOW", "metaName", "row1", false);
-     List<Connection> connList = new ArrayList<Connection>();
-     connList.add(conn);
-     target.setIncomingConnections(connList);
-     elem.setOutgoingConnections(connList);
-     }
+    public void setUp() throws Exception {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        IProcess2 process = new Process(property);
+        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tMysqlInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent targetCom = ComponentsFactoryProvider.getInstance().get("tMysqlOutput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        elem = new Node(sourceCom, process);
+        elem.setLabel("tMysqlInput_1");
+        target = new Node(targetCom, process);
+        IMetadataTable table = createSimpleMetadata();
+        table.setAttachedConnector("FLOW");
+        List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
+        metadataList.add(table);
+        elem.setMetadataList(metadataList);
+        Connection conn = new Connection(elem, target, EConnectionType.FLOW_MAIN, "FLOW", "metaName", "row1", false);
+        List<Connection> connList = new ArrayList<Connection>();
+        connList.add(conn);
+        target.setIncomingConnections(connList);
+        elem.setOutgoingConnections(connList);
 
-     private static void init() throws PersistenceException {
-     connection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
-     connection.setName("ChangeValues");
-     ((DatabaseConnection) connection).setDatabaseType("MySQL");
-     ((DatabaseConnection) connection).setUsername("root");
-     ((DatabaseConnection) connection).setRawPassword("root");
-     ((DatabaseConnection) connection).setPort("4000");
-     ((DatabaseConnection) connection).setDatasourceName("test");
-     ((DatabaseConnection) connection).setServerName("localhost");
-    
-     IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
-     connection.setId(factory.getNextId());
-     databaseConnItem = PropertiesFactory.eINSTANCE.createDatabaseConnectionItem();
-     Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
-     myProperty.setId(factory.getNextId());
-     myProperty.setLabel("ChangeValues");
-     myProperty.setVersion("0.1");
-    
-     ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
-     itemState.setPath("");
-    
-     databaseConnItem.setProperty(myProperty);
-     databaseConnItem.setState(itemState);
-     databaseConnItem.setConnection(connection);
-    
-     RecordFile record = (RecordFile) ConnectionHelper.getPackage(connection.getName(), connection, RecordFile.class);
-     inputTable = ConnectionFactory.eINSTANCE.createMetadataTable();
-    
-     inputTable.setId(factory.getNextId());
-     inputTable.setLabel("Input");
-    
-     if (record != null) {
-     PackageHelper.addMetadataTable(inputTable, record);
-     } else {
-     RecordFile newrecord = RecordFactory.eINSTANCE.createRecordFile();
-     newrecord.setName(connection.getName());
-     ConnectionHelper.addPackage(newrecord, connection);
-     PackageHelper.addMetadataTable(inputTable, newrecord);
-     }
-    
-     factory.create(databaseConnItem, new Path(""));
-     factory.save(databaseConnItem);
-     }
+        // cdh
+        Property propertyCDH = PropertiesFactory.eINSTANCE.createProperty();
+        IProcess2 processCDH = new Process(propertyCDH);
+        IComponent sourceComCDH = ComponentsFactoryProvider.getInstance().get("tSparkConfiguration",
+                ComponentCategory.CATEGORY_4_SPARK.getName());
+        newElemCDH = new Node(sourceComCDH, processCDH);
+        hadoopClusterConnection = HadoopClusterFactory.eINSTANCE.createHadoopClusterConnection();
+        hadoopClusterConnection.setAuthMode("USERNAME");
+        hadoopClusterConnection.setDfVersion("Cloudera_CDH5_8");
+        hadoopClusterConnection.setDistribution("CLOUDERA");
+        hadoopClusterConnection.setLabel("cdh");
+        hadoopClusterConnection.setEnableKerberos(true);
+        newElemCDH.getElementParameter("USE_KRB").setValue(new Boolean(true));
+
+        // emr
+        Property propertyEMR = PropertiesFactory.eINSTANCE.createProperty();
+        IProcess2 processEMR = new Process(propertyEMR);
+        IComponent sourceComEMR = ComponentsFactoryProvider.getInstance().get("tSparkConfiguration",
+                ComponentCategory.CATEGORY_4_SPARK.getName());
+        newElemEMR = new Node(sourceComEMR, processEMR);
+        hadoopClusterConnection2 = HadoopClusterFactory.eINSTANCE.createHadoopClusterConnection();
+        hadoopClusterConnection2.setAuthMode("USERNAME");
+        hadoopClusterConnection2.setDfVersion("EMR_5_0_0");
+        hadoopClusterConnection2.setDistribution("AMAZON_EMR");
+        hadoopClusterConnection2.setLabel("emr");
+        hadoopClusterConnection2.setEnableKerberos(false);
+        newElemEMR.getElementParameter("USE_KRB").setValue(new Boolean(false));
+    }
+
+    private static void init() throws PersistenceException {
+        connection = ConnectionFactory.eINSTANCE.createDatabaseConnection();
+        connection.setName("ChangeValues");
+        ((DatabaseConnection) connection).setDatabaseType("MySQL");
+        ((DatabaseConnection) connection).setUsername("root");
+        ((DatabaseConnection) connection).setRawPassword("root");
+        ((DatabaseConnection) connection).setPort("4000");
+        ((DatabaseConnection) connection).setDatasourceName("test");
+        ((DatabaseConnection) connection).setServerName("localhost");
+
+        IProxyRepositoryFactory factory = CoreRuntimePlugin.getInstance().getProxyRepositoryFactory();
+        connection.setId(factory.getNextId());
+        databaseConnItem = PropertiesFactory.eINSTANCE.createDatabaseConnectionItem();
+        Property myProperty = PropertiesFactory.eINSTANCE.createProperty();
+        myProperty.setId(factory.getNextId());
+        myProperty.setLabel("ChangeValues");
+        myProperty.setVersion("0.1");
+
+        ItemState itemState = PropertiesFactory.eINSTANCE.createItemState();
+        itemState.setPath("");
+
+        databaseConnItem.setProperty(myProperty);
+        databaseConnItem.setState(itemState);
+        databaseConnItem.setConnection(connection);
+
+        RecordFile record = (RecordFile) ConnectionHelper.getPackage(connection.getName(), connection, RecordFile.class);
+        inputTable = ConnectionFactory.eINSTANCE.createMetadataTable();
+
+        inputTable.setId(factory.getNextId());
+        inputTable.setLabel("Input");
+
+        if (record != null) {
+            PackageHelper.addMetadataTable(inputTable, record);
+        } else {
+            RecordFile newrecord = RecordFactory.eINSTANCE.createRecordFile();
+            newrecord.setName(connection.getName());
+            ConnectionHelper.addPackage(newrecord, connection);
+            PackageHelper.addMetadataTable(inputTable, newrecord);
+        }
+
+        factory.create(databaseConnItem, new Path(""));
+        factory.save(databaseConnItem);
+    }
 
     /**
      * DOC Administrator Comment method "tearDown".
@@ -189,47 +225,24 @@ public class ChangeValuesFromRepositoryTest {
         assertEquals(elem.getPropertyValue("HOST"), TalendTextUtils.addQuotes(dbConn.getServerName()));
         assertEquals(elem.getPropertyValue("PORT"), TalendTextUtils.addQuotes(dbConn.getPort()));
         assertEquals(elem.getPropertyValue("DBNAME"), TalendTextUtils.addQuotes(dbConn.getDatasourceName()));
-        
-        
-        //test for TUP-17721 xwen
-        // cdh
-        Property propertyCDH = PropertiesFactory.eINSTANCE.createProperty();
-        IProcess2 processCDH = new Process(propertyCDH);
-        IComponent sourceComCDH = ComponentsFactoryProvider.getInstance().get("tSparkConfiguration",
-                ComponentCategory.CATEGORY_4_SPARK.getName());
-        INode newElemCDH = new Node(sourceComCDH, processCDH);
-        HadoopClusterConnection hadoopClusterConnection = HadoopClusterFactory.eINSTANCE.createHadoopClusterConnection();
-        hadoopClusterConnection.setAuthMode("USERNAME");
-        hadoopClusterConnection.setDfVersion("Cloudera_CDH5_8");
-        hadoopClusterConnection.setDistribution("CLOUDERA");
-        hadoopClusterConnection.setLabel("cdh");
-        hadoopClusterConnection.setEnableKerberos(true);
-        ElementParameter paramCDH = new ElementParameter(newElemCDH);
-        newElemCDH.getElementParameter("USE_KRB").setValue(new Boolean(true));
+    }
+
+    // test for TUP-17721 xwen
+    @Test
+    public void testExecute_cdh() {
         ChangeValuesFromRepository changeValuesFromRepo = new ChangeValuesFromRepository(newElemCDH, hadoopClusterConnection,
                 "MR_PROPERTY:REPOSITORY_PROPERTY_TYPE", "_31iU4GIREeegQqu8SjIMUw");
         changeValuesFromRepo.execute();
-        assertEquals(newElemCDH.getElementParameter("USE_KRB").getValue(), Boolean.TRUE);
+        assertEquals(newElemCDH.getElementParameter("USE_KRB").getValue(), true);
+    }
 
-        // emr
-        Property propertyEMR = PropertiesFactory.eINSTANCE.createProperty();
-        IProcess2 process = new Process(propertyEMR);
-        IComponent sourceCom = ComponentsFactoryProvider.getInstance().get("tSparkConfiguration",
-                ComponentCategory.CATEGORY_4_SPARK.getName());
-        INode newElemEMR = new Node(sourceCom, process);
-        HadoopClusterConnection hadoopClusterConnection2 = HadoopClusterFactory.eINSTANCE.createHadoopClusterConnection();
-        hadoopClusterConnection2.setAuthMode("USERNAME");
-        hadoopClusterConnection2.setDfVersion("EMR_5_0_0");
-        hadoopClusterConnection2.setDistribution("AMAZON_EMR");
-        hadoopClusterConnection2.setLabel("emr");
-        hadoopClusterConnection2.setEnableKerberos(false);
-        newElemEMR.getElementParameter("USE_KRB").setValue(new Boolean(false));
+    // test for TUP-17721 xwen
+    @Test
+    public void testExecute_cdhToEmr() {
         ChangeValuesFromRepository changeValuesFromCDHtoEMR = new ChangeValuesFromRepository(newElemEMR, hadoopClusterConnection2,
                 "MR_PROPERTY:REPOSITORY_PROPERTY_TYPE", "_y7dnkGIREeegQqu8SjIMUw");
         changeValuesFromCDHtoEMR.execute();
         assertEquals(newElemEMR.getElementParameter("USE_KRB").getValue(), false);
-        
-
     }
 
     /**
