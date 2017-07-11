@@ -52,22 +52,24 @@ public class AdvancedMemoryHashFile<V> {
      * @return stored value or null if value shouldn't be placed in Cache.
      */
     public V put(V value) {
-        if (value != null) {
-            if (matchingMode == MATCHING_MODE.KEEP_ALL) {
-                allList.add(value);
-                return value;
-            } else {
-                if (matchingMode == MATCHING_MODE.KEEP_LAST || !firstOrLastHash.containsKey(value)) {
-                    firstOrLastHash.put(value, value);
-                    return value;
-                }
-            }
+        if (value == null)
+            return null;
+
+        if (matchingMode == MATCHING_MODE.KEEP_ALL) {
+            allList.add(value);
+            return value;
         }
-        return null;
+        if (matchingMode == MATCHING_MODE.KEEP_LAST) {
+            firstOrLastHash.put(value, value);
+            return value;
+        }
+        if (!firstOrLastHash.containsKey(value)) firstOrLastHash.put(value, value);
+        return value;
     }
 
     public Iterator<V> iterator() {
-        return matchingMode == MATCHING_MODE.KEEP_ALL ? allList.iterator() : firstOrLastHash.values().iterator();
+        if (matchingMode == MATCHING_MODE.KEEP_ALL) return allList.iterator();
+        return firstOrLastHash.values().iterator();
     }
 
 }
