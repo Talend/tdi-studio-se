@@ -620,6 +620,7 @@ public class Component extends AbstractBasicComponent {
         param.setValue("");//$NON-NLS-1$
         param.setNumRow(1);
         param.setShow(wizardDefinition != null);
+        param.setTaggedValue(IGenericConstants.IS_PROPERTY_SHOW, wizardDefinition != null);
 
         ElementParameter newParam = new ElementParameter(node);
         newParam.setCategory(EComponentCategory.BASIC);
