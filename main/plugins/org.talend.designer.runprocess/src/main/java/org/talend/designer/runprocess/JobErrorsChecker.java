@@ -13,8 +13,10 @@
 package org.talend.designer.runprocess;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
@@ -339,6 +341,8 @@ public class JobErrorsChecker {
 
         // if no error for job, check codes.
         checkRoutinesCompilationError();
+        
+        checkSubJobMultipleVersionsError();
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {
@@ -409,6 +413,33 @@ public class JobErrorsChecker {
             ExceptionHandler.process(e);
         }
 
+    }
+    
+    protected static void checkSubJobMultipleVersionsError() throws ProcessorException {
+        Set<JobInfo> jobInfos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
+        Map<String, Set<String>> jobInfoMap = new HashMap<>();
+        for (JobInfo jobInfo : jobInfos) {
+            String key = jobInfo.getJobId() + ":" + jobInfo.getJobName(); //$NON-NLS-1$
+            if (!jobInfoMap.containsKey(key)) {
+                Set<String> existVersions = new HashSet<>();
+                existVersions.add(jobInfo.getJobVersion());
+                jobInfoMap.put(key, existVersions);
+            } else {
+                jobInfoMap.get(key).add(jobInfo.getJobVersion());
+            }
+        }
+        for (Map.Entry<String, Set<String>> me : jobInfoMap.entrySet()) {
+            Set<String> existVersions = me.getValue();
+            if (existVersions.size() > 1) {
+                String[] keys = me.getKey().split(":"); //$NON-NLS-1$
+                String jobName = keys[1];
+                String errorMsg = Messages.getString("JobErrorsChecker_subjob_multiple_version_errors", jobName); //$NON-NLS-1$
+                for (String version : existVersions) {
+                    errorMsg += " [" + version + "]"; //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                throw new ProcessorException(errorMsg);
+            }
+        }
     }
 
 }
