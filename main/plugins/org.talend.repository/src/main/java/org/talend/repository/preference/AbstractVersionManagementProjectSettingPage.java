@@ -368,6 +368,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         }
         countSubjobs = false;
         if (!newAddedSubjobs.isEmpty()) {
+            for (ItemVersionObject subjob : newAddedSubjobs) {
+                subjob.setNewVersion(getNewVersionWithOption(subjob));
+            }
             addItemElements(newAddedSubjobs);
             checkButtonsState();
             refreshCheckedTreeView();
