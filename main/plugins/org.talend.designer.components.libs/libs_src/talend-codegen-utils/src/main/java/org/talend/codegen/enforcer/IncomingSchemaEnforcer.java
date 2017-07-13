@@ -25,8 +25,8 @@ import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.SchemaConstants;
 import org.talend.daikon.avro.converter.AvroConverter;
-import org.talend.daikon.di.converter.DiConverters;
-import org.talend.daikon.di.converter.TypeConverter;
+import org.talend.codegen.converter.DiConverters;
+import org.talend.codegen.converter.TypeConverter;
 import org.talend.codegen.DynamicFieldUtils;
 
 /**

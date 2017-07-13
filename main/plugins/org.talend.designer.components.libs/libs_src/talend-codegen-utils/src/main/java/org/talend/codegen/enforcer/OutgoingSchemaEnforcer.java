@@ -17,7 +17,7 @@ import java.util.List;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.IndexedRecord;
 import org.talend.daikon.avro.converter.AvroConverter;
-import org.talend.daikon.di.converter.DiConverters;
+import org.talend.codegen.converter.DiConverters;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
