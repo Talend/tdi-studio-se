@@ -188,9 +188,9 @@ if (jsEngine_<%=cid%> == null) {
 	        java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
 		               java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
 		               fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
-	        
+	        }
 <%}%>
-	       }
+	       
 		jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
 		if(jsonText_<%=cid%> == null) {
 			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filenameOrStream %> <%} else {%> <%=urlpath %> <%}%>);
