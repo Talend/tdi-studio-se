@@ -94,7 +94,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 							
 							} else if((javaType == JavaTypesManager.BIGDECIMAL) && changeHashAndEqualsForBigDecimal) {
 								%>
-								result = prime * result + ((this.<%=column.getLabel() %> == null) ? 0 : new Double(this.<%=column.getLabel() %>.doubleValue()).hashCode());
+								result = prime * result + ((this.<%=column.getLabel() %> == null) ? 0 : this.<%=column.getLabel() %>.stripTrailingZeros().hashCode());
 								<%
 							} else {
 								%>
@@ -142,7 +142,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 										if (other.<%=column.getLabel() %> != null) 
 											return false;
 								<%if((javaType == JavaTypesManager.BIGDECIMAL) && changeHashAndEqualsForBigDecimal) {%>
-									} else if ((other.<%=column.getLabel() %> == null) || (this.<%=column.getLabel() %>.compareTo(other.<%=column.getLabel() %>)!=0))
+									} else if ((other.<%=column.getLabel() %> == null) || (this.<%=column.getLabel() %>.stripTrailingZeros().compareTo(other.<%=column.getLabel() %>.stripTrailingZeros())!=0))
 								<%} else {%>
 									} else if (!this.<%=column.getLabel() %>.equals(other.<%=column.getLabel() %>))
 								<%}%> 
