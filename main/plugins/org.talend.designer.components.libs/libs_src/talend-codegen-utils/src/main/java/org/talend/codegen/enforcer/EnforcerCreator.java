@@ -23,8 +23,8 @@ public final class EnforcerCreator {
     /**
      * Instantiates concrete class of {@link OutgoingSchemaEnforcer} according to incoming arguments
      * <code>byIndex</code> parameter is used to specify type of index mapper to use with
-     * {@link org.talend.daikon.di.DiOutgoingDynamicSchemaEnforcer} For non dynamic case by index is always used (in
-     * {@link org.talend.daikon.di.DiOutgoingSchemaEnforcer} )
+     * {@link org.talend.codegen.enforcer.OutgoingDynamicSchemaEnforcer} For non dynamic case by index is always used (in
+     * {@link org.talend.codegen.enforcer.OutgoingSchemaEnforcer} )
      *
      * @param designSchema design schema specified by user
      * @param byIndex schema fields mapper mode; true for by index mode; false is for by name mode
