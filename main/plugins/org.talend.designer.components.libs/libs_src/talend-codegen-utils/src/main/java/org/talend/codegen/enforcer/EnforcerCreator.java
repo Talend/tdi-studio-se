@@ -16,19 +16,19 @@ import org.apache.avro.Schema;
 import org.talend.daikon.avro.AvroUtils;
 
 /**
- * Instantiates concrete class of {@link OutgoingSchemaEnforcer} according to incoming arguments
+ * Instantiates concrete class of {@link DiOutgoingSchemaEnforcer} according to incoming arguments
  */
 public final class EnforcerCreator {
 
     /**
-     * Instantiates concrete class of {@link OutgoingSchemaEnforcer} according to incoming arguments
+     * Instantiates concrete class of {@link DiOutgoingSchemaEnforcer} according to incoming arguments
      * <code>byIndex</code> parameter is used to specify type of index mapper to use with
      * {@link org.talend.codegen.enforcer.OutgoingDynamicSchemaEnforcer} For non dynamic case by index is always used (in
      * {@link org.talend.codegen.enforcer.OutgoingSchemaEnforcer} )
      *
      * @param designSchema design schema specified by user
      * @param byIndex schema fields mapper mode; true for by index mode; false is for by name mode
-     * @return instance of {@link OutgoingSchemaEnforcer}
+     * @return instance of {@link DiOutgoingSchemaEnforcer}
      */
     public static OutgoingSchemaEnforcer createOutgoingEnforcer(Schema designSchema, boolean byIndex) {
 
@@ -40,9 +40,9 @@ public final class EnforcerCreator {
             } else {
                 indexMapper = new DynamicIndexMapperByName(designSchema);
             }
-            enforcer = new OutgoingDynamicSchemaEnforcer(indexMapper);
+            enforcer = new OutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
         } else {
-            enforcer = new OutgoingSchemaEnforcer(new IndexMapperByIndex(designSchema));
+            enforcer = new OutgoingSchemaEnforcer(designSchema, new IndexMapperByIndex(designSchema));
         }
 
         return enforcer;
