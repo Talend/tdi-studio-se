@@ -66,7 +66,7 @@ public class DiConvertersTest {
         converter = converters.get(2);
         assertThat(converter, instanceOf(DateLogicalTimestampConverter.class));
         converter = converters.get(3);
-        assertThat(converter, instanceOf(BigDecimalStringConverter.class));
+        assertThat(converter, instanceOf(BigDecimalStringDoubleConverter.class));
         converter = converters.get(4);
         assertThat(converter, instanceOf(ByteIntegerConverter.class));
         converter = converters.get(5);

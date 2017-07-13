@@ -355,6 +355,7 @@ public class IncomingSchemaEnforcerTest {
                 .name("Test_Double").type().doubleType().noDefault() //
                 .name("Test_Float").type().floatType().noDefault() //
                 .name("Test_BigDecimal").type(AvroUtils._decimal()).noDefault() //
+                .name("Test_BigDecimal_Double").type(AvroUtils._decimal()).noDefault() //
                 .name("Test_Date").prop(SchemaConstants.TALEND_COLUMN_PATTERN, "yyyy-MM-dd'T'HH:mm:ss'000Z'")
                 .type(AvroUtils._logicalTimestamp()).noDefault() //
                 .name("Test_Byte").type(AvroUtils._byte()).noDefault() //
@@ -383,6 +384,7 @@ public class IncomingSchemaEnforcerTest {
         enforcer.addDynamicField("Test_Double", "id_Double", null, null, null, false);
         enforcer.addDynamicField("Test_Float", "id_Float", null, null, null, false);
         enforcer.addDynamicField("Test_BigDecimal", "id_BigDecimal", null, null, null, false);
+        enforcer.addDynamicField("Test_BigDecimal_Double", "id_BigDecimal", null, null, null, false);
         enforcer.addDynamicField("Test_Date", "id_Date", null, "yyyy-MM-dd'T'HH:mm:ss'000Z'", null, false);
         enforcer.addDynamicField("Test_Byte", "id_Byte", null, null, null, false);
         enforcer.addDynamicField("Test_Short", "id_Short", null, null, null, false);
@@ -405,17 +407,18 @@ public class IncomingSchemaEnforcerTest {
         enforcer.put(4, 2.15);
         enforcer.put(5, 3.6f);
         enforcer.put(6, new BigDecimal("630.1020"));
-        enforcer.put(7, new Date(1234567891011L));
-        enforcer.put(8, (byte) 20);
-        enforcer.put(9, (short) 2016);
-        enforcer.put(10, 'A');
+        enforcer.put(7, 630.1020);
+        enforcer.put(8, new Date(1234567891011L));
+        enforcer.put(9, (byte) 20);
+        enforcer.put(10, (short) 2016);
+        enforcer.put(11, 'A');
         // 46 * 365 days in milliseconds
-        enforcer.put(11, new Date(1450656000000l));
+        enforcer.put(12, new Date(1450656000000l));
         // 14 hours in milliseconds
-        enforcer.put(12, 50400000);
+        enforcer.put(13, 50400000);
         // 46 * 365 days + 14 hours
-        enforcer.put(13, new Date(1450706400000l));
-        enforcer.put(14, false);
+        enforcer.put(14, new Date(1450706400000l));
+        enforcer.put(15, false);
 
         IndexedRecord record = enforcer.getCurrentRecord();
 
@@ -426,17 +429,18 @@ public class IncomingSchemaEnforcerTest {
         assertThat(record.get(4), is((Object) 2.15));
         assertThat(record.get(5), is((Object) 3.6f));
         assertThat(record.get(6), is((Object) "630.1020"));
-        assertThat(record.get(7), is((Object) 1234567891011L));
-        assertThat(record.get(8), is((Object) 20));
-        assertThat(record.get(9), is((Object) 2016));
-        assertThat(record.get(10), is((Object) "A"));
+        assertThat(record.get(7), is((Object) "630.102"));
+        assertThat(record.get(8), is((Object) 1234567891011L));
+        assertThat(record.get(9), is((Object) 20));
+        assertThat(record.get(10), is((Object) 2016));
+        assertThat(record.get(11), is((Object) "A"));
         // should be integer value equals to 46 * 365 days in days
-        assertThat(record.get(11), is((Object) 16790));
+        assertThat(record.get(12), is((Object) 16790));
         // should be integer value equals to 14 hours in milliseconds
-        assertThat(record.get(12), is((Object) 50400000));
+        assertThat(record.get(13), is((Object) 50400000));
         // should be long value equals to 1450706400000
-        assertThat(record.get(13), is((Object) 1450706400000l));
-        assertThat(record.get(14), is((Object) false));
+        assertThat(record.get(14), is((Object) 1450706400000l));
+        assertThat(record.get(15), is((Object) false));
     }
 
     /**
