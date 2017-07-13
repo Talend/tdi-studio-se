@@ -12,12 +12,22 @@
 // ============================================================================
 package org.talend.codegen.enforcer;
 
-import java.util.List;
+import static org.talend.codegen.DiSchemaConstants.TALEND6_COLUMN_TALEND_TYPE;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
+import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
-import org.talend.daikon.avro.converter.AvroConverter;
-import org.talend.codegen.converter.DiConverters;
+import org.talend.daikon.avro.AvroUtils;
+import org.talend.daikon.avro.SchemaConstants;
+import org.talend.daikon.avro.converter.IndexedRecordConverter.UnmodifiableAdapterException;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to coerce the output type to the exact
@@ -66,13 +76,30 @@ import org.talend.codegen.converter.DiConverters;
  * old Di objects.
  * Row2Struct (also known as POJO) corresponds to IndexedRecord. Its fields correspond to data fields. Important note is that
  * Row2Struct contains
- * also a field for dynamic field. {@link OutgoingSchemaEnforcer} goal is to convert avro-styled data to Talend-styled.
- * {@link OutgoingSchemaEnforcer#get(int)} is the main functionality of this class. This class is used in codegen plugin.
+ * also a field for dynamic field. {@link DiOutgoingSchemaEnforcer} goal is to convert avro-styled data to Talend-styled.
+ * {@link DiOutgoingSchemaEnforcer#get(int)} is the main functionality of this class. This class is used in codegen plugin.
  * See, component_util_indexedrecord_to_rowstruct.javajet. Note, get() is called for each field in Row2Struct. When user specified
  * dynamic column,
  * Row2Struct will contain one more field than desigh avro schema.
  */
-public class OutgoingSchemaEnforcer {
+public class OutgoingSchemaEnforcer implements IndexedRecord {
+
+    /**
+     * {@link Schema} which was specified by user during setting component properties (at design time)
+     * This schema may contain di-specific properties
+     */
+    protected final Schema designSchema;
+
+    /**
+     * A {@link List} of design schema {@link Field}s
+     * It is stored as separate field to accelerate access to them
+     */
+    protected final List<Field> designFields;
+
+    /**
+     * Number of fields in design schema
+     */
+    protected final int designSchemaSize;
 
     /**
      * {@link IndexedRecord} currently wrapped by this enforcer. This can be swapped out for new data as long as
@@ -101,78 +128,113 @@ public class OutgoingSchemaEnforcer {
     private boolean firstRecordProcessed = false;
 
     /**
-     * Avro to DI converters list. Converter index corresponds to specific field in {@link Schema}, which this converter will
-     * convert
-     */
-    @SuppressWarnings("rawtypes")
-    private List<AvroConverter> converters;
-
-    /**
-     * Constructor sets {@link IndexMapper} instance
+     * Constructor sets design schema and {@link IndexMapper} instance
      *
-     * @param indexMapper tool, which computes correspondence between design and runtime fields
+     * @param designSchema design schema specified by user
+     * @param indexMapper  tool, which computes correspondence between design and runtime fields
      */
-    public OutgoingSchemaEnforcer(IndexMapper indexMapper) {
+    public OutgoingSchemaEnforcer(Schema designSchema, IndexMapper indexMapper) {
+        this.designSchema = designSchema;
+        this.designFields = designSchema.getFields();
+        this.designSchemaSize = designFields.size();
         this.indexMapper = indexMapper;
     }
 
     /**
      * Wraps {@link IndexedRecord},
      * creates map of correspondence between design and runtime fields, when first record is wrapped
-     * It may be useful when runtime schema has different field order from design schema (and "by Name" index mapping is used)
-     * Also initializes converters for each field
      *
      * @param record {@link IndexedRecord} to be wrapped
      */
     public void setWrapped(IndexedRecord record) {
         wrappedRecord = record;
         if (!firstRecordProcessed) {
-            processFirstRecord(record);
+            indexMap = indexMapper.computeIndexMap(record.getSchema());
             firstRecordProcessed = true;
         }
     }
 
     /**
-     * Computes {@link this#indexMap} and initializes {@link this#converters}
-     * This method could be extended
-     * 
-     * @param record first incoming {@link IndexedRecord}
+     * Returns schema of this {@link IndexedRecord}
+     * Note, this schema doesn't contain dynamic field.
+     * However, {@link DiOutgoingDynamicSchemaEnforcer} returns dynamic values
+     * in map, when dynamic field index is passed
      */
-    protected void processFirstRecord(IndexedRecord record) {
-        indexMap = indexMapper.computeIndexMap(record.getSchema());
-        converters = DiConverters.initConverters(record.getSchema());
+    @Override
+    public Schema getSchema() {
+        return designSchema;
     }
 
     /**
+     * Throws {@link UnmodifiableAdapterException}. This operation is not supported
+     */
+    @Override
+    public void put(int i, Object v) {
+        throw new UnmodifiableAdapterException();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * Could be called only after first record was wrapped.
      * Here design schema and runtime schema have the same fields
      * (but fields could be in different order)
-     * 
-     * <code>pojoIndex</code> is a field index in design schema. This field may have different index in runtime schema
-     * (when runtime {@link Schema} has different field order).
-     * {@link this#indexMap} is used to compute corresponding field index in runtime schema
      *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize - 1
      */
+    @Override
     public Object get(int pojoIndex) {
+        Field outField = designFields.get(pojoIndex);
         Object value = wrappedRecord.get(indexMap[pojoIndex]);
-        return convertValue(value, indexMap[pojoIndex]);
+        return transformValue(value, outField);
     }
 
     /**
-     * Converts value from Avro to DI format
-     * 
-     * @param avroValue value retrieved from {@link IndexedRecord}
-     * @param recordIndex value index in {@link IndexedRecord}
-     * @return DI value to be set to DI row
+     * Transforms record column value from Avro type to Talend type
+     *
+     * @param value      record column value, which should be transformed into Talend compatible value.
+     *                   It can be null when null
+     *                   corresponding wrapped field.
+     * @param valueField field, which contain information about value's Talend type. It mustn't be null
      */
-    @SuppressWarnings("unchecked")
-    protected Object convertValue(Object avroValue, int recordIndex) {
-        Object diValue = null;
-        if (avroValue != null) {
-            diValue = converters.get(recordIndex).convertToDatum(avroValue);
+    protected Object transformValue(Object value, Field valueField) {
+        if (null == value) {
+            return null;
         }
-        return diValue;
+
+        Schema nonnull = AvroUtils.unwrapIfNullable(valueField.schema());
+        LogicalType logicalType = nonnull.getLogicalType();
+        if (logicalType != null) {
+            if (logicalType == LogicalTypes.date()) {
+                Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+                c.setTimeInMillis(0L);
+                c.add(Calendar.DATE, (Integer) value);
+                return c.getTime();
+            } else if (logicalType == LogicalTypes.timeMillis()) {
+                return value;
+            } else if (logicalType == LogicalTypes.timestampMillis()) {
+                return new Date((Long) value);
+            }
+        }
+
+        // This might not always have been specified.
+        String talendType = valueField.getProp(TALEND6_COLUMN_TALEND_TYPE);
+        String javaClass = nonnull.getProp(SchemaConstants.JAVA_CLASS_FLAG);
+
+        // TODO(rskraba): A full list of type conversion to coerce to Talend-compatible types.
+        if ("id_Short".equals(talendType)) { //$NON-NLS-1$
+            return value instanceof Number ? ((Number) value).shortValue() : Short.parseShort(String.valueOf(value));
+        } else if ("id_Date".equals(talendType) || "java.util.Date".equals(javaClass)) { //$NON-NLS-1$
+            // FIXME - remove this mapping in favor of using Avro logical types
+            return value instanceof Date ? value : new Date((Long) value);
+        } else if ("id_Byte".equals(talendType)) { //$NON-NLS-1$
+            return value instanceof Number ? ((Number) value).byteValue() : Byte.parseByte(String.valueOf(value));
+        } else if ("id_Character".equals(talendType) || "java.lang.Character".equals(javaClass)) {
+            return value instanceof Character ? value : ((String) value).charAt(0);
+        } else if ("id_BigDecimal".equals(talendType) || "java.math.BigDecimal".equals(javaClass)) {
+            return value instanceof BigDecimal ? value : new BigDecimal(String.valueOf(value));
+        }
+        return value;
     }
 
 }
