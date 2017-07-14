@@ -2113,8 +2113,11 @@ public abstract class AbstractElementPropertySectionController implements Proper
             for (IElementParameter param : elem.getElementParameters()) {
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE
                         && param.getRepositoryValue().startsWith("DATABASE")) {
-                    repositoryParam = param;
-                    break;
+                    if (memoParam != null && param.getCategory().equals(memoParam.getCategory())) {
+                        repositoryParam = param;
+                        break;
+                    }
+
                 }
             }
             // in case no database property found, take the first property (to keep compatibility with old code)
