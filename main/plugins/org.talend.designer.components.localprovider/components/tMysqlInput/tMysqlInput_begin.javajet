@@ -68,6 +68,19 @@ imports="
 			}
 		}
 		
+		public void generateYearResultSet(String firstConnName, IMetadataColumn column, int currentColNo) {
+%>
+			String yearStringValue_<%=cid %> = rs_<%=cid%>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+			if (null != yearStringValue_<%=cid %>) {
+				Integer yearValue_<%=cid%> = rs_<%=cid%>.getInt(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+				calendar_<%=cid %>.set(yearValue_<%=cid%>, 0, 0);
+				<%=firstConnName%>.<%=column.getLabel()%> = calendar_<%=cid %>.getTime();
+			} else {
+				<%=firstConnName%>.<%=column.getLabel()%> = null;
+			}
+<%
+		}
+
 		//-----------according schema type to generate ResultSet
 	    public void generateTimestampResultSet(String firstConnName, IMetadataColumn column, int currentColNo) {
 %>
@@ -80,7 +93,7 @@ imports="
 	            }
 	        } else {
 	            <%=firstConnName%>.<%=column.getLabel()%> =  null;
-	        }			 
+	        }
 <%
 	    }
 	    
