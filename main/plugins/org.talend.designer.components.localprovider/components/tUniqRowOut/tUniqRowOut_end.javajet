@@ -136,6 +136,8 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
                 }
 
                 public void close() throws IOException {
+            		buffer = null;
+                	
                     if (ois != null) {
                         ois.close();
                         ois = null;
