@@ -291,7 +291,8 @@
     							}
     							%>
     							} catch(java.lang.Exception ex_<%=cid%>) {
-									rowstate_<%=cid%>.setException(ex_<%=cid%>);
+									rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s'. %s",
+										"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>.toString()), ex_<%=cid%>));
 								}
     							<%
 							}
@@ -800,7 +801,8 @@
 									%>
 									
 										} catch(java.lang.Exception ex_<%=cid%>) {
-											rowstate_<%=cid%>.setException(ex_<%=cid%>);
+											rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s'. %s",
+												"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>.toString()), ex_<%=cid%>));
 										}
     								}else{
     									<%
