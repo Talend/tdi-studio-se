@@ -646,7 +646,7 @@ public class IncomingSchemaEnforcerTest {
         assertThat(record.get(8), is((Object) 20));
         assertThat(record.get(9), is((Object) 2016));
         assertThat(record.get(10), is((Object) "A"));
-       // should be integer value equals to 46 * 365 days in days
+        // should be integer value equals to 46 * 365 days in days
         assertThat(record.get(12), is((Object) 16790));
         // should be integer value equals to 14 hours in milliseconds
         assertThat(record.get(13), is((Object) 50400000));
