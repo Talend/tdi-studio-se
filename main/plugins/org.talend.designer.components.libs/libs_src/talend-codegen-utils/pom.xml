@@ -6,7 +6,8 @@
 	<name>Codegen Utilities</name>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-codegen-utils</artifactId>
-	<version>0.20.1</version>
+	<!-- release for revert version of library -->
+	<version>0.20.2</version>
 	<packaging>jar</packaging>
 	
 	<properties>
