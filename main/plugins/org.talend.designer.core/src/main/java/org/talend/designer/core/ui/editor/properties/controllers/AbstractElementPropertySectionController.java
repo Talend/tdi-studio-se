@@ -1886,8 +1886,9 @@ public abstract class AbstractElementPropertySectionController implements Proper
         }
         String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(type, driverName);
         if (EDatabaseTypeName.HIVE.getProduct().equalsIgnoreCase(type)) {
-            if (EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(
-                    elem.getElementParameter("CONNECTION_MODE").getValue())) {
+            IElementParameter connectionMode = elem.getElementParameter("CONNECTION_MODE");
+            if (connectionMode != null
+                    && EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue().equals(connectionMode.getValue())) {
                 connParameters.setDbVersion(EDatabaseVersion4Drivers.HIVE_EMBEDDED.getVersionValue());
             } else {
                 connParameters.setDbVersion(EDatabaseVersion4Drivers.HIVE.getVersionValue());
