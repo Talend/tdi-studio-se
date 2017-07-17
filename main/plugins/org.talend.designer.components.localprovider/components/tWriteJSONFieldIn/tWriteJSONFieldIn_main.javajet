@@ -102,8 +102,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
             }
 %>
         //Convert XML to JSON
-        net.sf.json.JSON json_<%=cid%> = xmlSerializer_<%=cid%>.read(str_<%=cid %>);
-        <%=conn.getName()%>.<%=jsonField %> = json_<%=cid%>.toString();
+        <%=conn.getName()%>.<%=jsonField %> = org.json.XML.toJSONObject(str_<%=cid %>).toString();
     
         nb_line_<%=cid%>++;
 <%
