@@ -45,25 +45,32 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 	%>
 	
+	String tableName_<%=cid%> = <%=table%>;
     String schemaForSearch_<%=cid%> = null;
-    String tableForSearch_<%=cid%> = <%=table%>;
+    String tableForSearch_<%=cid%> = tableName_<%=cid%>;
     <%
     if(tableNameWithSchema){
     %>
-    if(tableForSearch_<%=cid%> == null && tableForSearch_<%=cid%>.trim().length()>0){
-    	tableForSearch_<%=cid%> = tableForSearch_<%=cid%>.replace("\".\"",".");
-    	String[] names_<%=cid%> = tableForSearch_<%=cid%>.split("\\.");
+    if(tableName_<%=cid%>!=null && tableName_<%=cid%>.trim().length()>0){
+    	tableName_<%=cid%> = tableName_<%=cid%>.replace("\".\"",".");
+    	String[] names_<%=cid%> = tableName_<%=cid%>.split("\\.");
     	if(names_<%=cid%>.length > 0){
     		tableForSearch_<%=cid%> = names_<%=cid%>[names_<%=cid%>.length-1];
     	}
     	if(names_<%=cid%>.length > 1){
     		schemaForSearch_<%=cid%> = names_<%=cid%>[names_<%=cid%>.length-2];
     	}
+    	tableName_<%=cid%> = tableName_<%=cid%>.replace(".","\".\"");
+    }
+    <%
+    }else{
+    %>
+    if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
+    	tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + tableName_<%=cid%>;
     }
     <%
     }
     %>
-    String tableName_<%=cid%> = <%=table%>;
 	String tableName2_<%=cid%> = tableName_<%=cid%>;
 	boolean isTempTable_<%=cid%> = tableName_<%=cid%>!=null && tableName_<%=cid%>.trim().startsWith("#");
 	if(isTempTable_<%=cid%>) {
@@ -71,7 +78,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 	} else if(dbschema_<%=cid%> == null || dbschema_<%=cid%>.trim().length() == 0) {
 		//do nothing
 	} else {
-	    tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + tableName_<%=cid%>;
 		tableName2_<%=cid%> = dbschema_<%=cid%> + "." + tableName2_<%=cid%>;
 	}
 
