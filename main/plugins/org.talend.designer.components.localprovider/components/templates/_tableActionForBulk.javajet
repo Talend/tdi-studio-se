@@ -148,7 +148,7 @@ if (!isParallelize) {
                 java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, schemaForSearch_<%=cid%>, null, new String[]{"TABLE"});
                 boolean whetherExist_<%=cid%> = false;
                 while(rsTable_<%=cid%>.next()) {
-                    if(rsTable_<%=cid%>.getString("TABLE_NAME").equalsIgnoreCase(<%=table%>)) {
+                    if(rsTable_<%=cid%>.getString("TABLE_NAME").equalsIgnoreCase(tableForSearch_<%=cid%>)) {
                         whetherExist_<%=cid%> = true;
                         break;
                     }

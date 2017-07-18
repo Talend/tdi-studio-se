@@ -46,9 +46,23 @@ skeleton="../templates/db_output_bulk.skeleton"
 	%>
 	
     String schemaForSearch_<%=cid%> = null;
-    <%if(tableNameWithSchema){%>
-    schemaForSearch_<%=cid%> = dbschema_<%=cid%>;
-    <%}%>
+    String tableForSearch_<%=cid%> = <%=table%>;
+    <%
+    if(tableNameWithSchema){
+    %>
+    if(tableForSearch_<%=cid%> == null && tableForSearch_<%=cid%>.trim().length()>0){
+    	tableForSearch_<%=cid%> = tableForSearch_<%=cid%>.replace("\".\"",".");
+    	String[] names_<%=cid%> = tableForSearch_<%=cid%>.split("\\.");
+    	if(names_<%=cid%>.length > 0){
+    		tableForSearch_<%=cid%> = names_<%=cid%>[names_<%=cid%>.length-1];
+    	}
+    	if(names_<%=cid%>.length > 1){
+    		schemaForSearch_<%=cid%> = names_<%=cid%>[names_<%=cid%>.length-2];
+    	}
+    }
+    <%
+    }
+    %>
     String tableName_<%=cid%> = <%=table%>;
 	String tableName2_<%=cid%> = tableName_<%=cid%>;
 	boolean isTempTable_<%=cid%> = tableName_<%=cid%>!=null && tableName_<%=cid%>.trim().startsWith("#");
