@@ -142,7 +142,20 @@ if (!isParallelize) {
 				}
                 rsTable_<%=cid%>.close();
 			<%			
-			} else{
+			} else if(REDSHIFT.equalsIgnoreCase(dbmsId)) {
+            %>
+				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+                java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, dbschema_<%=cid%>, null, new String[]{"TABLE"});
+                boolean whetherExist_<%=cid%> = false;
+                while(rsTable_<%=cid%>.next()) {
+                    if(rsTable_<%=cid%>.getString("TABLE_NAME").equalsIgnoreCase(<%=table%>)) {
+                        whetherExist_<%=cid%> = true;
+                        break;
+                    }
+                }
+                rsTable_<%=cid%>.close();
+            <%
+            }else{
 			%>
 				java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
 				java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(null, null, null, new String[]{"TABLE"});
