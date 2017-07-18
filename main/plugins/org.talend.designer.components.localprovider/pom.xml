@@ -19,7 +19,28 @@
 	</properties>
 
 	<build>
+		<resources>
+            <resource>
+               <directory>components/tSAPConnection</directory>
+               <filtering>true</filtering>
+            </resource>
+        </resources>
+        
 		<plugins>
+			<plugin>
+	        	<groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-resources-plugin</artifactId>
+		        <version>3.0.2</version>
+		        <configuration>
+	          		<nonFilteredFileExtensions>
+			            <nonFilteredFileExtension>jar</nonFilteredFileExtension>
+			            <nonFilteredFileExtension>javajet</nonFilteredFileExtension>
+			            <nonFilteredFileExtension>png</nonFilteredFileExtension>
+			            <nonFilteredFileExtension>properties</nonFilteredFileExtension>
+          			</nonFilteredFileExtensions>
+		        </configuration>
+		    </plugin>
+		    
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-clean-plugin</artifactId>
