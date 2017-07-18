@@ -166,6 +166,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
             store.setDefault(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK, true);
             store.setDefault(ITalendCorePrefConstants.AUTO_REFRESH_LOCKS, true);
             store.setDefault(ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT, 5);
+            store.setDefault(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT, 60);
         }
 
         store.setDefault(ITalendCorePrefConstants.NEXUS_TIMEOUT, 10000);

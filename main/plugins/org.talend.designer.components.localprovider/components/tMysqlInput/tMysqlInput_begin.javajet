@@ -68,20 +68,38 @@ imports="
 			}
 		}
 		
+		public void generateYearResultSet(String firstConnName, IMetadataColumn column, int currentColNo) {
+%>
+			//check if year is null in DB
+			String yearStringValue_<%=cid %> = rs_<%=cid%>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+			if (null != yearStringValue_<%=cid %>) {
+				Integer yearValue_<%=cid%> = rs_<%=cid%>.getInt(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+				calendar_<%=cid %>.set(yearValue_<%=cid%>, 0, 1);
+				<%=firstConnName%>.<%=column.getLabel()%> = calendar_<%=cid %>.getTime();
+			} else {
+				<%=firstConnName%>.<%=column.getLabel()%> = null;
+			}
+<%
+		}
+
 		//-----------according schema type to generate ResultSet
 	    public void generateTimestampResultSet(String firstConnName, IMetadataColumn column, int currentColNo) {
+			if ("YEAR".equalsIgnoreCase(column.getType())) {
+				generateYearResultSet(firstConnName, column, currentColNo);
+			} else {
 %>
-	        if(rs_<%=cid %>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>) != null) {
-	            String dateString_<%=cid%> = rs_<%=cid%>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
-	            if (!("0000-00-00").equals(dateString_<%=cid%>) && !("0000-00-00 00:00:00").equals(dateString_<%=cid%>)) {
-	                <%=firstConnName%>.<%=column.getLabel()%> = rs_<%=cid%>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
-	            } else {
-	                <%=firstConnName%>.<%=column.getLabel()%> = (java.util.Date) year0_<%=cid%>.clone();
-	            }
-	        } else {
-	            <%=firstConnName%>.<%=column.getLabel()%> =  null;
-	        }			 
+				if(rs_<%=cid %>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>) != null) {
+					String dateString_<%=cid%> = rs_<%=cid%>.getString(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+					if (!("0000-00-00").equals(dateString_<%=cid%>) && !("0000-00-00 00:00:00").equals(dateString_<%=cid%>)) {
+						<%=firstConnName%>.<%=column.getLabel()%> = rs_<%=cid%>.getTimestamp(<%if(isDynamic){%>column_index_<%=cid%><%}else{%><%=currentColNo%><%}%>);
+					} else {
+						<%=firstConnName%>.<%=column.getLabel()%> = (java.util.Date) year0_<%=cid%>.clone();
+					}
+				} else {
+					<%=firstConnName%>.<%=column.getLabel()%> =  null;
+				}
 <%
+			}
 	    }
 	    
 	    //---------end according schema type to generate ResultSet

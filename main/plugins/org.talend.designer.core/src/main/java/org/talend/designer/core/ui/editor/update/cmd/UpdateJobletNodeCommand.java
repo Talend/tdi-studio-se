@@ -126,8 +126,11 @@ public class UpdateJobletNodeCommand extends Command {
                                         reloadNode(currentNode, newComponent);
                                     }
                                     if (currentNode.getNodeContainer() instanceof AbstractJobletContainer) {
-                                        for(IElementParameter para : tempList){
-                                            currentNode.getElementParameter(para.getName()).setValue(para.getValue());
+                                        for(IElementParameter tempParam : tempList) {
+                                            IElementParameter param = currentNode.getElementParameter(tempParam.getName());
+                                            if (param != null) {
+                                                param.setValue(tempParam.getValue());
+                                            }
                                         }
                                         ((AbstractJobletContainer) currentNode.getNodeContainer()).updateJobletNodes(true);
                                     }

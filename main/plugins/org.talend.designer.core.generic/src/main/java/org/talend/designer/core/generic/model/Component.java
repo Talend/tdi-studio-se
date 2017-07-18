@@ -620,6 +620,7 @@ public class Component extends AbstractBasicComponent {
         param.setValue("");//$NON-NLS-1$
         param.setNumRow(1);
         param.setShow(wizardDefinition != null);
+        param.setTaggedValue(IGenericConstants.IS_PROPERTY_SHOW, wizardDefinition != null);
 
         ElementParameter newParam = new ElementParameter(node);
         newParam.setCategory(EComponentCategory.BASIC);
@@ -1184,7 +1185,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.17.0-SNAPSHOT");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.2");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }

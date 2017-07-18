@@ -355,7 +355,10 @@ public class PersistentSortedLookupManager<B extends IPersistableComparableLooku
             Arrays.sort(buffer, 0, bufferBeanIndex);
         }
         File keysDataFile = new File(buildKeysFilePath(fileIndex));
+        keysDataFile.deleteOnExit();
+        
         File valuesDataFile = new File(buildValuesFilePath(fileIndex));
+        valuesDataFile.deleteOnExit();
 
         BufferedOutputStream keysBufferedOutputStream = new BufferedOutputStream(new FileOutputStream(keysDataFile));
         ObjectOutputStream keysDataOutputStream = null;

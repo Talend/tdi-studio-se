@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.generic.IndexedRecord;
+import org.talend.codegen.DiSchemaConstants;
+import org.talend.daikon.avro.AvroUtils;
 
 /**
  * This class acts as a wrapper around an arbitrary Avro {@link IndexedRecord} to transform output avro-styled values to the exact
@@ -34,14 +36,19 @@ import org.apache.avro.generic.IndexedRecord;
  * <li>Placing all of the unresolved columns between the wrapped schema and the output schema in the Dynamic column.</li>
  * </ul>
  * <p>
- * It extends {@link OutgoingSchemaEnforcer} and provides handling for dynamic fields
+ * It extends {@link DiOutgoingSchemaEnforcer} and provides handling for dynamic fields
  */
 public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
 
     /**
-     * {@link List} of runtime schema {@link Field} names
+     * A {@link List} of runtime schema {@link Field}s
      */
-    private List<String> runtimeFieldsNames;
+    private List<Field> runtimeFields;
+
+    /**
+     * Dynamic field position in the design schema. Schema can contain 0 or 1 dynamic columns.
+     */
+    private final int dynamicFieldPosition;
 
     /**
      * Contains indexes of dynamic fields (i.e. fields which are present in runtime schema, but are not present in design schema)
@@ -55,12 +62,24 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
     private Schema dynamicFieldsSchema;
 
     /**
-     * Constructor sets values related to dynamic fields handling
+     * State field, which denotes whether first incoming {@link IndexedRecord} was processed
+     * (i.e. )
+     */
+    private boolean firstRecordProcessed = false;
+
+    /**
+     * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
      * 
+     * @param designSchema design schema (specified by user and provided by Di Studio)
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
-    public OutgoingDynamicSchemaEnforcer(DynamicIndexMapper indexMapper) {
-        super(indexMapper);
+    public OutgoingDynamicSchemaEnforcer(Schema designSchema, DynamicIndexMapper indexMapper) {
+        super(designSchema, indexMapper);
+        if (AvroUtils.isIncludeAllFields(designSchema)) {
+            this.dynamicFieldPosition = Integer.valueOf(designSchema.getProp(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION));
+        } else {
+            throw new IllegalArgumentException("Design schema doesn't contain dynamic field");
+        }
     }
 
     /**
@@ -80,28 +99,37 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
      * 
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize
      */
+    // @Override
     public Object get(int pojoIndex) {
         int runtimeIndex = indexMap[pojoIndex];
         if (runtimeIndex == DYNAMIC) {
             return getDynamicValues();
         }
-        Object avroValue = wrappedRecord.get(runtimeIndex);
-        return convertValue(avroValue, runtimeIndex);
+
+        Field designField = pojoIndex > dynamicFieldPosition ? designFields.get(pojoIndex - 1) : designFields.get(pojoIndex);
+        Object value = wrappedRecord.get(runtimeIndex);
+        return transformValue(value, designField);
     }
 
     /**
-     * Computes {@link this#indexMap}, initializes {@link this#converters}
-     * Computes runtime fields and creates dynamic fields schema
+     * Wraps {@link IndexedRecord},
+     * creates map of correspondence between design and runtime fields, when first record is wrapped
      * 
-     * @param record first incoming {@link IndexedRecord}
+     * @param record {@link IndexedRecord} to be wrapped
      */
     @Override
-    protected void processFirstRecord(IndexedRecord record) {
-        super.processFirstRecord(record);
-        Schema runtimeSchema = record.getSchema();
-        initRuntimeFieldsNames(runtimeSchema);
-        this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
-        createDynamicFieldsSchema(record.getSchema());
+    public void setWrapped(IndexedRecord record) {
+        super.setWrapped(record);
+        // wrappedRecord = record;
+        // if (indexMap == null) {
+        // indexMap = indexMapper.computeIndexMap(record.getSchema());
+        // }
+        if (!firstRecordProcessed) {
+            Schema runtimeSchema = record.getSchema();
+            this.runtimeFields = runtimeSchema.getFields();
+            this.dynamicFieldsIndexes = ((DynamicIndexMapper) indexMapper).computeDynamicFieldsIndexes(runtimeSchema);
+            createDynamicFieldsSchema();
+        }
     }
 
     /**
@@ -114,22 +142,23 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
     private Map<String, Object> getDynamicValues() {
         Map<String, Object> dynamicValues = new LinkedHashMap<>();
         for (int dynamicIndex : dynamicFieldsIndexes) {
-            Object avroValue = wrappedRecord.get(dynamicIndex);
-            Object diValue = convertValue(avroValue, dynamicIndex);
-            dynamicValues.put(runtimeFieldsNames.get(dynamicIndex), diValue);
+            Field dynamicField = runtimeFields.get(dynamicIndex);
+            String dynamicFieldName = dynamicField.name();
+            Object value = wrappedRecord.get(dynamicIndex);
+            value = transformValue(value, runtimeFields.get(dynamicIndex));
+            dynamicValues.put(dynamicFieldName, value);
         }
         return dynamicValues;
     }
 
     /**
-     * Creates {@link Schema} of dynamic fields. It is used to create Dynamic Metadatas in DI
-     * 
-     * @param runtimeSchema Runtime Avro {@link Schema}, it comes with {@link IndexedRecord}
+     * Creates {@link Schema} of dynamic fields
      */
-    private void createDynamicFieldsSchema(Schema runtimeSchema) {
+    private void createDynamicFieldsSchema() {
         List<Field> dynamicFields = new ArrayList<>();
-        for (int dynamicIndex : dynamicFieldsIndexes) {
-            Field dynamicField = runtimeSchema.getFields().get(dynamicIndex);
+        // List<Integer> dynamicFieldsIndexes = indexMapper.computeDynamicFieldsIndexes();
+        for (int index : dynamicFieldsIndexes) {
+            Field dynamicField = runtimeFields.get(index);
             Field dynamicFieldCopy = new Schema.Field(dynamicField.name(), dynamicField.schema(), dynamicField.doc(),
                     dynamicField.defaultVal());
             Map<String, Object> fieldProperties = dynamicField.getObjectProps();
@@ -144,18 +173,5 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
 
         dynamicFieldsSchema = Schema.createRecord("dynamic", null, null, false);
         dynamicFieldsSchema.setFields(dynamicFields);
-    }
-
-    /**
-     * Initializes runtime fields names
-     * These fields are used as keys in generated {@link Map} with dynamic values
-     * 
-     * @param runtimeSchema Runtime Avro {@link Schema}, it comes with {@link IndexedRecord}
-     */
-    private void initRuntimeFieldsNames(Schema runtimeSchema) {
-        runtimeFieldsNames = new ArrayList<>(runtimeSchema.getFields().size());
-        for (Field field : runtimeSchema.getFields()) {
-            runtimeFieldsNames.add(field.name());
-        }
     }
 }

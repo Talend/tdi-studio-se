@@ -405,8 +405,8 @@ if (hasOutputOnly || asInputComponent) {
         }
     }
     org.apache.avro.Schema designSchema_<%=cid%> = props_<%=cid %>.getSchema(c_<%=cid%>, false);
-    org.talend.daikon.di.DiIncomingSchemaEnforcer current_<%=cid%>
-            = new org.talend.daikon.di.DiIncomingSchemaEnforcer(designSchema_<%=cid%>);
+    org.talend.codegen.enforcer.IncomingSchemaEnforcer incomingEnforcer_<%=cid%>
+            = new org.talend.codegen.enforcer.IncomingSchemaEnforcer(designSchema_<%=cid%>);
     <%
     List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
     if (outgoingConns!=null){

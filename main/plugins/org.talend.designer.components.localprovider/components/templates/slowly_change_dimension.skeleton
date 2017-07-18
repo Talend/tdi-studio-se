@@ -666,6 +666,12 @@ public class CLASS {
     public String genDimensionAttributeClass(SCDConfiger scdConfiger, String cid) {
         StringBuilder dimensionAttributeClass = new StringBuilder();
         dimensionAttributeClass.append("class SCDStruct_" + cid + " {\r\n");
+        if(scdConfiger.isEnableType0()) {
+            List<Column> type0Attributes = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+            for(Column type0Attribute : type0Attributes) {
+                dimensionAttributeClass.append("private " + type0Attribute.getJavaType() + " " + type0Attribute.getColumnName() + ";\r\n");
+            }
+        }
         if(scdConfiger.isEnableType1()) {
             List<Column> type1Attributes = scdConfiger.getDimensionType1Configer().getDimensionAttributes();
             for(Column type1Attribute : type1Attributes) {
@@ -781,6 +787,12 @@ public class CLASS {
         List<Column> sourceKeys = scdConfiger.getSourceKeys();
         for(Column sourceKey : sourceKeys) {
             columnList.add(sourceKey);
+        }
+        if(scdConfiger.isEnableType0()) {
+            List<Column> type0Attributes = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+            for(Column type0Attribute : type0Attributes) {
+                columnList.add(type0Attribute);
+            }
         }
         if(scdConfiger.isEnableType1()) {
             List<Column> type1Attributes = scdConfiger.getDimensionType1Configer().getDimensionAttributes();
@@ -917,6 +929,17 @@ public class CLASS {
                     selectionSQL.append(separator);
                 }
                 selectionSQL.append(getLProtectedChar() + sourceKey.getColumnName() + getRProtectedChar());
+            }
+            if(scdConfiger.isEnableType0()) {
+                List<Column> type0Attributes = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+                for(Column type0Attribute : type0Attributes) {
+                    if(firstColumn) {
+                        firstColumn = false;
+                    } else {
+                        selectionSQL.append(separator);
+                    }
+                    selectionSQL.append(getLProtectedChar() + type0Attribute.getColumnName() + getRProtectedChar());
+                }
             }
             if(scdConfiger.isEnableType1()) {
                 List<Column> type1Attributes = scdConfiger.getDimensionType1Configer().getDimensionAttributes();

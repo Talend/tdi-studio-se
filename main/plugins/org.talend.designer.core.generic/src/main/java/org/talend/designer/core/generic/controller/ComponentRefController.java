@@ -43,9 +43,11 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
@@ -98,7 +100,8 @@ public class ComponentRefController extends AbstractElementPropertySectionContro
                                 for (int j = 0; j < param.getListItemsValue().length; j++) {
                                     if (((CCombo) ctrl).getText().equals(param.getListItemsDisplayName()[j])) {
                                         value = (String) param.getListItemsValue()[j];
-                                        if (j == 0) {
+                                        if (j == 0 && (boolean) ((ElementParameter) propertyParameter)
+                                                .getTaggedValue(IGenericConstants.IS_PROPERTY_SHOW)) {
                                             // The first item in the combo is
                                             // this component
                                             props.referenceType

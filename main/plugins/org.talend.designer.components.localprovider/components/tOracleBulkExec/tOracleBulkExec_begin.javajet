@@ -308,7 +308,7 @@ if(columnList != null && columnList.size() > 0) {
 <%
 }
 %>
-boolean isDirect = false;	
+boolean isDirect_<%=cid%> = false;	
 <%
 //table atction end
 
@@ -330,7 +330,7 @@ if(("true").equals(use_existing_ctl_file)) {
 			String regex_<%=cid %> = "\\bdirect\\s*=\\s*true\\b";
 			java.util.regex.Pattern pattern_<%=cid %> = java.util.regex.Pattern.compile(regex_<%=cid %>, java.util.regex.Pattern.CASE_INSENSITIVE);
 			java.util.regex.Matcher matcher_<%=cid %> = pattern_<%=cid %>.matcher(optionLine_<%=cid %>);
-			isDirect = matcher_<%=cid %>.find();		
+			isDirect_<%=cid%> = matcher_<%=cid %>.find();		
 		}
 		finally	{
 			ctlf_br_<%=cid %>.close();
@@ -366,7 +366,7 @@ if(("true").equals(use_existing_ctl_file)) {
     boolean flag = false;
     String tempvalue=null;
     %>
-	isDirect = <%=isDirect%>;
+	isDirect_<%=cid%> = <%=isDirect%>;
     java.lang.StringBuilder optionClause_<%=cid %> = new java.lang.StringBuilder();
     optionClause_<%=cid %>.append("OPTIONS (");
     <%
@@ -591,7 +591,7 @@ if(("true").equals(use_existing_ctl_file)) {
 }
 %>
 String command_<%=cid %> = "sqlldr '" + dbUser_<%=cid %> + "/" + dbPwd_<%=cid %> + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
-String printableCommand = "sqlldr '" + dbUser_<%=cid %> + "/" + "...." + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
+String printableCommand_<%=cid%> = "sqlldr '" + dbUser_<%=cid %> + "/" + "...." + "@" + serviceUrl_<%=cid %> + "' CONTROL='" + ctlf_<%=cid %> + "' LOG='" + logf_<%=cid %> + "'";
 
 <%
 if(("UPDATE").equals(data_action)) {
@@ -606,7 +606,7 @@ if(("UPDATE").equals(data_action)) {
     stmtCreateTmp_<%=cid%>.close();
         <%if(isLog4jEnabled){%>
         log.info("<%=cid%> - Create temp table <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%> has succeeded.");
-        log.info("<%=cid%> - Executing command:'" + printableCommand + "'.");
+        log.info("<%=cid%> - Executing command:'" + printableCommand_<%=cid%> + "'.");
     <%}%>
     <%
     }
@@ -656,7 +656,7 @@ if(("UPDATE").equals(data_action)) {
     }
     if(isLog4jEnabled){
     %>
-        log.info("<%=cid%> - Executing command:'" + printableCommand + "'.");
+        log.info("<%=cid%> - Executing command:'" + printableCommand_<%=cid%> + "'.");
     <%
     }
 %>
@@ -745,7 +745,7 @@ if ("true".equals((String)globalMap.get("<%=cid%>_SQLLOAD_ERROR"))) {
 <%
 if(isLog4jEnabled){
 %>
-    log.info("<%=cid%> - Excute command: '" + printableCommand + "' has finished.");
+    log.info("<%=cid%> - Excute command: '" + printableCommand_<%=cid%> + "' has finished.");
     log.info("<%=cid%> - Retrieving information from oracle log file: '" + logf_<%=cid %> + "'.");
 <%
 }
@@ -858,7 +858,7 @@ class LogUtil_<%=cid%>{
 LogUtil_<%=cid%> lu_<%=cid%> = new LogUtil_<%=cid%>();
 java.io.BufferedReader lr_<%=cid %> = null;
 try {
-	if(isDirect){
+	if(isDirect_<%=cid%>){
 		lr_<%=cid %> = lu_<%=cid%>.parseLogFileWithDirect(logf_<%=cid %>);		
 	}		
 	else{

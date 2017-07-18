@@ -337,6 +337,11 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
                 nb_line_update_<%=cid%> += updateForType2_<%=cid%>.executeUpdate();
                 <%
                 paramIndex = 1;
+                List<Column> dimensionAttrbites0 = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+                List<String> dimensionNames0 = new ArrayList<String>();
+                for(Column dimensionAttrbite : dimensionAttrbites0) {
+                    dimensionNames0.add(dimensionAttrbite.getColumnName());
+                }
                 for(Column insertionColumn : insertionColumnList) {
                     if(insertionColumn.getColumnName().equals(surrogateKeyField)) {
                         if(("INPUT_FIELD").equals(scdConfiger.getSurrogateKeyValueType())) {
@@ -372,7 +377,11 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
                         %>
                         <%=scdManager.genSetStatement("insertionStatement_" + cid, "maxVersion_" + cid, paramIndex, scdConfiger.getDimensionType2Configer().getVersionFieldType())%>
                         <%
-                    } else {
+                    } else if (dimensionNames0.contains(insertionColumn.getColumnName())){
+                            %>
+                            <%=scdManager.genSetStatement("insertionStatement_" + cid, "lookUpValue_" + cid + "." + insertionColumn.getLabelName(), paramIndex, insertionColumn.getJavaType())%>
+                            <%
+                    }else {
                         if(!insertionColumn.getColumnName().equals(scdConfiger.getDimensionType2Configer().getEndDateField())) {
                             %>
                             <%=scdManager.genSetStatement("insertionStatement_" + cid, inConnectionName + "." + insertionColumn.getLabelName(), paramIndex, insertionColumn.getJavaType())%>
