@@ -1156,11 +1156,8 @@ public class Component extends AbstractBasicComponent {
         if (runtimeInfo != null) {
             if (runtimeInfo instanceof JarRuntimeInfo) {
                 JarRuntimeInfo currentRuntimeInfo = (JarRuntimeInfo) runtimeInfo;
-                JarRuntimeInfo localRuntimeInfo = new JarRuntimeInfo(
-                        currentRuntimeInfo.getJarUrl().toString().replace("mvn:", //$NON-NLS-1$
-                                "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!") //$NON-NLS-1$ //$NON-NLS-2$
-                        , currentRuntimeInfo.getDepTxtPath(), currentRuntimeInfo.getRuntimeClassName());
-                runtimeInfo = localRuntimeInfo;
+                runtimeInfo = currentRuntimeInfo.cloneWithNewJarUrlString(currentRuntimeInfo.getJarUrl().toString()
+                        .replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"));
             }
             final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
             for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
