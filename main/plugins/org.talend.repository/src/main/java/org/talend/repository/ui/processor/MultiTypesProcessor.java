@@ -106,7 +106,7 @@ public abstract class MultiTypesProcessor implements IRepositoryTypeProcessor {
     }
 
     @Override
-    public ViewerFilter makeFilter() {
+    public ViewerFilter makeFilter(IElement elem) {
         return new ViewerFilter() {
 
             @Override
@@ -125,7 +125,7 @@ public abstract class MultiTypesProcessor implements IRepositoryTypeProcessor {
                             return true;
                         }
                     }
-                    return selectRepositoryNode(viewer, (RepositoryNode) parentElement, (RepositoryNode) element);
+                    return selectRepositoryNode(viewer, (RepositoryNode) parentElement, (RepositoryNode) element, elem);
                 } else {
                     return false;
                 }
@@ -133,7 +133,7 @@ public abstract class MultiTypesProcessor implements IRepositoryTypeProcessor {
         };
     }
 
-    protected boolean selectRepositoryNode(Viewer viewer, RepositoryNode parentNode, RepositoryNode node) {
+    protected boolean selectRepositoryNode(Viewer viewer, RepositoryNode parentNode, RepositoryNode node, IElement elem) {
         if (node == null) {
             return false;
         }
