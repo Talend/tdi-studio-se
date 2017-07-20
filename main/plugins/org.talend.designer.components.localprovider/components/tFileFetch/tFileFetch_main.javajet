@@ -70,7 +70,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	} 
 	catch (Exception e) {
 <%
-			String unsupportedEncodingErrorMessage = "URI is not correct or not encoded, please input a valid one or use 'Encode URI' option";
+		String unsupportedEncodingErrorMessage = "URI is not correct or not encoded, please input a valid one or use 'Encode URI' option";
 		if (isLog4jEnabled) {
 %>
 			log.error("<%=unsupportedEncodingErrorMessage %>", e);
@@ -78,7 +78,6 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		} else {
 %>
 			System.err.println("<%= unsupportedEncodingErrorMessage %>");
-			e.printStackTrace();
 <%
 		}
 %>
