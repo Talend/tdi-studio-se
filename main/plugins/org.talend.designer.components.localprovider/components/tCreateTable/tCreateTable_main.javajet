@@ -1826,6 +1826,70 @@ class ExasolManager extends Manager {
    
 }
 
+class RedshiftManager extends Manager {
+    private String host;
+    private String port;
+    private String dbSchema;
+    private boolean useExistingConnection;
+    private String connection;        
+    public RedshiftManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid) {
+        super(dbName, tableName, userName ,cid);
+        this.host = host;
+        this.port = port;
+        this.dbSchema = dbSchema;
+        this.useExistingConnection = useExistingConnection;
+        this.connection = connection;
+    }
+    protected String getDriver() {
+        return "com.amazon.redshift.jdbc41.Driver";
+    }
+    public String getConnectionURL() {
+        return "\"jdbc:redshift://\" + " + host + " + \":\" + " + port + " + \"/\" + " + dbName;
+    }
+    public String getConnection() {
+        StringBuilder javaCode = new StringBuilder();
+        if(useExistingConnection) {
+            javaCode.append(retrieveTable());
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"conn_" + connection + "\");");
+        } else {
+            javaCode.append(super.getConnection());
+        }
+        return javaCode.toString();
+    }        
+    protected String getDBMSId() {
+        return "redshift_id";
+    }
+    protected String getLProtectedChar() {
+        return "\\\"";
+    }
+    protected String getRProtectedChar() {
+        return "\\\"";
+    }
+    public String closeConnection() {
+        StringBuilder javaCode = new StringBuilder();
+        if(useExistingConnection) {
+            javaCode.append("");
+        } else {
+            javaCode.append(super.closeConnection());            
+        }
+        return javaCode.toString();
+    }
+    protected String retrieveTable() {
+        StringBuilder javaCode = new StringBuilder();
+        javaCode.append(super.retrieveTable());
+        if(useExistingConnection) {
+            javaCode.append("String dbSchema_" + cid + " = (String)globalMap.get(\"schema_" + connection + "\");\r\n"); 
+        } else {
+            javaCode.append("String dbSchema_" + cid + " = " + dbSchema + ";\r\n");            
+        }
+        javaCode.append("if(dbSchema_" + cid + " != null && dbSchema_" + cid + ".trim().length() != 0) {");
+        javaCode.append("tableName_" + cid + " = dbSchema_" + cid + " + \"" + getLProtectedChar() + "." + getRProtectedChar() + "\" + tableName_" + cid + ";\r\n");
+        javaCode.append("}");
+        return javaCode.toString();        
+    }    
+}
+
+
 class StringUtil {
     public String getString(String source) {
         String tmp = null;
@@ -2044,8 +2108,16 @@ class ManagerFactory {
              boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
              String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
              manager = new ExasolManager(host, port, dbSchema, tableName, userName, useExistingConnection, connection, cid);
+        } else if(("REDSHIFT").equals(dbType)) {
+            String host = ElementParameterParser.getValue(node, "__HOST__");
+            String port = ElementParameterParser.getValue(node, "__PORT__");
+            String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+            String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
+            String userName = ElementParameterParser.getValue(node, "__USER__");
+            boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
+            String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
+            manager = new RedshiftManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);
         }
-        
         return manager;
     }
 }
