@@ -9,5 +9,5 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.talend.testutils,
  org.apache.servicemix.bundles.avro,
  jackson-core-asl,
- org.talend.components.common,
- org.talend.repository.hadoopcluster
+ org.talend.components.common
+
