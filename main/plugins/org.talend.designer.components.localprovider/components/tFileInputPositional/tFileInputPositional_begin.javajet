@@ -776,7 +776,7 @@
             	}
             	%>
             	if(filename_<%=cid %> instanceof java.io.InputStream){
-            		throw new java.lang.Exception("When the input source is a stream,footer shouldn't be bigger than 0.");
+            		throw new java.lang.RuntimeException("When the input source is a stream,footer shouldn't be bigger than 0.");
             	}else{
             		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
             	}
