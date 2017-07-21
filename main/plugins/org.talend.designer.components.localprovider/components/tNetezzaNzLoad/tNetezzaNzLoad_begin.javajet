@@ -415,16 +415,12 @@ skeleton="../templates/db_output_bulk.skeleton"
 				String line = "";
 				String errLine = "";
 				while ((line = reader.readLine()) != null) {
-					if((errLine = errReader.readLine()) != null) {
-						nzloadOutput_<%=cid%>.append(errLine);
-						<% if (true) { %>
-								System.out.println(errLine);
-						<% } %>
-					}
 					nzloadOutput_<%=cid%>.append(line);
-					<% if (true) { %>
 					System.out.println(line);
-					<% } %>
+				}
+				while((errLine = errReader.readLine()) != null) {
+					nzloadOutput_<%=cid%>.append(errLine);
+					System.err.println(errLine);
 				}
 <%
 				String actualLogFilePath;
