@@ -451,7 +451,7 @@ public class RepositoryReviewDialog extends Dialog {
         if (additionalFilters != null) {
             addFilter(additionalFilters);
         }
-        ViewerFilter filter = typeProcessor.makeFilter(elem);
+        ViewerFilter filter = typeProcessor.makeFilter();
         addFilter(filter);
         TimeMeasure.step(RepositoryReviewDialog.class.getSimpleName(), "finshed add Filters"); //$NON-NLS-1$
 
