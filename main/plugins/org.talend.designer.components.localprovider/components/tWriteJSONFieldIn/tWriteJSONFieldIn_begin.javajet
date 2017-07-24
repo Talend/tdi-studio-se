@@ -29,6 +29,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 			    String outputRowStructName = conns.get(0).getName()+"Struct";//row2
 				%>
 				int nb_line_<%=cid%> = 0;
+				net.sf.json.xml.XMLSerializer xmlSerializer_<%=cid%> = new net.sf.json.xml.XMLSerializer(); 
+			    xmlSerializer_<%=cid%>.clearNamespaces();
+			    xmlSerializer_<%=cid%>.setSkipNamespaces(true);
+			    xmlSerializer_<%=cid%>.setForceTopLevelObject(<%=(removeRoot?false:true)%>);
 				<%
 				INode sourceNode = node.getIncomingConnections(EConnectionType.ON_COMPONENT_OK).get(0).getSource();
 				String virtualSourceCid = sourceNode.getUniqueName();
