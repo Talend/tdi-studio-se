@@ -90,6 +90,7 @@ import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
@@ -1149,6 +1150,9 @@ public class Component extends AbstractBasicComponent {
         } catch (Exception e) {
             if (node == null) {
                 // not handled, must because the runtime info must have a node configuration (properties are null)
+            } else if (e instanceof TalendRuntimeException) {
+                // no need to check talend runtime exception in design time.
+                e.printStackTrace(); // only for debug.
             } else {
                 ExceptionHandler.process(e);
             }
