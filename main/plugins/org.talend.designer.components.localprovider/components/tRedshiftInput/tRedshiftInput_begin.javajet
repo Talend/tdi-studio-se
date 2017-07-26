@@ -21,7 +21,7 @@ imports="
 			
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
 			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
-			if (!logLevel.equalsIgnoreCase("0")) {
+			if (!logLevel.equals("0")) {
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
 				java.sql.DriverManager.setLogWriter(new java.io.PrintWriter(output_<%=cid %>,true));
