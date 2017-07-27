@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.sqlbuilder.actions;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.model.metadata.builder.database.DriverShim;
 import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.IConstants;
 import org.talend.sqlbuilder.Messages;
@@ -174,11 +177,13 @@ public class ExecSQLAction extends AbstractEditorAction {
                 queryStrings.add(querySql);
             }
         }
+        boolean executed = false;
         try {
             // Diaplay data in sqlResult Composites
             while (!queryStrings.isEmpty()) {
                 String querySql = queryStrings.remove(0);
                 if (querySql != null) {
+                    executed = true;
                     SQLExecution sqlExe = new SQLExecution(querySql, maxRows, runNode);
                     resultViewer.addSQLExecution(sqlExe);
                     // editor.setSQLRunTime(sqlExe.getSQLResult().getExecutionTimeMillis());
@@ -188,6 +193,19 @@ public class ExecSQLAction extends AbstractEditorAction {
             // e.printStackTrace();
             ExceptionHandler.process(e);
             SqlBuilderPlugin.log(Messages.getString("ExecSQLAction.logMessageErrorCreatingSqlTab"), e); //$NON-NLS-1$
+        } finally {
+            if (runNode != null && !executed) {
+                DriverShim wapperDriver = runNode.getWapperDriver();
+                String dbType = runNode.getDatabaseConnection().getDatabaseType();
+                String driverClassName = runNode.getDatabaseConnection().getDriverClass();
+                if (wapperDriver != null && MetadataConnectionUtils.isDerbyRelatedDb(driverClassName, dbType)) {
+                    try {
+                        wapperDriver.connect("jdbc:derby:;shutdown=true", null); //$NON-NLS-1$
+                    } catch (SQLException e) {
+                        // exception of shutdown success. no need to catch.
+                    }
+                }
+            }
         }
     }
 
