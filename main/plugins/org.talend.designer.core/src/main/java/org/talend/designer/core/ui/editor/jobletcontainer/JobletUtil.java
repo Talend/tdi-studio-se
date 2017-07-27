@@ -2,11 +2,17 @@ package org.talend.designer.core.ui.editor.jobletcontainer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -448,6 +454,39 @@ public class JobletUtil {
                         IJobletProviderService.class);
                 if (service != null) {
                     service.unlockJoblet(node, false);
+                }
+            }
+        }
+
+    }
+
+    public void reloadJobletInCurrentProcessInBackground(final IProcess2 process) {
+        Job reloadJob = new Job("Reload joblet process...") {
+
+            @Override
+            protected IStatus run(IProgressMonitor monitor) {
+                reloadJobletInCurrentProcess(process);
+                return Status.OK_STATUS;
+            }
+
+        };
+        reloadJob.setPriority(Job.INTERACTIVE);
+        reloadJob.setSystem(true);
+        reloadJob.schedule();
+
+    }
+
+    public void reloadJobletInCurrentProcess(IProcess2 process) {
+        List<? extends INode> nodeList = process.getGraphicalNodes();
+        Set<String> components = new HashSet<String>();
+        for (INode node : nodeList) {
+            if (!components.contains(node.getComponent().getName() + node.getComponent().getVersion())
+                    && ((Node) node).isJoblet()) {
+                components.add(node.getComponent().getName() + node.getComponent().getVersion());
+                IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                        IJobletProviderService.class);
+                if (service != null) {
+                    service.reloadJobletProcess(node, true);
                 }
             }
         }
