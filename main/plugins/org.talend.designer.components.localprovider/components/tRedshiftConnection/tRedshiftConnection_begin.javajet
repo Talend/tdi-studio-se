@@ -24,14 +24,14 @@ imports="
 %>
 			StringBuilder sbuilder_<%=cid%> = new StringBuilder();
 			sbuilder_<%=cid%>.append("jdbc:redshift://").append(<%=dbhost%>).append(":").append(<%=dbport%>).append("/").append(<%=dbname%>).append("?loglevel=").append(<%= logLevel %>);
-			<%
-            if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
-        	%>
-        		sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
-        	<%
-        	}
-            %>
-            String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+<%
+			if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+				sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+<%
+			}
+%>
+			String url_<%=cid%> = sbuilder_<%=cid%>.toString();
 <%
 		}
 		
