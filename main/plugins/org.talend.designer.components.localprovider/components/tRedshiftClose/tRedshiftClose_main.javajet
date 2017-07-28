@@ -1,1 +1,5 @@
 <%@ include file="../templates/DB/Close/AbstractDBClose.javajet"%>
+
+if (null != java.sql.DriverManager.getLogWriter()) {
+	java.sql.DriverManager.getLogWriter().close();
+}

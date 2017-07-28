@@ -1,5 +1,11 @@
 <%@ include file="../templates/DB/Input/AbstractDBInputEnd.javajet"%>
 
-if (null != java.sql.DriverManager.getLogWriter()) {
-	java.sql.DriverManager.getLogWriter().close();
+<%
+if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))) {
+%>
+	if (null != java.sql.DriverManager.getLogWriter()) {
+		java.sql.DriverManager.getLogWriter().close();
+	}
+<%
 }
+%>
