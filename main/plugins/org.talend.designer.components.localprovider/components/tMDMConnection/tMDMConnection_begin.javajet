@@ -33,3 +33,12 @@ globalMap.put("username_<%=cid %>", username_<%=cid %>);
 globalMap.put("password_<%=cid %>", decryptedPassword_<%=cid %>);
 globalMap.put("useTransaction_<%=cid %>", <%=useTransaction %>);
 globalMap.put("useClientTranId_<%=cid %>", <%=useClientTranId %>);
+
+org.talend.mdm.webservice.XtentisServiceLocator xtentisService_<%=cid %> = new org.talend.mdm.webservice.XtentisServiceLocator();
+xtentisService_<%=cid %>.setXtentisPortEndpointAddress(<%=mdmUrl %>);
+org.talend.mdm.webservice.XtentisPort_PortType xtentisWS_<%=cid %> = xtentisService_<%=cid %>.getXtentisPort();    
+org.talend.mdm.webservice.XtentisBindingStub stub_<%=cid %> = (org.talend.mdm.webservice.XtentisBindingStub)xtentisWS_<%=cid %>;
+stub_<%=cid %>.setUsername(<%=username %>);
+stub_<%=cid %>.setPassword(decryptedPassword_<%=cid%>);
+stub_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());
+xtentisWS_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());
