@@ -241,6 +241,11 @@ public class DesignerCoreService implements IDesignerCoreService {
     }
 
     @Override
+    public void switchToCurProcessView() {
+        DesignerPlugin.getDefault().getRunProcessService().switchToCurProcessView();
+    }
+
+    @Override
     public void saveJobBeforeRun(IProcess activeProcess) {
         new SaveJobBeforeRunAction(activeProcess).run();
     }
@@ -753,6 +758,16 @@ public class DesignerCoreService implements IDesignerCoreService {
         return 0;
     }
 
+    @Override
+    public int getHBaseOrMaprDBScanLimit() {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore != null) {
+            return preferenceStore.getInt(ITalendCorePrefConstants.HBASE_OR_MAPRDB_SCAN_LIMIT);
+        }
+        // disable
+        return 0;
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -789,4 +804,16 @@ public class DesignerCoreService implements IDesignerCoreService {
         return timeOut;
     }
 
+    @Override
+    public int getTACReadTimeout() {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        int timeOut = -1;
+        if (preferenceStore != null && preferenceStore.contains(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT)) {
+            timeOut = preferenceStore.getInt(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT);
+        }
+        if (timeOut < 0) {
+            timeOut = 0;
+        }
+        return timeOut;
+    }
 }

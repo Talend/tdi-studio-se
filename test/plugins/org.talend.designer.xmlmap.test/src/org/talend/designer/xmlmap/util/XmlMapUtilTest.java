@@ -12,9 +12,13 @@
 // ============================================================================
 package org.talend.designer.xmlmap.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.talend.core.model.metadata.builder.connection.ConnectionFactory;
+import org.talend.core.model.metadata.builder.connection.MetadataColumn;
+import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.metadata.builder.connection.XMLFileNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.AbstractNode;
 import org.talend.designer.xmlmap.model.emf.xmlmap.Connection;
 import org.talend.designer.xmlmap.model.emf.xmlmap.InputXmlTree;
@@ -154,6 +158,53 @@ public class XmlMapUtilTest {
         doc.setNodeType(nodeType);
         doc.setXpath(xpath);
         doc.setExpression(expression);
+    }
+
+    @Test
+    public void testGetColumnPatternFromMetadataTable() {
+        XMLFileNode node = ConnectionFactory.eINSTANCE.createXMLFileNode();
+        MetadataTable testTable = createMetaTable("testTable"); //$NON-NLS-1$
+
+        String columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertNull(columnPattern);
+
+        MetadataColumn column1 = createMetaColumn("C1"); //$NON-NLS-1$
+        MetadataColumn column2 = createMetaColumn("C2"); //$NON-NLS-1$
+        testTable.getColumns().add(column1);
+        testTable.getColumns().add(column2);
+        columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertNull(columnPattern);
+
+        node.setRelatedColumn("C1"); //$NON-NLS-1$
+        columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertNull(columnPattern);
+
+        column1.setPattern(""); //$NON-NLS-1$
+        columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertNull(columnPattern);
+
+        column1.setPattern("P1"); //$NON-NLS-1$
+        columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertEquals("P1", columnPattern); //$NON-NLS-1$
+
+        node.setRelatedColumn("C3"); //$NON-NLS-1$
+        columnPattern = XmlMapUtil.getColumnPatternFromMetadataTable(node, testTable);
+        assertNull(columnPattern);
+    }
+
+    private MetadataTable createMetaTable(String tableName) {
+        MetadataTable table = ConnectionFactory.eINSTANCE.createMetadataTable();
+        table.setName(tableName);
+        table.setLabel(tableName);
+        return table;
+    }
+
+    private MetadataColumn createMetaColumn(String columnName) {
+        MetadataColumn column = ConnectionFactory.eINSTANCE.createMetadataColumn();
+        column.setName(columnName);
+        column.setLabel(columnName);
+        column.setTalendType("id_String"); //$NON-NLS-1$
+        return column;
     }
 
 }

@@ -19,12 +19,15 @@ import java.util.List;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.EList;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.properties.FolderItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.ui.utils.ZipToFile;
 
 /**
@@ -117,6 +120,43 @@ public class ExportJobUtil {
             return;
         }
         ZipToFile.deleteDirectory(file);
+    }
+
+    public static ProcessItem getProcessItem(List<? extends IRepositoryNode> nodes) {
+        ProcessItem processItem = null;
+        for (IRepositoryNode node : nodes) {
+            IRepositoryViewObject repositoryObject = node.getObject();
+            if (repositoryObject != null) {
+                if (repositoryObject.getProperty().getItem() instanceof ProcessItem) {
+                    processItem = (ProcessItem) repositoryObject.getProperty().getItem();
+                } else if (repositoryObject.getProperty().getItem() instanceof FolderItem) {
+                    processItem = getProcessItemIfSelectFolder(repositoryObject);
+                }
+            } else {
+                List<IRepositoryNode> nodesChildren = node.getChildren();
+                processItem = getProcessItem(nodesChildren);
+            }
+            if (processItem != null) {
+                return processItem;
+            }
+        }
+        return null;
+    }
+
+    private static ProcessItem getProcessItemIfSelectFolder(IRepositoryViewObject repositoryObject) {
+        ProcessItem processItem = null;
+        List<IRepositoryNode> children = repositoryObject.getRepositoryNode().getChildren();
+        for (IRepositoryNode object : children) {
+            if (object.getObject().getProperty().getItem() instanceof FolderItem) {
+                processItem = getProcessItemIfSelectFolder(object.getObject());
+                if (processItem != null) {
+                    return processItem;
+                }
+            } else if (object.getObject().getProperty().getItem() instanceof ProcessItem) {
+                return (ProcessItem) object.getObject().getProperty().getItem();
+            }
+        }
+        return processItem;
     }
 
 }

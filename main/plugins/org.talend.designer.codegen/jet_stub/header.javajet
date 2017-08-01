@@ -324,6 +324,13 @@ public <%=JavaTypesManager.getTypeToGenerate(ctxParam.getType(),true)%> get<%=Ch
 	if(isRunInMultiThread || NodeUtil.containsMultiThreadComponent(process)){
 	%>
 		private final java.util.Map<String, Object> globalMap = java.util.Collections.synchronizedMap(new java.util.HashMap<String, Object>());
+		<%
+		if(ProcessUtils.isTestContainer(process)) {
+		%>
+			private final static java.util.Map<String, Object> junitGlobalMap = java.util.Collections.synchronizedMap(new java.util.HashMap<String, Object>());
+		<%
+		}
+		%>
 	<%
 	} else {
 	%>

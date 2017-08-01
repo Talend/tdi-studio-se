@@ -18,9 +18,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.talend.components.api.properties.ComponentProperties;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.designer.core.generic.constants.IGenericConstants;
+import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.TalendFileFactoryImpl;
@@ -40,49 +43,46 @@ public class GenericContextUtilTest {
         String prefix = "testConn"; //$NON-NLS-1$
         GenericConnection connection = GenericMetadataFactory.eINSTANCE.createGenericConnection();
 
-        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        props.userId.setValue("1"); //$NON-NLS-1$
-        TestNestedProperties nestedProps = (TestNestedProperties) props.getProperty("nestedProps"); //$NON-NLS-1$
-        nestedProps.userName.setValue("testUserName"); //$NON-NLS-1$
-        nestedProps.userPassword.setValue("testUserPassword"); //$NON-NLS-1$
+        ComponentProperties props = ComponentsUtils.getComponentProperties("tSalesforceConnection"); //$NON-NLS-1$
+        props.setValue("endpoint", "sf_endpoint"); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setValue("userPassword.userId", "sf_user"); //$NON-NLS-1$ //$NON-NLS-2$
         connection.setCompProperties(props.toSerialized());
 
         Set<IConnParamName> contextParams = new HashSet<>();
-        contextParams.add(createConnParamName("userId")); //$NON-NLS-1$
-        contextParams.add(createConnParamName("nestedProps.userName")); //$NON-NLS-1$
-        contextParams.add(createConnParamName("nestedProps.userPassword")); //$NON-NLS-1$
+        contextParams.add(createConnParamName("endpoint")); //$NON-NLS-1$
+        contextParams.add(createConnParamName("userPassword.userId")); //$NON-NLS-1$
 
         // Test export context
         GenericContextUtil.setPropertiesForContextMode(prefix, connection, contextParams);
 
-        TestProperties deserProps = getPropertiesFromConnection(connection);
-        assertEquals("context.testConn_userId", deserProps.userId.getValue()); //$NON-NLS-1$
-        assertEquals("context.testConn_nestedProps_userName", deserProps.nestedProps.userName.getValue()); //$NON-NLS-1$
-        assertEquals("context.testConn_nestedProps_userPassword", deserProps.nestedProps.userPassword.getValue()); //$NON-NLS-1$
-        assertEquals(deserProps.userId.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
-        assertEquals(deserProps.nestedProps.userName.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
-        assertEquals(deserProps.nestedProps.userPassword.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
+        ComponentProperties deserProps = getPropertiesFromConnection(connection);
+        Property<?> endpointProperty = deserProps.getValuedProperty("endpoint"); //$NON-NLS-1$
+        Property<?> userIdProperty = deserProps.getValuedProperty("userPassword.userId"); //$NON-NLS-1$
+        assertEquals("context.testConn_endpoint", endpointProperty.getValue()); //$NON-NLS-1$
+        assertEquals("context.testConn_userPassword_userId", userIdProperty.getValue()); //$NON-NLS-1$
+        assertEquals(endpointProperty.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
+        assertEquals(userIdProperty.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), true);
 
         // Test revert context
         ContextType contextType = TalendFileFactoryImpl.eINSTANCE.createContextType();
-        contextType.getContextParameter().add(createContextParameterType("testConn_userId", "1")); //$NON-NLS-1$ //$NON-NLS-2$
-        contextType.getContextParameter().add(createContextParameterType("testConn_nestedProps_userName", "testUserName")); //$NON-NLS-1$ //$NON-NLS-2$
-        contextType.getContextParameter().add(createContextParameterType("testConn_nestedProps_userPassword", "testUserPassword")); //$NON-NLS-1$ //$NON-NLS-2$
+        contextType.getContextParameter().add(createContextParameterType("testConn_endpoint", "sf_endpoint")); //$NON-NLS-1$ //$NON-NLS-2$
+        contextType.getContextParameter().add(createContextParameterType("testConn_userPassword_userId", "sf_user")); //$NON-NLS-1$ //$NON-NLS-2$
 
         GenericContextUtil.revertPropertiesForContextMode(connection, contextType);
 
         deserProps = getPropertiesFromConnection(connection);
-        assertEquals("1", deserProps.userId.getValue()); //$NON-NLS-1$
-        assertEquals("testUserName", deserProps.nestedProps.userName.getValue()); //$NON-NLS-1$
-        assertEquals("testUserPassword", deserProps.nestedProps.userPassword.getValue()); //$NON-NLS-1$
-        assertEquals(deserProps.userId.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
-        assertEquals(deserProps.nestedProps.userName.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
-        assertEquals(deserProps.nestedProps.userPassword.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
+        endpointProperty = deserProps.getValuedProperty("endpoint"); //$NON-NLS-1$
+        userIdProperty = deserProps.getValuedProperty("userPassword.userId"); //$NON-NLS-1$
+        assertEquals("sf_endpoint", endpointProperty.getValue()); //$NON-NLS-1$
+        assertEquals("sf_user", userIdProperty.getValue()); //$NON-NLS-1$
+        assertEquals(endpointProperty.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
+        assertEquals(userIdProperty.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE), false);
     }
 
-    private TestProperties getPropertiesFromConnection(GenericConnection connection) {
-        SerializerDeserializer.Deserialized<TestProperties> d = Properties.Helper.fromSerializedPersistent(connection.getCompProperties(), TestProperties.class);
-        TestProperties deserProps = d.object;
+    private ComponentProperties getPropertiesFromConnection(GenericConnection connection) {
+        SerializerDeserializer.Deserialized<ComponentProperties> d = Properties.Helper
+                .fromSerializedPersistent(connection.getCompProperties(), ComponentProperties.class);
+        ComponentProperties deserProps = d.object;
         return deserProps;
     }
 

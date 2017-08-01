@@ -76,7 +76,7 @@ public class AlfrescoOutputManager {
                 break;
             }
         }
-        if (inConn != null) {
+        if (inConn != null && inConn.getMetadataTable() != null) {
             if (!inConn.getMetadataTable().sameMetadataAs(connector.getMetadataList().get(0))) {
                 MessageBox messageBox = new MessageBox(parent.getShell(), SWT.APPLICATION_MODAL | SWT.OK);
                 messageBox.setText(Messages.getString("AlfrescoOutputManager.schemaError.title")); //$NON-NLS-1$

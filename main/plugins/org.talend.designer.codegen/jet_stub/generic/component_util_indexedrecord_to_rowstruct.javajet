@@ -43,7 +43,7 @@ class IndexedRecordToRowStructGenerator {
         }
         dynamicColName = tmpDynamicColName;
 
-        this.codeVarSchemaEnforcer = "current_" + cid;
+        this.codeVarSchemaEnforcer = "outgoingEnforcer_" + cid;
         this.codeVarIsDynamicInitialized = "initDyn_" + cid;
         this.codeVarDynamic = "dynamic_" + cid;
         this.codeVarIndexedRecordAdapter = "factory_" + cid;
@@ -66,7 +66,7 @@ class IndexedRecordToRowStructGenerator {
         }
 
         %>
-        org.talend.daikon.di.DiOutgoingSchemaEnforcer <%=codeVarSchemaEnforcer%> = org.talend.daikon.di.EnforcerCreator.createOutgoingEnforcer(<%=codeVarSchemaToEnforce%>, <%=dynamicByPosition%>);
+        org.talend.codegen.enforcer.OutgoingSchemaEnforcer <%=codeVarSchemaEnforcer%> = org.talend.codegen.enforcer.EnforcerCreator.createOutgoingEnforcer(<%=codeVarSchemaToEnforce%>, <%=dynamicByPosition%>);
 
         // Create a reusable factory that converts the output of the reader to an IndexedRecord.
         org.talend.daikon.avro.converter.IndexedRecordConverter<Object, ? extends org.apache.avro.generic.IndexedRecord> <%=codeVarIndexedRecordAdapter%> = null;
@@ -111,66 +111,39 @@ class IndexedRecordToRowStructGenerator {
         if (dynamicColName != null) {
             %>
             if (!<%=codeVarIsDynamicInitialized%>) {
-                org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.daikon.di.DiOutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
+                org.apache.avro.Schema dynSchema_<%=cid%> = ((org.talend.codegen.enforcer.OutgoingDynamicSchemaEnforcer) <%=codeVarSchemaEnforcer%>).getDynamicFieldsSchema();
                 for (org.apache.avro.Schema.Field dynamicField_<%=cid%> : dynSchema_<%=cid%>.getFields()){
                     routines.system.DynamicMetadata dynamicMetadata_<%=cid%> = new routines.system.DynamicMetadata();
-                    // set name and db name
+                    org.apache.avro.Schema dynamicFieldSchema_<%=cid%> = dynamicField_<%=cid%>.schema();
+                    // set name
                     dynamicMetadata_<%=cid%>.setName(dynamicField_<%=cid%>.name());
+                    // set db name
                     dynamicMetadata_<%=cid%>.setDbName(dynamicField_<%=cid%>.name());
-                    // set type
-                    String talendType_<%=cid%> = null;
-                    org.apache.avro.Schema.Type type_<%=cid%> = dynamicField_<%=cid%>.schema().getType();
-                    if(type_<%=cid%>  == org.apache.avro.Schema.Type.UNION){
-                    	java.util.List<org.apache.avro.Schema> fieldTypes_<%=cid%> = dynamicField_<%=cid%>.schema().getTypes();
-                    	for(org.apache.avro.Schema fieldType_<%=cid%>:fieldTypes_<%=cid%>){
-                    		if(fieldType_<%=cid%>.getType() == org.apache.avro.Schema.Type.NULL){
-                    			dynamicMetadata_<%=cid%>.setNullable(true);
-                    		}else{
-                    			type_<%=cid%> = fieldType_<%=cid%>.getType();
-                    		}
-                    	}
-					}
-                    if (type_<%=cid%> == org.apache.avro.Schema.Type.ARRAY) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.LIST.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.BOOLEAN) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.BOOLEAN.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.BYTES) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.BYTE_ARRAY.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.FIXED) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.BYTE_ARRAY.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.DOUBLE) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.DOUBLE.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.FLOAT) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.FLOAT.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.INT) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.INTEGER.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.LONG) {
-                    	String pattern_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PATTERN);
-                    	if(pattern_<%=cid%>!=null && !pattern_<%=cid%>.trim().isEmpty()){
-                    		talendType_<%=cid%> = "<%=JavaTypesManager.DATE.getId()%>";
-                    		dynamicMetadata_<%=cid%>.setFormat(pattern_<%=cid%>);
-                    	}else{
-                    		talendType_<%=cid%> = "<%=JavaTypesManager.LONG.getId()%>";
-                    	}
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.ENUM) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.STRING.getId()%>";
-                    } else if (type_<%=cid%> == org.apache.avro.Schema.Type.STRING) {
-                        talendType_<%=cid%> = "<%=JavaTypesManager.STRING.getId()%>";
+                    // set nullable
+                    if (org.talend.daikon.avro.AvroUtils.isNullable(dynamicFieldSchema_<%=cid%>)) {
+                        dynamicMetadata_<%=cid%>.setNullable(true);
                     }
+                    // set type
+                    String talendType_<%=cid%> = org.talend.codegen.converter.TypeConverter.avroToDi(dynamicFieldSchema_<%=cid%>);
                     dynamicMetadata_<%=cid%>.setType(talendType_<%=cid%>);
+                    // set pattern
+                    String pattern_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PATTERN);
+                    if (pattern_<%=cid%> != null && !pattern_<%=cid%>.trim().isEmpty()) {
+                        dynamicMetadata_<%=cid%>.setFormat(pattern_<%=cid%>);
+                    }
                     // set logical type
-                    org.apache.avro.Schema unwrappedSchema_<%=cid%> = org.talend.daikon.avro.AvroUtils.unwrapIfNullable(dynamicField_<%=cid%>.schema());
+                    org.apache.avro.Schema unwrappedSchema_<%=cid%> = org.talend.daikon.avro.AvroUtils.unwrapIfNullable(dynamicFieldSchema_<%=cid%>);
                     String logicalType_<%=cid%> = org.talend.daikon.avro.LogicalTypeUtils.getLogicalTypeName(unwrappedSchema_<%=cid%>);
                     dynamicMetadata_<%=cid%>.setLogicalType(logicalType_<%=cid%>);
                     // set length
                     Object length_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_DB_LENGTH);
-                    if(length_<%=cid%> != null){
-                    	dynamicMetadata_<%=cid%>.setLength(Integer.parseInt(String.valueOf(length_<%=cid%>)));
+                    if (length_<%=cid%> != null) {
+                        dynamicMetadata_<%=cid%>.setLength(Integer.parseInt(String.valueOf(length_<%=cid%>)));
                     }
                     // set precision
                     Object precision_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PRECISION); 
-                    if(precision_<%=cid%> != null){
-						dynamicMetadata_<%=cid%>.setPrecision(Integer.parseInt(String.valueOf(precision_<%=cid%>)));
+                    if (precision_<%=cid%> != null) {
+                        dynamicMetadata_<%=cid%>.setPrecision(Integer.parseInt(String.valueOf(precision_<%=cid%>)));
                     } 
                     // add dynamic field metadata to dynamic variable
                     <%=codeVarDynamic%>.metadatas.add(dynamicMetadata_<%=cid%>);
@@ -184,46 +157,54 @@ class IndexedRecordToRowStructGenerator {
         for (int i = 0; i < columnsToGenerate.size(); i++) {
             IMetadataColumn column = columnsToGenerate.get(i);
             String columnName = column.getLabel();
-            JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
             String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
             if (columnName.equals(dynamicColName)) {
-                %>
+            %>
                 java.util.Map<String, Object> dynamicValue_<%=cid%> = (java.util.Map<String, Object>) <%=codeVarSchemaEnforcer%>.get(<%=i%>);
                 for (java.util.Map.Entry<String, Object> dynamicValueEntry_<%=cid%> : dynamicValue_<%=cid%>.entrySet()) {
                     <%=codeVarDynamic%>.setColumnValue(<%=codeVarDynamic%>.getIndex(dynamicValueEntry_<%=cid%>.getKey()), dynamicValueEntry_<%=cid%>.getValue());
                 }
                 <%=codeVarRowStruct%>.<%=dynamicColName%> = <%=codeVarDynamic%>;
-                <%
+            <%
             } else {
-                %>
-				Object columnValue_<%=i%>_<%=cid%> = <%=codeVarSchemaEnforcer%>.get(<%=i%>);
-                if (columnValue_<%=i%>_<%=cid%> == null) {
-                     <%=codeVarRowStruct%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
-                } else {
-                    <%
-                    if (javaType == JavaTypesManager.STRING) {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(columnValue_<%=i%>_<%=cid%>);
-                        <%
-                    } else if (javaType == JavaTypesManager.CHARACTER) {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = String.valueOf(columnValue_<%=i%>_<%=cid%>).charAt(0);
-                        <%
-                    } else if("id_Document".equals(column.getTalendType())){
-                    	%>
-                    	<%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
-                    	<%
-                    } else  {
-                        %>
-                        <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
-                        <%
-                    }
-                    %>
-                }
+            %>
+                Object columnValue_<%=i%>_<%=cid%> = <%=codeVarSchemaEnforcer%>.get(<%=i%>);
                 <%
+                if (JavaTypesManager.NULL.equals(JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate))) {
+                    // there is no default value, so just assign data value to RowStruct
+                %>
+                    <%
+                    if ("id_Document".equals(column.getTalendType())) {
+                    %>
+                        <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
+                    <%
+                    } else {
+                    %>
+                        <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
+                    <%
+                    }
+                } else {
+                    // there is default value, so check on null and set default value instead of null
+                %>
+                    if (columnValue_<%=i%>_<%=cid%> == null) {
+                        <%=codeVarRowStruct%>.<%=columnName%> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate)%>;
+                    } else {
+                        <%
+                        if ("id_Document".equals(column.getTalendType())) {
+                        %>
+                            <%=codeVarRowStruct%>.<%=columnName%> = ParserUtils.parseTo_Document(String.valueOf(columnValue_<%=i%>_<%=cid%>));
+                        <%
+                        } else {
+                        %>
+                            <%=codeVarRowStruct%>.<%=columnName%> = (<%=typeToGenerate%>) (columnValue_<%=i%>_<%=cid%>);
+                        <%
+                        }
+                        %>
+                    }
+                <%
+                }
             }
         }
     }
-
 }
 %>

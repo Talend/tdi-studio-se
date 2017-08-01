@@ -144,6 +144,9 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         store.setDefault(ITalendCorePrefConstants.DB_CONNECTION_TIMEOUT, 15);
         // store.setDefault(ITalendCorePrefConstants.ITEM_INDEX, false);
 
+        // HBase or MaprDB scan limit
+        store.setDefault(ITalendCorePrefConstants.HBASE_OR_MAPRDB_SCAN_LIMIT, 50);
+
         // Add dependencies routines for job
         store.setDefault(ITalendCorePrefConstants.ADD_USER_ROUTINES, false);
         store.setDefault(ITalendCorePrefConstants.ADD_SYSTEM_ROUTINES, true);
@@ -163,6 +166,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
             store.setDefault(ITalendCorePrefConstants.SVN_UPDATE_INFO_AUTO_CHECK, true);
             store.setDefault(ITalendCorePrefConstants.AUTO_REFRESH_LOCKS, true);
             store.setDefault(ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT, 5);
+            store.setDefault(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT, 60);
         }
 
         store.setDefault(ITalendCorePrefConstants.NEXUS_TIMEOUT, 10000);

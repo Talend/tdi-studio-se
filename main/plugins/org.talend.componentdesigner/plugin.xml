@@ -16,7 +16,7 @@
 	<extension point="org.eclipse.ui.perspectives">
 		<perspective class="org.talend.componentdesigner.ui.Perspective"
 			id="org.talend.componentdesigner.perspective"
-			name="Component Designer">
+			name="Component Designer (Deprecated)">
 		</perspective>
 	</extension>
 	<extension point="org.eclipse.ui.perspectiveExtensions">
@@ -293,7 +293,7 @@
 	</extension>-->
 
 	<extension point="org.eclipse.ui.preferencePages">
-		<page name="Talend Component Designer"
+		<page name="Talend Component Designer (Deprecated)"
 			class="org.talend.componentdesigner.ui.preferencepage.ComponentProjectPreferencePage"
 			id="org.talend.componentdesigner.ui.preferencepage.ComponentProjectPreferencePage">
 		</page>

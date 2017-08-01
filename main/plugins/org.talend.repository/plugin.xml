@@ -2916,6 +2916,30 @@
               name="Set the Spark Dataframe Alphabatical sort order in tHiveOutput and tFileOutputParquet"
               version="6.1.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.UnselectChangeEqualsAndHashcodeForBigDecimalInTMap"
+              id="org.talend.repository.model.migration.UnselectChangeEqualsAndHashcodeForBigDecimalInTMap"
+              name="Set the 'skip tailing zeros for BigDecimal' setting to false if it was null"
+              version="6.5.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
+              id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
+              name="reset the 'COLUMN_DELIMITER' parameter"
+              version="6.5.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              id="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              name="Configure the new INCLUDTRASHFILES property to 'true' in order to keep the same behavior as before"
+              version="6.5.1">
+        </projecttask>
    </extension>
 
    <extension
@@ -3083,6 +3107,9 @@
             class="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             id="org.talend.repository.preference.MavenVersionManagementProjectSettingPage"
             title="%projectSetting.versioning">
+         <tester
+               class="org.talend.repository.preference.MavenVersionManagementProjectSettingPageTester">
+         </tester>
       </page>
       <page
             category="projectsetting.Build"

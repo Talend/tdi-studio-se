@@ -135,6 +135,10 @@ public class MavenVersionUtils {
             if (ERepositoryObjectType.PROCESS_ROUTE != null) {
                 versioningTypes.add(ERepositoryObjectType.PROCESS_ROUTE);
             }
+            ERepositoryObjectType serviceType = ERepositoryObjectType.valueOf("SERVICES"); //$NON-NLS-1$
+            if (serviceType != null) {
+                versioningTypes.add(serviceType);
+            }
 
         }
         return versioningTypes.contains(type);

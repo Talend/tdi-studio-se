@@ -555,6 +555,13 @@ public class EXABulkUtil {
 	private boolean isEmpty(String value) {
 		return isNotEmpty(value) == false;
 	}
+	
+	/*
+	 * check if the string is ""
+	 */
+	private boolean isEmptyString(String value) {
+	    return value!=null && "".equals(value);
+	}
 
 	/**
 	 * set the schema.table name here.
@@ -681,7 +688,7 @@ public class EXABulkUtil {
 	}
 
 	public void setFileOptColumnEnclosure(String fileOptColumnEnclosure) {
-		if (isNotEmpty(fileOptColumnEnclosure)) {
+		if (isEmptyString(fileOptColumnEnclosure) || isNotEmpty(fileOptColumnEnclosure)) {
 			this.fileOptColumnEnclosure = fileOptColumnEnclosure.trim();
 		}
 	}

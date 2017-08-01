@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Publish Upload
 Bundle-SymbolicName: org.talend.designer.publish.core;singleton:=true
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Export-Package: org.talend.designer.publish.core.actions,
  org.talend.designer.publish.core.filters,
  org.talend.designer.publish.core.filters.impl,

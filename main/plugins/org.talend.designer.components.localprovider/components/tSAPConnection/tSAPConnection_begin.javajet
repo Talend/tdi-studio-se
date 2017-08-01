@@ -39,9 +39,8 @@
     List<Map<String, String>> sapProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SAP_PROPERTIES__");
 %>
     
-<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-    
 <%if("sapjco3.jar".equals(version)){%>
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 		com.sap.conn.jco.JCoDestination dest_<%=cid%> = null;
 <%
 		boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));
@@ -148,49 +147,7 @@
 	}
 %>
 	
-	java.util.Properties properties_<%=cid%> = new java.util.Properties();
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_CLIENT, <%=client%>);
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_USER, <%=userid%>);
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_PASSWORD, decryptedPassword_<%=cid%>);
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_LANGUAGE, <%=language%>);
-    
-    <%if("ApplicationServer".equals(serverType)){%>
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_APPLICATION_SERVER_HOST, <%=hostname%>);
-    properties_<%=cid%>.put(org.talend.sap.ISAPConnection.PROP_SYSTEM_NUMBER, <%=systemnumber%>);
-    <%}else{%>
-    properties_<%=cid%>.put("jco.client.mshost", <%=hostname%>);
-    properties_<%=cid%>.put("jco.client.r3name", <%=systemId%>);
-    properties_<%=cid%>.put("jco.client.group", <%=groupName%>);
-    <%}%>
-    
-    <%
-	if(activeSNC){
-	%>
-		properties_<%=cid%>.setProperty("jco.client.snc_mode", "1");
-		properties_<%=cid%>.setProperty("jco.client.snc_partnername", <%=partnerSNCName%>);
-		properties_<%=cid%>.setProperty("jco.client.snc_qop", String.valueOf(<%=sncLevel%>));
-		<%if(hasMySNCName){%>
-    		if(<%=mySNCName%> != null){
-    			properties_<%=cid%>.setProperty("jco.client.snc_myname", <%=mySNCName%>);
-    		}
-		<%}%>
-		<%if(hasSNCLibPath){%>
-    		if(<%=sncLibPath%> != null){
-    			properties_<%=cid%>.setProperty("jco.client.snc_lib", <%=sncLibPath%>);
-    		}
-		<%}%>
-	<%
-	}
-	%>
-	<%
-    if(sapProps!=null) {
-		for(Map<String, String> item : sapProps){
-		%>	
-		properties_<%=cid%>.put(<%=item.get("PROPERTY") %> ,<%=item.get("VALUE") %>);
-		<% 
-		}
-    }
-	%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/SAP/SetProperties.javajet"%>
     
 	connection_<%=cid%> = org.talend.sap.impl.SAPConnectionFactory.getInstance().createConnection(properties_<%=cid%>);
 <%

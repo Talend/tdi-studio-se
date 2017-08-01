@@ -61,7 +61,6 @@ import org.talend.sqlbuilder.repository.utility.SQLBuilderRepositoryNodeManager;
 import org.talend.sqlbuilder.ui.ISQLBuilderDialog;
 import org.talend.sqlbuilder.util.UIUtils;
 import org.talend.utils.sql.ConnectionUtils;
-
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -98,7 +97,7 @@ public class ErDiagramComposite extends SashForm {
     /**
      * admin Comment method "addErDiagramEditor".
      */
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private void addErDiagramEditor(boolean isShowDesignerPage) {
         GridData gridData = new GridData(GridData.FILL_BOTH);
         this.setLayoutData(gridData);
@@ -236,8 +235,11 @@ public class ErDiagramComposite extends SashForm {
     private String getCurrentDbType() {
         DatabaseConnection connection = (DatabaseConnection) ((ConnectionItem) rootNode.getObject().getProperty().getItem())
                 .getConnection();
-
-        String dbType = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(connection.getDriverClass());
+        String driverClass = connection.getDriverClass();
+        if (connection.isContextMode()) {
+            driverClass = DatabaseConnectionParameterUtil.getContextTrueValue(connection, driverClass);
+        }
+        String dbType = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(driverClass);
         if (dbType == null) {
             dbType = connection.getDatabaseType();
         }
@@ -260,7 +262,7 @@ public class ErDiagramComposite extends SashForm {
 
     }
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private String getSqlStatement() {
         String sql = ""; //$NON-NLS-1$
         List<String> tables = new ArrayList<String>();
@@ -275,7 +277,7 @@ public class ErDiagramComposite extends SashForm {
                     if (object instanceof TablePart) {
                         TablePart tablePart = (TablePart) object;
                         Table table = (Table) tablePart.getModel();
-                        if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) { //$NON-NLS-1$
+                        if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) { 
                             tables.add(schemaPrefixWithDoubleQuotes + "\"" + table.getElementName() + "\"");
                         } else {
                             tables.add(schemaPrefix
@@ -289,7 +291,7 @@ public class ErDiagramComposite extends SashForm {
                                 Column column = (Column) columnPart.getModel();
                                 CheckBox isSelected = columnPart.getPrimativeFigure().getFigureCustomColumnIsSelectedFigure();
                                 if (isSelected != null && isSelected.isSelected() && !column.getElementName().equals("*")) { //$NON-NLS-1$
-                                    if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) { //$NON-NLS-1$
+                                    if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) { 
                                         columns.add(schemaPrefixWithDoubleQuotes
                                                 + "\"" + table.getElementName() + "\".\"" + column.getElementName() + "\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                     } else {
@@ -321,7 +323,7 @@ public class ErDiagramComposite extends SashForm {
                                         }
                                     }
                                 }
-                                for (Relation rel : (List<Relation>) column.getOutputs()) {
+                                for (Relation rel : column.getOutputs()) {
                                     Column source = rel.getSource();
                                     Column target = rel.getTarget();
                                     if (TextUtil.isDoubleQuotesNeededDbType(getCurrentDbType())) {

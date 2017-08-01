@@ -81,6 +81,7 @@ import org.talend.sqlbuilder.editors.MultiPageSqlBuilderEditor;
 import org.talend.sqlbuilder.ui.AbstractSQLEditorComposite;
 import org.talend.sqlbuilder.ui.SQLBuilderDialog;
 import org.talend.utils.sql.ConnectionUtils;
+
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
 
@@ -864,11 +865,22 @@ public class SQLBuilderRepositoryNodeManager {
     public DatabaseMetaData getDatabaseMetaData(IMetadataConnection iMetadataConnection) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, SQLException {
         ExtractMetaDataUtils extractMeta = ExtractMetaDataUtils.getInstance();
-        extractMeta.getConnection(iMetadataConnection.getDbType(), iMetadataConnection.getUrl(),
+        List list = extractMeta.getConnection(iMetadataConnection.getDbType(), iMetadataConnection.getUrl(),
                 iMetadataConnection.getUsername(), iMetadataConnection.getPassword(), iMetadataConnection.getDatabase(),
                 iMetadataConnection.getSchema(), iMetadataConnection.getDriverClass(), iMetadataConnection.getDriverJarPath(),
                 iMetadataConnection.getDbVersionString(), iMetadataConnection.getAdditionalParams());
         String dbType = iMetadataConnection.getDbType();
+        if (list != null && list.size() > 0) {
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i) instanceof Driver) {
+                    String driverClass = iMetadataConnection.getDriverClass();
+                    if (MetadataConnectionUtils.isDerbyRelatedDb(driverClass, dbType)) {
+                        MetadataConnectionUtils.setDerbyDriver((Driver) list.get(i));
+                        break;
+                    }
+                }
+            }
+        }
         DatabaseMetaData dbMetaData = null;
         // Added by Marvin Wang on Mar. 13, 2013 for loading hive jars dynamically, refer to TDI-25072.
         if (EDatabaseTypeName.HIVE.getXmlName().equalsIgnoreCase(dbType)) {

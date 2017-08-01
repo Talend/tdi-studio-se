@@ -25,6 +25,11 @@ import java.util.Set;
 
 import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.text.translate.AggregateTranslator;
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
+import org.apache.commons.lang3.text.translate.EntityArrays;
+import org.apache.commons.lang3.text.translate.JavaUnicodeEscaper;
+import org.apache.commons.lang3.text.translate.LookupTranslator;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -85,6 +90,7 @@ import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
@@ -615,6 +621,7 @@ public class Component extends AbstractBasicComponent {
         param.setValue("");//$NON-NLS-1$
         param.setNumRow(1);
         param.setShow(wizardDefinition != null);
+        param.setTaggedValue(IGenericConstants.IS_PROPERTY_SHOW, wizardDefinition != null);
 
         ElementParameter newParam = new ElementParameter(node);
         newParam.setCategory(EComponentCategory.BASIC);
@@ -1143,6 +1150,9 @@ public class Component extends AbstractBasicComponent {
         } catch (Exception e) {
             if (node == null) {
                 // not handled, must because the runtime info must have a node configuration (properties are null)
+            } else if (e instanceof TalendRuntimeException) {
+                // no need to check talend runtime exception in design time.
+                e.printStackTrace(); // only for debug.
             } else {
                 ExceptionHandler.process(e);
             }
@@ -1150,11 +1160,8 @@ public class Component extends AbstractBasicComponent {
         if (runtimeInfo != null) {
             if (runtimeInfo instanceof JarRuntimeInfo) {
                 JarRuntimeInfo currentRuntimeInfo = (JarRuntimeInfo) runtimeInfo;
-                JarRuntimeInfo localRuntimeInfo = new JarRuntimeInfo(
-                        currentRuntimeInfo.getJarUrl().toString().replace("mvn:", //$NON-NLS-1$
-                                "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!") //$NON-NLS-1$ //$NON-NLS-2$
-                        , currentRuntimeInfo.getDepTxtPath(), currentRuntimeInfo.getRuntimeClassName());
-                runtimeInfo = localRuntimeInfo;
+                runtimeInfo = currentRuntimeInfo.cloneWithNewJarUrlString(currentRuntimeInfo.getJarUrl().toString()
+                        .replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"));
             }
             final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
             for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
@@ -1179,7 +1186,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.17.0-SNAPSHOT");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.2");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1361,6 +1368,10 @@ public class Component extends AbstractBasicComponent {
         return propsList;
     }
 
+    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(
+            new CharSequenceTranslator[] { new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
+                    new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
+
     public String getCodegenValue(Property property, String value) {
         if (property.isFlag(Property.Flags.ENCRYPT)) {
             return ElementParameterParser.getEncryptedValue(value);
@@ -1383,11 +1394,7 @@ public class Component extends AbstractBasicComponent {
         }
         if (GenericTypeUtils.isSchemaType(property)) {
             // Handles embedded escaped quotes which might occur
-            return "\"" + org.apache.commons.lang3.StringEscapeUtils.escapeJson(value) + "\"";//$NON-NLS-1$ //$NON-NLS-2$
-                                                                                              // //$NON-NLS-3$
-                                                                                              // //$NON-NLS-4$
-                                                                                              // //$NON-NLS-5$
-                                                                                              // //$NON-NLS-6$
+            return "\"" + ESCAPE_SCHEMA.translate(value) + "\"";
         }
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";

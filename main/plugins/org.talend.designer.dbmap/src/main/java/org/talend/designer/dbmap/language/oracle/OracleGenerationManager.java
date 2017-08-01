@@ -65,6 +65,8 @@ public class OracleGenerationManager extends DbGenerationManager {
     public String buildSqlSelect(DbMapComponent component, String outputTableName, String tabString) {
         queryColumnsName = "\""; //$NON-NLS-1$
         aliasAlreadyDeclared.clear();
+        queryColumnsSegments.clear();
+        querySegments.clear();
         this.tabSpaceString = tabString;
 
         List<IConnection> outputConnections = (List<IConnection>) component.getOutgoingConnections();
@@ -101,9 +103,10 @@ public class OracleGenerationManager extends DbGenerationManager {
                     // outputTable = removeUnmatchingEntriesWithColumnsOfMetadataTable(outputTable, metadataTable);
                 }
             }
-            sb.append("\""); //$NON-NLS-1$
-            sb.append(DbMapSqlConstants.SELECT);
-            sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
+            appendSqlQuery(sb, "\"", false); //$NON-NLS-1$
+            appendSqlQuery(sb, DbMapSqlConstants.SELECT);
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+            appendSqlQuery(sb, tabSpaceString);
 
             List<ExternalDbMapEntry> metadataTableEntries = outputTable.getMetadataTableEntries();
             if (metadataTableEntries != null) {
@@ -126,14 +129,15 @@ public class OracleGenerationManager extends DbGenerationManager {
                                 + getAliasOf(dbMapEntry.getName());
                         added = true;
                     }
+                    String columnSegment = expression;
                     if (i > 0) {
-                        sb.append(DbMapSqlConstants.COMMA);
-                        sb.append(DbMapSqlConstants.SPACE);
-
+                        appendSqlQuery(sb, DbMapSqlConstants.COMMA);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         queryColumnsName += DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE;
+                        columnSegment = DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE + columnSegment;
                     }
                     if (expression != null && expression.trim().length() > 0) {
-                        sb.append(expression);
+                        appendSqlQuery(sb, expression);
                         if (component.getMapperMain() == null) {
                             component.getExternalEmfData();
                         }
@@ -158,22 +162,25 @@ public class OracleGenerationManager extends DbGenerationManager {
                                 }
                             }
                             if (!added && columnChanged) {
-                                sb.append(DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
-                                        + getAliasOf(dbMapEntry.getName()));
+                                String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
+                                        + getAliasOf(dbMapEntry.getName());
+                                appendSqlQuery(sb, name);
                             }
                         }
                         queryColumnsName += expression;
+                        queryColumnsSegments.add(columnSegment);
                     } else {
-                        sb.append(DbMapSqlConstants.LEFT_COMMENT);
+                        appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
                         String str = outputTable.getName() + DbMapSqlConstants.DOT + dbMapEntry.getName();
-                        sb.append(Messages.getString("DbGenerationManager.OuputExpSetMessage", str)); //$NON-NLS-1$
-                        sb.append(DbMapSqlConstants.RIGHT_COMMENT);
+                        appendSqlQuery(sb, Messages.getString("DbGenerationManager.OuputExpSetMessage", str));//$NON-NLS-1$
+                        appendSqlQuery(sb, DbMapSqlConstants.RIGHT_COMMENT);
                     }
                 }
             }
 
-            sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
-            sb.append(DbMapSqlConstants.FROM);
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+            appendSqlQuery(sb, tabSpaceString);
+            appendSqlQuery(sb, DbMapSqlConstants.FROM);
 
             List<ExternalDbMapTable> inputTables = data.getInputTables();
 
@@ -200,7 +207,8 @@ public class OracleGenerationManager extends DbGenerationManager {
                 }
             }
 
-            sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
+            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+            appendSqlQuery(sb, tabSpaceString);
 
             IJoinType previousJoinType = null;
 
@@ -223,13 +231,14 @@ public class OracleGenerationManager extends DbGenerationManager {
                             buildTableDeclaration(component, sb, inputTables.get(i - 1), commaCouldBeAdded, crCouldBeAdded, true);
                             previousJoinType = joinType;
                         } else {
-                            sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
+                            appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                            appendSqlQuery(sb, tabSpaceString);
                         }
-                        sb.append(DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                     }
                     String labelJoinType = joinType.getLabel();
-                    sb.append(labelJoinType);
-                    sb.append(DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, labelJoinType);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                     if (joinType == AbstractDbLanguage.JOIN.CROSS_JOIN) {
                         ExternalDbMapTable nextTable = null;
                         if (i < lstSizeInputTables) {
@@ -244,20 +253,20 @@ public class OracleGenerationManager extends DbGenerationManager {
                         // if (rightTable != null) {
                         // } else {
                         // sb.append(" <!! NO JOIN CLAUSES FOR '" + inputTable.getName() + "' !!> ");
-                        // }
-                        sb.append(DbMapSqlConstants.SPACE);
-                        sb.append(DbMapSqlConstants.ON);
-                        sb.append(DbMapSqlConstants.LEFT_BRACKET);
-                        sb.append(DbMapSqlConstants.SPACE);
+                        // }                       
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, DbMapSqlConstants.ON);
+                        appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         if (!buildConditions(component, sb, inputTable, true, true)) {
-                            sb.append(DbMapSqlConstants.LEFT_COMMENT);
-                            sb.append(DbMapSqlConstants.SPACE);
-                            sb.append(Messages.getString("DbGenerationManager.conditionNotSet")); //$NON-NLS-1$
-                            sb.append(DbMapSqlConstants.SPACE);
-                            sb.append(DbMapSqlConstants.RIGHT_COMMENT);
+                            appendSqlQuery(sb, DbMapSqlConstants.LEFT_COMMENT);
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            appendSqlQuery(sb, Messages.getString("DbGenerationManager.conditionNotSet"));//$NON-NLS-1$
+                            appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                            appendSqlQuery(sb, DbMapSqlConstants.RIGHT_COMMENT);
                         }
-                        sb.append(DbMapSqlConstants.SPACE);
-                        sb.append(DbMapSqlConstants.RIGHT_BRACKET);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, DbMapSqlConstants.RIGHT_BRACKET);
                     }
 
                 }
@@ -315,35 +324,39 @@ public class OracleGenerationManager extends DbGenerationManager {
 
             boolean whereOriginalFlag = !originalWhereAddition.isEmpty();
             if (whereFlag || whereAddFlag || whereOriginalFlag) {
-                sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
-                sb.append(DbMapSqlConstants.WHERE);
+                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sb, tabSpaceString);
+                appendSqlQuery(sb, DbMapSqlConstants.WHERE);
             }
             if (whereFlag) {
                 sb.append(whereClauses);
             }
             if (whereAddFlag) {
                 for (int i = 0; i < whereAddition.size(); i++) {
-                    if (i == 0 && whereFlag || i > 0) {
-                        sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
-                        sb.append(DbMapSqlConstants.SPACE);
-                        sb.append(DbMapSqlConstants.AND);
+                    if (i == 0 && whereFlag || i > 0) {                      
+                        appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                        appendSqlQuery(sb, tabSpaceString);
+                        appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                        appendSqlQuery(sb, DbMapSqlConstants.AND);
                     }
-                    sb.append(DbMapSqlConstants.SPACE);
-                    sb.append(whereAddition.get(i));
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, whereAddition.get(i));
                 }
             }
             if (whereOriginalFlag) {
                 for (String s : originalWhereAddition) {
-                    sb.append(DbMapSqlConstants.NEW_LINE);
-                    sb.append(DbMapSqlConstants.SPACE);
-                    sb.append(s);
+                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                    appendSqlQuery(sb, DbMapSqlConstants.SPACE);
+                    appendSqlQuery(sb, s);
                 }
             }
             if (!otherAddition.isEmpty()) {
-                sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
+                appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sb, tabSpaceString);
                 for (String s : otherAddition) {
-                    sb.append(s);
-                    sb.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
+                    appendSqlQuery(sb, s);
+                    appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
+                    appendSqlQuery(sb, tabSpaceString);
                 }
             }
         }
@@ -356,9 +369,11 @@ public class OracleGenerationManager extends DbGenerationManager {
                     sqlQuery = sqlQuery.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     haveReplace = true;
                 }
+                replaceQueryContext(querySegments, context);
                 if (queryColumnsName.contains(context)) {
                     queryColumnsName = queryColumnsName.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 }
+                replaceQueryContext(queryColumnsSegments, context);
             }
             if (!haveReplace) {
                 List<String> connContextList = getConnectionContextList(component);
@@ -366,9 +381,11 @@ public class OracleGenerationManager extends DbGenerationManager {
                     if (sqlQuery.contains(context)) {
                         sqlQuery = sqlQuery.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
+                    replaceQueryContext(querySegments, context);
                     if (queryColumnsName.contains(context)) {
                         queryColumnsName = queryColumnsName.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
+                    replaceQueryContext(queryColumnsSegments, context);
                 }
             }
         }

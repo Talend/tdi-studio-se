@@ -431,6 +431,11 @@ public class ComponentsPreferencePage extends FieldEditorPreferencePage implemen
                                                         MessageDialog.openInformation(getShell(), title, installedMessages);
                                                     }
                                                 }
+                                                if (StringUtils.isNotEmpty(component.getFailureMessage())) {
+                                                    MessageDialog.openError(getShell(), Messages
+                                                            .getString("ComponentsPreferencePage.installComponentsFailure"),//$NON-NLS-1$
+                                                            component.getFailureMessage());
+                                                }
                                             } finally {
                                                 // after install, clear the setting for service.
                                                 component.setComponentFolder(null);

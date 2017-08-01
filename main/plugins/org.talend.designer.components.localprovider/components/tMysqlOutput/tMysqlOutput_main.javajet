@@ -497,84 +497,80 @@ if(columnList != null && columnList.size() > 0) {
         public void generateSetStmt(String typeToGenerate, Column column, String incomingConnName, String cid){
             boolean isObject = false;
             String prefix = "pstmt_";
-            %>
 
-            <%
             if(("Character").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.CHAR);
-                    <%
+<%
             }else if(("Date").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.DATE);
-                    <%
+<%
             }else if(("byte[]").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.ARRAY);
-                    <%
+<%
             }else if(("Long").equals(typeToGenerate)||("Byte").equals(typeToGenerate)||("Integer").equals(typeToGenerate)||("Short").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.INTEGER);
-                    <%
+<%
             }else if(("String").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.VARCHAR);
-                    <%
+<%
             }else if(("Object").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.OTHER);
-                    <%
+<%
             }else if(("Boolean").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.BOOLEAN);
-                    <%
+<%
             }else if(("Double").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.DOUBLE);
-                    <%
+<%
             }else if(("Float").equals(typeToGenerate)){
                 isObject = true;
-                %>
+%>
                 if(<%=incomingConnName%>.<%=column.getName()%>==null){
                     <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.FLOAT);
-                    <%
+<%
             }
             if(isObject){
-                %>
+%>
                 }else{
-                <%
+<%
             }
             typeToGenerate = generateType(typeToGenerate);
 
             if(("Char").equals(typeToGenerate)||("Character").equals(typeToGenerate)){
-                %>
-                <%
                 if(isObject) {
-                    %>
+%>
                     if(<%=incomingConnName%>.<%=column.getName()%>==null){
-                    <%
+<%
                 } else {
-                    %>
+%>
                     if(("null").equals(String.valueOf(<%=incomingConnName%>.<%=column.getName()%>).toLowerCase())){
-                    <%
+<%
                 }
-                %>
+%>
                 <%=prefix+cid%>.setNull(counter<%=cid%>,java.sql.Types.CHAR);
 
                 }else if(<%=incomingConnName%>.<%=column.getName()%> == '\0'){
@@ -585,7 +581,7 @@ if(columnList != null && columnList.size() > 0) {
 
                     <%=prefix+cid%>.setString(counter<%=cid%>,String.valueOf(<%=incomingConnName%>.<%=column.getName()%>));
                 }
-                <%
+<%
             }else if(("Date").equals(typeToGenerate)){
                 %>
                 if(<%=incomingConnName%>.<%=column.getName()%>!=null){

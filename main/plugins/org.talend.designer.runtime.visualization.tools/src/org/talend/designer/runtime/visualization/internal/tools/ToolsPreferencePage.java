@@ -103,8 +103,9 @@ public class ToolsPreferencePage extends PreferencePage implements
      */
     @Override
     public boolean performOk() {
-        getPreferenceStore().setValue(IConstants.JDK_ROOT_DIRECTORY,
-                jdkRootDirectoryText.getText());
+        if (jdkRootDirectoryText != null) {
+            getPreferenceStore().setValue(IConstants.JDK_ROOT_DIRECTORY, jdkRootDirectoryText.getText());
+        }
         getPreferenceStore().setValue(IConstants.UPDATE_PERIOD,
                 Long.valueOf(updatePeriodText.getText()));
         getPreferenceStore().setValue(IConstants.MAX_CLASSES_NUMBER,

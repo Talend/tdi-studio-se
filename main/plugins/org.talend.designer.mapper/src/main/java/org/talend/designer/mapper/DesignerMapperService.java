@@ -152,12 +152,14 @@ public class DesignerMapperService implements IDesignerMapperService {
         data.getInputTables().add(inputTable);
         inputTable.setName(inputConnection.getName());
 
-        for (IMetadataColumn column : inputConnection.getMetadataTable().getListColumns()) {
-            MapperTableEntry tableEntry = MapperFactory.eINSTANCE.createMapperTableEntry();
-            tableEntry.setName(column.getLabel());
-            tableEntry.setType(column.getTalendType());
-            tableEntry.setNullable(column.isNullable());
-            inputTable.getMapperTableEntries().add(tableEntry);
+        if (inputConnection.getMetadataTable() != null) {
+            for (IMetadataColumn column : inputConnection.getMetadataTable().getListColumns()) {
+                MapperTableEntry tableEntry = MapperFactory.eINSTANCE.createMapperTableEntry();
+                tableEntry.setName(column.getLabel());
+                tableEntry.setType(column.getTalendType());
+                tableEntry.setNullable(column.isNullable());
+                inputTable.getMapperTableEntries().add(tableEntry);
+            }
         }
 
         data.getOutputTables().clear();
@@ -165,13 +167,15 @@ public class DesignerMapperService implements IDesignerMapperService {
         data.getOutputTables().add(outputTable);
         outputTable.setName(outputConnection.getName());
 
-        for (IMetadataColumn column : outputConnection.getMetadataTable().getListColumns()) {
-            MapperTableEntry tableEntry = MapperFactory.eINSTANCE.createMapperTableEntry();
-            tableEntry.setName(column.getLabel());
-            tableEntry.setType(column.getTalendType());
-            tableEntry.setNullable(column.isNullable());
-            tableEntry.setExpression(inputConnection.getName() + "." + column.getLabel());
-            outputTable.getMapperTableEntries().add(tableEntry);
+        if (outputConnection.getMetadataTable() != null) {
+            for (IMetadataColumn column : outputConnection.getMetadataTable().getListColumns()) {
+                MapperTableEntry tableEntry = MapperFactory.eINSTANCE.createMapperTableEntry();
+                tableEntry.setName(column.getLabel());
+                tableEntry.setType(column.getTalendType());
+                tableEntry.setNullable(column.isNullable());
+                tableEntry.setExpression(inputConnection.getName() + "." + column.getLabel());
+                outputTable.getMapperTableEntries().add(tableEntry);
+            }
         }
 
         ((MapperComponent) node.getExternalNode()).buildExternalData(data);

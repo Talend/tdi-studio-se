@@ -394,6 +394,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
                         bean = ConnectionBean.getDefaultConnectionBean();
                     }
                 }
+                LoginHelper.getInstance().setCurrentSelectedConnBean(bean);
 
                 Context ctx = CorePlugin.getContext();
                 RepositoryContext repositoryContext = new RepositoryContext();

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Repository Plug-in
 Bundle-SymbolicName: org.talend.repository;singleton:=true
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Bundle-Localization: plugin
 Eclipse-LazyStart: true
 Bundle-Vendor: .Talend SA.
@@ -25,6 +25,8 @@ Require-Bundle: javax.xml.rpc,
  org.talend.librariesmanager,
  org.eclipse.ltk.core.refactoring,
  org.eclipse.jdt.ui,
+ org.eclipse.m2e.core,
+ org.eclipse.m2e.maven.runtime,
  org.eclipse.ui.browser,
  org.talend.commons.ui,
  org.talend.registration,

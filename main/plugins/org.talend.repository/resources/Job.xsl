@@ -140,7 +140,7 @@
 				</div>
 				<div class="FONTSTYLE">
 					<b>
-						<a href="#Job Settings"><xsl:value-of select="/project/@i18n.job.job.setting" /></a>
+						<a href="#Job_settings"><xsl:value-of select="/project/@i18n.job.job.setting" /></a>
 					</b>
 				</div>
 				<xsl:if test="/project/job/@type = 'route' ">
@@ -191,7 +191,7 @@
 				<!-- Project Description-->
 				<!--HR-->
 				<h2 class="FONTSTYLE">
-					<a name="#ProjectDescription">
+					<a id="ProjectDescription" name="#ProjectDescription">
 					<xsl:value-of select="/project/@i18n.job.project.description" />
 					</a>
 				</h2>
@@ -234,7 +234,7 @@
 				<br />
 				<br />
 				<h2 class="FONTSTYLE">
-					<a name="#JobDescription"><xsl:value-of select="/project/@i18n.job.job.description" /></a>
+					<a id="JobDescription" name="#JobDescription"><xsl:value-of select="/project/@i18n.job.job.description" /></a>
 				</h2>
 				<br />
 				<table border="1" width="90%" cellpadding="0"
@@ -319,7 +319,7 @@
 					select="$job/preview/@picture" />
 				<xsl:if test="string-length($jobPreviewPicture)!=0">
 					<h2 class="FONTSTYLE">
-						<a name="#JobPreviewPicture">
+						<a id="JobPreviewPicture" name="#JobPreviewPicture">
 						<xsl:value-of select="/project/@i18n.job.job.preview.picture" />
 						</a>
 					</h2>
@@ -342,7 +342,7 @@
 				<!-- Job settings -->
 				<!--HR-->
 				<h2 class="FONTSTYLE">
-					<a name="#Job settings"><xsl:value-of select="/project/@i18n.job.job.setting" /></a>
+					<a id="Job_settings" name="#Job settings"><xsl:value-of select="/project/@i18n.job.job.setting" /></a>
 				</h2>
 				<xsl:if test="$job/@i18n.job.extract.settings.type = 'i18n.job.extract.settings' ">
 				<table border="0" width="90%" class="FONTSTYLE"
@@ -431,7 +431,7 @@
 				<!-- Context List-->
 				<!--HR-->
 				<h2 class="FONTSTYLE">
-					<a name="#Context List"><xsl:value-of select="/project/@i18n.job.context.list" /></a>
+					<a id="Context List" name="#Context List"><xsl:value-of select="/project/@i18n.job.context.list" /></a>
 				</h2>
 				<xsl:for-each select="$job/contextList/context">
 					<table border="0" width="90%" class="FONTSTYLE"
@@ -513,7 +513,7 @@
 				
 					<!-- Route MANIFEST -->
 					<h2 class="FONTSTYLE">
-						<a name="#MANIFEST">MANIFEST</a>
+						<a id="MANIFEST" name="#MANIFEST">MANIFEST</a>
 					</h2>
 					<table width="90%" border="1" cellpadding="0"
 						cellspacing="0"
@@ -581,7 +581,7 @@
 					
 					<!-- Route Spring -->
 					<h2 class="FONTSTYLE">
-						<a name="#Spring">Spring</a>
+						<a id="Spring" name="#Spring">Spring</a>
 						<pre class="CODESTYLE">
 							<xsl:call-template name="TransferLF2BR">
 								<xsl:with-param name="input" select="$job/RouteSpring/text()"/>
@@ -591,7 +591,7 @@
 					
 					<!-- Route Resources -->
 					<h2 class="FONTSTYLE">
-						<a name="#Resources">Resources</a>
+						<a id="Resources" name="#Resources">Resources</a>
 					</h2>
 					<table width="90%" border="1" cellpadding="0"
 						cellspacing="0"
@@ -630,7 +630,7 @@
 				<!-- Component List-->
 				<!--HR-->
 				<h2 class="FONTSTYLE">
-					<a name="#ComponentList"><xsl:value-of select="/project/@i18n.job.component.list" /></a>
+					<a id="ComponentList" name="#ComponentList"><xsl:value-of select="/project/@i18n.job.component.list" /></a>
 				</h2>
 				<table width="90%" border="1" cellpadding="0"
 					cellspacing="0"
@@ -664,7 +664,7 @@
 				<!-- Components Description-->
 				<!--HR-->
 				<h2 class="FONTSTYLE">
-					<a name="#ComponentsDescription">
+					<a id="ComponentsDescription" name="#ComponentsDescription">
 					<xsl:value-of select="/project/@i18n.job.components.description" />
 					</a>
 				</h2>

@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nl Fragment
 Bundle-SymbolicName: org.talend.designer.webservice.nl
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Fragment-Host: org.talend.designer.webservice

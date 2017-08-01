@@ -47,7 +47,8 @@
     			or (DBTYPE=='SQLITE' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true')
     			or (DBTYPE=='TERADATA' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='NETEZZA' and USE_EXISTING_CONNECTION == 'true')
     			or (DBTYPE=='POSTGREPLUS' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true')
-    			or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')"
+    			or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
+    			or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')"
   />
 
   <PARAMETER
@@ -59,6 +60,7 @@
       	<ITEM NAME="ACCESS"        VALUE="ACCESS" />
         <ITEM NAME="AS400"        VALUE="AS400" />
         <ITEM NAME="DB2"           VALUE="DB2"/>
+        <ITEM NAME="EXASOL"   VALUE="EXASOL"/>
         <ITEM NAME="FIREBIRD"      VALUE="FIREBIRD"/>
 		<ITEM NAME="GREENPLUM"   VALUE="GREENPLUM"/>
         <ITEM NAME="HSQLDB"      VALUE="HSQLDB"/>
@@ -74,6 +76,7 @@
         <ITEM NAME="DBORACLE"      VALUE="DBORACLE"/>
         <ITEM NAME="POSTGREPLUS"   VALUE="POSTGREPLUS"/>
         <ITEM NAME="POSTGRE"      VALUE="POSTGRE"/>
+        <ITEM NAME="REDSHIFT"   VALUE="REDSHIFT"/>
         <ITEM NAME="SQLITE"      VALUE="SQLITE"/>
         <ITEM NAME="SYBASE"      VALUE="SYBASE"/>
         <ITEM NAME="TERADATA"      VALUE="TERADATA"/>
@@ -107,7 +110,8 @@
 		SHOW_IF="(DBTYPE=='MSSQL') or (DBTYPE=='MYSQL') or (DBTYPE=='DBORACLE') or (DBTYPE=='POSTGRE')
 				or (DBTYPE=='POSTGREPLUS') or (DBTYPE=='TERADATA') or (DBTYPE=='NETEZZA') or (DBTYPE=='AS400')
 				or (DBTYPE=='DB2') or (DBTYPE=='FIREBIRD') or (DBTYPE=='INFORMIX') or (DBTYPE=='INGRES') or (DBTYPE=='INTERBASE')
-				or (DBTYPE=='SQLITE') or (DBTYPE=='SYBASE') or (DBTYPE=='ACCESS') or (DBTYPE=='GREENPLUM') or (DBTYPE=='VERTICA')">
+				or (DBTYPE=='SQLITE') or (DBTYPE=='SYBASE') or (DBTYPE=='ACCESS') or (DBTYPE=='GREENPLUM') or (DBTYPE=='VERTICA') 
+				or (DBTYPE=='EXASOL') or (DBTYPE=='REDSHIFT')">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
 
@@ -123,9 +127,11 @@
 					or (DBTYPE=='INGRES' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='INTERBASE' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true') or  (CONNECTION_TYPE == 'ORACLE_OCI')
 				    or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC') or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')
-				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')">
+				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
+				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
+	
 	<PARAMETER NAME="DBNAME" FIELD="TEXT" NUM_ROW="70"
 		REPOSITORY_VALUE="SID" REQUIRED="true"
 		NOT_SHOW_IF="(DBTYPE=='FIREBIRD') or (DBTYPE=='ACCESS') or (DBTYPE=='SQLITE') or (DBTYPE == 'INTERBASE') or (DBTYPE == 'HSQLDB')
@@ -137,9 +143,12 @@
 					or (DBTYPE=='INFORMIX' and USE_EXISTING_CONNECTION=='TRUE') or (DBTYPE=='INGRES' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true') or  (CONNECTION_TYPE == 'ORACLE_OCI')
 				    or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC') or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')
-				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')">
+				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
+				    or (DBTYPE=='EXASOL')
+				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
+	
 	 <PARAMETER
       NAME="LOCAL_SERVICE_NAME"
       FIELD="TEXT"
@@ -169,7 +178,9 @@
 					or (DBTYPE=='INFORMIX' and USE_EXISTING_CONNECTION=='TRUE') or (DBTYPE=='INGRES' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='INTERBASE' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true') or (CONNECTION_TYPE == 'ORACLE_WALLET')
-					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="80"
@@ -182,7 +193,9 @@
 					or (DBTYPE=='INFORMIX' and USE_EXISTING_CONNECTION=='TRUE') or (DBTYPE=='INGRES' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='INTERBASE' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true') or (CONNECTION_TYPE == 'ORACLE_WALLET')
-					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 
@@ -200,7 +213,9 @@
 	  				or (DBTYPE=='DB2' and USE_EXISTING_CONNECTION=='TRUE') or (DBTYPE=='INFORMIX' and USE_EXISTING_CONNECTION=='TRUE')
 	  				or (DBTYPE=='INGRES' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true')
 					or  (CONNECTION_TYPE == 'ORACLE_OCI') or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC')
-					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -209,7 +224,9 @@
       FIELD="TEXT"
       NUM_ROW="70"
       REPOSITORY_VALUE="SCHEMA"
-      SHOW_IF="(DBTYPE=='DBORACLE' or DBTYPE=='POSTGRE' or DBTYPE=='POSTGREPLUS' or DBTYPE=='INFORMIX' or DBTYPE=='DB2' or DBTYPE=='GREENPLUM' or DBTYPE=='VERTICA' or DBTYPE=='MSSQL' or DBTYPE=='SYBASE') and (USE_EXISTING_CONNECTION == 'false')"
+      SHOW_IF="(DBTYPE=='DBORACLE' or DBTYPE=='POSTGRE' or DBTYPE=='POSTGREPLUS' or DBTYPE=='INFORMIX' or DBTYPE=='DB2' or DBTYPE=='GREENPLUM' or DBTYPE=='VERTICA' or DBTYPE=='MSSQL' or DBTYPE=='SYBASE' 
+      				or DBTYPE=='EXASOL' or DBTYPE=='REDSHIFT') 
+      			and (USE_EXISTING_CONNECTION == 'false')"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -557,6 +574,7 @@
       NUM_ROW="30"
       SHOW_IF="(DBTYPE=='SQLITE') and (USE_EXISTING_CONNECTION == 'true')"
     />
+    
 	<PARAMETER NAME="DBFILE_SQLITE" FIELD="FILE" NUM_ROW="40"
 		REPOSITORY_VALUE="FILE" REQUIRED="true" SHOW_IF="(DBTYPE=='SQLITE') and (USE_EXISTING_CONNECTION == 'false')">
 		<DEFAULT>"__COMP_DEFAULT_FILE_DIR__/talend.db"</DEFAULT>
@@ -631,6 +649,7 @@
 			<ITEM NAME="VERTICA_6_0" VALUE="VERTICA_6_0" />
 			<ITEM NAME="VERTICA_6_1_X" VALUE="VERTICA_6_1_X" />
 			<ITEM NAME="VERTICA_7_0_X" VALUE="VERTICA_7_0_X" />
+			<ITEM NAME="VERTICA_7_1_X" VALUE="VERTICA_7_1_X" />
 		</ITEMS>
 	</PARAMETER>
 	<PARAMETER
@@ -642,6 +661,29 @@
       SHOW_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'true')"
     />
 	<!--Vertica configuration end-->
+	
+	
+	<!-- Exasol configuration start -->
+	<PARAMETER
+      NAME="CONNECTION_EXASOL"
+      FIELD="COMPONENT_LIST"
+      FILTER="tEXAConnection"
+	  REQUIRED="true"
+      NUM_ROW="30"
+      SHOW_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'true')"
+    />
+	<!-- Exasol configuration end --> 
+	
+	<!-- Redshift configuration start -->
+	<PARAMETER
+      NAME="CONNECTION_REDSHIFT"
+      FIELD="COMPONENT_LIST"
+      FILTER="tRedshiftConnection"
+	  REQUIRED="true"
+      NUM_ROW="30"
+      SHOW_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'true')"
+    />
+	<!-- Redshift configuration end -->
 
     <PARAMETER
       NAME="TABLE"
@@ -687,6 +729,8 @@
       <DEFAULT IF="DBTYPE=='ODBC'">MSODBC</DEFAULT>
       <DEFAULT IF="DBTYPE=='GREENPLUM'">greenplum_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='VERTICA'">vertica_id</DEFAULT>
+      <DEFAULT IF="DBTYPE=='EXASOL'">Exasol_id</DEFAULT>
+      <DEFAULT IF="DBTYPE=='REDSHIFT'">redshift_id</DEFAULT>
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
 
@@ -764,15 +808,21 @@
 		<IMPORT NAME="Driver-Teradata_jdbc" MODULE="terajdbc4-15.10.00.14.jar" MVN="mvn:org.talend.libraries/terajdbc4-15.10.00.14/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Teradata_config" MODULE="tdgssconfig-15.10.00.14.jar" MVN="mvn:org.talend.libraries/tdgssconfig-15.10.00.14/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Netezza" MODULE="nzjdbc.jar" MVN="mvn:org.talend.libraries/nzjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='NETEZZA')" />
-		<IMPORT NAME="Driver-VERTICA" MODULE="vertica_3.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.0_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_3')" />
-		<IMPORT NAME="Driver-VERTICA_3.5" MODULE="vertica_3.5_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.5_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_3.5')" />
-		<IMPORT NAME="Driver-VERTICA_4" MODULE="vertica_4.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.0_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_4')" />
-		<IMPORT NAME="Driver-VERTICA_4.1" MODULE="vertica_4.1.7_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.7_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_4.1')" />
+		
+		<IMPORT NAME="Driver-VERTICA" MODULE="vertica_3.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.0_jdk_5/6.0.0"   			REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_3')" />
+		<IMPORT NAME="Driver-VERTICA_3.5" MODULE="vertica_3.5_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.5_jdk_5/6.0.0"   		REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_3.5')" />
+		<IMPORT NAME="Driver-VERTICA_4" MODULE="vertica_4.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.0_jdk_5/6.0.0"   		REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_4')" />
+		<IMPORT NAME="Driver-VERTICA_4.1" MODULE="vertica_4.1.7_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.7_jdk_5/6.0.0"   	REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_4.1')" />
 		<IMPORT NAME="Driver-VERTICA_5.0" MODULE="vertica_4.1.14_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.14_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_5.0')" />
-        <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_5_1')" />
+        <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   	REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_5_1')" />
 		<IMPORT NAME="Driver-VERTICA_6.0" MODULE="vertica-jdk5-6.0.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.0.2-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_6_0')" />
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_0_X')" />
+  		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0" REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_7_1_X')" />
+  		
+  		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
+     
+        <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.1.1001.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.1.1001/6.0.0"  REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
    </CODEGENERATION>
 

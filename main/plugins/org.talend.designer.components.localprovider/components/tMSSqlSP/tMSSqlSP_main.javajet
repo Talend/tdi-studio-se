@@ -231,9 +231,12 @@ if (canGenerate) {
 	        }
             <%
 		}else{
-%>statement_<%=cid%>.execute();
-
-<%
+		%>
+			statement_<%=cid%>.execute();
+			while(statement_<%=cid%>.getMoreResults() || (statement_<%=cid%>.getUpdateCount() != -1)){
+				//Do nothing. "getMoreResults()" would call method do error check.
+			}
+		<%
 		}
 		
 		List<? extends IConnection> outConnections = node.getOutgoingConnections();

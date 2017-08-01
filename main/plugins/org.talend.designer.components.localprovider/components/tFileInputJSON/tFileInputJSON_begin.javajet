@@ -31,7 +31,7 @@ boolean advancedSeparator = (advancedSeparatorStr!=null&&!("").equals(advancedSe
 String thousandsSeparator = ElementParameterParser.getValueWithJavaType(node, "__THOUSANDS_SEPARATOR__", JavaTypesManager.CHARACTER);
 String decimalSeparator = ElementParameterParser.getValueWithJavaType(node, "__DECIMAL_SEPARATOR__", JavaTypesManager.CHARACTER);
 
-String filename = ElementParameterParser.getValue(node, "__FILENAME__");
+String filenameOrStream = ElementParameterParser.getValue(node, "__FILENAME__");
 String useUrl = ElementParameterParser.getValue(node, "__USEURL__");
 boolean isUseUrl = "true".equals(useUrl);
 String urlpath = ElementParameterParser.getValue(node, "__URLPATH__");

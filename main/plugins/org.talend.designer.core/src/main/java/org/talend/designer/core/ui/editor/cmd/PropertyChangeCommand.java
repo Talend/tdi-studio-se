@@ -48,7 +48,6 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.designer.core.IDbMapDesignerService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
-import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.components.Expression;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
@@ -222,10 +221,6 @@ public class PropertyChangeCommand extends Command {
             return;
         }
 
-        if (currentParam instanceof ElementParameter) {
-            ((ElementParameter) currentParam).setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
-        }
-
         if (currentParam.isRepositoryValueUsed()) {
             if (currentParam.getFieldType() == EParameterFieldType.MEMO_SQL) {
                 Object queryStoreValue = elem.getPropertyValue(EParameterName.QUERYSTORE_TYPE.getName());
@@ -296,6 +291,10 @@ public class PropertyChangeCommand extends Command {
             }
             List<? extends IConnection> connections = ((Node) elem).getOutgoingConnections();
             for (IConnection connection : connections) {
+                if (!connection.getName().equals(oldELTValue)) {
+                    //do nothing when custom connection name.
+                    continue;
+                }
                 INode targetNode = connection.getTarget();
                 String componentName = targetNode.getComponent().getName();
                 if (componentName.matches("tELT.+Map")) { //$NON-NLS-1$
@@ -649,7 +648,6 @@ public class PropertyChangeCommand extends Command {
             return;
         }
         boolean contains = false;
-
         // zli
         for (IElementParameterDefaultValue value : testedParam.getDefaultValues()) {
             if (value.getIfCondition() != null) {
@@ -695,6 +693,7 @@ public class PropertyChangeCommand extends Command {
                         if (isValid) {
                             int index = ArrayUtils.indexOf(testedParam.getListItemsShowIf(), condition);
                             testedParam.setValue(testedParam.getListItemsValue()[index]);
+                            isCurrentComboValid = true;
                             break;
                         }
                     }

@@ -133,6 +133,8 @@ if(tableNameWithSchema){
     if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
     	tableName_<%=cid%> = dbschema_<%=cid%> + "\".\"" + tableName_<%=cid%>;
     }
+
+    schemaForSearch_<%=cid %> = dbschema_<%=cid%>;
 <%
 }
 %>

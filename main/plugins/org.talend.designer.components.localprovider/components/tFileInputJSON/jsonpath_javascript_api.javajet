@@ -151,23 +151,49 @@ if (jsEngine_<%=cid%> == null) {
     if(jsonpathjsUrl_<%=cid%>!=null) {
 		jsEngine_<%=cid%>.eval(new java.io.BufferedReader(new java.io.InputStreamReader(jsonpathjsUrl_<%=cid%>.openStream())));
 	}
+	    Object filenameOrStream_<%=cid %> = null;
+        try {
+            filenameOrStream_<%=cid %> = <%=filenameOrStream %>;
+        } catch(java.lang.Exception e_<%=cid%>) {
+<%
+			if (dieOnError) {
+%>
+            	throw(e_<%=cid%>);
+<%			
+			}else{
+%>
+				<%if(isLog4jEnabled){%>
+					log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+				<%}%>
+	            System.err.println(e_<%=cid%>.getMessage());
+<%
+			}
+%>
+        }
 
 <%if(!isUseUrl){//read from a file%>
 	java.io.BufferedReader fr_<%=cid%> = null;
+		try{
+	        if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+	            fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>));
+	        }else{
+	            fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream((String)filenameOrStream_<%=cid %>),<%=encoding %>));
+	        }
 <%}else{ //read from internet%>
 	java.io.InputStreamReader fr_<%=cid %> = null;
+		try{
+	        if(filenameOrStream_<%=cid %> instanceof java.io.InputStream){
+	            fr_<%=cid%> = new java.io.InputStreamReader((java.io.InputStream)filenameOrStream_<%=cid %>,<%=encoding%>);
+	        }else{
+	        java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
+		               java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
+		               fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
+	        }
 <%}%>
-	try{
-	<%if(!isUseUrl){//read from a file%>
-		fr_<%=cid%> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(<%=filename %>),<%=encoding %>));
-	<%}else{ //read from internet%>
-		java.net.URL url_<%=cid %> = new java.net.URL(<%=urlpath %>);
-		java.net.URLConnection urlConn_<%=cid %> = url_<%=cid %>.openConnection();
-		fr_<%=cid %> = new java.io.InputStreamReader(urlConn_<%=cid %>.getInputStream(),<%=encoding %>);
-	<%}%>
+	       
 		jsonText_<%=cid%> = org.json.simple.JSONValue.parse(fr_<%=cid%>);
 		if(jsonText_<%=cid%> == null) {
-			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filename %> <%} else {%> <%=urlpath %> <%}%>);
+			throw new RuntimeException("fail to parse the json file : " + <%if(!isUseUrl) {%> <%=filenameOrStream %> <%} else {%> <%=urlpath %> <%}%>);
 		}
 	} catch(java.lang.Exception e_<%=cid%>) {
 	<%if (dieOnError) {%>

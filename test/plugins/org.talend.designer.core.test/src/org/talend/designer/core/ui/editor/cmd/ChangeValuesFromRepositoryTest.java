@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +54,7 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.repository.model.IProxyRepositoryFactory;
+
 import orgomg.cwm.resource.record.RecordFactory;
 import orgomg.cwm.resource.record.RecordFile;
 
@@ -89,7 +91,7 @@ public class ChangeValuesFromRepositoryTest {
      *
      * @throws java.lang.Exception
      */
-    @Before
+     @Before
     public void setUp() throws Exception {
         Property property = PropertiesFactory.eINSTANCE.createProperty();
         IProcess2 process = new Process(property);
@@ -186,8 +188,9 @@ public class ChangeValuesFromRepositoryTest {
         assertEquals(elem.getPropertyValue("HOST"), TalendTextUtils.addQuotes(dbConn.getServerName()));
         assertEquals(elem.getPropertyValue("PORT"), TalendTextUtils.addQuotes(dbConn.getPort()));
         assertEquals(elem.getPropertyValue("DBNAME"), TalendTextUtils.addQuotes(dbConn.getDatasourceName()));
-
     }
+
+
 
     /**
      * Test method for {@link org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository#undo()}.

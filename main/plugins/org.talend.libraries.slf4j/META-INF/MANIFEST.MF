@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Slf4j
 Bundle-SymbolicName: org.talend.libraries.slf4j
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Eclipse-BundleShape: dir

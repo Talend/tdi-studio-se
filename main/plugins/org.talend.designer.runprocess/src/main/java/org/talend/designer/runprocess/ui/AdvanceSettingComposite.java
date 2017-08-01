@@ -83,6 +83,7 @@ public class AdvanceSettingComposite extends ScrolledComposite implements IDynam
     public AdvanceSettingComposite(Composite parent, int style) {
         super(parent, style);
         // TODO Auto-generated constructor stub
+        this.setMinSize(500, 450);
         setExpandHorizontal(true);
         setExpandVertical(true);
         this.setLayout(new FormLayout());

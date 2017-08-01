@@ -126,8 +126,11 @@ public class UpdateJobletNodeCommand extends Command {
                                         reloadNode(currentNode, newComponent);
                                     }
                                     if (currentNode.getNodeContainer() instanceof AbstractJobletContainer) {
-                                        for(IElementParameter para : tempList){
-                                            currentNode.getElementParameter(para.getName()).setValue(para.getValue());
+                                        for(IElementParameter tempParam : tempList) {
+                                            IElementParameter param = currentNode.getElementParameter(tempParam.getName());
+                                            if (param != null) {
+                                                param.setValue(tempParam.getValue());
+                                            }
                                         }
                                         ((AbstractJobletContainer) currentNode.getNodeContainer()).updateJobletNodes(true);
                                     }
@@ -327,12 +330,14 @@ public class UpdateJobletNodeCommand extends Command {
                         IConnection connection = incomingConnections.get(i);
                         Node source = (Node) connection.getSource();
                         IMetadataTable metadataTable = connection.getMetadataTable();
-                        IMetadataTable newInputMetadataTable = UpdateManagerUtils.getNewInputTableForConnection(
-                                newInputTableList, metadataTable.getAttachedConnector());
-                        if (newInputMetadataTable != null && !metadataTable.sameMetadataAs(newInputMetadataTable)) {
-                            IElementParameter elementParam = source.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
-                            command = new ChangeMetadataCommand(source, elementParam, metadataTable, newInputMetadataTable);
-                            command.execute(Boolean.FALSE);
+                        if (metadataTable != null) {
+                            IMetadataTable newInputMetadataTable = UpdateManagerUtils.getNewInputTableForConnection(
+                                    newInputTableList, metadataTable.getAttachedConnector());
+                            if (newInputMetadataTable != null && !metadataTable.sameMetadataAs(newInputMetadataTable)) {
+                                IElementParameter elementParam = source.getElementParameterFromField(EParameterFieldType.SCHEMA_TYPE);
+                                command = new ChangeMetadataCommand(source, elementParam, metadataTable, newInputMetadataTable);
+                                command.execute(Boolean.FALSE);
+                            }
                         }
                     }
                 } else {

@@ -24,7 +24,7 @@
 	String action = ElementParameterParser.getValue(node, "__ACTION__");
 	String version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 	String zone = ElementParameterParser.getValue(node, "__ZONE__");
-			
+	
 	String masterNumInstances = ElementParameterParser.getValue(node, "__MASTER_NUM_INSTANCES__");
 	String masterInstanceType = ElementParameterParser.getValue(node, "__MASTER_INSTANCE_TYPE__");
 	String workerNumInstances = ElementParameterParser.getValue(node, "__WORKER_NUM_INSTANCES__");
@@ -46,16 +46,24 @@
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
 	List<Map<String, String>> initializationActions = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__INITIALIZATION_ACTIONS__");
+	List<Map<String, String>> tags = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__TAGS__");
 %>
 
 <%
 	if("START".equals(action)) {
 %>
 		java.util.List<org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.InitializationActionHolder> <%=cid%>_initializationActions = new java.util.ArrayList<>();
+		java.util.List<String> <%=cid%>_tags = new java.util.ArrayList<>();
 <%
 	   for (Map<String, String> initializationAction : initializationActions) {
 %>
 			<%=cid%>_initializationActions.add(new org.talend.bigdata.manage.google.dataproc.DataprocCreateCluster.InitializationActionHolder(<%=initializationAction.get("EXECUTABLE_FILE")%>, <%=initializationAction.get("EXECUTABLE_TIMEOUT")%>));
+<%
+		}
+		
+		for (Map<String, String> tag : tags) {
+%>
+			<%=cid%>_tags.add(<%=tag.get("TAG")%>);
 <%
 		}
 %>
@@ -93,6 +101,7 @@
 			}
 %>
          .withInitializationActions(<%=cid%>_initializationActions) //
+         .withTags(<%=cid%>_tags) //
          .build() //
          .run();
 <%

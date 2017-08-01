@@ -28,13 +28,23 @@ public class ItemVersionObject {
     private String oldVersion;
 
     private String newVersion;
+    
+    private boolean useSnapshotOld;
 
+    private boolean useSnapshotNew;
+    
     public ItemVersionObject(Property property, RepositoryNode repositoryNode, String oldVersion) {
+        this(property, repositoryNode, oldVersion, false);
+    }
+
+    public ItemVersionObject(Property property, RepositoryNode repositoryNode, String oldVersion, boolean useSnapshotOld) {
         super();
         this.repositoryNode = repositoryNode;
         this.property = property;
         this.oldVersion = oldVersion;
         this.newVersion = oldVersion; // init
+        this.useSnapshotOld = useSnapshotOld;
+        this.useSnapshotNew = useSnapshotOld;
     }
 
     public String getNewVersion() {
@@ -55,6 +65,27 @@ public class ItemVersionObject {
 
     public String getOldVersion() {
         return this.oldVersion;
+    }
+    
+    /**
+     * @return the useSnapshotNew
+     */
+    public boolean isUseSnapshotNew() {
+        return useSnapshotNew;
+    }
+    
+    /**
+     * @param useSnapshotNew the useSnapshotNew to set
+     */
+    public void setUseSnapshotNew(boolean useSnapshotNew) {
+        this.useSnapshotNew = useSnapshotNew;
+    }
+
+    /**
+     * @return the useSnapshotOld
+     */
+    public boolean isUseSnapshotOld() {
+        return useSnapshotOld;
     }
 
     @SuppressWarnings("restriction")

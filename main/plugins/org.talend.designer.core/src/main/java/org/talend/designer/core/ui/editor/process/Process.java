@@ -87,6 +87,7 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataSchemaType;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
@@ -97,6 +98,7 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
@@ -121,6 +123,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.service.IScdComponentService;
 import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.ILastVersionChecker;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -174,6 +177,7 @@ import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
+import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -1299,7 +1303,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
                         param = elemParam.getElementParameter(pType.getName());
                         if (param != null) {
-                            if ((param.isReadOnly() && !isJunitLoad)
+                            if ((param.isReadOnly() && !isJunitLoad && noNeedSetValue(param, pType.getValue()))
                                     && !(param.getName().equals(EParameterName.UNIQUE_NAME.getName()) || param.getName().equals(
                                             EParameterName.VERSION.getName()))) {
                                 continue;
@@ -1337,12 +1341,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         tempParaName = pType.getName();
                     }
                     if (param != null) {
-                        if ((param.isReadOnly() && !isJunitLoad)
+                        String paraValue = pType.getValue();
+                        if ((param.isReadOnly() && !isJunitLoad && noNeedSetValue(param, paraValue))
                                 && !(param.getName().equals(EParameterName.UNIQUE_NAME.getName()) || param.getName().equals(
                                         EParameterName.VERSION.getName()))) {
                             continue;
                         }
-                        String paraValue = pType.getValue();
                         if (pType.getName().equals(EParameterName.LABEL.getName()) && tempLabel != null) {
                             if (tempParaName != null && pType.getValue().equals(DesignerUtilities.getParameterVar(tempParaName))) {
                                 paraValue = tempLabel;
@@ -1353,6 +1357,23 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 }
             }
         }
+
+        for (IElementParameter param : elemParam.getElementParameters()) {
+            UpdateParameterUtils.setDefaultValues(param, elemParam);
+        }
+
+    }
+    
+    protected boolean noNeedSetValue(IElementParameter param, String paraValue){
+        if(paraValue == null){
+            return true;
+        }
+        for(IElementParameterDefaultValue defaultValue : param.getDefaultValues()){
+            if(defaultValue.getDefaultValue() != null &&  defaultValue.getDefaultValue().equals(paraValue)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void loadElementParameters(Element elemParam, ElementParameterType pType, IElementParameter param, String key,
@@ -2539,7 +2560,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             if (!listNames.contains(metadataTable.getTableName())) {
                 listNames.add(metadataTable.getTableName());
                 listMetaData.add(metadataTable);
-                if (nc.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
+                if (nc.getConnectorFromType(EConnectionType.FLOW_MAIN) != null
+                        && nc.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
                         && checkValidConnectionName(metadataTable.getTableName())) {
                     addUniqueConnectionName(metadataTable.getTableName());
                     // for tmap 11884
@@ -2565,6 +2587,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         properties.put("isinput", "true"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
+            }
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IScdComponentService.class)) {
+                IScdComponentService service = (IScdComponentService) GlobalServiceRegister.getDefault().getService(
+                        IScdComponentService.class);
+                service.updateOutputMetadata(nc, metadataTable);
             }
         }
         List<IMetadataTable> oldComponentMetadataList = new ArrayList<IMetadataTable>(nc.getMetadataList());
@@ -3557,9 +3584,26 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         generatingNodes = (List<INode>) getGeneratingNodes();
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
 
+        generatingNodes = getRealGraphicalNodesFromVirtrualNodes(generatingNodes);
+        getMatchingNodes(componentName, matchingNodes, generatingNodes);
+
         generatingNodes = (List<INode>) getGraphicalNodes();
         getMatchingNodes(componentName, matchingNodes, generatingNodes);
+
         return matchingNodes;
+    }
+
+    private List<INode> getRealGraphicalNodesFromVirtrualNodes(List<INode> generatingNodes) {
+        Set<INode> set = new HashSet<INode>();
+        if (generatingNodes != null) {
+            for (INode node : generatingNodes) {
+                if (node.isVirtualGenerateNode() && node instanceof AbstractNode
+                        && ((AbstractNode) node).getRealGraphicalNode() != null) {
+                    set.add(((AbstractNode) node).getRealGraphicalNode());
+                }
+            }
+        }
+        return new ArrayList<INode>(set);
     }
 
     private void getMatchingNodes(String componentName, List<INode> matchingNodes, List<INode> generatingNodes) {

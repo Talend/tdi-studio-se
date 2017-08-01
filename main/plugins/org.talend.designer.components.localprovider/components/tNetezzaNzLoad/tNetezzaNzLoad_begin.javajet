@@ -369,6 +369,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	}
 %>
 	final StringBuilder nzloadOutput_<%=cid%> = new StringBuilder(200);
+	final java.util.concurrent.atomic.AtomicInteger nb_line_<%=cid%> = new java.util.concurrent.atomic.AtomicInteger();
 	//final 
 	
     <%
@@ -383,6 +384,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 	Thread nzloadThread_<%=cid%> = new Thread() {
 		public void run() {
+<%
+			//even if user doesn't specify it - nzload.exe will write to default path log file
+			boolean isLogFilePathSpecified = parametersList.contains("\"-lf\"");
+%>
 			try {
 				String[] envp = null;
 				String[] cmds = new String[] {<%=nzloadExePath%> <%
@@ -402,7 +407,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				Runtime rt = Runtime.getRuntime();
 				final Process ps = rt.exec(cmds, envp);
 				
-
+				ps.waitFor();
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
 				// fixed no showing of error messages
 				java.io.BufferedReader errReader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
@@ -410,23 +415,84 @@ skeleton="../templates/db_output_bulk.skeleton"
 				String line = "";
 				String errLine = "";
 				while ((line = reader.readLine()) != null) {
-					if((errLine = errReader.readLine()) != null) {
-						nzloadOutput_<%=cid%>.append(errLine);
-						<% if (true) { %>
-								System.out.println(errLine);
-						<% } %>
-					}
 					nzloadOutput_<%=cid%>.append(line);
-					<% if (true) { %>
-					System.out.println(line);
-					<% } %>
+<%
+					if (isLog4jEnabled) {
+%>
+						log.info(line);
+<%
+					} else {
+%>
+						System.out.println(line);
+<%
+					}
+%>
 				}
+				while((errLine = errReader.readLine()) != null) {
+					nzloadOutput_<%=cid%>.append(errLine);
+<%
+					if (isLog4jEnabled) {
+%>
+						log.error(errLine);
+<%
+					} else {
+%>
+						System.err.println(errLine);
+<%
+					}
+%>
+				}
+<%
+				String actualLogFilePath;
+				if (isLogFilePathSpecified) {
+					actualLogFilePath = parametersList.get(parametersList.indexOf("\"-lf\"") + 1);
+				} else {
+					actualLogFilePath = new StringBuilder("\"")
+										.append(dbtable.toUpperCase().replaceAll("\"", ""))
+										.append(".")
+										.append(dbuser.toUpperCase().replaceAll("\"", ""))
+										.append(".")
+										.append(dbname.toUpperCase().replaceAll("\"", ""))
+										.append(".nzlog\"").toString();
+				}
+%>
+				nb_line_<%=cid%>.set(getProcessedRowsCount(<%=actualLogFilePath%>));
+
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_NZLOAD_ERROR",e.getMessage());
 				throw new RuntimeException(e.getMessage(),e.getCause());
 			}
 		}
+		private int getProcessedRowsCount(String pathToLogFile) {
+			int processedRowsCount = 0;
+			try (org.apache.commons.io.input.ReversedLinesFileReader reversedLinesFileReader_<%=cid%> = new org.apache.commons.io.input.ReversedLinesFileReader(new java.io.File(pathToLogFile))) {
+				String logLine = null;
+				while(null != (logLine = reversedLinesFileReader_<%=cid%>.readLine())) {
+					if (logLine.contains("  number of records read:")) {
+						processedRowsCount = Integer.parseInt(logLine.split(":")[1].trim());
+						break;
+					}
+				}
+			}
+			catch(IOException e) {
+<%
+				String warningMessage = "Can't get NB_LINE value from log file";
+				if (isLog4jEnabled) {
+%>
+					log.warn("<%=warningMessage%>");
+<%
+				} else {
+%>
+					System.err.println("<%=warningMessage%>");
+<%
+				}
+%>
+				return 0;
+			}
+			return processedRowsCount;
+		}
+		
 	};
 	
 <%
@@ -467,6 +533,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		<%}%>
 		nzloadThread_<%=cid%>.start();
 		nzloadThread_<%=cid%>.join(0);
+		globalMap.put("<%=cid%>_NB_LINE", nb_line_<%=cid%>.get());
 		globalMap.put("<%=cid%>_NZLOAD_OUTPUT", nzloadOutput_<%=cid%>.toString());
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Execute '"+command_<%=cid %>.toString()+"' has finished.");

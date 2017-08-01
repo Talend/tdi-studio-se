@@ -14,9 +14,7 @@ package org.talend.designer.mapper.ui.visualmap.table;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -27,6 +25,8 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.CellEditorValueAdapter;
+import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.ExtendedComboBoxCellEditor;
+import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.ExtendedSimpleTextCellEditor;
 import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.ExtendedTextCellEditor;
 import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.runtime.swt.tableviewer.selection.ILineSelectionListener;
@@ -131,6 +131,10 @@ public class VarsDataMapTableView extends DataMapTableView {
 
     private ExtendedTextCellEditor expressionCellEditor;
 
+    private ExtendedComboBoxCellEditor comboBoxCellEditor;
+
+    private ExtendedSimpleTextCellEditor textCellEditor;
+
     /*
      * (non-Javadoc)
      * 
@@ -139,6 +143,8 @@ public class VarsDataMapTableView extends DataMapTableView {
     @Override
     public void notifyFocusLost() {
         expressionCellEditor.focusLost();
+        comboBoxCellEditor.focusLost();
+        textCellEditor.focusLost();
     }
 
     @Override
@@ -216,10 +222,10 @@ public class VarsDataMapTableView extends DataMapTableView {
                 }
 
             });
+            comboBoxCellEditor = new ExtendedComboBoxCellEditor(tableViewerCreatorForColumns.getTable(), arrayTalendTypes);
             column.setModifiable(!mapperManager.componentIsReadOnly());
             column.setWeight(18);
-            column.setCellEditor(new ComboBoxCellEditor(tableViewerCreatorForColumns.getTable(), arrayTalendTypes),
-                    comboValueAdapter);
+            column.setCellEditor(comboBoxCellEditor, comboValueAdapter);
 
             column = new TableViewerCreatorColumn(tableViewerCreatorForColumns);
             column.setTitle("Nullable"); //$NON-NLS-1$
@@ -267,8 +273,8 @@ public class VarsDataMapTableView extends DataMapTableView {
         } else {
             column.setWeight(COLUMN_NAME_SIZE_WEIGHT);
         }
-        final TextCellEditor cellEditor = new TextCellEditor(tableViewerCreatorForColumns.getTable());
-        cellEditor.addListener(new DialogErrorForCellEditorListener(cellEditor, column) {
+        textCellEditor = new ExtendedSimpleTextCellEditor(tableViewerCreatorForColumns.getTable());
+        textCellEditor.addListener(new DialogErrorForCellEditorListener(textCellEditor, column) {
 
             @Override
             public void newValidValueTyped(int itemIndex, Object previousValue, Object newValue, CELL_EDITOR_STATE state) {
@@ -287,7 +293,7 @@ public class VarsDataMapTableView extends DataMapTableView {
             }
 
         });
-        column.setCellEditor(cellEditor);
+        column.setCellEditor(textCellEditor);
 
     }
 

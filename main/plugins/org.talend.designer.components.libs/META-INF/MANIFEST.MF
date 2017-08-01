@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Components Libs Plug-in
 Bundle-SymbolicName: org.talend.designer.components.libs
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Require-Bundle: org.eclipse.core.runtime
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: .Talend SA.

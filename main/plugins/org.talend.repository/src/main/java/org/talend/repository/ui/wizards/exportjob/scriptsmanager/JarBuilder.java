@@ -40,6 +40,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.utils.ZipFileUtils;
+import org.talend.utils.files.FileUtils;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -243,6 +244,9 @@ public class JarBuilder {
                     }
                 }
             }
+            // First we remove the signature files from the META-INF folder (see TBD-5163 for example)
+            FileUtils.deleteFiles(new File(tempFolderPath + "/META-INF"), name -> name.endsWith(".RSA") || name.endsWith(".SF")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            // Then we archive
             ZipFileUtils.zip(tempFolderPath, jarFile.getPath(), false);
         } else {
             JarOutputStream jarOut = null;
@@ -337,7 +341,7 @@ public class JarBuilder {
             JarEntry jarEntry = jarEntrys.nextElement();
             File f = new File(outFileName + File.separator + jarEntry.getName());
             makeSupDir(f.getAbsolutePath());
-            if (jarEntry.isDirectory() || jarEntry.getName().contains("MANIFEST.MF")) {
+            if (jarEntry.isDirectory() || jarEntry.getName().contains("MANIFEST.MF")) { //$NON-NLS-1$
                 continue;
             }
             writeFile(jarFile.getInputStream(jarEntry), f);
@@ -345,7 +349,7 @@ public class JarBuilder {
     }
 
     private static void makeSupDir(String outFileName) {
-        Pattern p = Pattern.compile("[/\\" + File.separator + "]");
+        Pattern p = Pattern.compile("[/\\" + File.separator + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         Matcher m = p.matcher(outFileName);
         while (m.find()) {
             int index = m.start();

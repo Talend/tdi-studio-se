@@ -509,9 +509,15 @@ public class UpdateNodeParameterCommand extends Command {
                     if (service != null && (service.isSinglePatternNode(node) || service.isMultiPatternNode(node))
                             && parameter != null && parameter instanceof IElementParameter) {
                         IElementParameter elementParameter = node.getElementParameter(((IElementParameter) parameter).getName());
+                        // for single pattern
                         if (elementParameter != null
                                 && !elementParameter.getValue().equals(((IElementParameter) parameter).getValue())) {
                             elementParameter.setValue(((IElementParameter) parameter).getValue());
+                        } else if ("SCHEMA_PATTERN_CHECK".equals(((IElementParameter) parameter).getName())) {// for
+                                                                                                              // multipattern
+                            if (elementParameter != null) {
+                                elementParameter.setValue(((IElementParameter) parameter).getValue());
+                            }
                         }
                         update = true;
                         Object regexValue = null;
@@ -1016,7 +1022,7 @@ public class UpdateNodeParameterCommand extends Command {
             if (conn.getLineStyle() == EConnectionType.FLOW_MAIN) {
                 IMetadataTable metadataTable = null;
                 for (IMetadataTable table : node.getMetadataList()) {
-                    if (table.getTableName() != null && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
+                    if (table.getTableName() != null && conn.getMetadataTable() != null && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
                         metadataTable = table;
                     }
                 }

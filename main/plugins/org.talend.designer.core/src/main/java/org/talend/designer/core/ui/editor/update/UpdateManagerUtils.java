@@ -259,7 +259,7 @@ public final class UpdateManagerUtils {
                     .getShell(), results, onlySimpleShow);
 
             if (checkDialog.open() == IDialogConstants.OK_ID) {
-                return doExecuteUpdates(results, updateAllJobs);
+                return doExecuteUpdates(checkDialog.getSelectedElements(), updateAllJobs);
             }
         } finally {
             results.clear();

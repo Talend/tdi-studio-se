@@ -43,6 +43,12 @@ public class OpenJobAction extends Action implements IWorkbenchWindowActionDeleg
     public void run() {
         List<ERepositoryObjectType> repObjectTypes = new ArrayList<ERepositoryObjectType>();
         repObjectTypes.add(ERepositoryObjectType.PROCESS);
+        if (ERepositoryObjectType.PROCESS_ROUTE != null) {
+            repObjectTypes.add(ERepositoryObjectType.PROCESS_ROUTE);
+        }
+        if (ERepositoryObjectType.PROCESS_ROUTELET != null) {
+            repObjectTypes.add(ERepositoryObjectType.PROCESS_ROUTELET);
+        }
         if (PluginChecker.isStormPluginLoader()) {
             repObjectTypes.add(ERepositoryObjectType.PROCESS_STORM);
         }

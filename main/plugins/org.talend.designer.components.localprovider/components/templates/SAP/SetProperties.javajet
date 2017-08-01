@@ -1,0 +1,43 @@
+<%@ jet
+%>
+
+	class PropertyUil_<%=cid%> {
+		
+        void validateAndSet(java.util.Properties p, String key, Object value) {
+        	if(value==null) {
+        		System.err.println("WARN : will ignore the property : " + key + " as setting the null value."); 
+        		return;
+        	}
+        	
+        	p.setProperty(key, String.valueOf(value));
+        }
+        
+	}
+	
+	PropertyUil_<%=cid%> pu_<%=cid%> = new PropertyUil_<%=cid%>();
+
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+	java.util.Properties properties_<%=cid%> = new java.util.Properties();
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_CLIENT, <%=client%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_USER, <%=userid%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_PASSWORD, decryptedPassword_<%=cid%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_LANGUAGE, <%=language%>);
+    
+    <%if("ApplicationServer".equals(serverType)){%>
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_APPLICATION_SERVER_HOST, <%=hostname%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, org.talend.sap.ISAPConnection.PROP_SYSTEM_NUMBER, <%=systemnumber%>);
+    <%}else{%>
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, "jco.client.mshost", <%=hostname%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, "jco.client.r3name", <%=systemId%>);
+    pu_<%=cid%>.validateAndSet(properties_<%=cid%>, "jco.client.group", <%=groupName%>);
+    <%}%>
+    
+	<%
+    if(sapProps!=null) {
+		for(Map<String, String> item : sapProps){
+		%>
+		pu_<%=cid%>.validateAndSet(properties_<%=cid%>, <%=item.get("PROPERTY") %> ,<%=item.get("VALUE") %>);
+		<% 
+		}
+    }
+	%>

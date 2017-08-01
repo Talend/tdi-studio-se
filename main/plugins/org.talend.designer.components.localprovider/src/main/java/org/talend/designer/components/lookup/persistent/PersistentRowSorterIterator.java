@@ -273,6 +273,9 @@ public abstract class PersistentRowSorterIterator<V extends IPersistableRow> imp
         // System.out.println("Writing ordered buffer in file...");
 
         File file = new File(buildFilePath());
+        
+        file.deleteOnExit();
+        
         count++;
         // ObjectOutputStream rw = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         ObjectOutputStream rw = new JBossObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));

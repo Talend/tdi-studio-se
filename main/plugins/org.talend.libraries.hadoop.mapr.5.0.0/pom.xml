@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.talend.studio</groupId>
     <artifactId>tdi-studio-se</artifactId>
-    <version>6.4.1-SNAPSHOT</version>
+    <version>6.5.0-SNAPSHOT</version>
     <relativePath>../../../</relativePath>
   </parent>
   <artifactId>org.talend.libraries.hadoop.mapr.5.0.0</artifactId>

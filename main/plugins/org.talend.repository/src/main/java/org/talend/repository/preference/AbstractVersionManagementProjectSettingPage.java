@@ -43,7 +43,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
 import org.talend.commons.exception.ExceptionHandler;
@@ -92,6 +91,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected Button removeBtn;
 
     protected Table itemTable;
+    
+    protected Button globalSnapshotCheckbox;
 
     protected Button fixedVersionButton;
 
@@ -108,6 +109,10 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     protected List<ItemVersionObject> versionObjects = new ArrayList<ItemVersionObject>();
 
     protected List<ItemVersionObject> checkedObjects = new ArrayList<ItemVersionObject>();
+    
+    private boolean countSubjobs;
+    
+    private List<ItemVersionObject> newAddedSubjobs = new ArrayList<ItemVersionObject>();
 
     protected ICheckStateListener checkStateListener = new ICheckStateListener() {
 
@@ -323,6 +328,8 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
     }
 
     protected void selectSubjob() {
+        countSubjobs = true;
+        newAddedSubjobs.clear();
         List<ItemVersionObject> jobList = new ArrayList<ItemVersionObject>();
 
         for (ItemVersionObject object : checkedObjects) {
@@ -344,6 +351,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                                     ItemVersionObject relat = obj2;
                                     if (!checkedObjects.contains(relat)) {
                                         checkedObjects.add(relat);
+                                        if (countSubjobs) {
+                                            newAddedSubjobs.add(relat);
+                                        }
                                         checkAllVerSionLatest(checkedObjects, relat);
                                     }
                                     break;
@@ -356,8 +366,15 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 }
             }
         }
-        refreshTableItems();
-        refreshCheckedTreeView();
+        countSubjobs = false;
+        if (!newAddedSubjobs.isEmpty()) {
+            for (ItemVersionObject subjob : newAddedSubjobs) {
+                subjob.setNewVersion(getNewVersionWithOption(subjob));
+            }
+            addItemElements(newAddedSubjobs);
+            checkButtonsState();
+            refreshCheckedTreeView();
+        }
     }
 
     protected void checkAllVerSionLatest(List<ItemVersionObject> tableList, ItemVersionObject object) {
@@ -373,6 +390,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                                 ItemVersionObject relat = obj2;
                                 if (!tableList.contains(relat)) {
                                     tableList.add(relat);
+                                    if (countSubjobs) {
+                                        newAddedSubjobs.add(relat);
+                                    }
                                     checkAllVerSionLatest(tableList, relat);
                                 }
                                 break;
@@ -490,26 +510,38 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
 
     @Override
     public boolean performOk() {
-        okPressed();
-        return super.performOk();
+        return okPressed();
     }
 
-    protected void okPressed() {
+    protected boolean okPressed() {
         if (treeViewer == null) {
-            return;
+            return true;
         }
         boolean modified = false;
         String newVersion = null;
         for (ItemVersionObject object : checkedObjects) {
             newVersion = getNewVersionWithOption(object);
             if (!newVersion.equals(object.getOldVersion())) {
-                isApplied = false;
                 modified = true;
+            }
+            if (!modified && globalSnapshotCheckbox != null) {
+                boolean useSnapshotNew;
+                if (eachVersionButton.getSelection()) {
+                    useSnapshotNew = object.isUseSnapshotNew();
+                } else {
+                    useSnapshotNew = globalSnapshotCheckbox.getSelection();
+                }
+                if(object.isUseSnapshotOld() != useSnapshotNew) {
+                    modified = true;
+                }
+            }
+            if (modified) {
+                isApplied = false;
                 break;
             }
         }
+        boolean confirm = true;
         if (modified) {
-            boolean confirm = false;
             if (fixedVersionButton.getSelection()) {
                 confirm = MessageDialog.openConfirm(getShell(), Messages.getString("VersionManagementDialog.ConfirmTitle"), //$NON-NLS-1$
                         Messages.getString("VersionManagementDialog.confirmMessage", newVersion)); //$NON-NLS-1$
@@ -517,6 +549,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                     // set all items for new version
                     for (ItemVersionObject object : checkedObjects) {
                         object.setNewVersion(newVersion);
+                        if (globalSnapshotCheckbox != null) {
+                            object.setUseSnapshotNew(globalSnapshotCheckbox.getSelection());
+                        }
                     }
                 }
             } else {
@@ -524,6 +559,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                     for (ItemVersionObject object : checkedObjects) {
                         newVersion = getNewVersionWithOption(object);
                         object.setNewVersion(newVersion);
+                        if (globalSnapshotCheckbox != null) {
+                            object.setUseSnapshotNew(globalSnapshotCheckbox.getSelection());
+                        }
                     }
                 }
                 ItemsVersionConfirmDialog chanedDialog = new ItemsVersionConfirmDialog(getShell(), checkedObjects, useJobVersionButton != null);
@@ -539,6 +577,7 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                         Messages.getString("VersionManagementDialog.WarningMessages")); //$NON-NLS-1$
             }
         }
+        return confirm;
 
     }
 

@@ -44,7 +44,11 @@ imports="
 %>
 				stmt_<%=cid %> = conn_<%=cid%>.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY,
 																					java.sql.ResultSet.CONCUR_READ_ONLY);
-				((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+				if(stmt_<%=cid %> instanceof com.mysql.jdbc.Statement){
+				    ((com.mysql.jdbc.Statement)stmt_<%=cid %>).enableStreamingResults();
+				}else if(stmt_<%=cid %> instanceof com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper){
+				    ((com.mysql.jdbc.jdbc2.optional.JDBC4StatementWrapper)stmt_<%=cid %>).enableStreamingResults();
+				}
 <%
 			} 
             if(("true").equals(useCursor)) {

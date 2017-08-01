@@ -28,10 +28,11 @@ import org.talend.components.api.component.ComponentDefinition;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.repository.FakePropertyImpl;
-import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.NamedThing;
@@ -250,48 +251,53 @@ public class ComponentsUtilsTest {
     }
 
     @Test
-    public void testIsPropertyChangedByUser() {
-        TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
-
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
-        assertTrue(ComponentsUtils.isPropertyChangedByUser(props.userId));
-
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, false);
-        assertFalse(ComponentsUtils.isPropertyChangedByUser(props.userId));
-    }
-
-    @Test
     public void testGetParameterValue() {
         TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        props.userId.setValue("user"); //$NON-NLS-1$
+        Property<String> testProperty = props.userId;
+        testProperty.setValue("user"); //$NON-NLS-1$
+        String testParamName = testProperty.getName();
+        EParameterFieldType testFieldType = EParameterFieldType.TEXT;
         Form form = props.getForm(Form.MAIN);
         Element fakeElement = new FakeElement(form.getName());
         INode node = createSFTestNode();
 
         // If it is a fake element, do not add quotes.
-        Object parameterValue = ComponentsUtils.getParameterValue(fakeElement, props.userId, null);
+        Object parameterValue = ComponentsUtils.getParameterValue(fakeElement, testProperty, testFieldType, testParamName);
         assertEquals("user", parameterValue); //$NON-NLS-1$
 
         // If the property value is context mode, do not add quotes.
-        props.userId.setValue("context.user"); //$NON-NLS-1$
-        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        testProperty.setValue("context.user"); //$NON-NLS-1$
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("context.user", parameterValue); //$NON-NLS-1$
 
-        // If the property value is changed by user, do not add quotes.
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, true);
-        props.userId.setValue("user"); //$NON-NLS-1$
-        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
-        assertEquals("user", parameterValue); //$NON-NLS-1$
-
-        // Otherwise will add quotes.
-        props.userId.setTaggedValue(UpdatesConstants.CHANGED_BY_USER, false);
-        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        // If old parameter is null(parameter name is testParamName), will initialize and add quotes.
+        testProperty.setValue("user"); //$NON-NLS-1$
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("\"user\"", parameterValue); //$NON-NLS-1$
 
-        // If value is NULL, return "".
-        props.userId.setValue(null);
-        parameterValue = ComponentsUtils.getParameterValue(node, props.userId, null);
+        // If old parameter value is null, will initialize and add quotes.
+        IElementParameter testParam = new ElementParameter(node);
+        testParam.setName(testParamName);
+        testParam.setDisplayName(testParamName);
+        testParam.setFieldType(testFieldType);
+        ((List<IElementParameter>) node.getElementParameters()).add(testParam);
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals("\"user\"", parameterValue); //$NON-NLS-1$
+
+        // If old parameter value is not null but not equals to property value, will initialize and add quotes.
+        node.setPropertyValue(testParamName, "user1");
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals("\"user\"", parameterValue); //$NON-NLS-1$
+
+        // If old parameter value is not null and equals to property value, do not add quotes.
+        testProperty.setValue("user"); //$NON-NLS-1$
+        node.setPropertyValue(testParamName, "user");
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals("user", parameterValue); //$NON-NLS-1$
+
+        // If old parameter value is not null but property value is NULL, return "".
+        testProperty.setValue(null);
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("\"\"", parameterValue); //$NON-NLS-1$
     }
 

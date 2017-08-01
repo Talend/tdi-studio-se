@@ -45,6 +45,7 @@ import org.eclipse.jface.text.source.projection.ProjectionAnnotation;
 import org.eclipse.jface.text.source.projection.ProjectionSupport;
 import org.eclipse.jface.text.source.projection.ProjectionViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ST;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.DropTarget;
@@ -75,6 +76,7 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.preferences.HotKeyUtil;
 import org.talend.commons.utils.threading.ExecutionLimiter;
 import org.talend.core.model.process.INode;
+
 
 /**
  * DOC nrousseau class global comment. Detailled comment <br/>
@@ -401,20 +403,9 @@ public abstract class ReconcilerViewer extends ProjectionViewer {
         });
         getTextWidget().setMenu(popupMenu);
 
-        Listener selectAllListener = new Listener() {
-
-            @Override
-            public void handleEvent(Event event) {
-                if (event.character == '\u0001') { // CTRL + A
-                    getTextWidget().selectAll();
-                }
-            }
-        };
-
-        getTextWidget().addListener(SWT.KeyDown, selectAllListener);
-
+        getTextWidget().setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
     }
-
+    
     /**
      * Example: configure(new TalendPerlSourceViewerConfiguration(PerlEditorPlugin .getDefault().getPreferenceStore(),
      * this));.

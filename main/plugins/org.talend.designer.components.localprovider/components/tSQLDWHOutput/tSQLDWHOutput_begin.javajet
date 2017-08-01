@@ -182,9 +182,113 @@ if(("UPDATE").equals(dataAction) || ("INSERT_OR_UPDATE").equals(dataAction) || (
        <%
     }
 }
+
+
+// From "../templates/tMSSql/_tMSSqlConnection.javajet" ******start******
 %>
-	<%@ include file="../templates/tMSSql/_tMSSqlConnection.javajet"%>
+java.sql.Connection conn_<%=cid%> = null;
 <%
+boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+boolean isEnableDatasource = false;
+if(cid.indexOf("tMSSqlOutput")>-1 || cid.indexOf("tMSSqlSP")>-1 ){
+	isEnableDatasource = true;
+}
+%>
+String dbUser_<%=cid %> = null;
+<%
+if(useExistingConnection) {
+	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+	String conn = "conn_" + connection;
+	String schema = "dbschema_" + connection;
+	%>
+	dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
+	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
+	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
+<%
+} else {
+	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));   
+	String driver = ElementParameterParser.getValue(node, "__DRIVER__");
+	if(isEnableDatasource && specify_alias){
+		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
+		%>
+		java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
+		if (null != dataSources_<%=cid%>) {
+			String dsAlias_<%=cid%> = <%=(null != alias && !("".equals(alias)))?alias:"\"\""%>;
+    		if (dataSources_<%=cid%>.get(dsAlias_<%=cid%>) == null) {
+       			throw new RuntimeException("No DataSource with alias: " + dsAlias_<%=cid%> + " available!");
+          	}
+    		conn_<%=cid%> = dataSources_<%=cid%>.get(dsAlias_<%=cid%>).getConnection();
+		} else {
+	<%
+	}
+    %>
+    dbschema_<%=cid%> = <%=dbschema%>;
+    <%
+    if(driver.equals("JTDS")) {
+    %>
+    String driverClass_<%=cid%> = "net.sourceforge.jtds.jdbc.Driver";
+    <%
+    } else {
+    %>
+    String driverClass_<%=cid%> = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    <% 
+    }
+    %>
+	<%dbLog.conn().logJDBCDriver(dbLog.var("driverClass"));%>
+    java.lang.Class.forName(driverClass_<%=cid%>);
+    String port_<%=cid%> = <%=dbport%>;
+    String dbname_<%=cid%> = <%=dbname%> ;
+    <%
+    if(driver.equals("JTDS")) {
+    %>
+    String url_<%=cid %> = "jdbc:jtds:sqlserver://" + <%=dbhost%> ;
+    <%
+    } else {
+    %>
+    String url_<%=cid %> = "jdbc:sqlserver://" + <%=dbhost%> ;
+    <%
+    }
+    %> 
+    if (!"".equals(port_<%=cid%>)) {
+    	url_<%=cid %> += ":" + <%=dbport%>;
+    }
+    if (!"".equals(dbname_<%=cid%>)) {
+    <%
+			if(driver.equals("JTDS")) {
+	%>
+				url_<%=cid%> += "//" + <%=dbname%>; 
+	<%
+			} else {
+	%>		    
+		    	url_<%=cid%> += ";databaseName=" + <%=dbname%>; 
+	<%
+			}
+	%>
+    }
+    url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
+    dbUser_<%=cid %> = <%=dbuser%>;
+
+    <%
+    String passwordFieldName = "__PASS__";
+    %>
+
+    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+    String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
+    <%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>	
+    conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
+    <%dbLog.conn().connDone(dbLog.var("url"));%>
+	<%
+	if(isEnableDatasource && specify_alias){
+	%>
+		}
+	<%
+	}
+}
+
+
+// From "../templates/tMSSql/_tMSSqlConnection.javajet" ******end******
+
 if(!useExistingConnection) {
 	%>
 		resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);

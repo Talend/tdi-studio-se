@@ -254,13 +254,16 @@ public class DbInfo {
                     || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }
-        }else if(EDatabaseTypeName.SYBASEASE.getDisplayName().equals(dbType)){
-            if(EDatabaseVersion4Drivers.SYBASEIQ_16.getVersionValue().equals(dbVersion)){
+        } else if (EDatabaseTypeName.SYBASEASE.getDisplayName().equals(dbType)) {
+            if (EDatabaseVersion4Drivers.SYBASEIQ_16.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.SYBASEIQ_16.getDriverClass();
-            }else if(EDatabaseVersion4Drivers.SYBASEASE.getVersionValue().equals(dbVersion)){
+            } else if (EDatabaseVersion4Drivers.SYBASEASE.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.SYBASEIQ.getDriverClass();
             }
-        }else {
+        } else if (EDatabaseTypeName.MSSQL.getDisplayName().equals(dbType)
+                && EDatabaseVersion4Drivers.MSSQL_PROP.getVersionValue().equals(dbVersion)) {
+            driverClassName = EDatabase4DriverClassName.MSSQL2.getDriverClass();
+        } else {
             driverClassName = ExtractMetaDataUtils.getInstance().getDriverClassByDbType(dbType);
         }
     }

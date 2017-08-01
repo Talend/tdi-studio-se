@@ -66,9 +66,11 @@
                     		client_<%=cid%>.insertEntity(entity_<%=cid%>);
                     	<%
                     	}else if("update".equals(action)){
-                    	%>
-                 			client_<%=cid%>.updateEntity( entity_<%=cid%>, <%=connName%>.<%=idColumnName%>);
-                    	<%
+                    		if(idColumnName!=null){
+                    		%>
+                 				client_<%=cid%>.updateEntity( entity_<%=cid%>, <%=connName%>.<%=idColumnName%>);
+                    		<%
+                    		}
                     	} else if ("delete".equals(action)){
                     	%>
                     		client_<%=cid%>.deleteEntity(<%=connName%>.Id);

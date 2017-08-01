@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,18 +15,15 @@ package org.talend.designer.components.hashfile.common;
 public enum MATCHING_MODE {
     KEEP_ALL,
     KEEP_FIRST,
-    // because the "file model" can't support this case, so, we make "memory model" not support this case too.
     KEEP_LAST;
 
     public static MATCHING_MODE parse(String matchingMode) {
-        MATCHING_MODE multipleMatchingModeResult = null;
         MATCHING_MODE[] multipleMatchingModes = values();
         for (MATCHING_MODE multipleMatchingMode : multipleMatchingModes) {
             if (multipleMatchingMode.toString().equals(matchingMode)) {
-                multipleMatchingModeResult = multipleMatchingMode;
-                break;
+                return multipleMatchingMode;
             }
         }
-        return multipleMatchingModeResult;
+        return null;
     }
 }

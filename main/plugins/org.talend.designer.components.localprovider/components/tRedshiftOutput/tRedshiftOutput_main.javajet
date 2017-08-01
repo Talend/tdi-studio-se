@@ -1109,52 +1109,8 @@ skeleton="../templates/db_output_bulk.skeleton"
         if (useBatch) {
             %>
                 if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
-                    int[] status_<%=cid%> = null;
-                    int countSum_<%=cid%> = 0;
-                    try {
-                        batchSizeCounter_<%=cid%> = 0;
-                        <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
-                        status_<%=cid%> = pstmt_<%=cid %>.executeBatch();
-                        <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                        for(int countEach_<%=cid%>: status_<%=cid%>) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                        }
-                    }catch (java.sql.BatchUpdateException e){
-                        <%if(("true").equals(dieOnError)) {
-                        %>
-                            throw(e);
-                        <%
-                        }else {
-                        %>
-                        for(int countEach_<%=cid%>: e.getUpdateCounts()) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                        }
-                        <%dbLog.logPrintedException("e.getMessage()");%>
-                        System.err.println(e.getMessage());
-                        <%
-                        }%>
-                    }
-                    try {
-                        tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
-                    }catch (java.sql.SQLException e){
-                        <%dbLog.logPrintedException("e.getMessage()");%>
-                        System.err.println(e.getMessage());
-                    }
-                    tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
-                    <%if (("INSERT").equals(dataAction)) {
-                    %>
-                        insertedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
-                    <%
-                    }else if (("UPDATE").equals(dataAction)) {
-                    %>
-                        updatedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
-                    <%
-                    }else if (("DELETE").equals(dataAction)) {
-                    %>
-                        deletedCount_<%=cid%> += tmp_batchUpdateCount_<%=cid%>;
-                    <%
-                    }%>
-               }
+            		<%@ include file="./batchExecute.javajet"%>
+                }
             <%
             }
 
@@ -1166,25 +1122,19 @@ skeleton="../templates/db_output_bulk.skeleton"
                 commitCounter_<%=cid%>++;
 
                 if(commitEvery_<%=cid%><=commitCounter_<%=cid%>) {
-                    <%
-                      if(useBatch){
-                           %>
-                                if(batchSize_<%=cid%> > 0){
-                                      <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-                                      conn_<%=cid%>.commit();
-                                      <%dbLog.commit().commitDone(null);%>
-                                      commitCounter_<%=cid%>=0;
-                                }
-                           <%
-                      }else{
-                            %>
-                                <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
-                                   conn_<%=cid%>.commit();
-                                <%dbLog.commit().commitDone(null);%>
-                                   commitCounter_<%=cid%>=0;
-                            <%
-                      }
-                     %>
+                <%
+              	if(useBatch){//execute the batch before commit, if not that, the batch may not be executed at last and make the data lost
+                %>
+                    if((batchSize_<%=cid%> > 0) && (batchSizeCounter_<%=cid%> > 0)){
+                    	<%@ include file="./batchExecute.javajet"%>
+                    }
+                <%
+                }
+                %>
+                    <%dbLog.commit().commitTry(null, dbLog.var("commitCounter"));%>
+                    conn_<%=cid%>.commit();
+                    <%dbLog.commit().commitDone(null);%>
+                   	commitCounter_<%=cid%>=0;
                 }
             <%
             }

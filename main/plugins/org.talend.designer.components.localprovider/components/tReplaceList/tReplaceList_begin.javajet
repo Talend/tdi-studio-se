@@ -71,7 +71,9 @@ for (Object o : tMap_<%=lookup%>_<%=cid %>.keySet()) {
     
     <%=typeToGenerate_lookup%> search = tMap_<%=lookup%>_<%=cid %>.get(o).<%=lookupSearchName%>;
     <%=typeToGenerate_replacement%> replacement = tMap_<%=lookup%>_<%=cid %>.get(o).<%=lookupReplacementName%>;
-    replace_<%=cid%>.put(search,replacement);
+    if(search!=null&&!"".equals(search)){
+        replace_<%=cid%>.put(search,replacement);
+    }
 }
 
 <%

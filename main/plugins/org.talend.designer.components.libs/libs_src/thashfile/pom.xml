@@ -7,7 +7,7 @@
 
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>thashfile</artifactId>
-	<version>2.0-20170329</version>
+	<version>3.0-20170711</version>
 	<packaging>jar</packaging>
 
 	<name>thashfile</name>
@@ -33,23 +33,6 @@
 		</repository>
 	</distributionManagement>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-client</artifactId>
-			<version>${cxf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.3.1</version>
-		</dependency>
-	</dependencies>
 	<build>
 		<resources>	
 			<resource>
@@ -67,21 +50,6 @@
 		        </configuration>
     		</plugin>
 			
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>../../../org.talend.designer.components.localprovider/components/thashfile</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 </project>

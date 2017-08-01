@@ -778,6 +778,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
     public MultipleThreadDynamicComposite(Composite parentComposite, int styles, final EComponentCategory section,
             Element element, boolean isCompactView, Color backgroundColor) {
         super(parentComposite, styles);
+        this.setMinSize(700, 450);
         setCompactView(isCompactView);
         updataComponentParamName = EParameterName.UPDATE_COMPONENTS.getName();
         FormData d = new FormData();

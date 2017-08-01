@@ -42,6 +42,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IGenericElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess;
@@ -66,7 +67,7 @@ import org.talend.designer.core.ui.editor.nodes.Node;
  * created by ycbai on 2015年9月24日 Detailled comment
  *
  */
-public class GenericElementParameter extends ElementParameter {
+public class GenericElementParameter extends ElementParameter implements IGenericElementParameter {
 
     private ComponentProperties rootProperties;
 
@@ -129,8 +130,7 @@ public class GenericElementParameter extends ElementParameter {
     public void setValue(Object o) {
         super.setValue(o);
         if (!isFirstCall
-                || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE
-                        .equals(widget.getWidgetType()))) {
+                || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
             updateProperty(o);
             boolean calledValidate = callValidate();
             if (calledValidate) {
@@ -169,6 +169,7 @@ public class GenericElementParameter extends ElementParameter {
                     }
                 }
             }
+            se.setStoredValue(value);
             if (value != null && !value.equals(oldValue)) {
                 se = (Property<?>) getSubProperties().getProperty(se.getName());
                 if (isDrivedByForm()) {
@@ -194,9 +195,10 @@ public class GenericElementParameter extends ElementParameter {
     }
 
     private void fireValidateStatusEvent() {
-        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT && this.getFieldType() != EParameterFieldType.TABLE) {
-            this.pcs.firePropertyChange(IElementParameterEventProperties.EVENT_VALIDATE_RESULT_UPDATE, null, getSubProperties()
-                    .getValidationResult());
+        if (hasPropertyChangeListener() && this.getFieldType() != EParameterFieldType.TEXT
+                && this.getFieldType() != EParameterFieldType.TABLE) {
+            this.pcs.firePropertyChange(IElementParameterEventProperties.EVENT_VALIDATE_RESULT_UPDATE, null,
+                    getSubProperties().getValidationResult());
         }
     }
 
@@ -347,8 +349,7 @@ public class GenericElementParameter extends ElementParameter {
                                         if (!isSchemaPropagated(target)) {
                                             continue;
                                         }
-                                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(target, null, null,
-                                                newTable, null);
+                                        ChangeMetadataCommand cmd = new ChangeMetadataCommand(target, null, null, newTable, null);
                                         cmd.setPropagate(true);
                                         IProcess process = node.getProcess();
                                         if (process instanceof org.talend.designer.core.ui.editor.process.Process) {
@@ -500,7 +501,7 @@ public class GenericElementParameter extends ElementParameter {
 
     public ComponentProperties getRootProperties() {
         if (this.getElement() instanceof INode) {
-            return ((INode)this.getElement()).getComponentProperties();
+            return ((INode) this.getElement()).getComponentProperties();
         }
         return this.rootProperties;
     }
@@ -554,7 +555,9 @@ public class GenericElementParameter extends ElementParameter {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.talend.designer.core.model.components.ElementParameter#getRepositoryValue()
      */
     @Override
@@ -562,7 +565,7 @@ public class GenericElementParameter extends ElementParameter {
         if (isRepositoryValueUsed() && super.getRepositoryValue() == null) {
             Property property = getProperty();
             if (property != null) {
-                super.setRepositoryValue((String)property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
+                super.setRepositoryValue((String) property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
             }
         }
         return super.getRepositoryValue();
@@ -577,6 +580,7 @@ public class GenericElementParameter extends ElementParameter {
         }
     }
 
+    @Override
     public void setAskPropagate(Boolean askPropagate) {
         this.askPropagate = askPropagate;
     }

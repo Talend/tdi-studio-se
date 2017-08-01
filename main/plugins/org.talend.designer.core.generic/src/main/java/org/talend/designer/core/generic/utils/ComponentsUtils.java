@@ -15,6 +15,7 @@ package org.talend.designer.core.generic.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,10 +49,10 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
+import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
-import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -84,10 +85,14 @@ import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyVa
  */
 public class ComponentsUtils {
 
-    private static List<IComponent> components = null;
+    private static Set<IComponent> components = null;
+
+    private static ComponentService compService = null;
 
     public static ComponentService getComponentService() {
-        ComponentService compService = null;
+        if (compService != null) {
+            return compService;
+        }
         BundleContext bundleContext = FrameworkUtil.getBundle(ComponentsUtils.class).getBundleContext();
         ServiceReference<ComponentService> compServiceRef = bundleContext.getServiceReference(ComponentService.class);
         if (compServiceRef != null) {
@@ -111,7 +116,7 @@ public class ComponentsUtils {
     }
 
     public static void loadComponents(ComponentService service) {
-        if(service == null){
+        if (service == null) {
             return;
         }
         IComponentsFactory componentsFactory = null;
@@ -120,16 +125,18 @@ public class ComponentsUtils {
         }
         Set<IComponent> componentsList = componentsFactory.getComponents();
         if (components == null) {
-            components = new ArrayList<IComponent>();
+            components = new HashSet<>();
         } else {
             componentsList.removeAll(components);
+            components.clear();
         }
 
         // Load components from service
         Set<ComponentDefinition> componentDefinitions = service.getAllComponents();
         for (ComponentDefinition componentDefinition : componentDefinitions) {
-            loadComponents(componentsList, componentDefinition);
+            loadComponents(components, componentDefinition);
         }
+        componentsList.addAll(components);
     }
 
     private static void loadComponents(Set<IComponent> componentsList, ComponentDefinition componentDefinition) {
@@ -206,8 +213,8 @@ public class ComponentsUtils {
      * @return parameters list
      */
     private static List<ElementParameter> getParametersFromForm(IElement element, boolean isInitializing,
-            EComponentCategory category, ComponentProperties rootProperty, Properties compProperties,
-            String parentPropertiesPath, Form form, Widget parentWidget, AtomicInteger lastRowNum) {
+            EComponentCategory category, ComponentProperties rootProperty, Properties compProperties, String parentPropertiesPath,
+            Form form, Widget parentWidget, AtomicInteger lastRowNum) {
         List<ElementParameter> elementParameters = new ArrayList<>();
         List<String> parameterNames = new ArrayList<>();
         EComponentCategory compCategory = category;
@@ -247,8 +254,8 @@ public class ComponentsUtils {
                 if (!isSameComponentProperties(componentProperties, widgetProperty)) {
                     propertiesPath = getPropertiesPath(parentPropertiesPath, subProperties.getName());
                 }
-                elementParameters.addAll(getParametersFromForm(element, isInitializing, compCategory, rootProperty,
-                        subProperties, propertiesPath, subForm, widget, lastRN));
+                elementParameters.addAll(getParametersFromForm(element, isInitializing, compCategory, rootProperty, subProperties,
+                        propertiesPath, subForm, widget, lastRN));
                 continue;
             }
 
@@ -324,7 +331,7 @@ public class ComponentsUtils {
             } else if (widgetProperty instanceof Property) {
                 Property property = (Property) widgetProperty;
                 param.setRequired(property.isRequired());
-                param.setValue(getParameterValue(element, property, fieldType));
+                param.setValue(getParameterValue(element, property, fieldType, parameterName));
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
                         || EParameterFieldType.CLOSED_LIST.equals(fieldType) || EParameterFieldType.CHECK.equals(fieldType)
@@ -486,7 +493,7 @@ public class ComponentsUtils {
         return params;
     }
 
-    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType) {
+    public static Object getParameterValue(IElement element, Property property, EParameterFieldType fieldType, String parameterName) {
         Object paramValue = property.getStoredValue();
         if (paramValue instanceof List) {
             return null;
@@ -500,10 +507,24 @@ public class ComponentsUtils {
                 }
             }
         } else if (GenericTypeUtils.isStringType(property)) {
+            boolean needInitializeProperty = false;
+            IElementParameter oldParam = null;
+            if (element.getElementParameters() != null) {
+                oldParam = element.getElementParameter(parameterName);
+            }
+            if (oldParam == null || oldParam.getValue() == null || !StringUtils.equals((String) oldParam.getValue(), (String) property.getStoredValue())) {
+                // if parameter is not setup yet (= initialization)
+                // then we set the value and check if we need to add quotes.
+                //
+                // if parameter value / property value are not the same
+                // then the component updated the property in it's own code, so we need to add quotes/initialize.
+                needInitializeProperty = true;
+            }
+
             String value = (String) paramValue;
-            // If value is not context mode and is not in wizard and is not changed by user then add double quotes.
-            if (!(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value)
-                    || isPropertyChangedByUser(property))) {
+            // If property is not initialized by client and value is not context mode and is not in wizard then add
+            // double quotes.
+            if (needInitializeProperty && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
                 if (value == null) {
                     value = StringUtils.EMPTY;
                 }
@@ -519,13 +540,8 @@ public class ComponentsUtils {
         return paramValue;
     }
 
-    public static boolean isPropertyChangedByUser(Property property) {
-        return Boolean.valueOf(String.valueOf(property.getTaggedValue(UpdatesConstants.CHANGED_BY_USER)));
-    }
-
     public static String unescapeForJava(String input) {
-        CharSequenceTranslator UNESCAPE_JAVA = new AggregateTranslator(new OctalUnescaper(),
-                new UnicodeUnescaper(),
+        CharSequenceTranslator UNESCAPE_JAVA = new AggregateTranslator(new OctalUnescaper(), new UnicodeUnescaper(),
                 new LookupTranslator(new String[][] { { "\\\\", "\\" }, { "\\\"", "\"" }, { "\\'", "'" } })); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
         return UNESCAPE_JAVA.translate(input);
     }

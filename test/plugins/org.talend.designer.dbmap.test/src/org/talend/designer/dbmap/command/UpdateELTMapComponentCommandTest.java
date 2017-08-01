@@ -1,6 +1,6 @@
 package org.talend.designer.dbmap.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,10 @@ public class UpdateELTMapComponentCommandTest {
     private List<ExternalDbMapTable> inputs;
 
     private List<ExternalDbMapTable> outputs;
+    
+    private ExternalDbMapTable input;
+    
+    private ExternalDbMapEntry outputEntry;
 
     @BeforeClass
     public static void beforeClass() {
@@ -74,16 +78,16 @@ public class UpdateELTMapComponentCommandTest {
         connection = new Connection(sourceNode, targetNode, EConnectionType.FLOW_MAIN, "connector", "meta", "oldTable", true);
 
         inputs = (List<ExternalDbMapTable>) targetNode.getExternalData().getInputTables();
-        ExternalDbMapTable input = new ExternalDbMapTable();
+        input = new ExternalDbMapTable();
         input.setName("oldTable");
         input.setTableName("oldTable");
         inputs.add(input);
         
         outputs = (List<ExternalDbMapTable>) targetNode.getExternalData().getOutputTables();
         ExternalDbMapTable output = new ExternalDbMapTable();
-        ExternalDbMapEntry entry = new ExternalDbMapEntry("oldTable", "oldTable.column");
+        outputEntry = new ExternalDbMapEntry("oldTable", "oldTable.column");
         output.setMetadataTableEntries(new ArrayList<ExternalDbMapEntry>());
-        output.getMetadataTableEntries().add(entry);
+        output.getMetadataTableEntries().add(outputEntry);
         outputs.add(output);
     }
 
@@ -91,18 +95,38 @@ public class UpdateELTMapComponentCommandTest {
     public void testUpdateELTMapComponentCommand() throws InterruptedException {
         UpdateELTMapComponentCommand command = new UpdateELTMapComponentCommand(targetNode, connection, "oldTable", "newTable");
         command.execute();
-        validateResult("newTable");
+        validateResult("newTable", "newTable");
         command.undo();
-        validateResult("oldTable");
+        validateResult("oldTable", "oldTable");
         command.redo();
-        validateResult("newTable");
+        validateResult("newTable", "newTable");
     }
+    
+    @Test
+    public void testUpdateELTMapComponentCommandWithAliasSameWithTableName() throws InterruptedException {
+        input.setAlias("oldTable");
+        UpdateELTMapComponentCommand command = new UpdateELTMapComponentCommand(targetNode, connection, "oldTable", "newTable");
+        command.execute();
+        validateResult("newTable", "oldTable");
+        
+    }
+    
+    @Test
+    public void testUpdateELTMapComponentCommandWithAlias() throws InterruptedException {
+        input.setAlias("aliasName");
+        outputEntry.setExpression("aliasName.column");
+        UpdateELTMapComponentCommand command = new UpdateELTMapComponentCommand(targetNode, connection, "oldTable", "newTable");
+        command.execute();
+        validateResult("newTable", "aliasName");
+        
+    }
+    
 
-    private void validateResult(String value) {
-        assertEquals(value, connection.getName());
-        assertEquals(value, inputs.get(0).getName());
-        assertEquals(value, inputs.get(0).getTableName());
-        assertEquals(value + ".column", outputs.get(0).getMetadataTableEntries().get(0).getExpression());
+    private void validateResult(String tableValue, String expressionValue) {
+        assertEquals(tableValue, connection.getName());
+        assertEquals(tableValue, inputs.get(0).getName());
+        assertEquals(tableValue, inputs.get(0).getTableName());
+        assertEquals(expressionValue + ".column", outputs.get(0).getMetadataTableEntries().get(0).getExpression());
     }
 
     private static Property createProperty() {

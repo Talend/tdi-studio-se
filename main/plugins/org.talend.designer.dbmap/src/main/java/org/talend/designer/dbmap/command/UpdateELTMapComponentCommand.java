@@ -2,6 +2,7 @@ package org.talend.designer.dbmap.command;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.gef.commands.Command;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
@@ -36,6 +37,8 @@ public class UpdateELTMapComponentCommand extends Command {
 
     private void execute(String oldValue, String newValue) {
         connection.setName(newValue);
+        // may have several tables with different aliases.
+        boolean isAliasIncludeTableName = false;
         // update table name
         for (IExternalMapTable input : newInputTables) {
             if (input instanceof ExternalDbMapTable) {
@@ -43,6 +46,12 @@ public class UpdateELTMapComponentCommand extends Command {
                 if (oldValue.equals(dbMapTable.getName()) || oldValue.equals(dbMapTable.getTableName())) {
                     dbMapTable.setName(newValue);
                     dbMapTable.setTableName(newValue);
+                    String alias = dbMapTable.getAlias();
+                    if (alias != null) {
+                        if (alias.contains(oldValue)) {
+                            isAliasIncludeTableName = true;
+                        }
+                    }
                 }
             }
         }
@@ -52,15 +61,8 @@ public class UpdateELTMapComponentCommand extends Command {
                 List<ExternalDbMapEntry> entries = ((ExternalDbMapTable) output).getMetadataTableEntries();
                 for (ExternalDbMapEntry entry : entries) {
                     String expression = entry.getExpression();
-                    if (expression != null && !"".equals(expression.trim())) { //$NON-NLS-1$
-                        int index = expression.lastIndexOf("."); //$NON-NLS-1$
-                        // at least "a.b"
-                        if (index > 0) {
-                            String connectionName = expression.substring(0, index);
-                            if (oldValue.equals(connectionName)) {
-                                entry.setExpression(newValue + expression.substring(index, expression.length()));
-                            }
-                        }
+                    if (!StringUtils.isBlank(expression) && expression.contains(oldValue) && !isAliasIncludeTableName) {
+                        entry.setExpression(expression.replace(oldValue, newValue));
                     }
                 }
             }

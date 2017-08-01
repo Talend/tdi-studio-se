@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.talend.designer.business.diagram; singleton:=true
-Bundle-Version: 6.4.1.qualifier
+Bundle-Version: 6.5.0.qualifier
 Bundle-ClassPath: .
 Bundle-Activator: org.talend.designer.business.model.business.diagram.part.BusinessDiagramEditorPlugin
 Bundle-Vendor: %providerName
