@@ -7,7 +7,6 @@
 
 	<!-- modification 1: config -->
 	<property name="jar.name" value="talend-stewardshipTask.jar" />
-	<property name="component.name" value="tStewardshipTaskOutput" />
 	<property name="author.name" value="jjzhou" />
 	
 	<!-- modification 2: compile classpath -->
@@ -21,7 +20,6 @@
 
 	<!-- sourcecode and final jar path -->
 	<property name="source.home" value="." />
-	<property name="jar.home" value="${component.plugin.home}/${component.name}/${jar.name}" />
 
 	<!-- temp dir for clasee files -->
 	<property name="build.dir" value="../../build" />
