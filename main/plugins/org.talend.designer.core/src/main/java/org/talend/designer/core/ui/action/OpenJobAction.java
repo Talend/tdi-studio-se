@@ -18,7 +18,6 @@ import java.util.List;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IActionDelegate2;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -26,6 +25,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.repository.ui.dialog.OpenJobSelectionDialog;
 import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 
@@ -58,20 +58,10 @@ public class OpenJobAction extends Action implements IWorkbenchWindowActionDeleg
         final OpenJobSelectionDialog dialog = new OpenJobSelectionDialog(window.getShell(), repObjectTypes);
 
         if (dialog.open() == RepositoryReviewDialog.OK) {
-            EditProcess editProcess = new EditProcess() {
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see org.talend.repository.ui.actions.AContextualAction#getSelection()
-                 */
-                @Override
-                public ISelection getSelection() {
-                    return new StructuredSelection(dialog.getResult());
-                }
-
-            };
-            editProcess.run();
+            IAction action = DesignerUtilities.getEditProcessAction(dialog.getResult());
+            if (action != null) {
+                action.run();
+            }
         }
     }
 
