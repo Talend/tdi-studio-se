@@ -19,7 +19,7 @@
      /**
       * Generate code that set value for component properties
       */
-     public void setPropertyValues(Property property, Component.CodegenPropInfo propInfo, String connName, boolean setDynamicTags) {
+     public void setPropertyValues(Property property, Component.CodegenPropInfo propInfo, String connName, boolean setDynamicTags, boolean firstCall) {
      
  		            Object value = property.getStoredValue();
  		            if (value != null) {
@@ -29,9 +29,15 @@
  		                if (value instanceof List) { // if
  		                    // added for the support of tables
  		                    String tmpVarName = cid+propInfo.fieldName.replace('.','_')+"_"+property.getName();
+ 		                    if(firstCall) {
  		                    %>
  		                    java.util.List<Object> <%=tmpVarName %> = new java.util.ArrayList<Object>();
  		                    <%
+ 		                    } else {
+ 		                    %>
+ 		                    <%=tmpVarName %> = new java.util.ArrayList<Object>();
+ 		                    <%
+ 		                    }
  		                    for (Object subPropertyValue : (java.util.List<Object>)property.getValue()) {
  		                        if ((property.getPossibleValues() != null && property.getPossibleValues().size() > 0)||
  		                        	Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
@@ -69,7 +75,7 @@
  		                } else if (property instanceof org.talend.daikon.properties.property.EnumProperty) {
  		                    %>
  		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
- 		                        <%=property.getType()%>.<%=property.getValue()%>);
+ 		                        <%=property.getType().replaceAll("<.*>", "")%>.<%=property.getValue()%>);
  		                    <%
  		                } else if (property instanceof org.talend.daikon.properties.property.SchemaProperty) {
  		                    %>

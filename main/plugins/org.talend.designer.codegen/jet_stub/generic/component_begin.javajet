@@ -91,7 +91,7 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
             Property property = (Property)prop;
             if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
                 continue;
-            generator.setPropertyValues(property, propInfo, connName, true);
+            generator.setPropertyValues(property, propInfo, connName, true, true);
         } else if (prop instanceof ComponentReferenceProperties) {
             final String fieldString = propInfo.fieldName + "." + prop.getName();
             referenceProperties.add(fieldString);
