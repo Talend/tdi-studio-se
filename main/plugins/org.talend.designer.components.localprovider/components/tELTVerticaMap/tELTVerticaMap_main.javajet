@@ -57,12 +57,7 @@
 			"<%=uniqueNameComponent %>"+"QUERY_COLUMNS_NAME" + "<%= connection.getUniqueName() %>",
 			<%= gm.getQueryColumnsName() %>
 		);
-<%
-		if(!tablesProcessed.contains(outputTable.getTableName())) {
-%>
-		Object <%= outputTable.getTableName() %> = new Object();
-<%
-		}
+		<%
 		tablesProcessed.add(outputTable.getTableName());
     }
 %>

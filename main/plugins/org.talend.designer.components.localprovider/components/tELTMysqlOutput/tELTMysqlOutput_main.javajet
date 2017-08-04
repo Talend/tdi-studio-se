@@ -25,6 +25,8 @@ imports="
 	String dbtable = null;
 	String uniqueNameConnection = null;
 	INode previousNode = null;
+	
+	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 %>
 	String select_query = null;
 	String selectQueryColumnsName = null;
@@ -60,9 +62,18 @@ imports="
     }
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
-	String useDifferentTable = ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__");
-        String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
-
+	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
+     String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
+	 String tableName=null;
+	 if(useDifferentTable){
+		  tableName=differenttable;
+	 }else{
+	 	  if(isTableNameVariable){
+	 	      tableName=dbtable;
+	 	  }else{
+	 	      tableName="\""+dbtable +"\"";
+	 	  }
+	 }
 %>
 
 <%
@@ -241,24 +252,12 @@ imports="
 
 		if(("INSERT").equals(dataAction)){
 %>
-<%
-		if("false".equals(useDifferentTable)) {
-%>	
-		String insertQuery = "INSERT INTO <%=dbtable%>(<%=insertColName.toString()%>) ("+select_query+")";
-<%} else {%>
-		String insertQuery = "INSERT INTO "+<%=differenttable%>+"(<%=insertColName.toString()%>) ("+select_query+")";
-<%}%>
+		String insertQuery = "INSERT INTO "+<%=tableName%>+"(<%=insertColName.toString()%>) ("+select_query+")";
 		pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery);
 <%
 		} else if (("UPDATE").equals(dataAction)) {
 %>
-<%
-		if("false".equals(useDifferentTable)) {
-%>
-		String updateQuery = "UPDATE <%=dbtable%>";
-<%		} else {%>
-		String updateQuery = "UPDATE "+<%=differenttable%>;
-<%		}%>
+		String updateQuery = "UPDATE "+<%=tableName%>;
 		updateQuery +=" SET <%=updateSetStmt.toString()%> "
 <%
 			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
@@ -273,13 +272,7 @@ imports="
 <%		
 		}else if (("DELETE").equals(dataAction)){
 %>
-<%
-		if("false".equals(useDifferentTable)) {
-%>
-		String deleteQuery = "DELETE  FROM <%=dbtable%>";
-<%} else {%>
-		String deleteQuery = "DELETE  FROM "+<%=differenttable%>;
-<%}%>
+		String deleteQuery = "DELETE  FROM "+<%=tableName%>;
 		deleteQuery += " WHERE EXISTS ("+select_query+")"
 <%
 			if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {

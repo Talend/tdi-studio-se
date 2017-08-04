@@ -29,6 +29,7 @@ imports="
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
+	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 	
 	%>
 	String select_query = null;	
@@ -49,13 +50,22 @@ imports="
 		
 		<%
 	}
-	
+	 String tableName=null;
+	 if(useDifferentTable){
+		  tableName=differenttable;
+	 }else{
+	 	  if(isTableNameVariable){
+	 	      tableName=dbtable;
+	 	  }else{
+	 	      tableName="\""+dbtable +"\"";
+	 	  }
+	 }
 	%>
 	String dbschema_<%=cid%> = <%=dbschema%>;
 	if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
-		tableName_<%=cid%> = "\""+<%=dbschema%> + "\".\"" + <%=useDifferentTable? differenttable:"\""+dbtable +"\""%> + "\"";
+		tableName_<%=cid%> = "\""+<%=dbschema%> + "\".\"" + <%=tableName%> + "\"";
 	}else {
-		tableName_<%=cid%> = "\""+<%=useDifferentTable? differenttable:"\""+dbtable +"\""%> + "\"";
+		tableName_<%=cid%> = "\""+<%=tableName%> + "\"";
 	}
 	<%
 	

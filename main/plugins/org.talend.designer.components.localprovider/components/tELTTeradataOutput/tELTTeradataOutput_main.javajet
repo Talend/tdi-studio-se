@@ -48,6 +48,7 @@ class StrUtils{
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
+	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 
 	%>
 	String select_query = null;
@@ -65,7 +66,16 @@ class StrUtils{
 		selectQueryColumnsName = (String) globalMap.get("<%=previousComponentName%>"+"QUERY_COLUMNS_NAME"+"<%=uniqueNameConnection%>");
 		<%
 	}
-
+	 String tableName=null;
+	 if(useDifferentTable){
+		  tableName=differenttable;
+	 }else{
+	 	  if(isTableNameVariable){
+	 	      tableName=dbtable;
+	 	  }else{
+	 	      tableName="\""+dbtable +"\"";
+	 	  }
+	 }
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
 
         String dbhost = null;
@@ -250,7 +260,7 @@ for(Column colStmt:stmtStructure){
 }
 %>
 
-	String tableName_<%=cid%> = <%=useDifferentTable? differenttable:"\""+dbtable +"\""%>;
+	String tableName_<%=cid%> = <%=tableName%>;
 <%
 
 	if(("INSERT").equals(dataAction)){
