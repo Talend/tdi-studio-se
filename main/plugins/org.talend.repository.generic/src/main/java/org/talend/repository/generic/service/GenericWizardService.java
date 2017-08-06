@@ -76,12 +76,22 @@ public class GenericWizardService implements IGenericWizardService {
             String folder = "metadata/" + name; //$NON-NLS-1$
             int ordinal = 100;
             ERepositoryObjectType repositoryType = internalService.createRepositoryType(name, displayName, name, folder, ordinal);
-            if (curParentNode != null) {
+            if (curParentNode != null && !needHide(repositoryType)) {
                 repNodes.add(internalService.createRepositoryNode(curParentNode, wizardDefinition.getDisplayName(),
                         repositoryType, ENodeType.SYSTEM_FOLDER));
             }
         }
         return repNodes;
+    }
+    
+    private boolean needHide(ERepositoryObjectType type){
+        if(type == null){
+            return false;
+        }
+        if(type.equals(ERepositoryObjectType.JDBC)){
+            return true;
+        }
+        return false;
     }
 
     @Override
