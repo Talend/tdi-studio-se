@@ -97,8 +97,9 @@
      }
      
      private boolean isDynamicValue(String value, String connName) {
-		if(value == null)
+		if(value == null) {
 			return false;
+		}
 		boolean dynamicByGlobals = ContextParameterUtils.isContainContextParam(value) || ContextParameterUtils.containCodeVariable(value, "globalMap.");
 		if(connName == null || dynamicByGlobals) {
 			return dynamicByGlobals;
