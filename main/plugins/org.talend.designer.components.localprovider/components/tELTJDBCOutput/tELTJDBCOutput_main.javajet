@@ -35,9 +35,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 	%>
-	String select_query = null;	
+	String select_query_<%=cid %> = null;	
 	String tableName_<%=cid%> = null;
-	String selectQueryColumnsName = null;
+	String selectQueryColumnsName_<%=cid %> = null;
 	<%
 	List<IConnection> connections = (List<IConnection>) node.getIncomingConnections();
 	if(connections != null && connections.size() > 0 && connections.get(0) != null) {
@@ -48,8 +48,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 		uniqueNameConnection = connection.getUniqueName();
 		
 		%>
-		select_query = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
-		selectQueryColumnsName = (String) globalMap.get("<%=previousComponentName%>"+"QUERY_COLUMNS_NAME"+"<%=uniqueNameConnection%>");
+		select_query_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
+		selectQueryColumnsName_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY_COLUMNS_NAME"+"<%=uniqueNameConnection%>");
 		<%
 	}
 	 String tableName=null;
@@ -142,18 +142,18 @@ skeleton="../templates/db_output_bulk.skeleton"
         	
         	insertColName.append(columnName).append(suffix);
         	
-        	updateSetStmt.append(columnName+"=(\"+select_query.replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName)[ "+ counterOuter + "])+\")" + suffix);
+        	updateSetStmt.append(columnName+"=(\"+select_query_"+ cid +".replaceFirst(java.util.regex.Pattern.quote(selectQueryColumnsName_"+ cid +"),routines.system.StringUtils.splitSQLColumns(selectQueryColumnsName_"+ cid +")[ "+ counterOuter + "])+\")" + suffix);
         	
         	counterOuter++;
         }
 
         if(("INSERT").equals(dataAction)){
         %>	
-        	String insertQuery = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query+")";
+        	String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>)  ("+select_query_<%=cid %>+")";
         <%
     	} else if (("UPDATE").equals(dataAction)){
         %>
-        	String updateQuery = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
+        	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET <%=updateSetStmt.toString()%> "
         <%
     		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
         %>
@@ -165,7 +165,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         <%
     	} else if (("DELETE").equals(dataAction)){
     	%>
-        	String deleteQuery = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query+") " 
+        	String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") " 
         	<%
         	if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
         	%>
@@ -203,9 +203,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 		
 		if(("INSERT").equals(dataAction)){
 		%>
-        System.out.println("Inserting with : \n" + insertQuery + "\n");
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery+\"");%>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery);
+        System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
         nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
         System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
@@ -213,9 +213,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 		<%
     	} else if(("UPDATE").equals(dataAction)){
     	%>
-        System.out.println("Updating with : \n" + updateQuery +"\n");
-        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery+\"");%>
-        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery);
+        System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
+        <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
         nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
         <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
     	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
@@ -223,9 +223,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     	<%
     	} else if (("DELETE").equals(dataAction)){
 		%>
-    	System.out.println("Deleting with : \n" + deleteQuery +"\n");
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery+\"");%>
-		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery);
+    	System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
+		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
     	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");
