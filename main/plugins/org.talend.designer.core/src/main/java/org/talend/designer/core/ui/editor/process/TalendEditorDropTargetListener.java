@@ -1857,7 +1857,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             IMetadataTable metadataTable = (IMetadataTable) selectedNode.getObject();
             command2.setTable(metadataTable);
         }
-        if (selectedNode.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.METADATA_CONNECTIONS) {
+        if (selectedNode.getProperties(EProperties.CONTENT_TYPE) != ERepositoryObjectType.METADATA_CON_QUERY) {
             command2.setGuessQuery(true);
         }
         return command2;
