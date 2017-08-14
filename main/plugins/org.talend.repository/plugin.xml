@@ -2467,15 +2467,6 @@
         <projecttask
               beforeLogon="false"
               breaks="6.0.0"
-              class="org.talend.repository.model.migration.SetUrltStewardshipXXXTDI32354"
-              description="concat host and port to a url"
-              id="org.talend.repository.model.migration.SetUrltStewardshipXXXTDI32354"
-              name="SetUrltStewardshipXXXTDI32354"
-              version="6.0.0">
-        </projecttask>
-        <projecttask
-              beforeLogon="false"
-              breaks="6.0.0"
               class="org.talend.repository.model.migration.ChangeMongoDBMinimalVersion"
               id="org.talend.repository.model.migration.ChangeMongoDBMinimalVersion"
               description="Change mongoDB version to 3.0.X"
@@ -2931,6 +2922,14 @@
               id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               name="reset the 'COLUMN_DELIMITER' parameter"
               version="6.5.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              id="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              name="Configure the new INCLUDTRASHFILES property to 'true' in order to keep the same behavior as before"
+              version="6.5.1">
         </projecttask>
    </extension>
 

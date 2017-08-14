@@ -133,7 +133,7 @@ public class GenericHiddenTextController extends TextController {
                     Control control = super.createDialogArea(parent);
                     String paramName = (String) button.getData(PARAMETER_NAME);
                     getText().setData(PARAMETER_NAME, paramName);
-                    // editionControlHelper.register(paramName, getText());
+                    editionControlHelper.register(paramName, getText());
                     return control;
                 }
             };

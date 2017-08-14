@@ -12,12 +12,14 @@
 // ============================================================================
 package org.talend.designer.core;
 
+import org.eclipse.jface.action.IAction;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.IService;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.repository.model.RepositoryNode;
 
 /**
  * DOC talend class global comment. Detailled comment
@@ -28,6 +30,8 @@ public interface ICreateMRProcessService extends IService {
 
     public ProcessEditorInput getMRProcessEditorInput(ProcessItem processItem, boolean load) throws PersistenceException;
 
-    public ProcessEditorInput getMRProcessEditorInput(ProcessItem processItem, boolean load, boolean lastVersion, boolean readOnly)
-            throws PersistenceException;
+    public ProcessEditorInput getMRProcessEditorInput(ProcessItem processItem, boolean load, boolean lastVersion,
+            boolean readOnly) throws PersistenceException;
+
+    public IAction getEditProcessAction(RepositoryNode result);
 }

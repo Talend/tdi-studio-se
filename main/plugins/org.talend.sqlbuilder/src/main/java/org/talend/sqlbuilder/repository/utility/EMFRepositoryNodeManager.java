@@ -38,6 +38,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.IConstants;
@@ -250,6 +251,8 @@ public final class EMFRepositoryNodeManager {
                 }
             } catch (Exception e) {
                 SqlBuilderPlugin.log(Messages.getString("EMFRepositoryNodeManager.logMessage"), e); //$NON-NLS-1$
+            } finally {
+                MetadataConnectionUtils.closeDerbyDriver();
             }
         }
         if (!relations.isEmpty()) {

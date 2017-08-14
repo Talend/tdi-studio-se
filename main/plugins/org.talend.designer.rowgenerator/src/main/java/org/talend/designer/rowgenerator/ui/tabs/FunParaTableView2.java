@@ -18,14 +18,18 @@ import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.talend.commons.ui.runtime.expressionbuilder.IExpressionBuilderDialogController;
@@ -298,6 +302,31 @@ public class FunParaTableView2 extends AbstractDataTableEditorView<Parameter> {
         IContentProposalProvider processProposalProvider = new TalendProposalProvider(component.getProcess());
         return processProposalProvider;
 
+    }
+    
+    protected void createLabelComposite(Composite mainComposite){
+        if (!labelVisible) {
+            return;
+        }
+        SashForm sash = new SashForm(mainComposite, SWT.VERTICAL);
+        sash.setLayout(new GridLayout());
+        sash.setLayoutData(new GridData(GridData.FILL_BOTH));
+        Composite title = new Composite(sash, SWT.NONE);
+        title.setLayout(new GridLayout());
+        titleLabel = new Label(title, SWT.NONE);
+        titleLabel.setLayoutData(new GridData(GridData.FILL_BOTH));
+        if (parentComposite.getBackground() != null && !parentComposite.getBackground().equals(titleLabel.getBackground())) {
+            titleLabel.setBackground(parentComposite.getBackground());
+        }
+        
+        tableComposite = new Composite(sash, SWT.NONE);
+        if (parentComposite.getBackground() != null && !parentComposite.getBackground().equals(tableComposite.getBackground())) {
+            tableComposite.setBackground(parentComposite.getBackground());
+        }
+        tableComposite.setLayout(new GridLayout());
+
+        sash.setSashWidth(6);
+        sash.setWeights(new int[] { 1, 6 });
     }
 
 }

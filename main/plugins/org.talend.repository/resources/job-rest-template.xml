@@ -19,6 +19,10 @@
 	<reference id="eventFeature" interface="org.talend.esb.sam.agent.feature.EventFeature" />
 #end
 
+#if ($endpoint.useSL)
+	<reference id="locatorFeature" interface="org.talend.esb.servicelocator.cxf.LocatorFeature" />
+#end
+
 #if ($endpoint.exposeSwaggerSpecification)
     <!-- CXF Swagger2Feature -->
     <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
@@ -73,20 +77,7 @@
 			<ref component-id="eventFeature" />
 #end
 #if ($endpoint.useSL)
-			<bean class="org.talend.esb.servicelocator.cxf.LocatorFeature">
-#if (!$endpoint.slCustomProps.isEmpty())
-				<property name="availableEndpointProperties">
-					<map>
-#foreach ($entry in $endpoint.slCustomProps.entrySet())
-						<entry>
-							<key><value>${entry.key}</value></key>
-							<value>${entry.value}</value>
-						</entry>
-#end ## end SL custom properties loop
-					</map>
-				</property>
-#end ## end not empty SL custom properties
-			</bean>
+			<ref component-id="locatorFeature" />
 #end ## end use SL
 #if ($endpoint.logMessages)
 			<bean class="org.apache.cxf.feature.LoggingFeature" />

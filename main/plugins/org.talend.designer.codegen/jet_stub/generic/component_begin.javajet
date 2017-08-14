@@ -25,6 +25,7 @@ imports="
         org.talend.core.model.process.IElementParameter
         org.talend.core.model.process.INode
         org.talend.core.model.utils.TalendTextUtils
+        org.talend.core.model.utils.ContextParameterUtils
         org.talend.daikon.NamedThing
         org.talend.daikon.properties.property.Property
         org.talend.designer.codegen.config.CodeGeneratorArgument
@@ -33,6 +34,7 @@ imports="
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
+<%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_process_properties.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -68,6 +70,20 @@ List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(c
 
 final Set<String> referenceProperties = new HashSet<String>();
 
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+
+String connName = null;
+if(hasInput) {
+	IConnection main = null;
+    List<? extends IConnection> mains = NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA);
+    if (mains!=null && !mains.isEmpty()) {
+        main = mains.get(0);
+        connName = main.getName();
+    }
+}
+ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
+List<Property> dynamicProperties = new ArrayList<Property>();
+
 for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
     List<NamedThing> properties = propInfo.props.getProperties();
     for (NamedThing prop : properties) { // property
@@ -75,68 +91,7 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
             Property property = (Property)prop;
             if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
                 continue;
-            Object value = property.getStoredValue();
-            if (value != null) {
-                if (value instanceof List) {
-                    // added for the support of tables
-                    String tmpVarName = cid+propInfo.fieldName.replace('.','_')+"_"+property.getName();
-                    %>
-                    java.util.List<Object> <%=tmpVarName %> = new java.util.ArrayList<Object>();
-                    <%
-                    for (Object subPropertyValue : (java.util.List<Object>)property.getValue()) {
-                        if ((property.getPossibleValues() != null && property.getPossibleValues().size() > 0)||
-                        	Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
-                            %>
-                            <%=tmpVarName %>.add("<%=subPropertyValue %>");
-                            <%
-                        } else if(!"".equals(subPropertyValue)) {
-                                %>
-                                <%=tmpVarName %>.add(<%=subPropertyValue %>);
-                                <%
-                        } else {
-                            %>
-                            <%=tmpVarName %>.add("");
-                            <%
-                        }
-                    }
-                    %>
-                    ((org.talend.daikon.properties.Properties)props_<%=cid %><%=propInfo.fieldName%>).setValue("<%=property.getName()%>",<%=tmpVarName %>);
-                    <%
-                }  else if (value instanceof String && property.isFlag(Property.Flags.ENCRYPT) && ElementParameterParser.canEncryptValue((String) value)) {
-                    if (!"".equals(property.getStringValue())) {
-                        %>
-                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                        routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, (String) value)%>));
-                        <%
-                    }
-                } else if (value != null && "java.util.Date".equals(property.getType())){
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                        TalendDate.parseDate("yyyy-MM-dd HH:mm:ss",<%=component.getCodegenValue(property, value.toString())%>));
-                    <%
-                } else if (property instanceof org.talend.daikon.properties.property.EnumProperty) {
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                        <%=property.getType().replaceAll("<.*>", "")%>.<%=property.getValue()%>);
-                    <%
-                } else if (property instanceof org.talend.daikon.properties.property.SchemaProperty) {
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                        new org.apache.avro.Schema.Parser().parse(<%=component.getCodegenValue(property, property.getStringValue())%>));
-                    <%
-                } else if (!(value instanceof String) || !((String)value).equals("")) {
-                    %>
-                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
-                    <%=component.getCodegenValue(property, value.toString())%>);
-                    <%
-                }
-            }
-
-            if("java.lang.Integer".equals(property.getType()) && (value == null || ((value instanceof String) && ((String)value).isEmpty()))) {//need to overwrite the default value when the passed value is null or empty string from the model
-        	%>
-                props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>", null);
-            <%
-            }
+            generator.setPropertyValues(property, propInfo, connName, true, true);
         } else if (prop instanceof ComponentReferenceProperties) {
             final String fieldString = propInfo.fieldName + "." + prop.getName();
             referenceProperties.add(fieldString);
@@ -181,7 +136,6 @@ int nb_line_<%=cid %> = 0;
 
 org.talend.components.api.component.ConnectorTopology topology_<%=cid%> = null;
 <%
-boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutputOnly = hasOutput && !hasInput;
 

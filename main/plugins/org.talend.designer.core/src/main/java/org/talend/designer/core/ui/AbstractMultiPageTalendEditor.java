@@ -284,6 +284,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         }
     }
 
+    @Override
     public void changePaletteComponentHandler() {
         ComponentsFactoryProvider.getInstance().setComponentsHandler(designerEditor.getComponenentsHandler());
     }
@@ -1780,6 +1781,7 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
      */
     @Override
     public void dispose() {
+        boolean isDirty = isDirty();
         getSite().setSelectionProvider(null);
         getSite().getWorkbenchWindow().getSelectionService().removeSelectionListener(this);
         /* after the release of eclipse3.6,this parameter can't be null */
@@ -1809,11 +1811,17 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
 
                 JobletUtil jUtil = new JobletUtil();
                 jUtil.makeSureUnlockJoblet(getProcess());
+                if (isDirty) {
+                    // fix for TUP-17936
+                    jUtil.reloadJobletInCurrentProcess(getProcess());
+                }
+
                 Item item = getProcess().getProperty().getItem();
                 boolean keep = jUtil.keepLockJoblet(item);
                 if (keep) {
                     repFactory.unlock(property.getItem());
                 }
+
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
             } catch (LoginException e) {

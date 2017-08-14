@@ -1,0 +1,111 @@
+<%
+ 
+ /**
+  * Utility for generating code that set values for the properties of the component.
+  */
+ class ProcessPropertiesGenerator {
+ 
+     /** A unique tag for generating code variables, usually based on the cid
+      *  of the node. */
+     private final String cid;
+ 
+     private final Component component;
+     
+     public ProcessPropertiesGenerator(String cid, Component component) {
+         this.cid = cid;
+         this.component = component;    
+     }
+ 
+     /**
+      * Generate code that set value for component properties
+      */
+     public void setPropertyValues(Property property, Component.CodegenPropInfo propInfo, String connName, boolean setDynamicTags, boolean firstCall) {
+     
+ 		            Object value = property.getStoredValue();
+ 		            if (value != null) {
+ 		            	if (setDynamicTags && (value instanceof String) && isDynamicValue(String.valueOf(value), connName)) {
+ 		            		property.setTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE, "true");
+ 		            	}
+ 		                if (value instanceof List) { // if
+ 		                    // added for the support of tables
+ 		                    String tmpVarName = cid+propInfo.fieldName.replace('.','_')+"_"+property.getName();
+ 		                    if(firstCall) {
+ 		                    %>
+ 		                    java.util.List<Object> <%=tmpVarName %> = new java.util.ArrayList<Object>();
+ 		                    <%
+ 		                    } else {
+ 		                    %>
+ 		                    <%=tmpVarName %> = new java.util.ArrayList<Object>();
+ 		                    <%
+ 		                    }
+ 		                    for (Object subPropertyValue : (java.util.List<Object>)property.getValue()) {
+ 		                        if ((property.getPossibleValues() != null && property.getPossibleValues().size() > 0)||
+ 		                        	Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.ADD_QUOTES)))) {
+ 		                            %>
+ 		                            <%=tmpVarName %>.add("<%=subPropertyValue %>");
+ 		                            <%
+ 		                        } else if(!"".equals(subPropertyValue)) {
+ 		                        	if(setDynamicTags && isDynamicValue(String.valueOf(subPropertyValue), connName)) {
+ 		                        		property.setTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE, "true");
+ 		                        	}
+ 		                                %>
+ 		                                <%=tmpVarName %>.add(<%=subPropertyValue %>);
+ 		                                <%
+ 		                        } else {
+ 		                            %>
+ 		                            <%=tmpVarName %>.add("");
+ 		                            <%
+ 		                        }
+ 		                    }
+ 		                    %>
+ 		                    ((org.talend.daikon.properties.Properties)props_<%=cid %><%=propInfo.fieldName%>).setValue("<%=property.getName()%>",<%=tmpVarName %>);
+ 		                    <%
+ 		                } else if (value instanceof String && property.isFlag(Property.Flags.ENCRYPT) && ElementParameterParser.canEncryptValue((String) value)) {
+ 		                    if (!"".equals(property.getStringValue())) {
+ 		                        %>
+ 		                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                        routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, (String) value)%>));
+ 		                        <%
+ 		                    }
+ 		                } else if (value != null && "java.util.Date".equals(property.getType())){
+ 		                    %>
+ 		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                        TalendDate.parseDate("yyyy-MM-dd HH:mm:ss",<%=component.getCodegenValue(property, value.toString())%>));
+ 		                    <%
+ 		                } else if (property instanceof org.talend.daikon.properties.property.EnumProperty) {
+ 		                    %>
+ 		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                        <%=property.getType().replaceAll("<.*>", "")%>.<%=property.getValue()%>);
+ 		                    <%
+ 		                } else if (property instanceof org.talend.daikon.properties.property.SchemaProperty) {
+ 		                    %>
+ 		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                        new org.apache.avro.Schema.Parser().parse(<%=component.getCodegenValue(property, property.getStringValue())%>));
+ 		                    <%
+ 		                } else if (!(value instanceof String) || !((String)value).equals("")) {
+ 		                    %>
+ 		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                    <%=component.getCodegenValue(property, value.toString())%>);
+ 		                    <%
+ 		                }
+ 		            }
+ 		            if("java.lang.Integer".equals(property.getType()) && (value == null || ((value instanceof String) && ((String)value).isEmpty()))) {//need to overwrite the default value when the passed value is null or empty string from the model
+ 		        	%>
+ 		                props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>", null);
+ 		            <%
+ 		            }
+     }
+     
+     private boolean isDynamicValue(String value, String connName) {
+		if(value == null) {
+			return false;
+		}
+		boolean dynamicByGlobals = ContextParameterUtils.isContainContextParam(value) || ContextParameterUtils.containCodeVariable(value, "globalMap.");
+		if(connName == null || dynamicByGlobals) {
+			return dynamicByGlobals;
+		}
+		return ContextParameterUtils.containCodeVariable(value, connName + ".");
+	}
+ 
+ }
+ %>

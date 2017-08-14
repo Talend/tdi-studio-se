@@ -12,12 +12,16 @@
 // ============================================================================
 package org.talend.designer.core.utils;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.Expression;
 
 /**
@@ -96,4 +100,37 @@ public final class UpdateParameterUtils {
                 }
         }
     }
+
+    public static void deepCopy(IElementParameter from, IElementParameter to) {
+        Set<IElementParameter> copiedList = new HashSet<IElementParameter>();
+        deepCopy(from, to, copiedList);
+    }
+
+    public static void deepCopy(IElementParameter from, IElementParameter to, Set<IElementParameter> copiedList) {
+        if (copiedList.contains(from)) {
+            return;
+        } else {
+            copiedList.add(from);
+        }
+        to.setValue(from.getValue());
+        Map<String, IElementParameter> fromChildParamMap = from.getChildParameters();
+        if (fromChildParamMap != null && !fromChildParamMap.isEmpty()) {
+            Map<String, IElementParameter> toChildParamMap = to.getChildParameters();
+            for (Map.Entry<String, IElementParameter> fromEntry : fromChildParamMap.entrySet()) {
+                String key = fromEntry.getKey();
+                IElementParameter fromValue = fromEntry.getValue();
+                if (fromValue == null) {
+                    toChildParamMap.put(key, null);
+                } else {
+                    IElementParameter toValue = toChildParamMap.get(key);
+                    if (toValue == null) {
+                        toValue = new ElementParameter(to.getElement());
+                        toChildParamMap.put(key, toValue);
+                    }
+                    deepCopy(fromValue, toValue, copiedList);
+                }
+            }
+        }
+    }
+
 }

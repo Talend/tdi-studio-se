@@ -131,6 +131,8 @@ public class RepositoryReviewDialog extends Dialog {
 
     private static final String USEYARN = "USEYARN"; //$NON-NLS-1$
 
+    private static final String ELEMENT = "ELEMENT"; //$NON-NLS-1$
+
     private boolean filterReferenceNode = false;
 
     protected RepositoryReviewDialog(Shell parentShell) {
@@ -359,7 +361,7 @@ public class RepositoryReviewDialog extends Dialog {
                     attributes.putAll(attr);
                 }
             }
-
+            attributes.put(ELEMENT, elem);
             IRepositoryTypeProcessor processor = hadoopClusterService.getHadoopSubMultiRepTypeProcessor(repTypeList
                     .toArray(new String[0]));
             processor.setAttributes(attributes);

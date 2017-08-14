@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1305,7 +1306,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 libPath.append(classPathSeparator);
             }
         } else {
-            Set<String> neededLibraries = new HashSet<String>();
+            Set<String> neededLibraries = new LinkedHashSet<String>();
             for (ModuleNeeded neededModule : neededModules) {
                 neededLibraries.add(neededModule.getModuleName());
             }
@@ -1315,12 +1316,15 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 return ""; //$NON-NLS-1$
             }
             File[] jarFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
-            List<File> listFile = Arrays.asList(jarFiles);
-            Collections.sort(listFile);
-
-            if (jarFiles != null && jarFiles.length > 0) {
-                for (File jarFile : jarFiles) {
-                    if (jarFile.isFile() && neededLibraries.contains(jarFile.getName())) {
+            
+            Map<String, File> jarFileMap = new HashMap<>();
+            for (File file : jarFiles) {
+                jarFileMap.put(file.getName(), file);
+            }
+            for (String neededLibrary : neededLibraries) {
+                if (jarFileMap.containsKey(neededLibrary)) {
+                    File jarFile = jarFileMap.get(neededLibrary);
+                    if (jarFile.isFile()) {
                         String singleLibPath = new Path(jarFile.getAbsolutePath()).toPortableString();
                         libPath.append(singleLibPath).append(classPathSeparator);
                     }

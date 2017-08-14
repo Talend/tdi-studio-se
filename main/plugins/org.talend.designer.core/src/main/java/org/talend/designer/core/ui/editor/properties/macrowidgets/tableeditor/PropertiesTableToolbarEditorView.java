@@ -240,22 +240,10 @@ public class PropertiesTableToolbarEditorView extends ExtendedToolbarView {
                 if (element != null && element instanceof INode) {
                     List<ColumnInfo> tableInputs = null;
                     IElementParameter param = tableEditorModel.getElemParameter();
-                    String componentName = ((INode) element).getComponent().getName();
-                    // If component is tStewardshipTaskOutput, then for "Record Column" there is no necessary to
-                    // prompt the dialog when clicking the button of "Add All".
-                    if ("tStewardshipTaskOutput".equalsIgnoreCase(componentName)) { //$NON-NLS-1$
-                        if ("EXTRA_INFO".equals(param.getName())) { //$NON-NLS-1$
-                            tableInputs = promptForDefaultValue(tableEditorModel.getTableViewer().getControl().getShell(), param);
-                        } else {
-                            tableInputs = new ArrayList<ColumnInfo>();
-                        }
-                    } else {
-                        // diplay a dialog for setting default values. see 0005416: When click Add All in a table, add
-                        // the
-                        // possibility to setup the default parameters value.
-                        tableInputs = promptForDefaultValue(tableEditorModel.getTableViewer().getControl().getShell(), param);
-
-                    }
+                    // diplay a dialog for setting default values. see 0005416: When click Add All in a table, add
+                    // the
+                    // possibility to setup the default parameters value.
+                    tableInputs = promptForDefaultValue(tableEditorModel.getTableViewer().getControl().getShell(), param);
 
                     if (tableInputs == null) {
                         return new ArrayList<Object>();

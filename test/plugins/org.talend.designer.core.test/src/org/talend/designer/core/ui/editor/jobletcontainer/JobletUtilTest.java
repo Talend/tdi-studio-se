@@ -1,0 +1,138 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
+package org.talend.designer.core.ui.editor.jobletcontainer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.Path;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.ui.runtime.image.ImageUtils;
+import org.talend.commons.utils.VersionUtils;
+import org.talend.core.CorePlugin;
+import org.talend.core.context.Context;
+import org.talend.core.context.RepositoryContext;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.properties.ByteArray;
+import org.talend.core.model.properties.JobletProcessItem;
+import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.FakePropertyImpl;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.repository.RepositoryObject;
+import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.repository.ui.view.RepositoryLabelProvider;
+import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.model.process.AbstractProcessProvider;
+import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
+import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
+import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
+import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
+import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.joblet.model.JobletFactory;
+import org.talend.designer.joblet.model.JobletProcess;
+import org.talend.repository.model.IProxyRepositoryFactory;
+
+/**
+ * created by wchen on Jul 27, 2017 Detailled comment
+ *
+ */
+public class JobletUtilTest {
+
+    IProxyRepositoryFactory factory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
+
+    IComponentsFactory components = ComponentsFactoryProvider.getInstance();
+
+    List<IRepositoryViewObject> repositoryObjects;
+
+    @Before
+    public void setUp() throws Exception {
+        repositoryObjects = new ArrayList<IRepositoryViewObject>();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        for (IRepositoryViewObject repositoryObject : repositoryObjects) {
+            factory.deleteObjectPhysical(repositoryObject);
+            IComponent jobletComponent = components.get(repositoryObject.getLabel(), ComponentCategory.CATEGORY_4_DI.getName());
+            components.getComponents().remove(jobletComponent);
+        }
+        AbstractProcessProvider.loadComponentsFromProviders();
+    }
+
+    @Test
+    public void testReloadJobletInCurrentProcess() throws PersistenceException {
+        String label = "testReloadJobletInCurrentProcess";
+        String id = factory.getNextId();
+        createRepositoryObject(label, id, VersionUtils.DEFAULT_VERSION);
+        AbstractProcessProvider.loadComponentsFromProviders();
+        IComponent jobleComponent = components.get(label, ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tMsgComponent = components.get("tMsgBox", ComponentCategory.CATEGORY_4_DI.getName());
+
+        Property porperty = new FakePropertyImpl();
+        Process currentProcess = new Process(porperty);
+        Node jobletNode = new Node(jobleComponent, currentProcess);
+        currentProcess.addNodeContainer(new NodeContainer(jobletNode));
+
+        Process jobletProcess = (Process) jobletNode.getComponent().getProcess();
+        Node node = new Node(tMsgComponent, jobletProcess);
+        jobletProcess.addNodeContainer(new NodeContainer(node));
+
+        Assert.assertEquals(jobletProcess.getGraphicalNodes().size(), 1);
+
+        JobletUtil jUtil = new JobletUtil();
+        jUtil.reloadJobletInCurrentProcess(currentProcess);
+
+        Process jobletProcessAfterReload = (Process) jobletNode.getComponent().getProcess();
+        Assert.assertFalse(jobletProcessAfterReload == jobletProcess);
+        Assert.assertEquals(jobletProcessAfterReload.getGraphicalNodes().size(), 0);
+
+    }
+
+    private IRepositoryViewObject createRepositoryObject(String label, String id, String version) throws PersistenceException {
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
+        property.setVersion(version);
+        property.setStatusCode(""); //$NON-NLS-1$
+
+        JobletProcessItem processItem = PropertiesFactory.eINSTANCE.createJobletProcessItem();
+        ByteArray ba = PropertiesFactory.eINSTANCE.createByteArray();
+        processItem.setIcon(ba);
+        processItem.getIcon().setInnerContent(
+                ImageUtils.saveImageToData(RepositoryLabelProvider.getDefaultJobletImage(processItem)));
+
+        processItem.setProperty(property);
+        property.setId(id);
+        property.setLabel(label);
+        property.setDisplayName(property.getLabel());
+        ParametersType parameterType = TalendFileFactory.eINSTANCE.createParametersType();
+        // add depended routines.
+        List<RoutinesParameterType> dependenciesInPreference;
+        dependenciesInPreference = RoutinesUtil.createDependenciesInPreference();
+
+        parameterType.getRoutinesParameter().addAll(dependenciesInPreference);
+        JobletProcess process = JobletFactory.eINSTANCE.createJobletProcess();
+        process.setParameters(parameterType);
+        processItem.setJobletProcess(process);
+        factory.create(processItem, new Path(""));
+        return new RepositoryObject(property);
+    }
+
+}
