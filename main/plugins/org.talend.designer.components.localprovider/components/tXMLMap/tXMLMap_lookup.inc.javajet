@@ -533,10 +533,6 @@ skeleton="tXMLMap_java.skeleton"
 						  	<% if(!isInnerJoin && findFromDocumentType) { %>
 						  	if(!isMatchDocRow<%=cid%> && !hasResultFromLookupCache<%= tableName %>) {
 						  		<%=tableName%> = <%=tableName%>Default;
-				  				
-				  				<%for (String key : outNodesXPath.keySet()) {%> 
-				  				treeNodeAPI_<%=cid %>.put("<%=key%>",null);
-								<%}%>
 						  	}
 						  	<% } %>
 						  	<% if(hasOutputFromLookupDoc && !findFromDocumentType) {//for the case : not lookup doc,but doc output exists%>
