@@ -136,7 +136,7 @@ public class PropertySetDialog extends Dialog {
 
         autoMapGroup = new Group(container, SWT.NONE);
         autoMapGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        autoMapGroup.setText("Auto Map");
+        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));//$NON-NLS-1$
 
         GridLayout AutogridLayout = new GridLayout(3, false);
         AutogridLayout.horizontalSpacing = 10;
