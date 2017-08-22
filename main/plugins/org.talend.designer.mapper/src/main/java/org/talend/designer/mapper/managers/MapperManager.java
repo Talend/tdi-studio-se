@@ -1035,9 +1035,9 @@ public class MapperManager extends AbstractMapperManager {
     /**
      * DOC amaumont Comment method "mapAutomaticallly".
      */
-    public void mapAutomaticallly(int levenshteinWeight, int jaccardWeight) {
+    public void mapAutomaticallly() {
         AutoMapper autoMapper = new AutoMapper(this);
-        autoMapper.map(levenshteinWeight, jaccardWeight);
+        autoMapper.map();
     }
 
     /**

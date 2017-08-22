@@ -71,10 +71,6 @@ public class PropertySetDialog extends Dialog {
 
     private Slider jaccardSlider;
 
-    private int levenshteinWeight = 0;
-
-    private Integer jaccardWeight = 0;
-
     private Label levenshteinWeightLabel;
 
     private Label jaccardWeightLabel;
@@ -276,10 +272,8 @@ public class PropertySetDialog extends Dialog {
     }
 
     private void updateAutoMap() {
-        levenshteinWeight = levenshteinSlider.getSelection();
-        jaccardWeight = jaccardSlider.getSelection();
-        levenshteinWeightLabel.setText(String.valueOf(levenshteinWeight));
-        jaccardWeightLabel.setText(String.valueOf(jaccardWeight));
+        levenshteinWeightLabel.setText(String.valueOf(levenshteinSlider.getSelection()));
+        jaccardWeightLabel.setText(String.valueOf(jaccardSlider.getSelection()));
         autoMapGroup.layout();
     }
 
@@ -333,10 +327,8 @@ public class PropertySetDialog extends Dialog {
             }
         }
         IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
-        levenshteinWeight = levenshteinSlider.getSelection();
-        jaccardWeight = jaccardSlider.getSelection();
-        weightStore.setValue(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT, levenshteinWeight);
-        weightStore.setValue(ITalendCorePrefConstants.JACCARD_WEIGHT, jaccardWeight);
+        weightStore.setValue(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT, levenshteinSlider.getSelection());
+        weightStore.setValue(ITalendCorePrefConstants.JACCARD_WEIGHT, jaccardSlider.getSelection());
 
 
         super.okPressed();

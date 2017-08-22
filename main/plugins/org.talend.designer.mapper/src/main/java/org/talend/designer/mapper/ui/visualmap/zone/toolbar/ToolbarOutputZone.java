@@ -14,15 +14,12 @@ package org.talend.designer.mapper.ui.visualmap.zone.toolbar;
 
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ToolItem;
 import org.talend.commons.ui.runtime.image.EImage;
-import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.UIManager;
@@ -138,10 +135,8 @@ public class ToolbarOutputZone extends ToolbarZone {
                     dataMapTableView.notifyFocusLost();
                 }
                 // uiManager.openAutoMappingDialog();
-                IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
 
-                getMapperManager().mapAutomaticallly(weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT),
-                        weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT));
+                getMapperManager().mapAutomaticallly();
             }
 
         });

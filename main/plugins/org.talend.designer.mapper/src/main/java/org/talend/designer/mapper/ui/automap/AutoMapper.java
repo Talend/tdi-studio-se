@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
 import org.talend.designer.mapper.language.ILanguage;
 import org.talend.designer.mapper.language.LanguageProvider;
@@ -49,9 +52,11 @@ public class AutoMapper {
     /**
      * DOC amaumont Comment method "map".
      */
-    public void map(int levenshteinWeight, int jaccardWeight) {
-        int paramL = levenshteinWeight;
-        int paramJ = jaccardWeight;
+    public void map() {
+        IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
+
+        int paramL = weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT);
+        int paramJ = weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT);
 
         List<InputTable> inputTables = mapperManager.getInputTables();
         List<OutputTable> outputTables = mapperManager.getOutputTables();

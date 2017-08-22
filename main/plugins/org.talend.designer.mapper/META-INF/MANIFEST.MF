@@ -45,4 +45,3 @@ Export-Package: org.talend.designer.mapper,
  org.talend.designer.mapper.model.tableentry,
  org.talend.designer.mapper.utils,
  org.talend.designer.mapper.utils.problems
-Import-Package: org.eclipse.jface.preference
