@@ -92,6 +92,7 @@ import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.SchemaProperty;
@@ -1338,10 +1339,13 @@ public class Component extends AbstractBasicComponent {
     protected void processCodegenPropInfos(List<CodegenPropInfo> propList, Properties props, String fieldString) {
         for (NamedThing prop : props.getProperties()) {
             if (prop instanceof Properties) {
+                if (prop instanceof ReferenceProperties) {
+                    ReferenceProperties rp = (ReferenceProperties) prop;
+                    rp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                }
                 if (prop instanceof ComponentReferenceProperties) {
                     ComponentReferenceProperties crp = (ComponentReferenceProperties) prop;
                     crp.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
-                    crp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                 }
                 CodegenPropInfo childPropInfo = new CodegenPropInfo();
                 if (fieldString.equals("")) {//$NON-NLS-1$
