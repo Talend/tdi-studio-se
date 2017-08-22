@@ -118,7 +118,22 @@
 		.locationId(<%=zone%>)
 		.options(options_<%=cid%>).build();
 	
-	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
+	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = null;
+	
+	try {
+		nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
+	} catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
+		boolean ignoreException_<%=cid%> = false;
+		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
+			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
+				ignoreException_<%=cid%> = true;
+			}
+		}
+		
+		if(!ignoreException_<%=cid%>) {
+			throw e_<%=cid%>;
+		}
+	}
 	
 	globalMap.put("<%=cid %>_NODE_GROUP", <%=instanceName%>.toLowerCase());
 	globalMap.put("<%=cid %>_NODES", nodes_<%=cid%>);
