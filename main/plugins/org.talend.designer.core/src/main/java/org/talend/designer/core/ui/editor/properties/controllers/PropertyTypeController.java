@@ -77,6 +77,7 @@ import org.talend.designer.core.ui.views.properties.MultipleThreadDynamicComposi
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.model.IMetadataService;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.ui.dialog.RepositoryReviewDialog;
@@ -422,6 +423,9 @@ public class PropertyTypeController extends AbstractRepositoryController {
                     }
                     if (changeValuesFromRepository != null) {
                         compoundCommand.add(changeValuesFromRepository);
+                        if (selectNode.getProperties(EProperties.CONTENT_TYPE) != ERepositoryObjectType.METADATA_CON_QUERY) {
+                            changeValuesFromRepository.setGuessQuery(true);
+                        }
                     }
 
                     updateDBType(compoundCommand, repositoryConnection);
