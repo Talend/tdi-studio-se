@@ -1,0 +1,24 @@
+<%@jet%>
+class TimeoutUtil_<%=cid%> {
+    public static final String CONNECTION_TIMEOUT_KEY = "javax.xml.ws.client.connectionTimeout";
+    public static final String RECEIVE_TIMEOUT_KEY = "javax.xml.ws.client.receiveTimeout";
+    public static final String CONNECTION_TIME_VALUE = "ws_client_connection_timeout";
+    public static final String RECEIVE_TIME_VALUE = "ws_client_receive_timeout";
+
+    public int getWSClientTimeout(String property) throws Exception {
+        int defaultTimeout = 60000;
+        String inputTimeout = System.getProperty(property);
+        if (inputTimeout != null) {
+            try {
+                int timeout = Integer.parseInt(inputTimeout);
+                if (timeout > 0) {
+                    return timeout;
+                }
+            } catch (Exception exception) {
+                throw new RuntimeException("Webservice " + property + " property value '" + inputTimeout + "' is invalid", exception);
+            }
+        }
+        return defaultTimeout;
+    }
+}
+TimeoutUtil_<%=cid%> timeoutUtil_<%=cid%> = new TimeoutUtil_<%=cid%>();
