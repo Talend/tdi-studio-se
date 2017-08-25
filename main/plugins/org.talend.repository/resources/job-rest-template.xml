@@ -29,6 +29,7 @@
         <property name="basePath" value="${endpoint.originalAddress}"/>
         <property name="usePathBasedConfig" value="true"/>
         <property name="scan" value="false"/>
+        <property name="swaggerUiMavenGroupAndArtifact" value="org.talend.esb/swagger-ui"/>
         <property name="title" value="${job.name} REST Application"/>
         <property name="description" value="${endpoint.description}"/>
         <property name="contact"><null/></property>
