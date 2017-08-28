@@ -127,6 +127,7 @@
 		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
 			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
 				ignoreException_<%=cid%> = true;
+				System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
 			}
 		}
 		
