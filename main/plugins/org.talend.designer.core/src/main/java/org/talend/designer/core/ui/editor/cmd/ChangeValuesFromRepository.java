@@ -305,6 +305,25 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             }
             IElementParameter propertyParam = elem.getElementParameter(propertyName);
             List<IElementParameter> elementParameters = new ArrayList<>(elem.getElementParameters());
+            
+         // (bug 5198)
+            IElementParameter parentParameter = propertyParam.getParentParameter();
+            if (parentParameter != null) {
+                IElementParameter param = parentParameter.getChildParameters()
+                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                if (param != null && propertyParam == param) { // avoid to process twice.
+                    ConnectionItem connItem = UpdateRepositoryUtils.getConnectionItemByItemId((String) param.getValue());
+                    if (connItem != null) {
+                        if (elem instanceof Node) {
+                            ConnectionContextHelper.addContextForNodeParameter((Node) elem, connItem, ignoreContextMode);
+                        } else if (elem instanceof Process) {
+                            ConnectionContextHelper.addContextForProcessParameter((Process) elem, connItem, param.getCategory(),
+                                    ignoreContextMode);
+                        }
+                    }
+                }
+            }
+            
             for (IElementParameter param : elementParameters) {
                 String repositoryValue = param.getRepositoryValue();
                 if (param.getFieldType() == EParameterFieldType.PROPERTY_TYPE) {
@@ -599,23 +618,6 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             param.setReadOnly(true);
                         } else {
                             param.setReadOnly(false);
-                        }
-                    }
-                }
-            }
-            // (bug 5198)
-            IElementParameter parentParameter = propertyParam.getParentParameter();
-            if (parentParameter != null) {
-                IElementParameter param = parentParameter.getChildParameters()
-                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                if (param != null && propertyParam == param) { // avoid to process twice.
-                    ConnectionItem connItem = UpdateRepositoryUtils.getConnectionItemByItemId((String) param.getValue());
-                    if (connItem != null) {
-                        if (elem instanceof Node) {
-                            ConnectionContextHelper.addContextForNodeParameter((Node) elem, connItem, ignoreContextMode);
-                        } else if (elem instanceof Process) {
-                            ConnectionContextHelper.addContextForProcessParameter((Process) elem, connItem, param.getCategory(),
-                                    ignoreContextMode);
                         }
                     }
                 }

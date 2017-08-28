@@ -87,7 +87,7 @@
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 	
-    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="90">
+    <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" REQUIRED="true" NUM_ROW="150">
 		<TABLE READONLY="true">
 			<COLUMN NAME="content" TYPE="id_Object" />
 		</TABLE>
@@ -96,6 +96,49 @@
    </PARAMETERS>
    
 	<ADVANCED_PARAMETERS>
+	    <PARAMETER NAME="EXPORT_DOCUMENT" FIELD="CLOSED_LIST" NUM_ROW="110">
+	        <ITEMS DEFAULT="WORD">
+	        	<ITEM NAME="EPUB" VALUE="application/epub+zip"/>
+	        	<ITEM NAME="HTML" VALUE="text/html" />
+	        	<ITEM NAME="WORD" VALUE="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+	        	<ITEM NAME="PDF" VALUE="application/pdf"/>
+	        	<ITEM NAME="TEXT" VALUE="text/plain" />
+	        	<ITEM NAME="OO_DOCUMENT" VALUE="application/vnd.oasis.opendocument.text" />
+	        	<ITEM NAME="RTF" VALUE="application/rtf" />
+	        </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER NAME="EXPORT_DRAWING" FIELD="CLOSED_LIST" NUM_ROW="120">
+	        <ITEMS DEFAULT="PNG">
+	            <ITEM NAME="JPG" VALUE="image/jpeg" />
+	            <ITEM NAME="PDF" VALUE="application/pdf"/>
+	            <ITEM NAME="PNG" VALUE="image/png" />
+	            <ITEM NAME="SVG" VALUE="image/svg+xml" />
+	        </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER NAME="EXPORT_PRESENTATION" FIELD="CLOSED_LIST" NUM_ROW="130">
+	        <ITEMS DEFAULT="POWERPOINT">
+	            <ITEM NAME="POWERPOINT" VALUE="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+	            <ITEM NAME="PDF" VALUE="application/pdf"/>
+	            <ITEM NAME="OO_PRESENSTATION" VALUE="application/vnd.oasis.opendocument.presentation" />
+	        </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER NAME="EXPORT_SPREADSHEET" FIELD="CLOSED_LIST" NUM_ROW="140">
+	        <ITEMS DEFAULT="EXCEL">
+	            <ITEM NAME="CSV" VALUE="text/csv" />
+	            <ITEM NAME="CSV_TAB" VALUE="text/tab-separated-values" />
+	            <ITEM NAME="EXCEL" VALUE="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+	            <ITEM NAME="PDF" VALUE="application/pdf"/>
+	            <ITEM NAME="OO_SPREADSHEET" VALUE="application/vnd.oasis.opendocument.spreadsheet" />
+	            <ITEM NAME="OO_XSPREADSHEET" VALUE="application/x-vnd.oasis.opendocument.spreadshee" />
+	            <ITEM NAME="ZIP" VALUE="application/zip" />
+	        </ITEMS>
+	    </PARAMETER>
+	    <PARAMETER NAME="OUTPUT_EXT"  FIELD="CHECK"  NUM_ROW="150" REQUIRED="true" SHOW_IF=" STORE_TO_LOCAL == 'true'">
+			<DEFAULT>false</DEFAULT>
+    	</PARAMETER>
 	</ADVANCED_PARAMETERS>
 	
    <CODEGENERATION>

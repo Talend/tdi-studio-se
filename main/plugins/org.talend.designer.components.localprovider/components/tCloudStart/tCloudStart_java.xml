@@ -59,20 +59,59 @@ COMPATIBILITY="ALL"
 			<DEFAULT>1</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="TYPE" FIELD="CLOSED_LIST" NUM_ROW="45" GROUP="CONFIGURATION">
-			<ITEMS DEFAULT="T1_MICRO">
+			<ITEMS DEFAULT="T2_MICRO">
 				<ITEM NAME="T1_MICRO" VALUE="T1_MICRO" />
+				<ITEM NAME="T2_MICRO" VALUE="T2_MICRO" />
+				<ITEM NAME="T2_SMALL" VALUE="T2_SMALL" />
+				<ITEM NAME="T2_MEDIUM" VALUE="T2_MEDIUM" />
+				<ITEM NAME="T2_LARGE" VALUE="T2_LARGE" />
 				<ITEM NAME="M1_SMALL" VALUE="M1_SMALL" />
 				<ITEM NAME="M1_MEDIUM" VALUE="M1_MEDIUM" />
 				<ITEM NAME="M1_LARGE" VALUE="M1_LARGE" />
+				<ITEM NAME="M1_XLARGE" VALUE="M1_XLARGE" />
 				<ITEM NAME="M2_XLARGE" VALUE="M2_XLARGE" />
 				<ITEM NAME="M2_2XLARGE" VALUE="M2_2XLARGE" />
 				<ITEM NAME="M2_4XLARGE" VALUE="M2_4XLARGE" />
+				<ITEM NAME="M3_MEDIUM" VALUE="M3_MEDIUM" />
+				<ITEM NAME="M3_LARGE" VALUE="M3_LARGE" />
+				<ITEM NAME="M3_XLARGE" VALUE="M3_XLARGE" />
+				<ITEM NAME="M3_2XLARGE" VALUE="M3_2XLARGE" />
+				<ITEM NAME="M4_LARGE" VALUE="M4_LARGE" />
+				<ITEM NAME="M4_XLARGE" VALUE="M4_XLARGE" />
+				<ITEM NAME="M4_2XLARGE" VALUE="M4_2XLARGE" />
+				<ITEM NAME="M4_4XLARGE" VALUE="M4_4XLARGE" />
+				<ITEM NAME="M4_10XLARGE" VALUE="M4_10XLARGE" />
 				<ITEM NAME="C1_MEDIUM" VALUE="C1_MEDIUM" />
 				<ITEM NAME="C1_XLARGE" VALUE="C1_XLARGE" />
 				<ITEM NAME="CC1_4XLARGE" VALUE="CC1_4XLARGE" />
 				<ITEM NAME="CC2_8XLARGE" VALUE="CC2_8XLARGE" />
 				<ITEM NAME="CG1_4XLARGE" VALUE="CG1_4XLARGE" />
 				<ITEM NAME="HI1_4XLARGE" VALUE="HI1_4XLARGE" />
+				<ITEM NAME="HS1_8XLARGE" VALUE="HS1_8XLARGE" />
+				<ITEM NAME="G2_2XLARGE" VALUE="G2_2XLARGE" />
+				<ITEM NAME="C3_LARGE" VALUE="C3_LARGE" />
+				<ITEM NAME="C3_XLARGE" VALUE="C3_XLARGE" />
+				<ITEM NAME="C3_2XLARGE" VALUE="C3_2XLARGE" />
+				<ITEM NAME="C3_4XLARGE" VALUE="C3_4XLARGE" />
+				<ITEM NAME="C3_8XLARGE" VALUE="C3_8XLARGE" />
+				<ITEM NAME="C4_LARGE" VALUE="C4_LARGE" />
+				<ITEM NAME="C4_XLARGE" VALUE="C4_XLARGE" />
+				<ITEM NAME="C4_2XLARGE" VALUE="C4_2XLARGE" />
+				<ITEM NAME="C4_4XLARGE" VALUE="C4_4XLARGE" />
+				<ITEM NAME="C4_8XLARGE" VALUE="C4_8XLARGE" />
+				<ITEM NAME="D2_XLARGE" VALUE="D2_XLARGE" />
+				<ITEM NAME="D2_2XLARGE" VALUE="D2_2XLARGE" />
+				<ITEM NAME="D2_4XLARGE" VALUE="D2_4XLARGE" />
+				<ITEM NAME="D2_8XLARGE" VALUE="D2_8XLARGE" />
+				<ITEM NAME="I2_XLARGE" VALUE="I2_XLARGE" />
+				<ITEM NAME="I2_2XLARGE" VALUE="I2_2XLARGE" />
+				<ITEM NAME="I2_4XLARGE" VALUE="I2_4XLARGE" />
+				<ITEM NAME="I2_8XLARGE" VALUE="I2_8XLARGE" />
+				<ITEM NAME="R3_LARGE" VALUE="R3_LARGE" />
+				<ITEM NAME="R3_XLARGE" VALUE="R3_XLARGE" />
+				<ITEM NAME="R3_2XLARGE" VALUE="R3_2XLARGE" />
+				<ITEM NAME="R3_4XLARGE" VALUE="R3_4XLARGE" />
+				<ITEM NAME="R3_8XLARGE" VALUE="R3_8XLARGE" />
 			</ITEMS>
 		</PARAMETER>
 		<PARAMETER NAME="PROCEED_WITH_KEYPAIR" FIELD="CHECK" NUM_ROW="50" GROUP="CONFIGURATION">
@@ -125,22 +164,21 @@ COMPATIBILITY="ALL"
    <CODEGENERATION>
 	<IMPORTS>
 		<IMPORT NAME="aopalliance-1_0" MODULE="aopalliance-1.0.jar" MVN="mvn:org.talend.libraries/aopalliance-1.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.esb/lib/aopalliance-1.0.jar" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="aws-common-1_5_7" MODULE="aws-common-1.5.7.jar" MVN="mvn:org.talend.libraries/aws-common-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="aws-ec2-1_5_7" MODULE="aws-ec2-1.5.7.jar" MVN="mvn:org.talend.libraries/aws-ec2-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="aws-ec2-2_0_2" MODULE="aws-ec2-2.0.2.jar" MVN="mvn:org.talend.libraries/aws-ec2-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="bcprov-jdk16-1_46" MODULE="bcprov-jdk16-1.46.jar" MVN="mvn:org.talend.libraries/bcprov-jdk16-1.46/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="commons-io-2_4" MODULE="commons-io-2.4.jar" MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="ec2-1_5_7" MODULE="ec2-1.5.7.jar" MVN="mvn:org.talend.libraries/ec2-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="ec2-2_0_2" MODULE="ec2-2.0.2.jar" MVN="mvn:org.talend.libraries/ec2-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="gson-2_2" MODULE="gson-2.2.jar" MVN="mvn:org.talend.libraries/gson-2.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="guava-13_0" MODULE="guava-13.0.jar" MVN="mvn:org.talend.libraries/guava-13.0/6.0.0"   UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-13.0.jar" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="guava-16.0.1" MODULE="guava-16.0.1.jar" MVN="mvn:org.talend.libraries/guava-16.0.1/6.0.0"   UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-16.0.1.jar" REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="guice-3_0" MODULE="guice-3.0.jar" MVN="mvn:org.talend.libraries/guice-3.0/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="guice-assistedinject-3_0" MODULE="guice-assistedinject-3.0.jar" MVN="mvn:org.talend.libraries/guice-assistedinject-3.0/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="javax_inject-1" MODULE="javax.inject-1.jar" MVN="mvn:org.talend.libraries/javax.inject-1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-bouncycastle-1_5_7" MODULE="jclouds-bouncycastle-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-bouncycastle-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-compute-1_5_7" MODULE="jclouds-compute-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-compute-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-core-1_5_7" MODULE="jclouds-core-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-core-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-scriptbuilder-1_5_7" MODULE="jclouds-scriptbuilder-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-scriptbuilder-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-slf4j-1_5_7" MODULE="jclouds-slf4j-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-slf4j-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
-		<IMPORT NAME="jclouds-sshj-1_5_7" MODULE="jclouds-sshj-1.5.7.jar" MVN="mvn:org.talend.libraries/jclouds-sshj-1.5.7/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-bouncycastle-2_0_2" MODULE="jclouds-bouncycastle-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-bouncycastle-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-compute-2_0_2" MODULE="jclouds-compute-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-compute-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-core-2_0_2" MODULE="jclouds-core-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-core-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-scriptbuilder-2_0_2" MODULE="jclouds-scriptbuilder-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-scriptbuilder-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-slf4j-2_0_2" MODULE="jclouds-slf4j-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-slf4j-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		<IMPORT NAME="jclouds-sshj-2_0_2" MODULE="jclouds-sshj-2.0.2.jar" MVN="mvn:org.talend.libraries/jclouds-sshj-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="jsr250-api-1_0" MODULE="jsr250-api-1.0.jar" MVN="mvn:org.talend.libraries/jsr250-api-1.0/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="jsr311-api-1_1_1" MODULE="jsr311-api-1.1.1.jar" MVN="mvn:org.talend.libraries/jsr311-api-1.1.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="logback-classic-1_0_9" MODULE="logback-classic-1.0.9.jar" MVN="mvn:org.talend.libraries/logback-classic-1.0.9/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
@@ -148,6 +186,8 @@ COMPATIBILITY="ALL"
 		<IMPORT NAME="rocoto-6_1" MODULE="rocoto-6.1.jar" MVN="mvn:org.talend.libraries/rocoto-6.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="slf4j-api-1_7_2" MODULE="slf4j-api-1.7.2.jar" MVN="mvn:org.talend.libraries/slf4j-api-1.7.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 		<IMPORT NAME="sshj-0_8_1" MODULE="sshj-0.8.1.jar" MVN="mvn:org.talend.libraries/sshj-0.8.1/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
+		
+		<IMPORT NAME="sts-2.0.2" MODULE="sts-2.0.2.jar" MVN="mvn:org.talend.libraries/sts-2.0.2/6.0.0"  REQUIRED_IF="PROVIDER=='AWS_EC2'"/>
 	</IMPORTS>
    </CODEGENERATION>
 

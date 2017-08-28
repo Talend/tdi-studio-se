@@ -229,15 +229,6 @@
         };
     };
 
-<% if (hasSAM4RS) { %>
-    // ESB Service Activity Monitor Feature
-    private org.apache.cxf.feature.Feature eventFeature;
-
-    public void setEventFeature(org.apache.cxf.feature.Feature eventFeature) {
-        this.eventFeature = eventFeature;
-    }
-<% } %>
-
 <%
     if(isRunInMultiThread || exist_tParallelize){
 %>
@@ -893,20 +884,6 @@ this.globalResumeTicket = true;//to run tPostJob
 <% if (exist_tSCP) { %>
     closeScpConnections();
 <% } %>
-
-<%
-    if (hasSAM4RS || hasSAM4WS) {
-%>
-    if (false<% if (hasSAM4RS) { %> || null == eventFeature<% } %><% if (hasSAM4WS) { %> || null == registry<% } %>) { // TESB-8574: Fix SAM timeout issue in Studio
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-        }
-    }
-<%
-    }
-%>
-
 
 <%
     if (stats) {

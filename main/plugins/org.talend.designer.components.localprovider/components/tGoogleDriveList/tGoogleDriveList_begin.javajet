@@ -112,7 +112,7 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
       } else {
       
 	  	<%if ("BOTH".equals(helper.getStringParam("__LIST_MODE__"))) {%>
-	  		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash;
+	  		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash);
       	<%} else if ("FILES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
       		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash+" and mimeType != 'application/vnd.google-apps.folder'");
       	<%} else {%>
