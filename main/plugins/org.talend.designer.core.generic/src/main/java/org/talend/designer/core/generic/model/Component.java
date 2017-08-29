@@ -199,9 +199,14 @@ public class Component extends AbstractBasicComponent {
     }
 
     @Override
-    public List<NodeReturn> createReturns() {
+    public List<NodeReturn> createReturns(INode parentNode) {
         List<NodeReturn> listReturn = new ArrayList<>();
-        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+
+        ComponentProperties componentProperties = parentNode.getComponentProperties();
+        if (componentProperties == null) {
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            componentProperties = parentNode.getComponentProperties();
+        }
         if (!(componentProperties instanceof ComponentPropertiesImpl)) {
             return listReturn;
         }
@@ -948,7 +953,11 @@ public class Component extends AbstractBasicComponent {
     public List<INodeConnector> createConnectors(INode parentNode) {
         List<INodeConnector> listConnector = new ArrayList<>();
 
-        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+        ComponentProperties componentProperties = parentNode.getComponentProperties();
+        if (componentProperties == null) {
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            componentProperties = parentNode.getComponentProperties();
+        }
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
 
         if (inputConnectors.isEmpty()) {

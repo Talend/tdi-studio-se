@@ -508,7 +508,7 @@ public class EmfComponent extends AbstractBasicComponent {
     }
 
     @Override
-    public List<NodeReturn> createReturns() {
+    public List<NodeReturn> createReturns(INode parentNode) {
         List<NodeReturn> listReturn;
         RETURNType retType;
         EList returnList;
