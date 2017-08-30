@@ -1486,6 +1486,8 @@ public abstract class AbstractElementPropertySectionController implements Proper
         String dbVersion = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter);
         if (StringUtils.isBlank(dbVersion) && EDatabaseTypeName.MSSQL.getDisplayName().equals(connParameters.getDbType())) {
             dbVersion = getValueFromRepositoryName(element, "DRIVER", basePropertyParameter); //$NON-NLS-1$
+        } else if (EDatabaseTypeName.AS400.getDisplayName().equals(connParameters.getDbType())) {
+            dbVersion = EDatabaseVersion4Drivers.getDbVersionName(type, dbVersion);
         }
         connParameters.setDbVersion(dbVersion);
         if (EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
