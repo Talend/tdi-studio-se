@@ -22,6 +22,7 @@ import org.talend.components.api.component.Connector;
 import org.talend.components.api.component.PropertyPathConnector;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.common.FixedConnectorsComponentProperties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
@@ -45,6 +46,9 @@ public class TestProperties extends FixedConnectorsComponentProperties {
             "referencePros", //$NON-NLS-1$
             TestReferencedProperties.TEST_DEFINTION_NAME);
 
+    public ReferenceProperties<TestReferencedProperties> simpleReferencePros = new ReferenceProperties<>(
+            "simpleReferencePros", //$NON-NLS-1$
+            TestReferencedProperties.TEST_DEFINTION_NAME);
     protected transient PropertyPathConnector MAIN_CONNECTOR = new PropertyPathConnector(Connector.MAIN_NAME, "schema"); //$NON-NLS-1$
 
     public TestProperties(String name) {
