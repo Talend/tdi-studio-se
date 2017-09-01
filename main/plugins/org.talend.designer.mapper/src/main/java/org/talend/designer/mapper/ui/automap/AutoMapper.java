@@ -63,51 +63,72 @@ public class AutoMapper {
 
         ILanguage currentLanguage = LanguageProvider.getCurrentLanguage();
 
-        HashMap<String, InputTable> nameToInputTable = new HashMap<String, InputTable>(inputTables.size());
 
-        for (InputTable inputTable : inputTables) {
-            nameToInputTable.put(inputTable.getName(), inputTable);
-        }
 
         // output tables are the references
         for (OutputTable outputTable : outputTables) {
 
             List<IColumnEntry> outputEntries = outputTable.getColumnEntries();
+            boolean mapFound = false;
             for (IColumnEntry outputEntry : outputEntries) {
+
+                mapFound = false;
 
                 if (mapperManager.checkEntryHasEmptyExpression(outputEntry)) {
 
-                    String outputColumnName = outputEntry.getName().toLowerCase();
-                    String jaccardOutput = Jaccard.tokenize(outputEntry.getName());
+                    // when set both weights to 0, automap will match columns exactly the same
+                    if ((paramL + paramJ) == 0) {
+                        String outputColumnName = outputEntry.getName();
 
-                    HashMap<IColumnEntry, Double> finalMap = new HashMap<IColumnEntry, Double>();
-                    for (InputTable inputTable : inputTables) {
+                        for (InputTable inputTable : inputTables) {
 
-                        List<IColumnEntry> inputColumnEntries = inputTable.getColumnEntries();
-                        for (IColumnEntry inputEntry : inputColumnEntries) {
-                            // Levenshtein
-                            String inputStr = inputEntry.getName().toLowerCase();
-                            double LevenshteinScore = Levenshtein.getLevenshteinScore(inputStr, outputColumnName);
-
-                            // Jaccard
-                            String jaccardIutput = Jaccard.tokenize(inputEntry.getName());
-                            double JaccardScore = Jaccard.JaccardCompare(jaccardIutput, jaccardOutput);
-                            double finalScore = LevenshteinScore * paramL + JaccardScore * paramJ;
-
-                            finalMap.put(inputEntry, finalScore);
-                            inputEntry.getParent();
+                            List<IColumnEntry> inputColumnEntries = inputTable.getColumnEntries();
+                            for (IColumnEntry inputEntry : inputColumnEntries) {
+                                if (inputEntry.getName().equalsIgnoreCase(outputColumnName)) {
+                                    outputEntry.setExpression(
+                                            currentLanguage.getLocation(inputTable.getName(), inputEntry.getName()));
+                                    mapFound = true;
+                                    break;
+                                }
+                            }
+                            if (mapFound) {
+                                break;
+                            }
 
                         }
-                    }
-                    IColumnEntry bestEntry = getMaxStr(finalMap);
-                    if (bestEntry == null) {
-                        continue;
-                    }
-                    if (finalMap.get(bestEntry) < 30) {
-                        continue;
                     } else {
-                        outputEntry
-                                .setExpression(currentLanguage.getLocation(bestEntry.getParent().getName(), bestEntry.getName()));
+                        String outputColumnName = outputEntry.getName().toLowerCase();
+                        String jaccardOutput = Jaccard.tokenize(outputEntry.getName());
+
+                        HashMap<IColumnEntry, Double> finalMap = new HashMap<IColumnEntry, Double>();
+                        for (InputTable inputTable : inputTables) {
+
+                            List<IColumnEntry> inputColumnEntries = inputTable.getColumnEntries();
+                            for (IColumnEntry inputEntry : inputColumnEntries) {
+                                // Levenshtein
+                                String inputStr = inputEntry.getName().toLowerCase();
+                                double LevenshteinScore = Levenshtein.getLevenshteinScore(inputStr, outputColumnName);
+
+                                // Jaccard
+                                String jaccardIutput = Jaccard.tokenize(inputEntry.getName());
+                                double JaccardScore = Jaccard.JaccardCompare(jaccardIutput, jaccardOutput);
+                                double finalScore = LevenshteinScore * paramL + JaccardScore * paramJ;
+
+                                finalMap.put(inputEntry, finalScore);
+                                inputEntry.getParent();
+
+                            }
+                        }
+                        IColumnEntry bestEntry = getMaxStr(finalMap);
+                        if (bestEntry == null) {
+                            continue;
+                        }
+                        if (finalMap.get(bestEntry) < 30) {
+                            continue;
+                        } else {
+                            outputEntry.setExpression(
+                                    currentLanguage.getLocation(bestEntry.getParent().getName(), bestEntry.getName()));
+                        }
                     }
 
                 }
@@ -128,8 +149,6 @@ public class AutoMapper {
         mapperManager.getUiManager().refreshBackground(true, false);
 
     }
-
-
 
     public static IColumnEntry getMaxStr(HashMap<IColumnEntry, Double> map) {
         Double max = 0.0;
