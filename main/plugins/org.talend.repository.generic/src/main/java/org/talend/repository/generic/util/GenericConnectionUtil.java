@@ -12,11 +12,16 @@
 // ============================================================================
 package org.talend.repository.generic.util;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
+import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
 import org.talend.daikon.properties.property.Property;
@@ -24,6 +29,7 @@ import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
+import org.talend.repository.model.IRepositoryNode;
 
 /**
  * created by ycbai on 2016年8月18日 Detailled comment
@@ -91,6 +97,23 @@ public class GenericConnectionUtil {
                 }
             }
         }, null);
+    }
+
+    public static List<ComponentWizard> getAllWizards(IRepositoryNode node) {
+        if (node == null) {
+            return Collections.EMPTY_LIST;
+        }
+        IRepositoryViewObject repObj = node.getObject();
+        if (repObj == null) {
+            return Collections.EMPTY_LIST;
+        }
+        GenericConnectionItem item = (GenericConnectionItem) repObj.getProperty().getItem();
+        GenericConnection connection = (GenericConnection) item.getConnection();
+        ComponentProperties componentProperties = ComponentsUtils
+                .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
+        List<ComponentWizard> wizards = GenericWizardServiceFactory.getGenericWizardInternalService()
+                .getComponentWizardsForProperties(componentProperties, item.getProperty().getId());
+        return wizards;
     }
 
 }

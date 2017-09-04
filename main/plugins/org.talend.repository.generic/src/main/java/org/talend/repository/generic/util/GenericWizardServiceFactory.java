@@ -13,6 +13,8 @@
 package org.talend.repository.generic.util;
 
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.repository.generic.internal.IGenericWizardInternalService;
+import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.service.GenericWizardService;
 
 /**
@@ -23,11 +25,20 @@ public class GenericWizardServiceFactory {
 
     private static IGenericWizardService service = null;
 
+    private static IGenericWizardInternalService internalService = null;
+
     public static IGenericWizardService getGenericWizardService() {
         if (service == null) {
             service = new GenericWizardService();
         }
         return service;
+    }
+
+    public static IGenericWizardInternalService getGenericWizardInternalService() {
+        if (internalService == null) {
+            internalService = new GenericWizardInternalService();
+        }
+        return internalService;
     }
 
 }

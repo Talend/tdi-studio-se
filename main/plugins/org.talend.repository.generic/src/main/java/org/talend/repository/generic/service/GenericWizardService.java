@@ -23,7 +23,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.runtime.model.components.IComponentConstants;
+import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.components.api.wizard.WizardImageType;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -40,12 +42,14 @@ import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.repository.generic.action.GenericAction;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DynamicComposite;
+import org.talend.repository.generic.util.GenericConnectionUtil;
 import org.talend.repository.generic.util.RepTypeMappingManager;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.RepositoryNode;
@@ -239,6 +243,23 @@ public class GenericWizardService implements IGenericWizardService {
             return compProperties;
         }
         return null;
+    }
+
+    @Override
+    public ITreeContextualAction getDefaultAction(RepositoryNode node) {
+        if (node == null) {
+            return null;
+        }
+        ITreeContextualAction defaultAction = null;
+        List<ComponentWizard> wizards = GenericConnectionUtil.getAllWizards(node);
+        for (ComponentWizard wizard : wizards) {
+            ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
+            if (wizardDefinition.isTopLevel()) {
+                defaultAction = new GenericAction(wizard);
+                break;
+            }
+        }
+        return defaultAction;
     }
 
 }
