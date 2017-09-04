@@ -89,8 +89,14 @@ skeleton="../templates/db_output_bulk.skeleton"
         String connection = ElementParameterParser.getValue(previousNode, "__CONNECTION__");
         String conn = "conn_" + connection;
         String username = "username_" + connection;
+        String connectionKey=null;
+        if(connection.indexOf("tJDBCConnection")<0){
+           connectionKey=connection+"_Connection";
+        }else{
+        	  connectionKey=conn;
+        }
         %>
-        java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
+        java.sql.Connection conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=connectionKey%>");
         dbUser_<%=cid %> = (String)globalMap.get("<%=username%>");
         <%
         log4jCodeGenerateUtil.useExistConnection(node);

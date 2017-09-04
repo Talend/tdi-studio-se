@@ -122,8 +122,6 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 
         mainComposite.setLayoutData(gridData);
 
-        tableComposite = mainComposite;
-
         createHeaderTable();
 
         initTable();

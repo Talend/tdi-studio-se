@@ -169,7 +169,7 @@ public class DummyComponent extends AbstractComponent {
      * @see org.talend.core.model.components.IComponent#createReturns()
      */
     @Override
-    public List<? extends INodeReturn> createReturns() {
+    public List<? extends INodeReturn> createReturns(INode node) {
         return new ArrayList<NodeReturn>();
     }
 

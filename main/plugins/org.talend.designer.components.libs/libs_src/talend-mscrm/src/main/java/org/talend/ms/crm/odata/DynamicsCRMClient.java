@@ -307,7 +307,7 @@ public class DynamicsCRMClient {
     }
 
     public void addEntityProperty(ClientEntity entity, String propertyName, EdmPrimitiveTypeKind type, Object value) {
-        if (type != null && value != null) {
+        if (type != null) {
             entity.getProperties().add(odataClient.getObjectFactory().newPrimitiveProperty(propertyName,
                     odataClient.getObjectFactory().newPrimitiveValueBuilder().setType(type).setValue(value).build()));
         }

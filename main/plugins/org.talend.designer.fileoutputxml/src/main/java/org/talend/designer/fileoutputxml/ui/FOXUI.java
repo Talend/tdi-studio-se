@@ -15,6 +15,7 @@ package org.talend.designer.fileoutputxml.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -33,11 +34,14 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
@@ -161,7 +165,9 @@ public class FOXUI {
         xmlToSchemaSash = new SashForm(mainComposite, SWT.HORIZONTAL | SWT.SMOOTH);
         xmlToSchemaSash.setLayoutData(new GridData(GridData.FILL_BOTH));
         xmlToSchemaSash.setBackgroundMode(SWT.INHERIT_FORCE);
-
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            xmlToSchemaSash.setSashWidth((mainComposite.getShell().getBounds().width) / 5);
+        }
         canModify = externalNode.getProcess().isReadOnly();
         if (externalNode.getOriginalNode().getJobletNode() != null) {
             canModify = externalNode.getOriginalNode().isReadOnly();
@@ -184,7 +190,22 @@ public class FOXUI {
         footerComp = new FooterComposite(mainComposite, SWT.NONE, foxManager);
         xmlViewer.expandToLevel(3);
         linker.createLinks();
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            mainComposite.getShell().addControlListener(new ControlListener() {
+
+                @Override
+                public void controlMoved(ControlEvent e) {
+                }
+
+                @Override
+                public void controlResized(ControlEvent e) {
+                    xmlToSchemaSash.setSashWidth((mainComposite.getShell().getBounds().width) / 5);
+                }
+
+            });
+        }
     }
+
 
     /**
      * 
@@ -310,11 +331,19 @@ public class FOXUI {
         if (inConn != null) {
             List<IMetadataColumn> columnList = inConn.getMetadataTable().getListColumns();
             schemaViewer.setInput(columnList);
+
         } else {
             schemaViewer.setInput(new ArrayList<IMetadataColumn>());
         }
-        // }
-
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            TableItem[] items = schemaViewer.getTable().getItems();
+            for (int rowid = 0; rowid < items.length; rowid++) {
+                if (rowid % 2 == 0)
+                    items[rowid].setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_WHITE));
+                else
+                    items[rowid].setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
+            }
+        }
     }
 
     /**
@@ -518,6 +547,7 @@ public class FOXUI {
 
         GridData data2 = new GridData(GridData.FILL_BOTH);
         Table table = schemaViewer.getTable();
+
         // see bug 7087
         if (canModify || isRepository) {
             table.setEnabled(false);
@@ -526,9 +556,25 @@ public class FOXUI {
         table.setHeaderVisible(true);
         TableColumn column1 = new TableColumn(table, SWT.LEFT);
         column1.setText(Messages.getString("FOXUI.20")); //$NON-NLS-1$
-        column1.setWidth(100);
-        table.setLayoutData(data2);
 
+        if (Platform.OS_MACOSX.equals(Platform.getOS())) {
+            column1.setWidth(mainComposite.getShell().getBounds().width);
+            column1.addControlListener(new ControlListener() {
+
+                @Override
+                public void controlMoved(ControlEvent e) {
+                }
+
+                @Override
+                public void controlResized(ControlEvent e) {
+                    column1.setWidth(mainComposite.getShell().getBounds().width);
+                }
+
+            });
+        } else {
+            column1.setWidth(100);
+        }
+        table.setLayoutData(data2);
         table.addSelectionListener(new SelectionAdapter() {
 
             @Override

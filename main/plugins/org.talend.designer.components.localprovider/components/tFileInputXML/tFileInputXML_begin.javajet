@@ -28,7 +28,7 @@ String loopQuery = ElementParameterParser.getValue(node, "__LOOP_QUERY__");
 
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 
-String ignore_NS_Str = ElementParameterParser.getValue(node, "__IGNORE_NS__");
+boolean ignore_NS="true".equals(ElementParameterParser.getValue(node, "__IGNORE_NS__"));
 String tmp_filename = ElementParameterParser.getValue(node, "__TMP_FILENAME__");
 
 String useSeparator = ElementParameterParser.getValue(node, "__USE_SEPARATOR__");
@@ -397,7 +397,7 @@ class XML_API_<%=cid%>{
 }
 
 <%
-	if(("true").equals(ignore_NS_Str)){
+	if(ignore_NS){
 %>
 	class XML_NS_RMV_<%=cid %>{	
 
@@ -465,7 +465,7 @@ if(filename_<%=cid %> != null && filename_<%=cid %> instanceof String && filenam
 }
 
 <%
-	if(("true").equals(ignore_NS_Str)){
+	if(ignore_NS){
 %>
 org.dom4j.Document doc_reader_<%=cid %> = null;
 org.dom4j.Document doc_tmp_<%=cid %> = org.dom4j.DocumentHelper.createDocument();
@@ -539,7 +539,7 @@ java.util.HashMap<String,String> xmlNameSpaceMap_<%=cid%> = nsTool_<%=cid%>.xmlN
 
 org.dom4j.XPath x_<%=cid%> = doc_<%=cid%>.createXPath(nsTool_<%=cid%>.addDefaultNSPrefix(<%=loopQuery%>));  
 x_<%=cid%>.setNamespaceURIs(xmlNameSpaceMap_<%=cid%>); 
-<%if(("true").equals(ignore_NS_Str)){%>
+<%if(ignore_NS){%>
 org.jaxen.NamespaceContext namespaceContext_<%=cid%> = new org.jaxen.NamespaceContext() {
 
 	public String translateNamespacePrefixToUri(String prefix) { 
@@ -556,6 +556,67 @@ String str_<%=cid %> = "";
 org.dom4j.Node node_<%=cid%> = null;
 
 //init all mapping xpaths
+java.util.Map<Integer,org.dom4j.XPath> xpaths_<%=cid%>=new java.util.HashMap<Integer,org.dom4j.XPath>();
+<%
+if(schemaOptNum>0){
+%>
+	class XPathUtil_<%=cid%>{
+	<%
+	   int mappingSize=mapping.size();
+		for (int i=0;i<mappingSize;i++) {
+			String query = mapping.get(i).get("QUERY");
+			if(i%schemaOptNum==0){
+			%>
+			   public void initXPaths_<%=i/schemaOptNum%>(java.util.Map<Integer,org.dom4j.XPath> xpaths,NameSpaceTool_<%=cid%> nsTool,
+			       java.util.HashMap<String,String> xmlNameSpaceMap<%if(ignore_NS){%>,org.jaxen.NamespaceContext namespaceContext<%}%>){
+			<%
+			}
+	      %>
+	org.dom4j.XPath xpath_<%=i%> = org.dom4j.DocumentHelper.createXPath(nsTool.addDefaultNSPrefix(<%=query%>,<%=loopQuery%>));
+	xpath_<%=i%>.setNamespaceURIs(xmlNameSpaceMap);
+	<%
+			if(ignore_NS){
+	%>
+	xpath_<%=i%>.setNamespaceContext(namespaceContext);
+	<%
+			}
+			%>
+			xpaths.put(<%=i%>,xpath_<%=i%>);
+			<%
+			if((i+1)%schemaOptNum==0){
+	      %>
+	         }
+	      <%
+	      }
+		}
+		if(mappingSize>0&&(mappingSize%schemaOptNum)>0){
+	   %>
+	     }
+	   <%
+	   }
+	   %>
+	      public void initXPaths(java.util.Map<Integer,org.dom4j.XPath> xpaths,NameSpaceTool_<%=cid%> nsTool,
+			    java.util.HashMap<String,String> xmlNameSpaceMap<%if(ignore_NS){%>,org.jaxen.NamespaceContext namespaceContext<%}%>){
+			    <%
+			    for (int i=0;i<=((mappingSize-1)/schemaOptNum);i++) {
+			    %>
+			        initXPaths_<%=i%>(xpaths,nsTool, xmlNameSpaceMap<%if(ignore_NS){%>,namespaceContext<%}%>);
+			    <%
+			    }
+			    %>
+		   }
+	}
+	XPathUtil_<%=cid%> xPathUtil_<%=cid%> = new XPathUtil_<%=cid%>();
+	xPathUtil_<%=cid%>.initXPaths(xpaths_<%=cid%>, nsTool_<%=cid%>, xmlNameSpaceMap_<%=cid%><%if(ignore_NS){%>, namespaceContext_<%=cid%><%}%>);
+<%
+}else{
+%>
+	if(true){
+		throw new IllegalArgumentException("Min column number of optimize code should be bigger than 0!");
+	}
+<%
+}
+%>
 <%log4jFileUtil.startRetriveDataInfo();%>
 for (org.dom4j.tree.AbstractNode temp_<%=cid%>: nodeList_<%=cid%>) {
 <%
@@ -700,9 +761,10 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 				varsMap.put("nsTool_"+cid,"NameSpaceTool_"+cid);
 				varsMap.put("xmlNameSpaceMap_"+cid,"java.util.HashMap<String,String>");
 				varsMap.put("temp_"+cid,"org.dom4j.tree.AbstractNode");
-				if(("true").equals(ignore_NS_Str)){
+				if(ignore_NS){
 					varsMap.put("namespaceContext_"+cid,"org.jaxen.NamespaceContext");
 				}
+				varsMap.put("xpaths_"+cid,"java.util.Map<Integer,org.dom4j.XPath>");
 			}
 			if(("SAX").equals(mode)){
 				varsMap.put("row_"+cid,"java.util.Map<String, String>");
@@ -728,8 +790,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					String useSeparator = ElementParameterParser.getValue(node, "__USE_SEPARATOR__");
 					
 					String mode = ElementParameterParser.getValue(node, "__GENERATION_MODE__");
-					String loopQuery = ElementParameterParser.getValue(node, "__LOOP_QUERY__"); 
-					String ignore_NS_Str = ElementParameterParser.getValue(node, "__IGNORE_NS__");
 					
 					for (int i=start;i<end;i++) { // S_for_a_1_0
 						String query = mapping.get(i).get("QUERY");
@@ -759,15 +819,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 	}
 <%
 						}else if(("Dom4j").equals(mode)){
-%>
-	org.dom4j.XPath xTmp<%=i%>_<%=cid%> = org.dom4j.DocumentHelper.createXPath(nsTool_<%=cid%>.addDefaultNSPrefix(<%=query%>,<%=loopQuery%>));
-	xTmp<%=i%>_<%=cid%>.setNamespaceURIs(xmlNameSpaceMap_<%=cid%>);
-<%
-							if(("true").equals(ignore_NS_Str)){
-%>
-	xTmp<%=i%>_<%=cid%>.setNamespaceContext(namespaceContext_<%=cid%>);
-<%
-							}
 							//TDI-18498
 							boolean isWrongConfig = false;
 							
@@ -790,7 +841,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 <%
 							}
 %>
-    Object obj<%=i%>_<%=cid%> = xTmp<%=i%>_<%=cid%>.evaluate(temp_<%=cid%>);
+    Object obj<%=i%>_<%=cid%> = xpaths_<%=cid%>.get(<%=i%>).evaluate(temp_<%=cid%>);
     if(obj<%=i%>_<%=cid%> == null) {
     	node_<%=cid%> = null;
 <%

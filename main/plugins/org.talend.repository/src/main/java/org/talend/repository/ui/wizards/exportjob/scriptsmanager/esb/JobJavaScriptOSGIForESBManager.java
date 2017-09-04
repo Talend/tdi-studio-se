@@ -554,7 +554,29 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 }
             }
         }
+
+        Map<String, String> samCustomProperties = new HashMap<String, String>();
+        customPropsType = EmfModelUtils.findElementParameterByName("SERVICE_ACTIVITY_MONITOR_CUSTOM_PROPERTIES", //$NON-NLS-1$
+                restRequestComponent);
+        if (null != customPropsType) {
+            List<?> elementValues = customPropsType.getElementValue();
+            final int size = elementValues.size();
+            for (int i = 0; i < size; i += 2) {
+                if (size <= i + 1) {
+                    break;
+                }
+                ElementValueType name = (ElementValueType) elementValues.get(i);
+                ElementValueType value = (ElementValueType) elementValues.get(i + 1);
+                if (null != name && null != value) {
+                    if (null != name.getValue() && null != value.getValue()) {
+                        samCustomProperties.put(unquote(name.getValue()), unquote(value.getValue()));
+                    }
+                }
+            }
+        }
+
         endpointInfo.put("slCustomProps", slCustomProperties); //$NON-NLS-1$
+        endpointInfo.put("samCustomProps", samCustomProperties); //$NON-NLS-1$
 
         // service name & namespace
         endpointInfo.put("serviceName", //$NON-NLS-1$

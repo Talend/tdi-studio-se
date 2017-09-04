@@ -1483,15 +1483,16 @@ public abstract class AbstractElementPropertySectionController implements Proper
 
         String driverClass = getValueFromRepositoryName(element, EConnectionParameterName.DRIVER_CLASS.getName(),
                 basePropertyParameter);
-        String dbVersion = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter);
-        if (StringUtils.isBlank(dbVersion) && EDatabaseTypeName.MSSQL.getDisplayName().equals(connParameters.getDbType())) {
-            dbVersion = getValueFromRepositoryName(element, "DRIVER", basePropertyParameter); //$NON-NLS-1$
+        String driverName = getValueFromRepositoryName(element, "DB_VERSION", basePropertyParameter); //$NON-NLS-1$
+        if (StringUtils.isBlank(driverName) && EDatabaseTypeName.MSSQL.getDisplayName().equals(connParameters.getDbType())) {
+            driverName = getValueFromRepositoryName(element, "DRIVER", basePropertyParameter); //$NON-NLS-1$
         }
-        connParameters.setDbVersion(dbVersion);
-        if (EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
-                || EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
-                || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
-                || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
+        String dbVersionName = EDatabaseVersion4Drivers.getDbVersionName(type, driverName);
+        connParameters.setDbVersion(dbVersionName);
+        if (EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersionName)
+                || EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersionName)
+                || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersionName)
+                || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersionName)) {
             driverClass = EDatabase4DriverClassName.VERTICA2.getDriverClass();
         }
 

@@ -62,7 +62,7 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
 
     // no use for virtual component
     @Override
-    public List<? extends INodeReturn> createReturns() {
+    public List<? extends INodeReturn> createReturns(INode node) {
         return null;
     }
 

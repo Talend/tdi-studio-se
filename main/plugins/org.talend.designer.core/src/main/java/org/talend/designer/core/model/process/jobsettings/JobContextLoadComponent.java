@@ -108,7 +108,7 @@ public class JobContextLoadComponent implements IComponent {
     }
 
     @Override
-    public List<? extends INodeReturn> createReturns() {
+    public List<? extends INodeReturn> createReturns(INode node) {
         return null;
     }
 

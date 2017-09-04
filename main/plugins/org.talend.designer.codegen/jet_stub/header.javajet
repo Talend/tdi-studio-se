@@ -198,11 +198,6 @@ public class <%=className%> implements <%=talendJobInterfaces%> {
 		// fix for TESB-7714
 		talendESBJob.setEndpointRegistry(registry);
 
-        // TESB-15920 tRESTClient and SAM not working
-        <% if (hasSAM4RS) { %>
-        talendESBJob.setEventFeature(eventFeature);
-        <% } %>
-
 		return talendESBJob;
 	}
 <% } %>
