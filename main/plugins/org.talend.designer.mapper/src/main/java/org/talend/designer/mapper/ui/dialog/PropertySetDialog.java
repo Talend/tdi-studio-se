@@ -176,11 +176,16 @@ public class PropertySetDialog extends Dialog {
         directoryField.setText(StringUtils.trimToEmpty(currnentModel.getTempDataDir()));
         sizeField.setText(StringUtils.trimToEmpty(currnentModel.getRowBufferSize()));
 
-        IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
-        levenshteinWeightLabel.setText(String.valueOf(weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT)));
-        levenshteinSlider.setSelection(weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT));
-        jaccardWeightLabel.setText(String.valueOf(weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT)));
-        jaccardSlider.setSelection(weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT));
+        // IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
+        // levenshteinWeightLabel.setText(String.valueOf(weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT)));
+        // levenshteinSlider.setSelection(weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT));
+        // jaccardWeightLabel.setText(String.valueOf(weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT)));
+        // jaccardSlider.setSelection(weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT));
+
+        levenshteinWeightLabel.setText(String.valueOf(currnentModel.getLevenshteinWeight()));
+        levenshteinSlider.setSelection(currnentModel.getLevenshteinWeight());
+        jaccardWeightLabel.setText(String.valueOf(currnentModel.getJaccardWeight()));
+        jaccardSlider.setSelection(currnentModel.getJaccardWeight());
     }
 
     private void addListener() {
@@ -318,6 +323,8 @@ public class PropertySetDialog extends Dialog {
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
         currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
+        currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
+        currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
 
         if (dieOnErrorButton.getSelection()) {
             mapperManager.removeRejectOutput();
@@ -326,9 +333,6 @@ public class PropertySetDialog extends Dialog {
                 mapperManager.addRejectOutput();
             }
         }
-        IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
-        weightStore.setValue(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT, levenshteinSlider.getSelection());
-        weightStore.setValue(ITalendCorePrefConstants.JACCARD_WEIGHT, jaccardSlider.getSelection());
 
 
         super.okPressed();

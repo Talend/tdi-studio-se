@@ -16,13 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.eclipse.jface.preference.IPreferenceStore;
-import org.talend.core.prefs.ITalendCorePrefConstants;
-import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
 import org.talend.designer.mapper.language.ILanguage;
 import org.talend.designer.mapper.language.LanguageProvider;
 import org.talend.designer.mapper.managers.MapperManager;
+import org.talend.designer.mapper.managers.MapperSettingsManager;
+import org.talend.designer.mapper.model.MapperSettingModel;
 import org.talend.designer.mapper.model.table.InputTable;
 import org.talend.designer.mapper.model.table.OutputTable;
 import org.talend.designer.mapper.ui.visualmap.table.DataMapTableView;
@@ -40,6 +39,8 @@ public class AutoMapper {
 
     private MapperManager mapperManager;
 
+    private MapperSettingsManager settingsManager;
+
     /**
      * Map all empty output expression cells if possible.
      * 
@@ -53,10 +54,10 @@ public class AutoMapper {
      * DOC amaumont Comment method "map".
      */
     public void map() {
-        IPreferenceStore weightStore = CoreUIPlugin.getDefault().getPreferenceStore();
-
-        int paramL = weightStore.getInt(ITalendCorePrefConstants.LEVENSHTEIN_WEIGHT);
-        int paramJ = weightStore.getInt(ITalendCorePrefConstants.JACCARD_WEIGHT);
+        settingsManager = MapperSettingsManager.getInstance(mapperManager);
+        MapperSettingModel currentModel = settingsManager.getCurrnentModel();
+        int paramL = currentModel.getLevenshteinWeight();
+        int paramJ = currentModel.getJaccardWeight();
 
         List<InputTable> inputTables = mapperManager.getInputTables();
         List<OutputTable> outputTables = mapperManager.getOutputTables();

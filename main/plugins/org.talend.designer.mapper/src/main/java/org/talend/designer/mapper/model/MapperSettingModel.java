@@ -30,6 +30,10 @@ public class MapperSettingModel implements Cloneable {
 
     private String rowBufferSize;
 
+    private int levenshteinWeight;
+
+    private int JaccardWeight;
+
 
     /**
      * @return the MapReduce lookup tables should be precalculated and distributed across nodes in the cluster.
@@ -217,6 +221,42 @@ public class MapperSettingModel implements Cloneable {
     @Override
     public MapperSettingModel clone() throws CloneNotSupportedException {
         return (MapperSettingModel) super.clone();
+    }
+
+    /**
+     * Getter for levenshteinWeight.
+     * 
+     * @return the levenshteinWeight
+     */
+    public int getLevenshteinWeight() {
+        return levenshteinWeight;
+    }
+
+    /**
+     * Sets the levenshteinWeight.
+     * 
+     * @param levenshteinWeight the levenshteinWeight to set
+     */
+    public void setLevenshteinWeight(int levenshteinWeight) {
+        this.levenshteinWeight = levenshteinWeight;
+    }
+
+    /**
+     * Getter for jaccardWeight.
+     * 
+     * @return the jaccardWeight
+     */
+    public int getJaccardWeight() {
+        return JaccardWeight;
+    }
+
+    /**
+     * Sets the jaccardWeight.
+     * 
+     * @param jaccardWeight the jaccardWeight to set
+     */
+    public void setJaccardWeight(int jaccardWeight) {
+        this.JaccardWeight = jaccardWeight;
     }
 
 }

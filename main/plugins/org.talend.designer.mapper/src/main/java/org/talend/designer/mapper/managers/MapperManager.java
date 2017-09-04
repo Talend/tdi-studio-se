@@ -1140,6 +1140,8 @@ public class MapperManager extends AbstractMapperManager {
 
             defaultSettingMap.put(MapperSettingsManager.REPLICATED_JOIN, false);
             defaultSettingMap.put(MapperSettingsManager.DIE_ON_ERROR, true);
+            defaultSettingMap.put(MapperSettingsManager.LEVENSHTEIN, 0);
+            defaultSettingMap.put(MapperSettingsManager.JACCARD, 0);
 
             // boolean parallel = false;
             // IElementParameter paraEle = getAbstractMapComponent().getElementParameter("LKUP_PARALLELIZE");

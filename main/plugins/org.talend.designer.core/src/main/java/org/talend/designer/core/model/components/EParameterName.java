@@ -367,6 +367,10 @@ public enum EParameterName {
     STREAMING_BATCH_SIZE("STREAMING_BATCH_SIZE"), //$NON-NLS-1$
 
     REPAINT("REPAINT"), //$NON-NLS-1$
+    
+    //for automap algorithms
+    LEVENSHTEIN("LEVENSHTEIN"),//$NON-NLS-1$
+    JACCARD("JACCARD"),//$NON-NLS-1$
 
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");
