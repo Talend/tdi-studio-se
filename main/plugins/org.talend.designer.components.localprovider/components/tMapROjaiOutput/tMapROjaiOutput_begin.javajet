@@ -1,0 +1,154 @@
+<%@ jet 
+imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.EConnectionType
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.core.model.metadata.types.JavaTypesManager
+		java.util.List
+		java.util.Map" 
+%>
+<% 
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+  	String cid = node.getUniqueName();
+  	java.util.List<java.util.Map<String, String>> mappings = (java.util.List<java.util.Map<String, String>>)ElementParameterParser.getObjectValueXML(node, "__MAPPING__");
+    String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
+    String table = ElementParameterParser.getValue(node,"__TABLE__");
+    boolean setBulkWrite = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__SET_BULK_WRITE__"));
+    boolean InsertionOrder = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__SET_WRITE_ORDER__"));
+    boolean AutoSplit = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__Auto_Split__"));
+    String bulkWriteOperationSize = ElementParameterParser.getValue(node, "__BULK_WRITE_SIZE__");
+    
+    List<? extends IConnection> inConns = node.getIncomingConnections(EConnectionType.FLOW_MAIN);
+    
+  	%>
+  	int nb_line_<%=cid %>=0;
+  	  	com.mapr.db.Admin admin_<%=cid%> = com.mapr.db.MapRDB.newAdmin();
+  		com.mapr.db.TableDescriptor tableDescriptor_<%=cid%> = com.mapr.db.MapRDB.newTableDescriptor(<%=table%>);
+  		tableDescriptor_<%=cid%>.setInsertionOrder(<%=InsertionOrder%>);
+  		tableDescriptor_<%=cid%>.setAutoSplit(<%=AutoSplit%>);
+  		long bulkWriteSize_<%=cid%> = Long.parseLong(<%=bulkWriteOperationSize%>);
+  		tableDescriptor_<%=cid%>.setSplitSize(bulkWriteSize_<%=cid%>);
+  	<%
+  		if("NONE".equals(tableAction)){
+  		%>
+  	
+  	    com.mapr.db.Table table_<%=cid%> = com.mapr.db.MapRDB.getTable(<%=table%>);
+  	
+  	    <%
+  		}else if("DROP_CREATE".equals(tableAction)){
+  		%>
+  		com.mapr.db.MapRDB.deleteTable(<%=table%>);
+  		com.mapr.db.Table table_<%=cid%> = admin_<%=cid%>.createTable(tableDescriptor_<%=cid%>);
+  		  	<%
+  		}else if("CREATE".equals(tableAction)){
+  		%>
+  		com.mapr.db.Table table_<%=cid%> = admin_<%=cid%>.createTable(tableDescriptor_<%=cid%>);
+  		  	<%
+  		}else if("CREATE_IF_NOT_EXISTS".equals(tableAction)){
+  		%>
+  		if(!com.mapr.db.MapRDB.tableExists(<%=table%>)){
+  		    com.mapr.db.Table table_<%=cid%> = admin_<%=cid%>.createTable(tableDescriptor_<%=cid%>);
+  		}
+  		
+  		  	<%
+  		}else if("DROP_IF_EXISTS_AND_CREATE".equals(tableAction)){
+  		%>
+  		
+  		if(com.mapr.db.MapRDB.tableExists(<%=table%>)){
+  		    com.mapr.db.MapRDB.deleteTable(<%=table%>);
+  		}
+  		com.mapr.db.Table table_<%=cid%> = admin_<%=cid%>.createTable(tableDescriptor_<%=cid%>);
+  		
+  		  	<%
+  		}else if("TRUNCATE".equals(tableAction)){
+  		%>
+  		com.mapr.db.Table table_<%=cid%> = com.mapr.db.MapRDB.getTable(<%=table%>);
+  		  	    // all recordss in the table
+	    org.ojai.DocumentStream rst_<%=cid%> = table_<%=cid%>.find();
+        java.util.Iterator<org.ojai.Document> itrst_<%=cid%> = rst_<%=cid%>.iterator();
+        org.ojai.Document readRecord_<%=cid%>;
+        while (itrst_<%=cid%>.hasNext()) {
+          readRecord_<%=cid%> = itrst_<%=cid%>.next();
+          table_<%=cid%>.delete(readRecord_<%=cid%>.getId());
+        }
+        rst_<%=cid%>.close();
+        table_<%=cid%>.flush();
+  		  	<%
+  		}
+  		%>
+  		admin_<%=cid%>.close();
+  		<%
+  			if(setBulkWrite){
+  			%>
+  			
+  			long bulkCount_<%=cid%> = 0l;
+  			java.io.File temp_<%=cid%> = java.io.File.createTempFile("<%=cid%>", ".jsontemp");
+  			java.io.BufferedWriter out_<%=cid%> = new java.io.BufferedWriter(new java.io.FileWriter(temp_<%=cid%>));
+  			class DelegateImpl_<%=cid%> extends org.ojai.json.Events.BaseDelegate {}
+  			DelegateImpl_<%=cid%> di_<%=cid%> = new DelegateImpl_<%=cid%>();
+  			java.util.Map<org.ojai.FieldPath, org.ojai.Value.Type> fieldPathTypeMap_<%=cid%> = new java.util.HashMap<org.ojai.FieldPath, org.ojai.Value.Type>();
+<%
+	IConnection inConn = null;
+	IMetadataTable metadata = null;
+	
+	if(inConns!=null && inConns.size()> 0) {
+		inConn = inConns.get(0);
+		metadata = inConn.getMetadataTable();
+	}
+	
+		  		java.util.Map<String, String> pathMap = new java.util.HashMap<String, String>();
+			for (int i=0;i<mappings.size();i++) {
+				String path = mappings.get(i).get("PARENT_NODE_PATH");
+				if(path==null || "".equals(path)){
+					path="";
+				}
+				String schemaColumn=mappings.get(i).get("SCHEMA_COLUMN");
+				pathMap.put(schemaColumn,path);
+			}
+			
+	if (metadata!=null) {
+		List< ? extends IConnection> conns = node.getIncomingConnections();
+		for (IConnection conn : conns) {
+			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+				List<IMetadataColumn> columnList = metadata.getListColumns();
+				int sizeColumns = columnList.size();
+				for (int i = 0; i < sizeColumns; i++) {
+					IMetadataColumn column = columnList.get(i);
+					
+					        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+					        String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+					        String rowType = null;
+					        if(("java.util.Date").equals(typeToGenerate)){
+					            rowType = "DATE";
+					        }else if ("BigDecimal".equals(typeToGenerate)){
+					            rowType = "DECIMAL";
+					        }else if ("byte[]".equals(typeToGenerate)){
+					            rowType = "BINARY";
+					        }else if ("Integer".equals(typeToGenerate)){
+					            rowType = "INT";
+					        }else{
+					            rowType = typeToGenerate.toUpperCase();
+					        }
+					        
+					        String schemaData = null;
+				            if("".equals(pathMap.get(column.getLabel()))){
+				                schemaData=column.getOriginalDbColumnName();
+				            }else{
+				                schemaData=pathMap.get(column.getLabel()).replaceAll("\"","")+"."+column.getOriginalDbColumnName();
+				            }%>
+					        
+                            fieldPathTypeMap_<%=cid%>.put(org.ojai.FieldPath.parseFrom("<%=schemaData%>"),org.ojai.Value.Type.<%=rowType%>);
+
+                     <%
+                            }
+                        }
+                  }
+  			}
+  		}
+  		%>

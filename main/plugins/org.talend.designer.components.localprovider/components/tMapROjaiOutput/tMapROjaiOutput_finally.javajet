@@ -1,0 +1,13 @@
+<%@ jet 
+imports="
+		org.talend.core.model.process.INode 
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.ElementParameterParser
+" 
+%>
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+%>
+

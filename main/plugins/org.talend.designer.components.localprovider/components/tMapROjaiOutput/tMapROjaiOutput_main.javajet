@@ -1,0 +1,178 @@
+<%@ jet 
+imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser 
+		org.talend.core.model.metadata.IMetadataTable 
+		org.talend.core.model.metadata.IMetadataColumn
+		org.talend.core.model.process.EConnectionType
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.IConnection
+		org.talend.core.model.process.IConnectionCategory
+		org.talend.core.model.metadata.types.JavaTypesManager
+		java.util.List
+		java.util.Map" 
+%>
+<% 
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+  	String cid = node.getUniqueName();
+  	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+  	java.util.List<java.util.Map<String, String>> mappings = (java.util.List<java.util.Map<String, String>>)ElementParameterParser.getObjectValueXML(node, "__MAPPING__");
+  	boolean dieOnError = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+	List<? extends IConnection> inConns = node.getIncomingConnections(EConnectionType.FLOW_MAIN);
+	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	boolean setBulkWrite = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__SET_BULK_WRITE__"));
+    String bulkWriteType = ElementParameterParser.getValue(node, "__BULK_WRITE_TYPE__");
+  	%>
+
+<%
+		IConnection inConn = null;
+	IMetadataTable metadata = null;
+	
+	if(inConns!=null && inConns.size()> 0) {
+		inConn = inConns.get(0);
+		metadata = inConn.getMetadataTable();
+	}
+	
+	  		java.util.Map<String, String> pathMap = new java.util.HashMap<String, String>();
+	  		java.util.Map<String, Boolean> vacantMap = new java.util.HashMap<String, Boolean>();
+			for (int i=0;i<mappings.size();i++) {
+				String path = mappings.get(i).get("PARENT_NODE_PATH");
+				if(path==null || "".equals(path)){
+					path="";
+				}
+				String schemaColumn=mappings.get(i).get("SCHEMA_COLUMN");
+				pathMap.put(schemaColumn,path);
+				boolean vacant = "true".equals(mappings.get(i).get("REMOVE_NULL_FIELD"));
+				vacantMap.put(schemaColumn,vacant);
+			}
+	
+	if (metadata!=null) {
+		List< ? extends IConnection> conns = node.getIncomingConnections();
+		for (IConnection conn : conns) {
+			if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+				List<IMetadataColumn> columnList = metadata.getListColumns();
+				int sizeColumns = columnList.size();
+
+				// Create the BasicDBObject
+				%>
+				org.ojai.Document doc_<%=cid%> = com.mapr.db.MapRDB.newDocument();
+				String key = null;
+				<%
+				// Set key/values of the BasicObject
+				for (int i = 0; i < sizeColumns; i++) {
+					IMetadataColumn column = columnList.get(i);
+					
+					        String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+					        String patternValue = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
+					        String rowData = null;
+					        if(("java.util.Date").equals(typeToGenerate)){
+					            rowData = "new org.ojai.types.OTimestamp("+conn.getName()+"."+column.getLabel()+".getTime())";
+					        }else if ("BigDecimal".equals(typeToGenerate)){
+					            rowData = conn.getName()+"."+column.getLabel()+".toString()";
+					        }else{
+					            rowData = conn.getName()+"."+column.getLabel();
+					        }
+					        
+					        String schemaData = null;
+				            if("".equals(pathMap.get(column.getLabel()))){
+				                schemaData=column.getOriginalDbColumnName();
+				            }else{
+				                schemaData=pathMap.get(column.getLabel()).replaceAll("\"","")+"."+column.getOriginalDbColumnName();
+				            }
+					        
+	                        if (vacantMap.get(column.getLabel())) {
+	                            %>
+	                            if (<%=conn.getName() %>.<%=column.getLabel() %> != null) {
+                                    doc_<%=cid%>.set("<%=schemaData%>",<%=rowData%>);
+	                            }
+                                <%
+                                }else{
+                                %>
+                                doc_<%=cid%>.set("<%=schemaData%>",<%=rowData%>);
+                                <%
+                                }
+                            }
+                        }
+  				// Get the BasicDBObject
+  			}
+  		}
+  		%>
+  		try{
+  		<%
+  		if(!setBulkWrite){
+				if ("INSERT".equalsIgnoreCase(dataAction)){
+                                    %>
+                table_<%=cid%>.insert(doc_<%=cid%>);
+                <%
+                }else if("REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.replace(doc_<%=cid%>);
+                <%
+                }else if("INSERT_OR_REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.insertOrReplace(doc_<%=cid%>);
+                <%
+                }else if("DELETE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.delete(doc_<%=cid%>);
+                <%
+                }
+                %>
+				table_<%=cid%>.flush();
+		<%}else{%>
+		
+		         out_<%=cid%>.write(doc_<%=cid%>.toString());
+		         bulkCount_<%=cid%>++;
+		     
+		     if(bulkCount_<%=cid%>>=bulkWriteSize_<%=cid%>){
+		         out_<%=cid%>.close();
+		         java.io.FileInputStream fis_<%=cid%> = new java.io.FileInputStream(temp_<%=cid%>);
+		         org.ojai.json.impl.JsonDocumentStream jds_<%=cid%> = new org.ojai.json.impl.JsonDocumentStream(fis_<%=cid%>,fieldPathTypeMap_<%=cid%>,di_<%=cid%>);
+		        <%
+		        if ("INSERT".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.insert(jds_<%=cid%>);
+                <%
+                }else if("REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.replace(jds_<%=cid%>);
+                <%
+                }else if("INSERT_OR_REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.insertOrReplace(jds_<%=cid%>);
+                <%
+                }else if("DELETE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.delete(jds_<%=cid%>);
+                <%
+                }
+                %>
+		         jds_<%=cid%>.close();
+		         fis_<%=cid%>.close();
+		         
+		         temp_<%=cid%>.delete();
+		         temp_<%=cid%> = java.io.File.createTempFile("tMapROjaiOutput", ".jsontemp");
+		         out_<%=cid%> = new java.io.BufferedWriter(new java.io.FileWriter(temp_<%=cid%>));
+		         bulkCount_<%=cid%>=0;
+		     }
+		
+		<%}%>
+				}catch(Exception e_<%=cid%>){
+				    <%if(dieOnError){%>
+				    throw e_<%=cid%>;
+				    <%}else{
+				        							if(isLog4jEnabled){
+							%>
+								log.error(e_<%=cid%>.getLocalizedMessage());
+							<%
+							}
+							%>
+							System.err.println(e_<%=cid%>.getLocalizedMessage());
+				    <%
+				    }
+				    %>
+				  
+				}
+				nb_line_<%=cid %> ++;
+				

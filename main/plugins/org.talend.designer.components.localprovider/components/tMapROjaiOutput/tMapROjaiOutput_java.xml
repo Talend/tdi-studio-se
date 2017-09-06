@@ -1,0 +1,281 @@
+<COMPONENT>
+	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.101" STATUS="ALPHA"
+		COMPATIBILITY="ALL" AUTHOR="Talend" SCHEMA_AUTO_PROPAGATE="true"
+		DATA_AUTO_PROPAGATE="false" EXTENSION="org.talend.designer.fileoutputxml"
+		RELEASE_DATE="20070210A" STARTABLE="false" PARTITIONING="NONE"
+		LOG4J_ENABLED="true">
+		<SIGNATURE />
+	</HEADER>
+	<FAMILIES>
+		<FAMILY>Databases/MapRDB</FAMILY>
+	</FAMILIES>
+	<DOCUMENTATION>
+		<URL />
+	</DOCUMENTATION>
+	<CONNECTORS>
+		<CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="0" />
+		<CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="0" MAX_INPUT="0" />
+		<CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
+		<CONNECTOR CTYPE="COMPONENT_OK" />
+		<CONNECTOR CTYPE="COMPONENT_ERROR" />
+		<CONNECTOR CTYPE="RUN_IF" />
+	</CONNECTORS>
+	<PARAMETERS>
+		<PARAMETER NAME="PROPERTY" FIELD="PROPERTY_TYPE" NUM_ROW="1"
+			REPOSITORY_VALUE="NOSQL:MapRDB" SHOW_IF="USE_EXISTING_CONNECTION == 'false'" />
+		<PARAMETER NAME="USE_EXISTING_CONNECTION" FIELD="CHECK"
+			NUM_ROW="2" GROUP="CONNECTION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		<PARAMETER NAME="CONNECTION" FIELD="COMPONENT_LIST"
+			REQUIRED="true" FILTER="tMapRDBConnection" NUM_ROW="2"
+			SHOW_IF="USE_EXISTING_CONNECTION == 'true'" GROUP="CONNECTION" />
+		<PARAMETER FIELD="TEXT" NAME="TABLE" REQUIRED="true"
+			NUM_ROW="30">
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="TABLE_ACTION" FIELD="CLOSED_LIST" NUM_ROW="35">
+			<ITEMS DEFAULT="NONE">
+				<ITEM NAME="NONE" VALUE="NONE" />
+				<ITEM NAME="DROP_CREATE" VALUE="DROP_CREATE" />
+				<ITEM NAME="CREATE" VALUE="CREATE" />
+				<ITEM NAME="CREATE_IF_NOT_EXISTS" VALUE="CREATE_IF_NOT_EXISTS" />
+				<ITEM NAME="DROP_IF_EXISTS_AND_CREATE" VALUE="DROP_IF_EXISTS_AND_CREATE" />
+				<ITEM NAME="TRUNCATE" VALUE="TRUNCATE" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="DATA_ACTION" FIELD="CLOSED_LIST" NUM_ROW="40">
+			<ITEMS DEFAULT="INSERT">
+				<ITEM NAME="INSERT" VALUE="INSERT" />
+				<ITEM NAME="REPLACE" VALUE="REPLACE" />
+				<ITEM NAME="INSERT_OR_REPLACE" VALUE="INSERT_OR_REPLACE" />
+				<ITEM NAME="DELETE" VALUE="DELETE" />
+			</ITEMS>
+		</PARAMETER>
+
+		<PARAMETER NAME="UPDATE_ALL" FIELD="CHECK" NUM_ROW="40"
+			SHOW_IF="((DATA_ACTION=='SET') OR (DATA_ACTION=='UPSERT_WITH_SET')) AND (IS_VIRTUAL_COMPONENT == 'false')">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		<PARAMETER NAME="SCHEMA_FLOW" FIELD="SCHEMA_TYPE" NUM_ROW="45">
+			<TABLE READONLY="false">
+				<COLUMN NAME="_id" TYPE="id_String" READONLY="false" />
+			</TABLE>
+		</PARAMETER>
+		
+		<PARAMETER FIELD="CHECK" NAME="SET_BULK_WRITE" NUM_ROW="50"  GROUP="BULK_WRITE_GROUP">
+            <DEFAULT>"false"</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER FIELD="TEXT" NAME="BULK_WRITE_SIZE" REPOSITORY_VALUE="BULK_WRITE_SIZE" NUM_ROW="70" SHOW_IF="SET_BULK_WRITE=='true'"  GROUP="BULK_WRITE_GROUP">
+            <DEFAULT>"4096"</DEFAULT>
+        </PARAMETER>
+
+
+        <PARAMETER
+            NAME="MAPPING"
+            FIELD="TABLE"
+            REQUIRED="true"
+            NUM_ROW="80"
+            NB_LINES="5"
+        >
+            <ITEMS BASED_ON_SCHEMA="true">
+                <ITEM NAME="PARENT_NODE_PATH" FIELD="TEXT" />
+                <ITEM NAME="REMOVE_NULL_FIELD" FIELD="CHECK" VALUE="false"/>
+            </ITEMS>
+        </PARAMETER>
+		
+		<PARAMETER NAME="DIE_ON_ERROR" FIELD="CHECK" NUM_ROW="90">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+	</PARAMETERS>
+
+	<ADVANCED_PARAMETERS>
+			<PARAMETER FIELD="CHECK" NAME="SET_WRITE_ORDER" NUM_ROW="10" NOT_SHOW_IF="(TABLE_ACTION=='NONE')OR(TABLE_ACTION=='TRUNCATE')">
+                <DEFAULT>false</DEFAULT>
+            </PARAMETER>
+            <PARAMETER FIELD="CHECK" NAME="Auto_Split" NUM_ROW="20" NOT_SHOW_IF="(TABLE_ACTION=='NONE')OR(TABLE_ACTION=='TRUNCATE')">
+                <DEFAULT>true</DEFAULT>
+            </PARAMETER>
+	</ADVANCED_PARAMETERS>
+
+	<CODEGENERATION>
+		<IMPORTS>
+
+			<IMPORT MODULE="maprdb-5.1.0-mapr.jar"
+				MVN="mvn:org.talend.libraries/maprdb-5.1.0-mapr/6.0.0" NAME="maprdb-5.1.0-mapr"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/maprdb-5.1.0-mapr.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="hadoop-common-2.7.0-mapr-1602.jar"
+				MVN="mvn:org.talend.libraries/hadoop-common-2.7.0-mapr-1602/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/hadoop-common-2.7.0-mapr-1602.jar"
+				NAME="hadoop-common-2.7.0-mapr-1602.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="ojai-1.0.jar" MVN="mvn:org.talend.libraries/ojai-1.0/6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/ojai-1.0.jar"
+				NAME="ojai-1.0.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="log4j-1.2.17.jar" MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
+				NAME="log4j-1.2.17.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="slf4j-api-1.7.10.jar"
+				MVN="mvn:org.talend.libraries/slf4j-api-1.7.10/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-api-1.7.10.jar"
+				NAME="slf4j-api-1.7.10.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="guava-14.0.1.jar" MVN="mvn:org.talend.libraries/guava-14.0.1/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-14.0.1.jar"
+				NAME="guava-14.0.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-logging-1.1.3.jar"
+				MVN="mvn:org.talend.libraries/commons-logging-1.1.3/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-logging-1.1.3.jar"
+				NAME="commons-logging-1.1.3.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-collections-3.2.2.jar"
+				MVN="mvn:org.talend.libraries/commons-collections-3.2.2/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-collections-3.2.2.jar"
+				NAME="commons-collections-3.2.2.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="maprfs-5.1.0-mapr.jar"
+				MVN="mvn:org.talend.libraries/maprfs-5.1.0-mapr/6.0.0" NAME="maprfs-5.1.0-mapr.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/maprfs-5.1.0-mapr.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="protobuf-java-2.5.0.jar"
+				MVN="mvn:org.talend.libraries/protobuf-java-2.5.0/6.0.0" NAME="protobuf-java-2.5.0.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="json-20080701.jar" MVN="mvn:org.talend.libraries/json-20080701/6.0.0"
+				NAME="json-20080701.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="hadoop-auth-2.7.0-mapr-1602.jar"
+				MVN="mvn:org.talend.libraries/hadoop-auth-2.7.0-mapr-1602/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/hadoop-auth-2.7.0-mapr-1602.jar"
+				NAME="hadoop-auth-2.7.0-mapr-1602.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-configuration-1.6.jar"
+				MVN="mvn:org.talend.libraries/commons-configuration-1.6/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-configuration-1.6.jar"
+				NAME="commons-configuration-1.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-lang-2.6.jar"
+				MVN="mvn:org.talend.libraries/ccommons-lang-2.6/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang-2.6.jar"
+				NAME="commons-lang-2.6.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="zookeeper-3.4.5-mapr-1503.jar"
+				MVN="mvn:org.talend.libraries/zookeeper-3.4.5-mapr-1503/6.0.0" NAME="zookeeper-3.4.5-mapr-1503.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/zookeeper-3.4.5-mapr-1503.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="antlr4-runtime-4.5.jar"
+				MVN="mvn:org.talend.libraries/antlr4-runtime-4.5/6.0.0" NAME="antlr4-runtime-4.5.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/antlr4-runtime-4.5.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="mapr-java-utils-5.1.0-mapr.jar"
+				MVN="mvn:org.talend.libraries/mapr-java-utils-5.1.0-map/6.0.0" NAME="mapr-java-utils-5.1.0-mapr.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/mapr-java-utils-5.1.0-mapr.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="jackson-core-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/jackson-core-2.7./6.0.0" NAME="jackson-core-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/jackson-core-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="curator-framework-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/curator-framework-2.7./6.0.0" NAME="curator-framework-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/curator-framework-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="xercesImpl-2.9.1.jar"
+				MVN="mvn:org.talend.libraries/xercesImpl-2.9./6.0.0" NAME="xercesImpl-2.9.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/xercesImpl-2.9.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="xml-apis-1.3.04.jar" MVN="mvn:org.talend.libraries/xml-apis-1.3.0/6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/xml-apis-1.3.04.jar"
+				NAME="xml-apis-1.3.04.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="xalan-2.7.1.jar" MVN="mvn:org.talend.libraries/xalan-2.7./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/xalan-2.7.1.jar"
+				NAME="xalan-2.7.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="serializer-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/serializer-2.7./6.0.0" NAME="serializer-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.designer.components.localprovider/components/tWebService/serializer-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="hadoop-annotations-2.7.0-mapr-1602.jar"
+				MVN="mvn:org.talend.libraries/hadoop-annotations-2.7.0-mapr-1602/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/hadoop-annotations-2.7.0-mapr-1602.jar"
+				NAME="hadoop-annotations-2.7.0-mapr-1602.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="tools-1.7.jar" MVN="mvn:org.talend.libraries/tools-1.7/6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/tools-1.7.jar"
+				NAME="tools-1.7.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-cli-1.2.jar" MVN="mvn:org.talend.libraries/commons-cli-1./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-cli-1.2.jar"
+				NAME="commons-cli-1.2.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-math3-3.1.1.jar"
+				MVN="mvn:org.talend.libraries/commons-math3-3.1./6.0.0" NAME="commons-math3-3.1.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-math3-3.1.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="xmlenc-0.52.jar" MVN="mvn:org.talend.libraries/xmlenc-0.5/6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/xmlenc-0.52.jar"
+				NAME="xmlenc-0.52.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-httpclient-3.1.jar"
+				MVN="mvn:org.talend.libraries/commons-httpclient-3./6.0.0" NAME="commons-httpclient-3.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/commons-httpclient-3.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-codec-1.4.jar"
+				MVN="mvn:org.talend.libraries/commons-codec-1./6.0.0" NAME="commons-codec-1.4.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.4.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-io-2.4.jar" MVN="mvn:org.talend.libraries/commons-io-2./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
+				NAME="commons-io-2.4.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-net-3.1.jar" MVN="mvn:org.talend.libraries/commons-net-3./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/commons-net-3.1.jar"
+				NAME="commons-net-3.1.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-digester-1.8.jar"
+				MVN="mvn:org.talend.libraries/commons-digester-1./6.0.0" NAME="commons-digester-1.8.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-digester-1.8.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-beanutils-1.7.0.jar"
+				MVN="mvn:org.talend.libraries/commons-beanutils-1.7./6.0.0" NAME="commons-beanutils-1.7.0.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/commons-beanutils-1.7.0.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-beanutils-core-1.8.0.jar"
+				MVN="mvn:org.talend.libraries/commons-beanutils-core-1.8./6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-beanutils-core-1.8.0.jar"
+				NAME="commons-beanutils-core-1.8.0.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="slf4j-log4j12-1.7.10.jar"
+				MVN="mvn:org.talend.libraries/slf4j-log4j12-1.7.1/6.0.0" NAME="slf4j-log4j12-1.7.10.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.10.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="jackson-core-asl-1.9.13.jar"
+				MVN="mvn:org.talend.libraries/jackson-core-asl-1.9.1/6.0.0" NAME="jackson-core-asl-1.9.13.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="jackson-mapper-asl-1.9.13.jar"
+				MVN="mvn:org.talend.libraries/jackson-mapper-asl-1.9.1/6.0.0" NAME="jackson-mapper-asl-1.9.13.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-mapper-asl-1.9.13.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="gson-2.2.4.jar" MVN="mvn:org.talend.libraries/gson-2.2./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.sap/lib/gson-2.2.4.jar"
+				NAME="gson-2.2.4.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="curator-client-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/curator-client-2.7./6.0.0" NAME="curator-client-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/curator-client-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="curator-recipes-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/curator-recipes-2.7./6.0.0" NAME="curator-recipes-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/curator-recipes-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="htrace-core-3.1.0-incubating.jar"
+				MVN="mvn:org.talend.libraries/htrace-core-3.1.0-incubatin/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/htrace-core-3.1.0-incubating.jar"
+				NAME="htrace-core-3.1.0-incubating.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="commons-compress-1.4.1.jar"
+				MVN="mvn:org.talend.libraries/commons-compress-1.4./6.0.0" NAME="commons-compress-1.4.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/commons-compress-1.4.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="xz-1.0.jar" MVN="mvn:org.talend.libraries/xz-1./6.0.0"
+			    UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/xz-1.0.jar"
+				NAME="xz-1.0.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="jackson-databind-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/jackson-databind-2.7./6.0.0" NAME="jackson-databind-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/jackson-databind-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT MODULE="jackson-annotations-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/jackson-annotations-2.7.1/6.0.0" NAME="jackson-annotations-2.7.1.jar"
+				UrlPath="platform:/plugin/org.talend.libraries.mapr/lib/jackson-annotations-2.7.1.jar"
+				REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false')" />
+		</IMPORTS>
+	</CODEGENERATION>
+	<RETURNS>
+		<RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer" />
+	</RETURNS>
+</COMPONENT>

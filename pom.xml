@@ -122,6 +122,7 @@
 		<module>main/plugins/org.talend.libraries.microsoft</module>
 		<module>main/plugins/org.talend.libraries.mondrian</module>
 		<module>main/plugins/org.talend.libraries.mozilla</module>
+		<module>main/plugins/org.talend.libraries.mapr</module>
 		<module>main/plugins/org.talend.libraries.palo</module>
 		<module>main/plugins/org.talend.libraries.saaj</module>
 		<module>main/plugins/org.talend.libraries.salesforce</module>

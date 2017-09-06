@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: mapr
+Bundle-SymbolicName: org.talend.libraries.mapr;singleton:=true
+Bundle-Version: 6.5.0.qualifier
+Eclipse-BundleShape: dir

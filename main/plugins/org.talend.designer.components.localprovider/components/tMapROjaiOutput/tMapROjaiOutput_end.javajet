@@ -1,0 +1,52 @@
+<%@ jet 
+imports="
+		org.talend.core.model.process.INode 
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		org.talend.core.model.process.ElementParameterParser
+" 
+%>
+<%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	
+	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+	boolean setBulkWrite = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__SET_BULK_WRITE__"));
+%>
+  		<%
+  		if(setBulkWrite){
+  		%>
+		     if(bulkCount_<%=cid%>>0){
+		         out_<%=cid%>.close();
+		         java.io.FileInputStream fis_<%=cid%> = new java.io.FileInputStream(temp_<%=cid%>);
+		         org.ojai.json.impl.JsonDocumentStream jds_<%=cid%> = new org.ojai.json.impl.JsonDocumentStream(fis_<%=cid%>,fieldPathTypeMap_<%=cid%>,di_<%=cid%>);
+		        <%
+		        if ("INSERT".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.insert(jds_<%=cid%>);
+                <%
+                }else if("REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.replace(jds_<%=cid%>);
+                <%
+                }else if("INSERT_OR_REPLACE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.insertOrReplace(jds_<%=cid%>);
+                <%
+                }else if("DELETE".equalsIgnoreCase(dataAction)){
+                %>
+                table_<%=cid%>.delete(jds_<%=cid%>);
+                <%
+                }
+                %>
+		         jds_<%=cid%>.close();
+		         fis_<%=cid%>.close();
+		         temp_<%=cid%>.delete();
+		         
+		         bulkCount_<%=cid%>=0;
+		     }
+	<%}%>
+		table_<%=cid%>.close();     
+		     
+globalMap.put("<%=cid%>_NB_LINE",nb_line_<%=cid %>);
