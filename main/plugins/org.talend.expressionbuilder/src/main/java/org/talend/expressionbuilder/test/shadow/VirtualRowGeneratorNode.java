@@ -104,36 +104,32 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             // modify for bug 9471
             try {
                 for (Variable varible : variables) {
-                    if (valueContains(expression, varible.getName())) {
-                        Integer.parseInt(varible.getValue());
-                    }
-                }
-                for (Variable var : variables) {
-                    String talendType = var.getTalendType();
-                    JavaType javaTypeFromId = JavaTypesManager.getJavaTypeFromId(talendType);
-                    String label = null;
-                    String value2 = var.getValue();
+                    String type = null;
+                    JavaType javaTypeFromId = JavaTypesManager.getJavaTypeFromId(varible.getTalendType());
                     if (javaTypeFromId != null) {
-                        label = javaTypeFromId.getLabel();
-                        if ("BigDecimal".equals(label)) {//$NON-NLS-1$
-                            value2 = " new BigDecimal(" + value2 + ")";//$NON-NLS-1$//$NON-NLS-1$
-                        }
+                        type = javaTypeFromId.getLabel();
                     }
-                    expression = renameValues(expression, var.getName(), value2);
+                    String currentValue = varible.getValue();
+                    String newValue = renameVaribleValue(currentValue, type);
+                    if (valueContains(expression, varible.getName())) {
+                        if (currentValue != null && !currentValue.equals(newValue)) {
+                            expression = renameValues(expression, varible.getName(), newValue);
+                        } else {
+                            Integer.parseInt(varible.getValue());
+                        }
+                    }else {
+                        expression = renameValues(expression, varible.getName(), newValue);
+                    }
                 }
             } catch (NumberFormatException e1) {
                 for (Variable var : variables) {
                     expression = renameValues(expression, var.getName(), "\"" + var.getValue() + "\"");//$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
-
-            value.put(RowGeneratorComponent.ARRAY, "\"\"+(" + expression + ")+\"\""); //$NON-NLS-1$//$NON-NLS-1$
-
+            value.put(RowGeneratorComponent.ARRAY, "\"\"+(" + expression + ")+\"\""); //$NON-NLS-1$ //$NON-NLS-2$
             map.add(value);
         }
-
         return map;
-
     }
 
     // add for bug 9471
@@ -183,5 +179,16 @@ public class VirtualRowGeneratorNode extends RowGeneratorComponent {
             }
         }
         return false;
+    }
+
+    private String renameVaribleValue(String newValue, String type) {
+        if (JavaTypesManager.BIGDECIMAL.getLabel().equals(type)) {
+            newValue = " new " + JavaTypesManager.BIGDECIMAL.getNullableClass().getName() + "(" + newValue + ")";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        } else if (JavaTypesManager.CHARACTER.getLabel().contains(type)) {
+            if (newValue.length() == 1) {
+                newValue = " new " + JavaTypesManager.CHARACTER.getNullableClass().getName() + "('" + newValue.charAt(0) + "')";//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            }
+        }
+        return newValue;
     }
 }
