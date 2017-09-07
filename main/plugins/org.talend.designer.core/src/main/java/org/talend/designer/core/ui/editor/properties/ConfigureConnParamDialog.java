@@ -522,16 +522,14 @@ public class ConfigureConnParamDialog extends Dialog {
              */
             @Override
             public void keyReleased(KeyEvent e) {
-                if (isRequriedValue(key.getName())) {
-                    if (host.getText().trim().length() == 0) {
-                        host.setBackground(ColorConstants.red);
-                        host.redraw();
-                    } else {
-                        host.setBackground(ColorConstants.white);
-                        host.redraw();
-                    }
-                    resetValues(host, hostValue);
+                if (host.getText().trim().length() == 0) {
+                    host.setBackground(ColorConstants.red);
+                    host.redraw();
+                } else {
+                    host.setBackground(ColorConstants.white);
+                    host.redraw();
                 }
+                resetValues(host, hostValue);
             }
 
         });
