@@ -80,6 +80,12 @@ skeleton="../tXMLMap/tXMLMap_java.skeleton"
 		%>
 		
 		<%
+		if(hasDocumentInAnyLookupTable) {
+		%>
+		treeNodeAPI_<%=cid %>.clear();
+		<%
+		}
+		
 		for(TreeNode tmpNode : mainInputTable.getNodes()){
 //			boolean isInnerJoin = true;
 			currentMainNode = tmpNode;
