@@ -167,7 +167,7 @@
 			    REQUIRED_IF="(READ_BY == 'XPATH')" />
 
 			<!-- json path -->
-			<IMPORT NAME="json-path-2.1.0.jar" MODULE="json-path-2.1.0.jar" MVN="mvn:org.talend.libraries/json-path-1.2.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-2.1.0.jar"
+			<IMPORT NAME="json-path-2.1.0.jar" MODULE="json-path-2.1.0.jar" MVN="mvn:org.talend.libraries/json-path-2.1.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-2.1.0.jar"
 			    REQUIRED_IF="(READ_BY == 'JSONPATH')" />
             <IMPORT NAME="json-smart-2.2.1.jar" MODULE="json-smart-2.2.1.jar" MVN="mvn:org.talend.libraries/json-smart-2.2.1/6.0.0"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" />
