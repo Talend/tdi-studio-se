@@ -15,6 +15,9 @@ imports="
     String from_key = ElementParameterParser.getValue(node,"__FROM_KEY__");
     String to_bucket = ElementParameterParser.getValue(node,"__TO_BUCKET__");
     String to_key = ElementParameterParser.getValue(node,"__TO_KEY__");
+    boolean is_cross_region_copy = "true".equals(ElementParameterParser.getValue(node,"__CROSS_REGION_COPY__"));
+	String account_id = ElementParameterParser.getValue(node,"__ACCOUNT_ID__");
+	String role_name = ElementParameterParser.getValue(node,"__ROLE_NAME__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	
 	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
@@ -29,6 +32,35 @@ imports="
 		<%
 		}
 		%>
+		<%
+		if(is_cross_region_copy){
+		%>
+		
+		String roleARN_<%=cid%> = "arn:aws:iam::"+<%=account_id%>+":role/"+<%=role_name%>; 
+		String destinationBucketArn_<%=cid%> = "arn:aws:s3:::"+<%=to_bucket%>;
+		 com.amazonaws.services.s3.AmazonS3 s3Client = new com.amazonaws.services.s3.AmazonS3Client(credentials_<%=cid%>);
+		 java.util.Map<String, com.amazonaws.services.s3.model.ReplicationRule> replicationRules = new java.util.HashMap<String, com.amazonaws.services.s3.model.ReplicationRule>();
+            replicationRules.put(
+                    "the-replication-rules",
+                    new com.amazonaws.services.s3.model.ReplicationRule()
+                        .withPrefix("Tax/")
+                        .withStatus(com.amazonaws.services.s3.model.ReplicationRuleStatus.Enabled)
+                        .withDestinationConfig(
+                                new com.amazonaws.services.s3.model.ReplicationDestinationConfig()
+                                  .withBucketARN(destinationBucketArn_<%=cid%>)
+                                  .withStorageClass(com.amazonaws.services.s3.model.StorageClass.StandardInfrequentAccess)
+                        )
+            );
+		 s3Client.setBucketReplicationConfiguration(
+                    <%=from_bucket%>,
+                    new com.amazonaws.services.s3.model.BucketReplicationConfiguration()
+                        .withRoleARN(roleARN_<%=cid%>)
+                        .withRules(replicationRules)
+            ); 
+            s3Client.copyObject(<%=from_bucket%>, <%=from_key%>, <%=to_bucket%>, <%=to_key%>);
+		
+		<%}else{%>
+		
 		com.amazonaws.services.s3.model.CopyObjectRequest copyRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(<%=from_bucket%>, <%=from_key%>, <%=to_bucket%>, <%=to_key%>);
 		
 		<%
@@ -42,6 +74,8 @@ imports="
 		%>
 		
 		conn_<%=cid%>.copyObject(copyRequest_<%=cid%>);
+		
+		<%}%>
 		<%
 		if(isLog4jEnabled){
 		%>	

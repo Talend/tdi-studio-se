@@ -185,6 +185,35 @@
     </PARAMETER>
     
     <PARAMETER
+      NAME="CROSS_REGION_COPY"
+      FIELD="CHECK"
+      NUM_ROW="45"
+	  REQUIRED="true"
+    >
+	 <DEFAULT>"false"</DEFAULT>
+    </PARAMETER>
+	
+	<PARAMETER
+      NAME="ACCOUNT_ID"
+      FIELD="TEXT"
+      NUM_ROW="60"
+	  REQUIRED="true"
+	  SHOW_IF="CROSS_REGION_COPY == 'true'"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ROLE_NAME"
+      FIELD="TEXT"
+      NUM_ROW="60"
+	  REQUIRED="true"
+	  SHOW_IF="CROSS_REGION_COPY == 'true'"
+    >
+    <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
         NAME="ENABLE-SERVER-SIDE-ENCRYPTION"
         FIELD="CHECK"
         NUM_ROW="85"
