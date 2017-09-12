@@ -12,6 +12,9 @@
 // ============================================================================
 package org.talend.repository.generic.view.content;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.runtime.Assert;
@@ -19,7 +22,13 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.navigator.CommonViewer;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.repository.model.ProjectRepositoryNode;
+import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.navigator.RepoViewCommonNavigator;
 import org.talend.repository.navigator.RepoViewCommonViewer;
@@ -38,7 +47,30 @@ public class MetadataGenericContentProvider extends ProjectRepoDirectChildrenNod
          */
         @Override
         protected Set<RepositoryNode> getTopNodes() {
-            return getTopLevelNodes();
+            return makeUpHideNodes(getTopLevelNodes());
+        }
+        
+        private Set<RepositoryNode> makeUpHideNodes(Set<RepositoryNode> topNodes){
+            Set<RepositoryNode> nodes = new HashSet<RepositoryNode>(topNodes);
+            List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
+            IGenericDBService dbService = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                        IGenericDBService.class);
+            }
+            if(dbService != null){
+                extraTypes.addAll(dbService.getExtraTypes());
+            }
+            for(ERepositoryObjectType type : extraTypes){
+                if(RepositoryManagerHelper.findRepositoryView() == null){
+                    return nodes;
+                }
+                RepositoryNode jdbc = new RepositoryNode(null, (RepositoryNode)RepositoryManagerHelper.findRepositoryView().getRoot(), ENodeType.SYSTEM_FOLDER);
+                jdbc.setProperties(EProperties.CONTENT_TYPE, type);
+                jdbc.setProperties(EProperties.LABEL, type.getType());
+                nodes.add(jdbc);
+            }
+            return nodes;
         }
 
         /* (non-Javadoc)

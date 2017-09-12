@@ -170,4 +170,7 @@ public class ContextComposite extends Composite {
         removeAllPropertyChangeListener();
     }
 
+    public void setConnectionItem(ConnectionItem connectionItem){
+        this.connectionItem = connectionItem;
+    }
 }

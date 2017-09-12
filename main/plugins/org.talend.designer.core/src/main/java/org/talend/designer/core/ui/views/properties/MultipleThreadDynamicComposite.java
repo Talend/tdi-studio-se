@@ -474,7 +474,9 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
                         subComposite = composite;
                         curTop = DEFAULT_GROUP_HEIGHT * (groupPosition.size() > 0 ? 1 : 0) + heightSize;
                     }
-
+                    if(!isShouldCreateControl(curParam)){
+                        continue;
+                    }
                     lastControl = controller.createControl(subComposite, curParam, curNumInRow, curNbInRow, curTop,
                             cutLastControl);
 
@@ -491,6 +493,10 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         }
         minHeight = heightSize;
         resizeScrolledComposite();
+    }
+    
+    protected boolean isShouldCreateControl(IElementParameter curParam){
+        return true;
     }
 
     /**

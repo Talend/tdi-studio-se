@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,6 +13,8 @@
 package org.talend.repository.generic.util;
 
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.repository.generic.internal.IGenericWizardInternalService;
+import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.service.GenericWizardService;
 
 /**
@@ -23,6 +25,8 @@ public class GenericWizardServiceFactory {
 
     private static IGenericWizardService service = null;
 
+    private static IGenericWizardInternalService internalService = null;
+
     public static IGenericWizardService getGenericWizardService() {
         if (service == null) {
             service = new GenericWizardService();
@@ -30,4 +34,12 @@ public class GenericWizardServiceFactory {
         return service;
     }
 
+    public static IGenericWizardInternalService getGenericWizardInternalService() {
+        if (internalService == null) {
+            internalService = new GenericWizardInternalService();
+        }
+        return internalService;
+    }
+
 }
+

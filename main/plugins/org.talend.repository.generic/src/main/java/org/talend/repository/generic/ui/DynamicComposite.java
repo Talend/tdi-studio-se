@@ -465,4 +465,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         this.wizardPropertyChangeListener = wizardPropertyChangeListener;
     }
 
+    public Form getForm(){
+        return this.form;
+    }
 }

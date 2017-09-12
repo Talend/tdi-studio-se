@@ -471,12 +471,12 @@ public class Node extends Element implements IGraphicalNode {
 
     public Node(INode oldNode, IProcess2 process) {
         this.oldcomponent = oldNode.getComponent();
+        this.process = process;
+        init(oldNode.getComponent());
         if (component != null && component instanceof AbstractBasicComponent) {
             AbstractBasicComponent comp = (AbstractBasicComponent) component;
             comp.initNodePropertiesFromSerialized(this, oldNode.getComponentProperties().toSerialized());
         }
-        this.process = process;
-        init(oldNode.getComponent());
         needlibrary = false;
     }
 
