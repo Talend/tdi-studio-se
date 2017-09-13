@@ -26,9 +26,9 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.fieldassist.DecoratedField;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.fieldassist.IControlCreator;
+import org.eclipse.jface.fieldassist.TextControlCreator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -41,11 +41,10 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
-import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
@@ -61,6 +60,8 @@ import org.talend.designer.core.ui.dialog.BrmsDialog;
 import org.talend.designer.core.ui.dialog.IBrmsExtension;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
+import org.talend.designer.core.ui.editor.properties.controllers.creator.SelectAllTextControlCreator;
+import org.talend.designer.core.ui.editor.properties.controllers.uidialog.InstallModuleDialog;
 
 /**
  * DOC yzhang class global comment. Detailled comment <br/>
@@ -105,10 +106,10 @@ public class ModuleListController extends AbstractElementPropertySectionControll
                             ExceptionHandler.process(e);
                         }
 
-                        // update the combo current value
-                        CCombo combo = (CCombo) hashCurControls.get(propertyName);
-                        if (combo != null && !combo.isDisposed()) {
-                            combo.setText(Path.fromOSString(file).lastSegment());
+                        // update the text current value
+                        Text text = (Text) hashCurControls.get(propertyName);
+                        if (text != null && !text.isDisposed()) {
+                            text.setText(Path.fromOSString(file).lastSegment());
                         }
                         return new PropertyChangeCommand(elem, propertyName, lastSegment);
                     }
@@ -119,87 +120,31 @@ public class ModuleListController extends AbstractElementPropertySectionControll
 
             }
         } else {
-            FileDialog dial = new FileDialog(composite.getShell(), SWT.NONE);
-            dial.setFilterExtensions(FilesUtils.getAcceptJARFilesSuffix());
-            String file = dial.open();
-            if (file != null && !file.equals("")) { //$NON-NLS-1$
-                String propertyName = (String) button.getData(PARAMETER_NAME);
-                String lastSegment = TalendTextUtils.addQuotes(Path.fromOSString(file).lastSegment());
+            String propertyName = (String) button.getData(PARAMETER_NAME);
+            Object value = elem.getPropertyValue(propertyName);
+            String initValue = value == null ? "" : TalendTextUtils.removeQuotes(value.toString());
+            InstallModuleDialog dial = new InstallModuleDialog(composite.getShell(), initValue);
+            if (Window.OK == dial.open()) {
+                String file = dial.getResult();
+                if (file != null && !file.equals("")) { //$NON-NLS-1$
+                    String lastSegment = TalendTextUtils.addQuotes(Path.fromOSString(file).lastSegment());
 
-                try {
-                    CorePlugin.getDefault().getLibrariesService().deployLibrary(Path.fromOSString(file).toFile().toURL());
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
-                }
-                if (!elem.getPropertyValue(propertyName).equals(lastSegment)) {
+                    if (!elem.getPropertyValue(propertyName).equals(lastSegment)) {
 
-                    // update the combo current value
-                    CCombo combo = (CCombo) hashCurControls.get(propertyName);
-                    if (combo != null && !combo.isDisposed()) {
-                        combo.setText(Path.fromOSString(file).lastSegment());
+                        // update the text current value
+                        Text text = (Text) hashCurControls.get(propertyName);
+                        if (text != null && !text.isDisposed()) {
+                            text.setText(Path.fromOSString(file).lastSegment());
+                        }
+
+                        return new PropertyChangeCommand(elem, propertyName, lastSegment);
                     }
-
-                    return new PropertyChangeCommand(elem, propertyName, lastSegment);
                 }
             }
         }
 
         return null;
     }
-
-    public Command createCommand(SelectionEvent selectionEvent) {
-        Set<String> elementsName;
-        Control ctrl;
-        elementsName = hashCurControls.keySet();
-        for (String name : elementsName) {
-            Object o = hashCurControls.get(name);
-            if (o instanceof Control) {
-                ctrl = (Control) o;
-                if (ctrl == null) {
-                    hashCurControls.remove(name);
-                    return null;
-                }
-
-                if (ctrl.equals(selectionEvent.getSource()) && ctrl instanceof CCombo) {
-                    boolean isDisposed = ((CCombo) ctrl).isDisposed();
-                    if (!isDisposed && (!elem.getPropertyValue(name).equals(((CCombo) ctrl).getText()))) {
-
-                        String value = new String(""); //$NON-NLS-1$
-                        for (int i = 0; i < elem.getElementParameters().size(); i++) {
-                            IElementParameter param = elem.getElementParameters().get(i);
-                            if (param.getName().equals(name)) {
-                                for (int j = 0; j < param.getListItemsValue().length; j++) {
-                                    if (((CCombo) ctrl).getText().equals(param.getListItemsDisplayName()[j])) {
-                                        value = (String) param.getListItemsValue()[j];
-                                    }
-                                }
-                            }
-                        }
-                        if (value.equals(elem.getPropertyValue(name))) { // same
-                            // value so
-                            // no
-                            // need to do
-                            // anything
-                            return null;
-                        }
-                        CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
-                        return new PropertyChangeCommand(elem, name, value);
-                    }
-                }
-
-            }
-        }
-        return null;
-    }
-
-    IControlCreator cbCtrl = new IControlCreator() {
-
-        @Override
-        public Control createControl(final Composite parent, final int style) {
-            CCombo cb = new CCombo(parent, style);
-            return cb;
-        }
-    };
 
     /*
      * (non-Javadoc)
@@ -216,7 +161,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
             }
         }
 
-        DecoratedField dField = new DecoratedField(subComposite, SWT.BORDER, cbCtrl);
+        final DecoratedField dField = new DecoratedField(subComposite, SWT.BORDER, new SelectAllTextControlCreator());
         if (param.isRequired()) {
             FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
                     FieldDecorationRegistry.DEC_REQUIRED);
@@ -224,14 +169,13 @@ public class ModuleListController extends AbstractElementPropertySectionControll
         }
 
         Control cLayout = dField.getLayoutControl();
-        CCombo combo = (CCombo) dField.getControl();
+        Text text = (Text) dField.getControl();
 
-        combo.setEditable(false);
+        text.setEditable(false);
         cLayout.setBackground(subComposite.getBackground());
-        combo.setEnabled(!param.isReadOnly());
-        combo.addSelectionListener(listenerSelection);
+        text.setEnabled(!param.isReadOnly());
         if (elem instanceof Node) {
-            combo.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+            text.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
         }
 
         CLabel labelLabel = getWidgetFactory().createCLabel(subComposite, param.getDisplayName());
@@ -267,6 +211,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
         } else {
             data.left = new FormAttachment(labelLabel, 0, SWT.RIGHT);
         }
+        data.right = new FormAttachment(labelLabel, STANDARD_LABEL_WIDTH * 3, SWT.RIGHT);
         data.top = new FormAttachment(0, top);
         cLayout.setLayoutData(data);
         Point initialSize = dField.getLayoutControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -286,7 +231,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
         btnEdit.addSelectionListener(listenerSelection);
 
         // **********************
-        hashCurControls.put(param.getName(), combo);
+        hashCurControls.put(param.getName(), text);
         hashCurControls.put(param.getName() + BUTTON_EDIT, btnEdit);
         updateData();
         // this.dynamicTabbedPropertySection.updateColumnList(null);
@@ -304,7 +249,7 @@ public class ModuleListController extends AbstractElementPropertySectionControll
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
-        DecoratedField dField = new DecoratedField(subComposite, SWT.BORDER, cbCtrl);
+        DecoratedField dField = new DecoratedField(subComposite, SWT.BORDER, new TextControlCreator());
         Point initialSize = dField.getLayoutControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dField.getLayoutControl().dispose();
 
@@ -380,34 +325,28 @@ public class ModuleListController extends AbstractElementPropertySectionControll
             if (event.getSource() instanceof Button) {
                 Command cmd = createCommand((Button) event.getSource());
                 executeCommand(cmd);
-            } else {
-                Command cmd = createCommand(event);
-                executeCommand(cmd);
             }
         }
     };
 
     @Override
     public void refresh(IElementParameter param, boolean check) {
-        CCombo combo = (CCombo) hashCurControls.get(param.getName());
-        if (combo == null || combo.isDisposed()) {
+        Text text = (Text) hashCurControls.get(param.getName());
+        if (text == null || text.isDisposed()) {
             return;
         }
         updateData();
 
-        String[] curNameList = param.getListItemsDisplayName();
-
         Object value = param.getValue();
 
-        combo.setItems(curNameList);
         if (value instanceof String) {
-            combo.setText(TalendTextUtils.removeQuotes((String) value));
+            text.setText(TalendTextUtils.removeQuotes((String) value));
         }
 
         if (param.isContextMode()) {
             Button buttonEdit = (Button) hashCurControls.get(param.getName() + BUTTON_EDIT);
-            combo.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-            combo.setEnabled(false);
+            text.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_RED));
+            text.setEnabled(false);
             buttonEdit.setEnabled(false);
         }
     }
