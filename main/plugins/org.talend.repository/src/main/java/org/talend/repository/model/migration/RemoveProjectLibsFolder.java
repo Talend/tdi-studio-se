@@ -25,12 +25,12 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
-import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
-import org.talend.librariesmanager.maven.ArtifactsDeployer;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.librariesmanager.maven.ShareLibrareisHelper;
 
 /**
@@ -60,7 +60,7 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
             libsFolder = new File(location.toPortableString());
             ShareProjectLibsMigration migration = new ShareProjectLibsMigration();
             migration.shareLibs(null, new NullProgressMonitor());
-        } catch (PersistenceException e) {
+        } catch (Exception e) {
             ExceptionHandler.process(e);
             return ExecutionResult.FAILURE;
         }
@@ -110,9 +110,10 @@ public class RemoveProjectLibsFolder extends AbstractProjectMigrationTask {
          * org.talend.core.model.general.ModuleNeeded)
          */
         @Override
-        public void deployToLocalMaven(ArtifactsDeployer deployer, File jarFile, ModuleNeeded module) throws Exception {
-            deployer.deployToLocalMaven(jarFile.getAbsolutePath(), module.getMavenUri(true), false);
-
+        public void shareToRepository(File jarFile, MavenArtifact artifact) throws Exception {
+            String uri = MavenUrlHelper.generateMvnUrl(artifact.getGroupId(), artifact.getArtifactId(), artifact.getArtifactId(),
+                    artifact.getClassifier(), artifact.getVersion());
+            deployer.install(jarFile.getPath(), uri);
         }
     }
 

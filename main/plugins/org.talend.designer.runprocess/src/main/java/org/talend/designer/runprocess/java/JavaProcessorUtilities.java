@@ -412,7 +412,7 @@ public class JavaProcessorUtilities {
                 }
             }
         }
-        repositoryBundleService.deployModules(listModulesReallyNeeded, null);
+        repositoryBundleService.installModules(listModulesReallyNeeded, null);
         if (missingJars != null) {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
         }

@@ -188,7 +188,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
 
     protected StringBuffer getProfileArgs() {
         StringBuffer profileBuffer = new StringBuffer();
-        String property = System.getProperty("maven.addiitonal.params");
+        String property = System.getProperty("maven.additional.params");
         if (property != null) {
             profileBuffer.append(SPACE);
             profileBuffer.append(property);
