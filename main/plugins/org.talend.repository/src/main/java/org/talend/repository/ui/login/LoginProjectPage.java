@@ -611,7 +611,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             if (selectedConnBean != null) {
                 connectionsViewer.setSelection(new StructuredSelection(new Object[] { selectedConnBean }));
                 IStructuredSelection sel = (IStructuredSelection) connectionsViewer.getSelection();
-                if (sel.getFirstElement() == selectedConnBean) {
+                if (selectedConnBean.equals(sel.getFirstElement())) {
                     selected = true;
                 }
             }
@@ -671,7 +671,9 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                     // if (beforeConnBean != null && connection.equals(beforeConnBean)) {
                     // return;
                     // }
-                    if (connection == loginHelper.getCurrentSelectedConnBean()) {
+                    if (connection.equals(loginHelper.getCurrentSelectedConnBean())) {
+                        // in case they are equal but different object id
+                        loginHelper.setCurrentSelectedConnBean(connection);
                         return;
                     } else {
                         loginHelper.setCurrentSelectedConnBean(connection);
@@ -823,6 +825,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 finishButton.setEnabled(false);
                 Project project = getProject();
                 if (project != null) {
+                    selectedProjectBeforeRefresh = project.getLabel();
 
                     // last used project will be saved when click finish
                     // loginHelper.getPrefManipulator().setLastProject(project.getLabel());
@@ -1867,7 +1870,6 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 try {
                     selectProject(project);
                 } catch (JSONException e) {
-                    // TODO Auto-generated catch block
                     ExceptionHandler.process(e);
                 }
             }
@@ -1876,6 +1878,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     private void selectProject(Project goodProject) throws JSONException {
         projectViewer.setSelection(new StructuredSelection(new Object[] { goodProject }), true);
+        selectedProjectBeforeRefresh = goodProject.getLabel();
         fetchLicenseIfNeeded(goodProject);
         fillUIBranches(goodProject, true);
         // if (PluginChecker.isTIS()) {

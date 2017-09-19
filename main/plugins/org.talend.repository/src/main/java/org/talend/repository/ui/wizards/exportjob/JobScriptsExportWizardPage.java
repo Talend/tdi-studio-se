@@ -73,6 +73,7 @@ import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExpo
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IContext;
@@ -83,6 +84,7 @@ import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.export.FileSystemExporterFullPath;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
@@ -1368,6 +1370,28 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                 return false;
             }
 
+        } else if (JobExportType.MSESB.equals(jobExportType)) {
+            IRunnableWithProgress worker = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
+                IESBMicroService microService = (IESBMicroService) GlobalServiceRegister.getDefault()
+                        .getService(IESBMicroService.class);
+                if (microService != null) {
+                    Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
+                    exportChoiceMap.put(ExportChoice.needAssembly, false);
+                    exportChoiceMap.put(ExportChoice.needLauncher, false);
+                    worker = microService.createRunnableWithProgress(exportChoiceMap, Arrays.asList(getCheckNodes()),
+                            getSelectedJobVersion(), getDestinationValue(), "");
+                }
+            }
+
+            try {
+                getContainer().run(false, true, worker);
+            } catch (InvocationTargetException e) {
+                MessageBoxExceptionHandler.process(e.getCause(), getShell());
+                return false;
+            } catch (InterruptedException e) {
+                return false;
+            }
         } else {
             List<ContextParameterType> contextEditableResultValuesList = null;
             if (manager != null) {

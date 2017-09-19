@@ -50,11 +50,10 @@
 <%
 		if(isLog4jEnabled){
 %>
-		log.error("<%=cid%> - " + "file doesn't exist or content is empty.");
+		  log.debug("<%=cid%> - " + "file \""+file_<%=cid%>.getPath()+"\" doesn't exist or content is empty.");
 <%
 		}
 %>
-		System.err.println("file doesn't exist or content is empty.");
 	}
 <%
 	boolean delete = "true".equals(ElementParameterParser.getValue(node,"__DELETE_LOCALFILE__"));

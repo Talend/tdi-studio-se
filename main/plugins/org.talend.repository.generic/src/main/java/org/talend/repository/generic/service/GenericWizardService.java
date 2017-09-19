@@ -84,18 +84,25 @@ public class GenericWizardService implements IGenericWizardService {
             int ordinal = 100;
             ERepositoryObjectType repositoryType = internalService.createRepositoryType(name, displayName, name, folder, ordinal);
             if (curParentNode == null) {
-                Class<ComponentProperties> jdbcClass = ReflectionUtils.getClass(
-                        "org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties",
-                        wizardDefinition.getClass().getClassLoader());
-                if (jdbcClass != null && wizardDefinition.supportsProperties(jdbcClass)) {
-                    IGenericDBService dbService = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                        dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
-                    }
-                    if (dbService != null) {
-                        dbService.getExtraTypes().add(repositoryType);
-                    }
+                try {
+                    @SuppressWarnings("unchecked")
+                    Class<ComponentProperties> jdbcClass = (Class<ComponentProperties>) Class.forName(
+                            "org.talend.components.jdbc.wizard.JDBCConnectionWizardProperties", true, //$NON-NLS-1$
+                            wizardDefinition.getClass().getClassLoader());
+                    if (jdbcClass != null && wizardDefinition.supportsProperties(jdbcClass)) {
+                        IGenericDBService dbService = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                            dbService = (IGenericDBService) GlobalServiceRegister.getDefault()
+                                    .getService(IGenericDBService.class);
+                        }
+                        if (dbService != null) {
+                            dbService.getExtraTypes().add(repositoryType);
+                        }
 
+                    }
+                } catch (ClassNotFoundException cnfe) {
+                    // nothing, we don't throw any exception actually if the wizard is not a JDBC property.
+                    // this code should be removed in the future once all the components are using new framework
                 }
             }
             if (curParentNode != null && !needHide(repositoryType)) {

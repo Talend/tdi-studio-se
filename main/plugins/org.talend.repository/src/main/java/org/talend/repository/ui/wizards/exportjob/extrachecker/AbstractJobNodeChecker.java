@@ -43,7 +43,7 @@ public abstract class AbstractJobNodeChecker implements ExtraBuildChecker {
     abstract String checkNode(JobExportType exportType, NodeType nodeType);
 
     @SuppressWarnings("unchecked")
-    private static List<NodeType> getProcessNodeTypes(RepositoryNode node) {
+    protected static List<NodeType> getProcessNodeTypes(RepositoryNode node) {
         Item item = node.getObject().getProperty().getItem();
         if (item instanceof ProcessItem) {
             ProcessType process = ((ProcessItem) item).getProcess();

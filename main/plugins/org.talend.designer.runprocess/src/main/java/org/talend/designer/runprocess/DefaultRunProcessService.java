@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -41,7 +40,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.PluginChecker;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
 import org.talend.core.model.components.ComponentCategory;
@@ -55,6 +53,7 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
+import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.runprocess.i18n.Messages;
@@ -194,6 +193,24 @@ public class DefaultRunProcessService implements IRunProcessService {
                 }
             }
         }
+
+        // check for ESB MicroService
+
+        IESBMicroService microService = null;
+
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
+            microService = (IESBMicroService) GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
+
+            if (ProcessorUtilities.isExportJobAsMicroService()) {
+                if (microService != null) {
+                    IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, false);
+                    if (processor != null) {
+                        return processor;
+                    }
+                }
+            }
+        }
+
         if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType())) {
             return new MapReduceJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_SPARK.getName().equals(process.getComponentsType())) {
@@ -203,17 +220,13 @@ public class DefaultRunProcessService implements IRunProcessService {
         } else if (ComponentCategory.CATEGORY_4_SPARKSTREAMING.getName().equals(process.getComponentsType())) {
             return new SparkJavaProcessor(process, property, filenameFromLabel);
         } else if (ComponentCategory.CATEGORY_4_CAMEL.getName().equals(process.getComponentsType())) {
-            Bundle bundle = Platform.getBundle(PluginChecker.EXPORT_ROUTE_PLUGIN_ID);
-            if (bundle != null) {
-                try {
-                    Class camelJavaProcessor = bundle
-                            .loadClass("org.talend.resources.export.maven.runprocess.CamelJavaProcessor");
-                    Constructor constructor = camelJavaProcessor.getConstructor(IProcess.class, Property.class, boolean.class);
-                    return (MavenJavaProcessor) constructor.newInstance(process, property, filenameFromLabel);
-                } catch (Exception e) {
-                    ExceptionHandler.process(e);
+            if (microService != null) {
+                IProcessor processor = microService.createJavaProcessor(process, property, filenameFromLabel, true);
+                if (processor != null) {
+                    return processor;
                 }
             }
+
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             return new MavenJavaProcessor(process, property, filenameFromLabel);

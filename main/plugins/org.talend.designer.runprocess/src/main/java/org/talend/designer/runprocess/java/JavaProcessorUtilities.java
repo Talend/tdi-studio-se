@@ -469,7 +469,7 @@ public class JavaProcessorUtilities {
             } else {
                 subForMsg(sb.toString());
             }
-            if (!CommonsPlugin.isHeadless()) {
+            if (!CommonsPlugin.isHeadless() && !CommonsPlugin.isJUnitTest()) {
                 Display display = DisplayUtils.getDisplay();
                 if (display != null) {
                     display.syncExec(new Runnable() {
