@@ -218,6 +218,8 @@ public class JarBuilder {
                 FileChannel dstChannel = null;
                 try {
                     srcChannel = new FileInputStream(subf.getAbsoluteFile()).getChannel();
+                    // Create intermediate folders (needed for contexts folder)
+                    new File(tempFolderPath + File.separatorChar + desFileName).getParentFile().mkdirs();
                     dstChannel = new FileOutputStream(tempFolderPath + File.separatorChar + desFileName).getChannel();
                     dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
                 } finally {

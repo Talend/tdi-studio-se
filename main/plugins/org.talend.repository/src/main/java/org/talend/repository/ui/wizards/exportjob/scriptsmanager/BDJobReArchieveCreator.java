@@ -62,7 +62,7 @@ public class BDJobReArchieveCreator {
 
     private ProcessItem processItem, fatherProcessItem;
 
-    private Boolean isMRWithHDInsight, isStormJob, isSparkWithHDInsight;
+    private Boolean isMRWithHDInsight, isStormJob, isSparkWithHDInsight, isSparkInYarnClusterMode;
 
     public BDJobReArchieveCreator(ProcessItem processItem) {
         this(processItem, processItem);
@@ -127,6 +127,28 @@ public class BDJobReArchieveCreator {
         return isStormJob || isSparkWithHDInsight;
     }
 
+    /**
+     * Test if it is a spark job with yarn cluster mode
+     */
+    public boolean isSparkWithYarnClusterMode() {
+        if (isSparkInYarnClusterMode == null) {
+            isSparkInYarnClusterMode = false;
+            // Test if we are in Spark or Spark streaming
+            if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
+                    || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+                
+                EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
+                for (ElementParameterType pt : parameters) {
+                    if (HadoopConstants.SPARK_MODE.equals(pt.getName())
+                            && HadoopConstants.SPARK_MODE_YARN_CLUSTER.equals(pt.getValue())) {
+                        isSparkInYarnClusterMode = true;
+                    }
+                }
+            }
+        }
+        return isSparkInYarnClusterMode;
+    }
+
     private boolean isBDJobWithFramework(ERepositoryObjectType objectType, String frameworkName) {
         if (processItem != null) {
             // Storm/SparkStreaming(PROCESS_STORM), MR/Spark(PROCESS_MR)
@@ -172,6 +194,18 @@ public class BDJobReArchieveCreator {
         } else if (isFatJar()) {
             jarbuilder.setLibPath(getLibPath(libRootFolder, false));
             jarbuilder.setFatJar(true);
+        } else if (isSparkWithYarnClusterMode()) {
+            jarbuilder.setFatJar(false);
+            if (isSparkWithYarnClusterMode()) {
+                // Copy contexts (*.properties)
+                HashSet<FilterInfo> propertiesFilter = new HashSet<FilterInfo>(Arrays.asList(new FilterInfo(null,
+                        FileExtensions.PROPERTIES_FILE_SUFFIX)));
+                for (File f : FileUtils.getAllFilesFromFolder(originalJarFile.getParentFile(), propertiesFilter)) {
+                    FilesUtils.copyFile(f,
+ new File(jarTmpFolder.getAbsolutePath()
+                            + "/" + jobClassPackageFolder + "/contexts/" + f.getName())); //$NON-NLS-1$
+                }
+            }
         }
         jarbuilder.buildJar();
 
@@ -188,7 +222,7 @@ public class BDJobReArchieveCreator {
         }
 
         // check
-        if (!isMRWithHDInsight() && !isFatJar()) {
+        if (!isMRWithHDInsight() && !isFatJar() && !isSparkWithYarnClusterMode()) {
             return;
         }
         Property property = processItem.getProperty();
