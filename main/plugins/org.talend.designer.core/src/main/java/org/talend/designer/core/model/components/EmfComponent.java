@@ -147,6 +147,7 @@ import org.talend.hadoop.distribution.condition.EqualityOperator;
 import org.talend.hadoop.distribution.condition.NestedComponentCondition;
 import org.talend.hadoop.distribution.condition.SimpleComponentCondition;
 import org.talend.hadoop.distribution.helper.DistributionsManager;
+import org.talend.hadoop.distribution.helper.HadoopDistributionsHelper;
 import org.talend.hadoop.distribution.model.DistributionBean;
 import org.talend.hadoop.distribution.model.DistributionVersion;
 import org.talend.hadoop.distribution.model.DistributionVersionModule;
@@ -171,7 +172,8 @@ public class EmfComponent extends AbstractBasicComponent {
 
     private final String name;
 
-    private boolean isLoaded = false;
+    private boolean isLoaded, areHadoopLibsLoaded, areHadoopLibsImported, areHadoopDistribsLoaded,
+            areHadoopDistribsImported = false;
 
     private String hadoopDistribsCacheVersion = "";
 
@@ -1509,11 +1511,18 @@ public class EmfComponent extends AbstractBasicComponent {
             newParam.setRequired(false);
             newParam.setParentParameter(parentParam);
         } else if (type == EParameterFieldType.HADOOP_LIBRARIES) {
-            if (!areHadoopLibsLoaded()) {
+            String cacheVersion = HadoopDistributionsHelper.getCacheVersion();
+            if (!StringUtils.equals(cacheVersion, hadoopLibCacheVersion)) {
+                areHadoopLibsLoaded = false;
                 // We get the component type defined by the NAME of the HADOOP_LIBRARIES parameter.
                 ComponentType componentType = ComponentType.getComponentType(parentParam.getName());
 
+                if (areHadoopLibsImported) {
+                    componentImportNeedsList.removeAll(componentHadoopDistributionImportNeedsList);
+                }
+
                 componentHadoopDistributionImportNeedsList = new ArrayList<>();
+                areHadoopLibsImported = false;
 
                 // We retrieve all the implementations of the HadoopComponent service.
                 BundleContext bc = FrameworkUtil.getBundle(DistributionFactory.class).getBundleContext();
@@ -1546,7 +1555,8 @@ public class EmfComponent extends AbstractBasicComponent {
                         }
                     }
                 }
-                // areHadoopLibsLoaded = true;
+                hadoopLibCacheVersion = cacheVersion;
+                areHadoopLibsLoaded = true;
             }
         } else if (type == EParameterFieldType.HADOOP_DISTRIBUTION) {
             ComponentType componentType = ComponentType.getComponentType(parentParam.getName());
@@ -1617,8 +1627,17 @@ public class EmfComponent extends AbstractBasicComponent {
 
             listParam.add(newParam);
 
-            if (!areHadoopDistribsLoaded()) {
+            boolean cacheVersionChanged = false;
+            String cacheVersion = HadoopDistributionsHelper.getCacheVersion();
+            cacheVersionChanged = !StringUtils.equals(cacheVersion, hadoopDistribsCacheVersion);
+
+            if (cacheVersionChanged) {
+                if (areHadoopDistribsImported) {
+                    componentImportNeedsList.removeAll(hadoopDistributionImportNeedsList);
+                }
                 hadoopDistributionImportNeedsList = new ArrayList<>();
+                areHadoopDistribsImported = false;
+                areHadoopDistribsLoaded = false;
             }
 
             displayName = new String[versionsList.size()];
@@ -1637,7 +1656,7 @@ public class EmfComponent extends AbstractBasicComponent {
                 showIfVersion[index] = that.getDisplayShowIf();
                 notShowIfVersion[index] = null;
 
-                if (!areHadoopDistribsLoaded()) {
+                if (cacheVersionChanged) {
                     // Create the EMF IMPORTType to import the modules group required by a Hadoop distribution for a
                     // given
                     // ComponentType.
@@ -1655,7 +1674,10 @@ public class EmfComponent extends AbstractBasicComponent {
                 index++;
             }
 
-            // areHadoopDistribsLoaded = true;
+            if (cacheVersionChanged) {
+                hadoopDistribsCacheVersion = cacheVersion;
+            }
+            areHadoopDistribsLoaded = true;
 
             defaultValue = itemValue[0];
 
@@ -3089,22 +3111,14 @@ public class EmfComponent extends AbstractBasicComponent {
     @Override
     public List<ModuleNeeded> getModulesNeeded(INode node) {
         if (componentImportNeedsList != null && componentImportNeedsList.size() > 0) {
-            // if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
-            // areHadoopDistribsImported = true;
-            // componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
-            // }
-            if (hadoopDistributionImportNeedsList != null) {
-                componentImportNeedsList.removeAll(hadoopDistributionImportNeedsList);
+            if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
+                areHadoopDistribsImported = true;
+                componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
             }
-            componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
-            // if (areHadoopLibsLoaded && !areHadoopLibsImported) {
-            // areHadoopLibsImported = true;
-            // componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
-            // }
-            if (componentHadoopDistributionImportNeedsList != null) {
-                componentImportNeedsList.removeAll(componentHadoopDistributionImportNeedsList);
+            if (areHadoopLibsLoaded && !areHadoopLibsImported) {
+                areHadoopLibsImported = true;
+                componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
             }
-            componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
             return componentImportNeedsList;
         }
         List<String> moduleNames = new ArrayList<String>();
@@ -3247,23 +3261,14 @@ public class EmfComponent extends AbstractBasicComponent {
             componentImportNeedsList.add(componentImportNeeds);
         }
 
-        // if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
-        // areHadoopDistribsImported = true;
-        // componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
-        // }
-        if (hadoopDistributionImportNeedsList != null) {
-            componentImportNeedsList.removeAll(hadoopDistributionImportNeedsList);
+        if (areHadoopDistribsLoaded && !areHadoopDistribsImported) {
+            areHadoopDistribsImported = true;
+            componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
         }
-        componentImportNeedsList.addAll(hadoopDistributionImportNeedsList);
-
-        // if (areHadoopLibsLoaded && !areHadoopLibsImported) {
-        // areHadoopLibsImported = true;
-        // componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
-        // }
-        if (componentHadoopDistributionImportNeedsList != null) {
-            componentImportNeedsList.removeAll(componentHadoopDistributionImportNeedsList);
+        if (areHadoopLibsLoaded && !areHadoopLibsImported) {
+            areHadoopLibsImported = true;
+            componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
         }
-        componentImportNeedsList.addAll(componentHadoopDistributionImportNeedsList);
 
         return componentImportNeedsList;
     }
@@ -4231,14 +4236,6 @@ public class EmfComponent extends AbstractBasicComponent {
     @Override
     public String toString() {
         return getName() + ":" + getLongName(); //$NON-NLS-1$
-    }
-
-    private boolean areHadoopLibsLoaded() {
-        return false;
-    }
-
-    private boolean areHadoopDistribsLoaded() {
-        return false;
     }
 
 }
