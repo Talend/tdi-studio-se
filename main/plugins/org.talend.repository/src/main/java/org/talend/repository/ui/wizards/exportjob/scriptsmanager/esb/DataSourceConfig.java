@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IElementParameter;
@@ -32,11 +33,14 @@ import org.talend.designer.runprocess.ItemCacheManager;
 public class DataSourceConfig {
 
     private static final String TRUN_JOB = "tRunJob"; //$NON-NLS-1$
+    
+    private static final Set<String> PROCESSES_SUB_JOB = new HashSet<>();
 
     private DataSourceConfig() {
     }
 
     public static Collection<String> getAliases(IProcess processItem) {
+        PROCESSES_SUB_JOB.clear();
         return getAliases(processItem, new HashSet<String>());
     }
 
@@ -88,6 +92,12 @@ public class DataSourceConfig {
             return;
         }
         if (TRUN_JOB.equals(node.getComponent().getName())) {
+            String processId = (String) node.getElementParameter("PROCESS:PROCESS_TYPE_PROCESS").getValue();
+            if (PROCESSES_SUB_JOB.contains(processId)) {
+                return;
+            }
+            PROCESSES_SUB_JOB.add(processId);
+            
             List<? extends INode> subNodes = getSubProcessNodesFromTRunjob(node);
             if (subNodes != null) {
                 for (INode n : subNodes) {
