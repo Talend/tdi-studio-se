@@ -139,6 +139,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     protected Button jobItemButton;
 
     protected Button contextButton;
+    
+    protected Button exportMSAsZipButton;
 
     protected Button jobScriptButton;
 
@@ -1377,8 +1379,9 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                         .getService(IESBMicroService.class);
                 if (microService != null) {
                     Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
-                    exportChoiceMap.put(ExportChoice.needAssembly, false);
-                    exportChoiceMap.put(ExportChoice.needLauncher, false);
+                    exportChoiceMap.put(ExportChoice.needAssembly, true);
+                    exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());
+                    exportChoiceMap.put(ExportChoice.onlyDefautContext, contextButton.getSelection());
                     worker = microService.createRunnableWithProgress(exportChoiceMap, Arrays.asList(getCheckNodes()),
                             getSelectedJobVersion(), getDestinationValue(), "");
                 }

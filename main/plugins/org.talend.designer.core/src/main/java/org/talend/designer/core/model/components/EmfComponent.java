@@ -290,6 +290,10 @@ public class EmfComponent extends AbstractBasicComponent {
         }
     }
 
+    public COMPONENTType getEmfComponentType() {
+        return compType;
+    }
+
     private ResourceBundle getComponentResourceBundle(IComponent currentComp, String source, String cachedPathSource,
             AbstractComponentsProvider provider) {
         try {

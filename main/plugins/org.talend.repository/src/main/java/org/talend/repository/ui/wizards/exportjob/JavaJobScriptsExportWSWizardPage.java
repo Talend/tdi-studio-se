@@ -1078,7 +1078,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     }
 
     private void createOptionsForMSESB(Composite optionsComposite, Font font) {
-        if (!PluginChecker.isPluginLoaded(PluginChecker.EXPORT_JOB_PLUGIN_ID)) {
+        if (!PluginChecker.isTIS()) {
             return;
         }
 
@@ -1120,16 +1120,16 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             }
         });
 
-        Button exportAsZipButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
-        exportAsZipButton.setText("Export as ZIP"); //$NON-NLS-1$
-        exportAsZipButton.setFont(getFont());
+        exportMSAsZipButton = new Button(optionsComposite, SWT.CHECK | SWT.LEFT);
+        exportMSAsZipButton.setText("Export as ZIP"); //$NON-NLS-1$
+        exportMSAsZipButton.setFont(getFont());
         // exportAsZipButton.setEnabled(false);
-        exportAsZipButton.setVisible(PluginChecker.isTIS());
-        exportAsZipButton.addSelectionListener(new SelectionAdapter() {
+        exportMSAsZipButton.setVisible(PluginChecker.isTIS());
+        exportMSAsZipButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                boolean selectContext = exportAsZipButton.getSelection();
+                boolean selectContext = exportMSAsZipButton.getSelection();
                 // exportAsZip = selectContext;
 
                 String destinationValue = getDestinationValue();
