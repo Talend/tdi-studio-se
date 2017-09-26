@@ -50,6 +50,9 @@ try {
     return "";
 }
 boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
+final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+final java.util.Date currentTime = new java.util.Date(System.currentTimeMillis());
+final String currentTimeStr = "_" + currentTime.toString();
 
 if(hiveDistrib.isExecutedThroughWebHCat()) {
 %>
@@ -186,7 +189,10 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 	}
 	%>
 	try {
-	<%		
+		final String queryIdentifier = "talend_" + jobName + "<%=currentTimeStr%>";
+		stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
+		stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
+		<%		
 		if (usePrepareStatement) {
 		
 			for (Map<String, String> param : prepareStatementParameters) {
@@ -214,16 +220,17 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			
 		} else {
 			if(("true").equals(propagateRecordset)){
-	%>
-			rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
+			%>
+				rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
 			<%
-		} else {
+			} else {
 		    %>
-	    	stmt_<%=cid %>.execute(query_<%=cid %>);
+		  	stmt_<%=cid %>.execute(query_<%=cid %>);
 	    	<%
 			}
 		}
-	    %>
+		%>
+		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier + "]");
 	    } catch (java.lang.Exception e) {
 	        whetherReject_<%=cid%> = true;
 	        <%
