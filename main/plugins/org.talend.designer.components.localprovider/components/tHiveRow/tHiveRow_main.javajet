@@ -11,9 +11,6 @@ imports="
 		java.util.Map
 		java.util.Set
 		java.util.HashSet
-		java.util.Date
-		java.text.DateFormat
-		java.text.SimpleDateFormat
 "
 %>
 
@@ -53,8 +50,6 @@ try {
     return "";
 }
 boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
-final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-final Date currentTime = new Date(System.currentTimeMillis());
 
 if(hiveDistrib.isExecutedThroughWebHCat()) {
 %>
@@ -191,9 +186,11 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 	}
 	%>
 	try {
-		final String queryIdentifier = "talend_" + jobName + "_<%=currentTime%>";
+		final String queryIdentifier = "talend_" + jobName + "_" + new Date(startTime);
+		// For MapReduce Mode
 		stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
-		stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
+		// For Tez Mode
+		stmt_<%=cid %>.execute("set hive.query.name=" + queryIdentifier);
 		<%		
 		if (usePrepareStatement) {
 		
