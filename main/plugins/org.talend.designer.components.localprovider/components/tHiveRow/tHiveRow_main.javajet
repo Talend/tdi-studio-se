@@ -11,6 +11,7 @@ imports="
 		java.util.Map
 		java.util.Set
 		java.util.HashSet
+		java.text.DateFormat
 "
 %>
 
@@ -186,11 +187,7 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 	}
 	%>
 	try {
-		final String queryIdentifier = "talend_" + jobName + "_" + new Date(startTime);
-		// For MapReduce Mode
-		stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
-		// For Tez Mode
-		stmt_<%=cid %>.execute("set hive.query.name=" + queryIdentifier);
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/SetQueryName.javajet"%>
 		<%		
 		if (usePrepareStatement) {
 		
