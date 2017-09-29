@@ -3890,6 +3890,7 @@ public class CLASS {
                             dataType = column.getColumn().getType();
                         }
                         Integer length = column.getColumn().getLength() == null ? 0 : column.getColumn().getLength();
+                        createSQL.append(dataType);
                         Integer precision = column.getColumn().getPrecision() == null ? 0 : column.getColumn().getPrecision();
                         boolean lengthIgnored = mappingType.isLengthIgnored(getDBMSId(), dataType);
                         boolean precisionIgnored = mappingType.isPrecisionIgnored(getDBMSId(), dataType);
