@@ -91,10 +91,7 @@ imports="
             %>
 		    java.sql.ResultSet rs_<%=cid %> = null;
 
-		    try{
-		    	if (stmt_<%=cid %> instanceof org.apache.hive.jdbc.HiveStatement) {
-		    		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/SetQueryName.javajet"%>
-		    	}
+		    try {
 		    	rs_<%=cid %> = stmt_<%=cid %>.executeQuery(dbquery_<%=cid%>);
 		    	java.sql.ResultSetMetaData rsmd_<%=cid %> = rs_<%=cid %>.getMetaData();
 		    	int colQtyInRs_<%=cid%> = rsmd_<%=cid %>.getColumnCount();
