@@ -34,6 +34,9 @@ String joinClauseString = StringUtils.join(joinClause.toArray(), " AND ");
 String strFieldName = "";
 String selectColumnString = "";
 String columnNameString = "";
+%>
+sequenceValueFetchPattern_<%=cid%> = "NEXTVAL(\'"+sequence_<%=cid%>+"\')";
+<%
 
 if(isEnableType1) {
     List<String> columnNames = new ArrayList<String>();
