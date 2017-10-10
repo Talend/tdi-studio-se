@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talendExcel-1.1-20170504</artifactId>
+	<artifactId>talendExcel-1.2-20171010</artifactId>
 	<version>6.0.0</version>
 	<packaging>jar</packaging>
 
