@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.talend.libraries</groupId>
-	<artifactId>talend_DB_mssqlUtil-1.1-20170612</artifactId>
+	<artifactId>talend_DB_mssqlUtil-1.2-20171017</artifactId>
 	<version>6.0.0</version>
 	<packaging>jar</packaging>
 
