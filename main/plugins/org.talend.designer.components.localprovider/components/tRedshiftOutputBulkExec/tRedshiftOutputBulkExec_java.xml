@@ -353,7 +353,7 @@
 		</TEMPLATES>
 
 		<IMPORTS>
-			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.8.1005.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.8.1005/6.0.0"  REQUIRED="true" />
+			<IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED="true" />
 			
 			<IMPORT NAME="aws-java-sdk-1.10.52.jar" MODULE="aws-java-sdk-1.10.52.jar"
 				MVN="mvn:org.talend.libraries/aws-java-sdk-1.10.52/6.0.0"
