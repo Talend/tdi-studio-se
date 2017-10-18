@@ -723,7 +723,7 @@ public class Node extends Element implements IGraphicalNode {
 
         while ((nodeConnector == null) && (nbConn < listConnector.size())) {
             INodeConnector connector = listConnector.get(nbConn);
-            if (connector.getDefaultConnectionType() == testedType && connector.isShow()) {
+            if (connector.getDefaultConnectionType() == testedType ) {
                 nodeConnector = listConnector.get(nbConn);
                 listConnectors.add(nodeConnector);
             }
@@ -742,7 +742,7 @@ public class Node extends Element implements IGraphicalNode {
     @Override
     public INodeConnector getConnectorFromName(final String connName) {
         for (INodeConnector nodeConnector : listConnector) {
-            if (connName.equals(nodeConnector.getName()) && nodeConnector.isShow()) {
+            if (connName.equals(nodeConnector.getName())) {
                 return nodeConnector;
             }
         }
@@ -765,7 +765,7 @@ public class Node extends Element implements IGraphicalNode {
 
         while (nbConn < listConnector.size()) {
             INodeConnector connector = listConnector.get(nbConn);
-            if (connector.getDefaultConnectionType() == testedType && connector.isShow()) {
+            if (connector.getDefaultConnectionType() == testedType ) {
                 nodeConnector = listConnector.get(nbConn);
                 listConnectors.add(nodeConnector);
             }
@@ -2774,12 +2774,6 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
 
-            for (IConnection connection : getOutgoingConnections()) {
-                if (connection.getSourceNodeConnector() != null && !connection.getSourceNodeConnector().isShow()) {
-                    Problems.add(ProblemStatus.ERROR, this, "Please remove the " //$NON-NLS-1$
-                            + connection.getSourceNodeConnector().getLinkName() + " connections"); //$NON-NLS-1$
-                }
-            }
 
             if (param.isRequired() && param.isShow(getElementParameters())) {
                 EParameterFieldType fieldType = param.getFieldType();
@@ -3332,10 +3326,11 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
         // check not startable components not linked
-        if (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
-            if ((getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
-                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMinLinkInput() == 0)
-                    & (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() != 0)) {
+        INodeConnector connectorFromType = getConnectorFromType(EConnectionType.FLOW_MAIN);
+		if (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
+            if (connectorFromType!=null && (getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
+                    && (connectorFromType.isShow()&& connectorFromType.getMinLinkInput() == 0)
+                    & (connectorFromType.getMaxLinkInput() != 0)) {
                 String errorMessage = Messages.getString("Node.noInputLink"); //$NON-NLS-1$
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
             }
@@ -3348,9 +3343,9 @@ public class Node extends Element implements IGraphicalNode {
 
         // check not startable components not linked
         if (getComponentProperties() == null) {
-            if (getConnectorFromType(EConnectionType.FLOW_MAIN) != null 
-                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkInput() == 0)
-                    && (getConnectorFromType(EConnectionType.FLOW_MAIN).getMaxLinkOutput() != 0)) {
+            if (connectorFromType != null &&connectorFromType.isShow()
+                    && (connectorFromType.getMaxLinkInput() == 0)
+                    && (connectorFromType.getMaxLinkOutput() != 0)) {
                 if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                         && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
                         && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
@@ -3361,7 +3356,7 @@ public class Node extends Element implements IGraphicalNode {
             }
         } else if ((Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
             for (INodeConnector connector : getConnectorsFromType(EConnectionType.FLOW_MAIN)) {
-                if ((connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
+                if (connector.isShow() && (connector.getMaxLinkInput() == 0) && (connector.getMaxLinkOutput() != 0)) {
                     if ((getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MERGE) == 0)
                             && (getCurrentActiveLinksNbOutput(EConnectionType.FLOW_REF) == 0)
@@ -3484,9 +3479,6 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         for (INodeConnector nodeConnector : listConnector) {
-            if (!nodeConnector.isShow()) {
-                continue;
-            }
             if (!nodeConnector.getDefaultConnectionType().hasConnectionCategory(IConnectionCategory.USE_HASH)
                     && nodeConnector.getDefaultConnectionType() != EConnectionType.FLOW_MERGE) {
                 boolean needCheckOutput = true;
@@ -3567,7 +3559,8 @@ public class Node extends Element implements IGraphicalNode {
                 }
                 if (needCheckOutput) {
                     if (nbMaxOut != -1) {
-                        if (curLinkOut > nbMaxOut) {
+                    	boolean notShow = !nodeConnector.isShow() &&curLinkOut >0;
+                        if (notShow || curLinkOut > nbMaxOut) {
                             String errorMessage = Messages.getString("Node.tooMuchTypeOutput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
@@ -3584,7 +3577,8 @@ public class Node extends Element implements IGraphicalNode {
                 if (!isJoblet) {
 
                     if (nbMaxIn != -1) {
-                        if (curLinkIn > nbMaxIn) {
+                    	boolean notShow = !nodeConnector.isShow() &&curLinkIn >0;
+                        if (notShow || curLinkIn > nbMaxIn) {
                             String errorMessage = Messages.getString("Node.tooMuchTypeInput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
