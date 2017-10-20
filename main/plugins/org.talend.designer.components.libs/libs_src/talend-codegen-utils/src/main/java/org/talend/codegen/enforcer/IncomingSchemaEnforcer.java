@@ -419,7 +419,7 @@ public class IncomingSchemaEnforcer {
                 break;
             case FIXED:
             case BYTES:
-                if (diValue instanceof byte[])
+                if (diValue instanceof byte[] || "java.lang.Object".equals(javaClass))
                     avroValue = diValue;
                 else
                     avroValue = String.valueOf(diValue).getBytes();
