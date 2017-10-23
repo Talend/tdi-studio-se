@@ -1370,16 +1370,16 @@ if (execStat) {
 			return contentToReplace;
 		}
 
-		char[] contextChars = contentToReplace.toCharArray();
+		char[] contextChars = contentToReplace.replaceAll("\\\\\\\\", "\\\\").toCharArray();
 		StringBuilder result = new StringBuilder();
-		int length = contentToReplace.length();
+		int length = contextChars.length;
 		boolean flag = false;
 
 		for (int i = 0; i < length; i++) {
 
-			if (contextChars[i] == '\\') {
+			if (contextChars[i] == '\\' && i + 1 < length) {
 				for (char[] escapeChar : escapeChars) {
-					if (i + 1 < length && contextChars[i + 1] == escapeChar[0]) {
+					if (contextChars[i + 1] == escapeChar[0]) {
 						result.append(escapeChar[1]);
 						i++;
 						flag = true;

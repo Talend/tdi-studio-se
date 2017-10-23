@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: mapr500
 Bundle-SymbolicName: org.talend.libraries.hadoop.mapr.5.0.0;singleton:=true
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Bundle-Vendor: .Talend SA.
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
