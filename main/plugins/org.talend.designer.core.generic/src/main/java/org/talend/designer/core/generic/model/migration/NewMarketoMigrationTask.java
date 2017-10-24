@@ -112,9 +112,9 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
             }
             // Manage include/exclude REST types
             if ("INCLUDE_TYPES".equals(paramName) || "EXCLUDE_TYPES".equals(paramName)) {
-                ElementParameterType whichApi = ParameterUtilTool.findParameterType(node, "USE_SOAP_API");
-                Object whichApiValue = ParameterUtilTool.convertParameterValue(whichApi);
-                if ("true".equals(String.valueOf(whichApiValue))) {
+                ElementParameterType isSOAP = ParameterUtilTool.findParameterType(node, "USE_SOAP_API");
+                Object isSOAPValue = ParameterUtilTool.convertParameterValue(isSOAP);
+                if ("true".equals(String.valueOf(isSOAPValue))) {
                     return paramType;
                 }
                 String k = "INCLUDE_TYPES".equals(paramName) ? "INCLUDE_TYPES_REST" : "EXCLUDE_TYPES_REST";
