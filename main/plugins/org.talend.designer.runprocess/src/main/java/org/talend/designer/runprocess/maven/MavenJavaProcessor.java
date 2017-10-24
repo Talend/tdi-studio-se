@@ -48,6 +48,7 @@ import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.ProjectPomManager;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IMavenProcessor;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
@@ -58,12 +59,24 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.BuildJobManager
  * created by ggu on 2 Feb 2015 Detailled comment
  *
  */
-public class MavenJavaProcessor extends JavaProcessor {
+public class MavenJavaProcessor extends JavaProcessor implements IMavenProcessor {
 
     protected String windowsClasspath, unixClasspath;
 
+    private String[] childrenJobDependencies;
+
     public MavenJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         super(process, property, filenameFromLabel);
+    }
+
+    @Override
+    public String[] getChildrenJobDependencies() {
+        return childrenJobDependencies;
+    }
+
+    @Override
+    public void setChildrenJobDependencies(String[] dependencies) {
+        this.childrenJobDependencies = dependencies;
     }
 
     @Override
