@@ -110,6 +110,17 @@ public class NewMarketoMigrationTask extends NewComponentFrameworkMigrationTask 
             if ("LEAD_SELECTOR".equals(paramName)) {
                 ParameterUtilTool.addParameterType(node, "CLOSED_LIST", "LEAD_SELECTOR_REST", String.valueOf(value));
             }
+            // Manage include/exclude REST types
+            if ("INCLUDE_TYPES".equals(paramName) || "EXCLUDE_TYPES".equals(paramName)) {
+                ElementParameterType whichApi = ParameterUtilTool.findParameterType(node, "USE_SOAP_API");
+                Object whichApiValue = ParameterUtilTool.convertParameterValue(whichApi);
+                if ("true".equals(String.valueOf(whichApiValue))) {
+                    return paramType;
+                }
+                String k = "INCLUDE_TYPES".equals(paramName) ? "INCLUDE_TYPES_REST" : "EXCLUDE_TYPES_REST";
+                ElementParameterType rest = ParameterUtilTool.findParameterType(node, k);
+                return rest;
+            }
         }
         return paramType;
     }
