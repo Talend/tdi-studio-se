@@ -21,6 +21,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.composites.MessagesComposite;
 import org.talend.commons.ui.swt.composites.MessagesWithActionComposite;
 import org.talend.core.CorePlugin;
@@ -128,16 +129,24 @@ public class MissingSettingsMultiThreadDynamicComposite extends TopMessagesMulti
 
     @Override
     public void afterChangingLibraries() {
-        final Element ele = this.getElement();
-        if (ele instanceof Node) {
-            final Node node = (Node) ele;
-            // after install, need update the error marks for node
-            IProcess process = node.getProcess();
-            if (process instanceof IProcess2) {
-                // check whole process to make sure other related nodes can be updated also.
-                ((IProcess2) process).checkProcess();
+        DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final Element ele = getElement();
+                if (ele instanceof Node) {
+                    final Node node = (Node) ele;
+                    // after install, need update the error marks for node
+                    IProcess process = node.getProcess();
+                    if (process instanceof IProcess2) {
+                        // check whole process to make sure other related nodes can be updated also.
+                        ((IProcess2) process).checkProcess();
+                    }
+                    checkVisibleTopMessages();
+                }
             }
-        }
+        });
+
     }
 
     @Override
