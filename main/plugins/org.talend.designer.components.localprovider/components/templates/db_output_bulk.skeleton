@@ -486,6 +486,11 @@ public class CLASS {
             }
             return createSQL.toString();
         }
+        
+        protected String getLengthStringRepresentation(String dataType, Integer length) {
+        	return String.valueOf(length);
+    	}
+    
         protected String getAutoIncrement(int startValue, int step) {
             if(SYBASE.equalsIgnoreCase(getDBMSId()) || EXASOL.equalsIgnoreCase(getDBMSId())){
                 return " IDENTITY NOT NULL";
@@ -2112,7 +2117,7 @@ public class CLASS {
                                     } else {
                                         comma = ",";
                                     }
-                                    createSQL.append(comma + length);
+                                    createSQL.append(comma + getLengthStringRepresentation(dataType, length));
                                 }
                                 createSQL.append(suffix);
                             } else {
@@ -2121,7 +2126,7 @@ public class CLASS {
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
-                                        createSQL.append(prefix + length);                                    
+                                        createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
                                     }
                                 }
                                 if (!precisionIgnored) {
@@ -2172,6 +2177,14 @@ public class CLASS {
             }
             return createSQL.toString();
         }
+        
+        protected String getLengthStringRepresentation(String dataType, Integer length) {
+	        if (("VARCHAR".equalsIgnoreCase(dataType) && length > 8000) || ("NVARCHAR".equalsIgnoreCase(dataType) && length > 4000)
+	                || ("VARBINARY".equalsIgnoreCase(dataType) && length > 8000)) {
+	            return "MAX";
+	        }
+	        return String.valueOf(length);
+	    }
     }
     
     public class MysqlManager extends Manager {
@@ -3838,7 +3851,134 @@ public class CLASS {
                 setStmt.append("}\r\n");
             }
             return setStmt.toString();
-        }        
+        }  
+        public String getCreateTableSQL(List<Column> columnList){
+
+            MappingTypeRetriever mappingType = MetadataTalendType.getMappingTypeRetriever(getDBMSId());
+            StringBuilder createSQL = new StringBuilder();
+            createSQL.append("CREATE TABLE " + getLProtectedChar() + "\" + tableName_" + cid + " + \"" + getRProtectedChar() + "(");
+            List<String> pkList = new ArrayList<String>();
+            int count = 0;
+            String ending = ",";
+            
+            for (Column column : columnList) {
+                if (column.isReplaced()) {
+                    List<Column> replacedColumns = column.getReplacement();
+                    if (column.isKey()) {
+                        for (Column replacedColumn : replacedColumns) {
+                            pkList.add(getLProtectedChar(replacedColumn.getColumnName()) + replacedColumn.getColumnName() + getRProtectedChar(replacedColumn.getColumnName()));
+                        }
+                    }
+                    int replacedCount = 0;
+                    for (Column replacedColumn : replacedColumns) {
+                        if (count == columnList.size() - 1 && replacedCount == replacedColumns.size() - 1) {
+                            ending = "";
+                        }
+                        createSQL.append(getLProtectedChar(replacedColumn.getColumnName()) + replacedColumn.getColumnName() + getRProtectedChar(replacedColumn.getColumnName()) + " ");
+                        createSQL.append(replacedColumn.getDataType() + ending);
+                        replacedCount++;
+                    }
+                } else {
+                    if (count == columnList.size() - 1) {
+                        ending = "";
+                    }
+                    
+                    if (column.isAddCol()) {
+                        createSQL.append(getLProtectedChar( column.getColumnName() ) + column.getColumnName() + getRProtectedChar( column.getColumnName() ) + " ");
+                        createSQL.append(column.getDataType() + ending);
+                    } else if(column.isDynamic()) {
+                        createSQL.append(" {TALEND_DYNAMIC_COLUMN} ").append(ending);
+                    } else {
+                        if (column.isKey()) {
+                            pkList.add(getLProtectedChar( column.getColumnName() ) + column.getColumnName() + getRProtectedChar( column.getColumnName() ));
+                        }
+                        createSQL.append(getLProtectedChar( column.getColumnName() ) + column.getColumnName() + getRProtectedChar( column.getColumnName() ) + " ");
+                        if(column.isAutoIncrement()) {
+                            createSQL.append(getAutoIncrement(column.getStartValue(), column.getStep()));
+                        } else {
+                        String dataType = null;
+                        if (column.getColumn().getType() == null || column.getColumn().getType().trim().equals("")) {
+                            dataType = mappingType.getDefaultSelectedDbType(column.getColumn().getTalendType());
+                        } else {
+                            dataType = column.getColumn().getType();
+                        }
+                        Integer length = column.getColumn().getLength() == null ? 0 : column.getColumn().getLength();
+                        createSQL.append(dataType);
+                        Integer precision = column.getColumn().getPrecision() == null ? 0 : column.getColumn().getPrecision();
+                        boolean lengthIgnored = mappingType.isLengthIgnored(getDBMSId(), dataType);
+                        boolean precisionIgnored = mappingType.isPrecisionIgnored(getDBMSId(), dataType);
+                        String prefix = "";
+                        String suffix = "";
+                        String comma = "";
+
+                            if (mappingType.isPreBeforeLength(getDBMSId(), dataType)) {
+                                if (!precisionIgnored) {
+                                    prefix = "(";
+                                    suffix = ") ";
+                                    createSQL.append(prefix + precision);
+                                }
+                                if (!lengthIgnored) {
+                                    prefix = (prefix.equals("") ? "(" : prefix);
+                                    suffix = (suffix.equals("") ? ") " : suffix);
+                                    if (precisionIgnored) {
+                                        createSQL.append(prefix);
+                                        comma = "";
+                                    } else {
+                                        comma = ",";
+                                    }
+                                    createSQL.append(comma + length);
+                                }
+                                createSQL.append(suffix);
+                            } else {
+                                if (!lengthIgnored) {
+                                        prefix = "(";
+                                        suffix = ") ";
+                                        createSQL.append(prefix + length);                                    
+                                }
+                                if (!precisionIgnored) {
+                                    prefix = (prefix.equals("") ? "(" : prefix);
+                                    suffix = (suffix.equals("") ? ") " : suffix);
+                                    if (lengthIgnored) {
+                                        createSQL.append(prefix);
+                                        comma = "";
+                                    } else {
+                                        comma = ",";
+                                    }
+                                    createSQL.append(comma + precision);
+                                }
+                                    createSQL.append(suffix);
+                                if(MYSQL.equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
+                                    createSQL.append("UNSIGNED");
+                                }
+                            }                            
+                            
+                        
+                            createSQL.append(setDefaultValue(column.getColumn().getDefault(), dataType));
+                            createSQL.append(setNullable(column.getColumn().isNullable()));
+                        }
+
+                        createSQL.append(ending);
+                    }
+                }
+                count++;
+            }
+            
+            if (pkList.size() > 0) {
+                createSQL.append(",primary key(");
+                int i = 0;
+                for (String pk : pkList) {
+                    createSQL.append(pk);
+                    if (i != pkList.size() - 1) {
+                        createSQL.append(",");
+                    }
+                    i++;
+                }
+                createSQL.append(")");
+            }
+            return createSQL.toString();
+        
+        }
+        
     }
     
     public class ODBCManager extends Manager {

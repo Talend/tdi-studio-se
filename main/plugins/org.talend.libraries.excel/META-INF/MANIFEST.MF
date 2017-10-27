@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Excel
 Bundle-SymbolicName: org.talend.libraries.excel
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Bundle-ClassPath: .,
  lib/simpleexcel-1.1-20170714.jar,
  lib/commons-collections4-4.1.jar,

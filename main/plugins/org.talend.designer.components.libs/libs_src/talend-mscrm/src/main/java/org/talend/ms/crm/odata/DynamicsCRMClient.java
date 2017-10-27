@@ -18,6 +18,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.naming.AuthenticationException;
@@ -74,6 +76,9 @@ import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
 public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     private static final String NAMESPAVE = "Microsoft.Dynamics.CRM";
+    private  static final String LOOKUP_NAME_PREFIX = "_";
+    private  static final String LOOKUP_NAME_SUFFIX = "_value";
+    private static final int LOOKUP_NAME_MINSIZE = LOOKUP_NAME_PREFIX.length()+LOOKUP_NAME_SUFFIX.length();
 
     private ClientConfiguration clientConfiguration;
 
@@ -93,6 +98,14 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     private String entitySet;
 
     private String entityType;
+
+    /**
+     * A list which contains all navigation links to set to null.
+     *
+     * A distinct delete command must be sent to set a navigation property to null. It can't be done in the same
+     * time that the entity update.
+     */
+    private List<String> navigationLinksToNull = new ArrayList<String>();
 
     public DynamicsCRMClient(ClientConfiguration clientConfiguration, String serviceRootURL, String entitySet)
             throws AuthenticationException {
@@ -217,11 +230,12 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
     }
 
     /**
-     * Update entity with provided content
+     * Update entity with provided content.
+     * The PATCH method is used, so only given properties are updated.
+     * Navigation link properties that must be set to null are updated by another DELETE calls.
      * 
-     * @param entitySet entitySet the EntitySet name which you want to update records
-     * @param entity provide to update
-     * @param updateType UpdateType.REPLACE(Full updates) or UpdateType.PATCH(Partial updates )
+     * @param entity The payload containing properties to update
+     * @param keySegment The id of the entity to update
      * 
      * @throws ServiceUnavailableException
      */
@@ -229,7 +243,19 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
         URIBuilder updateURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
                 .appendKeySegment(UUID.fromString(keySegment));
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        return createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
+        HttpResponse updateHttpResponse =  createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
+
+        // No need to test the updateHttpResponse code since it is returned only if it's a success.
+        // The deletion of navigation links will be done only if the previous update doesn't throw an exception.
+        this.deleteNavigationLinksToNull(keySegment);
+
+        return updateHttpResponse;
+    }
+
+    protected void deleteNavigationLinksToNull(String keySegment) throws ServiceUnavailableException {
+        for(String navigationLinkName : this.navigationLinksToNull){
+            this.deleteNavigationLink(navigationLinkName, keySegment);
+        }
     }
 
     /**
@@ -245,6 +271,25 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
                 .appendKeySegment(UUID.fromString(keySegment));
 
         return createAndExecuteRequest(deleteURIBuilder.build(), null, HttpMethod.DELETE);
+    }
+
+
+    /**
+     * Delete a navigation link from an entity (set the property to null).
+     * Jira : TDI-39571
+     *
+     * @param navigationLinkName The navigation link name (not the _name_value generated lookup property)
+     * @param keySegment The keysegment(id) of the main property
+     * @return The Http response.
+     * @throws ServiceUnavailableException
+     */
+    public HttpResponse deleteNavigationLink(String navigationLinkName, String keySegment) throws ServiceUnavailableException {
+        URIBuilder deleteNavLinkURIBuilder = odataClient.newURIBuilder(serviceRootURL)
+                                                    .appendEntitySetSegment(entitySet)
+                                                    .appendKeySegment(UUID.fromString(keySegment))
+                                                    .appendNavigationSegment(navigationLinkName).appendRefSegment();
+
+        return createAndExecuteRequest(deleteNavLinkURIBuilder.build(), null, HttpMethod.DELETE);
     }
 
     /**
@@ -299,17 +344,77 @@ public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     }
 
-    public void addEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String navigationName,
-            String linkedEntityId) {
+    /**
+     * This setter has been added for unit tests to avoid some http requests.
+     *
+     * @param entityType
+     */
+    public void setEntityType(String entityType){
+        this.entityType = entityType;
+    }
+
+    public void addEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String lookupName,
+            String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull) {
+
+        // To help the final user since lookup names '_name_value' are available in the schema
+        // But it's the navigation link that can be updated.
+        String navigationLinkName = this.extractNavigationLinkName(lookupName);
+
+        // If value is empty and emptyLookupIntoNull, then set the value to null to unlink the navigation (set to null)
+        if(emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()){
+            linkedEntityId = null;
+        }
+
+        // If ignore null is set and the value is null, then don't update/delete this navigation link
+        if(ignoreNull && linkedEntityId == null){
+            return;
+        }
+
         if (linkedEntityId != null) {
             try {
-                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationName,
+                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationLinkName,
                         new URI(lookupEntitySet + "(" + linkedEntityId + ")")));
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
             }
         }
+        else{
+            // Retains all navigation links to delete (set to null)
+            navigationLinksToNull.add(navigationLinkName);
+        }
+    }
 
+    public int getNbNavigationLinkToRemove(){
+        return navigationLinksToNull.size();
+    }
+
+    /**
+     * Get the navigation link name from a lookup one.
+     * MSCRM auto-generates lookup properties from navigation links.
+     * The auto-generated lookup property name is _navigationLinkName_value.
+     * This method extract 'navigationLinkName' only if it begins by '_' and ends by '_value'.
+     *
+     * @param lookupName The auto-generated lookup name
+     * @return The extracted navigation link name or the lookup name if it can't be extracted.
+     */
+    public String extractNavigationLinkName(String lookupName){
+        final int nameSize = lookupName.length();
+        if(nameSize <= LOOKUP_NAME_MINSIZE){
+            return lookupName;
+        }
+
+        String pref = lookupName.substring(0, LOOKUP_NAME_PREFIX.length());
+        if(!pref.equals(LOOKUP_NAME_PREFIX)){
+            return lookupName;
+        }
+
+        final int endName = nameSize - LOOKUP_NAME_SUFFIX.length();
+        String suff = lookupName.substring(endName, nameSize);
+        if(!suff.equals(LOOKUP_NAME_SUFFIX)){
+            return lookupName;
+        }
+
+        return lookupName.substring(LOOKUP_NAME_PREFIX.length(), endName);
     }
 
     /**

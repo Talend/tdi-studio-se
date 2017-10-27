@@ -145,8 +145,17 @@ TextUtil text_util = new TextUtil(manager);
 
 <%if("DB_SEQUENCE".equals(surrogateKeyType)) {%>
 String sequence_<%=cid%> = <%=ElementParameterParser.getValue(node,"__SK_DB_SEQUENCE__")%>;
-
+    <%if("snowflake_id".equals(dbmsId)) {%>
+    String sequenceValueFetchPattern_<%=cid%>;
+    if(dbschema_<%=cid%>!=null && !dbschema_<%=cid%>.trim().isEmpty()) {
+        sequenceValueFetchPattern_<%=cid%> = dbschema_<%=cid%> + "." + sequence_<%=cid%>+".nextval ";
+        //snowflake is not case sensitive, so no need to consider the quoter here.
+    }else{
+        sequenceValueFetchPattern_<%=cid%> = sequence_<%=cid%>+".nextval ";
+    }
+    <%}else{%>
 String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("sequence", cid)%>";
+    <%}%>
 <%}%>
 
 <%if("mysql_id".equals(dbmsId)) {%>
@@ -165,8 +174,10 @@ String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("s
 	<%@ include file="./sybase.javajet"%>
 <%} else if("redshift_id".equals(dbmsId)){%>
 	<%@ include file="./common_scd_pattern1.javajet"%>
-<%} else if("netezza_id".equals(dbmsId)){%>
+<%} else if("netezza_id".equals(dbmsId)||"snowflake_id".equals(dbmsId)){%>
 	<%@ include file="./common_scd_pattern2.javajet"%>
+<%} else if("vertica_id".equals(dbmsId)){%>
+	<%@ include file="./vertica.javajet"%>
 <%} else {%>
 	<%@ include file="./common_scd_pattern1.javajet"%>
 <%}%>
