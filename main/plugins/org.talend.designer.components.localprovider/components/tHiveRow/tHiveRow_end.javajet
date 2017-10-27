@@ -39,14 +39,13 @@ imports="
 
 	if(!hiveDistrib.useCloudLauncher()) {
 		if (usePrepareStatement) {
-%>
+		%>
 			pstmt_<%=cid %>.close();	
-<%
-		} else {
-%>
-			stmt_<%=cid %>.close();	
-<%
-		}
+		<%
+		} 
+		%>
+		stmt_<%=cid %>.close();	
+		<%
 		if(!("true").equals(useExistingConn)) {
 	    	if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
             %>

@@ -48,6 +48,7 @@ Compress com<%=cid%> = new Compress();
 java.net.Socket socket<%=cid%> = null;
 int nb_line_<%=cid%> = 0;
 boolean retry<%=cid%> = true;
+java.net.ConnectException exception_<%=cid%> = null;
 
 for(int i=0;i<<%=retry%>-1;i++){
     if(retry<%=cid%>){
@@ -55,11 +56,16 @@ for(int i=0;i<<%=retry%>-1;i++){
             socket<%=cid%> = new java.net.Socket(<%=host%>,<%=port%>);
             retry<%=cid%> = false;
         }catch(java.net.ConnectException e<%=cid%>){
+        	exception_<%=cid%> = e<%=cid%>;
             Thread.sleep(<%=timeout%>);
         }
     }
 }
-    
+
+if(retry<%=cid%> && (exception_<%=cid%>!=null)) {
+	throw exception_<%=cid%>;
+}
+
 com.talend.csv.CSVWriter CsvWriter<%=cid%> = 
    new com.talend.csv.CSVWriter(
       new java.io.BufferedWriter(new java.io.OutputStreamWriter(socket<%=cid%>.getOutputStream(),<%=encoding%>)));

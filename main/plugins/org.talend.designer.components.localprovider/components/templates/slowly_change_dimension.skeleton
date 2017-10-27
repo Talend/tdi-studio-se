@@ -756,6 +756,12 @@ public class CLASS {
     }
     public List<Column> getSearchingColumnList(SCDConfiger scdConfiger) {
         List<Column> columnList = new ArrayList<Column>();
+        if(scdConfiger.isEnableType0()) {
+            List<Column> type0Attributes = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+            for(Column type0Attribute : type0Attributes) {
+                columnList.add(type0Attribute);
+            }
+        }
         if(scdConfiger.isEnableType1()) {
             List<Column> type1Attributes = scdConfiger.getDimensionType1Configer().getDimensionAttributes();
             for(Column type1Attribute : type1Attributes) {
@@ -852,6 +858,17 @@ public class CLASS {
                     searchingSQL.append(separator);
                 }
                 searchingSQL.append(getLProtectedChar() + sourceKey.getColumnName() + getRProtectedChar());
+            }
+            if(scdConfiger.isEnableType0()) {
+                List<Column> type0Attributes = scdConfiger.getDimensionType0Configer().getDimensionAttributes();
+                for(Column type0Attribute : type0Attributes) {
+                    if(firstColumn) {
+                        firstColumn = false;
+                    } else {
+                        searchingSQL.append(separator);
+                    }
+                    searchingSQL.append(getLProtectedChar() + type0Attribute.getColumnName() + getRProtectedChar());
+                }
             }
             if(scdConfiger.isEnableType1()) {
                 List<Column> type1Attributes = scdConfiger.getDimensionType1Configer().getDimensionAttributes();

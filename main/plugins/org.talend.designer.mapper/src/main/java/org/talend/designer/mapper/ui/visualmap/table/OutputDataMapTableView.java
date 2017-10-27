@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,15 +36,19 @@ import org.talend.commons.ui.runtime.swt.tableviewer.TableViewerCreatorNotModifi
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.DefaultTableLabelProvider;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.ITableCellValueModifiedListener;
 import org.talend.commons.ui.runtime.swt.tableviewer.behavior.TableCellValueModifiedEvent;
+import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.ExtendedSimpleTextCellEditor;
 import org.talend.commons.ui.runtime.swt.tableviewer.celleditor.ExtendedTextCellEditor;
+import org.talend.commons.ui.runtime.swt.tableviewer.data.ModifiedObjectInfo;
 import org.talend.commons.ui.runtime.swt.tableviewer.tableeditor.ButtonPushImageTableEditorContent;
 import org.talend.commons.ui.runtime.ws.WindowSystem;
 import org.talend.commons.ui.swt.advanced.dataeditor.commands.ExtendedTableRemoveCommand;
 import org.talend.commons.ui.swt.extended.table.AbstractExtendedTableViewer;
 import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreator.CELL_EDITOR_STATE;
 import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
 import org.talend.commons.ui.swt.tableviewer.behavior.DefaultCellModifier;
+import org.talend.commons.ui.swt.tableviewer.celleditor.DialogErrorForCellEditorListener;
 import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.IMetadataColumn;
@@ -57,6 +61,7 @@ import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.UIManager;
 import org.talend.designer.mapper.model.table.AbstractInOutTable;
 import org.talend.designer.mapper.model.table.OutputTable;
+import org.talend.designer.mapper.model.table.VarsTable;
 import org.talend.designer.mapper.model.tableentry.FilterTableEntry;
 import org.talend.designer.mapper.model.tableentry.GlobalMapEntry;
 import org.talend.designer.mapper.model.tableentry.OutputColumnTableEntry;
@@ -70,6 +75,7 @@ import org.talend.designer.mapper.ui.visualmap.zone.Zone;
  * $Id$
  * 
  */
+
 public class OutputDataMapTableView extends DataMapTableView {
 
     private OutputTableCellModifier cellModifier;
@@ -323,9 +329,9 @@ public class OutputDataMapTableView extends DataMapTableView {
      */
     @Override
     public void notifyFocusLost() {
-        if (expressionCellEditor != null) {
+         //if (expressionCellEditor != null) {
             expressionCellEditor.focusLost();
-        }
+         //}
     }
 
     @Override

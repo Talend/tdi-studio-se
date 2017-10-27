@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2015 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.test.util.NodeTestCreator;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.utils.TestProperties;
 import org.talend.designer.core.utils.TestUtils;
 
 /**
@@ -58,8 +57,6 @@ public class DataProcessTest {
         process = new Process(TestUtils.createDefaultProperty());
         dataProcess = new DataProcess(process);
         testNode = new Node(testComponent, process);
-        TestProperties testProps = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
-        testNode.setComponentProperties(testProps);
     }
 
     @Test

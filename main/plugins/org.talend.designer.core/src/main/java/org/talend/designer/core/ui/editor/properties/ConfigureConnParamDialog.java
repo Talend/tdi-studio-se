@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -522,16 +522,14 @@ public class ConfigureConnParamDialog extends Dialog {
              */
             @Override
             public void keyReleased(KeyEvent e) {
-                if (isRequriedValue(key.getName())) {
-                    if (host.getText().trim().length() == 0) {
-                        host.setBackground(ColorConstants.red);
-                        host.redraw();
-                    } else {
-                        host.setBackground(ColorConstants.white);
-                        host.redraw();
-                    }
-                    resetValues(host, hostValue);
+                if (host.getText().trim().length() == 0) {
+                    host.setBackground(ColorConstants.red);
+                    host.redraw();
+                } else {
+                    host.setBackground(ColorConstants.white);
+                    host.redraw();
                 }
+                resetValues(host, hostValue);
             }
 
         });

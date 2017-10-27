@@ -229,16 +229,14 @@ imports="
 
 	if(!hiveDistrib.useCloudLauncher()) {
 		if (usePrepareStatement) {
-%>
+		%>
 			java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(<%=dbquery%>);
-<%
-		} else {
-%>
-			java.sql.Statement stmt_<%=cid %> = conn_<%=cid %>.createStatement();
-<%
+		<%
 		}
+		%>
+		java.sql.Statement stmt_<%=cid %> = conn_<%=cid %>.createStatement();
+		<%
 	}
 %>
-
 	String query_<%=cid %> = "";
 	boolean whetherReject_<%=cid%> = false;

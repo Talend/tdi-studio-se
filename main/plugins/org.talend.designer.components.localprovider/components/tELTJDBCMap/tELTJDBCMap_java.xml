@@ -17,7 +17,6 @@
      EXTENSION="org.talend.designer.dbmap" 
      SCHEMA_AUTO_PROPAGATE="false" 
      DATA_AUTO_PROPAGATE="false" 
-     HAS_CONDITIONAL_OUTPUTS="true"
   >
     <SIGNATURE/>
   </HEADER>
@@ -57,7 +56,7 @@
 	   <PARAMETER
 	     NAME="CONNECTION"
 	     FIELD="COMPONENT_LIST"
-	     REQUIRED="true" FILTER="tJDBCConnection"
+	     REQUIRED="true" FILTER="REGEXP:^tJDBCConnection|tSnowflakeConnection$"
 	     NUM_ROW="2"
 	     SHOW_IF="(#LINK@CONNECTOR.OUT.TABLE_REF == '0') AND (USE_EXISTING_CONNECTION == 'true')"
 	     DYNAMIC_SETTINGS="true"/>

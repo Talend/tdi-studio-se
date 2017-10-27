@@ -7,6 +7,10 @@
             class="org.talend.repository.generic.service.GenericWizardService"
             serviceId="IGenericWizardService">
       </Service>
+      <Service
+            class="org.talend.repository.generic.service.GenericDBService"
+            serviceId="IGenericDBService">
+      </Service>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -53,8 +57,8 @@
             </and>
          </possibleChildren>
          <actionProvider
-               class="org.talend.repository.view.di.metadata.action.MetedataNodeActionProvier"
-               id="org.talend.repository.metadata.genericConnection.action.provider.id">
+               class="org.talend.repository.generic.action.GenericNodeActionProvier"
+               id="org.talend.repository.generic.action.GenericNodeActionProvier">
             <enablement>
                <and>
                   <instanceof
@@ -87,14 +91,6 @@
    </extension>
    <extension
          point="org.talend.core.repositoryContextualsActions">
-      <Action
-            class="org.talend.repository.generic.action.CreateGenericConnectionAction"
-            id="org.talend.repository.generic.action.CreateGenericConnectionAction"
-            isEditAction="true"
-            isReadAction="true"
-            level="10"
-            name="Metadata/Create generic connection">
-      </Action>
       <Action
             class="org.talend.repository.generic.action.EditGenericConnectionPropertiesAction"
             id="org.talend.repository.generic.action.EditGenericConnectionPropertiesAction"

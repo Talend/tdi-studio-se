@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -108,7 +108,7 @@ public class JobContextLoadComponent implements IComponent {
     }
 
     @Override
-    public List<? extends INodeReturn> createReturns() {
+    public List<? extends INodeReturn> createReturns(INode node) {
         return null;
     }
 

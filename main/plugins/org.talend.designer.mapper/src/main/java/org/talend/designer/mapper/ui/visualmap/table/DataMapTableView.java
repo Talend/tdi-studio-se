@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -2153,7 +2153,6 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
             }
 
             public void focusLost(FocusEvent e) {
-                // System.out.println("focusLost:Text.getText()='"+((Text) e.widget).getText() + "'");
                 expressionEditorTextSelectionBeforeFocusLost = expressionTextEditor.getSelection();
                 lastExpressionEditorTextWhichLostFocus = expressionTextEditor;
             }
@@ -3214,8 +3213,9 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
     }
 
     private void parseColumnNameFilterRefresh() {
-        viewer.refresh();
 
+        notifyFocusLost();
+        viewer.refresh();
         if (abstractDataMapTable instanceof OutputTable) {
             OutputTable outputTable = (OutputTable) abstractDataMapTable;
             List<IColumnEntry> oldOuputEntries = outputTable.getDataMapTableEntries();
@@ -3248,8 +3248,8 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                         if (textTarget.getStyledText().getText() != null && textTarget.getCurrentEntry() != null) {
                             String[] expressions = textTarget.getStyledText().getText().split("\\s+");
                             for (String expression : expressions) {
-                                mapperManager.getUiManager()
-                                        .parseNewFilterColumn(expression, textTarget.getCurrentEntry(), false);
+                                mapperManager.getUiManager().parseNewFilterColumn(expression, textTarget.getCurrentEntry(),
+                                        false);
                                 mapperManager.getUiManager().refreshBackground(false, false);
                             }
                         }
@@ -3259,6 +3259,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
                 resizeAtExpandedSize();
             }
         }
+
     }
 
     /**

@@ -33,7 +33,7 @@
 	
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
    	
-	org.jclouds.compute.ComputeServiceContext context_<%=cid%> = new org.jclouds.compute.ComputeServiceContextFactory().createContext("<%=providerId%>", <%=accesskey%>, decryptedPassword_<%=cid%>);
+	org.jclouds.compute.ComputeServiceContext context_<%=cid%> = org.jclouds.ContextBuilder.newBuilder("<%=providerId%>").credentials(<%=accesskey%>, decryptedPassword_<%=cid%>).buildView(org.jclouds.compute.ComputeServiceContext.class);
 	org.jclouds.compute.ComputeService client_<%=cid%> = context_<%=cid%>.getComputeService();
 
 <%

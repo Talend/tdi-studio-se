@@ -109,8 +109,9 @@
 	    FIELD="OPENED_LIST" 
 	    RAW="true" 
 	    NUM_ROW="22" 
-	    REQUIRED="true" 
-	 >
+	    REQUIRED="true"
+	    GROUP="REGION_ENDPOINT_GROUP">
+	    
      	<ITEMS DEFAULT="DEFAULT">
         	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
          	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
@@ -127,7 +128,7 @@
     	</ITEMS>
     </PARAMETER>
     
-    <PARAMETER NAME="ENCRYPT" FIELD="CHECK" NUM_ROW="23"
+    <PARAMETER NAME="ENCRYPT" FIELD="CHECK" NUM_ROW="25"
 		REQUIRED="true" GROUP="ENCRYPT_GROUP">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
@@ -136,7 +137,7 @@
 	    NAME="KEY_TYPE" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="25" 
+	    NUM_ROW="26" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
 	    SHOW_IF="ENCRYPT == 'true'"
@@ -166,7 +167,7 @@
 	    NAME="ALGORITHM_ASYMMETRIC_MASTER_KEY" 
 	    FIELD="CLOSED_LIST" 
 	    RAW="true" 
-	    NUM_ROW="27"
+	    NUM_ROW="28"
 	    SHOW_IF="isShow[KEY_TYPE] AND (KEY_TYPE == 'ASYMMETRIC_MASTER_KEY')" 
 	    REQUIRED="true" 
 	    GROUP="ENCRYPT_GROUP"
@@ -219,6 +220,19 @@
    </PARAMETERS>
 
     <ADVANCED_PARAMETERS>
+    
+    <PARAMETER 	NAME="USE_REGION_ENDPOINT" FIELD="CHECK" NUM_ROW="5" REQUIRED="true"	GROUP="REGION_ENDPOINT_GROUP" >
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER>
+    
+    <PARAMETER 	NAME="REGION_ENDPOINT" 
+    			FIELD="TEXT" 
+    			NUM_ROW="5" 
+    			REQUIRED="false" 
+    			GROUP="REGION_ENDPOINT_GROUP" 
+    			SHOW_IF="USE_REGION_ENDPOINT == 'true'" >
+      <DEFAULT>"s3.amazonaws.com"</DEFAULT>
+    </PARAMETER>
 
     <PARAMETER
       NAME="CONFIG_CLIENT"

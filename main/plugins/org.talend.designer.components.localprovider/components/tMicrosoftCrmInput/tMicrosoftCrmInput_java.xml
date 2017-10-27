@@ -49,6 +49,7 @@
             <ITEMS DEFAULT="CRM_2011">
                 <ITEM NAME="CRM_2011" VALUE="CRM_2011" />
                 <ITEM NAME="CRM_2015" VALUE="CRM_2015" />
+                <ITEM NAME="CRM_2016_ODATA" VALUE="CRM_2016" />
             </ITEMS>
         </PARAMETER>
 
@@ -57,7 +58,7 @@
             <DEFAULT>"http://192.168.0.22/MSCrmServices/2007/CrmService.asmx"</DEFAULT>
         </PARAMETER>
 
-        <PARAMETER NAME="ORGNAME" FIELD="TEXT" NUM_ROW="15" REQUIRED="true" NOT_SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA'))">
+        <PARAMETER NAME="ORGNAME" FIELD="TEXT" NUM_ROW="15" REQUIRED="true" NOT_SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))">
             <DEFAULT>"talend"</DEFAULT>
         </PARAMETER>
 
@@ -70,12 +71,12 @@
         </PARAMETER>
 
         <PARAMETER NAME="DOMAIN" FIELD="TEXT" NUM_ROW="20" REQUIRED="true"
-            SHOW_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')">
+            SHOW_IF="(((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <DEFAULT>"192.168.0.22"</DEFAULT>
         </PARAMETER>
 
         <PARAMETER NAME="HOST" FIELD="TEXT" NUM_ROW="20" REQUIRED="true"
-            SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')">
+            SHOW_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')  OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))">
             <DEFAULT>"192.168.0.22"</DEFAULT>
         </PARAMETER>
 
@@ -84,8 +85,8 @@
             <DEFAULT>"https://disco.crm.dynamics.com/XRMServices/2011/Discovery.svc"</DEFAULT>
         </PARAMETER>
         
-        <PARAMETER NAME="SERVICE_ROOT_URL" FIELD="TEXT" NUM_ROW="20" REQUIRED="true"
-            SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+        <PARAMETER NAME="SERVICE_ROOT_URL" FIELD="TEXT" NUM_ROW="22" REQUIRED="true"
+            SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))">
             <DEFAULT>"https://talend.api.crm.dynamics.com/api/data/v8.1/"</DEFAULT>
         </PARAMETER>
 
@@ -122,7 +123,7 @@
         </PARAMETER>
 
         <PARAMETER NAME="ENTITYNAME" FIELD="CLOSED_LIST" NUM_ROW="50"
-            REQUIRED="true" NOT_SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+            REQUIRED="true" NOT_SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))">
             <ITEMS DEFAULT="Contact">
                 <ITEM NAME="Account" VALUE="Account" />
                 <ITEM NAME="Accountleads" VALUE="Accountleads" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -402,7 +403,7 @@
             </ITEMS>
         </PARAMETER>
 
-        <PARAMETER NAME="ENTITYSET" FIELD="CLOSED_LIST" NUM_ROW="50" REQUIRED="true" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+        <PARAMETER NAME="ENTITYSET" FIELD="CLOSED_LIST" NUM_ROW="50" REQUIRED="true" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))">
 			<ITEMS DEFAULT="contacts">
 			    <ITEM NAME="accountleadscollection" VALUE="accountleadscollection" />
 				<ITEM NAME="accounts" VALUE="accounts" />
@@ -11612,13 +11613,13 @@
 </TABLE>
 
 <!-- crm 2016 odata -->
-<TABLE IF="(ENTITYSET=='accountleadscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="((ENTITYSET=='accountleadscollection') AND ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accountid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="accountleadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='accounts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='accounts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accountcategorycode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="accountclassificationcode" TYPE="id_Integer"  />
     <COLUMN KEY="true" LENGTH="0" NAME="accountid" TYPE="id_String"  />
@@ -11774,7 +11775,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_territoryid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='activitymimeattachments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='activitymimeattachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="activitymimeattachmentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitymimeattachmentidunique" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String"  />
@@ -11797,7 +11798,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningbusinessunit_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='activityparties') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='activityparties') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="activitypartyid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addressused" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addressusedemailcolumnnumber" TYPE="id_Integer"  />
@@ -11818,7 +11819,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_partyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_resourcespecid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='activitypointers') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='activitypointers') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -11871,7 +11872,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='annotations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='annotations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="annotationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String"  />
@@ -11899,7 +11900,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='annualfiscalcalendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='annualfiscalcalendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="annual" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="annual_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -11918,7 +11919,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='appointments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='appointments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -11982,7 +11983,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='asyncoperations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='asyncoperations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="asyncoperationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="completedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="correlationid" TYPE="id_String"  />
@@ -12028,7 +12029,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_workflowactivationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='attachments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="attachmentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="body" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String"  />
@@ -12038,7 +12039,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="subject" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcebookingheaders') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcebookingheaders') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcebookingheaderid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="duration" TYPE="id_Integer"  />
@@ -12067,7 +12068,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcebookings') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcebookings') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcebookingid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="bookingtype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -12100,7 +12101,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_resource_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcecategories') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcecategories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcecategoryid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -12124,7 +12125,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcecategoryassns') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcecategoryassns') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcecategoryassnid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -12149,7 +12150,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_resourcecategory_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcecharacteristics') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcecharacteristics') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcecharacteristicid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -12178,7 +12179,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_resource_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresourcegroups') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresourcegroups') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourcegroupid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -12205,7 +12206,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentresource_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookableresources') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookableresources') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookableresourceid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -12237,7 +12238,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_userid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bookingstatuses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bookingstatuses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bookingstatusid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -12262,7 +12263,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bulkdeletefailures') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bulkdeletefailures') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bulkdeletefailureid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="errordescription" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="errornumber" TYPE="id_Integer"  />
@@ -12274,7 +12275,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bulkdeleteoperations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bulkdeleteoperations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="bulkdeleteoperationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="failurecount" TYPE="id_Integer"  />
@@ -12298,7 +12299,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningbusinessunit_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bulkoperationlogs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bulkoperationlogs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="additionalinfo" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="bulkoperationlogid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="errornumber" TYPE="id_Integer"  />
@@ -12309,7 +12310,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='bulkoperations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='bulkoperations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -12371,7 +12372,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='businessunitnewsarticles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='businessunitnewsarticles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activeon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="activeuntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="articletitle" TYPE="id_String"  />
@@ -12393,7 +12394,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='businessunits') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='businessunits') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_city" TYPE="id_String"  />
@@ -12469,7 +12470,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentbusinessunitid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='calendarrules') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='calendarrules') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="businessunitid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="calendarruleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -12504,7 +12505,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_serviceid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='calendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='calendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="calendarid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -12522,7 +12523,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='campaignactivities') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='campaignactivities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -12588,7 +12589,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='campaignactivityitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='campaignactivityitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="campaignactivityitemid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="itemid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="itemobjecttypecode" TYPE="id_String"  />
@@ -12598,7 +12599,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_campaignactivityid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='campaignitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='campaignitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="campaignitemid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entitytype" TYPE="id_String"  />
@@ -12608,7 +12609,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_campaignid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='campaignresponses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='campaignresponses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -12679,7 +12680,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='campaigns') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='campaigns') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="actualend" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="actualstart" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="budgetedcost" TYPE="id_BigDecimal"  />
@@ -12732,7 +12733,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_pricelistid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='categories') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='categories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="categoryid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="categorynumber" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -12755,7 +12756,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentcategoryid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='channelaccessprofileentityaccesslevels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='channelaccessprofileentityaccesslevels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="channelaccessprofileentityaccesslevelid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="channelaccessprofileentityaccesslevelidunique" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="channelaccessprofileid" TYPE="id_String"  />
@@ -12767,7 +12768,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="solutionid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='characteristics') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='characteristics') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="characteristicid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="characteristictype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -12792,7 +12793,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='competitoraddresses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='competitoraddresses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="addressnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="city" TYPE="id_String"  />
@@ -12825,13 +12826,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_parentid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='competitorproducts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='competitorproducts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="competitorid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="competitorproductid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="productid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='competitors') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='competitors') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_city" TYPE="id_String"  />
@@ -12916,13 +12917,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='competitorsalesliteratures') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='competitorsalesliteratures') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="competitorid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="competitorsalesliteratureid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="salesliteratureid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='complexcontrols') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='complexcontrols') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="complexcontrolid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="complexcontrolidunique" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="complexcontrolxml" TYPE="id_String"  />
@@ -12933,13 +12934,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='connectionroleassociations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='connectionroleassociations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="associatedconnectionroleid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="connectionroleassociationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="connectionroleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='connectionroles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='connectionroles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="category" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="true" LENGTH="0" NAME="connectionroleid" TYPE="id_String"  />
@@ -12963,7 +12964,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='connections') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='connections') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="connectionid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -12999,7 +13000,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_relatedconnectionid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='constraintbasedgroups') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='constraintbasedgroups') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="constraintbasedgroupid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="constraints" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13015,31 +13016,31 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contactinvoicescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contactinvoicescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="contactinvoiceid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="invoiceid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contactleadscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contactleadscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="contactleadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contactorderscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contactorderscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="contactorderid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="salesorderid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contactquotescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contactquotescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="contactquoteid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="quoteid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contacts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contacts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accountrolecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
@@ -13232,7 +13233,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contractdetails') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contractdetails') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activeon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="allotmentsoverage" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="allotmentsremaining" TYPE="id_Integer"  />
@@ -13283,7 +13284,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomscheduleid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contracts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contracts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activeon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="allotmenttypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billingendon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13340,7 +13341,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_serviceaddress_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='contracttemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='contracttemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="abbreviation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="allotmenttypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billingfrequencycode" TYPE="id_Integer"  />
@@ -13368,7 +13369,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='customcontroldefaultconfigs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='customcontroldefaultconfigs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="controldescriptionxml" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13387,7 +13388,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='customcontrolresources') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='customcontrolresources') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="customcontrolid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="customcontrolresourceid" TYPE="id_String"  />
@@ -13403,7 +13404,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='customcontrols') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='customcontrols') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="compatibledatatypes" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13424,7 +13425,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />    
 </TABLE>
-<TABLE IF="(ENTITYSET=='customeraddresses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='customeraddresses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="addressnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="city" TYPE="id_String"  />
@@ -13469,7 +13470,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='dataperformanceset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='dataperformanceset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="anyoptimizationapplied" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="anyoptimizationavailable" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="component" TYPE="id_String"  />
@@ -13491,7 +13492,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="weight" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='dependencies') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='dependencies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="dependencyid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="dependencytype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="dependentcomponentbasesolutionid" TYPE="id_String"  />
@@ -13506,7 +13507,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_dependentcomponentnodeid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_requiredcomponentnodeid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='discounts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='discounts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="amount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="amount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13528,7 +13529,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='discounttypes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='discounttypes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="discounttypeid" TYPE="id_String"  />
@@ -13547,7 +13548,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='documenttemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='documenttemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="clientdata" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -13566,7 +13567,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="associatedentitytypecode" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='duplicaterecords') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='duplicaterecords') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="duplicateid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="owningbusinessunit" TYPE="id_String"  />
@@ -13577,7 +13578,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_duplicateruleid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='duplicateruleconditions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='duplicateruleconditions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseattributename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="duplicateruleconditionid" TYPE="id_String"  />
@@ -13595,7 +13596,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='duplicaterules') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='duplicaterules') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseentitymatchcodetable" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseENTITYSET" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseentitytypecode" TYPE="id_Integer"  />
@@ -13622,7 +13623,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='emails') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='emails') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -13700,7 +13701,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='emailserverprofiles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='emailserverprofiles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="defaultserverlocation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -13770,7 +13771,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementchannels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementchannels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="channel" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="entitlementchannelid" TYPE="id_String"  />
@@ -13795,19 +13796,19 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementcontactscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementcontactscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="entitlementcontactid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entitlementid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementproductscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementproductscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="entitlementid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="entitlementproductid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="productid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlements') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlements') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="allocationtypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="decreaseremainingon" TYPE="id_Integer"  />
@@ -13848,7 +13849,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slaid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementtemplatechannels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementtemplatechannels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="channel" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="entitlementtemplatechannelid" TYPE="id_String"  />
@@ -13869,13 +13870,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementtemplateproductscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementtemplateproductscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="entitlementtemplateid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="entitlementtemplateproductid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="productid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='entitlementtemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='entitlementtemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="allocationtypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="decreaseremainingon" TYPE="id_Integer"  />
@@ -13902,7 +13903,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slaid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='EntityDefinitions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='EntityDefinitions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="ActivityTypeMask" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="AutoCreateAccessTeams" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="AutoRouteToOwnerQueue" TYPE="id_Boolean"  />
@@ -13989,7 +13990,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="SchemaName" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="SyncToExternalSearchIndex" TYPE="id_Boolean"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='equipments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='equipments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="displayinserviceviews" TYPE="id_Boolean"  />
@@ -14016,7 +14017,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_siteid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='exchangesyncidmappings') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='exchangesyncidmappings') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangeentryid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="exchangesyncidmappingid" TYPE="id_String"  />
@@ -14038,7 +14039,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='faxes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='faxes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -14101,7 +14102,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='feedback') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='feedback') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="closedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="comments" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -14132,7 +14133,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='fieldpermissions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='fieldpermissions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="attributelogicalname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="cancreate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="canread" TYPE="id_Integer"  />
@@ -14148,7 +14149,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_fieldsecurityprofileid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='fieldsecurityprofiles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='fieldsecurityprofiles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -14166,7 +14167,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='fixedmonthlyfiscalcalendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='fixedmonthlyfiscalcalendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -14209,7 +14210,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='GlobalOptionSetDefinitions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='GlobalOptionSetDefinitions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="Description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="DisplayName" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="HasChanged" TYPE="id_Boolean"  />
@@ -14222,7 +14223,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="Name" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="OptionSetType" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='goalrollupqueries') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='goalrollupqueries') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="fetchxml" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="goalrollupqueryid" TYPE="id_String"  />
@@ -14245,7 +14246,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='goals') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='goals') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="actualdecimal" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualinteger" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualmoney" TYPE="id_BigDecimal"  />
@@ -14331,7 +14332,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_rollupqueryinprogressmoneyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importdataset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importdataset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="data" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="errortype" TYPE="id_Integer"  />
@@ -14352,7 +14353,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importentitymappings') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importentitymappings') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="dedupe" TYPE="id_Integer"  />
     <COLUMN KEY="true" LENGTH="0" NAME="importentitymappingid" TYPE="id_String"  />
@@ -14368,7 +14369,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importfiles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importfiles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="additionalheaderrow" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="completedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
@@ -14414,7 +14415,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_recordsownerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importjobs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importjobs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="completedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="data" TYPE="id_String"  />
@@ -14432,7 +14433,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importlogs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importlogs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="additionalinfo" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="columnvalue" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -14457,7 +14458,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='importmaps') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='importmaps') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entitiesperfile" TYPE="id_Integer"  />
@@ -14485,7 +14486,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='imports') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='imports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="importid" TYPE="id_String"  />
@@ -14505,13 +14506,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='incidentknowledgebaserecords') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='incidentknowledgebaserecords') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="incidentid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="incidentknowledgebaserecordid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="knowledgebaserecordid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='incidentresolutions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='incidentresolutions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -14572,7 +14573,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='incidents') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='incidents') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activitiescomplete" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualserviceunits" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billedserviceunits" TYPE="id_Integer"  />
@@ -14658,7 +14659,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_subjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='invaliddependencies') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='invaliddependencies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="existingcomponentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="existingcomponenttype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="existingdependencytype" TYPE="id_Integer"  />
@@ -14669,7 +14670,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="missingcomponentlookuptype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="missingcomponenttype" TYPE="id_Integer"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='invoicedetails') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='invoicedetails') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="actualdeliveryon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount_base" TYPE="id_BigDecimal"  />
@@ -14736,7 +14737,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='invoices') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='invoices') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="billto_city" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_composite" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_country" TYPE="id_String"  />
@@ -14827,7 +14828,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='kbarticlecomments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='kbarticlecomments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="commenttext" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="kbarticlecommentid" TYPE="id_String"  />
@@ -14841,7 +14842,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='kbarticles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='kbarticles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="articlexml" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="comments" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
@@ -14872,7 +14873,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_subjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='kbarticletemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='kbarticletemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -14898,13 +14899,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='knowledgearticlecategories') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='knowledgearticlecategories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="categoryid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="knowledgearticlecategoryid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="knowledgearticleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='knowledgearticleincidents') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='knowledgearticleincidents') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -14929,7 +14930,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='knowledgearticles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='knowledgearticles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="articlepublicnumber" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -14991,7 +14992,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_subjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='knowledgearticleviews') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='knowledgearticleviews') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -15016,7 +15017,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='knowledgebaserecords') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='knowledgebaserecords') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="true" LENGTH="0" NAME="knowledgebaserecordid" TYPE="id_String"  />
@@ -15034,7 +15035,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='languagelocale') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='languagelocale') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="code" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="language" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="languagelocaleid" TYPE="id_String"  />
@@ -15046,7 +15047,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='leadaddresses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='leadaddresses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="addressnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="city" TYPE="id_String"  />
@@ -15081,19 +15082,19 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='leadcompetitorscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='leadcompetitorscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="competitorid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="leadcompetitorid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='leadproducts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='leadproducts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="leadproductid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="productid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='leads') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='leads') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_city" TYPE="id_String"  />
@@ -15241,7 +15242,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='letters') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='letters') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -15300,7 +15301,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='listmembers') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='listmembers') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="entitytype" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="listmemberid" TYPE="id_String"  />
@@ -15316,7 +15317,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_ownerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='lists') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='lists') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="cost" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="cost_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdfromcode" TYPE="id_Integer"  />
@@ -15356,7 +15357,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='mailboxes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='mailboxes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="actdeliverymethod" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actstatus" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="allowemailconnectortousecredentials" TYPE="id_Boolean"  />
@@ -15445,7 +15446,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='mailmergetemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='mailmergetemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="body" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -15485,7 +15486,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='ManagedPropertyDefinitions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='ManagedPropertyDefinitions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="Description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="DisplayName" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="EnablesAttributeName" TYPE="id_String"  />
@@ -15501,7 +15502,7 @@
     <COLUMN KEY="true" LENGTH="0" NAME="MetadataId" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="Operation" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='metrics') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='metrics') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="amountdatatype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -15523,7 +15524,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='mobileofflineprofileitemassociations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='mobileofflineprofileitemassociations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String"  />
@@ -15552,7 +15553,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='mobileofflineprofileitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='mobileofflineprofileitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="canbefollowed" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -15589,7 +15590,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_profileitemrule_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='mobileofflineprofiles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='mobileofflineprofiles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String"  />
@@ -15614,7 +15615,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='monthlyfiscalcalendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='monthlyfiscalcalendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -15655,7 +15656,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='officegraphdocuments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='officegraphdocuments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="authornames" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdby" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdtime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -15687,7 +15688,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='opportunities') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='opportunities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="actualclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue_base" TYPE="id_BigDecimal"  />
@@ -15793,7 +15794,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='opportunitycloses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='opportunitycloses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -15854,13 +15855,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='opportunitycompetitorscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='opportunitycompetitorscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="competitorid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="opportunitycompetitorid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="opportunityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='opportunityproducts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='opportunityproducts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -15911,7 +15912,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='ordercloses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='ordercloses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -15971,7 +15972,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='organizations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='organizations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="allowaddressbooksyncs" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="allowautoresponsecreation" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="allowautounsubscribe" TYPE="id_Boolean"  />
@@ -16244,7 +16245,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='personaldocumenttemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='personaldocumenttemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="associatedentitytypecode" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="clientdata" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
@@ -16266,7 +16267,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='phonecalls') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='phonecalls') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -16325,7 +16326,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='pluginassemblies') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String"  />
@@ -16357,7 +16358,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='plugintracelogs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='plugintracelogs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="configuration" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="correlationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16384,7 +16385,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='plugintypes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='plugintypes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="assemblyname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16415,7 +16416,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_pluginassemblyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='positions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='positions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -16437,7 +16438,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentpositionid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='postcomments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='postcomments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="postcommentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="text" TYPE="id_String"  />
@@ -16448,7 +16449,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_postid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='postfollows') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='postfollows') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="postfollowid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
@@ -16463,7 +16464,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='postlikes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='postlikes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="postlikeid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
@@ -16473,7 +16474,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_postid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='postregardings') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='postregardings') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="latestautopostmodifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="latestmanualpostmodifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="postregardingid" TYPE="id_String"  />
@@ -16482,7 +16483,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectowningbusinessunit_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='posts') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='posts') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="true" LENGTH="0" NAME="postid" TYPE="id_String"  />
@@ -16500,7 +16501,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectowningbusinessunit_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='pricelevels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='pricelevels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="begindate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -16526,13 +16527,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='principalentitymaps') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='principalentitymaps') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="principalentitymapid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="principalid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='principalobjectaccessset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='principalobjectaccessset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accessrightsmask" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="changedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="inheritedaccessrightsmask" TYPE="id_Integer"  />
@@ -16545,7 +16546,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='privileges') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='privileges') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accessright" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="canbebasic" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeep" TYPE="id_Boolean"  />
@@ -16557,7 +16558,7 @@
     <COLUMN KEY="true" LENGTH="0" NAME="privilegeid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='productassociations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='productassociations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="dmtimportstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -16581,7 +16582,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='productpricelevels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='productpricelevels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="amount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="amount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16614,7 +16615,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomscheduleid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='products') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='products') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost_base" TYPE="id_BigDecimal"  />
@@ -16674,13 +16675,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_subjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='productsalesliteratures') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='productsalesliteratures') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="productid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="productsalesliteratureid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="salesliteratureid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='productsubstitutes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='productsubstitutes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="direction" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -16703,7 +16704,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_substitutedproductid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='publisheraddresses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='publisheraddresses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="addressnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="city" TYPE="id_String"  />
@@ -16740,7 +16741,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_parentid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='publishers') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='publishers') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_city" TYPE="id_String"  />
@@ -16807,7 +16808,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='quarterlyfiscalcalendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='quarterlyfiscalcalendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -16832,7 +16833,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='queueitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='queueitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="enteredon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -16861,13 +16862,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_workerid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='queuememberships') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='queuememberships') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="queueid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="queuemembershipid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='queues') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='queues') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress" TYPE="id_String"  />
@@ -16895,7 +16896,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="statuscode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='quotecloses') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='quotecloses') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="_createdby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_createdonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
@@ -16966,7 +16967,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='quotedetails') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='quotedetails') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17029,7 +17030,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='quotes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='quotes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="billto_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_city" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_composite" TYPE="id_String"  />
@@ -17122,7 +17123,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='ratingmodels') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='ratingmodels') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -17147,7 +17148,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='ratingvalues') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='ratingvalues') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -17172,7 +17173,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ratingmodel_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='recommendeddocuments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='recommendeddocuments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="absoluteurl" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="associatedrecordname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="author" TYPE="id_String"  />
@@ -17204,7 +17205,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='recurringappointmentmasters') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='recurringappointmentmasters') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -17292,7 +17293,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='RelationshipDefinitions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='RelationshipDefinitions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="HasChanged" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="IntroducedVersion" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="IsCustomRelationship" TYPE="id_Boolean"  />
@@ -17304,7 +17305,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="SchemaName" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="SecurityTypes" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='reportcategories') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='reportcategories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="categorycode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17330,7 +17331,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_reportid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='reports') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String"  />
@@ -17380,7 +17381,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_parentreportid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='resourcegroups') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='resourcegroups') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="grouptypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="name" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String"  />
@@ -17389,7 +17390,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_businessunitid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='resources') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='resources') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="calendarid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="displayinserviceviews" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
@@ -17405,7 +17406,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_siteid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='resourcespecs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='resourcespecs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="constraints" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -17426,7 +17427,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='roleprivilegescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='roleprivilegescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="ismanaged" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="overwritetime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17438,7 +17439,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="solutionid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='roles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='roles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -17462,7 +17463,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentrootroleid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_roletemplateid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='roletemplateprivilegescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='roletemplateprivilegescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="isbasic" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="isdeep" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="isglobal" TYPE="id_Boolean"  />
@@ -17471,11 +17472,11 @@
     <COLUMN KEY="false" LENGTH="0" NAME="roletemplateid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="roletemplateprivilegeid" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='roletemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='roletemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="name" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="roletemplateid" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='salesliteratureitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='salesliteratureitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="abstract" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="attacheddocumenturl" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String"  />
@@ -17501,7 +17502,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_salesliteratureid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='salesliteratures') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='salesliteratures') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
@@ -17534,7 +17535,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_subjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='salesorderdetails') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='salesorderdetails') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17602,7 +17603,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='salesorders') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='salesorders') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="billto_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_city" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_composite" TYPE="id_String"  />
@@ -17702,7 +17703,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='savedqueries') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='savedqueries') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="advancedgroupby" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="columnsetxml" TYPE="id_String"  />
@@ -17739,7 +17740,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='savedqueryvisualizations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='savedqueryvisualizations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17766,7 +17767,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_webresourceid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sdkmessagefilters') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sdkmessagefilters') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="availability" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="customizationlevel" TYPE="id_Integer"  />
@@ -17786,7 +17787,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_sdkmessageid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sdkmessageprocessingstepimages') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sdkmessageprocessingstepimages') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="attributes" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17813,7 +17814,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_sdkmessageprocessingstepid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sdkmessageprocessingsteps') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sdkmessageprocessingsteps') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="asyncautodelete" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="canusereadonlyconnection" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
@@ -17850,7 +17851,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_sdkmessageid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_sdkmessageprocessingstepsecureconfigid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sdkmessageprocessingstepsecureconfigs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sdkmessageprocessingstepsecureconfigs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="customizationlevel" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -17863,7 +17864,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sdkmessages') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sdkmessages') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="autotransact" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="availability" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="categoryname" TYPE="id_String"  />
@@ -17888,7 +17889,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='semiannualfiscalcalendars') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='semiannualfiscalcalendars') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -17910,7 +17911,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_salespersonid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='serviceappointments') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='serviceappointments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -17970,14 +17971,14 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='servicecontractcontactscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='servicecontractcontactscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="contactid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="contractid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="servicecontractcontactid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="servicelevel" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='serviceendpoints') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='serviceendpoints') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="authtype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="connectionmode" TYPE="id_Integer"  />
@@ -18010,7 +18011,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='services') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='services') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="anchoroffset" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="calendarid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18035,7 +18036,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_resourcespecid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_strategyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sharepointdocumentlocations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sharepointdocumentlocations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="absoluteurl" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -18067,7 +18068,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sharepointsites') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sharepointsites') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="absoluteurl" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -18104,7 +18105,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentsite_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='similarityrules') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='similarityrules') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activerulefetchxml" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseENTITYSET" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="baseentitytypecode" TYPE="id_Integer"  />
@@ -18139,7 +18140,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='sites') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='sites') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_city" TYPE="id_String"  />
@@ -18197,7 +18198,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='slaitems') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='slaitems') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="applicablewhenxml" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18227,7 +18228,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_workflowid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='slakpiinstances') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='slakpiinstances') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="computedfailuretime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="computedwarningtime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18253,7 +18254,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regarding_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='slas') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='slas') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="allowpauseresume" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="applicablefrom" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="applicablefrompicklist" TYPE="id_Integer"  />
@@ -18288,7 +18289,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_workflowid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='socialactivities') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='socialactivities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -18356,7 +18357,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='socialprofiles') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='socialprofiles') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="blocked" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="community" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18386,7 +18387,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='solutioncomponents') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='solutioncomponents') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componenttype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="ismetadata" TYPE="id_Boolean"  />
@@ -18402,7 +18403,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_solutionid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='solutions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='solutions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="friendlyname" TYPE="id_String"  />
@@ -18428,7 +18429,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_parentsolutionid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_publisherid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='subjects') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='subjects') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="featuremask" TYPE="id_Integer"  />
@@ -18447,7 +18448,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_parentsubject_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='syncerrors') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='syncerrors') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="action" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actiondata" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18474,7 +18475,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemforms') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemforms') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -18502,24 +18503,24 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_ancestorformid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemuserlicensescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemuserlicensescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="licenseid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="systemuserlicenseid" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemuserprofilescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemuserprofilescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="fieldsecurityprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="systemuserprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemuserrolescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemuserrolescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="roleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="systemuserroleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemusers') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemusers') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accessmode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addressid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="address1_addresstypecode" TYPE="id_Integer"  />
@@ -18645,13 +18646,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_territoryid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='systemusersyncmappingprofilescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='systemusersyncmappingprofilescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="syncattributemappingprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="systemusersyncmappingprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='tasks') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='tasks') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityadditionalparams" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="activityid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="activitytypecode" TYPE="id_String"  />
@@ -18710,25 +18711,25 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_slainvokedid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teammemberships') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teammemberships') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="systemuserid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="teamid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="teammembershipid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teamprofilescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teamprofilescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="fieldsecurityprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="teamid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="teamprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teamrolescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teamrolescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="roleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="teamid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="teamroleid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teams') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teams') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress" TYPE="id_String"  />
@@ -18759,13 +18760,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_teamtemplateid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teamsyncattributemappingprofilescollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teamsyncattributemappingprofilescollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="syncattributemappingprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="teamid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="teamsyncattributemappingprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="versionnumber" TYPE="id_Long"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='teamtemplates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='teamtemplates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="defaultaccessrightsmask" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -18779,7 +18780,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='templates') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='templates') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="body" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18812,7 +18813,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='territories') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='territories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
@@ -18834,7 +18835,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='themes') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='themes') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="backgroundcolor" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="controlborder" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="controlshade" TYPE="id_String"  />
@@ -18870,12 +18871,12 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='timestampdatemappingset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='timestampdatemappingset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="date" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="timestamp" TYPE="id_Long"  />
     <COLUMN KEY="true" LENGTH="0" NAME="timestampdatemappingid" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='timezonedefinitions') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='timezonedefinitions') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="bias" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="daylightname" TYPE="id_String"  />
@@ -18892,7 +18893,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='timezonelocalizednames') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='timezonelocalizednames') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="cultureid" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="daylightname" TYPE="id_String"  />
@@ -18908,7 +18909,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_timezonedefinitionid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='timezonerules') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='timezonerules') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="bias" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="daylightbias" TYPE="id_Integer"  />
@@ -18939,7 +18940,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_timezonedefinitionid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='tracelogs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='tracelogs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="collationlevel" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -18969,7 +18970,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectownerid_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectowningbusinessunit_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='transactioncurrencies') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='transactioncurrencies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="currencyname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currencyprecision" TYPE="id_Integer"  />
@@ -18993,7 +18994,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='uoms') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='uoms') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="isschedulebaseuom" TYPE="id_Boolean"  />
@@ -19013,7 +19014,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_uomscheduleid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='uomschedules') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='uomschedules') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="baseuomname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -19033,7 +19034,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='userforms') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='userforms') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="formxml" TYPE="id_String"  />
@@ -19053,7 +19054,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owningteam_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='userqueries') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='userqueries') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="advancedgroupby" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="columnsetxml" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="conditionalformatting" TYPE="id_String"  />
@@ -19079,7 +19080,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_parentqueryid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='userqueryvisualizations') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='userqueryvisualizations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="datadescription" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
@@ -19100,7 +19101,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_webresourceid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='usersettingscollection') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='usersettingscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="addressbooksyncinterval" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="advancedfindstartupmode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="amdesignator" TYPE="id_String"  />
@@ -19190,7 +19191,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='webresourceset') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='webresourceset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
@@ -19219,7 +19220,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='webwizards') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='webwizards') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accessprivileges" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="isstaticpagesequence" TYPE="id_Boolean"  />
@@ -19237,7 +19238,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_modifiedonbehalfby_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_organizationid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='workflowlogs') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='workflowlogs') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="activityname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="completedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -19262,7 +19263,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_owninguser_value" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="_regardingobjectid_value" TYPE="id_String"  />
 </TABLE>
-<TABLE IF="(ENTITYSET=='workflows') AND (AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')">
+<TABLE IF="(ENTITYSET=='workflows') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="asyncautodelete" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="businessprocesstype" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="category" TYPE="id_Integer"  />
@@ -19330,7 +19331,7 @@
 
         </PARAMETER>
 
-        <PARAMETER NAME="SPECIFY_COMPLEX_FILTER" FIELD="CHECK" NUM_ROW="70" REQUIRED="false" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" >
+        <PARAMETER NAME="SPECIFY_COMPLEX_FILTER" FIELD="CHECK" NUM_ROW="70" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
 
@@ -19356,14 +19357,14 @@
                         <ITEM NAME="LESSTHAN" VALUE="LessThan" />
                         <ITEM NAME="GREATEREQUAL" VALUE="GreaterEqual" />
                         <ITEM NAME="LESSEQUAL" VALUE="LessEqual" />
-                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA')"/>
+                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(((AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))"/>
                     </ITEMS>
                 </ITEM>
                 <ITEM NAME="RVALUE" FIELD="String" />
             </ITEMS>
         </PARAMETER>
         
-        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" >
+        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
         
@@ -19391,7 +19392,7 @@
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
         
-        <PARAMETER NAME="MAX_RECONN_ATTEMPS" FIELD="TEXT" NUM_ROW="30" REQUIRED="true" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA'))">
+        <PARAMETER NAME="MAX_RECONN_ATTEMPS" FIELD="TEXT" NUM_ROW="30" REQUIRED="true" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')) OR ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
 			<DEFAULT>5</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="ATTEMPS_INTERVAL_TIME" FIELD="TEXT" NUM_ROW="40" REQUIRED="true" SHOW="false" >
@@ -19427,7 +19428,7 @@
                 <IMPORT NAME="jcifs" MODULE="jcifs-1.3.0.jar" MVN="mvn:org.talend.libraries/jcifs-1.3.0/6.0.0"  REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" />
                 <!-- 2011 -->
                 <!-- crm client -->
-                <IMPORT NAME="talend-mscrm-3.0-20170426" MODULE="talend-mscrm-3.0-20170426.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.0-20170426/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.0-20170426.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')" />
+                <IMPORT NAME="talend-mscrm-3.1-20170825" MODULE="talend-mscrm-3.1-20170825.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.1-20170825/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.1-20170825.jar" REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
                 <!-- axis2 1.7.4 -->
                 <IMPORT NAME="activation-1.1" MODULE="activation-1.1.jar" MVN="mvn:org.talend.libraries/activation-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation-1.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="axiom-api-1.2.20" MODULE="axiom-api-1.2.20.jar" MVN="mvn:org.talend.libraries/axiom-api-1.2.20/6.0.0"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -19687,131 +19688,131 @@
                 NAME="aalto-xml-0.9.10"
                 MODULE="aalto-xml-0.9.10.jar"
                 MVN="mvn:org.talend.libraries/aalto-xml-0.9.10/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="adal4j-1.1.1"
                 MODULE="adal4j-1.1.1.jar"
                 MVN="mvn:org.talend.libraries/adal4j-1.1.1/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="commons-codec-1.9"
                 MODULE="commons-codec-1.9.jar"
                 MVN="mvn:org.talend.libraries/commons-codec-1.9/6.0.0"
                 UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.9.jar"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="apache-commons-io"
 				MODULE="commons-io-2.4.jar"
 				MVN="mvn:org.talend.libraries/commons-io-2.4/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-io-2.4.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="commons-lang3-3.3.2.jar"
 				MODULE="commons-lang3-3.3.2.jar"
 				MVN="mvn:org.talend.libraries/commons-lang3-3.3.2/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-lang3-3.3.2.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="gson-2.3.1"
 				MODULE="gson-2.3.1.jar"
 				MVN="mvn:org.talend.libraries/gson-2.3.1/6.1.0"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/gson-2.3.1.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="commons-logging"
 				MODULE="commons-logging-1.2.jar"
 				MVN="mvn:org.talend.libraries/commons-logging-1.2/6.0.0"
 				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.2.0.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="httpcore-4.4.4"
 				MODULE="httpcore-4.4.4.jar"
 				MVN="mvn:org.talend.libraries/httpcore-4.4.4/6.3.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="httpclient-4.5.2"
 				MODULE="httpclient-4.5.2.jar"
 				MVN="mvn:org.talend.libraries/httpclient-4.5.2/6.3.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="jackson-core-2.5.3.jar"
 				MODULE="jackson-core-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="jackson-databind-2.5.3.jar"
 				MODULE="jackson-databind-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="jackson-annotations-2.5.3.jar"
 				MODULE="jackson-annotations-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
 				NAME="json-smart-2.2.1.jar"
 				MODULE="json-smart-2.2.1.jar"
 				MVN="mvn:org.talend.libraries/json-smart-2.2.1/6.0.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="accessors-smart-1.1"
 				MODULE="accessors-smart-1.1.jar"
 				MVN="mvn:org.talend.libraries/accessors-smart-1.1/6.0.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="mail-1.4.7"
 				MODULE="mail-1.4.7.jar"
 				MVN="mvn:org.talend.libraries/mail-1.4.7/6.0.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="nimbus-jose-jwt-3.1.2"
                 MODULE="nimbus-jose-jwt-3.1.2.jar"
                 MVN="mvn:org.talend.libraries/nimbus-jose-jwt-3.1.2/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="oauth2-oidc-sdk-4.5"
                 MODULE="oauth2-oidc-sdk-4.5.jar"
                 MVN="mvn:org.talend.libraries/oauth2-oidc-sdk-4.5/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
-                NAME="odata-client-core-4.3.0"
-                MODULE="odata-client-core-4.3.0.jar"
-                MVN="mvn:org.talend.libraries/odata-client-core-4.3.0/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                NAME="odata-client-core-4.3.0-patch"
+                MODULE="odata-client-core-4.3.0-patch.jar"
+                MVN="mvn:org.talend.libraries/odata-client-core-4.3.0-patch/6.4.0"
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="odata-client-api-4.3.0"
                 MODULE="odata-client-api-4.3.0.jar"
                 MVN="mvn:org.talend.libraries/odata-client-api-4.3.0/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="odata-commons-api-4.3.0"
                 MODULE="odata-commons-api-4.3.0.jar"
                 MVN="mvn:org.talend.libraries/odata-commons-api-4.3.0/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
-                NAME="odata-commons-core-4.3.0"
-                MODULE="odata-commons-core-4.3.0.jar"
-                MVN="mvn:org.talend.libraries/odata-commons-core-4.3.0/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                NAME="odata-commons-core-4.3.0-patch"
+                MODULE="odata-commons-core-4.3.0-patch.jar"
+                MVN="mvn:org.talend.libraries/odata-commons-core-4.3.0-patch/6.4.0"
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="slf4j-api-1.7.12"
                 MODULE="slf4j-api-1.7.12.jar"
                 MVN="mvn:org.talend.libraries/slf4j-api-1.7.12/6.4.0"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="slf4j-simple-1.7.2"
 				MODULE="slf4j-simple-1.7.2.jar"
 				MVN="mvn:org.talend.libraries/slf4j-simple-1.7.2/6.0.0"
-				REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="stax2-api-3.1.4"
                 MODULE="stax2-api-3.1.4.jar"
                 MVN="mvn:org.talend.libraries/stax2-api-3.1.4/6.0.0"
                 UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/stax2-api-3.1.4.jar"
-                REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')" />
+                REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <!-- CRM 2016 odata end -->
                 
             </IMPORTS>

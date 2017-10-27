@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,6 +31,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.constants.IGenericConstants;
@@ -88,14 +89,19 @@ public class ComponentTest {
     public void testGetCodegenPropInfosWithReferencePropertiesObject() {
         TestProperties props = (TestProperties) new TestProperties("test").init(); //$NON-NLS-1$
         props.referencePros.setReference(new TestReferencedProperties("reference").init());
+        props.simpleReferencePros.setReference(new TestReferencedProperties("reference").init());
 
         List<CodegenPropInfo> propInfos = component.getCodegenPropInfos(props);
         for (CodegenPropInfo propInfo : propInfos) {
             Properties properties = propInfo.props;
-            if (properties instanceof ComponentReferenceProperties) {
-                ComponentReferenceProperties crp = (ComponentReferenceProperties) properties;
-                assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
+            if (properties instanceof ReferenceProperties) {
+                ReferenceProperties<?> crp = (ReferenceProperties<?>) properties;
                 assertEquals(Boolean.TRUE, crp.referenceDefinitionName.getTaggedValue(IGenericConstants.ADD_QUOTES));
+                assertNotNull(crp.getReference());
+            }
+            if (properties instanceof ComponentReferenceProperties) {
+                ComponentReferenceProperties<?> crp = (ComponentReferenceProperties<?>) properties;
+                assertEquals(Boolean.TRUE, crp.componentInstanceId.getTaggedValue(IGenericConstants.ADD_QUOTES));
                 assertNotNull(crp.getReference());
             }
         }

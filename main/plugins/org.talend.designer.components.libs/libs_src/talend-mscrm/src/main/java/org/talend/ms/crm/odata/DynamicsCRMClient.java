@@ -1,17 +1,28 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.ms.crm.odata;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.SocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
+import javax.naming.AuthenticationException;
 import javax.naming.ServiceUnavailableException;
 
 import org.apache.commons.io.IOUtils;
@@ -41,7 +52,6 @@ import org.apache.olingo.client.api.domain.ClientEntitySet;
 import org.apache.olingo.client.api.domain.ClientEntitySetIterator;
 import org.apache.olingo.client.api.domain.ClientProperty;
 import org.apache.olingo.client.api.http.HttpClientException;
-import org.apache.olingo.client.api.http.HttpClientFactory;
 import org.apache.olingo.client.api.serialization.ODataSerializer;
 import org.apache.olingo.client.api.uri.QueryOption;
 import org.apache.olingo.client.api.uri.URIBuilder;
@@ -52,19 +62,23 @@ import org.apache.olingo.commons.api.Constants;
 import org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind;
 import org.apache.olingo.commons.api.edm.FullQualifiedName;
 import org.apache.olingo.commons.api.format.ContentType;
-import org.apache.olingo.commons.api.http.HttpHeader;
 import org.apache.olingo.commons.api.http.HttpMethod;
-
-import com.microsoft.aad.adal4j.AuthenticationContext;
-import com.microsoft.aad.adal4j.AuthenticationResult;
+import org.talend.ms.crm.odata.authentication.AuthStrategyFactory;
+import org.talend.ms.crm.odata.authentication.IAuthStrategy;
+import org.talend.ms.crm.odata.httpclientfactory.DefaultHttpClientState;
+import org.talend.ms.crm.odata.httpclientfactory.IHttpClientFactoryObserver;
+import org.talend.ms.crm.odata.httpclientfactory.IHttpclientFactoryObservable;
 
 /**
  * Client for accessing Dynamics CRM Online using the Web API
  * 
  */
-public class DynamicsCRMClient {
+public class DynamicsCRMClient implements IHttpClientFactoryObserver {
 
     private static final String NAMESPAVE = "Microsoft.Dynamics.CRM";
+    private  static final String LOOKUP_NAME_PREFIX = "_";
+    private  static final String LOOKUP_NAME_SUFFIX = "_value";
+    private static final int LOOKUP_NAME_MINSIZE = LOOKUP_NAME_PREFIX.length()+LOOKUP_NAME_SUFFIX.length();
 
     private ClientConfiguration clientConfiguration;
 
@@ -75,18 +89,26 @@ public class DynamicsCRMClient {
 
     private ODataClient odataClient;
 
-    private DefaultHttpClient httpClient;
+    private DefaultHttpClientState httpClientState;
 
-    private HttpClientFactory httpClientFactory;
+    private IHttpclientFactoryObservable httpClientFactory;
 
-    private AuthenticationResult authResult;
+    private IAuthStrategy authStrategy;
 
     private String entitySet;
 
     private String entityType;
 
+    /**
+     * A list which contains all navigation links to set to null.
+     *
+     * A distinct delete command must be sent to set a navigation property to null. It can't be done in the same
+     * time that the entity update.
+     */
+    private List<String> navigationLinksToNull = new ArrayList<String>();
+
     public DynamicsCRMClient(ClientConfiguration clientConfiguration, String serviceRootURL, String entitySet)
-            throws ServiceUnavailableException {
+            throws AuthenticationException {
         this.clientConfiguration = clientConfiguration;
 
         this.serviceRootURL = serviceRootURL;
@@ -96,65 +118,38 @@ public class DynamicsCRMClient {
         init();
     }
 
-    private void init() throws ServiceUnavailableException {
+    private void init() throws AuthenticationException {
         odataClient = ODataClientFactory.getClient();
         if (clientConfiguration != null && serviceRootURL != null && serviceRootURL.indexOf("/api/data") > 0) {
             clientConfiguration.setResource(serviceRootURL.substring(0, serviceRootURL.indexOf("/api/data")));
         }
-        authResult = getAccessToken();
 
-        httpClientFactory = new DefaultHttpClientFactory() {
+        authStrategy = AuthStrategyFactory.createAuthStrategy(this.clientConfiguration);
+        authStrategy.init();
 
-            @Override
-            public DefaultHttpClient create(final HttpMethod method, final URI uri) {
-                if (!clientConfiguration.isReuseHttpClient() || httpClient == null) {
-                    httpClient = super.create(method, uri);
+        httpClientFactory = authStrategy.getHttpClientFactory();
+        httpClientFactory.addListener(this);
 
-                    HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), clientConfiguration.getTimeout() * 1000);
-                    HttpConnectionParams.setSoTimeout(httpClient.getParams(), clientConfiguration.getTimeout() * 1000);
+        odataClient.getConfiguration().setHttpClientFactory((DefaultHttpClientFactory) httpClientFactory);
 
-                    // setup proxy
-                    setHttpclientProxy(httpClient);
-                }
-                return httpClient;
-            }
+        ((DefaultHttpClientFactory) httpClientFactory).create(null, null);
 
-        };
-        odataClient.getConfiguration().setHttpClientFactory(httpClientFactory);
+    }
 
-        httpClient = (DefaultHttpClient) httpClientFactory.create(null, null);
+    @Override
+    public void httpClientCreated(DefaultHttpClientState httpClientState) {
+        this.httpClientState = httpClientState;
 
+        HttpConnectionParams.setConnectionTimeout(httpClientState.getHttpClient().getParams(),
+                clientConfiguration.getTimeout() * 1000);
+        HttpConnectionParams.setSoTimeout(httpClientState.getHttpClient().getParams(), clientConfiguration.getTimeout() * 1000);
+
+        // setup proxy
+        setHttpclientProxy(httpClientState.getHttpClient());
     }
 
     public ODataClient getClient() {
         return odataClient;
-    }
-
-    protected AuthenticationResult getAccessToken() throws ServiceUnavailableException {
-        AuthenticationContext context = null;
-        AuthenticationResult result = null;
-        ExecutorService service = null;
-        try {
-            service = Executors.newFixedThreadPool(1);
-            context = new AuthenticationContext(clientConfiguration.getAuthoryEndpoint(), false, service);
-            Proxy proxy = getProxy();
-            if (proxy != null) {
-                context.setProxy(proxy);
-            }
-            Future<AuthenticationResult> future = context.acquireToken(clientConfiguration.getResource(),
-                    clientConfiguration.getClientId(), clientConfiguration.getUserName(), clientConfiguration.getPassword(),
-                    null);
-            result = future.get();
-        } catch (Exception e) {
-            throw new ServiceUnavailableException(e.getMessage());
-        } finally {
-            service.shutdown();
-        }
-
-        if (result == null) {
-            throw new ServiceUnavailableException("Authenticated failed! Please check your configuration!");
-        }
-        return result;
     }
 
     /**
@@ -180,7 +175,9 @@ public class DynamicsCRMClient {
         }
         ODataEntitySetRequest<ClientEntitySet> request = odataClient.getRetrieveRequestFactory()
                 .getEntitySetRequest(uriBuilder.build());
-        request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+
+        this.authStrategy.configureRequest(request);
+
         return request;
     }
 
@@ -193,7 +190,7 @@ public class DynamicsCRMClient {
      * 
      * @throws ServiceUnavailableException
      */
-    public ClientEntitySet retrieveEntities(QueryOptionConfig queryOption) throws ServiceUnavailableException {
+    public ClientEntitySet retrieveEntities(QueryOptionConfig queryOption) throws AuthenticationException {
         boolean hasRetried = false;
         while (true) {
             ODataRetrieveResponse<ClientEntitySet> response = null;
@@ -206,7 +203,7 @@ public class DynamicsCRMClient {
             } catch (ODataClientErrorException clientException) {
                 // If get 401 Unauthorized, it would refresh the token
                 if (clientException.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
-                    refreshToken();
+                    this.authStrategy.refreshAuth();
                     hasRetried = true;
                     continue;
                 }
@@ -233,11 +230,12 @@ public class DynamicsCRMClient {
     }
 
     /**
-     * Update entity with provided content
+     * Update entity with provided content.
+     * The PATCH method is used, so only given properties are updated.
+     * Navigation link properties that must be set to null are updated by another DELETE calls.
      * 
-     * @param entitySet entitySet the EntitySet name which you want to update records
-     * @param entity provide to update
-     * @param updateType UpdateType.REPLACE(Full updates) or UpdateType.PATCH(Partial updates )
+     * @param entity The payload containing properties to update
+     * @param keySegment The id of the entity to update
      * 
      * @throws ServiceUnavailableException
      */
@@ -245,7 +243,19 @@ public class DynamicsCRMClient {
         URIBuilder updateURIBuilder = odataClient.newURIBuilder(serviceRootURL).appendEntitySetSegment(entitySet)
                 .appendKeySegment(UUID.fromString(keySegment));
         HttpEntity httpEntity = convertToHttpEntity(entity);
-        return createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
+        HttpResponse updateHttpResponse =  createAndExecuteRequest(updateURIBuilder.build(), httpEntity, HttpMethod.PATCH);
+
+        // No need to test the updateHttpResponse code since it is returned only if it's a success.
+        // The deletion of navigation links will be done only if the previous update doesn't throw an exception.
+        this.deleteNavigationLinksToNull(keySegment);
+
+        return updateHttpResponse;
+    }
+
+    protected void deleteNavigationLinksToNull(String keySegment) throws ServiceUnavailableException {
+        for(String navigationLinkName : this.navigationLinksToNull){
+            this.deleteNavigationLink(navigationLinkName, keySegment);
+        }
     }
 
     /**
@@ -263,6 +273,25 @@ public class DynamicsCRMClient {
         return createAndExecuteRequest(deleteURIBuilder.build(), null, HttpMethod.DELETE);
     }
 
+
+    /**
+     * Delete a navigation link from an entity (set the property to null).
+     * Jira : TDI-39571
+     *
+     * @param navigationLinkName The navigation link name (not the _name_value generated lookup property)
+     * @param keySegment The keysegment(id) of the main property
+     * @return The Http response.
+     * @throws ServiceUnavailableException
+     */
+    public HttpResponse deleteNavigationLink(String navigationLinkName, String keySegment) throws ServiceUnavailableException {
+        URIBuilder deleteNavLinkURIBuilder = odataClient.newURIBuilder(serviceRootURL)
+                                                    .appendEntitySetSegment(entitySet)
+                                                    .appendKeySegment(UUID.fromString(keySegment))
+                                                    .appendNavigationSegment(navigationLinkName).appendRefSegment();
+
+        return createAndExecuteRequest(deleteNavLinkURIBuilder.build(), null, HttpMethod.DELETE);
+    }
+
     /**
      * Get entity type by EntitySet name
      * 
@@ -276,7 +305,8 @@ public class DynamicsCRMClient {
         uriBuilder.filter("EntitySetName eq '" + entitySetName + "'");
         ODataEntitySetIteratorRequest<ClientEntitySet, ClientEntity> request = odataClient.getRetrieveRequestFactory()
                 .getEntitySetIteratorRequest(uriBuilder.build());
-        request.addCustomHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+        this.authStrategy.configureRequest(request);
+
         ODataRetrieveResponse<ClientEntitySetIterator<ClientEntitySet, ClientEntity>> response = request.execute();
         try {
             ClientEntitySetIterator<ClientEntitySet, ClientEntity> entitySetIterator = response.getBody();
@@ -289,7 +319,7 @@ public class DynamicsCRMClient {
         } finally {
             response.close();
             // Close reponse would also close connection. So here need recreate httpclient
-            httpClient = null;
+            this.httpClientState.setNeedNewHttpClient(true);
         }
         return null;
     }
@@ -307,24 +337,84 @@ public class DynamicsCRMClient {
     }
 
     public void addEntityProperty(ClientEntity entity, String propertyName, EdmPrimitiveTypeKind type, Object value) {
-        if (type != null && value != null) {
+        if (type != null) {
             entity.getProperties().add(odataClient.getObjectFactory().newPrimitiveProperty(propertyName,
                     odataClient.getObjectFactory().newPrimitiveValueBuilder().setType(type).setValue(value).build()));
         }
 
     }
 
-    public void addEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String navigationName,
-            String linkedEntityId) {
+    /**
+     * This setter has been added for unit tests to avoid some http requests.
+     *
+     * @param entityType
+     */
+    public void setEntityType(String entityType){
+        this.entityType = entityType;
+    }
+
+    public void addEntityNavigationLink(ClientEntity entity, String lookupEntitySet, String lookupName,
+            String linkedEntityId, boolean emptyLookupIntoNull, boolean ignoreNull) {
+
+        // To help the final user since lookup names '_name_value' are available in the schema
+        // But it's the navigation link that can be updated.
+        String navigationLinkName = this.extractNavigationLinkName(lookupName);
+
+        // If value is empty and emptyLookupIntoNull, then set the value to null to unlink the navigation (set to null)
+        if(emptyLookupIntoNull && linkedEntityId != null && linkedEntityId.isEmpty()){
+            linkedEntityId = null;
+        }
+
+        // If ignore null is set and the value is null, then don't update/delete this navigation link
+        if(ignoreNull && linkedEntityId == null){
+            return;
+        }
+
         if (linkedEntityId != null) {
             try {
-                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationName,
+                entity.getNavigationLinks().add(odataClient.getObjectFactory().newEntityNavigationLink(navigationLinkName,
                         new URI(lookupEntitySet + "(" + linkedEntityId + ")")));
             } catch (URISyntaxException e) {
                 throw new HttpClientException(e);
             }
         }
+        else{
+            // Retains all navigation links to delete (set to null)
+            navigationLinksToNull.add(navigationLinkName);
+        }
+    }
 
+    public int getNbNavigationLinkToRemove(){
+        return navigationLinksToNull.size();
+    }
+
+    /**
+     * Get the navigation link name from a lookup one.
+     * MSCRM auto-generates lookup properties from navigation links.
+     * The auto-generated lookup property name is _navigationLinkName_value.
+     * This method extract 'navigationLinkName' only if it begins by '_' and ends by '_value'.
+     *
+     * @param lookupName The auto-generated lookup name
+     * @return The extracted navigation link name or the lookup name if it can't be extracted.
+     */
+    public String extractNavigationLinkName(String lookupName){
+        final int nameSize = lookupName.length();
+        if(nameSize <= LOOKUP_NAME_MINSIZE){
+            return lookupName;
+        }
+
+        String pref = lookupName.substring(0, LOOKUP_NAME_PREFIX.length());
+        if(!pref.equals(LOOKUP_NAME_PREFIX)){
+            return lookupName;
+        }
+
+        final int endName = nameSize - LOOKUP_NAME_SUFFIX.length();
+        String suff = lookupName.substring(endName, nameSize);
+        if(!suff.equals(LOOKUP_NAME_SUFFIX)){
+            return lookupName;
+        }
+
+        return lookupName.substring(LOOKUP_NAME_PREFIX.length(), endName);
     }
 
     /**
@@ -366,10 +456,11 @@ public class DynamicsCRMClient {
 
     protected HttpResponse createAndExecuteRequest(URI uri, HttpEntity httpEntity, HttpMethod method)
             throws ServiceUnavailableException {
+
         boolean hasRetried = false;
         while (true) {
             try {
-                httpClient = (DefaultHttpClient) httpClientFactory.create(null, null);
+                ((DefaultHttpClientFactory) httpClientFactory).create(null, null);
                 HttpRequestBase request = null;
                 if (method == HttpMethod.POST) {
                     request = new HttpPost(uri);
@@ -380,18 +471,19 @@ public class DynamicsCRMClient {
                 } else {
                     throw new HttpClientException("Unsupported operation:" + method);
                 }
-                request.addHeader(HttpHeader.AUTHORIZATION, "Bearer " + authResult.getAccessToken());
+                this.authStrategy.configureRequest(request);
+
                 if (request instanceof HttpEntityEnclosingRequestBase) {
                     ((HttpEntityEnclosingRequestBase) request).setEntity(httpEntity);
                 }
-                HttpResponse response = httpClient.execute(request);
+                HttpResponse response = httpClientState.getHttpClient().execute(request);
                 if (isResponseSuccess(response.getStatusLine().getStatusCode())) {
                     request.releaseConnection();
                     EntityUtils.consume(response.getEntity());
                     return response;
                 } else {
                     if (response.getStatusLine().getStatusCode() == HttpStatus.SC_UNAUTHORIZED && !hasRetried) {
-                        refreshToken();
+                        this.authStrategy.refreshAuth();
                         hasRetried = true;
                         continue;
                     }
@@ -407,32 +499,6 @@ public class DynamicsCRMClient {
             } catch (Exception e) {
                 throw new HttpClientException(e);
             }
-        }
-    }
-
-    /**
-     * Refresh token when expired
-     */
-    public void refreshToken() throws ServiceUnavailableException {
-        int retryTime = 0;
-        // refresh the access token
-        while (true) {
-            try {
-                this.authResult = getAccessToken();
-                break;// refresh token successfully
-            } catch (ServiceUnavailableException e) {
-                if (retryTime < clientConfiguration.getMaxRetryTimes()) {
-                    retryTime++;
-                    try {
-                        Thread.sleep(clientConfiguration.getIntervalTime());
-                    } catch (InterruptedException e1) {
-                        // ignore
-                    }
-                    continue;// retry to refresh token
-                }
-                throw e;// failed to refresh token after retry
-            }
-
         }
     }
 
@@ -454,10 +520,9 @@ public class DynamicsCRMClient {
      * Setup proxy for httpClient
      */
     private void setHttpclientProxy(DefaultHttpClient httpClient) {
-
-        Proxy proxy = getProxy();
-        String proxyUser = System.getProperty("https.proxyUser");
-        String proxyPwd = System.getProperty("https.proxyPassword");
+        Proxy proxy = ProxyProvider.getProxy();
+        String proxyUser = ProxyProvider.getProxyUserName();
+        String proxyPwd = ProxyProvider.getProxyUserPassword();
         // set by other components like tSetProxy
         if (proxy != null) {
 
@@ -475,24 +540,6 @@ public class DynamicsCRMClient {
 
         }
 
-    }
-
-    /**
-     * Get the proxy setting if there is proxy for system
-     */
-    private Proxy getProxy() {
-        String proxyHost = System.getProperty("https.proxyHost");
-        String proxyPort = System.getProperty("https.proxyPort");
-        if (proxyHost != null) {
-            int port = -1;
-            if (proxyPort != null && proxyPort.length() > 0) {
-                port = Integer.parseInt(proxyPort);
-            }
-            SocketAddress addr = new InetSocketAddress(proxyHost, port);
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
-            return proxy;
-        }
-        return null;
     }
 
 }

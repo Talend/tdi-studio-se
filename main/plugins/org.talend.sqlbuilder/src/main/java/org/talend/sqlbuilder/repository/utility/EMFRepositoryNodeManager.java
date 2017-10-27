@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -38,6 +38,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.cwm.helper.ConnectionHelper;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sqlbuilder.IConstants;
@@ -250,6 +251,8 @@ public final class EMFRepositoryNodeManager {
                 }
             } catch (Exception e) {
                 SqlBuilderPlugin.log(Messages.getString("EMFRepositoryNodeManager.logMessage"), e); //$NON-NLS-1$
+            } finally {
+                MetadataConnectionUtils.closeDerbyDriver();
             }
         }
         if (!relations.isEmpty()) {

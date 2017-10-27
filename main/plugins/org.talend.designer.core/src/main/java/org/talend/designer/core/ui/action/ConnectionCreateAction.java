@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -153,7 +153,7 @@ public class ConnectionCreateAction extends SelectionAction {
             menuList = new ArrayList<String>();
             if (curNodeConnector == null) {
                 curNodeConnector = node.getConnectorFromType(connecType);
-                if (curNodeConnector == null) {
+                if (curNodeConnector == null || !curNodeConnector.isShow()) {
                     return false;
                 }
             }
@@ -418,7 +418,7 @@ public class ConnectionCreateAction extends SelectionAction {
             List<INodeConnector> nodeConnectorList = new ArrayList<INodeConnector>(node.getConnectorsFromType(connecType));
             List<INodeConnector> toRemove = new ArrayList<INodeConnector>();
             for (INodeConnector connector : nodeConnectorList) {
-                if ((connector.getMaxLinkOutput() != -1) && (connector.getCurLinkNbOutput() >= connector.getMaxLinkOutput())) {
+                if (!connector.isShow() || ((connector.getMaxLinkOutput() != -1) && (connector.getCurLinkNbOutput() >= connector.getMaxLinkOutput()))) {
                     toRemove.add(connector);
                 } else {
                     if (PluginChecker.isJobLetPluginLoaded()) {

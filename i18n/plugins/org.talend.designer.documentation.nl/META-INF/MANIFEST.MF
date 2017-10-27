@@ -2,5 +2,5 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Nl
 Bundle-SymbolicName: org.talend.designer.documentation.nl
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Fragment-Host: org.talend.designer.documentation

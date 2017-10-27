@@ -291,7 +291,8 @@
     							}
     							%>
     							} catch(java.lang.Exception ex_<%=cid%>) {
-									rowstate_<%=cid%>.setException(ex_<%=cid%>);
+									rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s', value is '%s'. Details: %s",
+										"<%= column.getLabel() %>", "<%=targetConnName %>", temp, ex_<%=cid%>), ex_<%=cid%>));
 								}
     							<%
 							}
@@ -306,7 +307,22 @@
 							<%
 							} else {
 							%>
-								<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+								<%
+								if (!JavaTypesManager.NULL.equals(defaultValue)) {
+								%>
+								try {
+									<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+								} catch(java.lang.Exception ex_<%=cid%>) {
+									rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. Details: %s",
+										"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
+								}
+								<%
+								} else {
+								%>
+									<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+								<%
+								}
+								%>
 							<%
 							}
 							%>
@@ -800,7 +816,8 @@
 									%>
 									
 										} catch(java.lang.Exception ex_<%=cid%>) {
-											rowstate_<%=cid%>.setException(ex_<%=cid%>);
+											rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't parse value for column '%s' in '%s', value is '%s'. Details: %s",
+												"<%= column.getLabel() %>", "<%=targetConnName %>", <%=sourceValueName%>[columnIndexWithD_<%=cid%>], ex_<%=cid%>), ex_<%=cid%>));
 										}
     								}else{
     									<%
@@ -812,7 +829,22 @@
     									<%
     									} else {
     									%>
-    										<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+											<%
+											if (!JavaTypesManager.NULL.equals(defaultValue)) {
+											%>
+											try {
+												<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+											} catch(java.lang.Exception ex_<%=cid%>) {
+												rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. Details: %s",
+													"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
+											}
+											<%
+											} else {
+											%>
+												<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+											<%
+											}
+											%>
     									<%
     									}
     									%>
@@ -843,7 +875,34 @@
 							
 						<%if(!"id_Dynamic".equals(column.getTalendType())) {%>
 						}else{
-							<%=targetConnName %>.<%=column.getLabel() %> = <%=JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate, column.getDefault()) %>;
+						<%
+						String defaultValue = JavaTypesManager.getDefaultValueFromJavaType(typeToGenerate, column.getDefault());
+						boolean isJavaPrimitiveType = JavaTypesManager.isJavaPrimitiveType(javaType,column.isNullable());
+						if((isJavaPrimitiveType && (column.getDefault()==null || column.getDefault().length() == 0))) {
+						%>
+							rowstate_<%=cid%>.setException(new RuntimeException("Value is empty for column : '<%= column.getLabel() %>' in '<%=targetConnName %>' connection, value is invalid or this column should be nullable or have a default value."));
+						<%
+						} else {
+						%>
+							<%
+							if (!JavaTypesManager.NULL.equals(defaultValue)) {
+							%>
+							try {
+								<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+							} catch(java.lang.Exception ex_<%=cid%>) {
+								rowstate_<%=cid%>.setException(new RuntimeException(String.format("Couldn't set default value for column '%s' in '%s'. %s",
+									"<%= column.getLabel() %>", "<%=targetConnName %>", ex_<%=cid%>), ex_<%=cid%>));
+							}
+							<%
+							} else {
+							%>
+								<%=targetConnName %>.<%=column.getLabel() %> = <%=defaultValue %>;
+							<%
+							}
+							%>
+						<%
+						}
+						%>
 						}
 						<%}%>
 						

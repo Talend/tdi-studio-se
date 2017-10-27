@@ -21,11 +21,13 @@ imports="
 			
 			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
 			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
+			if (!logLevel.equals("0")) {
 %>
-			if (<%= logLevel %> > 0) {
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
 				java.sql.DriverManager.setLogWriter(new java.io.PrintWriter(output_<%=cid %>,true));
+<%
 			}
+%>
 			
 			StringBuilder sbuilder_<%=cid%> = new StringBuilder();
 			sbuilder_<%=cid%>.append("jdbc:redshift://").append(<%=dbhost%>).append(":").append(<%=dbport%>).append("/").append(<%=dbname%>).append("?loglevel=").append(<%= logLevel %>);

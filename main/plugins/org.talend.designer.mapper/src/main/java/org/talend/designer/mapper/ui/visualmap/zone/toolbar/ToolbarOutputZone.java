@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.designer.mapper.i18n.Messages;
 import org.talend.designer.mapper.managers.MapperManager;
+import org.talend.designer.mapper.managers.UIManager;
 import org.talend.designer.mapper.ui.visualmap.table.DataMapTableView;
 import org.talend.designer.mapper.ui.visualmap.zone.Zone;
 
@@ -109,7 +110,7 @@ public class ToolbarOutputZone extends ToolbarZone {
      * DOC amaumont Comment method "addListeners".
      */
     private void addListeners() {
-        // final UIManager uiManager = getMapperManager().getUiManager();
+        final UIManager uiManager = getMapperManager().getUiManager();
         addOutputItem.addListener(SWT.Selection, new Listener() {
 
             public void handleEvent(Event event) {
@@ -133,6 +134,8 @@ public class ToolbarOutputZone extends ToolbarZone {
                 for (DataMapTableView dataMapTableView : outputsTablesView) {
                     dataMapTableView.notifyFocusLost();
                 }
+                // uiManager.openAutoMappingDialog();
+
                 getMapperManager().mapAutomaticallly();
             }
 

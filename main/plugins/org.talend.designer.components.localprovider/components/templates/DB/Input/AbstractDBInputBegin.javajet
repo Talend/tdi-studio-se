@@ -78,23 +78,23 @@ imports="
 			<%}%>
 
             <% 
-                if(cid.matches("^.*?tAmazonAuroraInput_\\d+_in$")){
-                    // why 3: ==> "_in".length()
-                    %>
-                       globalMap.put("<%= cid.substring(0,cid.length() - 3) %>_QUERY",dbquery_<%=cid%>);
-                    <%
-                }else{
-                    %>
-                       globalMap.put("<%=cid %>_QUERY",dbquery_<%=cid%>);
-                    <%
+            if(cid.matches("^.*?tAmazonAuroraInput_\\d+_in$")){
+            // why 3: ==> "_in".length()
+            %>
+            	globalMap.put("<%= cid.substring(0,cid.length() - 3) %>_QUERY",dbquery_<%=cid%>);
+            <%
+            }else{
+            %>
+            	globalMap.put("<%=cid %>_QUERY",dbquery_<%=cid%>);
+            <%
             }
-             %>
-
+            %>
 		    java.sql.ResultSet rs_<%=cid %> = null;
-		try{
-		    rs_<%=cid %> = stmt_<%=cid %>.executeQuery(dbquery_<%=cid%>);
-		    java.sql.ResultSetMetaData rsmd_<%=cid %> = rs_<%=cid %>.getMetaData();
-		    int colQtyInRs_<%=cid%> = rsmd_<%=cid %>.getColumnCount();
+
+		    try {
+		    	rs_<%=cid %> = stmt_<%=cid %>.executeQuery(dbquery_<%=cid%>);
+		    	java.sql.ResultSetMetaData rsmd_<%=cid %> = rs_<%=cid %>.getMetaData();
+		    	int colQtyInRs_<%=cid%> = rsmd_<%=cid %>.getColumnCount();
 
 <%
 		    List< ? extends IConnection> conns = node.getOutgoingSortedConnections();

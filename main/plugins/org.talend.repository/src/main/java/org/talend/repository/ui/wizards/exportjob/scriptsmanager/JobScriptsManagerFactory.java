@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.constants.FileConstants;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JobJavaScriptOSGIForESBManager;
@@ -56,6 +57,9 @@ public class JobScriptsManagerFactory {
                 // TESB-16721 [Export Job] On export job context always "Default"
                 return new JobJavaScriptOSGIForESBManager(exportChoiceMap, null, launcher, statisticPort, tracePort);
             }
+        case MSESB:
+            ProcessorUtilities.setExportJobAsMicroSerivce(true);
+            return new JobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
         default:
             //
         }

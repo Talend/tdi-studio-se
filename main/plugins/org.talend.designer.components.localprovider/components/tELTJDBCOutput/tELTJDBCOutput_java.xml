@@ -103,6 +103,14 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="IS_TABLE_NAME_VARIABLE"
+      FIELD="CHECK"
+      NUM_ROW="25"
+      SHOW_IF="USE_DIFFERENT_TABLE=='false'">
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
     <PARAMETER
       NAME="USE_DIFFERENT_TABLE"

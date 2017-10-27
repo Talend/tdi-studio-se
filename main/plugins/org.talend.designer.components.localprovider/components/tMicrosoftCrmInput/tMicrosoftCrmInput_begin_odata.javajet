@@ -25,8 +25,11 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 		// if output columns are defined
 		if(nbSchemaColumns > 0 && outgoingConns != null && outgoingConns.size() > 0){
-			String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+		    
+		    String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
 			String userName = ElementParameterParser.getValue(node, "__USERNAME__");
+			String domain = ElementParameterParser.getValue(node, "__DOMAIN__");
+            String host = ElementParameterParser.getValue(node, "__HOST__");
 			String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
 			String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
 			String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
@@ -65,7 +68,21 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-				org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = new org.talend.ms.crm.odata.ClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+			<%
+			    if(isMsCrm2016OnPremise) {
+			%>
+			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                        .buildNtlmClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=host%>, <%=domain%>);
+			<%
+			    } else {
+			%>
+			    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                        .buildOAuthClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+			<%
+                }
+            %>
+				
+				
 				clientConfig_<%=cid%>.setTimeout(<%=timeout%>);
 				clientConfig_<%=cid%>.setMaxRetry(reConnMaxNum_<%=cid%>,<%=attemptsInterval%>);
 				clientConfig_<%=cid%>.setReuseHttpClient(<%=reuseHttpClient%>);

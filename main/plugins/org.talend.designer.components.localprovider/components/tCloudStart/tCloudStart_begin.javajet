@@ -63,14 +63,13 @@
 	%>
 	
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-   	
-	org.jclouds.compute.ComputeServiceContext context_<%=cid%> = new org.jclouds.compute.ComputeServiceContextFactory().createContext("<%=providerId%>", <%=accesskey%>, decryptedPassword_<%=cid%>);
+   	org.jclouds.compute.ComputeServiceContext context_<%=cid%> = org.jclouds.ContextBuilder.newBuilder("<%=providerId%>").credentials(<%=accesskey%>, decryptedPassword_<%=cid%>).buildView(org.jclouds.compute.ComputeServiceContext.class);
 	org.jclouds.compute.ComputeService client_<%=cid%> = context_<%=cid%>.getComputeService();
 	
 <%
 	if(proceedWithKeyPair && "CREATE_KEYPAIR".equals(keypairOption)) {
 %>
-		org.jclouds.ec2.services.KeyPairClient keyPairClient_<%=cid%> = org.jclouds.ec2.EC2Client.class.cast(context_<%=cid%>.getProviderSpecificContext().getApi()).getKeyPairServices();
+		org.jclouds.aws.ec2.features.AWSKeyPairApi keyPairClient_<%=cid%> = context_<%=cid%>.unwrapApi(org.jclouds.aws.ec2.AWSEC2Api.class).getKeyPairApi().get();
 		org.jclouds.ec2.domain.KeyPair result_<%=cid%> = keyPairClient_<%=cid%>.createKeyPairInRegion(<%=region%>, <%=keypair%>);
 		java.io.FileWriter fstream_<%=cid%> = new java.io.FileWriter(<%=keypairFolder%> + "/" + <%=keypair%> +".pem");
 		java.io.BufferedWriter out_<%=cid%> = new java.io.BufferedWriter(fstream_<%=cid%>);
@@ -119,7 +118,23 @@
 		.locationId(<%=zone%>)
 		.options(options_<%=cid%>).build();
 	
-	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
+	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = null;
+	
+	try {
+		nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
+	} catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
+		boolean ignoreException_<%=cid%> = false;
+		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
+			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
+				ignoreException_<%=cid%> = true;
+				System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+			}
+		}
+		
+		if(!ignoreException_<%=cid%>) {
+			throw e_<%=cid%>;
+		}
+	}
 	
 	globalMap.put("<%=cid %>_NODE_GROUP", <%=instanceName%>.toLowerCase());
 	globalMap.put("<%=cid %>_NODES", nodes_<%=cid%>);

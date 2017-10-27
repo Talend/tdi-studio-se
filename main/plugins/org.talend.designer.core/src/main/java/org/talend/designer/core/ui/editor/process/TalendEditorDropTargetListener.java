@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1856,6 +1856,9 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
         if (selectedNode.getObject() instanceof IMetadataTable) {
             IMetadataTable metadataTable = (IMetadataTable) selectedNode.getObject();
             command2.setTable(metadataTable);
+        }
+        if (selectedNode.getProperties(EProperties.CONTENT_TYPE) != ERepositoryObjectType.METADATA_CON_QUERY) {
+            command2.setGuessQuery(true);
         }
         return command2;
 

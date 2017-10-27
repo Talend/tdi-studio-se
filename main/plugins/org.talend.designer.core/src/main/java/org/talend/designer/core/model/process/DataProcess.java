@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,11 +24,13 @@ import java.util.Set;
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.ui.IEditorPart;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.properties.VirtualComponentProperties;
 import org.talend.core.PluginChecker;
 import org.talend.core.hadoop.IHadoopClusterService;
@@ -79,14 +81,14 @@ import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesVisitor;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.core.model.process.statsandlogs.StatsAndLogsManager;
-import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -270,17 +272,18 @@ public class DataProcess implements IGeneratingProcess {
         if (graphicalNode.getExternalNode() == null) {
             dataNode = new DataNode();
         } else {
-            // mapper
             dataNode = (AbstractNode) ExternalNodesFactory.getInstance(graphicalNode.getComponent().getPluginExtension());
             IExternalData externalData = graphicalNode.getExternalData();
             IExternalNode externalNode = graphicalNode.getExternalNode();
+            // mapper
             if (externalData != null) {
                 ((IExternalNode) dataNode).setExternalData(externalData);
             }
             // xmlmap
-            if (externalNode != null) {
-                ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData());
-            }
+            ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData());
+            // sap eltmap
+            ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
+
         }
         dataNode.setActivate(graphicalNode.isActivate());
         dataNode.setStart(graphicalNode.isStart());
@@ -304,7 +307,10 @@ public class DataProcess implements IGeneratingProcess {
 
         dataNode.setMetadataList(metadataList);
         dataNode.setComponent(graphicalNode.getComponent());
-        dataNode.setComponentProperties(graphicalNode.getComponentProperties());
+        if (graphicalNode.getComponentProperties() != null && graphicalNode.getComponent() != null && graphicalNode.getComponent() instanceof AbstractBasicComponent) {
+            AbstractBasicComponent comp = (AbstractBasicComponent) graphicalNode.getComponent();
+            comp.initNodePropertiesFromSerialized(dataNode, graphicalNode.getComponentProperties().toSerialized());
+        }
         dataNode.setElementParameters(graphicalNode.getComponent().createElementParameters(dataNode));
         dataNode.setListConnector(graphicalNode.getListConnector());
         dataNode.setSubProcessContainTraceBreakpoint(graphicalNode.isSubProcessContainTraceBreakpoint());
@@ -831,17 +837,20 @@ public class DataProcess implements IGeneratingProcess {
             if (component.getPluginExtension() == null) {
                 curNode = new DataNode(component, uniqueName);
             } else {
-                // mapper
                 curNode = (AbstractNode) ExternalNodesFactory.getInstance(component.getPluginExtension());
                 IExternalData externalData = graphicalNode.getExternalData();
                 IExternalNode externalNode = graphicalNode.getExternalNode();
-                if (externalData != null) {
-                    ((IExternalNode) curNode).setExternalData(externalData);
-                }
-                // xmlmap
-                if (externalNode != null) {
+                if (curNode instanceof IExternalNode) {
+                    // mapper
+                    if (externalData != null) {
+                        ((IExternalNode) curNode).setExternalData(externalData);
+                    }
+                    // xmlmap
                     ((IExternalNode) curNode).setExternalEmfData(externalNode.getExternalEmfData());
+                    // sap eltmap
+                    ((IExternalNode) curNode).setInternalMapperModel(externalNode.getInternalMapperModel());
                 }
+
                 curNode.setStart(graphicalNode.isStart());
                 curNode.setElementParameters(graphicalNode.getComponent().createElementParameters(curNode));
                 curNode.setListConnector(graphicalNode.getListConnector());
@@ -3119,27 +3128,19 @@ public class DataProcess implements IGeneratingProcess {
         // IExternalData externalData = graphicalNode.getExternalData();
 
         IExternalNode externalNode = graphicalNode.getExternalNode();
-        if (externalNode != null) {
-            AbstractExternalData externalEmfData = externalNode.getExternalEmfData();
-            newGraphicalNode.getExternalNode().setExternalEmfData(externalEmfData);
-        }
-        // fwang fixed bug TDI-8027
         IExternalData externalData = graphicalNode.getExternalData();
-        if (externalData != null) {
-            try {
-                newGraphicalNode.setExternalData(externalData.clone());
-            } catch (CloneNotSupportedException e) {
-                newGraphicalNode.setExternalData(externalData);
+        if (externalNode != null) {
+            // mapper
+            if (externalData != null) {
+                newGraphicalNode.getExternalNode().setExternalData(externalData);
             }
+            // xmlmap
+            newGraphicalNode.getExternalNode().setExternalEmfData(externalNode.getExternalEmfData());
+            // sap eltmap
+            newGraphicalNode.getExternalNode().setInternalMapperModel(externalNode.getInternalMapperModel());
         }
 
         copyElementParametersValue(graphicalNode, newGraphicalNode);
-        if (newGraphicalNode.getComponentProperties() != null) {
-            List<Form> forms = newGraphicalNode.getComponentProperties().getForms();
-            for (Form form : forms) {
-                newGraphicalNode.getComponentProperties().refreshLayout(form);
-            }
-        }
         newGraphicalNode.setDummy(graphicalNode.isDummy());
 
         ValidationRulesUtil.createRejectConnector(newGraphicalNode);
@@ -3174,7 +3175,6 @@ public class DataProcess implements IGeneratingProcess {
         }
         newGraphicalNode.setActivate(graphicalNode.isActivate());
         newGraphicalNode.setStart(graphicalNode.isStart());
-        newGraphicalNode.setComponentProperties(graphicalNode.getComponentProperties());
 
         return newGraphicalNode;
     }
@@ -3251,6 +3251,12 @@ public class DataProcess implements IGeneratingProcess {
                 node.getExternalNode().initialize();
             }
         }
+        for (INode node : newBuildNodeList) {
+            if (node.getComponentProperties() != null) {
+                synRefProperties(node.getComponentProperties());
+            }
+        }
+
         duplicatedProcess.setActivate(true);
         duplicatedProcess.checkStartNodes();
         return newBuildNodeList;
@@ -3449,4 +3455,37 @@ public class DataProcess implements IGeneratingProcess {
 
         return parallelizeNode;
     }
+    
+    
+    private  void synRefProperty(ComponentReferenceProperties<?> refProperties) {
+        String refCompInstId = null;
+        org.talend.daikon.properties.property.Property<String> refCompInstIdProp = refProperties.componentInstanceId;
+        if (refCompInstIdProp != null) {
+            refCompInstId = refCompInstIdProp.getValue();
+        }
+        if (refCompInstId != null && StringUtils.isNotEmpty(refCompInstId)) {
+            for (INode curNode : getNodeList()) {
+                if (curNode.getUniqueName().equals(refCompInstId)) {
+                    refProperties.setReference(curNode.getComponentProperties());
+                    break;
+                }
+            }
+        } else {
+            refProperties.setReference(null);
+        }
+
+    }
+
+    private void synRefProperties(Properties properties) {
+        properties.accept(new PropertiesVisitor() {
+
+            @Override
+            public void visit(Properties curProperties, Properties parent) {
+                if (curProperties instanceof ComponentReferenceProperties<?>) {
+                    synRefProperty((ComponentReferenceProperties) curProperties);
+                }
+            }
+        }, null);
+    }
+
 }

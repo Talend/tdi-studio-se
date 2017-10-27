@@ -17,9 +17,19 @@ imports="
         org.talend.designer.codegen.config.CodeGeneratorArgument
         org.talend.core.model.utils.TalendTextUtils
         org.talend.core.model.utils.NodeUtil
+        org.talend.designer.core.generic.model.Component
+        java.util.ArrayList
+        java.util.HashMap
+        java.util.Map
+        org.talend.components.api.properties.ComponentProperties
+        org.talend.daikon.NamedThing
+        org.talend.daikon.properties.property.Property
+        org.talend.designer.core.generic.constants.IGenericConstants
+        org.talend.core.model.utils.ContextParameterUtils
         "
 %>
 <%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
+<%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_process_properties.javajet"%>
 <%
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
@@ -134,7 +144,24 @@ if(hasInput){
             // There will be a ClassCastException if the output component does
             // not implement WriterWithFeedback, but permits outgoing
             // connections.
-
+            
+            ComponentProperties componentProps = node.getComponentProperties();
+			ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
+            List<Component.CodegenPropInfo> propsToProcess = component.getCodegenPropInfos(componentProps);
+            for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
+    			List<NamedThing> properties = propInfo.props.getProperties();
+    			for (NamedThing prop : properties) { // property
+        			if (prop instanceof Property) { // if, only deal with valued Properties
+            			Property property = (Property)prop;
+            			if (property.getFlags() != null && (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)))
+ 		                	continue;
+            			if(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)!=null && Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE)))) {
+            				generator.setPropertyValues(property, propInfo, null, false, false);
+            			}
+        			}
+    			} // property
+			} // propInfo
+            
             %>
             org.apache.avro.generic.IndexedRecord data_<%=cid%> = incomingEnforcer_<%=cid%>.getCurrentRecord();
 

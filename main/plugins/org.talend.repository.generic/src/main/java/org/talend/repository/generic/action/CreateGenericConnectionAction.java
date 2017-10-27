@@ -58,7 +58,10 @@ public class CreateGenericConnectionAction extends AbstractCreateAction {
             return;
         }
         repositoryNode = getCurrentRepositoryNode();
-        repObjType = (ERepositoryObjectType) repositoryNode.getProperties(EProperties.CONTENT_TYPE);
+        repObjType = repositoryNode.getObjectType();
+        if(repObjType == null){
+            repObjType =  (ERepositoryObjectType) repositoryNode.getProperties(EProperties.CONTENT_TYPE);
+        }
         this.setText(getCreateLabel());
         this.setToolTipText(getEditLabel());
         Image nodeImage = getNodeImage();
@@ -128,7 +131,10 @@ public class CreateGenericConnectionAction extends AbstractCreateAction {
     }
 
     private boolean isGenericConnection(RepositoryNode node) {
-        ERepositoryObjectType contentType = (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
+        ERepositoryObjectType contentType = node.getObjectType();
+        if(contentType == null){
+            contentType =  (ERepositoryObjectType) node.getProperties(EProperties.CONTENT_TYPE);
+        }
         boolean isGenericType = GenericWizardServiceFactory.getGenericWizardService().isGenericType(contentType);
         return isGenericType;
     }
