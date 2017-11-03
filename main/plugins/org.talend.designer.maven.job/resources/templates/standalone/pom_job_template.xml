@@ -110,6 +110,12 @@
 										<include>contexts/*.properties</include>
 									</includes>
 								</resource>
+								<resource>
+									<directory>${current.resources.dir}/metadata/survivorship/</directory>
+									<includes>
+										<include>**/*.*</include>
+									</includes>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -130,6 +136,7 @@
                       <!-- only package the job classes -->
                       <include>${talend.job.path}/*.class</include>
                       <include>${talend.job.path}/**/*.wsdl</include>
+                      <include>/metadata/survivorship/**/*.*</include>
                     </includes>
                   </configuration>
                 </execution>
