@@ -271,7 +271,6 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
                 @Override
                 protected void doWork() throws Throwable {
-                    prepareRuntimeContextForTriggerMethod();
                     componentService.validateProperty(getParameterName(), getSubProperties(), prepareRuntimeContextForTriggerMethod());
                 }
             }.call();
