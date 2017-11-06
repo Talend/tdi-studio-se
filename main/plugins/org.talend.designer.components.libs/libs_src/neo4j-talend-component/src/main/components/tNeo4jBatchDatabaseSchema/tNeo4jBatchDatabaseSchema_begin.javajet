@@ -1,0 +1,33 @@
+<%@ jet
+	imports="
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+        java.util.List
+        java.util.Map
+        java.util.HashMap
+	"
+%>
+<%
+    // General Talend object
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+
+    // Component parameter
+    String idConn = "neo4jBatchDatabase_" + ElementParameterParser.getValue(node, "__CONNECTION__");
+    List<Map<String, String>> schemaDefinitions = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__SCHEMA__");
+%>
+
+// Retrieve connection
+org.neo4j.talend.Neo4jBatchDatabase neo4jBatchDatabase_<%=cid%> = (org.neo4j.talend.Neo4jBatchDatabase) globalMap.get("<%=idConn%>");
+
+<%
+    if (schemaDefinitions != null) {
+        for (Map<String, String> definition : schemaDefinitions) {
+            %>
+                neo4jBatchDatabase_<%=cid%>.createSchema("<%=definition.get("TYPE")%>", <%=definition.get("LABEL")%>, <%=definition.get("PROPERTY")%>);
+            <%
+        }
+    }
+%>

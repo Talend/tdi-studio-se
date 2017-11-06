@@ -1,0 +1,40 @@
+<%@ jet
+	imports="
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+	"
+%>
+<%
+    // General Talend object
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+
+    // Component parameters
+    String idConn = "neo4jBatchDatabase_" + ElementParameterParser.getValue(node, "__CONNECTION__");;
+    String relationshipTypeField = ElementParameterParser.getValue(node, "__RELATIONSHIP_TYPE__");
+    String direction = ElementParameterParser.getValue(node, "__RELATIONSHIP_DIRECTION__");
+    String startIndexNameCid = ElementParameterParser.getValue(node, "__START_INDEX_NAME__");
+    String startIndexField = ElementParameterParser.getValue(node, "__START_INDEX_FIELD__");
+    String endIndexNameCid = ElementParameterParser.getValue(node, "__END_INDEX_NAME__");
+    String endIndexField = ElementParameterParser.getValue(node, "__END_INDEX_FIELD__");
+    Boolean skipOnError = Boolean.valueOf(ElementParameterParser.getValue(node, "__SKIP_ON_ERROR__"));
+%>
+
+// Retrieve connection
+org.neo4j.talend.Neo4jBatchDatabase neo4jBatchDatabase_<%=cid%> = (org.neo4j.talend.Neo4jBatchDatabase) globalMap.get("<%=idConn%>");
+
+// Retrieve start index name
+String startIndexName = (String) globalMap.get("neo4jBatchDatabaseIndexName_<%=startIndexNameCid%>");
+
+// Retrieve end index name
+String endIndexName = (String)  globalMap.get("neo4jBatchDatabaseIndexName_<%=endIndexNameCid%>");
+
+// Create Batch insert
+org.neo4j.talend.Neo4jBatchInserterRelationship neo4jBatchRelInserter_<%=cid%> = new org.neo4j.talend
+.Neo4jBatchInserterRelationship(neo4jBatchDatabase_<%=cid%>, "<%=relationshipTypeField%>", "<%=direction%>",
+startIndexName, "<%=startIndexField%>", endIndexName, "<%=endIndexField%>", <%=skipOnError%>);
+
+// Create counter
+int nb_line_<%=cid%> = 0;

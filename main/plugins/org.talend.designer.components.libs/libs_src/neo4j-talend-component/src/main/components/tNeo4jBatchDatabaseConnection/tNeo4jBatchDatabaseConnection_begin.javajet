@@ -1,0 +1,37 @@
+<%@ jet
+	imports="
+		org.talend.core.model.process.INode
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		java.util.List
+        java.util.Map
+        java.util.HashMap
+	"
+%>
+
+<%
+    // General Talend object
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+
+    // Component parameters
+    String dbPath = ElementParameterParser.getValue(node, "__DATABASE_PATH__");
+    List<Map<String, String>> configuration = (List<Map<String, String>>) ElementParameterParser.getObjectValue(node, "__CONFIGURATION__");
+%>
+
+// Transform configuration to Map configuration
+java.util.Map<String, String> config = new java.util.HashMap();
+<%
+    if (configuration != null) {
+        for (Map<String, String> params : configuration) {
+            %>
+                config.put("<%=params.get("KEY")%>", <%=params.get("VALUE")%>);
+            <%
+        }
+    }
+%>
+
+
+// Just put the database into the global map
+globalMap.put("neo4jBatchDatabase_<%=cid%>", new org.neo4j.talend.Neo4jBatchDatabase(<%=dbPath%>, config));

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<COMPONENT>
+    <HEADER AUTHOR="Benoit Simard"
+            COMPATIBILITY="ALL"
+            DATA_AUTO_PROPAGATE="false"
+            PLATEFORM="ALL"
+            RELEASE_DATE="20160301"
+            SERIAL=""
+            STARTABLE="true"
+            STATUS="ALPHA"
+            VERSION="${project.version}">
+        <SIGNATURE/>
+    </HEADER>
+
+    <FAMILIES>
+        <FAMILY>Databases/Neo4j</FAMILY>
+        <FAMILY>Big Data/Neo4j</FAMILY>
+    </FAMILIES>
+
+    <DOCUMENTATION>
+        <URL/>
+    </DOCUMENTATION>
+
+    <CONNECTORS>
+        <CONNECTOR CTYPE="FLOW"
+                   MAX_INPUT="1"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0" />
+        <CONNECTOR CTYPE="ITERATE"
+                   MAX_OUTPUT="1"
+                   MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_OK"
+                   MAX_INPUT="1" />
+        <CONNECTOR CTYPE="SUBJOB_ERROR"
+                   MAX_INPUT="1" />
+        <CONNECTOR CTYPE="COMPONENT_OK"
+                   MAX_INPUT="0"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0" />
+        <CONNECTOR CTYPE="COMPONENT_ERROR"
+                   MAX_INPUT="0"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0" />
+        <CONNECTOR CTYPE="RUN_IF" />
+    </CONNECTORS>
+
+    <PARAMETERS>
+        <PARAMETER NAME="CONNECTION"
+                   FIELD="COMPONENT_LIST"
+                   REQUIRED="true"
+                   FILTER="tNeo4jBatchDatabaseConnection"
+                   NUM_ROW="1"
+                   GROUP="CONNECTION_GROUP"/>
+
+        <PARAMETER NAME="LABEL_FIELD"
+                   FIELD="COLUMN_LIST"
+                   NUM_ROW="2"
+                   GROUP="SCHEMA_GROUP">
+            <DEFAULT>"label"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="IMPORT_INDEX_NAME"
+                   FIELD="TEXT"
+                   REPOSITORY_VALUE="NEO4J_BATCH_INDEXNAME"
+                   REQUIRED="true"
+                   NUM_ROW="3"
+                   GROUP="IMPORT_INDEX_GROUP" >
+            <DEFAULT>"ALL_NODE"</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="IMPORT_ID_FIELD"
+                   FIELD="COLUMN_LIST"
+                   REQUIRED="true"
+                   NUM_ROW="4"
+                   GROUP="IMPORT_INDEX_GROUP" />
+
+        <PARAMETER
+                NAME="INSERT_IMPORT_ID_FIELD"
+                FIELD="CHECK"
+                REQUIRED="true"
+                NUM_ROW="5"
+                GROUP="IMPORT_INDEX_GROUP" >
+            <DEFAULT>true</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="IMPORT_INDEX_CACHE_SIZE"
+                   FIELD="INTEGER"
+                   NUM_ROW="6"
+                   GROUP="IMPORT_INDEX_GROUP">
+            <DEFAULT>0</DEFAULT>
+        </PARAMETER>
+
+    </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+    </ADVANCED_PARAMETERS>
+
+    <CODEGENERATION>
+        <IMPORTS/>
+    </CODEGENERATION>
+
+    <RETURNS>
+        <RETURN AVAILABILITY="AFTER" NAME="NB_LINE" TYPE="id_Integer"/>
+    </RETURNS>
+
+</COMPONENT>

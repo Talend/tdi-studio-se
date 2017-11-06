@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<COMPONENT>
+    <HEADER AUTHOR="Benoit Simard"
+            COMPATIBILITY="ALL"
+            DATA_AUTO_PROPAGATE="false"
+            PLATEFORM="ALL"
+            RELEASE_DATE="20160301"
+            SERIAL=""
+            STARTABLE="true"
+            STATUS="ALPHA"
+            VERSION="${project.version}">
+        <SIGNATURE/>
+    </HEADER>
+
+    <FAMILIES>
+        <FAMILY>Databases/Neo4j</FAMILY>
+        <FAMILY>Big Data/Neo4j</FAMILY>
+    </FAMILIES>
+
+    <DOCUMENTATION>
+        <URL/>
+    </DOCUMENTATION>
+
+    <CONNECTORS>
+
+        <CONNECTOR CTYPE="SUBJOB_OK"
+                   MAX_INPUT="1"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0"/>
+
+        <CONNECTOR CTYPE="SUBJOB_ERROR"
+                   MAX_INPUT="1"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0"/>
+
+        <CONNECTOR CTYPE="COMPONENT_OK"
+                   MAX_INPUT="1"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0"/>
+
+        <CONNECTOR CTYPE="COMPONENT_ERROR"
+                   MAX_INPUT="0"
+                   MAX_OUTPUT="1"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0"/>
+
+        <CONNECTOR CTYPE="FLOW"
+                   MAX_INPUT="0"
+                   MAX_OUTPUT="0"
+                   MIN_INPUT="0"
+                   MIN_OUTPUT="0"/>
+
+    </CONNECTORS>
+
+    <PARAMETERS>
+
+        <PARAMETER NAME="DATABASE_PATH"
+                   FIELD="DIRECTORY"
+                   REQUIRED="true"
+                   NUM_ROW="1"
+                   GROUP="DATABASE_GROUP">
+            <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+
+        <PARAMETER NAME="NODE_FILES"
+                   FIELD="TABLE"
+                   GROUP="IMPORT_FILES_GROUP"
+                   NUM_ROW="2"
+                   NB_LINES="5">
+            <ITEMS>
+                <ITEM NAME="FILE" VALUE="" />
+                <ITEM NAME="HEADERS" VALUE='":ID,:LABEL"' />
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER NAME="RELATIONSHIP_FILES"
+                   FIELD="TABLE"
+                   GROUP="IMPORT_FILES_GROUP"
+                   NUM_ROW="3"
+                   NB_LINES="5">
+            <ITEMS>
+                <ITEM NAME="FILE" VALUE="" />
+                <ITEM NAME="HEADERS" VALUE='":START_ID,:END_ID,:TYPE"' />
+            </ITEMS>
+        </PARAMETER>
+
+    </PARAMETERS>
+
+    <ADVANCED_PARAMETERS>
+
+        <PARAMETER NAME="NEO4J_CONFIGURATION"
+                   FIELD="TABLE"
+                   GROUP="NEO4J_CONFIGURATION_GROUP"
+                   NUM_ROW="1"
+                   NB_LINES="5">
+            <ITEMS>
+                <ITEM NAME="KEY" VALUE="dbms.pagecache.memory"/>
+                <ITEM NAME="VALUE" VALUE="2G"/>
+            </ITEMS>
+        </PARAMETER>
+
+        <PARAMETER NAME="IMPORT_CONFIGURATION"
+                   FIELD="TABLE"
+                   GROUP="IMPORT_CONFIGURATION_GROUP"
+                   NUM_ROW="2"
+                   NB_LINES="5">
+            <ITEMS>
+                <ITEM NAME="KEY" VALUE=""/>
+                <ITEM NAME="VALUE" VALUE=""/>
+            </ITEMS>
+        </PARAMETER>
+
+    </ADVANCED_PARAMETERS>
+
+    <CODEGENERATION>
+        <IMPORTS/>
+    </CODEGENERATION>
+
+    <RETURNS>
+    </RETURNS>
+
+</COMPONENT>

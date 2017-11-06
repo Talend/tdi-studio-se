@@ -1,0 +1,22 @@
+= Talend component for Neo4j
+Benoit Simard <github@bsimard.com>
+V1.0
+:experimental:
+:toc:
+:toc-placement: preamble
+:toc-title: pass:[<b>Table of Contents</b>]
+:outfilesuffix-old: {outfilesuffix}
+ifdef::env-github[:outfilesuffix: .adoc]
+ifndef::env-github[]
+:idprefix:
+:idseparator: -
+endif::[]
+
+image:https://travis-ci.org/sim51/neo4j-talend-component.svg?branch=master["Build Status", link="https://travis-ci.org/sim51/neo4j-talend-component"]
+
+image:https://coveralls.io/repos/github/sim51/neo4j-talend-component/badge.svg?branch=master["Coverage Status", link="https://coveralls.io/github/sim51/neo4j-talend-component?branch=master"]
+
+Project website : http://sim51.github.io/neo4j-talend-component/
+
+== TODO
+
