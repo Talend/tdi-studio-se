@@ -79,6 +79,9 @@
         <site.skin.groupId>org.apache.maven.skins</site.skin.groupId>
         <site.skin.artifactId>maven-fluido-skin</site.skin.artifactId>
         <site.skin.version>1.5</site.skin.version>
+        
+        
+        <talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
     </properties>
 
     <!-- ======================== -->
@@ -468,4 +471,28 @@
             <url>http://m2.neo4j.org/content/repositories/public/</url>
         </repository>
     </repositories>
+    
+    
+    <distributionManagement>
+		<snapshotRepository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceSnapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</snapshotRepository>
+		<repository>
+			<id>talend_nexus_deployment</id>
+			<url>${talend.nexus.url}/nexus/content/repositories/TalendOpenSourceRelease/</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</distributionManagement>
 </project>
