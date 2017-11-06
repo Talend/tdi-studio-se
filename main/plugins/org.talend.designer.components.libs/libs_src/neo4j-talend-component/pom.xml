@@ -499,14 +499,4 @@
             <url>http://m2.neo4j.org/content/repositories/public/</url>
         </repository>
     </repositories>
-
-    <!-- =========================== -->
-    <!-- = Distribution management = -->
-    <!-- =========================== -->
-    <distributionManagement>
-        <site>
-            <id>github-site</id>
-            <url>scm:git:git@github.com:sim51/neo4j-talend-component.git</url>
-        </site>
-    </distributionManagement>
 </project>
