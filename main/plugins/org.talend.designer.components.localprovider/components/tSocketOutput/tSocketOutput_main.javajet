@@ -51,6 +51,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         }else{
 %>
             //doesn't work for other escapeChar
+            CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
 <%
         }
         
