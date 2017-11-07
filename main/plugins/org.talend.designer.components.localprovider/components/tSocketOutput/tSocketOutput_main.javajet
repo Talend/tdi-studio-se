@@ -40,23 +40,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
             CsvWriter<%=cid %>.setLineEnd(""+'<%=rowSeparator%>');
 <%              
         }
-        if(("\\\\").equals(escapeChar)){
-%>
-            CsvWriter<%=cid %>.setEscapeChar('\\');
-<%
-        }else if(!"".equals(escapeChar)&&escapeChar.equals(textEnclosure)){
-%>
-            CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
-<%
-        }else{
-%>
-            //doesn't work for other escapeChar
-            CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
-<%
-        }
-        
         if(!"".equals(textEnclosure)){
 %>
+			<%if(("\\\\").equals(escapeChar)){%>
+			     CsvWriter<%=cid %>.setEscapeChar('\\');
+			<%}else{%>
+				 CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
+			<%}%>
         	CsvWriter<%=cid %>.setQuoteChar('<%=textEnclosure %>'); 
         	CsvWriter<%=cid %>.setQuoteStatus(com.talend.csv.CSVWriter.QuoteStatus.FORCE);
         <%} else {%>
