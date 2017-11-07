@@ -34,7 +34,6 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         String escapeChar = escapeChar1.substring(1,escapeChar1.length()-1);
         String textEnclosure1 = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");
         String textEnclosure = textEnclosure1.substring(1,textEnclosure1.length()-1);
-        String QuoteStatus = "".equals(textEnclosure)?"NO":"FORCE";
         List< ? extends IConnection> conns = node.getIncomingConnections();
         if(!("\\n").equals(rowSeparator) && !("\\r").equals(rowSeparator)){
 %>
