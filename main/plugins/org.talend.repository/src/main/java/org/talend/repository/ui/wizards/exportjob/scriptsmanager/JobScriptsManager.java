@@ -966,7 +966,7 @@ public abstract class JobScriptsManager {
      */
     public String getRootFolderName(String path) {
         String subjectString = new Path(path).lastSegment();
-        Pattern regex = Pattern.compile("(.*)(?=(\\.(tar|zip))\\b)", Pattern.CANON_EQ | Pattern.CASE_INSENSITIVE //$NON-NLS-1$
+        Pattern regex = Pattern.compile("(.*)(?=(\\.(tar|zip|jar|kar))\\b)", Pattern.CANON_EQ | Pattern.CASE_INSENSITIVE //$NON-NLS-1$
                 | Pattern.UNICODE_CASE);
         Matcher regexMatcher = regex.matcher(subjectString);
         if (regexMatcher.find()) {

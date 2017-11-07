@@ -1,11 +1,11 @@
 <%@ include file="../templates/DB/Input/AbstractDBInputEnd.javajet"%>
 
 <%
-if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))) {
+String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
+if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))
+&& !logLevel.equals("0")) {
 %>
-	if (null != java.sql.DriverManager.getLogWriter()) {
-		java.sql.DriverManager.getLogWriter().close();
-	}
+		logWriter_<%=cid %>.close();
 <%
 }
 %>

@@ -130,6 +130,7 @@
 		<module>main/plugins/org.talend.libraries.uniserv</module>
 		<module>main/plugins/org.talend.libraries.w3c</module>
 		<module>main/plugins/org.talend.libraries.xml</module>
+		<module>main/plugins/org.talend.libraries.zmq</module>
 		<module>main/plugins/org.talend.libraries.hadoop.mapr.5.0.0</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource.tos</module>

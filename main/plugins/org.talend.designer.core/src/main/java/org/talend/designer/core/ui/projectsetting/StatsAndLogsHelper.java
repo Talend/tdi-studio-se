@@ -424,7 +424,7 @@ public class StatsAndLogsHelper extends Utils {
         paramList.add(param);
 
         // jdbc child param
-        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+        Set<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
         Set<String> moduleNameList = new TreeSet<String>();
         Set<String> moduleValueList = new TreeSet<String>();
         for (ModuleNeeded module : moduleNeededList) {

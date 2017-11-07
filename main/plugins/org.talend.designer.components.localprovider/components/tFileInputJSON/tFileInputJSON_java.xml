@@ -47,6 +47,18 @@
 				<ITEM NAME="JSONPATH_WITHOUTPUT_LOOP" VALUE="JSONPATH_WITHOUTPUT_LOOP" />
 			</ITEMS>
 		</PARAMETER>
+		
+	    <PARAMETER
+	        NAME="JSON_PATH_VERSION"
+	        FIELD="CLOSED_LIST"
+	        SHOW_IF="READ_BY=='JSONPATH'"
+	        NUM_ROW="25"
+	        >
+	        <ITEMS DEFAULT="2_1_0">
+	            <ITEM NAME="2_1_0" VALUE="2_1_0" />
+	            <ITEM NAME="1_2_0" VALUE="1_2_0" />
+	        </ITEMS>
+	    </PARAMETER>
 
 		<PARAMETER NAME="USEURL" FIELD="CHECK" NUM_ROW="30"
 			REQUIRED="true">
@@ -168,7 +180,9 @@
 
 			<!-- json path -->
 			<IMPORT NAME="json-path-2.1.0.jar" MODULE="json-path-2.1.0.jar" MVN="mvn:org.talend.libraries/json-path-2.1.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-2.1.0.jar"
-			    REQUIRED_IF="(READ_BY == 'JSONPATH')" />
+			    REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '2_1_0')" />
+			<IMPORT NAME="json-path-1.2.0.jar" MODULE="json-path-1.2.0.jar" MVN="mvn:org.talend.libraries/json-path-1.2.0/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.json/lib/json-path-1.2.0.jar"
+                REQUIRED_IF="(READ_BY == 'JSONPATH') AND (JSON_PATH_VERSION == '1_2_0')" />
             <IMPORT NAME="json-smart-2.2.1.jar" MODULE="json-smart-2.2.1.jar" MVN="mvn:org.talend.libraries/json-smart-2.2.1/6.0.0"
                 REQUIRED_IF="(READ_BY == 'JSONPATH')" />
             <IMPORT NAME="accessors-smart-1.1.jar" MODULE="accessors-smart-1.1.jar" MVN="mvn:org.talend.libraries/accessors-smart-1.1/6.0.0"

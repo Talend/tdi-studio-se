@@ -101,13 +101,11 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
         </dependency>
-
         <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>adal4j</artifactId>
             <version>1.1.1</version>
         </dependency>
-		
 	</dependencies>
 	<build>
 		<resources>
@@ -134,6 +132,14 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
 	</build>
 </project>

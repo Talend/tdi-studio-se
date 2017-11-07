@@ -222,8 +222,7 @@ public class Component extends AbstractBasicComponent {
         for (Property<?> child : componentDefinition.getReturnProperties()) {
             nodeRet = new NodeReturn();
             nodeRet.setType(ComponentsUtils.getTalendTypeFromProperty(child).getId());
-            nodeRet.setDisplayName(
-                    ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
+            nodeRet.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
             nodeRet.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(child.getName()));
             if (nodeRet.getName().equals(ERROR_MESSAGE)) {
                 continue;
@@ -1063,8 +1062,7 @@ public class Component extends AbstractBasicComponent {
      * @param listConnector list of all {@link Component} connectors
      * @param parentNode parent node
      */
-    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector,
-            INode parentNode) {
+    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector, INode parentNode) {
         boolean inputOrNone = topologies.contains(ConnectorTopology.NONE) || topologies.contains(ConnectorTopology.OUTGOING);
         INodeConnector iterateConnector = addStandardType(listConnector, EConnectionType.ITERATE, parentNode);
         iterateConnector.setMaxLinkOutput(-1);
@@ -1123,7 +1121,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -1180,13 +1178,13 @@ public class Component extends AbstractBasicComponent {
 
                 if (bundle != null) { // update module location
                     try {
-                        final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getMavenUri());
+                        final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getDefaultMavenURI());
                         final String moduleFileName = artifact.getFileName();
                         final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
                         if (bundleFile != null && bundleFile.exists()) {
                             // FIXME, better install the embed jars from bundle directly in this way.
-                            moduleNeeded.setModuleLocaion(
-                                    ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName() + '/' + moduleFileName);
+                            moduleNeeded.setModuleLocaion(ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName() + '/'
+                                    + moduleFileName);
                         }
                     } catch (IOException e) {
                         ExceptionHandler.process(e);
@@ -1381,9 +1379,9 @@ public class Component extends AbstractBasicComponent {
         return propsList;
     }
 
-    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(
-            new CharSequenceTranslator[] { new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
-                    new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
+    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(new CharSequenceTranslator[] {
+            new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
+            new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
 
     public String getCodegenValue(Property property, String value) {
         if (property.isFlag(Property.Flags.ENCRYPT)) {
@@ -1429,7 +1427,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -1464,8 +1462,8 @@ public class Component extends AbstractBasicComponent {
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
-            node.setComponentProperties(
-                    Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class, new PostDeserializeSetup() {
+            node.setComponentProperties(Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class,
+                    new PostDeserializeSetup() {
 
                         @Override
                         public void setup(Object properties) {
@@ -1581,7 +1579,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#isVisible()
      */
     @Override
@@ -1613,7 +1611,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override

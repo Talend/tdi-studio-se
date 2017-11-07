@@ -263,7 +263,7 @@ public class JavaProcessorUtilities {
             orderedNeededLibraries.addAll(neededLibraries);
             return orderedNeededLibraries;
         }
-        
+
         return neededLibraries;
     }
 
@@ -275,12 +275,15 @@ public class JavaProcessorUtilities {
     public static void checkJavaProjectLib(Collection<ModuleNeeded> jarsNeeded) {
         File libDir = getJavaProjectLibFolder();
         if ((libDir != null) && (libDir.isDirectory())) {
-            Set<String> jarsNeedRetrieve = new HashSet<String>();
+            Set<ModuleNeeded> jarsNeedRetrieve = new HashSet<ModuleNeeded>(jarsNeeded);
+            File[] listFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
             for (ModuleNeeded moduleNeeded : jarsNeeded) {
-                jarsNeedRetrieve.add(moduleNeeded.getModuleName());
-            }
-            for (File externalLib : libDir.listFiles(FilesUtils.getAcceptJARFilesFilter())) {
-                jarsNeedRetrieve.remove(externalLib.getName());
+                for (File externalLib : listFiles) {
+                    if (moduleNeeded.getModuleName().equals(externalLib.getName())) {
+                        jarsNeedRetrieve.remove(moduleNeeded);
+                        break;
+                    }
+                }
             }
 
             if (!jarsNeedRetrieve.isEmpty()) {

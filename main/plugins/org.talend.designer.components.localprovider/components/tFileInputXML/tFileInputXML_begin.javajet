@@ -716,9 +716,20 @@ while (it_<%=cid%>.hasNext()) {
 	java.util.Map<String, String> row_<%=cid%> = it_<%=cid%>.next();
 <%
 }
+			// limit
+		if (limit.compareTo("-1")!=0) {
 %>
-	nb_line_<%=cid%>++;
-<%
+	if (nb_line_<%=cid %>>=<%=limit %>) {
+	<%if(("SAX").equals(mode)) {%>
+			looper_<%=cid%>.stopRead();
+	<%}%>
+		break;
+	}
+<% 
+		}
+		%>
+		nb_line_<%=cid%>++;
+		<%
 List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
 String firstConnName = "";
 List<IMetadataTable> metadatas = node.getMetadataList();
@@ -1099,18 +1110,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
 		} // if(conn!=null)
 		
-		// limit
-		if (limit.compareTo("-1")!=0) {
-%>
-	
-	if (nb_line_<%=cid %>><%=limit %>) {
-	<%if(("SAX").equals(mode)) {%>
-			looper_<%=cid%>.stopRead();
-	<%}%>
-		break;
-	}
-<% 
-		}
+
 	}// if (metadata!=null)
 } //if ((metadatas!=null)&&(metadatas.size()>0))
 %>

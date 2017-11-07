@@ -87,7 +87,7 @@ public class SchemaUtils {
             return;
         }
         for (Schema.Field field : schema.getFields()) {
-            MetadataColumn metadataColumn = MetadataToolAvroHelper.convertFromAvro(field);
+            MetadataColumn metadataColumn = MetadataToolAvroHelper.convertFromAvro(field, metadataTable);
             metadataTable.getColumns().add(metadataColumn);
         }
     }
