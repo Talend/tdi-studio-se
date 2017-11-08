@@ -188,6 +188,10 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		        					%>
 		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_Date(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString(), <%= patternValue %>);
 		        					<%
+		        					}else if(javaType == JavaTypesManager.BYTE_ARRAY){ // Byte[]
+		        					%>
+		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = (byte[])property_<%=column.getLabel()%>_<%=cid%>.getValue().asPrimitive().toValue();
+		        					<%
 		        					}else{ // other
 		        					%>
 		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_<%=typeToGenerate%>(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString());
