@@ -112,7 +112,7 @@
       NUM_ROW="35"
       REPOSITORY_VALUE="ESCAPE_CHAR"
     >
-      <DEFAULT>"\""</DEFAULT>
+      <DEFAULT>"""</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -121,7 +121,7 @@
       NUM_ROW="35"
       REPOSITORY_VALUE="TEXT_ENCLOSURE"
     >
-      <DEFAULT>"\""</DEFAULT>
+      <DEFAULT>"""</DEFAULT>
     </PARAMETER>
 
    <PARAMETER
