@@ -54,21 +54,13 @@ if(columnList != null && columnList.size() > 0) {
         String dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
         String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
         boolean useSSL = false;
-		  if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){
-		      useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
-		  }
-        if("ORACLE_RAC".equals(connectionType) && useSSL){
-            String walletType = ElementParameterParser.getValue(node,"__WALLET_TYPE__");
-            if("PKCS12".equals(walletType)){
-            %>
-                java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
-            <%
-            }
-            if("SSO".equals(walletType)){
-            %>
-                java.security.Security.addProvider(new oracle.security.pki.OraclePKIProvider());
-            <%
-            }
+        if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
+            useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
+        }
+        if(useSSL){
+        %>
+            java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
+        <%
         }
         %>
 		<%if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){%>
@@ -108,7 +100,7 @@ if(columnList != null && columnList.size() > 0) {
         String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
 
 <%
-	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+	if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
 %>
 	java.sql.Connection conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>, dbUser_<%=cid%>, dbPwd_<%=cid%>);
 <%
@@ -116,7 +108,7 @@ if(columnList != null && columnList.size() > 0) {
 %>
 	java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
 <%
-   if("ORACLE_RAC".equals(connectionType) && useSSL){
+   if(useSSL){
 %>
        if(dbUser_<%=cid%>!=null && dbPwd_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(dbPwd_<%=cid%>)){
 		     atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
@@ -133,6 +125,9 @@ if(columnList != null && columnList.size() > 0) {
     if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
          atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
      }
+    
+    <%@ include file="../tOracleConnection/Oracle_SSL_inc.javajet"%>
+
 	java.sql.Connection conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, atnParamsPrope_<%=cid%>);
 <%
 	}

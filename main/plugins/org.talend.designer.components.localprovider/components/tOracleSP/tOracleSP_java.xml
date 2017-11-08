@@ -188,22 +188,55 @@
     >
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    <PARAMETER 
-        NAME="WALLET_TYPE" 
-        FIELD="CLOSED_LIST" 
-        NUM_ROW="65" 
-        SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND (isShow[USE_SSL] AND (USE_SSL == 'true'))" 
+
+   <PARAMETER
+       NAME="SSL_TRUSTSERVER_TRUSTSTORE"
+       FIELD="FILE"
+       NUM_ROW="66"
+       SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
     >
-      <ITEMS DEFAULT="PKCS12">
-          <ITEM NAME="PKCS12"   VALUE="PKCS12" />
-          <ITEM NAME="SSO"   VALUE="SSO" />
-      </ITEMS>
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="SSL_TRUSTSERVER_PASSWORD"
+        FIELD="PASSWORD"
+        NUM_ROW="67"
+        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="NEED_CLIENT_AUTH"
+        FIELD="CHECK"
+        NUM_ROW="68"
+        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
+    >
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="SSL_KEYSTORE"
+        FIELD="FILE"
+        NUM_ROW="69"
+        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
+    >
+        <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+        NAME="SSL_KEYSTORE_PASSWORD"
+        FIELD="PASSWORD"
+        NUM_ROW="70"
+        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
+    >
+        <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="70"
+      NUM_ROW="75"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -522,9 +555,9 @@
       <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
       <IMPORT NAME="XDB"  MODULE="xdb.jar" MVN="mvn:org.talend.libraries/xdb/6.0.0"  REQUIRED_IF="((RETURN_BDTYPE == 'XMLTYPE') or (SP_ARGS.DBTYPE IN ['XMLTYPE']))" />
       <IMPORT NAME="XMLPARSEV2"  MODULE="xmlparserv2.jar" MVN="mvn:org.talend.libraries/xmlparserv2/6.0.0"  REQUIRED_IF="((RETURN_BDTYPE == 'XMLTYPE') or (SP_ARGS.DBTYPE IN ['XMLTYPE']))" />
-	  <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/6.5.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (isShow[USE_SSL] AND (USE_SSL == 'true')) AND (USE_EXISTING_CONNECTION == 'false')" />
-      <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/6.5.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (isShow[USE_SSL] AND (USE_SSL == 'true')) AND (USE_EXISTING_CONNECTION == 'false')" />
-      <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/6.5.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (isShow[USE_SSL] AND (USE_SSL == 'true')) AND (USE_EXISTING_CONNECTION == 'false')" />
+	  <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
+      <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
+      <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
     </IMPORTS>
    </CODEGENERATION>
 

@@ -52,23 +52,15 @@ if (useExistingConnection) {
 	<%
 	}
     boolean useSSL = false;
-	if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){
+    String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
+	if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
 	    useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
 	}
-	 String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
-      if("ORACLE_RAC".equals(connectionType) && useSSL){
-          String walletType = ElementParameterParser.getValue(node,"__WALLET_TYPE__");
-          if("PKCS12".equals(walletType)){
-          %>
-              java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
-          <%
-          }
-          if("SSO".equals(walletType)){
-          %>
-              java.security.Security.addProvider(new oracle.security.pki.OraclePKIProvider());
-          <%
-          }
-      }
+    if(useSSL){
+    %>
+        java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
+    <%
+    }
 	%>
 	<%if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){%>
     	java.lang.Class.forName("oracle.jdbc.OracleDriver");
@@ -103,7 +95,7 @@ if (useExistingConnection) {
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 <%
-	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+	if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
 %>
 	connection_<%=cid%> = java.sql.DriverManager.getConnection(connectionString_<%=cid%>, <%=dbuser%>, decryptedPassword_<%=cid%>);
 <%
@@ -111,7 +103,7 @@ if (useExistingConnection) {
 %>
 	java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
 <%
-    if("ORACLE_RAC".equals(connectionType) && useSSL){
+    if(useSSL){
 %>
 	   if(dbUser_<%=cid%>!=null && decryptedPassword_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(decryptedPassword_<%=cid%>)){
 		    atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
@@ -128,6 +120,9 @@ if (useExistingConnection) {
     if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
          atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
      }
+     
+    <%@ include file="../tOracleConnection/Oracle_SSL_inc.javajet"%>
+
 	connection_<%=cid%> = java.sql.DriverManager.getConnection(connectionString_<%=cid%>, atnParamsPrope_<%=cid%>);
 <%
 	}

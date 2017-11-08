@@ -104,20 +104,12 @@ if(useExistingConn) {
    boolean useSSL = false;
    if(previousNode != null) {
        String dbVersion =  ElementParameterParser.getValue(previousNode, "__DB_VERSION__");
-	   if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion)){
-	      useSSL = "true".equals(ElementParameterParser.getValue(previousNode,"__USE_SSL__"));
-		   if("ORACLE_RAC".equals(connectionType) && useSSL){
-		       String walletType = ElementParameterParser.getValue(previousNode,"__WALLET_TYPE__");
-		       if("PKCS12".equals(walletType)){
-		       %>
-		           java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
-		       <%
-		       }
-		       if("SSO".equals(walletType)){
-		       %>
-		           java.security.Security.addProvider(new oracle.security.pki.OraclePKIProvider());
-		       <%
-		       }
+	   if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
+	       useSSL = "true".equals(ElementParameterParser.getValue(previousNode,"__USE_SSL__"));
+		   if(useSSL){
+		   %>
+		       java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
+		   <%
 	      }
 	   }
 	 }
@@ -153,7 +145,7 @@ if(useExistingConn) {
 <%
 	log4jCodeGenerateUtil.debugConnectionParams(node);
 	log4jCodeGenerateUtil.connect_begin();
-	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+	if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
 %>
 	java.sql.Connection conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
 <%
@@ -161,7 +153,7 @@ if(useExistingConn) {
 %>
 	java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
    <%
-	if("ORACLE_RAC".equals(connectionType) && useSSL){
+	if(useSSL){
    %>
     	if(dbUser_<%=cid%>!=null && dbPwd_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(dbPwd_<%=cid%>)){
         	atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
@@ -178,6 +170,65 @@ if(useExistingConn) {
     if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
         atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
     }
+<%
+    if(useSSL){
+        String trustStorePath = ElementParameterParser.getValue(previousNode,"__SSL_TRUSTSERVER_TRUSTSTORE__");
+        String trustStorePwd = ElementParameterParser.getValue(previousNode,"__SSL_TRUSTSERVER_PASSWORD__");
+        boolean needClientAuth = "true".equals(ElementParameterParser.getValue(previousNode,"__NEED_CLIENT_AUTH__"));
+        String keyStorePath = ElementParameterParser.getValue(previousNode,"__SSL_KEYSTORE__");
+        String keyStorePwd = ElementParameterParser.getValue(previousNode,"__SSL_KEYSTORE_PASSWORD__");
+%>
+        if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.trustStoreType")==null){
+            atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStoreType","PKCS12");
+        }
+        atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStore", <%=trustStorePath %>);
+<%
+        passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
+%>
+    
+<%
+        if (ElementParameterParser.canEncrypt(previousNode, passwordFieldName)) {
+%> 
+            String trustStorePwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(previousNode, passwordFieldName)%>);
+<%
+        } else {
+%>
+            String trustStorePwd_<%=cid%> = <%= ElementParameterParser.getValue(previousNode, passwordFieldName)%>; 
+<%
+        }
+%>
+        if(trustStorePwd_<%=cid%>!=null && trustStorePwd_<%=cid%>.length()>0){
+            atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStorePassword", trustStorePwd_<%=cid%>);
+        }
+<%
+        if(needClientAuth){
+%>
+            if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.keyStore")==null){
+                atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStoreType","PKCS12");
+            }
+            atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStore", <%=keyStorePath %>);
+    
+<%
+            passwordFieldName = "__SSL_KEYSTORE_PASSWORD__";
+%>
+    
+<%
+            if (ElementParameterParser.canEncrypt(previousNode, passwordFieldName)) {%> 
+                String keyStorePwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(previousNode, passwordFieldName)%>);
+<%
+            } else {
+%>
+                String keyStorePwd_<%=cid%> = <%= ElementParameterParser.getValue(previousNode, passwordFieldName)%>; 
+<%
+            }
+%>
+            if(keyStorePwd_<%=cid%>!=null && keyStorePwd_<%=cid%>.length()>0){
+                atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStorePassword",keyStorePwd_<%=cid%>);
+            }
+<%
+        }
+    }
+%>
 	java.sql.Connection conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, atnParamsPrope_<%=cid%>);
 <%
 	}
