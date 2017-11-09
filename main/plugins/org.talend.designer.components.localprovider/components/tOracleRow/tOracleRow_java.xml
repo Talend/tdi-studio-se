@@ -179,65 +179,11 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    
-    <PARAMETER 
-        NAME="USE_SSL" 
-        FIELD="CHECK" 
-        NUM_ROW="43" 
-        REQUIRED="true" 
-        SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12'))"
-    >
-        <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-       NAME="SSL_TRUSTSERVER_TRUSTSTORE"
-       FIELD="FILE"
-       NUM_ROW="44"
-       SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="SSL_TRUSTSERVER_PASSWORD"
-        FIELD="PASSWORD"
-        NUM_ROW="45"
-        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="NEED_CLIENT_AUTH"
-        FIELD="CHECK"
-        NUM_ROW="46"
-        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="SSL_KEYSTORE"
-        FIELD="FILE"
-        NUM_ROW="47"
-        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-    <PARAMETER
-        NAME="SSL_KEYSTORE_PASSWORD"
-        FIELD="PASSWORD"
-        NUM_ROW="48"
-        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
 
     <PARAMETER
       NAME="SCHEMA_FLOW"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="49"
+      NUM_ROW="45"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -246,7 +192,7 @@
       NAME="SCHEMA_REJECT"
       FIELD="SCHEMA_TYPE"
       REQUIRED="true"
-      NUM_ROW="49"
+      NUM_ROW="45"
       CONTEXT="REJECT"
       SHOW="true">
       <TABLE READONLY="true">
@@ -258,7 +204,7 @@
 	<PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="49"
+      NUM_ROW="45"
       LOG4J_ENABLED="false"
     >
       <DEFAULT>""</DEFAULT>
@@ -442,9 +388,6 @@
            <IMPORT NAME="ORACLE_10"  MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
            <IMPORT NAME="ORACLE_9"  MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
            <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false') AND (SPECIFY_DATASOURCE_ALIAS == 'false')" />
-	       <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-           <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-           <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
      </IMPORTS>
    </CODEGENERATION>
 

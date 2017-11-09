@@ -100,16 +100,6 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         java.sql.Connection connection_<%=cid%> = (java.sql.Connection) globalMap.get("<%=connectionName%>");
         <%
     } else {
-        boolean useSSL = false;
-        String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
-        if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
-            useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
-        }
-        if(useSSL){
-        %>
-            java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
-        <%
-        }
         %>
 		<%if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){%>
         	java.lang.Class.forName("oracle.jdbc.OracleDriver");
@@ -117,6 +107,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     		java.lang.Class.forName("oracle.jdbc.driver.OracleDriver");
     	<%}%>
         <%
+        String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
 		String rac_url = ElementParameterParser.getValue(node, "__RAC_URL__");
         if("ORACLE_RAC".equals(connectionType)) {
 			%>
@@ -137,7 +128,7 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         }
         %>
         String schema_<%=cid%> = <%=ElementParameterParser.getValue(node, "__SCHEMA_DB__")%>;
-        String dbUser_<%=cid%> = <%=dbuser%>;
+
 		<%
 		String passwordFieldName = "__PASS__";
 		%>
@@ -145,34 +136,18 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
 <%
-		if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
+		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
 		java.sql.Connection connection_<%=cid%> = java.sql.DriverManager.getConnection(connectionString_<%=cid%>, <%=dbuser%>, decryptedPassword_<%=cid%>);
 <%
 		} else {
 %>
 		java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
-<%
-        if(useSSL){
-%>
-            if(dbUser_<%=cid%>!=null && decryptedPassword_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(decryptedPassword_<%=cid%>)){
-	            atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
-                atnParamsPrope_<%=cid%>.put("password",decryptedPassword_<%=cid%>);
-            }
-<%
-        }else{
-%>
-            atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
-            atnParamsPrope_<%=cid%>.put("password",decryptedPassword_<%=cid%>);
-<%
-        }
-%>
+		atnParamsPrope_<%=cid%>.put("user",<%=dbuser%>);
+		atnParamsPrope_<%=cid%>.put("password",decryptedPassword_<%=cid%>);
         if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
               atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
           }
-        
-        <%@ include file="../tOracleConnection/Oracle_SSL_inc.javajet"%>
-
 		java.sql.Connection connection_<%=cid%> = java.sql.DriverManager.getConnection(connectionString_<%=cid%>, atnParamsPrope_<%=cid%>);
 <%
 		}

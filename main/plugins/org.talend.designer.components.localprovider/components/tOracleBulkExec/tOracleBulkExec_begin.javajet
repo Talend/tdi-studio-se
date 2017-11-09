@@ -130,15 +130,6 @@ if(useExistingConnection) {
     log4jCodeGenerateUtil.useExistConnection(node);
 } else {
     String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
-    boolean useSSL = false;
-    if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
-        useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
-    }
-    if(useSSL){
-    %>
-        java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
-    <%
-    }
     if(!"ORACLE_RAC".equals(connectionType)) {
     %>
         host_<%=cid%> = <%=host%>;
@@ -180,7 +171,6 @@ if(useExistingConnection) {
         url_<%=cid%> = "jdbc:oracle:oci8:@" + <%=localServiceName%>;
         <%
     }
-    
     %>
     <%if("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion) ){%>
         String driverClass_<%=cid%> = "oracle.jdbc.OracleDriver";
@@ -190,31 +180,16 @@ if(useExistingConnection) {
     java.lang.Class.forName(driverClass_<%=cid%>);
 <%
     log4jCodeGenerateUtil.debugConnectionParams(node);
-    if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
+    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
         log4jCodeGenerateUtil.connect(node);
     } else {
 %>
     java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
-    <%
-	 if(useSSL){
-    %>
-    	  if(dbUser_<%=cid%>!=null && dbPwd_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(dbPwd_<%=cid%>)){
-            atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
-        	   atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
-		  }
-    <%
-	 }else{
-    %>
-    	  atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
-    	  atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
-    <%
-	 }
-    %>
+    atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid %>);
+    atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
     if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
         atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
     }
-    <%@ include file="../tOracleConnection/Oracle_SSL_inc.javajet"%>
-
     <%
     log4jCodeGenerateUtil.connect_begin();
     %>

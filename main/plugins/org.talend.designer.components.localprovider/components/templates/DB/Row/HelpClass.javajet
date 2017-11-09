@@ -12,11 +12,9 @@
 		protected String dbpwd ;
 		protected String useExistingConn;
 		protected DefaultLog4jCodeGenerateUtil log4jCodeGenerateUtil;
-		protected INode node;
 	    
 	    public void beforeComponentProcess(INode node){
 	    	cid = node.getUniqueName();
-	    	this.node=node;
 	    	log4jCodeGenerateUtil = new DefaultLog4jCodeGenerateUtil();
 			dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 			dbhost = ElementParameterParser.getValue(node, "__HOST__");

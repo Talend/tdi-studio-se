@@ -103,29 +103,7 @@
 	  		SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (CONNECTION_TYPE == 'ORACLE_WALLET')">
 		<DEFAULT>"jdbc:oracle:oci:/@talend"</DEFAULT>
 	 	</PARAMETER>
-        <PARAMETER NAME="USE_SSL" FIELD="CHECK" NUM_ROW="43" REQUIRED="true" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12'))">
-            <DEFAULT>false</DEFAULT>
-        </PARAMETER>
-        
-        <PARAMETER NAME="SSL_TRUSTSERVER_TRUSTSTORE" FIELD="FILE" NUM_ROW="44" SHOW_IF="(isShow[USE_SSL] AND (USE_SSL == 'true'))">
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
-
-        <PARAMETER NAME="SSL_TRUSTSERVER_PASSWORD" FIELD="PASSWORD" NUM_ROW="45" SHOW_IF="(isShow[USE_SSL] AND (USE_SSL == 'true'))">
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
-
-        <PARAMETER NAME="NEED_CLIENT_AUTH" FIELD="CHECK" NUM_ROW="46" SHOW_IF="(isShow[USE_SSL] AND (USE_SSL == 'true'))">
-            <DEFAULT>false</DEFAULT>
-        </PARAMETER>
-
-        <PARAMETER NAME="SSL_KEYSTORE" FIELD="FILE" NUM_ROW="47" SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')">
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
-        <PARAMETER NAME="SSL_KEYSTORE_PASSWORD" FIELD="PASSWORD" NUM_ROW="48" SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')">
-            <DEFAULT>""</DEFAULT>
-        </PARAMETER>
-		<PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="49">
+		<PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="45">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 		<PARAMETER NAME="TABLE" FIELD="DBTABLE" NUM_ROW="50">
@@ -246,9 +224,6 @@
 	   <IMPORT NAME="Driver-Oracle-XDB" MODULE="xdb.jar" MVN="mvn:org.talend.libraries/xdb/6.0.0"  REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
 	   <IMPORT NAME="Driver-Oracle-XMLPARSERV2" MODULE="xmlparserv2.jar" MVN="mvn:org.talend.libraries/xmlparserv2/6.0.0"  BundleID="" REQUIRED_IF="SCHEMA.DB_TYPE IN ['XMLTYPE']" />
 	   <IMPORT NAME="Talend-oracle-timestamptz" MODULE="talend-oracle-timestamptz.jar" MVN="mvn:org.talend.libraries/talend-oracle-timestamptz/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.custom/lib/talend-oracle-timestamptz.jar" REQUIRED_IF="(DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_10')" />
-	   <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-       <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-       <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
      </IMPORTS>
 	</CODEGENERATION>
 	<RETURNS>

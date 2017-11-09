@@ -184,64 +184,11 @@
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER 
-        NAME="USE_SSL" 
-        FIELD="CHECK" 
-        NUM_ROW="65" 
-        REQUIRED="true" 
-        SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12'))"
-    >
-        <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
-<PARAMETER
-       NAME="SSL_TRUSTSERVER_TRUSTSTORE"
-       FIELD="FILE"
-       NUM_ROW="66"
-       SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="SSL_TRUSTSERVER_PASSWORD"
-        FIELD="PASSWORD"
-        NUM_ROW="67"
-        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="NEED_CLIENT_AUTH"
-        FIELD="CHECK"
-        NUM_ROW="68"
-        SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
-    >
-        <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
-        NAME="SSL_KEYSTORE"
-        FIELD="FILE"
-        NUM_ROW="69"
-        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-    <PARAMETER
-        NAME="SSL_KEYSTORE_PASSWORD"
-        FIELD="PASSWORD"
-        NUM_ROW="70"
-        SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
-    >
-        <DEFAULT>""</DEFAULT>
-    </PARAMETER>
 
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="75"
+      NUM_ROW="70"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -249,7 +196,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="76"
+      NUM_ROW="71"
       NOT_SHOW_IF="PARALLELIZE == 'true'"
     >
       <ITEMS DEFAULT="NONE">
@@ -736,13 +683,6 @@
       <TEMPLATE_PARAM SOURCE="self.RAC_URL"   TARGET="tOBE.RAC_URL" />
       <TEMPLATE_PARAM SOURCE="self.USER"   TARGET="tOBE.USER" />
       <TEMPLATE_PARAM SOURCE="self.PASS"   TARGET="tOBE.PASS" />
-      <TEMPLATE_PARAM SOURCE="self.USE_SSL"   TARGET="tOBE.USE_SSL" />
-      <TEMPLATE_PARAM SOURCE="self.SSL_TRUSTSERVER_TRUSTSTORE"   TARGET="tOBE.SSL_TRUSTSERVER_TRUSTSTORE" />
-      <TEMPLATE_PARAM SOURCE="self.SSL_TRUSTSERVER_PASSWORD"   TARGET="tOBE.SSL_TRUSTSERVER_PASSWORD" />
-      <TEMPLATE_PARAM SOURCE="self.NEED_CLIENT_AUTH"   TARGET="tOBE.NEED_CLIENT_AUTH" />
-      <TEMPLATE_PARAM SOURCE="self.SSL_KEYSTORE"   TARGET="tOBE.SSL_KEYSTORE" />
-      <TEMPLATE_PARAM SOURCE="self.SSL_KEYSTORE_PASSWORD"   TARGET="tOBE.SSL_KEYSTORE_PASSWORD" />
-      <TEMPLATE_PARAM SOURCE="self.WALLET_TYPE"   TARGET="tOBE.WALLET_TYPE" />
       <TEMPLATE_PARAM SOURCE="self.TABLE_ACTION"  TARGET="tOBE.TABLE_ACTION" />
       <TEMPLATE_PARAM SOURCE="self.TABLE"  TARGET="tOBE.TABLE" />
 	  <TEMPLATE_PARAM SOURCE="self.DATA_ACTION"  TARGET="tOBE.DATA_ACTION" />
@@ -811,9 +751,6 @@
            <IMPORT NAME="ORACLE_10"  MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_10') AND (USE_EXISTING_CONNECTION == 'false')" />
            <IMPORT NAME="ORACLE_9"  MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_9') AND (USE_EXISTING_CONNECTION == 'false')" />
            <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  REQUIRED_IF="(DB_VERSION == 'ORACLE_8') AND (USE_EXISTING_CONNECTION == 'false')" />
-		   <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-           <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-           <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/7.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
      </IMPORTS>
   </CODEGENERATION>
   <RETURNS/>
