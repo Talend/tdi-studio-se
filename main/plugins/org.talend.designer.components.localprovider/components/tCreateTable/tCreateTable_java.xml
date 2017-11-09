@@ -519,7 +519,7 @@
 
 	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="50"
 		REPOSITORY_VALUE="DB_VERSION" SHOW_IF="(DBTYPE=='DBORACLE') and (USE_EXISTING_CONNECTION == 'false')">
-		<ITEMS DEFAULT="ORACLE_11-6">
+		<ITEMS DEFAULT="ORACLE_12">
 			<ITEM NAME="ORACLE_12" VALUE="ORACLE_12" />
 			<ITEM NAME="ORACLE_11-6" VALUE="ORACLE_11-6"/>
 			<ITEM NAME="ORACLE_11" VALUE="ORACLE_11" />
@@ -822,7 +822,7 @@
   		
   		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
      
-        <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.1.1001.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.1.1001/6.0.0"  REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
+        <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
    </CODEGENERATION>
 

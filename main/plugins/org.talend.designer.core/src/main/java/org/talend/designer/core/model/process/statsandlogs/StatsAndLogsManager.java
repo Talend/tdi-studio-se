@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -1032,7 +1033,7 @@ public class StatsAndLogsManager {
 
         // jdbc child param
         if (moduleNameList == null) {
-            List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+            Set<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
             moduleNameList = new ArrayList<String>();
             moduleValueList = new ArrayList<String>();
             for (ModuleNeeded module : moduleNeededList) {

@@ -114,6 +114,9 @@ for (final String fieldString : referenceProperties) {
 %>
 globalMap.put("<%=cid %>_COMPONENT_RUNTIME_PROPERTIES", props_<%=cid %>);
 
+java.net.URL mappings_url_<%=cid %>= this.getClass().getResource("/xmlMappings");
+globalMap.put("<%=cid %>_MAPPINGS_URL", mappings_url_<%=cid %>);
+
 org.talend.components.api.container.RuntimeContainer container_<%=cid%> = new org.talend.components.api.container.RuntimeContainer() {
     public Object getComponentData(String componentId, String key) {
         return globalMap.get(componentId + "_" + key);

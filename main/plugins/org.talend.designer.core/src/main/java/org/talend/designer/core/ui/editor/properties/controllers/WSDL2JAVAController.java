@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,7 +57,6 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
-import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IProcess;
@@ -480,8 +478,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
-        CorePlugin.getDefault().getRunProcessService().updateLibraries(new HashSet<ModuleNeeded>(), null);
+        CorePlugin.getDefault().getRunProcessService().updateLibraries(routineItem);
     }
 
     private String chanageRoutinesPackage(String routineContent, String name) {

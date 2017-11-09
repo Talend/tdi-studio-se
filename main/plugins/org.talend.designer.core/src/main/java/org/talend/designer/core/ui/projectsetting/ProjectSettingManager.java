@@ -563,7 +563,7 @@ public class ProjectSettingManager extends Utils {
         paramList.add(param);
 
         // jdbc child param
-        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+        Set<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
         Set<String> moduleNameList = new TreeSet<String>();
         Set<String> moduleValueList = new TreeSet<String>();
         for (ModuleNeeded module : moduleNeededList) {
@@ -604,8 +604,8 @@ public class ProjectSettingManager extends Utils {
         // class name for jdbc
         param = new ElementParameter(elem);
         param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_CLASS.getName()));
-        param.setValue(
-                StatsAndLogsManager.addQuotes(preferenceStore.getString(languagePrefix + EParameterName.DRIVER_CLASS.getName())));
+        param.setValue(StatsAndLogsManager.addQuotes(preferenceStore.getString(languagePrefix
+                + EParameterName.DRIVER_CLASS.getName())));
         param.setDisplayName(EParameterName.DRIVER_CLASS.getDisplayName());
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);

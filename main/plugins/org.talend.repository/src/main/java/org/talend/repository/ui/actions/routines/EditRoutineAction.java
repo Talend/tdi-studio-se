@@ -12,8 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.actions.routines;
 
-import java.util.HashSet;
-
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.PartInitException;
@@ -23,7 +21,6 @@ import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.CorePlugin;
-import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -109,7 +106,7 @@ public class EditRoutineAction extends AbstractRoutineAction {
             openRoutineEditor(routineItem, false);
             refresh(repositoryNode);
             // CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
-            CorePlugin.getDefault().getRunProcessService().updateLibraries(new HashSet<ModuleNeeded>(), null);
+            CorePlugin.getDefault().getRunProcessService().updateLibraries(routineItem);
         } catch (PartInitException e) {
             MessageBoxExceptionHandler.process(e);
         } catch (SystemException e) {

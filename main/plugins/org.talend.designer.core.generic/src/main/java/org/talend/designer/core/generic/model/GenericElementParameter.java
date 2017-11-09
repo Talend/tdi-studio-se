@@ -56,6 +56,7 @@ import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.presentation.Widget;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.SchemaProperty;
+import org.talend.daikon.properties.runtime.RuntimeContext;
 import org.talend.designer.core.generic.constants.IElementParameterEventProperties;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
@@ -232,7 +233,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
                 @Override
                 protected void doWork() throws Throwable {
-                    componentService.beforePropertyPresent(getParameterName(), getSubProperties());
+                    componentService.beforePropertyPresent(getParameterName(), getSubProperties(), prepareRuntimeContextForTriggerMethod());
                 }
             }.call();
         }
@@ -245,7 +246,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
                 @Override
                 protected void doWork() throws Throwable {
-                    componentService.beforePropertyActivate(getParameterName(), getSubProperties());
+                    componentService.beforePropertyActivate(getParameterName(), getSubProperties(), prepareRuntimeContextForTriggerMethod());
                     fireValidateStatusEvent();
                     update();
                 }
@@ -270,13 +271,31 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
                 @Override
                 protected void doWork() throws Throwable {
-                    componentService.validateProperty(getParameterName(), getSubProperties());
+                    componentService.validateProperty(getParameterName(), getSubProperties(), prepareRuntimeContextForTriggerMethod());
                 }
             }.call();
         }
         return false;
     }
+    
+    private RuntimeContext prepareRuntimeContextForTriggerMethod() {
+        //in future, we can pass all studio vars here to the trigger method in tcomp
+        RuntimeContext context = new RuntimeContext() {
 
+            @Override
+            public Object getData(String key) {
+                if("MAPPING_LOCATION".equals(key)) {
+                    return System.getProperty("talend.mappings.url");
+                }
+                
+                return null;
+            }
+            
+        };
+        
+        return context;
+    }
+    
     private boolean callAfter() {
         if (widget.isCallAfter()
                 && (hasPropertyChangeListener() || Widget.SCHEMA_REFERENCE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
@@ -285,7 +304,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
 
                 @Override
                 protected void doWork() throws Throwable {
-                    componentService.afterProperty(getParameterName(), getSubProperties());
+                    componentService.afterProperty(getParameterName(), getSubProperties(), prepareRuntimeContextForTriggerMethod());
                     ValidationResult validationResult = getSubProperties().getValidationResult();
                     if (validationResult != null && Result.ERROR == validationResult.getStatus()) {
                         DisplayUtils.getDisplay().asyncExec(new Runnable() {

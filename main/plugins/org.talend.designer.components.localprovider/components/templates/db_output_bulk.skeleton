@@ -486,6 +486,11 @@ public class CLASS {
             }
             return createSQL.toString();
         }
+        
+        protected String getLengthStringRepresentation(String dataType, Integer length) {
+        	return String.valueOf(length);
+    	}
+    
         protected String getAutoIncrement(int startValue, int step) {
             if(SYBASE.equalsIgnoreCase(getDBMSId()) || EXASOL.equalsIgnoreCase(getDBMSId())){
                 return " IDENTITY NOT NULL";
@@ -2112,7 +2117,7 @@ public class CLASS {
                                     } else {
                                         comma = ",";
                                     }
-                                    createSQL.append(comma + length);
+                                    createSQL.append(comma + getLengthStringRepresentation(dataType, length));
                                 }
                                 createSQL.append(suffix);
                             } else {
@@ -2121,7 +2126,7 @@ public class CLASS {
                                     } else { 
                                         prefix = "(";
                                         suffix = ") ";
-                                        createSQL.append(prefix + length);                                    
+                                        createSQL.append(prefix + getLengthStringRepresentation(dataType, length));
                                     }
                                 }
                                 if (!precisionIgnored) {
@@ -2172,6 +2177,14 @@ public class CLASS {
             }
             return createSQL.toString();
         }
+        
+        protected String getLengthStringRepresentation(String dataType, Integer length) {
+	        if (("VARCHAR".equalsIgnoreCase(dataType) && length > 8000) || ("NVARCHAR".equalsIgnoreCase(dataType) && length > 4000)
+	                || ("VARBINARY".equalsIgnoreCase(dataType) && length > 8000)) {
+	            return "MAX";
+	        }
+	        return String.valueOf(length);
+	    }
     }
     
     public class MysqlManager extends Manager {

@@ -20,6 +20,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
+import org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JobJavaScriptMicroServiceForESBManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.JobJavaScriptOSGIForESBManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.esb.OSGIJavaScriptForESBWithMavenManager;
 
@@ -59,7 +60,7 @@ public class JobScriptsManagerFactory {
             }
         case MSESB:
             ProcessorUtilities.setExportJobAsMicroSerivce(true);
-            return new JobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
+            return new JobJavaScriptMicroServiceForESBManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
         default:
             //
         }
