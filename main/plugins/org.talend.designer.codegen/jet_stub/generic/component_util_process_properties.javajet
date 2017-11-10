@@ -67,6 +67,13 @@
  		                        routines.system.PasswordEncryptUtil.decryptPassword(<%=component.getCodegenValue(property, (String) value)%>));
  		                        <%
  		                    }
+ 		                } else if (value != null && value instanceof String && property.isFlag(Property.Flags.MULTI_LINE)) {
+ 		                    if (!"".equals(property.getStringValue())) {
+ 		                        %>
+ 		                        props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
+ 		                        <%=org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(value.toString())%>);
+ 		                        <%
+ 		                    }
  		                } else if (value != null && "java.util.Date".equals(property.getType())){
  		                    %>
  		                    props_<%=cid %><%=propInfo.fieldName%>.setValue("<%=property.getName()%>",
