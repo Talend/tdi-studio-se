@@ -470,13 +470,14 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 	private boolean acquireJVM() {
 		long startTime = System.currentTimeMillis();
 		long endTime;
-		
+		String remoteHost = processContext.getSelectedTargetExecutionConfig().getHost();
+		int remotePort = processContext.getSelectedTargetExecutionConfig().getRemotePort();
 		while(true){
 			if ((processContext != null && !processContext.isRunning()) && !isReadyToStart) {
 				return false;
 			}
 			System.out.println("background thread searching..."); //$NON-NLS-1$
-			if(initCurrentActiveJobJvm(processContext.getSelectedTargetExecutionConfig().getHost(), processContext.getSelectedTargetExecutionConfig().getPort())){
+			if(initCurrentActiveJobJvm(remoteHost, remotePort)){
 				return true;
 			}
 			try {
