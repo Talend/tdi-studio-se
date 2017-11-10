@@ -10,6 +10,9 @@
 	List<Map<String,String>> clientConfiguration = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__CLIENT_CONFIGURATION__");
 	String region = ElementParameterParser.getValue(node,"__REGION__");
 	
+	boolean useRegionEndpoint 	= "true".equals(ElementParameterParser.getValue(node, "__USE_REGION_ENDPOINT__"));
+	String regionEndpoint 		= ElementParameterParser.getValue(node,"__REGION_ENDPOINT__");
+	
 	boolean assumeRole = "true".equals(ElementParameterParser.getValue(node, "__ASSUME_ROLE__"));
 	String arn = ElementParameterParser.getValue(node,"__ARN__");
 	String roleSessionName = ElementParameterParser.getValue(node,"__ROLE_SESSION_NAME__");
@@ -253,6 +256,11 @@
 		if(set_region){
 		%>
 			conn_<%=cid%>.setRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>));
+		<%
+		}
+		if(useRegionEndpoint && regionEndpoint != null && !regionEndpoint.isEmpty()){
+		%>
+			conn_<%=cid%>.setEndpoint(<%=regionEndpoint%>);
 		<%
 		}
 		if(isLog4jEnabled){

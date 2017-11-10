@@ -974,6 +974,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 }
                                 currentLine.put(curParam.getName(), newValue);
                             }
+                        }else if(itemsToDisplay.length >0){
+                        	  currentLine.put(curParam.getName(), 0);
                         }
                         break;
                     default:

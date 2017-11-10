@@ -366,7 +366,7 @@ public class ConnectionManager {
      */
     public static boolean canConnectToSource(INode oldSource, INode newSource, INode target, EConnectionType lineStyle,
             String connectorName, String connectionName, boolean isNewComponent) {
-        if (newSource.getConnectorFromName(connectorName) == null) {
+        if (newSource.getConnectorFromName(connectorName) == null || !newSource.getConnectorFromName(connectorName).isShow()) {
             // if the new source don't contain the kind of link, then we can't connect the link.
             return false;
         }
@@ -572,6 +572,9 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
+            if(connectorFromType ==null ||!connectorFromType.isShow()){
+            	return false;
+            }
             int maxInput = connectorFromType.getMaxLinkInput();
             if (maxInput != -1 && (connectorFromType.getCurLinkNbInput() >= maxInput)) {
                 return false;
@@ -699,6 +702,9 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
+            if(connectorFromType ==null ||!connectorFromType.isShow()){
+            	return false;
+            }
             int maxInput = connectorFromType.getMaxLinkInput();
             if (maxInput != -1 && (connectorFromType.getCurLinkNbInput() >= maxInput)) {
                 return false;

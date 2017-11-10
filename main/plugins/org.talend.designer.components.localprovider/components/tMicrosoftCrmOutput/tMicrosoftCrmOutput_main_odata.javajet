@@ -1,6 +1,6 @@
 <%
     String action = ElementParameterParser.getValue(node,"__ACTION__");
-	 boolean emptyLookupIntoNull = "true".equals(ElementParameterParser.getValue(node,"__EMPTY_LOOKUP_TO_NULL__"));
+	boolean emptyLookupIntoNull = "true".equals(ElementParameterParser.getValue(node,"__EMPTY_LOOKUP_TO_NULL__"));
     List<IMetadataTable> metadatas = node.getMetadataList();
     if ((metadatas!=null)&&(metadatas.size()>0)) {//1
         IMetadataTable metadata = metadatas.get(0);
@@ -36,21 +36,19 @@
                             
 		  			    			if(lookupMaps.containsKey(column.getLabel())){
                            %>
-                            		if(<%=connName%>.<%=column.getLabel()%> != null<%if(emptyLookupIntoNull) {%> && !(String.valueOf(<%=connName%>.<%=column.getLabel()%>).isEmpty())<%}%>){
-	                            		client_<%=cid%>.addEntityNavigationLink(entity_<%=cid%>, <%=lookupMaps.get(column.getLabel())%>,"<%=column.getOriginalDbColumnName()%>", <%=connName%>.<%=column.getLabel()%>);
-	                            	}
+	                            	client_<%=cid%>.addEntityNavigationLink(entity_<%=cid%>, <%=lookupMaps.get(column.getLabel())%>,"<%=column.getOriginalDbColumnName()%>", <%=connName%>.<%=column.getLabel()%>, <%=emptyLookupIntoNull%>, <%=ignoreNull%>);
                            <%
                            }else{
 	                           if(!isPrimitive && ignoreNull) {
 			  							%>   				
 			  			    				if(<%=connName%>.<%=column.getLabel()%> != null){
-			  			    				
+
 			  			    			<%
 			  			    			}
 
                           String columnValue = connName+"."+column.getLabel();
                           if("Guid".equals(column.getType())){
-                                columnValue = "java.util.UUID.fromString("+columnValue+")";
+                                columnValue = "(("+columnValue+" == null) ? null : java.util.UUID.fromString("+columnValue+"))";
                           }
 	                           %>
                            		client_<%=cid%>.addEntityProperty(entity_<%=cid%>, "<%=column.getLabel()%>", org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getType()%>, 	<%=columnValue%>);

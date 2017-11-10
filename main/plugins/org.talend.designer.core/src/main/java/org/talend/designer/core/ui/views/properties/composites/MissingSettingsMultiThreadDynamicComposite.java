@@ -21,8 +21,10 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.swt.composites.MessagesComposite;
 import org.talend.commons.ui.swt.composites.MessagesWithActionComposite;
+import org.talend.core.CorePlugin;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ILibrariesService;
 import org.talend.core.model.general.ModuleNeeded;
@@ -34,7 +36,6 @@ import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.ModulesInstallerUtil;
-import org.talend.librariesmanager.model.ModulesNeededProvider;
 import org.talend.librariesmanager.prefs.LibrariesManagerUtils;
 
 /**
@@ -48,13 +49,13 @@ public class MissingSettingsMultiThreadDynamicComposite extends TopMessagesMulti
     public MissingSettingsMultiThreadDynamicComposite(Composite parentComposite, int styles, EComponentCategory section,
             Element element, boolean isCompactView) {
         super(parentComposite, styles, section, element, isCompactView);
-        ModulesNeededProvider.addChangedLibrariesListener(this);
+        CorePlugin.getDefault().getLibrariesService().addChangeLibrariesListener(this);
     }
 
     public MissingSettingsMultiThreadDynamicComposite(Composite parentComposite, int styles, EComponentCategory section,
             Element element, boolean isCompactView, Color backgroundColor) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
-        ModulesNeededProvider.addChangedLibrariesListener(this);
+        CorePlugin.getDefault().getLibrariesService().addChangeLibrariesListener(this);
     }
 
     @Override
@@ -128,22 +129,30 @@ public class MissingSettingsMultiThreadDynamicComposite extends TopMessagesMulti
 
     @Override
     public void afterChangingLibraries() {
-        final Element ele = this.getElement();
-        if (ele instanceof Node) {
-            final Node node = (Node) ele;
-            // after install, need update the error marks for node
-            IProcess process = node.getProcess();
-            if (process instanceof IProcess2) {
-                // check whole process to make sure other related nodes can be updated also.
-                ((IProcess2) process).checkProcess();
+        DisplayUtils.getDisplay().syncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                final Element ele = getElement();
+                if (ele instanceof Node) {
+                    final Node node = (Node) ele;
+                    // after install, need update the error marks for node
+                    IProcess process = node.getProcess();
+                    if (process instanceof IProcess2) {
+                        // check whole process to make sure other related nodes can be updated also.
+                        ((IProcess2) process).checkProcess();
+                    }
+                    checkVisibleTopMessages();
+                }
             }
-        }
+        });
+
     }
 
     @Override
     public synchronized void dispose() {
         super.dispose();
-        ModulesNeededProvider.removeChangedLibrariesListener(this);
+        CorePlugin.getDefault().getLibrariesService().removeChangeLibrariesListener(this);
 
     }
 

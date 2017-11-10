@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Componentdesigner Plug-in
 Bundle-SymbolicName: org.talend.componentdesigner; singleton:=true
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Bundle-Activator: org.talend.componentdesigner.ComponentDesigenerPlugin
 Require-Bundle: org.talend.model,
  org.eclipse.ui,

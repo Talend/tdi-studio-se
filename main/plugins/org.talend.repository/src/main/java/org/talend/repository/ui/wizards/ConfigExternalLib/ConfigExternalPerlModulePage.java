@@ -64,6 +64,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
      * 
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     public void createControl(Composite parent) {
         initializeDialogUnits(parent);
 
@@ -72,8 +73,8 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
         composite.setLayout(new GridLayout(3, false));
         composite.setFont(parent.getFont());
 
-         libField = new EditPerlRoutineExternalModuleField(Messages
-                .getString("ConfigExternalPerlModulePage.moduleFieldLabel"), composite); //$NON-NLS-1$
+        libField = new EditPerlRoutineExternalModuleField(
+                Messages.getString("ConfigExternalPerlModulePage.moduleFieldLabel"), composite); //$NON-NLS-1$
 
         RoutineItem routine = getSelectedRoutine();
         EList routines = routine.getImports();
@@ -89,16 +90,17 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
      * 
      * @see org.talend.repository.ui.wizards.importExternalLib.ImportExternalLibPage#finish()
      */
+    @Override
     public boolean finish() {
         BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
 
+            @Override
             public void run() {
                 try {
                     CorePlugin.getDefault().getProxyRepositoryFactory().save(getSelectedRoutine());
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
-                CorePlugin.getDefault().getLibrariesService().resetModulesNeeded();
             }
         });
 
@@ -137,6 +139,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
          * 
          * @see org.talend.repository.ui.wizards.importExternalLib.TableField#afterDeleteSelection(java.util.List)
          */
+        @Override
         protected void afterDeleteSelection(List list) {
 
         }
@@ -146,6 +149,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
          * 
          * @see org.talend.repository.ui.wizards.importExternalLib.LibraryField#getNewInputObject()
          */
+        @Override
         protected List<IMPORTType> getNewInputObject() {
             List<IMPORTType> importTypes = new ArrayList<IMPORTType>();
             ModulePropertyDialog dialog = new ModulePropertyDialog(this.getShell());
@@ -215,6 +219,7 @@ public class ConfigExternalPerlModulePage extends ConfigExternalLibPage {
          * 
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
+        @Override
         protected void configureShell(Shell shell) {
             super.configureShell(shell);
 

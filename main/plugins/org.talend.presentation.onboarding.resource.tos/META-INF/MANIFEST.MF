@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: On-boarding resource for TOS
 Bundle-SymbolicName: org.talend.presentation.onboarding.resource.tos;singleton:=true
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Bundle-Vendor: .Talend SA.
 Require-Bundle: org.talend.commons.runtime,
  org.talend.presentation.onboarding,

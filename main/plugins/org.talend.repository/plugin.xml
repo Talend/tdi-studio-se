@@ -2931,6 +2931,13 @@
               name="Configure the new INCLUDTRASHFILES property to 'true' in order to keep the same behavior as before"
               version="6.5.1">
         </projecttask>
+        <projecttask
+              beforeLogon="true"
+              class="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
+              id="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
+              name="UpdateToJava8VersionMigrationTask"
+              version="6.5.1">
+        </projecttask>
    </extension>
 
    <extension

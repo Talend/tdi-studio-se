@@ -169,8 +169,15 @@ public class ExcelTool {
 			}
 		}
 		curRow = sheet.getRow(curY);
-		if (curRow == null)
+		if (curRow == null){
 			curRow = sheet.createRow(curY);
+		}
+        if (keepCellFormat) {
+            short rowHeight = curRow.getHeight();
+            if (rowHeight != -1) {
+                curRow.setHeight(rowHeight);
+            }
+        }
 		curY = curY + 1;
 		xOffset = 0;
 	}

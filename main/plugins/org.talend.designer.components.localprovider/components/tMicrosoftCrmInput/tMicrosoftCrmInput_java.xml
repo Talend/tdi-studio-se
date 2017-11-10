@@ -11613,7 +11613,7 @@
 </TABLE>
 
 <!-- crm 2016 odata -->
-<TABLE IF="((ENTITYSET=='accountleadscollection') AND ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
+<TABLE IF="(ENTITYSET=='accountleadscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accountid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="accountleadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
@@ -19357,14 +19357,14 @@
                         <ITEM NAME="LESSTHAN" VALUE="LessThan" />
                         <ITEM NAME="GREATEREQUAL" VALUE="GreaterEqual" />
                         <ITEM NAME="LESSEQUAL" VALUE="LessEqual" />
-                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(((AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))"/>
+                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(((AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))"/>
                     </ITEMS>
                 </ITEM>
                 <ITEM NAME="RVALUE" FIELD="String" />
             </ITEMS>
         </PARAMETER>
         
-        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
+        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
         
