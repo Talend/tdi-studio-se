@@ -525,6 +525,7 @@ public class RunProcessContext {
                 this.getStatisticsPort();
             }
             final IProcessor processor = getProcessor(process, process.getProperty());
+            ((IEclipseProcessor) processor).setTargetExecutionConfig(getSelectedTargetExecutionConfig());
             IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
 
             try {

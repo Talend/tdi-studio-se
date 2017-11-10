@@ -128,10 +128,6 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
     
     private boolean isRemoteMonitoring = false;
     
-    private String remoteHost = null;
-    
-    private int remotePort = -1;
-    
 	private boolean isReadyToStart = false;
 
     public MemoryRuntimeComposite(ProcessView viewPart, Composite parent, RunProcessContext processContext, int style) {
@@ -152,11 +148,9 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 	private void getRemoteStatus() {
 		ITargetExecutionConfig config = processContext.getSelectedTargetExecutionConfig();
         if (config != null) {
-        	remoteHost = config.getHost();
         	isRemoteRun = config.isRemote();
         	isCommandlineRun = config.getCommandlineServerConfig() == null ? false: true;
         	this.isRemoteMonitoring = config.isUseJMX();
-        	this.remotePort = config.getRemotePort();
         }
 	}
 
@@ -482,7 +476,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 				return false;
 			}
 			System.out.println("background thread searching..."); //$NON-NLS-1$
-			if(initCurrentActiveJobJvm()){
+			if(initCurrentActiveJobJvm(processContext.getSelectedTargetExecutionConfig().getHost(), processContext.getSelectedTargetExecutionConfig().getPort())){
 				return true;
 			}
 			try {
@@ -497,7 +491,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 		}
 	}
 	
-	private boolean initCurrentActiveJobJvm() {
+	private boolean initCurrentActiveJobJvm(String remoteHost, int remotePort) {
 		boolean isJvmFound = false;
 		JvmModel jvmModel = JvmModel.getInstance();
 		if (isRemoteRun) {
