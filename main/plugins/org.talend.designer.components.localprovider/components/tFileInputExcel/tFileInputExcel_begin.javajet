@@ -691,6 +691,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		Object source_<%=cid %> = <%=fileName%>;
 		org.apache.poi.xssf.usermodel.XSSFWorkbook workbook_<%=cid%> = null;
 
+		org.apache.poi.openxml4j.util.ZipSecureFile.setMinInflateRatio(0d);
+		
 		if(source_<%=cid %> instanceof String){
 			workbook_<%=cid%> = new org.apache.poi.xssf.usermodel.XSSFWorkbook((String)source_<%=cid %>);
 		} else if(source_<%=cid %> instanceof java.io.InputStream) {
@@ -1205,6 +1207,8 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 		Object source_<%=cid %> = <%=fileName%>;
 		com.talend.excel.xssf.event.ExcelReader excelReader_<%=cid%> = null;
 
+		org.apache.poi.openxml4j.util.ZipSecureFile.setMinInflateRatio(0d);
+		
 		if(source_<%=cid %> instanceof java.io.InputStream || source_<%=cid %> instanceof String){
 			excelReader_<%=cid%> = new com.talend.excel.xssf.event.ExcelReader();
 		}else{
