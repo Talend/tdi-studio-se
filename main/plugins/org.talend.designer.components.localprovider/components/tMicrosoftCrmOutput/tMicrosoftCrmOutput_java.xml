@@ -17430,7 +17430,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="attachmentnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
@@ -17493,7 +17493,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='annotations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="isdocument" TYPE="id_Boolean" />
@@ -17612,7 +17612,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="subject" TYPE="id_String" />
@@ -20724,7 +20724,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="culture" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -21438,7 +21438,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodyurl" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="createdinmajorversion" TYPE="id_Integer" />
@@ -21533,7 +21533,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attacheddocumenturl" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="filetypecode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
@@ -22814,7 +22814,7 @@
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='webresourceset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_Boolean" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="displayname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -23051,7 +23051,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="attachmentnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
@@ -23117,7 +23117,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='annotations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="annotationid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="isdocument" TYPE="id_Boolean" />
@@ -23240,7 +23240,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="attachmentid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="subject" TYPE="id_String" />
@@ -26468,7 +26468,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="pluginassemblyid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="culture" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -27219,7 +27219,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="reportid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodyurl" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="createdinmajorversion" TYPE="id_Integer" />
@@ -27322,7 +27322,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attacheddocumenturl" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="filetypecode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
@@ -28650,7 +28650,7 @@
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="webresourceid" TYPE="id_String" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="displayname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
