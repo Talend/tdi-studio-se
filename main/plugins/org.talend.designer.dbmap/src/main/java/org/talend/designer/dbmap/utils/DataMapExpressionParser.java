@@ -43,7 +43,7 @@ public class DataMapExpressionParser {
 
     private static String TABLE_PATTERN = EXPRESSION + SEPARATOR;
 
-    private static final String GLOBALMAP_PATTERN = "\\s*(\\(\\s*\\(\\s*String\\s*\\)\\s*globalMap\\s*\\.\\s*get\\s*\\(\\s*\\\"(\\w+)\\\"\\s*\\)\\s*\\))\\s*";
+    private static final String GLOBALMAP_PATTERN = "\\s*(\\(\\s*\\(\\s*String\\s*\\)\\s*globalMap\\s*\\.\\s*get\\s*\\(\\s*\\\"(.+)\\\"\\s*\\)\\s*\\))\\s*";
 
     private static final String GLOBALMAP_TABLE_EXPRESSION = "(" + GLOBALMAP_PATTERN + "\\." + GLOBALMAP_PATTERN + ")|("
             + TABLE_PATTERN + GLOBALMAP_PATTERN + ")|(" + GLOBALMAP_PATTERN + COLUMN_PATTERN + ")|" + GLOBALMAP_PATTERN;;
