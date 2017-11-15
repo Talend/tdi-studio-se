@@ -2932,6 +2932,14 @@
               name="Set the 'skip tailing zeros for BigDecimal' setting to false if it was null"
               version="6.5.0">
 		</projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.AddProductValuesItemMigrationTask"
+              id="org.talend.repository.model.migration.AddProductValuesItemMigrationTask"
+              name="Add Product Values"
+              version="6.5.0">
+        </projecttask>
    </extension>
 
    <extension

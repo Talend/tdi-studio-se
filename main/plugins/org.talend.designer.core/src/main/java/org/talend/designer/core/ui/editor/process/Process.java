@@ -291,6 +291,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         updateManager = new ProcessUpdateManager(this);
         createProcessParameters();
         init();
+        loadAdditionalProperties();
         componentsType = ComponentCategory.CATEGORY_4_DI.getName();
     }
 
@@ -4373,13 +4374,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                         org.talend.core.model.metadata.builder.connection.Connection connection = null;
                         IElementParameter ptParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
                         if (ptParam != null) {
-                            IElementParameter propertyElem = ptParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName());
+                            IElementParameter propertyElem = ptParam.getChildParameters().get(
+                                    EParameterName.PROPERTY_TYPE.getName());
                             Object proValue = propertyElem.getValue();
                             if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
-                                IElementParameter repositoryElem = ptParam.getChildParameters()
-                                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                                IElementParameter repositoryElem = ptParam.getChildParameters().get(
+                                        EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                                 String value = (String) repositoryElem.getValue();
-                                org.talend.core.model.properties.ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
+                                org.talend.core.model.properties.ConnectionItem connectionItem = UpdateRepositoryUtils
+                                        .getConnectionItemByItemId(value);
                                 connection = connectionItem.getConnection();
                                 if (connection != null && connection.isContextMode()) {
                                     addContextModel = true;
