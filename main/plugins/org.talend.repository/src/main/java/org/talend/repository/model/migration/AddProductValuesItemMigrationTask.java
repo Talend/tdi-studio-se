@@ -18,6 +18,9 @@ import java.util.GregorianCalendar;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.properties.SQLPatternItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.repository.item.ItemProductValuesHelper;
 
@@ -37,7 +40,17 @@ public class AddProductValuesItemMigrationTask extends AbstractItemMigrationTask
     @Override
     public ExecutionResult execute(Item item) {
         try {
-            if (ItemProductValuesHelper.setValuesWhenMigrate(item.getProperty())) {
+            // don't migrate for system item
+            boolean invalid = false;
+            if (item instanceof RoutineItem) {
+                invalid = ((RoutineItem) item).isBuiltIn();
+            } else if (item instanceof SQLPatternItem) {
+                invalid = ((SQLPatternItem) item).isSystem();
+            }
+
+            Property property = item.getProperty();
+            if (!invalid && !ItemProductValuesHelper.existed(property) // maybe, has been migrated from original project
+                    && ItemProductValuesHelper.setValuesWhenMigrate(property)) {
                 ProxyRepositoryFactory.getInstance().save(item, true);
                 return ExecutionResult.SUCCESS_NO_ALERT;
             }
