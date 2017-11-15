@@ -175,6 +175,7 @@ import org.talend.designer.core.ui.projectsetting.ProjectSettingManager;
 import org.talend.designer.core.ui.views.contexts.ContextsView;
 import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.utils.DesignerUtilities;
+import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
 import org.talend.designer.core.utils.UpdateParameterUtils;
@@ -183,6 +184,7 @@ import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.UpdateRepositoryUtils;
 import org.talend.repository.constants.Log4jPrefsConstants;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.IRepositoryNode;
@@ -4366,14 +4368,48 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     private void updateProSetingParameters(EList listParamType) {
         // TDI-28709:after import the ProjectSetting.xml,do not open job directly run job,should try to update
         // projcetSetting first
+        Project project = ProjectManager.getInstance().getCurrentProject();
+        boolean updateStandardLog = false;
+        boolean updateImplicitContext = false;
         for (int j = 0; j < listParamType.size(); j++) {
             ElementParameterType pType = (ElementParameterType) listParamType.get(j);
-            if (EParameterName.STATANDLOG_USE_PROJECT_SETTINGS.getName().equals(pType.getName())) {
-                if (Boolean.valueOf(pType.getValue())) {
-                    ProjectSettingManager.reloadStatsAndLogFromProjectSettings(this, ProjectManager.getInstance()
-                            .getCurrentProject(), null);
-                    break;
+            if (Boolean.valueOf(pType.getValue())) {
+                if (EParameterName.STATANDLOG_USE_PROJECT_SETTINGS.getName().equals(pType.getName())) {
+                    ProjectSettingManager.reloadStatsAndLogFromProjectSettings(this, project, null);
+                    updateStandardLog = true;
+                } else if (EParameterName.IMPLICITCONTEXT_USE_PROJECT_SETTINGS.getName().equals(pType.getName())) {
+                    Element elem = ProjectSettingManager.createImplicitContextLoadElement(project);
+                    Map<String, Set<String>> contextVars = DetectContextVarsUtils.detectByPropertyType(elem, true);
+                    boolean addContextModel = false;
+                    List<ContextItem> allContextItems = null;
+                    if (!contextVars.isEmpty()) {
+                        org.talend.core.model.metadata.builder.connection.Connection connection = null;
+                        IElementParameter ptParam = elem.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+                        if (ptParam != null) {
+                            IElementParameter propertyElem = ptParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName());
+                            Object proValue = propertyElem.getValue();
+                            if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
+                                IElementParameter repositoryElem = ptParam.getChildParameters()
+                                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                                String value = (String) repositoryElem.getValue();
+                                org.talend.core.model.properties.ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
+                                connection = connectionItem.getConnection();
+                                if (connection != null && connection.isContextMode()) {
+                                    addContextModel = true;
+                                    allContextItems = ContextUtils.getAllContextItem();
+                                }
+                            }
+                        }
+                    }
+                    ProjectSettingManager.reloadImplicitValuesFromProjectSettings(this, project, null);
+                    if (addContextModel && !contextVars.isEmpty() && allContextItems != null) {
+                        ContextUtils.addInContextModelForProcessItem(property.getItem(), contextVars, allContextItems);
+                    }
+                    updateImplicitContext = true;
                 }
+            }
+            if (updateStandardLog && updateImplicitContext) {
+                break;
             }
         }
     }

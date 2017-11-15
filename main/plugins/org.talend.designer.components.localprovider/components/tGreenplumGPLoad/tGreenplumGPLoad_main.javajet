@@ -187,9 +187,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		%>
 		outputStream_<%=cid%>.write(sb_<%=cid%>.toString().getBytes());
 		<%if(isLog4jEnabled){%>
-            log4jSb_<%=cid%>.append(sb_<%=cid%>.toString());
-			log.debug("<%=cid%> - Loading the record :" + log4jSb_<%=cid%>);
-			log4jSb_<%=cid%>.delete(0,log4jSb_<%=cid%>.length());
+			log.debug("<%=cid%> - Loading the record :" + sb_<%=cid%>);
 		<%}%>
 		sb_<%=cid%> = null;
 		<%
