@@ -34,7 +34,7 @@
   </CONNECTORS>
 
   <PARAMETERS>
-  
+
     <PARAMETER
       NAME="IS_STREAM_LABEL"
       FIELD="LABEL"
@@ -44,7 +44,7 @@
     >
       <DEFAULT>Note: You are in streaming mode, remove input flow to be able to select a file.</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="IS_FILE_LABEL"
       FIELD="LABEL"
@@ -70,17 +70,18 @@
 		NUM_ROW="100"
 		REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
-		<ITEMS DEFAULT="VERTICA_3">
+		<ITEMS DEFAULT="VERTICA_9_0">
 			<ITEM NAME="VERTICA_3" VALUE="vertica_3.0_jdk_5.jar" />
 			<ITEM NAME="VERTICA_3.5" VALUE="vertica_3.5_jdk_5.jar" />
 			<ITEM NAME="VERTICA_4" VALUE="vertica_4.0_jdk_5.jar" />
 			<ITEM NAME="VERTICA_4.1" VALUE="vertica_4.1.7_jdk_5.jar" />
 			<ITEM NAME="VERTICA_5.0" VALUE="vertica_4.1.14_jdk_5.jar" />
-            <ITEM NAME="VERTICA_5_1" VALUE="VERTICA_5_1" />
+			<ITEM NAME="VERTICA_5_1" VALUE="VERTICA_5_1" />
 			<ITEM NAME="VERTICA_6_0" VALUE="VERTICA_6_0" />
 			<ITEM NAME="VERTICA_6_1_X" VALUE="VERTICA_6_1_X" />
 			<ITEM NAME="VERTICA_7_0_X" VALUE="VERTICA_7_0_X" />
 			<ITEM NAME="VERTICA_7_1_X" VALUE="VERTICA_7_1_X" />
+			<ITEM NAME="VERTICA_9_0" VALUE="VERTICA_9_0" />
 		</ITEMS>
 	</PARAMETER>
 
@@ -237,7 +238,7 @@
       FIELD="CLOSED_LIST"
       NUM_ROW="950"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
     >
         <ITEMS DEFAULT="UNCOMPRESSED">
             <ITEM NAME="UNCOMPRESSED" VALUE="UNCOMPRESSED" />
@@ -278,13 +279,13 @@
         <ITEM NAME="UPDATE"           VALUE="UPDATE"/>
       </ITEMS>
     </PARAMETER>
-    
+
     <PARAMETER
         NAME="STREAM_NAME"
         FIELD="TEXT"
         NUM_ROW="65"
         REQUIRED="true"
-        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
         <DEFAULT>"talend"</DEFAULT>
     </PARAMETER>
 
@@ -308,48 +309,48 @@
         NAME="TRAILING_NULL"
         FIELD="CHECK"
         NUM_ROW="81"
-        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
             <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
      <PARAMETER
         NAME="SKIP_OPTION" FIELD="CHECK"
         REQUIRED="true"
         NUM_ROW="87"
-        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     <PARAMETER
         NAME="SKIP_VALUE" FIELD="TEXT"
-        SHOW_IF="SKIP_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X'))"
+        SHOW_IF="SKIP_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
         NUM_ROW="87">
       <DEFAULT>"1"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
         NAME="RECORD_TERMINATOR_OPTION" FIELD="CHECK"
         REQUIRED="true"
         NUM_ROW="88"
-        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     <PARAMETER
         NAME="RECORD_TERMINATOR_VALUE" FIELD="TEXT"
-        SHOW_IF="RECORD_TERMINATOR_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X'))"
+        SHOW_IF="RECORD_TERMINATOR_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
         NUM_ROW="88">
       <DEFAULT>"\n"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
         NAME="ENCLOSED_BY_OPTION" FIELD="CHECK"
         REQUIRED="true"
         NUM_ROW="89"
-        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     <PARAMETER
         NAME="ENCLOSED_BY_VALUE" FIELD="TEXT"
-        SHOW_IF="ENCLOSED_BY_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X'))"
+        SHOW_IF="ENCLOSED_BY_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
         NUM_ROW="89">
       <DEFAULT>"\""</DEFAULT>
     </PARAMETER>
@@ -391,44 +392,44 @@
       FIELD="CHECK"
       NUM_ROW="125"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
         NAME="REJECTMAX_OPTION" FIELD="CHECK"
         REQUIRED="true"
         NUM_ROW="150"
-        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND (DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')">
+        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND (DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
     <PARAMETER
         NAME="REJECTMAX_VALUE" FIELD="TEXT"
-        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND REJECTMAX_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X'))"
+        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND REJECTMAX_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
         NUM_ROW="150">
       <DEFAULT>"1000"</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="ON_ERROR_ABORT_OPTION"
       FIELD="CHECK"
       NUM_ROW="160"
       REQUIRED="true"
-      SHOW_IF="REJECTMAX_OPTION == 'false' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X'))">
+      SHOW_IF="REJECTMAX_OPTION == 'false' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
     <PARAMETER
       NAME="NO_COMMIT_OPTION"
       FIELD="CHECK"
       NUM_ROW="170"
       REQUIRED="true"
-      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X')"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
-    
+
 	<PARAMETER
 	   NAME="REJECTED_DATA_FILE"
 	   FIELD="FILE"
@@ -451,24 +452,25 @@
 	 
      <PARAMETER NAME="CID" FIELD="TEXT" REQUIRED="true" NUM_ROW="500" SHOW="false" >
        <DEFAULT>""</DEFAULT>
-     </PARAMETER>	
+     </PARAMETER>
      
-      
-     
+
+
    </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
-       <IMPORTS>
+    <IMPORTS>
 		<IMPORT NAME="Driver-VERTICA" MODULE="vertica_3.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.0_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_3.5" MODULE="vertica_3.5_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.5_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_4" MODULE="vertica_4.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.0_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_4.1" MODULE="vertica_4.1.7_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.7_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_5.0" MODULE="vertica_4.1.14_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.14_jdk_5/6.0.0"   REQUIRED="false" />
-        <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
+    <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
 		<IMPORT NAME="Driver-VERTICA_6.0" MODULE="vertica-jdk5-6.0.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.0.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_0')" />
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_0_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_1_X')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
     </IMPORTS>
   </CODEGENERATION>
 

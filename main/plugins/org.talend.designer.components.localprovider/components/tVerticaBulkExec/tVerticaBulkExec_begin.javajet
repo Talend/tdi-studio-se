@@ -57,7 +57,7 @@ String rejected_max_value = ElementParameterParser.getValue(node, "__REJECTMAX_V
 boolean is_abort_on_error = ("true").equals(ElementParameterParser.getValue(node, "__ON_ERROR_ABORT_OPTION__"));
 boolean is_no_commit = ("true").equals(ElementParameterParser.getValue(node, "__NO_COMMIT_OPTION__"));
 
-List<IMetadataColumn> columnList = getColumnList(node);    
+List<IMetadataColumn> columnList = getColumnList(node);
 String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
 
 String copySchema = " (";
@@ -68,7 +68,7 @@ copySchema += columnList.get(columnList.size() - 1).getOriginalDbColumnName();
 copySchema += ")";
 
 boolean is_old_version = "vertica_3.0_jdk_5.jar".equals(db_version) || "vertica_3.5_jdk_5.jar".equals(db_version) || "vertica_4.0_jdk_5.jar".equals(db_version) || "vertica_4.1.7_jdk_5.jar".equals(db_version) || "vertica_4.1.14_jdk_5.jar".equals(db_version);
-boolean is_version_ge_6 = "VERTICA_6_0".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_7_1_X".equals(db_version);
+boolean is_version_ge_6 = "VERTICA_6_0".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_7_1_X".equals(db_version) || "VERTICA_9_0".equals(db_version);
 
 if(!is_version_ge_6) {
     compression = "";
@@ -170,9 +170,9 @@ if(("UPDATE").equals(dataAction)) {
         if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() != 0) {
 	    	tableName_<%=cid%> = dbschema_<%=cid%> + "." + tableName_<%=cid%>;
 		}
-        
+
 		String sql_create_tmpdb = "<%=manager.getCreateTableSQL(stmtStructure)%>)";
-        
+
 <%
 	}
 }
@@ -192,7 +192,7 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 		<%if(useSchema) {%>
 			+ "<%=copySchema %>"
 		<%}%>		
-		+ " FROM STDIN <%=compression%> <%=stream_name%> DELIMITER '" + OUT_DELIM_<%=cid %> + "'" 
+		+ " FROM STDIN <%=compression%> <%=stream_name%> DELIMITER '" + OUT_DELIM_<%=cid %> + "'"
 		<%if(is_version_ge_6 && is_trailing_null){%>
 		+ " TRAILING NULLCOLS"
 		<%}%>
@@ -248,7 +248,7 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 	    int nbLineBeforeLoad_<%=cid %> = 0;
 	    while (rs_<%=cid %>.next()) {
 	    	nbLineBeforeLoad_<%=cid %> = rs_<%=cid %>.getInt(1);
-		}	
+		}
 		
 <%
 	}else{
