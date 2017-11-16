@@ -21,6 +21,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -38,6 +40,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -50,6 +53,7 @@ import org.talend.commons.exception.OperationCancelException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.runtime.model.components.IComponentConstants;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordHelper;
 import org.talend.commons.utils.io.FilesUtils;
@@ -132,6 +136,7 @@ import org.talend.repository.ui.dialog.RepositoryReviewDialog;
 import org.talend.repository.ui.login.LoginDialogV2;
 import org.talend.repository.ui.login.LoginHelper;
 import org.talend.repository.ui.login.connections.ConnectionUserPerReader;
+import org.talend.repository.ui.login.connections.network.NetworkErrorRetryDialog;
 import org.talend.repository.ui.utils.ColumnNameValidator;
 import org.talend.repository.ui.views.IRepositoryView;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
@@ -152,6 +157,10 @@ import org.talend.utils.json.JSONObject;
 public class RepositoryService implements IRepositoryService, IRepositoryContextService {
 
     private static Logger log = Logger.getLogger(RepositoryService.class);
+
+    private final Semaphore askUserForNetworkIssueSemaphore = new Semaphore(1, true);
+
+    private volatile boolean askUserForNetworkIssueRetryCache = false;
 
     /*
      * (non-Javadoc)
@@ -859,6 +868,75 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     @Override
     public void openProjectSettingDialog(final String pageId) {
         new ProjectSettingDialog().open(pageId);
+    }
+
+    @Override
+    public boolean askRetryForNetworkIssue(Throwable ex) {
+        final AtomicBoolean retry = new AtomicBoolean(false);
+        try {
+
+            /**
+             * Only popup one dialog for one time.
+             */
+            if (askUserForNetworkIssueSemaphore.availablePermits() <= 0) {
+                askUserForNetworkIssueSemaphore.acquire();
+                askUserForNetworkIssueSemaphore.release();
+                return askUserForNetworkIssueRetryCache;
+            }
+            askUserForNetworkIssueSemaphore.acquire();
+
+            if (Display.getCurrent() == null) {
+                try {
+                    Display defaultDisplay = Display.getDefault();
+
+                    /**
+                     * Check whether UI thread is busy
+                     */
+                    if (defaultDisplay.getThread().getState() == Thread.State.RUNNABLE) {
+                        defaultDisplay.syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
+                            }
+                        });
+                    } else {
+                        /**
+                         * If UI thread is busy, to avoid dead lock, we need to create a new UI thread and run dialog in
+                         * this new UI thread
+                         */
+                        DisplayUtils.syncExecInNewUIThread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                Shell shell = new Shell(SWT.ON_TOP);
+                                retry.set(askRetryForNetworkIssueInDialog(shell, ex));
+                                shell.dispose();
+                            }
+                        });
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            } else {
+                retry.set(askRetryForNetworkIssueInDialog(DisplayUtils.getDefaultShell(), ex));
+            }
+
+        } catch (Throwable t) {
+            ExceptionHandler.process(t);
+        } finally {
+            askUserForNetworkIssueRetryCache = retry.get();
+            if (askUserForNetworkIssueSemaphore.availablePermits() <= 0) {
+                askUserForNetworkIssueSemaphore.release();
+            }
+        }
+        return askUserForNetworkIssueRetryCache;
+    }
+
+    private boolean askRetryForNetworkIssueInDialog(Shell shell, Throwable ex) {
+        NetworkErrorRetryDialog dialog = new NetworkErrorRetryDialog(shell, ex);
+        int result = dialog.open();
+        return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
     }
 
 }

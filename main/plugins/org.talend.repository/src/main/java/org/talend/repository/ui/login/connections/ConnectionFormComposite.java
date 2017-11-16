@@ -65,7 +65,6 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.actions.importproject.DeleteProjectsAsAction;
 import org.talend.repository.ui.login.LoginDialogV2;
-import org.talend.repository.ui.login.connections.network.NetworkSettingDialog;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -96,8 +95,6 @@ public class ConnectionFormComposite extends Composite {
     private Button workSpaceButton;
 
     protected Button deleteProjectsButton;
-
-    protected Button networkSettingBtn;
 
     private ConnectionBean connection;
 
@@ -257,28 +254,14 @@ public class ConnectionFormComposite extends Composite {
         seperatorGridData.horizontalSpan = 3;
         seperatorGridData.heightHint = 0;
         seperator.setLayoutData(seperatorGridData);
-
-        /**
-         * Place holder
-         */
         Label placeHolder = new Label(formBody, SWT.NONE);
-
-        Composite buttonArea = toolkit.createComposite(formBody);
-        GridLayout btnAreaLayout = new GridLayout(2, true);
-        btnAreaLayout.marginHeight = 0;
-        btnAreaLayout.marginWidth = 0;
-        btnAreaLayout.makeColumnsEqualWidth = true;
-        buttonArea.setLayout(btnAreaLayout);
-        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(buttonArea);
-
         // add delete buttons
-        deleteProjectsButton = new Button(buttonArea, SWT.NONE);
+        deleteProjectsButton = new Button(formBody, SWT.NONE);
         deleteProjectsButton.setText(Messages.getString("ConnectionFormComposite.deleteExistingProject")); //$NON-NLS-1$
-        formDefaultFactory.copy().grab(true, false).span(1, 1).applyTo(deleteProjectsButton);
-
-        networkSettingBtn = new Button(buttonArea, SWT.PUSH);
-        networkSettingBtn.setText(Messages.getString("ConnectionFormComposite.networkSetting")); //$NON-NLS-1$
-        formDefaultFactory.copy().grab(true, false).span(1, 1).applyTo(networkSettingBtn);
+        GridData deleteButtonGridData = new GridData();
+        deleteButtonGridData.widthHint = LoginDialogV2.getNewButtonSize(deleteProjectsButton).x;
+        deleteButtonGridData.horizontalSpan = 2;
+        deleteProjectsButton.setLayoutData(deleteButtonGridData);
 
         addListeners();
         addWorkSpaceListener();
@@ -521,14 +504,6 @@ public class ConnectionFormComposite extends Composite {
         }
     };
 
-    SelectionListener networkSettingListener = new SelectionAdapter() {
-
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-            onNetworkSettingBtnSelected();
-        }
-    };
-
     private void addListeners() {
         repositoryCombo.addPostSelectionChangedListener(repositoryListener);
         nameText.addModifyListener(standardTextListener);
@@ -550,7 +525,6 @@ public class ConnectionFormComposite extends Composite {
         }
 
         deleteProjectsButton.addSelectionListener(deleteProjectClickListener);
-        networkSettingBtn.addSelectionListener(networkSettingListener);
     }
 
     public void changeUserLabel() {
@@ -601,7 +575,6 @@ public class ConnectionFormComposite extends Composite {
             }
         }
         deleteProjectsButton.removeSelectionListener(deleteProjectClickListener);
-        networkSettingBtn.removeSelectionListener(networkSettingListener);
     }
 
     private void fillBean(boolean cleanDynamicValue) {
@@ -737,11 +710,6 @@ public class ConnectionFormComposite extends Composite {
     public void deleteProject() {
         DeleteProjectsAsAction deleteProjectAction = new DeleteProjectsAsAction(true);
         deleteProjectAction.run();
-    }
-
-    private void onNetworkSettingBtnSelected() {
-        NetworkSettingDialog dialog = new NetworkSettingDialog(getShell());
-        dialog.open();
     }
 
     /**
