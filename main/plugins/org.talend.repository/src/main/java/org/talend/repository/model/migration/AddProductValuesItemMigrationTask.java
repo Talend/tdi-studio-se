@@ -49,8 +49,7 @@ public class AddProductValuesItemMigrationTask extends AbstractItemMigrationTask
             }
 
             Property property = item.getProperty();
-            if (!invalid && !ItemProductValuesHelper.existed(property) // maybe, has been migrated from original project
-                    && ItemProductValuesHelper.setValuesWhenMigrate(property)) {
+            if (!invalid && ItemProductValuesHelper.setValuesWhenMigrate(property)) {
                 ProxyRepositoryFactory.getInstance().save(item, true);
                 return ExecutionResult.SUCCESS_NO_ALERT;
             }
