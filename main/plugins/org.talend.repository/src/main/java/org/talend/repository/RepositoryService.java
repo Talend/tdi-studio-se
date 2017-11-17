@@ -162,6 +162,8 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     private volatile boolean askUserForNetworkIssueRetryCache = false;
 
+    private volatile boolean donnotRetryAgainBeforeRestart = false;
+
     /*
      * (non-Javadoc)
      * 
@@ -872,6 +874,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     @Override
     public boolean askRetryForNetworkIssue(Throwable ex) {
+        if (donnotRetryAgainBeforeRestart) {
+            return false;
+        }
         final AtomicBoolean retry = new AtomicBoolean(false);
         try {
 
@@ -936,6 +941,7 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     private boolean askRetryForNetworkIssueInDialog(Shell shell, Throwable ex) {
         NetworkErrorRetryDialog dialog = new NetworkErrorRetryDialog(shell, ex);
         int result = dialog.open();
+        donnotRetryAgainBeforeRestart = dialog.donnotRetryAgainBeforeRestart();
         return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
     }
 

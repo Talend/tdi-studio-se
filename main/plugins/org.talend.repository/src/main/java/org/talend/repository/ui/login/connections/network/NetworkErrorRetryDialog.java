@@ -99,6 +99,10 @@ public class NetworkErrorRetryDialog extends MessageDialog {
         return true;
     }
 
+    public boolean donnotRetryAgainBeforeRestart() {
+        return form.donnotRetryAgainBeforeRestart();
+    }
+
     public Throwable getEx() {
         return this.ex;
     }

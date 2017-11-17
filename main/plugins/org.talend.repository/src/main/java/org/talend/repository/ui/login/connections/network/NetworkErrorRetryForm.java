@@ -26,6 +26,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -47,6 +48,8 @@ public class NetworkErrorRetryForm extends Composite {
 
     private Text detailMessageText;
 
+    private Button donnotAskAgainBtn;
+
     private ICheckListener checkListener;
 
     private NetworkConfiguration networkConfiguration;
@@ -54,6 +57,8 @@ public class NetworkErrorRetryForm extends Composite {
     private String information;
 
     private String exceptionString;
+
+    private boolean donnotAskAgainBeforeRestart;
 
     private Throwable ex;
 
@@ -101,6 +106,14 @@ public class NetworkErrorRetryForm extends Composite {
         formData.left = new FormAttachment(0);
         connectLabel.setLayoutData(formData);
 
+        donnotAskAgainBtn = new Button(parent, SWT.CHECK);
+        donnotAskAgainBtn.setText(Messages.getString("NetworkErrorRetryForm.toggle.message")); //$NON-NLS-1$
+
+        formData = new FormData();
+        formData.top = new FormAttachment(connectTimeoutText, ALIGN_VERTICAL, SWT.BOTTOM);
+        formData.left = new FormAttachment(0, 0);
+        donnotAskAgainBtn.setLayoutData(formData);
+
         ExpandableComposite errorComposite = new ExpandableComposite(parent, ExpandableComposite.COMPACT);
         errorComposite.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true, 1, 1));
         errorComposite.setText(Messages.getString("NetworkErrorRetryForm.details")); //$NON-NLS-1$
@@ -125,7 +138,7 @@ public class NetworkErrorRetryForm extends Composite {
 
         formData = new FormData();
         formData.left = new FormAttachment(0);
-        formData.top = new FormAttachment(connectTimeoutText, ALIGN_VERTICAL, SWT.BOTTOM);
+        formData.top = new FormAttachment(donnotAskAgainBtn, ALIGN_VERTICAL, SWT.BOTTOM);
         formData.right = new FormAttachment(100);
         formData.bottom = new FormAttachment(100);
         errorComposite.setLayoutData(formData);
@@ -180,10 +193,15 @@ public class NetworkErrorRetryForm extends Composite {
         return checkConnectionTimeout;
     }
 
+    public boolean donnotRetryAgainBeforeRestart() {
+        return donnotAskAgainBeforeRestart;
+    }
+
     public void performFinish() {
         int timeout = Integer.valueOf(connectTimeoutText.getText());
         networkConfiguration.setConnectionTimeout(timeout);
         networkConfiguration.setReadTimeout(timeout);
+        donnotAskAgainBeforeRestart = donnotAskAgainBtn.getSelection();
     }
 
     private boolean checkConnectionTimeout() {
