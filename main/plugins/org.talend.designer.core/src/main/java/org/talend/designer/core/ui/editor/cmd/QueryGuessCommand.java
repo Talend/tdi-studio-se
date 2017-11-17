@@ -51,6 +51,8 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
+import org.talend.utils.sql.metadata.constants.GetTable;
+
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -404,6 +406,8 @@ public class QueryGuessCommand extends Command {
         // }
 
         String newQuery = null;
+        // Need update schema if table type as calculation view for SAP Hana Database
+        updateSchema(dbType, newOutputMetadataTable);
         realTableName = QueryUtil.getTableName(node, newOutputMetadataTable, schema, dbType, realTableName);
 
         if (realTableName.startsWith(TalendTextUtils.QUOTATION_MARK) && realTableName.endsWith(TalendTextUtils.QUOTATION_MARK)
@@ -509,6 +513,17 @@ public class QueryGuessCommand extends Command {
             }
         }
         return buffer.toString();
+    }
+
+    private void updateSchema(String dbType, IMetadataTable metadataTable) {
+        if (dbType != null && EDatabaseTypeName.SAPHana.getDisplayName().equals(dbType)) {
+            if (metadataTable != null) {
+                Map<String, String> properties = metadataTable.getAdditionalProperties();
+                if (properties.containsKey(GetTable.TABLE_SCHEM.name())) {
+                    schema = properties.get(GetTable.TABLE_SCHEM.name());
+                }
+            }
+        }
     }
 
     private String getDefaultSchema(String realTableName) {

@@ -54,6 +54,7 @@ import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
@@ -378,6 +379,15 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         for (JobExportType exportType : extractExportJobTypes()) {
             if (!Boolean.getBoolean("talend.export.job.2." + exportType.toString() + ".hide")) { //$NON-NLS-1$//$NON-NLS-2$
+                // TESB-20767 Microservice should not be display with TDI license
+                if (exportType.equals(JobExportType.MSESB)
+                        && GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+                    // reset export type
+                    if (getCurrentExportType1().equals(JobExportType.MSESB)) {
+                        getDialogSettings().put(STORE_EXPORTTYPE_ID, JobExportType.POJO.label);
+                    }
+                    continue;
+                }
                 exportTypeCombo.add(exportType.label);
             }
         }

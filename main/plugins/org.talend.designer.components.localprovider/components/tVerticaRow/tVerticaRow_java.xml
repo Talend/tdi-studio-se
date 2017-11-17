@@ -36,7 +36,7 @@
 		NUM_ROW="10"
 		REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
-		<ITEMS DEFAULT="VERTICA_3">
+		<ITEMS DEFAULT="VERTICA_9_0">
 			<ITEM NAME="VERTICA_3" VALUE="vertica_3.0_jdk_5.jar" />
 			<ITEM NAME="VERTICA_3.5" VALUE="vertica_3.5_jdk_5.jar" />
 			<ITEM NAME="VERTICA_4" VALUE="vertica_4.0_jdk_5.jar" />
