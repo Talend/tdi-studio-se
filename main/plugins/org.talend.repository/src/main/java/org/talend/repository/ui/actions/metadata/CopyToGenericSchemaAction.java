@@ -82,6 +82,7 @@ public class CopyToGenericSchemaAction extends AContextualAction {
 
         if (nodeType == ERepositoryObjectType.METADATA_CON_TABLE || nodeType == ERepositoryObjectType.METADATA_CON_VIEW
                 || nodeType == ERepositoryObjectType.METADATA_CON_SYNONYM
+                || nodeType == ERepositoryObjectType.METADATA_CON_CALCULATION_VIEW
                 || nodeType == ERepositoryObjectType.METADATA_FILE_DELIMITED
                 || nodeType == ERepositoryObjectType.METADATA_FILE_POSITIONAL
                 || nodeType == ERepositoryObjectType.METADATA_FILE_REGEXP || nodeType == ERepositoryObjectType.METADATA_FILE_XML
