@@ -75,8 +75,22 @@ public class Neo4jBatchDatabase {
     public BatchInserter getInserter() {
         return this.inserter;
     }
+    
+    
 
-    /**
+    public Map<String, BatchInserterIndex> getBatchInserterIndexes() {
+		return batchInserterIndexes;
+	}
+
+
+	public void setBatchInserterIndexes(Object batchInserterIndexes) {
+		if(batchInserterIndexes!=null && batchInserterIndexes instanceof Map) {
+			this.batchInserterIndexes.putAll((Map<String, BatchInserterIndex>)batchInserterIndexes);
+		}
+	}
+
+
+	/**
      * Create and store the index, if it doesn't exist.
      *
      * @param indexName      Name of the index
