@@ -13716,7 +13716,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="exchangeversion" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingauthenticationprotocol" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingcredentialretrieval" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="incomingpassword" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingportnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingserverlocation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incominguseimpersonation" TYPE="id_Boolean"  />
@@ -13740,7 +13739,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingauthenticationprotocol" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingautograntdelegateaccess" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingcredentialretrieval" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="outgoingpassword" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingportnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingserverlocation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoinguseimpersonation" TYPE="id_Boolean"  />
@@ -15410,7 +15408,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="orgmarkedasprimaryforexchangesync" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingemaildeliverymethod" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingemailstatus" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="password" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="postponemailboxprocessinguntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="postponeofficeappsdeploymentuntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="postponesendinguntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16214,7 +16211,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="timeseparator" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="tokenexpiry" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="tokenkey" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingprefix" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingtokenidbase" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingtokeniddigits" TYPE="id_Integer"  />
@@ -16560,7 +16556,6 @@
 </TABLE>
 <TABLE IF="(ENTITYSET=='productassociations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="dmtimportstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16620,7 +16615,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="dmtimportstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
@@ -17997,9 +17991,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="namespaceformat" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="overwritetime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="path" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="saskey" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="saskeyname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="sastoken" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="serviceendpointid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="serviceendpointidunique" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="solutionid" TYPE="id_String"  />
