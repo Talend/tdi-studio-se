@@ -1,0 +1,65 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.designer.codegen.config.NodeParamsHelper
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		NodeParamsHelper helper = new NodeParamsHelper(node);
+		List<IMetadataTable> metadatas = node.getMetadataList();
+		IMetadataTable metadata = null;
+		
+		boolean dieOnError = helper.getBoolParam("__DIE_ON_ERROR__");
+		boolean overwrite = helper.getBoolParam("__OVERWRITE__");
+		String title = helper.getStringParam("__FILE_TITLE__");
+		
+		if ((metadatas!=null)&&(metadatas.size()>0)) {
+			metadata = metadatas.get(0);    
+	    }
+		
+		List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+		
+        String dataOutputConnection = null;	
+	    for(IConnection conn : outputConnections) {
+	        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	        	dataOutputConnection = conn.getName();
+	        	break;
+	        } // if(conn) end
+	    } // for(conns) end
+	    boolean exposeOutput = helper.getBoolParam("__EXPOSE_OUTPUT_STREAM__");
+%>
+
+	
+	}finally {
+	<%if(exposeOutput){%>
+		if (<%=cid%>_uploader_input != null)
+		{
+			<%=cid%>_uploader_input.close();
+		}
+		if (<%=cid%>_uploader_output != null)
+		{
+			<%=cid%>_uploader_output.close();
+		}
+	<%}%>
+	}
+		<%if(dataOutputConnection != null){%>
+			if(<%=dataOutputConnection%>.content != null){
+				try{
+					((java.io.InputStream)<%=dataOutputConnection%>.content).close();
+				}catch(Exception e){
+				}
+			}
+		<%}%>

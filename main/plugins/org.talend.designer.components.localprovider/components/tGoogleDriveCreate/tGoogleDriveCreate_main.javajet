@@ -1,0 +1,150 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.NodeParamsHelper
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+NodeParamsHelper helper = new NodeParamsHelper(node);
+
+String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+String accessToken = helper.getStringParam("__ACCESS_TOKEN__");
+String folderName = helper.getStringParam("__FOLDER_NAME__");
+boolean useProxy = helper.getBoolParam("__USE_PROXY__");
+boolean useSSL = helper.getBoolParam("__USE_SSL__");
+
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String connectionKey = "\"conn_" + connection+"\"";
+
+List<? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+
+String dataOutputConnection = null;
+    for(IConnection conn : outputConnections) {
+        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+        	dataOutputConnection = conn.getName();
+        	break;
+        }
+    }
+
+
+String newFolderName = ElementParameterParser.getValue(node, "__NEW_FOLDER_NAME__");
+
+boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+%>
+com.google.api.services.drive.Drive <%=cid%>_client;
+<%
+if(!"true".equals(useExistingConn)){
+%>
+{
+<%
+if(useSSL) {
+%>
+ 	javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory
+	.getInstance(javax.net.ssl.TrustManagerFactory
+			.getDefaultAlgorithm());
+
+	java.io.FileInputStream fis = new java.io.FileInputStream(
+			<%=helper.getStringParam("__SSL_TRUST_STORE__")%>);
+	java.security.KeyStore ks = java.security.KeyStore
+			.getInstance(java.security.KeyStore.getDefaultType());
+	<%String passwordFieldName = "__SSL_TRUST_STORE_PASSWORD__";%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>                       
+	ks.load(fis, decryptedPassword_<%=cid%>.toCharArray());
+	fis.close();
+	tmf.init(ks);
+	javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(<%=helper.getStringParam("__SSL_ALGORITHM__")%>);
+	sslContext.init(null, tmf.getTrustManagers(), new java.security.SecureRandom());
+<%	
+}
+%>
+com.google.api.client.http.HttpTransport httpTransport = new com.google.api.client.http.javanet.NetHttpTransport.Builder()
+<%if(useProxy){
+String proxyHost = helper.getStringParam("__PROXY_HOST__");
+String proxyPort = helper.getStringParam("__PROXY_PORT__");
+%>
+		.setProxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, java.net.InetSocketAddress.createUnresolved(<%=proxyHost%>, <%=proxyPort%>)))
+<%}
+  if(useSSL) {
+%>
+	.setSslSocketFactory(sslContext.getSocketFactory())
+<%
+  }
+%>
+	.build();
+
+	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=accessToken%>);
+	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+	.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
+}	
+<%
+} else {
+%>
+	<%=cid%>_client = (com.google.api.services.drive.Drive)globalMap.get(<%=connectionKey%>);
+<%}%>
+		String parentFolder_<%=cid %> = <%=folderName%>;
+		if(parentFolder_<%=cid %> == null || "".equals(parentFolder_<%=cid %>.trim()))
+		{
+			throw new Exception("Parent Folder Name can not be null");
+		}
+
+        com.google.api.services.drive.model.File <%=cid%>_createdFolder = new com.google.api.services.drive.model.File();
+		com.google.api.services.drive.model.File <%=cid%>_resultFile = null;
+		com.google.api.services.drive.Drive.Files.List <%=cid%>_listRequest =  <%=cid%>_client.files().list();
+		String parentFolderId_<%= cid %> = "root";
+		<% if (!folderName.equals("\"root\"")) { %>
+		<%=cid%>_listRequest.setQ("title = '" + <%=folderName%> + "' and mimeType = 'application/vnd.google-apps.folder'");
+		com.google.api.services.drive.model.FileList <%=cid%>_files = <%=cid%>_listRequest.execute();
+		
+		if (<%=cid%>_files.getItems().size() > 1)
+		{
+			throw new Exception("More than one folder found with name \"" + <%=folderName%> + "\" ");
+		}
+		else if (<%=cid%>_files.getItems().isEmpty())
+		{
+			System.out.println("No folder found with name \"" + <%=folderName%> + "\",the folder will be created in the default root folder.");
+			<% /* Create the parent folder in the default root folder. */ %>
+			com.google.api.services.drive.model.File newParentFolder_<%= cid %> = new com.google.api.services.drive.model.File();
+		    newParentFolder_<%= cid %>.setParents(new java.util.ArrayList<com.google.api.services.drive.model.ParentReference>());
+		    newParentFolder_<%= cid %>.setMimeType("application/vnd.google-apps.folder"); 
+			newParentFolder_<%= cid %>.setTitle(<%= folderName %>);
+			<%=cid%>_resultFile = <%=cid%>_client.files().insert(newParentFolder_<%= cid %>).execute();
+			parentFolderId_<%= cid %> = <%=cid%>_resultFile.getId();
+		}
+
+		if(null == parentFolderId_<%= cid %>){
+			parentFolderId_<%= cid %> = <%=cid%>_files.getItems().get(0).getId();
+		}
+		<% }%>
+		
+		String subFolderId_<%= cid %> = null;
+		String subFolderName_<%= cid %> = <%= newFolderName %>;
+		if(null != subFolderName_<%= cid %> && !"".equals(subFolderName_<%= cid %>.trim())){
+			<% /* Create a sub folder in the specified parent folder.*/ %>
+	        <%=cid%>_createdFolder.setParents(java.util.Arrays.asList(new com.google.api.services.drive.model.ParentReference().setId(parentFolderId_<%= cid %>)));
+	        <%=cid%>_createdFolder.setMimeType("application/vnd.google-apps.folder"); 
+	    	<%=cid%>_createdFolder.setTitle(subFolderName_<%= cid %>); 
+
+	        <%=cid%>_resultFile = <%=cid%>_client.files().insert(<%=cid%>_createdFolder).execute();
+	        subFolderId_<%= cid %> = <%=cid%>_resultFile.getId();
+		}
+        <%
+		if(dataOutputConnection != null) {
+        %>
+			<%=dataOutputConnection%>.parentFolderID = parentFolderId_<%= cid %>;
+			<%=dataOutputConnection%>.newFolderID = subFolderId_<%= cid %>;
+        <%}%>
+		globalMap.put("<%=cid%>_PARENTFOLDERID", parentFolderId_<%= cid %>);
+		globalMap.put("<%=cid%>_NEWFOLDERID", subFolderId_<%= cid %>);
+

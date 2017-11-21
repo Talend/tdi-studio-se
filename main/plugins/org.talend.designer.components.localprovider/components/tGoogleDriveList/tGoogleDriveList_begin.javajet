@@ -1,0 +1,208 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.designer.codegen.config.NodeParamsHelper
+    java.util.List
+    java.util.ArrayList
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+" 
+%>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+NodeParamsHelper helper = new NodeParamsHelper(node);
+
+String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
+String accessToken = helper.getStringParam("__ACCESS_TOKEN__");
+String folderName = helper.getStringParam("__FOLDER_NAME__");
+boolean useProxy = helper.getBoolParam("__USE_PROXY__");
+boolean useSSL = helper.getBoolParam("__USE_SSL__");
+boolean withTrashFiles = helper.getBoolParam("__INCLUDTRASHFILES__");
+
+
+String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+String connectionKey = "\"conn_" + connection+"\"";
+
+List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+		
+String dataOutputConnection = null;	
+    for(IConnection conn : outputConnections) {
+        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+        	dataOutputConnection = conn.getName();
+        	break;
+        } // if(conn) end
+    } // for(conns) end
+%>
+com.google.api.services.drive.Drive <%=cid%>_client;
+<%
+if(!"true".equals(useExistingConn)){
+%>
+{
+<%
+if(useSSL) {
+%>
+ 	javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory
+	.getInstance(javax.net.ssl.TrustManagerFactory
+			.getDefaultAlgorithm());
+
+	java.io.FileInputStream fis = new java.io.FileInputStream(
+			<%=helper.getStringParam("__SSL_TRUST_STORE__")%>);
+	java.security.KeyStore ks = java.security.KeyStore
+			.getInstance(java.security.KeyStore.getDefaultType());
+	<%String passwordFieldName = "__SSL_TRUST_STORE_PASSWORD__";%>
+	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>                       
+	ks.load(fis, decryptedPassword_<%=cid%>.toCharArray());
+	fis.close();
+	tmf.init(ks);
+	javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(<%=helper.getStringParam("__SSL_ALGORITHM__")%>);
+	sslContext.init(null, tmf.getTrustManagers(), new java.security.SecureRandom());
+<%	
+}
+%>
+com.google.api.client.http.HttpTransport httpTransport = new com.google.api.client.http.javanet.NetHttpTransport.Builder()
+<%if(useProxy){
+String proxyHost = helper.getStringParam("__PROXY_HOST__");
+String proxyPort = helper.getStringParam("__PROXY_PORT__");
+%>
+		.setProxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, java.net.InetSocketAddress.createUnresolved(<%=proxyHost%>, <%=proxyPort%>)))
+<%}
+  if(useSSL) {
+%>
+	.setSslSocketFactory(sslContext.getSocketFactory())
+<%
+  }
+%>
+	.build();
+
+	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=accessToken%>);
+	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+	.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
+}	
+<%
+} else {
+%>
+	<%=cid%>_client = (com.google.api.services.drive.Drive)globalMap.get(<%=connectionKey%>);
+<%}%>
+    java.util.List<com.google.api.services.drive.model.File> <%=cid%>_result = new java.util.ArrayList<com.google.api.services.drive.model.File>();
+    com.google.api.services.drive.Drive.Files.List <%=cid%>_request = <%=cid%>_client.files().list();
+    String <%=cid%>_folderName = <%=folderName%>;
+    String <%=cid%>_qTrash = <% if (!withTrashFiles) {%>" and trashed=false"<% } else {%> "" <% } %>; 
+
+    if (<%=cid%>_folderName == null || <%=cid%>_folderName.isEmpty())
+    {
+    	throw new Exception("Folder name can not be empty");
+    }
+	
+    if(<%=cid%>_folderName.startsWith("\"")){
+		<%=cid%>_folderName = <%=cid%>_folderName.substring(1);
+	}
+	if(<%=cid%>_folderName.endsWith("\"")){
+		<%=cid%>_folderName = <%=cid%>_folderName.substring(0, <%=cid%>_folderName.length() - 1);
+    }
+	<%if ("false".equals(helper.getStringParam("__INCLUDSUBDIR__"))) { %> //without subfolders
+    do {
+      
+      if(!<%=cid%>_folderName.equals("root")) {
+      		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "'"+<%=cid%>_qTrash+" and mimeType = 'application/vnd.google-apps.folder'");
+      } else {
+      
+	  	<%if ("BOTH".equals(helper.getStringParam("__LIST_MODE__"))) {%>
+	  		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash);
+      	<%} else if ("FILES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
+      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash+" and mimeType != 'application/vnd.google-apps.folder'");
+      	<%} else {%>
+      		<%=cid%>_request.setQ("'" + <%=cid%>_folderName + "' in parents"+<%=cid%>_qTrash+" and mimeType = 'application/vnd.google-apps.folder'");
+      	<%}%>
+      }
+        com.google.api.services.drive.model.FileList files = <%=cid%>_request.execute();
+        if(!<%=cid%>_folderName.equals("root")) {
+	        if (files.getItems().size() > 1) {
+	        	throw new Exception("More than one folder with name " + "\"" + <%=cid%>_folderName + "\" found!");
+	        } else if (files.getItems().isEmpty()) {
+	        	throw new Exception("No folder with name " + "\"" + <%=cid%>_folderName + "\" found!");
+	        } else {
+	        	<%=cid%>_request = <%=cid%>_client.files().list();
+	        	<%if ("BOTH".equals(helper.getStringParam("__LIST_MODE__"))) {%>
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents"+<%=cid%>_qTrash);
+	        	<%} else if ("FILES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents"+<%=cid%>_qTrash+" and mimeType != 'application/vnd.google-apps.folder'");
+	        	<%} else {%>
+	        		<%=cid%>_request.setQ("'" + files.getItems().get(0).getId() + "' in parents"+<%=cid%>_qTrash+" and mimeType = 'application/vnd.google-apps.folder'");
+	        	<%}%>
+	        	files = <%=cid%>_request.execute();
+	        }
+        }
+        <%=cid%>_result.addAll(files.getItems());
+        <%=cid%>_request.setPageToken(files.getNextPageToken());
+    } while (<%=cid%>_request.getPageToken() != null &&
+             <%=cid%>_request.getPageToken().length() > 0);
+   <%} else {%>
+    java.util.List<String> subfolders_<%=cid %> = new java.util.ArrayList<String>(); 
+    if(!<%=cid%>_folderName.equals("root")) {
+   		<%=cid%>_request.setQ("title = '" + <%=cid%>_folderName + "'"+<%=cid%>_qTrash+" and mimeType = 'application/vnd.google-apps.folder'");
+   		com.google.api.services.drive.model.FileList <%=cid%>_files = <%=cid%>_request.execute();
+   		if (<%=cid%>_files.getItems().size() > 1) {
+        	throw new Exception("More than one folder with name " + "\"" + <%=cid%>_folderName + "\" found!");
+        } else if (<%=cid%>_files.getItems().isEmpty()) {
+        	throw new Exception("No folder with name " + "\"" + <%=cid%>_folderName + "\" found!");
+        } else {
+        	subfolders_<%=cid %>.add(<%=cid%>_files.getItems().get(0).getId());
+   		}
+   		<%=cid%>_request = <%=cid%>_client.files().list();
+    } else {
+	subfolders_<%=cid %>.add(<%=cid%>_folderName);
+	}
+	while (subfolders_<%=cid %>.size()>0) {
+    do {
+	  	<%if ("DIRECTORIES".equals(helper.getStringParam("__LIST_MODE__"))) {%>
+	  		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents"+<%=cid%>_qTrash+" and mimeType = 'application/vnd.google-apps.folder'");
+     	<%} else {%>
+      		<%=cid%>_request.setQ("'"+subfolders_<%=cid %>.get(0)+"' in parents"+<%=cid%>_qTrash); // check all files and folders
+      	<%}%>
+        com.google.api.services.drive.model.FileList files = <%=cid%>_request.execute();
+       
+		for (com.google.api.services.drive.model.File file : files.getItems()) {
+		  if (file.getMimeType().equals("application/vnd.google-apps.folder")) {
+			subfolders_<%=cid %>.add(file.getId());
+          } 
+          if (
+			      "BOTH".equals("<%=helper.getStringParam("__LIST_MODE__")%>")
+				 || (
+				       "FILES".equals("<%=helper.getStringParam("__LIST_MODE__")%>")
+					    &&
+						!file.getMimeType().equals("application/vnd.google-apps.folder")
+					) 
+				 || (
+				        "DIRECTORIES".equals("<%=helper.getStringParam("__LIST_MODE__")%>")
+						 && 
+						 file.getMimeType().equals("application/vnd.google-apps.folder")
+					) 
+		    )
+		  {
+			<%=cid%>_result.add(file);
+		  }
+ 		}
+        <%=cid%>_request.setPageToken(files.getNextPageToken());
+    } while (<%=cid%>_request.getPageToken() != null &&
+             <%=cid%>_request.getPageToken().length() > 0);
+    subfolders_<%=cid %>.remove(0);
+	}
+     
+   <%}%>
+	for (com.google.api.services.drive.model.File <%=cid%>_temp : <%=cid%>_result) {
+
+			globalMap.put("<%=cid%>_ID",<%=cid%>_temp.getId());
+			globalMap.put("<%=cid%>_TITLE",<%=cid%>_temp.getTitle());
+			globalMap.put("<%=cid%>_MIME_TYPE",<%=cid%>_temp.getMimeType());
+			globalMap.put("<%=cid%>_LAST_MODIFIED",<%=cid%>_temp.getModifiedDate().toStringRfc3339());
+			globalMap.put("<%=cid%>_SIZE",<%=cid%>_temp.getFileSize());
+			globalMap.put("<%=cid%>_SELF_LINK",<%=cid%>_temp.getSelfLink());
+			globalMap.put("<%=cid%>_PARENTS",<%=cid%>_temp.getParents());
+			try{
+
+

@@ -434,19 +434,21 @@ public class ConnectionManager {
             String connectorName, String connectionName) {
 
         newlineStyle = lineStyle;
-        boolean isMainConn = lineStyle==EConnectionType.FLOW_MAIN ;
+        boolean isMainConn = lineStyle == EConnectionType.FLOW_MAIN;
         if (source.equals(newTarget)) {
             return false;
         }
         final INode designSubjobStartNode = source.getDesignSubjobStartNode();
-        if ((designSubjobStartNode.getOutgoingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0 || 
-                designSubjobStartNode.getOutgoingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0)
-                && !newTarget.checkIfCanBeStart() && isMainConn && !((Node) newTarget).isJoblet()) {
+        if ((designSubjobStartNode.getOutgoingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0 || designSubjobStartNode
+                .getOutgoingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0)
+                && !newTarget.checkIfCanBeStart()
+                && isMainConn && !((Node) newTarget).isJoblet()) {
             return false;
         }
-        if ((designSubjobStartNode.getIncomingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0 || 
-                designSubjobStartNode.getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0)
-                && !newTarget.checkIfCanBeStart() && isMainConn && !((Node) newTarget).isJoblet()) {
+        if ((designSubjobStartNode.getIncomingConnections(EConnectionType.ON_SUBJOB_OK).size() != 0 || designSubjobStartNode
+                .getIncomingConnections(EConnectionType.ON_SUBJOB_ERROR).size() != 0)
+                && !newTarget.checkIfCanBeStart()
+                && isMainConn && !((Node) newTarget).isJoblet()) {
             return false;
         }
         if (newTarget.getJobletNode() != null) {
@@ -572,8 +574,8 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
-            if(connectorFromType ==null ||!connectorFromType.isShow()){
-            	return false;
+            if (connectorFromType == null) {
+                return false;
             }
             int maxInput = connectorFromType.getMaxLinkInput();
             if (maxInput != -1 && (connectorFromType.getCurLinkNbInput() >= maxInput)) {
@@ -702,8 +704,8 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
-            if(connectorFromType ==null ||!connectorFromType.isShow()){
-            	return false;
+            if (connectorFromType == null) {
+                return false;
             }
             int maxInput = connectorFromType.getMaxLinkInput();
             if (maxInput != -1 && (connectorFromType.getCurLinkNbInput() >= maxInput)) {

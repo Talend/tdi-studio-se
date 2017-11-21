@@ -1,0 +1,128 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.designer.codegen.config.NodeParamsHelper
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	NodeParamsHelper helper = new NodeParamsHelper(node);
+	
+	boolean useExistingConn = helper.getBoolParam("__USE_EXISTING_CONNECTION__");
+	String connection = helper.getStringParam("__CONNECTION__");
+    String connectionKey = "\"conn_" + connection+"\"";
+	
+	String fileName = helper.getStringParam("__FILE_NAME__");
+	boolean useTrash = helper.getBoolParam("__USE_TRASH__");
+	boolean dieOnError = helper.getBoolParam("__DIE_ON_ERROR__");
+	
+	List< ? extends IConnection> outputConnections = node.getOutgoingSortedConnections();
+	
+	String dataOutputConnection = null;	
+    for(IConnection conn : outputConnections) {
+        if(conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+        	dataOutputConnection = conn.getName();
+        	break;
+        } // if(conn) end
+    } // for(conns) end
+%>
+com.google.api.services.drive.Drive <%=cid%>_client;
+<%
+if(!useExistingConn) {
+%>
+	{
+<%
+    	boolean useSSL = helper.getBoolParam("__USE_SSL__");
+    	boolean useProxy = helper.getBoolParam("__USE_PROXY__");
+    	if(useSSL) {
+%>
+
+	javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory
+		.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+	
+	java.io.FileInputStream fis = new java.io.FileInputStream(<%=helper.getStringParam("__SSL_TRUST_STORE__")%>);
+	java.security.KeyStore ks = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
+<%String passwordFieldName = "__SSL_TRUST_STORE_PASSWORD__";%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>                       
+	ks.load(fis, decryptedPassword_<%=cid%>.toCharArray());
+	fis.close();
+	tmf.init(ks);
+	javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(<%=helper.getStringParam("__SSL_ALGORITHM__")%>);
+		sslContext.init(null, tmf.getTrustManagers(), new java.security.SecureRandom());
+<%
+	}
+%>
+	com.google.api.client.http.HttpTransport httpTransport = new com.google.api.client.http.javanet.NetHttpTransport.Builder()
+<%
+	if(useProxy) {
+		String proxyHost = helper.getStringParam("__PROXY_HOST__");
+		String proxyPort = helper.getStringParam("__PROXY_PORT__");
+%>
+		.setProxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, java.net.InetSocketAddress.createUnresolved(<%=proxyHost%>, <%=proxyPort%>)))
+<%
+	}if(useSSL) {
+%>
+		.setSslSocketFactory(sslContext.getSocketFactory())
+<%
+	}
+%>
+		.build();
+
+	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=helper.getStringParam("__ACCESS_TOKEN__")%>);
+	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+		.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
+}
+
+<%
+	}else {
+%>
+<%=cid%>_client = (com.google.api.services.drive.Drive)globalMap.get(<%=connectionKey%>);
+<%
+}
+%>
+    String fileName_<%=cid %> = <%=fileName%>;
+	if(fileName_<%=cid %> == null || "".equals(fileName_<%=cid %>))
+	{
+		throw new Exception("File/folder name can not be null");
+	}
+	com.google.api.services.drive.Drive.Files.List <%=cid%>_listRequest =  <%=cid%>_client.files().list();
+	<%=cid%>_listRequest.setQ("trashed = false and title = '" + fileName_<%=cid %> + "'");
+	com.google.api.services.drive.model.FileList <%=cid%>_files = <%=cid%>_listRequest.execute();
+	if (<%=cid%>_files.getItems().size() > 1)
+	{
+		throw new Exception("More than one file found with name \"" + <%=fileName%> + "\" ");
+	}
+	else if (<%=cid%>_files.getItems().isEmpty())
+	{
+		throw new Exception("No file found with name \"" + <%=fileName%> + "\" ");
+	}
+	else
+	{
+		String <%=cid%>_fileId = <%=cid%>_files.getItems().get(0).getId();
+		<%=cid%>_client.files().
+<%
+  if(useTrash){
+%>
+		trash
+<%
+  }else{
+%>
+		delete
+<%
+  }
+	%>
+		(<%=cid%>_fileId).execute();
+		globalMap.put("<%=cid%>_FILEID", <%=cid%>_fileId);	
+	}
+			

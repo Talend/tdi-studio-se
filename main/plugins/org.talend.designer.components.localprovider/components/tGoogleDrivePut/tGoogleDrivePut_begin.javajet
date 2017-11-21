@@ -1,0 +1,94 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.IConnection
+    org.talend.core.model.process.IConnectionCategory 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.designer.codegen.config.NodeParamsHelper
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.IMetadataColumn
+    org.talend.core.model.metadata.types.JavaTypesManager
+    org.talend.core.model.metadata.types.JavaType
+    java.util.List
+" 
+%>
+<%
+		CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+		INode node = (INode)codeGenArgument.getArgument();
+		String cid = node.getUniqueName();
+		NodeParamsHelper helper = new NodeParamsHelper(node);
+
+		boolean useExistingConn = helper.getBoolParam("__USE_EXISTING_CONNECTION__");
+		String connection = helper.getStringParam("__CONNECTION__");
+	    String connectionKey = "\"conn_" + connection+"\"";
+
+
+		String outputFile = helper.getStringParam("__OUTPUT__");
+
+		boolean dieOnError = helper.getBoolParam("__DIE_ON_ERROR__");
+
+	    boolean exposeOutput = helper.getBoolParam("__EXPOSE_OUTPUT_STREAM__");
+%>
+com.google.api.services.drive.Drive <%=cid%>_client;
+<%
+		if(!useExistingConn){
+%>
+{
+<%
+	    	boolean useSSL = helper.getBoolParam("__USE_SSL__");
+	    	boolean useProxy = helper.getBoolParam("__USE_PROXY__");
+	    	if(useSSL) {
+%>
+
+	javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory
+		.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
+	
+	java.io.FileInputStream fis = new java.io.FileInputStream(<%=helper.getStringParam("__SSL_TRUST_STORE__")%>);
+	java.security.KeyStore ks = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
+<%String passwordFieldName = "__SSL_TRUST_STORE_PASSWORD__";%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>                       
+	ks.load(fis, decryptedPassword_<%=cid%>.toCharArray());
+	fis.close();
+	tmf.init(ks);
+	javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance(<%=helper.getStringParam("__SSL_ALGORITHM__")%>);
+		sslContext.init(null, tmf.getTrustManagers(), new java.security.SecureRandom());
+<%
+			}
+%>
+	com.google.api.client.http.HttpTransport httpTransport = new com.google.api.client.http.javanet.NetHttpTransport.Builder()
+<%
+			if(useProxy) {
+				String proxyHost = helper.getStringParam("__PROXY_HOST__");
+				String proxyPort = helper.getStringParam("__PROXY_PORT__");
+%>
+		.setProxy(new java.net.Proxy(java.net.Proxy.Type.HTTP, java.net.InetSocketAddress.createUnresolved(<%=proxyHost%>, <%=proxyPort%>)))
+<%
+			}if(useSSL) {
+%>
+		.setSslSocketFactory(sslContext.getSocketFactory())
+<%
+			}
+%>
+		.build();
+
+	com.google.api.client.googleapis.auth.oauth2.GoogleCredential credential = new com.google.api.client.googleapis.auth.oauth2.GoogleCredential().setAccessToken(<%=helper.getStringParam("__ACCESS_TOKEN__")%>);
+	<%=cid%>_client = new  com.google.api.services.drive.Drive.Builder(httpTransport, new com.google.api.client.json.jackson2.JacksonFactory(), credential)
+		.setApplicationName(<%=helper.getStringParam("__APPLICATION_NAME__")%>+" (GPN:Talend)").build();
+}
+<%
+		}else {
+%>
+<%=cid%>_client = (com.google.api.services.drive.Drive)globalMap.get(<%=connectionKey%>);
+<%
+		}
+		if(exposeOutput){
+%>
+java.io.ByteArrayOutputStream <%=cid%>_uploader_output = new java.io.ByteArrayOutputStream();
+java.io.ByteArrayInputStream <%=cid%>_uploader_input = null;
+globalMap.put("<%=cid%>_OUTPUTSTREAM", <%=cid%>_uploader_output);
+<%
+		}
+%>
+try
+{
