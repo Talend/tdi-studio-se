@@ -51,6 +51,8 @@ import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
+import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.properties.Project;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
@@ -59,6 +61,7 @@ import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
+import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
 
 /**
  * DOC zhangchao.wang class global comment. Detailled comment
@@ -499,7 +502,11 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         //
         final Object[] selected = getProjectsList().getCheckedElements();
         XmiResourceManager xmiManager = new XmiResourceManager();
+        final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            final ImportProjectHelper importHelper = new ImportProjectHelper();
+
             for (Object element : selected) {
                 final ProjectRecord record = (ProjectRecord) element;
                 String projectName = record.getProjectName();
@@ -521,12 +528,15 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                         ChangeProjectTechinicalNameMigrationTask migrationTask = new ChangeProjectTechinicalNameMigrationTask();
                         migrationTask.migrateTalendProject(project, loadProject, xmiManager);
                     }
+                    importHelper.checkProjectItems(new org.talend.core.model.general.Project(loadProject));
+
                 } catch (PersistenceException e) {
                     //
                 }
             }
         } finally {
             xmiManager.unloadResources();
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
         }
         return created;
         //

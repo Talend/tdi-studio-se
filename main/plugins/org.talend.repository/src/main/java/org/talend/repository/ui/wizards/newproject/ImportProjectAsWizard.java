@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.newproject;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IProject;
@@ -21,7 +20,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
@@ -123,17 +121,8 @@ public class ImportProjectAsWizard extends Wizard {
                     monitorWrap = new EventLoopProgressMonitor(monitor);
 
                     try {
-
-                        if (!isArchive) {
-                            ImportProjectsUtilities.importProjectAs(shell, name, technicalName, sourcePath, monitorWrap);
-                        } else {// type.equalsIgnoreCase("archive")
-                            ImportProjectsUtilities.importArchiveProjectAs(shell, name, technicalName, sourcePath, monitorWrap);
-
-                        }
-
-                    } catch (IOException e) {
-                        throw new InvocationTargetException(e);
-                    } catch (TarException e) {
+                        ImportProjectsUtilities.importProjectAs(shell, name, technicalName, sourcePath, isArchive, monitor);
+                    } catch (Exception e) {
                         throw new InvocationTargetException(e);
                     }
                     monitorWrap.done();

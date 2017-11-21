@@ -53,7 +53,7 @@ import org.talend.core.utils.ProjectUtils;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
-import org.talend.repository.ui.actions.importproject.ImportProjectsUtilities;
+import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
 
 /**
  * Page for new project details. <br/>
@@ -394,6 +394,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
         Collection projectFiles = new ArrayList();
         Collection talendProjectFiles = new ArrayList();
+        ImportProjectHelper helper = new ImportProjectHelper();
 
         if (!dirSelected && ArchiveFileManipulations.isTarFile(path)) {
             TarFile sourceTarFile = getSpecifiedTarSourceFile(path);
@@ -404,15 +405,15 @@ public class ImportProjectAsWizardPage extends WizardPage {
             TarLeveledStructureProvider provider = new TarLeveledStructureProvider(sourceTarFile);
             Object child = provider.getRoot();
 
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
                     IProjectDescription.DESCRIPTION_FILE_NAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
                     FileConstants.LOCAL_PROJECT_FILENAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
                     FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
                 return;
             }
@@ -424,28 +425,28 @@ public class ImportProjectAsWizardPage extends WizardPage {
             ZipLeveledStructureProvider provider = new ZipLeveledStructureProvider(sourceFile);
             Object child = provider.getRoot();
 
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
                     IProjectDescription.DESCRIPTION_FILE_NAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
                     FileConstants.LOCAL_PROJECT_FILENAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
+            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
                     FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
                 return;
             }
         } else if (dirSelected && directory.isDirectory()) {
-            if (!ImportProjectsUtilities.collectProjectFilesFromDirectory(projectFiles, directory, null,
-                    IProjectDescription.DESCRIPTION_FILE_NAME)) {
+            if (!helper
+                    .collectProjectFilesFromDirectory(projectFiles, directory, null, IProjectDescription.DESCRIPTION_FILE_NAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
+            if (!helper.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
                     FileConstants.LOCAL_PROJECT_FILENAME)) {
                 return;
             }
-            if (!ImportProjectsUtilities.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
+            if (!helper.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
                     FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
                 return;
             }
