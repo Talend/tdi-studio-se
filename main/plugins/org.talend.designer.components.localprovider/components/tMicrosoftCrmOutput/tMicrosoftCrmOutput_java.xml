@@ -18429,11 +18429,11 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="address3_telephone3" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="address3_upszone" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="address3_utcoffset" TYPE="id_Integer" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="anniversary" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="anniversary" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="annualincome" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="assistantname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="assistantphone" TYPE="id_String" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="birthdate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="birthdate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="business2" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="callback" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="childrensnames" TYPE="id_String" />
@@ -19553,7 +19553,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="duedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="duedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="invoicenumber" TYPE="id_String" />
@@ -19847,7 +19847,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="emailaddress2" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="emailaddress3" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="estimatedamount" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Double" KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_Double" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="fax" TYPE="id_String" />
@@ -20193,7 +20193,7 @@
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String" />
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='opportunities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="actualclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="actualclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="actualvalue" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="budgetamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="budgetstatus" TYPE="id_Integer" />
@@ -20210,11 +20210,11 @@
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="developproposal" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="filedebrief" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="finaldecisiondate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="finaldecisiondate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="identifycompetitors" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="identifycustomercontacts" TYPE="id_Boolean" />
@@ -20935,8 +20935,8 @@
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="traversedpath" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="validfromdate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="validtodate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="validfromdate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="validtodate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorpartnumber" TYPE="id_String" />
@@ -21230,13 +21230,13 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_postalcode" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_stateorprovince" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_telephone" TYPE="id_String" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="closedon" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="closedon" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="effectivefrom" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="effectiveto" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="expireson" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="expireson" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="freighttermscode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
