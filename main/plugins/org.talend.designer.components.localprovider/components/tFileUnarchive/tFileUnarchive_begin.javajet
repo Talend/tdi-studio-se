@@ -54,14 +54,18 @@
     <%
     if(checkArchiveIntegrity){
     %>
+       boolean isValidArchive_<%= cid %> = false;
        if(
           tmpFileURL_<%=cid %>.endsWith(".tar.gz")
        || tmpFileURL_<%=cid %>.endsWith(".tgz")
-       || tmpFileURL_<%=cid %>.endsWith(".tar")
        || tmpFileURL_<%=cid %>.endsWith(".gz")
        ){
-       boolean isValidArchive_<%= cid %> = org.talend.archive.IntegrityUtil.isGZIPValid(zipFileURL_<%=cid %>);
-    <%
+           isValidArchive_<%= cid %> = org.talend.archive.IntegrityUtil.isGZIPValid(zipFileURL_<%=cid %>);
+
+       }else if(tmpFileURL_<%=cid %>.endsWith(".tar")){
+       		isValidArchive_<%= cid %> = org.talend.archive.IntegrityUtil.isTarValid(zipFileURL_<%=cid %>);
+       }
+           <%
     if(dieWhenArchiveCorrupted){
     %>
        if(!isValidArchive_<%= cid %>){
@@ -69,9 +73,6 @@
               }
            <%
            }
-           %>
-       }
-    <%
     }
      %>
 
