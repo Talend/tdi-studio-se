@@ -83,7 +83,6 @@ if(!is_version_ge_6) {
 }
 
 %>
-System.out.println("VERSION : <%= db_version %> / is_old : <%= is_old_version%> / ge_6 : <%= is_version_ge_6%>");
 String tableName_<%=cid%> = null;
 String dbschema_<%=cid %> = null;
 java.sql.Connection conn_<%=cid%> = null;
