@@ -36,6 +36,11 @@
                   <artifactId>talend_DB_mssqlUtil-1.2-20171017</artifactId>
                   <version>6.0.0</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.talend.libraries</groupId>
+                  <artifactId>checkArchive-1.1-20171121</artifactId>
+                  <version>6.0.0</version>
+                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
