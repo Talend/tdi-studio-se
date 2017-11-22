@@ -15,7 +15,6 @@
 		<soap.dir>${project.basedir}/components/tSOAP</soap.dir>
 		<webservice.dir>${project.basedir}/components/tWebServiceInput</webservice.dir>
 		<thashfile.dir>${project.basedir}/components/tHashInput</thashfile.dir>
-		<checkArchive.dir>${project.basedir}/components/tFileArchive</checkArchive.dir>
 	</properties>
 
 	<build>
@@ -134,14 +133,6 @@
 									<type>jar</type>
 									<overWrite>true</overWrite>
 									<outputDirectory>${thashfile.dir}</outputDirectory>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.talend.libraries</groupId>
-									<artifactId>checkArchive-1.1-20171121</artifactId>
-									<version>6.0.0</version>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${checkArchive.dir}</outputDirectory>
 								</artifactItem>
 							</artifactItems>
 						</configuration>
