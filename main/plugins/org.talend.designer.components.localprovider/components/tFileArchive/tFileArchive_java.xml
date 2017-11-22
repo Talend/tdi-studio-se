@@ -132,7 +132,7 @@
    <CODEGENERATION>
      <IMPORTS>
        <IMPORT NAME="COMMONS-COMPRESS-1.10" MODULE="commons-compress-1.10.jar" MVN="mvn:org.talend.libraries/commons-compress-1.10/6.1.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-compress-1.10.jar" REQUIRED="true" />
-       <IMPORT NAME="Encrypt-Zip" MODULE="checkArchive.jar" MVN="mvn:org.talend.libraries/checkArchive/6.0.0"  REQUIRED="true" />
+       <IMPORT NAME="Encrypt-Zip" MODULE="checkArchive-1.1-20171121.jar" MVN="mvn:org.talend.libraries/checkArchive-1.1-20171121/6.0.0"  REQUIRED="true" />
        <IMPORT NAME="zip4j_1.3.1.jar" MODULE="zip4j_1.3.1.jar" MVN="mvn:org.talend.libraries/zip4j_1.3.1/6.0.0"  REQUIRED="true" />
        <IMPORT NAME="talendzip.jar" MODULE="talendzip.jar" MVN="mvn:org.talend.libraries/talendzip/6.1.0"  REQUIRED="true" />
      </IMPORTS>

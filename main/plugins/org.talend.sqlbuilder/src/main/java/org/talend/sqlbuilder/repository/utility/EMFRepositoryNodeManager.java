@@ -127,8 +127,8 @@ public final class EMFRepositoryNodeManager {
             RepositoryNodeType type = SQLBuilderRepositoryNodeManager.getRepositoryType((RepositoryNode) node);
             if (type == RepositoryNodeType.DATABASE) {
                 root = (RepositoryNode) node;
-                DatabaseConnection connection = (DatabaseConnection) SQLBuilderRepositoryNodeManager.getItem(
-                        (RepositoryNode) node).getConnection();
+                DatabaseConnection connection = (DatabaseConnection) SQLBuilderRepositoryNodeManager
+                        .getItem((RepositoryNode) node).getConnection();
                 for (MetadataTable table : ConnectionHelper.getTables(connection)) {
                     if (!tables.contains(table)) {
                         tables.add(table);
@@ -221,29 +221,31 @@ public final class EMFRepositoryNodeManager {
                     }
                     if (resultSet != null) {
                         ResultSetMetaData metadata = resultSet.getMetaData();
-                        int[] relevantIndeces = new int[metadata.getColumnCount()];
-                        for (int i = 1; i <= metadata.getColumnCount(); i++) {
-                            relevantIndeces[i - 1] = i;
-                        }
-
-                        while (resultSet.next()) {
-                            for (int relevantIndece : relevantIndeces) {
-                                String key = metadata.getColumnName(relevantIndece);
-                                if (key.toUpperCase().equals("FKCOLUMN_NAME")) { //$NON-NLS-1$
-                                    fk += resultSet.getString(relevantIndece);
-                                } else if (key.toUpperCase().equals("FKTABLE_NAME")) { //$NON-NLS-1$
-                                    fk = resultSet.getString(relevantIndece) + "."; //$NON-NLS-1$
-                                } else if (key.toUpperCase().equals("PKCOLUMN_NAME")) { //$NON-NLS-1$
-                                    pk = table.getSourceName() + "." + resultSet.getString(relevantIndece); //$NON-NLS-1$
-                                }
+                        if (metadata != null) {
+                            int[] relevantIndeces = new int[metadata.getColumnCount()];
+                            for (int i = 1; i <= metadata.getColumnCount(); i++) {
+                                relevantIndeces[i - 1] = i;
                             }
-                            if (!"".equals(fk) && !"".equals(pk)) { //$NON-NLS-1$ //$NON-NLS-2$
-                                String[] strs = new String[2];
-                                strs[0] = pk;
-                                strs[1] = fk;
-                                fks.add(strs);
-                                fk = ""; //$NON-NLS-1$
-                                pk = ""; //$NON-NLS-1$
+
+                            while (resultSet.next()) {
+                                for (int relevantIndece : relevantIndeces) {
+                                    String key = metadata.getColumnName(relevantIndece);
+                                    if (key.toUpperCase().equals("FKCOLUMN_NAME")) { //$NON-NLS-1$
+                                        fk += resultSet.getString(relevantIndece);
+                                    } else if (key.toUpperCase().equals("FKTABLE_NAME")) { //$NON-NLS-1$
+                                        fk = resultSet.getString(relevantIndece) + "."; //$NON-NLS-1$
+                                    } else if (key.toUpperCase().equals("PKCOLUMN_NAME")) { //$NON-NLS-1$
+                                        pk = table.getSourceName() + "." + resultSet.getString(relevantIndece); //$NON-NLS-1$
+                                    }
+                                }
+                                if (!"".equals(fk) && !"".equals(pk)) { //$NON-NLS-1$ //$NON-NLS-2$
+                                    String[] strs = new String[2];
+                                    strs[0] = pk;
+                                    strs[1] = fk;
+                                    fks.add(strs);
+                                    fk = ""; //$NON-NLS-1$
+                                    pk = ""; //$NON-NLS-1$
+                                }
                             }
                         }
                         resultSet.close();
@@ -290,7 +292,7 @@ public final class EMFRepositoryNodeManager {
         String string = queryStrings.get(0).toLowerCase().replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
         string = string.replaceAll("\t", " "); //$NON-NLS-1$ //$NON-NLS-2$
         string = string.replaceAll("\r", " "); //$NON-NLS-1$ //$NON-NLS-2$
-        //        string = string.replaceAll("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
+        // string = string.replaceAll("\"", ""); //$NON-NLS-1$ //$NON-NLS-2$
         string = string.replaceAll("\'", ""); //$NON-NLS-1$ //$NON-NLS-2$
         if (!string.startsWith("select ")) { //$NON-NLS-1$
             if (isPrompt) {
@@ -387,14 +389,15 @@ public final class EMFRepositoryNodeManager {
                         }
                         if (collabel != null) {
                             for (String string : columnsNames) {
-                                if ((string.replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, "")).equals(collabel //$NON-NLS-1$ //$NON-NLS-2$
-                                                .toLowerCase())) {
+                                if ((string.replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, "")) //$NON-NLS-1$ //$NON-NLS-2$
+                                        .equals(collabel.toLowerCase())) {
                                     nodes.add(colNode);
                                 }
 
                                 // need get dbtype quotes,if the dbtype is Access,need to delete both left bracket and
                                 // right bracket
-                                if ((string.replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, "")).equals(tableLabel.toLowerCase() + "." + collabel.toLowerCase())) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ 
+                                if ((string.replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, "")) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                        .equals(tableLabel.toLowerCase() + "." + collabel.toLowerCase())) {
                                     if (!nodes.contains(colNode)) {
                                         nodes.add(colNode);
                                     }
@@ -485,16 +488,16 @@ public final class EMFRepositoryNodeManager {
             for (String string : columns) {
                 int dotIndex = string.indexOf("."); //$NON-NLS-1$
                 if (dotIndex != -1) {
-                    tableNames.add(string.substring(0, dotIndex).trim()
-                            .replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, "")); //$NON-NLS-1$ //$NON-NLS-2$ 
+                    tableNames.add(string.substring(0, dotIndex).trim().replaceAll("\\" + leftDbQuote, "") //$NON-NLS-1$ //$NON-NLS-2$
+                            .replaceAll("\\" + rightDbQuote, ""));
                 }
                 columnsNames.add(string.trim());
             }
             for (String string : tables) {
                 String tableName = string;
                 if (string.contains(".")) { //$NON-NLS-1$
-                    tableName = string
-                            .substring(string.indexOf(".") + 1).replaceAll("\\" + leftDbQuote, "").replaceAll("\\" + rightDbQuote, ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    tableName = string.substring(string.indexOf(".") + 1).replaceAll("\\" + leftDbQuote, "") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            .replaceAll("\\" + rightDbQuote, "");
                 }
                 if (!tableNames.contains(tableName.trim())) {
                     tableNames.add(tableName);
@@ -587,9 +590,9 @@ public final class EMFRepositoryNodeManager {
             // realName = tableContainAlias.get(0);
             // aliasName = tableContainAlias.get(1);
             // if (!tableNames.contains(aliasName)) {
-            //                    tableNames.add(prefix + realName + "=" + aliasName); //$NON-NLS-1$
+            // tableNames.add(prefix + realName + "=" + aliasName); //$NON-NLS-1$
             // } else {
-            //                    tableNames.set(tableNames.indexOf(aliasName), prefix + realName + "=" + aliasName); //$NON-NLS-1$
+            // tableNames.set(tableNames.indexOf(aliasName), prefix + realName + "=" + aliasName); //$NON-NLS-1$
             // }
             // tableNames.set(i, realName);
             // }
