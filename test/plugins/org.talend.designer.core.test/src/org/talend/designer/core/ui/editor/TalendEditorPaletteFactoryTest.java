@@ -514,5 +514,13 @@ public class TalendEditorPaletteFactoryTest {
             return getModulesNeeded();
         }
 
+        public String getTemplateFolder() {
+            return null;
+        }
+
+        public String getTemplateNamePrefix() {
+            return getName();
+        }
+
     }
 }
