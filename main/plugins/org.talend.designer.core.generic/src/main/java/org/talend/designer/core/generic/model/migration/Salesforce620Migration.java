@@ -129,7 +129,7 @@ public class Salesforce620Migration extends AbstractJobMigrationTask {
                 NamedThing nt = newProperties.getProperty("module.moduleName");
                 if (nt != null && nt instanceof Property) {
                     Property moduleNameProperty = (Property) nt;
-                    String moduleName = (String) moduleNameProperty.getValue();
+                    String moduleName = ((String) moduleNameProperty.getValue()).replaceAll("\r|\n|\r\n", "");
                     if (ContextParameterUtils.isContainContextParam(moduleName)) {
                         moduleName = TalendQuoteUtils.removeQuotes(moduleName);
                     } else {
