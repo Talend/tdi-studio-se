@@ -44,6 +44,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.config.CloseBlocksCodeArgument;
@@ -327,8 +328,8 @@ public class CodeGenerator implements ICodeGenerator {
                 CodeGeneratorArgument codeGenArgument = new CodeGeneratorArgument();
                 // encrypt the password
                 for (IContextParameter iContextParameter : listParameters) {
+                    IContextParameter icp = iContextParameter.clone();
                     if (PasswordEncryptUtil.isPasswordType(iContextParameter.getType())) {
-                        IContextParameter icp = iContextParameter.clone();
                         String pwd = icp.getValue();
                         if (pwd != null && !pwd.isEmpty()) {
                             try {
@@ -337,10 +338,10 @@ public class CodeGenerator implements ICodeGenerator {
                                 log.error(e.getMessage(), e);
                             }
                         }
-                        listParametersCopy.add(icp);
                     } else {
-                        listParametersCopy.add(iContextParameter);
+                        ContextParameterUtils.unescapeValue(icp);
                     }
+                    listParametersCopy.add(icp);
                 }
 
                 codeGenArgument.setNode(listParametersCopy);
