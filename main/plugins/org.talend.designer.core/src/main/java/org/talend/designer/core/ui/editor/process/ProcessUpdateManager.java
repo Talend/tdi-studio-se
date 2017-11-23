@@ -99,7 +99,9 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.update.extension.UpdateManagerProviderDetector;
 import org.talend.core.model.utils.SAPConnectionUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.services.IGenericWizardService;
+import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IDesignerMapperService;
 import org.talend.core.service.IEBCDICProviderService;
 import org.talend.core.service.IMetadataManagmentService;
@@ -155,7 +157,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         for (INode node : this.getProcess().getGraphicalNodes()) {
             Item jobletItem = jobletProcessProvider.getJobletItem(node);
             if (jobletItem != null) {
-                jobletReferenceMap.put(jobletItem.getProperty().getId(), jobletItem.getProperty().getModificationDate());
+                Date modifiedDate = ItemDateParser.parseAdditionalDate(jobletItem.getProperty(),
+                        ItemProductKeys.DATE.getModifiedKey());
+                jobletReferenceMap.put(jobletItem.getProperty().getId(), modifiedDate);
             }
         }
     }
@@ -1684,7 +1688,6 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
         }
         List<UpdateResult> propertiesResults = new ArrayList<UpdateResult>();
 
-
         for (IElementParameter curPropertyParam : node.getElementParametersFromField(EParameterFieldType.PROPERTY_TYPE)) {
             String propertyType = (String) curPropertyParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
                     .getValue();
@@ -2401,11 +2404,11 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             if (jobletItem != null) {
                 final Property property = jobletItem.getProperty();
                 final String id = property.getId();
-                final Date modificationDate = property.getModificationDate();
+                final Date modificationDate = ItemDateParser.parseAdditionalDate(property, ItemProductKeys.DATE.getModifiedKey());
 
                 final Date oldDate = this.jobletReferenceMap.get(id);
 
-                if (((oldDate != null && !modificationDate.equals(oldDate)) || onlySimpleShow)
+                if (((oldDate != null && !oldDate.equals(modificationDate)) || onlySimpleShow)
                         && !getProcess().getId().equals(id)) {
                     List<INode> jobletNodes = findRelatedJobletNode(getProcess(), property.getLabel(), null);
                     if (jobletNodes != null && !jobletNodes.isEmpty()) {
