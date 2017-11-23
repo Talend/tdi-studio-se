@@ -54,7 +54,7 @@
     <%
     if(checkArchiveIntegrity){
     %>
-       boolean isValidArchive_<%= cid %> = false;
+       boolean isValidArchive_<%= cid %> = true;
        if(
           tmpFileURL_<%=cid %>.endsWith(".tar.gz")
        || tmpFileURL_<%=cid %>.endsWith(".tgz")
