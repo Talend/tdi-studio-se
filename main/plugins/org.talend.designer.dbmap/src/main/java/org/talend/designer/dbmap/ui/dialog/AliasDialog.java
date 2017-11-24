@@ -33,6 +33,7 @@ import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
+import org.talend.designer.dbmap.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -56,6 +57,8 @@ public class AliasDialog {
 
     private String[] visibleTables;
 
+    ProblemsAnalyser problemsAnalyser;
+
     /**
      * DOC amaumont AliasDialog constructor comment.
      * 
@@ -66,6 +69,7 @@ public class AliasDialog {
         this.physicalTables = physicalTables;
         this.aliases = aliases;
         this.visibleTables = visibleTables;
+        problemsAnalyser = new ProblemsAnalyser(mapperManager);
     }
 
     public boolean open() {
@@ -76,8 +80,9 @@ public class AliasDialog {
         //
         String proposedAlias = ""; //$NON-NLS-1$
 
-        IInputValidator inputValidator = new IInputValidator() { //$NON-NLS-1$
+        IInputValidator inputValidator = new IInputValidator() {
 
+            @Override
             public String isValid(String newText) {
 
                 String selectedPhysicalTable = aliasInternalDialog.getTableName();
@@ -103,8 +108,8 @@ public class AliasDialog {
 
         };
 
-        aliasInternalDialog = new AliasInternalDialog(mapperManager.getUiManager().getShell(), Messages
-                .getString("AliasDialog.addNewAlias"), //$NON-NLS-1$
+        aliasInternalDialog = new AliasInternalDialog(mapperManager.getUiManager().getShell(),
+                Messages.getString("AliasDialog.addNewAlias"), //$NON-NLS-1$
                 Messages.getString("AliasDialog.typeAliasOfTable"), proposedAlias, inputValidator); //$NON-NLS-1$
 
         int response = aliasInternalDialog.open();
@@ -222,6 +227,7 @@ public class AliasDialog {
         /*
          * (non-Javadoc) Method declared on Dialog.
          */
+        @Override
         protected void buttonPressed(int buttonId) {
             if (buttonId == IDialogConstants.OK_ID) {
                 value = text.getText();
@@ -236,6 +242,7 @@ public class AliasDialog {
          * 
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
+        @Override
         protected void configureShell(Shell shell) {
             super.configureShell(shell);
             if (title != null) {
@@ -248,6 +255,7 @@ public class AliasDialog {
          * 
          * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
          */
+        @Override
         protected void createButtonsForButtonBar(Composite parent) {
             // create OK and Cancel buttons by default
             okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
@@ -264,6 +272,7 @@ public class AliasDialog {
         /*
          * (non-Javadoc) Method declared on Dialog.
          */
+        @Override
         protected Control createDialogArea(Composite parent) {
             // create composite
             Composite composite = (Composite) super.createDialogArea(parent);
@@ -272,16 +281,21 @@ public class AliasDialog {
             Label label = new Label(composite, SWT.WRAP);
             label.setText(Messages.getString("AliasDialog.SelectTableToUse")); //$NON-NLS-1$
 
-            combo = new Combo((Composite) composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+            combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
             combo.setItems(physicalTables);
             combo.addSelectionListener(new SelectionListener() {
 
+                @Override
                 public void widgetDefaultSelected(SelectionEvent e) {
                 }
 
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     internalTableName = combo.getText();
                     validateInput();
+                    if ("".equals(errorMessageText.getText())) {
+                        problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(), text.getText());
+                    }
                 }
 
             });
@@ -303,9 +317,12 @@ public class AliasDialog {
             text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
             text.addModifyListener(new ModifyListener() {
 
+                @Override
                 public void modifyText(ModifyEvent e) {
                     validateInput();
-
+                    if ("".equals(errorMessageText.getText())) {
+                        problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(), text.getText());
+                    }
                 }
             });
             errorMessageText = new Text(composite, SWT.READ_ONLY);
@@ -325,6 +342,7 @@ public class AliasDialog {
          * @return the error message label
          * @deprecated use setErrorMessage(String) instead
          */
+        @Deprecated
         protected Label getErrorMessageLabel() {
             return null;
         }

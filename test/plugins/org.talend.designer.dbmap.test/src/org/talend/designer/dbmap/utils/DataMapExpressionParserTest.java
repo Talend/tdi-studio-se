@@ -1,6 +1,6 @@
 package org.talend.designer.dbmap.utils;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +106,19 @@ public class DataMapExpressionParserTest {
         Assert.assertEquals(list.get(0), "((String)globalMap.get(\"lookup_table\"))");
         Assert.assertEquals(list.get(1), "((String)globalMap.get(\"main_table\"))");
         Assert.assertEquals(list.get(2), "((String)globalMap.get(\"schema\"))");
+
+        sqlQuery = "\"SELECT\n"
+                + "\" +((String)globalMap.get(\"#main_table%\"))+ \".id, \" +((String)globalMap.get(\"#main_table%\"))+ \".name,"
+                + " \" +((String)globalMap.get(\"#main_table%\"))+ \".age, \" +((String)globalMap.get(\"@lookup_table*\"))+ \".score\n"
+                + "FROM\n"
+                + " \" +((String)globalMap.get(\"#main_table%\"))+ \" , \" +((String)globalMap.get(\"@lookup_table*\"))";
+
+        globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 2);
+        list = new ArrayList<String>(globalList);
+        java.util.Collections.sort(list);
+        Assert.assertEquals(list.get(0), "((String)globalMap.get(\"#main_table%\"))");
+        Assert.assertEquals(list.get(1), "((String)globalMap.get(\"@lookup_table*\"))");
 
     }
 
