@@ -191,4 +191,9 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
         return rejectDataProcessor.processDataIterable(rejectedWrites);
     }
 
+    @Override
+    public void cleanWrites() {
+        wrappedWriter.cleanWrites();
+    }
+
 }

@@ -1194,7 +1194,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.2");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.3");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1236,6 +1236,8 @@ public class Component extends AbstractBasicComponent {
         ArrayList<ECodePart> theCodePartList = new ArrayList<>();
         theCodePartList.add(ECodePart.BEGIN);
         theCodePartList.add(ECodePart.MAIN);
+        theCodePartList.add(ECodePart.PROCESS_DATA_BEGIN);
+        theCodePartList.add(ECodePart.PROCESS_DATA_END);
         theCodePartList.add(ECodePart.END);
         theCodePartList.add(ECodePart.FINALLY);
         return theCodePartList;

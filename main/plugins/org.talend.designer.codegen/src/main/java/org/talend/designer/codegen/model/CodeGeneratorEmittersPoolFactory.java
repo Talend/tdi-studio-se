@@ -203,6 +203,8 @@ public final class CodeGeneratorEmittersPoolFactory {
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.BEGIN, genericComponent);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.END, genericComponent);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.MAIN, genericComponent);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_BEGIN, genericComponent);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_END, genericComponent);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.FINALLY, genericComponent);
                     // TODO
                     break;
