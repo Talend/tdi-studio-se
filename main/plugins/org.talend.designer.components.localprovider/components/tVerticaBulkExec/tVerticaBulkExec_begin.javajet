@@ -59,6 +59,13 @@ boolean is_no_commit = ("true").equals(ElementParameterParser.getValue(node, "__
 
 List<IMetadataColumn> columnList = getColumnList(node);
 String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
+if(useExistingConnection) {
+    String dbConnName = ElementParameterParser.getValue(node,"__CONNECTION__");
+    INode con_node = NodeUtil.getNodeByUniqueName(node.getProcess(), dbConnName);
+    if(con_node!=null){
+        db_version = ElementParameterParser.getValue(con_node,"__DB_VERSION__");
+    }
+}
 
 String copySchema = " (";
 for(int i = 0; i < columnList.size() - 1; i++){
