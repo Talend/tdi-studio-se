@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
@@ -96,13 +97,13 @@ public class ImportProjectHelper {
 
         importProject(shell, provider, new File(sourcePath), new Path(technicalName), true, false, monitor);
 
-        Project project = afterImportAs(newName, technicalName);
+        ImportProjectBean projectBean = afterImportAs(newName, technicalName);
 
         // do additional actions after importing projects
-        AfterImportProjectUtil.runAfterImportProjectActions(new org.talend.core.model.general.Project(project));
+        AfterImportProjectUtil.runAfterImportProjectActions(projectBean);
     }
 
-    protected Project afterImportAs(String newName, String technicalName) throws InvocationTargetException {
+    protected ImportProjectBean afterImportAs(String newName, String technicalName) throws InvocationTargetException {
         // Rename in ".project" and "talendProject" or "talend.project"
         // TODO SML Optimize
         final IWorkspace workspace = org.eclipse.core.resources.ResourcesPlugin.getWorkspace();
@@ -115,6 +116,7 @@ public class ImportProjectHelper {
             XmiResourceManager xmiManager = new XmiResourceManager();
             try {
                 final Project loadProject = xmiManager.loadProject(project);
+                Project oldProject = EcoreUtil.copy(loadProject);
                 loadProject.setTechnicalLabel(technicalName);
                 loadProject.setLabel(newName);
                 loadProject.setLocal(true);
@@ -132,7 +134,7 @@ public class ImportProjectHelper {
 
                 checkProjectItems(new org.talend.core.model.general.Project(loadProject));
 
-                return loadProject;
+                return new ImportProjectBean(loadProject, oldProject);
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
             }
@@ -172,10 +174,10 @@ public class ImportProjectHelper {
             IProgressMonitor monitor) throws InvocationTargetException, InterruptedException, TarException, IOException {
         importArchiveProject(shell, technicalName, sourcePath, monitor);
 
-        Project project = afterImportAs(newName, technicalName);
+        ImportProjectBean projectBean = afterImportAs(newName, technicalName);
 
         // do additional actions after importing projects
-        AfterImportProjectUtil.runAfterImportProjectActions(new org.talend.core.model.general.Project(project));
+        AfterImportProjectUtil.runAfterImportProjectActions(projectBean);
     }
 
     protected void importArchiveProject(Shell shell, String technicalName, String sourcePath, IProgressMonitor monitor)
