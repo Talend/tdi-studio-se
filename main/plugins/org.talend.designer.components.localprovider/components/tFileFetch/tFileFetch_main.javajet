@@ -334,7 +334,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 				status_<%=cid%> = client_<%=cid %>.executeMethod(method_<%=cid%>);
 
 				if ((status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_MOVED_TEMPORARILY) 
-					|| (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_MOVED_PERMANENTLY) 
+					|| (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_MOVED_PERMANENTLY)
 						|| (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_SEE_OTHER) 
 							|| (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_TEMPORARY_REDIRECT)) {
 					<%if(isLog4jEnabled){%>
@@ -364,25 +364,6 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 		<%
 		}
 
-		if (saveCookie) {
-		%>
-			org.apache.commons.httpclient.Cookie[] cookies_<%=cid%> = client_<%=cid %>.getState().getCookies();
-			java.io.File cookieFile_<%=cid%> = new java.io.File(<%=cookieDir%>);
-			java.io.File cookieDir_<%=cid%>= cookieFile_<%=cid%>.getParentFile(); 
-			if(!cookieDir_<%=cid%>.exists()){
-				cookieDir_<%=cid%>.mkdirs();
-			}
-			java.io.FileOutputStream fos_<%=cid%> = new java.io.FileOutputStream(cookieFile_<%=cid%>);
-			java.io.ObjectOutputStream os_<%=cid%> = new java.io.ObjectOutputStream(fos_<%=cid%>);
-
-			for (org.apache.commons.httpclient.Cookie c : cookies_<%=cid%>) {
-				os_<%=cid%>.writeObject(c);
-			}
-			os_<%=cid%>.close();
-			fos_<%=cid%>.close();
-		<%
-		}
-
 		if (!redirect) {
 		%>
 			if (status_<%=cid%> != org.apache.commons.httpclient.HttpStatus.SC_OK) {      
@@ -404,6 +385,24 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			isContinue_<%=cid%> = false;
 		<%}%>
 	}
+    <% if(saveCookie){ %>
+	finally {
+        org.apache.commons.httpclient.Cookie[] cookies_<%=cid%> = client_<%=cid %>.getState().getCookies();
+        java.io.File cookieFile_<%=cid%> = new java.io.File(<%=cookieDir%>);
+        java.io.File cookieDir_<%=cid%>= cookieFile_<%=cid%>.getParentFile();
+        if(!cookieDir_<%=cid%>.exists()){
+        	cookieDir_<%=cid%>.mkdirs();
+        }
+        java.io.FileOutputStream fos_<%=cid%> = new java.io.FileOutputStream(cookieFile_<%=cid%>);
+        java.io.ObjectOutputStream os_<%=cid%> = new java.io.ObjectOutputStream(fos_<%=cid%>);
+
+        for (org.apache.commons.httpclient.Cookie c : cookies_<%=cid%>) {
+            os_<%=cid%>.writeObject(c);
+        }
+        os_<%=cid%>.close();
+        fos_<%=cid%>.close();
+	}
+	<% } %>
 
 	if (isContinue_<%=cid%>) {    
 		<%if (printResponse) {%>
