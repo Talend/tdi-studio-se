@@ -566,7 +566,7 @@ public abstract class DbGenerationManager {
             Set<String> globalMapList = getGlobalMapList(component, expression);
             for (String globalMapStr : globalMapList) {
                 String replacement = globalMapStr;
-                if (globalMapStr.contains("\\\\")) {
+                if (globalMapStr.contains("\\")) {
                     replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
                 }
                 String regex = parser.getGlobalMapReplaceExpression(globalMapStr);

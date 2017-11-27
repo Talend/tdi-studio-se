@@ -26,6 +26,7 @@ import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContextParameter;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -57,7 +58,9 @@ public class DbGenerationManagerTestHelper {
         // main table
         ExternalDbMapTable inputTable = new ExternalDbMapTable();
         String mainTableName = "".equals(schema) ? main_table : schema + "." + main_table;
-        inputTable.setTableName(mainTableName);
+        // quote will be removed in the ui for connections ,so we do the same for test
+        String mainTableNameNoQuote = TalendTextUtils.removeQuotes(mainTableName);
+        inputTable.setTableName(mainTableNameNoQuote);
         inputTable.setName(mainTableName);
         if (main_alias != null && !"".equals(main_alias)) {
             inputTable.setAlias(main_alias);
@@ -133,6 +136,8 @@ public class DbGenerationManagerTestHelper {
         param.setValue(tableName);
         when(node.getElementParameter("ELT_TABLE_NAME")).thenReturn(param);
         String tName = "".equals(schemaName) ? tableName : schemaName + "." + tableName;
+        // quote will be removed in the ui for connections ,so we do the same for test
+        tName = TalendTextUtils.removeQuotes(tName);
         when(connection.getName()).thenReturn(tName);
         when(connection.getSource()).thenReturn(node);
         IMetadataTable table = new MetadataTable();
