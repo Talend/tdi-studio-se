@@ -12,11 +12,12 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.postgres;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.talend.core.model.metadata.IMetadataColumn;
-import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -29,8 +30,6 @@ import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
 import org.talend.designer.dbmap.language.GenericDbLanguage;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.DbMapSqlConstants;
-import org.talend.designer.dbmap.language.generation.MapExpressionParser;
-import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
 /**
  * 
@@ -59,6 +58,7 @@ public class PostgresGenerationManager extends DbGenerationManager {
     protected String initExpression(DbMapComponent component, ExternalDbMapEntry dbMapEntry) {
         String expression = super.initExpression(component, dbMapEntry);
         // String expression = dbMapEntry.getExpression();
+        Set<String> replacedStrings = new HashSet<String>();
         if (expression != null) {
             List<? extends IConnection> inputConnections = component.getIncomingConnections();
 
@@ -97,98 +97,49 @@ public class PostgresGenerationManager extends DbGenerationManager {
                         }
                     }
                 }
+                boolean needReplaceSchema = !StringUtils.isEmpty(schemaStr) && !isVariable(schemaStr);
+                boolean needReplaceTable = !StringUtils.isEmpty(tableNameStr) && !isVariable(tableNameStr);
 
+                if (inputTable.getAlias() != null && !"".equals(inputTable.getAlias())
+                        && !replacedStrings.contains(inputTable.getAlias())) {
+                    expression = expression.replaceAll("\\b" + inputTable.getAlias() + "\\b",
+                            getHandledField(inputTable.getAlias(), true));
+                    replacedStrings.add(inputTable.getAlias());
+                } else {
+                    if (needReplaceSchema && !replacedStrings.contains(schemaStr)) {
+                        expression = expression.replaceAll("\\b" + schemaStr + "\\b", getHandledField(schemaStr, true));
+                        replacedStrings.add(schemaStr);
+                    }
+                    if (needReplaceTable && !replacedStrings.contains(tableNameStr)) {
+                        expression = expression.replaceAll("\\b" + tableNameStr + "\\b", getHandledField(tableNameStr, true));
+                        replacedStrings.add(tableNameStr);
+                    }
+                }
                 for (IMetadataColumn co : connection.getMetadataTable().getListColumns()) {
                     String columnLabel = co.getOriginalDbColumnName();
                     if (columnLabel == null || "".equals(columnLabel)) {
                         columnLabel = co.getLabel();
+
                     }
-                    String[] patternSubs = getPattenSubs(component, schemaStr, tableNameStr, columnLabel);
-                    MapExpressionParser parser = new MapExpressionParser(patternSubs[0]);
-                    expression = parser.replaceLocation(expression, patternSubs[0], patternSubs[1]);
-                    if (inputTable.getAlias() != null && !"".equals(inputTable.getAlias())) {
-                        patternSubs = getPattenSubs(component, "", inputTable.getAlias(), columnLabel);
-                        parser = new MapExpressionParser(patternSubs[0]);
-                        expression = parser.replaceLocation(expression, patternSubs[0], patternSubs[1]);
+                    if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
+                        expression = expression.replaceAll("\\b" + columnLabel + "\\b", getHandledField(columnLabel, true));
+                        replacedStrings.add(columnLabel);
                     }
                 }
             }
         }
 
-        List<IMetadataTable> metadataList = component.getMetadataList();
-        if (metadataList != null) {
-            for (IMetadataTable table : metadataList) {
-                String tableName = table.getLabel();
-                for (IMetadataColumn column : table.getListColumns()) {
-                    String columnLabel = column.getOriginalDbColumnName();
-                    if (columnLabel == null || "".equals(columnLabel)) {
-                        columnLabel = column.getLabel();
-                    }
-                    String[] patternSubs = getPattenSubs(component, "", tableName, columnLabel);
-                    MapExpressionParser parser = new MapExpressionParser(patternSubs[0]);
-                    expression = parser.replaceLocation(expression, patternSubs[0], patternSubs[1]);
-                }
-            }
-        }
         return expression;
 
     }
 
-    private String[] getPattenSubs(DbMapComponent component, String schemaStr, String tableNameStr, String columnLabel) {
-        StringBuffer tempExp = new StringBuffer();
-        StringBuffer sub = new StringBuffer();
-        int i = 1;
-        if (!"".equals(schemaStr)) {
-            tempExp.append(REG_SPACE + schemaStr + REG_SPACE);
-            sub.append(REG_REPLACE + i++ + getHandledField(component, schemaStr, true) + REG_REPLACE + i++);
-        }
-        if (!"".equals(tableNameStr)) {
-            if ("".equals(schemaStr)) {
-                tempExp.append(REG_SPACE + tableNameStr + REG_SPACE);
-                sub.append(REG_REPLACE + i++ + getHandledField(component, tableNameStr, true) + REG_REPLACE + i++);
-            } else {
-                tempExp.append(REG_SPACE + "\\." + REG_SPACE);
-                sub.append(REG_REPLACE + i++ + "\\." + REG_REPLACE + i++);
-                tempExp.append(REG_SPACE + tableNameStr + REG_SPACE);
-                sub.append(REG_REPLACE + i++ + getHandledField(component, tableNameStr, true) + REG_REPLACE + i++);
-
-            }
-        }
-        if ("".equals(tempExp.toString())) {
-            tempExp.append(REG_SPACE + columnLabel + REG_SPACE);
-            sub.append(REG_REPLACE + i++ + getHandledField(component, columnLabel, true) + REG_REPLACE + i++);
-        } else {
-            tempExp.append(REG_SPACE + "\\." + REG_SPACE);
-            sub.append(REG_REPLACE + i++ + "\\." + REG_REPLACE + i++);
-            tempExp.append(REG_SPACE + columnLabel + REG_SPACE);
-            sub.append(REG_REPLACE + i++ + getHandledField(component, columnLabel, true) + REG_REPLACE + i++);
-        }
-        String exp = tempExp.toString().substring(REG_SPACE.length());
-        exp = exp.toString().substring(0, exp.lastIndexOf(REG_SPACE));
-        exp = "\\b" + exp + "\\b"; //$NON-NLS-1$ //$NON-NLS-2$
-
-        return new String[] { exp, sub.toString() };
+    @Override
+    protected String getHandledField(String field) {
+        return getHandledField(field, false);
     }
 
-    private StringBuffer getSchemaAndTable(DbMapComponent component, String schemaStr, String tableNameStr) {
-        StringBuffer tempExp = new StringBuffer();
-        if (!"".equals(schemaStr)) {
-            tempExp.append(getHandledField(component, schemaStr));
-        }
-        if (!"".equals(tableNameStr)) {
-            if ("".equals(schemaStr)) {
-                tempExp.append(getHandledField(component, tableNameStr));
-            } else {
-                tempExp.append(".");
-                tempExp.append(getHandledField(component, tableNameStr));
-            }
-        }
-        return tempExp;
-    }
-
-    private String getHandledField(DbMapComponent component, String field, boolean inRegx) {
-        DataMapExpressionParser parser = new DataMapExpressionParser(language);
-        if (ContextParameterUtils.isContainContextParam(field) || !parser.getGlobalMapSet(field).isEmpty()) {
+    private String getHandledField(String field, boolean inRegx) {
+        if (isVariable(field)) {
             return field;
         } else if (inRegx) {
             return "\\\\\"" + field + "\\\\\"";
@@ -196,11 +147,6 @@ public class PostgresGenerationManager extends DbGenerationManager {
             return "\\\"" + field + "\\\"";
         }
 
-    }
-
-    @Override
-    protected String getHandledField(DbMapComponent component, String field) {
-        return getHandledField(component, field, false);
     }
 
     @Override
@@ -258,15 +204,20 @@ public class PostgresGenerationManager extends DbGenerationManager {
                     generateSubQuery(component, sb, source, iconn, tableNoQuote, aliasName);
                 } else {
                     if (aliasName == null) {
-                        StringBuffer tempExp = getSchemaAndTable(component, schemaNoQuote, tableNoQuote);
-                        String exp = replaceVariablesForExpression(component, tempExp.toString());
-                        sb.append(exp);
+                        String tableAndSchema = "";
+                        if (hasSchema) {
+                            tableAndSchema = getHandledField(schemaNoQuote);
+                            tableAndSchema = tableAndSchema + ".";
+                        }
+                        tableAndSchema = tableAndSchema + getHandledField(tableNoQuote);
+
+                        if (isVariable(schemaNoQuote) || isVariable(tableNoQuote)) {
+                            tableAndSchema = replaceVariablesForExpression(component, tableAndSchema);
+                        }
+                        sb.append(tableAndSchema);
                     } else {
                         sb.append("\\\"\"+");
                         if (hasSchema) {
-                            if (schemaValue.matches(sourceTable)) {
-
-                            }
                             sb.append(schemaValue);
                             sb.append("+\"\\\".\\\"\"+");
                         }
@@ -278,6 +229,11 @@ public class PostgresGenerationManager extends DbGenerationManager {
             }
         }
         return tableName;
+    }
+
+    private boolean isVariable(String expression) {
+        return !StringUtils.isEmpty(expression)
+                && (ContextParameterUtils.isContainContextParam(expression) || parser.getGlobalMapSet(expression).size() > 0);
     }
 
     private void generateSubQuery(DbMapComponent component, StringBuffer sb, INode source, IConnection iconn, String tableName,
@@ -300,9 +256,9 @@ public class PostgresGenerationManager extends DbGenerationManager {
         }
 
         if (aliasName != null) {
-            sb.append(getHandledField(component, aliasName));
+            sb.append(getHandledField(aliasName));
         } else {
-            sb.append(getHandledField(component, tableName));
+            sb.append(getHandledField(tableName));
         }
 
     }
@@ -331,10 +287,12 @@ public class PostgresGenerationManager extends DbGenerationManager {
             }
             Set<String> globalMapList = getGlobalMapList(component, expression);
             for (String globalMapStr : globalMapList) {
-                // replace the ((String)globalMap.get("source")) to \(\(String\)globalMap.get\(\"source\"\)\) as regex
-                // expression
-                String regex = globalMapStr.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)").replaceAll("\\\"", "\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-                expression = expression.replaceAll(regex, "\\\\\"\"+" + globalMapStr + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ 
+                String replacement = globalMapStr;
+                if (globalMapStr.contains("\\\\")) {
+                    replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
+                }
+                String regex = parser.getGlobalMapReplaceExpression(globalMapStr);
+                expression = expression.replaceAll(regex, "\\\\\"\"+" + replacement + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ 
             }
         }
         return expression;

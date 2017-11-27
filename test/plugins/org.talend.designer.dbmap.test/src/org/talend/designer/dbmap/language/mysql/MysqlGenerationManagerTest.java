@@ -105,6 +105,18 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
         String query = manager.buildSqlSelect(dbMapComponent, "grade");
         assertEquals(expectedQuery, query);
 
+        main_table = "((String)globalMap.get(\"#main\\table)\"))";
+        lookup_table = "((String)globalMap.get(\"@lookup\\\\table*\"))";
+        init("", main_table, null, lookup_table, null);
+        expectedQuery = "\"SELECT\n"
+                + "\" +((String)globalMap.get(\"#main\table)\"))+ \".id, \" +((String)globalMap.get(\"#main\table)\"))+ \".name,"
+                + " \" +((String)globalMap.get(\"#main\table)\"))+ \".age, \" +((String)globalMap.get(\"@lookup\\table*\"))+ \".score\n"
+                + "FROM\n"
+                + " \" +((String)globalMap.get(\"#main\table)\"))+ \" , \" +((String)globalMap.get(\"@lookup\\table*\"))";
+        manager = new MysqlGenerationManager();
+        query = manager.buildSqlSelect(dbMapComponent, "grade");
+        assertEquals(expectedQuery, query);
+
     }
 
     @Test

@@ -78,6 +78,8 @@ public abstract class DbGenerationManager {
 
     protected List<String> querySegments = new ArrayList<String>();
 
+    protected DataMapExpressionParser parser;
+
     /**
      * DOC amaumont GenerationManager constructor comment.
      *
@@ -86,6 +88,7 @@ public abstract class DbGenerationManager {
     public DbGenerationManager(IDbLanguage language) {
         super();
         this.language = language;
+        this.parser = new DataMapExpressionParser(language);
     }
 
     /**
@@ -461,8 +464,10 @@ public abstract class DbGenerationManager {
                             // containWhereAddition.add(exp);
                             // } else
                             if (containWith(exp, DbMapSqlConstants.OR, true) || containWith(exp, DbMapSqlConstants.AND, true)) {
+                                exp = replaceVariablesForExpression(component, exp);
                                 originalWhereAddition.add(exp);
                             } else {
+                                exp = replaceVariablesForExpression(component, exp);
                                 whereAddition.add(exp);
                             }
                         }
@@ -560,10 +565,12 @@ public abstract class DbGenerationManager {
             }
             Set<String> globalMapList = getGlobalMapList(component, expression);
             for (String globalMapStr : globalMapList) {
-                // replace the ((String)globalMap.get("source")) to \(\(String\)globalMap.get\(\"source\"\)\) as regex
-                // expression
-                String regex = globalMapStr.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)").replaceAll("\\\"", "\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-                expression = expression.replaceAll(regex, "\" +" + globalMapStr + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ 
+                String replacement = globalMapStr;
+                if (globalMapStr.contains("\\\\")) {
+                    replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
+                }
+                String regex = parser.getGlobalMapReplaceExpression(globalMapStr);
+                expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ 
             }
         }
         return expression;
@@ -658,7 +665,6 @@ public abstract class DbGenerationManager {
     }
 
     protected Set<String> getGlobalMapList(DbMapComponent component, String sqlQuery) {
-        DataMapExpressionParser parser = new DataMapExpressionParser(language);
         return parser.getGlobalMapSet(sqlQuery);
     }
 
@@ -726,9 +732,9 @@ public abstract class DbGenerationManager {
             if (table.getAlias() == null) {
                 tableName = getHandledTableName(component, table.getName(), table.getAlias());
             } else {
-                tableName = getHandledField(component, table.getAlias());
+                tableName = getHandledField(table.getAlias());
             }
-            String locationInputEntry = language.getLocation(tableName, getHandledField(component, entryName));
+            String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
             sbWhere.append(DbMapSqlConstants.SPACE);
             sbWhere.append(locationInputEntry);
             sbWhere.append(getSpecialRightJoin(table));
@@ -808,7 +814,7 @@ public abstract class DbGenerationManager {
                 String handledTableName = getHandledTableName(component, inputTable.getTableName(), alias);
                 appendSqlQuery(sb, handledTableName);
                 appendSqlQuery(sb, DbMapSqlConstants.SPACE);
-                String handledField = getHandledField(component, alias);
+                String handledField = getHandledField(alias);
                 appendSqlQuery(sb, handledField);
                 aliasAlreadyDeclared.add(alias);
             } else {
@@ -1158,7 +1164,7 @@ public abstract class DbGenerationManager {
 
     }
 
-    protected String getHandledField(DbMapComponent component, String field) {
+    protected String getHandledField(String field) {
         return field;
     }
 

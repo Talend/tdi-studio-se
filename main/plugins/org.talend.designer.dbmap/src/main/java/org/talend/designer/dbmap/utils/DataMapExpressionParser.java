@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.designer.dbmap.utils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.oro.text.regex.MalformedPatternException;
@@ -217,6 +219,64 @@ public class DataMapExpressionParser {
             }
         }
         return resultList;
+    }
+
+    public String getGlobalMapReplaceExpression(String expression) {
+        String[] specialChars = new String[] { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
+        String[] specialCharsRegex = new String[] { "\\\\", "\\$", "\\(", "\\)", "\\*", "\\+", "\\.", "\\[", "\\]", "\\?", "\\^",
+                "\\{", "\\}", "\\|" };
+        String regexExpression = expression;
+        for (int i = 0; i < specialChars.length; i++) {
+            int indexOf = regexExpression.indexOf(specialChars[i]);
+            if (indexOf != -1) {
+                regexExpression = regexExpression.replaceAll(specialCharsRegex[i], "\\\\" + specialCharsRegex[i]);
+            }
+        }
+
+        return regexExpression;
+    }
+
+    public boolean isComplexValue(String value) {
+        List<Integer> quoteLocations = getQuoteLocations(value, 0);
+        for (int i = 1; i < quoteLocations.size(); i++) {
+            if (i + 1 < quoteLocations.size()) {
+                Integer start = quoteLocations.get(i);
+                Integer end = quoteLocations.get(i + 1);
+                int indexOf = value.substring(start, end).indexOf("+");
+                if (indexOf != -1) {
+                    return true;
+                }
+                i = i + 2;
+            }
+        }
+        return false;
+    }
+
+    private List<Integer> getQuoteLocations(String text, int index) {
+        List<Integer> locations = new ArrayList<Integer>();
+        if (index > text.length()) {
+            return locations;
+        }
+        int indexOf = text.indexOf("\"", index);
+        if (indexOf != -1) {
+            boolean isQuote = true;
+            if (indexOf > 0) {
+                char slash = '\\';
+                char charAt = text.charAt(indexOf - 1);
+                if (charAt == slash) {
+                    isQuote = false;
+                }
+            }
+            if (isQuote) {
+                locations.add(indexOf);
+                indexOf = indexOf + 1;
+            }
+            if (indexOf < text.length()) {
+                locations.addAll(getQuoteLocations(text, indexOf));
+            }
+
+        }
+        return locations;
     }
 
 }
