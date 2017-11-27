@@ -13120,12 +13120,12 @@
     <COLUMN KEY="false" LENGTH="0" NAME="aging60_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="aging90" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="aging90_base" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="anniversary" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="anniversary" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="annualincome" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="annualincome_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="assistantname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="assistantphone" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="birthdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="birthdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="business2" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="callback" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="childrensnames" TYPE="id_String"  />
@@ -14753,7 +14753,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="duedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="duedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
@@ -15160,7 +15160,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedamount_base" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_Double"  />
     <COLUMN KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -15686,7 +15686,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
 <TABLE IF="(ENTITYSET=='opportunities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
-    <COLUMN KEY="false" LENGTH="0" NAME="actualclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="actualclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="budgetamount" TYPE="id_BigDecimal"  />
@@ -15707,13 +15707,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filedebrief" TYPE="id_Boolean"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="finaldecisiondate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="finaldecisiondate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="identifycompetitors" TYPE="id_Boolean"  />
@@ -16649,8 +16649,8 @@
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="traversedpath" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="validfromdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="validtodate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="validfromdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="validtodate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorpartnumber" TYPE="id_String"  />
@@ -17038,7 +17038,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="billto_postalcode" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_stateorprovince" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_telephone" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="closedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="closedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
@@ -17047,7 +17047,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="effectivefrom" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveto" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="expireson" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="expireson" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freighttermscode" TYPE="id_Integer"  />
