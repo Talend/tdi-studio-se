@@ -381,8 +381,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             if (!Boolean.getBoolean("talend.export.job.2." + exportType.toString() + ".hide")) { //$NON-NLS-1$//$NON-NLS-2$
                 // TESB-20767 Microservice should not be display with TDI license
                 if (exportType.equals(JobExportType.MSESB)
-                        && GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
-                    // reset export type
+                        && !GlobalServiceRegister.getDefault().isServiceRegistered(ICamelDesignerCoreService.class)) {
+                    // reset export type to POJO
                     if (getCurrentExportType1().equals(JobExportType.MSESB)) {
                         getDialogSettings().put(STORE_EXPORTTYPE_ID, JobExportType.POJO.label);
                     }
