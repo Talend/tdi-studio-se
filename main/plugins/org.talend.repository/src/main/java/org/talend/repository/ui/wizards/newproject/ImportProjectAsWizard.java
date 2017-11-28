@@ -22,12 +22,14 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.commons.ui.swt.dialogs.ProgressDialog;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
@@ -126,8 +128,16 @@ public class ImportProjectAsWizard extends Wizard {
                         throw new InvocationTargetException(e);
                     }
                     monitorWrap.done();
-                    MessageDialog.openInformation(shell, Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
-                            Messages.getString("ImportProjectAction.messageDialogContent.projectImportedSuccessfully")); //$NON-NLS-1$
+                    try {
+                        IProject project = ResourceUtils.getProject(technicalName);
+                        if (project.exists()) {
+                            MessageDialog.openInformation(shell,
+                                    Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
+                                    Messages.getString("ImportProjectAction.messageDialogContent.projectImportedSuccessfully")); //$NON-NLS-1$
+                        }
+                    } catch (PersistenceException e) {
+                        //
+                    }
                 }
             };
 

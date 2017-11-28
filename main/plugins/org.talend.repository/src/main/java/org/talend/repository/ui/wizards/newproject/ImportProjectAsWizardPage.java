@@ -19,9 +19,9 @@ import java.util.Collection;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -42,12 +42,10 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
-import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
-import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
-import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.service.IRemoteService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.utils.ProjectUtils;
 import org.talend.repository.RepositoryPlugin;
@@ -394,76 +392,57 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
         Collection projectFiles = new ArrayList();
         Collection talendProjectFiles = new ArrayList();
-        ImportProjectHelper helper = new ImportProjectHelper();
-
         if (!dirSelected && ArchiveFileManipulations.isTarFile(path)) {
             TarFile sourceTarFile = getSpecifiedTarSourceFile(path);
             if (sourceTarFile == null) {
                 return;
             }
 
-            TarLeveledStructureProvider provider = new TarLeveledStructureProvider(sourceTarFile);
-            Object child = provider.getRoot();
-
-            if (!helper.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
-                    IProjectDescription.DESCRIPTION_FILE_NAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
-                    FileConstants.LOCAL_PROJECT_FILENAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
-                    FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
-                return;
-            }
         } else if (!dirSelected && ArchiveFileManipulations.isZipFile(path)) {
             ZipFile sourceFile = getSpecifiedZipSourceFile(path);
             if (sourceFile == null) {
                 return;
             }
-            ZipLeveledStructureProvider provider = new ZipLeveledStructureProvider(sourceFile);
-            Object child = provider.getRoot();
-
-            if (!helper.collectProjectFilesFromProvider(projectFiles, provider, child, 0, null,
-                    IProjectDescription.DESCRIPTION_FILE_NAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
-                    FileConstants.LOCAL_PROJECT_FILENAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, null,
-                    FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
-                return;
-            }
-        } else if (dirSelected && directory.isDirectory()) {
-            if (!helper
-                    .collectProjectFilesFromDirectory(projectFiles, directory, null, IProjectDescription.DESCRIPTION_FILE_NAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
-                    FileConstants.LOCAL_PROJECT_FILENAME)) {
-                return;
-            }
-            if (!helper.collectProjectFilesFromDirectory(talendProjectFiles, directory, null,
-                    FileConstants.OLD_TALEND_PROJECT_FILENAME)) {
-                return;
-            }
         }
-
         lastPath = path;
 
-        if (projectFiles.size() != 1 || talendProjectFiles.size() != 1) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
+        org.talend.core.model.properties.Project project = null;
+        ImportProjectHelper helper = new ImportProjectHelper();
+        try {
+            project = helper.retrieveProjectFilesFromProvider(null, directory);
+        } catch (OperationCanceledException e) {
+            return;
+        }
+        boolean valid = true;
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+                IBrandingService.class);
+        if (project == null) {
+            valid = false;
             String string = Messages.getString("ImportProjectAsWizardPage.error.notATalendProject", //$NON-NLS-1$
                     brandingService.getShortProductName());
             fileContentStatus = new Status(IStatus.ERROR, RepositoryPlugin.PLUGIN_ID, IStatus.OK, string, null);
         } else {
-            fileContentStatus = createOkStatus();
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
+                IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault().getService(
+                        IRemoteService.class);
+                if (!remoteService.isAuthorized(project.getProductVersion())) {
+                    String compatibleMessage = Messages.getString("ImportProjectAsWizardPage.compatible.message"); //$NON-NLS-1$
+                    String confirmMessage = Messages.getString("ImportProjectAsWizardPage.confirm.message", project.getLabel()); //$NON-NLS-1$
+                    boolean confirm = MessageDialog.openConfirm(this.getShell(), brandingService.getProductName(),
+                            compatibleMessage + "\n\n" + confirmMessage); //$NON-NLS-1$
+                    if (!confirm) {
+                        valid = false;
+                        fileContentStatus = new Status(IStatus.ERROR, RepositoryPlugin.PLUGIN_ID, IStatus.OK, compatibleMessage,
+                                null);
+                    }
+                }
+            }
         }
 
+        if (valid) {
+            fileContentStatus = createOkStatus();
+
+        }
         checkFieldsValue();
     }
 

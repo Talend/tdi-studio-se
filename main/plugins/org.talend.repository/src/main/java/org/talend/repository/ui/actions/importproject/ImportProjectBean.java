@@ -21,11 +21,12 @@ public class ImportProjectBean {
 
     public final org.talend.core.model.general.Project oldProject;
 
-    ImportProjectBean(org.talend.core.model.properties.Project newProject, org.talend.core.model.properties.Project oldProject) {
+    public ImportProjectBean(org.talend.core.model.properties.Project newProject,
+            org.talend.core.model.properties.Project oldProject) {
         this(new org.talend.core.model.general.Project(newProject), new org.talend.core.model.general.Project(oldProject));
     }
 
-    ImportProjectBean(org.talend.core.model.general.Project newProject, org.talend.core.model.general.Project oldProject) {
+    public ImportProjectBean(org.talend.core.model.general.Project newProject, org.talend.core.model.general.Project oldProject) {
         this.newProject = newProject;
         this.oldProject = oldProject;
     }

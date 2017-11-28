@@ -12,11 +12,13 @@
 // ============================================================================
 package org.talend.repository.ui.actions.importproject;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -36,12 +38,16 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.IOverwriteQuery;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
+import org.eclipse.ui.internal.wizards.datatransfer.ILeveledImportStructureProvider;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.TarLeveledStructureProvider;
@@ -51,10 +57,14 @@ import org.eclipse.ui.wizards.datatransfer.ImportOperation;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.utils.TalendResourceSet;
+import org.talend.core.repository.utils.URIHelper;
 import org.talend.core.repository.utils.XmiResourceManager;
 import org.talend.core.runtime.repository.item.ItemProductValuesHelper;
 import org.talend.repository.i18n.Messages;
@@ -349,10 +359,86 @@ public class ImportProjectHelper {
             }
             String elementLabel = provider.getLabel(child);
             if (elementLabel.equals(searchFileName)) {
-                files.add(elementLabel);
+                files.add(child);
             }
         }
         return true;
+    }
+
+    public Project retrieveProjectFilesFromProvider(IProgressMonitor monitor, File file) {
+        List projectFiles = new ArrayList();
+        List talendProjectFiles = new ArrayList();
+        ILeveledImportStructureProvider provider = null;
+        try {
+            if (file.isDirectory()) {
+                provider = new DirImportStructureProvider(file);
+            } else if (file.isFile()) {
+                if (ArchiveFileManipulations.isTarFile(file.getAbsolutePath())) {
+                    provider = new TarLeveledStructureProvider(new TarFile(file));
+                } else if (ArchiveFileManipulations.isZipFile(file.getAbsolutePath())) {
+                    provider = new ZipLeveledStructureProvider(new ZipFile(file));
+                }
+            }
+
+            if (monitor != null && monitor.isCanceled()) {
+                throw new OperationCanceledException();// cancel
+            }
+            if (provider != null) {
+                Object child = provider.getRoot();
+                if (!collectProjectFilesFromProvider(projectFiles, provider, child, 0, monitor,
+                        IProjectDescription.DESCRIPTION_FILE_NAME)) {
+                    throw new OperationCanceledException();// cancel
+                }
+                if (!collectProjectFilesFromProvider(talendProjectFiles, provider, child, 0, monitor,
+                        FileConstants.LOCAL_PROJECT_FILENAME)) {
+                    throw new OperationCanceledException();// cancel
+                }
+
+                if (projectFiles.size() == 1 && talendProjectFiles.size() == 1) {
+                    if (monitor != null && monitor.isCanceled()) {
+                        throw new OperationCanceledException();// cancel
+                    }
+
+                    InputStream contents = provider.getContents(talendProjectFiles.get(0));
+                    if (contents != null) {
+                        BufferedOutputStream bos = null;
+                        try {
+                            URI uri = URIHelper.convert(new Path(String.valueOf(System.currentTimeMillis()))
+                                    .append(FileConstants.LOCAL_PROJECT_FILENAME));
+                            Resource resource = new TalendResourceSet().createResource(uri);
+                            resource.load(contents, null);
+                            Project emfProject = (Project) EcoreUtil.getObjectByType(resource.getContents(),
+                                    PropertiesPackage.eINSTANCE.getProject());
+                            if (emfProject != null) {
+                                return emfProject;
+                            }
+                        } finally {
+                            if (bos != null) {
+                                try {
+                                    bos.close();
+                                } catch (IOException e1) {
+                                    //
+                                }
+                            }
+                            if (contents != null) {
+                                try {
+                                    contents.close();
+                                } catch (IOException e1) {
+                                    //
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException | TarException e) {
+            ExceptionHandler.process(e);
+        } finally {
+            if (provider != null) {
+                provider.closeArchive();
+            }
+        }
+        return null;
     }
 
     public void checkProjectItems(org.talend.core.model.general.Project p) {
