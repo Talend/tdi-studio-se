@@ -4243,7 +4243,7 @@ public class EmfComponent extends AbstractBasicComponent {
     }
 
     public String getTemplateFolder() {
-        return getPathSource() + "/" + getName() + "/";
+        return getPathSource() + "/" + getName();
     }
 
 }

@@ -1652,7 +1652,7 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public String getTemplateFolder() {
-        return "jet_stub/generic/";
+        return "jet_stub/generic";
     }
 
     public String getTemplateNamePrefix() {
