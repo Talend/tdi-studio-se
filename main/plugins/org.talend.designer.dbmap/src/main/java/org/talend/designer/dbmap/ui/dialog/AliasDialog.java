@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.talend.core.model.process.Problem;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
@@ -185,7 +186,7 @@ public class AliasDialog {
         /**
          * Error message label widget.
          */
-        private Text errorMessageText;
+        private Label errorMessageText;
 
         /**
          * Error message string.
@@ -214,6 +215,7 @@ public class AliasDialog {
         public AliasInternalDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue,
                 IInputValidator validator) {
             super(parentShell);
+            setShellStyle(getShellStyle() | SWT.APPLICATION_MODAL | SWT.RESIZE);
             this.title = dialogTitle;
             message = dialogMessage;
             if (initialValue == null) {
@@ -245,6 +247,7 @@ public class AliasDialog {
         @Override
         protected void configureShell(Shell shell) {
             super.configureShell(shell);
+            shell.setMinimumSize(300, 300);
             if (title != null) {
                 shell.setText(title);
             }
@@ -292,10 +295,7 @@ public class AliasDialog {
                 @Override
                 public void widgetSelected(SelectionEvent e) {
                     internalTableName = combo.getText();
-                    validateInput();
-                    if ("".equals(errorMessageText.getText())) {
-                        problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(), text.getText());
-                    }
+                    validateInput(combo.getText(), text.getText());
                 }
 
             });
@@ -319,15 +319,12 @@ public class AliasDialog {
 
                 @Override
                 public void modifyText(ModifyEvent e) {
-                    validateInput();
-                    if ("".equals(errorMessageText.getText())) {
-                        problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(), text.getText());
-                    }
+                    validateInput(combo.getText(), text.getText());
+
                 }
             });
-            errorMessageText = new Text(composite, SWT.READ_ONLY);
-            errorMessageText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
-            errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            errorMessageText = new Label(composite, SWT.WRAP);
+            errorMessageText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
             // Set the error message text
             // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=66292
             setErrorMessage(errorMessage);
@@ -391,10 +388,17 @@ public class AliasDialog {
          * method is called whenever the text changes in the input field.
          * </p>
          */
-        protected void validateInput() {
+        protected void validateInput(String tableName, String alias) {
             String errorMessage = null;
             if (validator != null) {
-                errorMessage = validator.isValid(text.getText());
+                errorMessage = validator.isValid(alias);
+            }
+            if (errorMessage == null) {
+                Problem needAliasProblem = problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(),
+                        text.getText());
+                if (needAliasProblem != null) {
+                    errorMessage = needAliasProblem.getDescription();
+                }
             }
             // Bug 16256: important not to treat "" (blank error) the same as null
             // (no error)
@@ -412,6 +416,7 @@ public class AliasDialog {
             if (errorMessageText != null && !errorMessageText.isDisposed()) {
                 errorMessageText.setText(errorMessage == null ? "" : errorMessage); //$NON-NLS-1$
                 errorMessageText.getParent().update();
+                errorMessageText.getParent().layout();
                 // Access the ok button by id, in case clients have overridden button creation.
                 // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=113643
                 Control button = getButton(IDialogConstants.OK_ID);

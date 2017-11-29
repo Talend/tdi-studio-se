@@ -291,7 +291,7 @@ public class PostgresGenerationManager extends DbGenerationManager {
                 if (globalMapStr.contains("\\\\")) {
                     replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
                 }
-                String regex = parser.getGlobalMapReplaceExpression(globalMapStr);
+                String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
                 expression = expression.replaceAll(regex, "\\\\\"\"+" + replacement + "+\"\\\\\""); //$NON-NLS-1$ //$NON-NLS-2$ 
             }
         }

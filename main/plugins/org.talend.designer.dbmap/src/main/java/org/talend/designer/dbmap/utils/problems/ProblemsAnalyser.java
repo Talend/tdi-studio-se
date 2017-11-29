@@ -27,6 +27,7 @@ import org.talend.designer.dbmap.MapperMain;
 import org.talend.designer.dbmap.external.connection.IOConnection;
 import org.talend.designer.dbmap.external.converter.ExternalDataConverter;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
+import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.ProblemsManager;
 import org.talend.designer.dbmap.model.table.AbstractInOutTable;
@@ -143,7 +144,7 @@ public class ProblemsAnalyser {
             String schemaValue = "";
             String tableValue = "";
             if (source != null) {
-                inputIsELTDBMap = source.isELTComponent();
+                inputIsELTDBMap = source.isELTComponent() && source.getComponent().getName().endsWith("Map");
                 if (inputIsELTDBMap) {
                     tableValue = iconn.getName();
                 } else {
@@ -172,7 +173,7 @@ public class ProblemsAnalyser {
                     needAlias = needAlias(tableValue);
                 }
                 if (needAlias) {
-                    String errorMessage = "The table name tableName is complex and the generated sql might not work ,please use alias ";
+                    String errorMessage = Messages.getString("ProblemsAnalyser.needAlias.error", tableName);
                     return new Problem(null, errorMessage, ProblemStatus.WARNING);
                 }
             }
@@ -180,17 +181,22 @@ public class ProblemsAnalyser {
         return null;
     }
 
-    private boolean needAlias(String value) {
+    public boolean needAlias(String value) {
         List<Integer> quoteLocations = getQuoteLocations(value, 0);
-        for (int i = 1; i < quoteLocations.size(); i++) {
-            if (i + 1 < quoteLocations.size()) {
-                Integer start = quoteLocations.get(i);
-                Integer end = quoteLocations.get(i + 1);
-                int indexOf = value.substring(start, end).indexOf("+");
-                if (indexOf != -1) {
-                    return true;
+        if (!quoteLocations.isEmpty()) {
+            for (int i = -1; i < quoteLocations.size(); i = i + 2) {
+                if (i < quoteLocations.size()) {
+                    Integer start = i < 0 ? 0 : quoteLocations.get(i);
+                    Integer end = (i + 1) >= quoteLocations.size() ? value.length() : quoteLocations.get(i + 1);
+                    int indexOf = value.substring(start, end).indexOf("+");
+                    if (indexOf != -1) {
+                        return true;
+                    }
                 }
-                i = i + 2;
+            }
+        } else {
+            if (value.indexOf("+") != -1) {
+                return true;
             }
         }
         return false;

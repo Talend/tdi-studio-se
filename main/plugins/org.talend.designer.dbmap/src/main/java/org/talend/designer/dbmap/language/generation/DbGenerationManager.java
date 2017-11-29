@@ -565,11 +565,8 @@ public abstract class DbGenerationManager {
             }
             Set<String> globalMapList = getGlobalMapList(component, expression);
             for (String globalMapStr : globalMapList) {
-                String replacement = globalMapStr;
-                if (globalMapStr.contains("\\")) {
-                    replacement = globalMapStr.replaceAll("\\\\", "\\\\\\\\");
-                }
-                String regex = parser.getGlobalMapReplaceExpression(globalMapStr);
+                String regex = parser.getGlobalMapExpressionRegex(globalMapStr);
+                String replacement = parser.getGlobalMapReplacement(globalMapStr);
                 expression = expression.replaceAll(regex, "\" +" + replacement + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ 
             }
         }

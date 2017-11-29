@@ -221,7 +221,7 @@ public class DataMapExpressionParser {
         return resultList;
     }
 
-    public String getGlobalMapReplaceExpression(String expression) {
+    public String getGlobalMapExpressionRegex(String expression) {
         String[] specialChars = new String[] { "\\", "$", "(", ")", "*", "+", ".", "[", "]", "?", "^", "{", "}", "|" };
         String[] specialCharsRegex = new String[] { "\\\\", "\\$", "\\(", "\\)", "\\*", "\\+", "\\.", "\\[", "\\]", "\\?", "\\^",
                 "\\{", "\\}", "\\|" };
@@ -234,6 +234,21 @@ public class DataMapExpressionParser {
         }
 
         return regexExpression;
+    }
+
+    public String getGlobalMapReplacement(String expression) {
+        String[] specialChars = new String[] { "\\", "$" };
+        String[] specialCharsRegex = new String[] { "\\\\", "\\$" };
+        String[] specialCharsReplacement = new String[] { "\\\\\\\\", "\\\\\\$" };
+        String replacement = expression;
+        for (int i = 0; i < specialChars.length; i++) {
+            int indexOf = replacement.indexOf(specialChars[i]);
+            if (indexOf != -1) {
+                replacement = replacement.replaceAll(specialCharsRegex[i], specialCharsReplacement[i]);
+            }
+        }
+
+        return replacement;
     }
 
     public boolean isComplexValue(String value) {

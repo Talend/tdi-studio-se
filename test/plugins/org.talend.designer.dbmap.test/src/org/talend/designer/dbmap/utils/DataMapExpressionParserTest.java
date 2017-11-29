@@ -171,49 +171,49 @@ public class DataMapExpressionParserTest {
     }
 
     @Test
-    public void testGetGlobalMapReplaceExpression() {
+    public void testGetGlobalMapExpressionRegexAndReplacement() {
         IDbLanguage language = new MysqlLanguage();
         DataMapExpressionParser paser = new DataMapExpressionParser(language);
         // test 1
         String exp1 = "((String)globalMap.get(\"\\source*test{\"))";
-        String globalMapReplaceExpression = paser.getGlobalMapReplaceExpression(exp1);
+        String globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
         // test expression
         Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"\\\\source\\*test\\{\"\\)\\)");
         // test replacement
-        String replacement = exp1.replaceAll("\\\\", "\\\\\\\\");
+        String replacement = paser.getGlobalMapReplacement(exp1);
         exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
         Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\source*test{\"))+\"");
 
         // test 2
         exp1 = "((String)globalMap.get(\"\\\\source*test{\"))";
-        globalMapReplaceExpression = paser.getGlobalMapReplaceExpression(exp1);
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
         // test expression
         Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"\\\\\\\\source\\*test\\{\"\\)\\)");
         // test replacement
-        replacement = exp1.replaceAll("\\\\", "\\\\\\\\");
+        replacement = paser.getGlobalMapReplacement(exp1);
         exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
         Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\\\source*test{\"))+\"");
 
         // test 3
         exp1 = "((String)globalMap.get(\"\\\\source\\*test\\{\"))";
-        globalMapReplaceExpression = paser.getGlobalMapReplaceExpression(exp1);
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
         // test expression
         Assert.assertEquals(globalMapReplaceExpression,
                 "\\(\\(String\\)globalMap\\.get\\(\"\\\\\\\\source\\\\\\*test\\\\\\{\"\\)\\)");
         // test replacement
-        replacement = exp1.replaceAll("\\\\", "\\\\\\\\");
+        replacement = paser.getGlobalMapReplacement(exp1);
         exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
         Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\\\source\\*test\\{\"))+\"");
 
         // test 4
-        exp1 = "((String)globalMap.get(\"#main\\table)\"))";
-        globalMapReplaceExpression = paser.getGlobalMapReplaceExpression(exp1);
+        exp1 = "((String)globalMap.get(\"#main\\$table)\"))";
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
         // test expression
-        Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"#main\\\\table\\)\"\\)\\)");
+        Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"#main\\\\\\$table\\)\"\\)\\)");
         // test replacement
-        replacement = exp1.replaceAll("\\\\", "\\\\\\\\");
+        replacement = paser.getGlobalMapReplacement(exp1);
         exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
-        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"#main\\table)\"))+\"");
+        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"#main\\$table)\"))+\"");
 
     }
 
