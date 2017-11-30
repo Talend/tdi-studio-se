@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFile;
@@ -198,14 +200,19 @@ public final class CodeGeneratorEmittersPoolFactory {
                     }
                 }
 
+                // Quick fix to avoid reinitialization of generic components. We have only two kinds of generic
+                // components right now.
+                // They have different javajet files, so we need to initialize once each of them.
+                // Should be a better fix for this situation, but this is only a quick fix.
+                Set<Class<?>> genericClasses = new HashSet<>();
                 // initialize generic component begin/main/end
                 for (IComponent genericComponent : genericComponents) {
-                    initGenericComponent(codeLanguage, jetBeans, ECodePart.BEGIN, genericComponent);
-                    initGenericComponent(codeLanguage, jetBeans, ECodePart.END, genericComponent);
-                    initGenericComponent(codeLanguage, jetBeans, ECodePart.MAIN, genericComponent);
-                    initGenericComponent(codeLanguage, jetBeans, ECodePart.FINALLY, genericComponent);
-                    // TODO
-                    break;
+                    if (genericClasses.add(genericComponent.getClass())) {
+                        initGenericComponent(codeLanguage, jetBeans, ECodePart.BEGIN, genericComponent);
+                        initGenericComponent(codeLanguage, jetBeans, ECodePart.END, genericComponent);
+                        initGenericComponent(codeLanguage, jetBeans, ECodePart.MAIN, genericComponent);
+                        initGenericComponent(codeLanguage, jetBeans, ECodePart.FINALLY, genericComponent);
+                    }
                 }
 
                 TimeMeasure.step("initialize Jet Emitters", "initialize jet beans from components"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -519,9 +526,8 @@ public final class CodeGeneratorEmittersPoolFactory {
     private static void initGenericComponent(ECodeLanguage codeLanguage, List<JetBean> jetBeans, ECodePart codePart,
             IComponent component) {
         if (component.getAvailableCodeParts().contains(codePart)) {
-            String templateURI = TemplateUtil.JET_STUB_DIRECTORY + TemplateUtil.DIR_SEP + TemplateUtil.RESOURCES_DIRECTORY_GENERIC
-                    + TemplateUtil.DIR_SEP + "component_" + codePart.getName()//$NON-NLS-1$
-                    + TemplateUtil.EXT_SEP + codeLanguage.getExtension() + TemplateUtil.TEMPLATE_EXT;
+            String templateURI = component.getTemplateFolder() + TemplateUtil.DIR_SEP + component.getTemplateNamePrefix() + "_"
+                    + codePart.getName() + TemplateUtil.EXT_SEP + codeLanguage.getExtension() + TemplateUtil.TEMPLATE_EXT;
             String componentsPath = "org.talend.designer.codegen";//$NON-NLS-1$
             // TODO
             JetBean jetBean = new JetBean(componentsPath, templateURI, "component", component.getVersion(), //$NON-NLS-1$

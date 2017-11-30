@@ -1459,6 +1459,10 @@ public class Component extends AbstractBasicComponent {
         return true;
     }
 
+    public void initNodeProperties(INode newNode, INode oldNode) {
+        this.initNodePropertiesFromSerialized(newNode, oldNode.getComponentProperties().toSerialized());
+    }
+
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
