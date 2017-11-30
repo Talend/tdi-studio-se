@@ -11,7 +11,6 @@
 	
     String cid = node.getUniqueName();
     String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
-
 	%>
 
    <%
@@ -20,9 +19,11 @@
 
    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	   
+	org.jets3t.service.Jets3tProperties jets3tProperties = new org.jets3t.service.Jets3tProperties();
+	jets3tProperties.setProperty("httpclient.useragent", routines.system.Constant.TALEND_USER_AGENT_GCS);
 	org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 	org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = 
-		new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)",null);
+		new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)", null, jets3tProperties);
 	service_<%=cid%>.getAccountOwner();
 	globalMap.put("service_" + "<%=cid%>",service_<%=cid%>);
 	
