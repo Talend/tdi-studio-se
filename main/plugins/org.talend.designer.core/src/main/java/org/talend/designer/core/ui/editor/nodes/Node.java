@@ -3565,7 +3565,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (nbMinOut != 0) {
-                        if (curLinkOut < nbMinOut) {
+                        if (nodeConnector.isShow() && curLinkOut < nbMinOut) {
                             String errorMessage = Messages.getString("Node.notEnoughTypeOutput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
@@ -3584,7 +3584,7 @@ public class Node extends Element implements IGraphicalNode {
                     }
                     if (needCheckInput) {
                         if (nbMinIn != 0) {
-                            if (curLinkIn < nbMinIn) {
+                            if (nodeConnector.isShow() && curLinkIn < nbMinIn) {
                                 String errorMessage = Messages.getString("Node.notEnoughTypeInput", typeName); //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
