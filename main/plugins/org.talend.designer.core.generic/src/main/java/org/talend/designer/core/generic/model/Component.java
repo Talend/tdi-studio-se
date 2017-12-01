@@ -1646,4 +1646,17 @@ public class Component extends AbstractBasicComponent {
         return super.getVersion();
     }
 
+    public String getJetFileNamePrefix() {
+        return "component";
+    }
+
+    @Override
+    public String getTemplateFolder() {
+        return "jet_stub/generic";
+    }
+
+    public String getTemplateNamePrefix() {
+        return "component";
+    }
+
 }

@@ -511,7 +511,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     private boolean isNeedSandboxProject;
 
     protected boolean isNeedSandboxProject() {
-        isNeedSandboxProject = LoginHelper.isRemoteConnection(getConnection());
+        isNeedSandboxProject = LoginHelper.isRemotesConnection(getConnection());
         if (isNeedSandboxProject) {
             BusyIndicator.showWhile(getDisplay(), new Runnable() {
 
@@ -519,7 +519,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 public void run() {
                     try {
                         isNeedSandboxProject = ProxyRepositoryFactory.getInstance().enableSandboxProject();
-                    } catch (PersistenceException e) {
+                    } catch (Exception e) {
                         CommonExceptionHandler.process(e);
                     }
                 }
@@ -559,7 +559,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             if (user2 != null && !"".equals(user2) && repositoryId2 != null && !"".equals(repositoryId2) && workSpace != null //$NON-NLS-1$ //$NON-NLS-2$
                     && !"".equals(workSpace) && name != null && !"".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
                 boolean valid = false;
-                if (LoginHelper.isRemoteConnection(connectionBean)) {
+                if (LoginHelper.isRemotesConnection(connectionBean)) {
                     String url = connectionBean.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     valid = url != null && !"".equals(url); //$NON-NLS-1$
                 } else {
@@ -892,7 +892,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                         }
                         checkErrors();
                         validateUpdate();
-                    } else if (!LoginHelper.isRemoteConnection(getConnection())) {
+                    } else if (!LoginHelper.isRemotesConnection(getConnection())) {
                         fillUIProjectListWithBusyCursor();
                         validateProject();
                         checkErrors();
@@ -1050,7 +1050,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     private boolean refreshLicenseIfNeeded() {
         ConnectionBean conn = loginHelper.getCurrentSelectedConnBean();
         Project proj = getProject();
-        if (LoginHelper.isRemoteConnection(conn)) {
+        if (LoginHelper.isRemotesConnection(conn)) {
             String url = getAdminURL();
             String projLabel = proj.getLabel();
             String userId = conn.getUser();
@@ -1129,7 +1129,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         Project project = getProject();
         loginHelper.getPrefManipulator().setLastProject(project.getLabel());
 
-        if (loginHelper.isRemoteConnection(getConnection())) {
+        if (LoginHelper.isRemotesConnection(getConnection())) {
             String branch = getBranch();
             if (branch == null) {
                 branch = SVNConstant.EMPTY;
@@ -1296,7 +1296,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     protected void refreshNecessaryVisible() {
-        refreshNecessaryVisible(LoginHelper.isRemoteConnection(getConnection()));
+        refreshNecessaryVisible(LoginHelper.isRemotesConnection(getConnection()));
     }
 
     protected void refreshNecessaryVisible(boolean isRemote) {
@@ -1495,6 +1495,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
                 } else {
                     if (LoginHelper.isRemoteConnection(getConnection())) {
                         errorManager.setErrMessage(Messages.getString("LoginProjectPage.project_need.remote.v1")); //$NON-NLS-1$
+                    } else if (LoginHelper.isCloudConnection(getConnection())) {
+                        errorManager.setErrMessage(Messages.getString("LoginProjectPage.project_need.remote.cloud")); //$NON-NLS-1$
                     } else {
                         errorManager.setErrMessage(Messages.getString("LoginComposite.PROJECT_NEED")); //$NON-NLS-1$
                     }
@@ -1639,7 +1641,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
         boolean valid = true;
 
         ConnectionBean connection = getConnection();
-        boolean isRemote = LoginHelper.isRemoteConnection(connection);
+        boolean isRemote = LoginHelper.isRemotesConnection(connection);
         boolean serverIsLocal = !isAuthenticationNeeded();
         if (valid && getConnection() == null) {
             valid = false;
@@ -1842,7 +1844,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             StructuredSelection selection = (StructuredSelection) connectionsViewer.getSelection();
             Object firstElement = selection.getFirstElement();
             if (firstElement instanceof ConnectionBean) {
-                isRemote = LoginHelper.isRemoteConnection((ConnectionBean) firstElement);
+                isRemote = LoginHelper.isRemotesConnection((ConnectionBean) firstElement);
             }
         }
         return isRemote;
@@ -1914,7 +1916,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     private void fillUIBranches(final Project project, boolean lastUsedBranch) throws JSONException {
         final String storage = getStorage(project);
-        if (LoginHelper.isRemoteConnection(getConnection())) {
+        if (LoginHelper.isRemotesConnection(getConnection())) {
             currentProjectSettings = project;
             final List<String> projectBranches = new ArrayList<String>();
             if ("svn".equals(storage)) {
@@ -2022,7 +2024,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
 
     public String getBranch() {
         Project project = getProject();
-        boolean isRemoteConnection = LoginHelper.isRemoteConnection(getConnection());
+        boolean isRemoteConnection = LoginHelper.isRemotesConnection(getConnection());
         if (branchesViewer != null && isRemoteConnection && !branchesViewer.getSelection().isEmpty() && project != null) {
             IStructuredSelection ss = (IStructuredSelection) branchesViewer.getSelection();
             String branch = (String) ss.getFirstElement();
@@ -2176,6 +2178,8 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             String connectionName = prj.getName();
             if (LoginHelper.isRemoteConnection(prj)) {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.remote"); //$NON-NLS-1$//$NON-NLS-2$
+            } else if (LoginHelper.isCloudConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud"); //$NON-NLS-1$//$NON-NLS-2$
             } else {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.local"); //$NON-NLS-1$//$NON-NLS-2$
             }
@@ -2308,7 +2312,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
     }
 
     private void fetchLicenseIfNeeded(Project proj) {
-        if (LoginHelper.isRemoteConnection(loginHelper.getCurrentSelectedConnBean())) {
+        if (LoginHelper.isRemotesConnection(loginHelper.getCurrentSelectedConnBean())) {
             fetchLicense(proj);
         }
     }

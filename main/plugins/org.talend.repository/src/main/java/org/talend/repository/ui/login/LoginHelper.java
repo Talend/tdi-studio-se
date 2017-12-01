@@ -211,11 +211,40 @@ public class LoginHelper {
         }
     }
 
+    /**
+     * 
+     * @param repositoryId
+     * @return true if remote or cloud
+     */
+    public static boolean isRemotesRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId)
+                || RepositoryConstants.REPOSITORY_CLOUD_ID.equals(repositoryId);
+    }
+
+    /**
+     * 
+     * @param connectionBean
+     * @return true if remote or cloud
+     */
+    public static boolean isRemotesConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return isRemoteConnection(connectionBean) || isCloudConnection(connectionBean);
+    }
+
     public static boolean isRemoteConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
         }
         return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_ID.equals(connectionBean.getRepositoryId());
     }
 
     public void saveConnections() {
@@ -253,8 +282,8 @@ public class LoginHelper {
         return LoginHelper.getInstance().getFirstConnBean();
     }
 
-    public static boolean isRemoteConnection() {
-        return isRemoteConnection(LoginHelper.getInstance().getCurrentSelectedConnBean());
+    public static boolean isRemotesConnection() {
+        return isRemotesConnection(LoginHelper.getInstance().getCurrentSelectedConnBean());
     }
 
     protected static boolean needRestartForLocal(ConnectionBean curConnection) {
@@ -306,7 +335,7 @@ public class LoginHelper {
 
     public static String getAdminURL(ConnectionBean currentBean) {
         String tacURL = null;
-        if (currentBean != null && currentBean.getRepositoryId().equals(RepositoryConstants.REPOSITORY_REMOTE_ID)) {
+        if (currentBean != null && LoginHelper.isRemotesRepository(currentBean.getRepositoryId())) {
             tacURL = currentBean.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
         }
         return tacURL;
@@ -339,7 +368,7 @@ public class LoginHelper {
         // must have this init, used to retreive projects
         setRepositoryContextInContext(connBean, user, null, null);
 
-        boolean isRemoteConnection = LoginHelper.isRemoteConnection(connBean);
+        boolean isRemoteConnection = LoginHelper.isRemotesConnection(connBean);
         if (isRemoteConnection) {
             boolean isStudioNeedUpdate = false;
             try {
@@ -499,7 +528,7 @@ public class LoginHelper {
             repositoryContext.setNoUpdateWhenLogon(false);
             return;
         }
-        if (!LoginHelper.isRemoteConnection(getCurrentSelectedConnBean())) {
+        if (!LoginHelper.isRemotesConnection(getCurrentSelectedConnBean())) {
             repositoryContext.setNoUpdateWhenLogon(true);
             return;
         }
@@ -569,7 +598,7 @@ public class LoginHelper {
             if (user2 != null && !"".equals(user2) && repositoryId2 != null && !"".equals(repositoryId2) && workSpace != null //$NON-NLS-1$ //$NON-NLS-2$
                     && !"".equals(workSpace) && name != null && !"".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
                 boolean valid = false;
-                if (isRemoteConnection(connBean)) {
+                if (isRemotesConnection(connBean)) {
                     String url = connBean.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     valid = url != null && !"".equals(url); //$NON-NLS-1$
                 } else {
@@ -809,7 +838,7 @@ public class LoginHelper {
         // can be two case: 1 only local connection, 2 only remote connection
         Iterator<ConnectionBean> connectionBeanIter = filteredConnections.iterator();
         while (connectionBeanIter.hasNext()) {
-            boolean isRemoteConnection = LoginHelper.isRemoteConnection(connectionBeanIter.next());
+            boolean isRemoteConnection = LoginHelper.isRemotesConnection(connectionBeanIter.next());
             if (isOnlyRemoteConnection && !isRemoteConnection) {
                 // only remote connection, should remove local
                 connectionBeanIter.remove();

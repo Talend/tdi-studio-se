@@ -171,4 +171,12 @@ public abstract class AbstractComponent implements IComponent {
     public String getOriginalName(){
         return getName();
     }
+
+    public String getTemplateFolder() {
+        return getPathSource() == null ? null : (getPathSource() + "/" + getName());
+    }
+
+    public String getTemplateNamePrefix() {
+        return getName();
+    }
 }

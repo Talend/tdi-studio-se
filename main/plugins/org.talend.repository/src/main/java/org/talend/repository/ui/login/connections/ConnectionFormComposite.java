@@ -65,7 +65,7 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.actions.importproject.DeleteProjectsAsAction;
 import org.talend.repository.ui.login.LoginDialogV2;
-import org.talend.repository.ui.login.connections.network.NetworkSettingDialog;
+import org.talend.repository.ui.login.LoginHelper;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -96,8 +96,6 @@ public class ConnectionFormComposite extends Composite {
     private Button workSpaceButton;
 
     protected Button deleteProjectsButton;
-
-    protected Button networkSettingBtn;
 
     private ConnectionBean connection;
 
@@ -232,6 +230,9 @@ public class ConnectionFormComposite extends Composite {
                 formDefaultFactory.copy().align(SWT.FILL, SWT.CENTER).applyTo(label);
 
                 Text text = toolkit.createText(formBody, "", textStyle); //$NON-NLS-1$
+                if (currentField.getDefaultValue() != null) {
+                    text.setText(currentField.getDefaultValue());
+                }
 
                 formDefaultFactory.copy().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(text);
                 LabelText labelText = new LabelText(label, text);
@@ -257,28 +258,14 @@ public class ConnectionFormComposite extends Composite {
         seperatorGridData.horizontalSpan = 3;
         seperatorGridData.heightHint = 0;
         seperator.setLayoutData(seperatorGridData);
-
-        /**
-         * Place holder
-         */
         Label placeHolder = new Label(formBody, SWT.NONE);
-
-        Composite buttonArea = toolkit.createComposite(formBody);
-        GridLayout btnAreaLayout = new GridLayout(2, true);
-        btnAreaLayout.marginHeight = 0;
-        btnAreaLayout.marginWidth = 0;
-        btnAreaLayout.makeColumnsEqualWidth = true;
-        buttonArea.setLayout(btnAreaLayout);
-        formDefaultFactory.copy().grab(true, false).span(2, 1).applyTo(buttonArea);
-
         // add delete buttons
-        deleteProjectsButton = new Button(buttonArea, SWT.NONE);
+        deleteProjectsButton = new Button(formBody, SWT.NONE);
         deleteProjectsButton.setText(Messages.getString("ConnectionFormComposite.deleteExistingProject")); //$NON-NLS-1$
-        formDefaultFactory.copy().grab(true, false).span(1, 1).applyTo(deleteProjectsButton);
-
-        networkSettingBtn = new Button(buttonArea, SWT.PUSH);
-        networkSettingBtn.setText(Messages.getString("ConnectionFormComposite.networkSetting")); //$NON-NLS-1$
-        formDefaultFactory.copy().grab(true, false).span(1, 1).applyTo(networkSettingBtn);
+        GridData deleteButtonGridData = new GridData();
+        deleteButtonGridData.widthHint = LoginDialogV2.getNewButtonSize(deleteProjectsButton).x;
+        deleteButtonGridData.horizontalSpan = 2;
+        deleteProjectsButton.setLayoutData(deleteButtonGridData);
 
         addListeners();
         addWorkSpaceListener();
@@ -425,7 +412,7 @@ public class ConnectionFormComposite extends Composite {
                 if (factory != null && factory.isAuthenticationNeeded()) {
                     enablePasswordField = true;
                 }
-            } else if (getRepository() != null && RepositoryConstants.REPOSITORY_REMOTE_ID.equals(getRepository().getId())) {
+            } else if (getRepository() != null && LoginHelper.isRemotesRepository(getRepository().getId())) {
                 enablePasswordField = true;
             }
 
@@ -521,14 +508,6 @@ public class ConnectionFormComposite extends Composite {
         }
     };
 
-    SelectionListener networkSettingListener = new SelectionAdapter() {
-
-        @Override
-        public void widgetSelected(SelectionEvent e) {
-            onNetworkSettingBtnSelected();
-        }
-    };
-
     private void addListeners() {
         repositoryCombo.addPostSelectionChangedListener(repositoryListener);
         nameText.addModifyListener(standardTextListener);
@@ -550,7 +529,6 @@ public class ConnectionFormComposite extends Composite {
         }
 
         deleteProjectsButton.addSelectionListener(deleteProjectClickListener);
-        networkSettingBtn.addSelectionListener(networkSettingListener);
     }
 
     public void changeUserLabel() {
@@ -601,27 +579,41 @@ public class ConnectionFormComposite extends Composite {
             }
         }
         deleteProjectsButton.removeSelectionListener(deleteProjectClickListener);
-        networkSettingBtn.removeSelectionListener(networkSettingListener);
     }
 
     private void fillBean(boolean cleanDynamicValue) {
         if (connection != null) {
-            if (getRepository() != null) {
-                connection.setRepositoryId(getRepository().getId());
+            IRepositoryFactory repository = getRepository();
+            if (repository != null) {
+                connection.setRepositoryId(repository.getId());
 
                 Map<String, String> connFields = new HashMap<String, String>();
 
-                Map<String, LabelText> map = dynamicControls.get(getRepository());
+                Map<String, LabelText> map = dynamicControls.get(repository);
+
+                Map<String, DynamicFieldBean> keyBeanMap = new HashMap<>();
+                List<DynamicFieldBean> fields = repository.getFields();
+                if (fields != null) {
+                    for (DynamicFieldBean field : fields) {
+                        keyBeanMap.put(field.getId(), field);
+                    }
+                }
+
                 for (String fieldKey : map.keySet()) {
                     if (cleanDynamicValue) {
-                        map.get(fieldKey).setText("");
+                        String text = ""; //$NON-NLS-1$
+                        DynamicFieldBean dynamicFieldBean = keyBeanMap.get(fieldKey);
+                        if (dynamicFieldBean != null) {
+                            text = dynamicFieldBean.getDefaultValue();
+                        }
+                        map.get(fieldKey).setText(text);
                     }
                     connFields.put(fieldKey, map.get(fieldKey).getText());
                 }
 
-                Map<String, LabelledCombo> map2 = dynamicChoices.get(getRepository());
+                Map<String, LabelledCombo> map2 = dynamicChoices.get(repository);
                 for (String fieldKey : map2.keySet()) {
-                    for (DynamicChoiceBean dynamicChoiceBean : getRepository().getChoices()) {
+                    for (DynamicChoiceBean dynamicChoiceBean : repository.getChoices()) {
                         if (dynamicChoiceBean.getId().equals(fieldKey)) {
                             int selectionIndex = map2.get(fieldKey).getCombo().getSelectionIndex();
                             connFields.put(fieldKey, dynamicChoiceBean.getChoiceValue(selectionIndex));
@@ -737,11 +729,6 @@ public class ConnectionFormComposite extends Composite {
     public void deleteProject() {
         DeleteProjectsAsAction deleteProjectAction = new DeleteProjectsAsAction(true);
         deleteProjectAction.run();
-    }
-
-    private void onNetworkSettingBtnSelected() {
-        NetworkSettingDialog dialog = new NetworkSettingDialog(getShell());
-        dialog.open();
     }
 
     /**
