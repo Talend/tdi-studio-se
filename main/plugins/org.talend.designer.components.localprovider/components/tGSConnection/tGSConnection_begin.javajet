@@ -11,13 +11,13 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 String accessKey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 String passwordFieldName = "__SECRET_KEY__";
-final String version_studio = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
 %>
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	   
 org.jets3t.service.Jets3tProperties jets3tProperties = new org.jets3t.service.Jets3tProperties();
-jets3tProperties.setProperty("httpclient.useragent", routines.system.Constant.getUserAgentGCS("<%=version_studio%>"));
+jets3tProperties.setProperty("httpclient.useragent", routines.system.Constant.getUserAgentGCS("<%=studioVersion%>"));
 org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)", null, jets3tProperties);
 service_<%=cid%>.getAccountOwner();

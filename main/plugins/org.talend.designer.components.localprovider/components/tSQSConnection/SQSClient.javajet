@@ -21,7 +21,7 @@
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
 		sessionDuration = "15";
 	}
-	final String version_studio = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
 	
 	if(("true").equals(useExistingConn)) {
 		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
@@ -59,7 +59,7 @@
 		}
 		%>
 		com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
-		cc_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=version_studio%>"));
+		cc_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"));
 		<%
 		if(configClient && clientConfiguration.size()>0){
 			boolean setBuffer = false;
