@@ -1205,7 +1205,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (libsStr.lastIndexOf(classPathSeparator) != libsStr.length() - 1) {
             libsStr += classPathSeparator;
         }
-        return "\"" + libsStr + "\"";
+        return libsStr;
     }
 
     protected String getBasePathClasspath() throws ProcessorException {
