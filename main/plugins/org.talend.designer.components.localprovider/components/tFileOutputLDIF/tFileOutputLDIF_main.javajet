@@ -42,7 +42,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
                     JavaType javaType_sub = JavaTypesManager.getJavaTypeFromId(column_sub.getTalendType());
                     if(column_sub.getLabel().equals(columnName)){
                     	if(javaType_sub == JavaTypesManager.BYTE_ARRAY && isBinary){
-                    		return columnName+";binary:";
+                    		return columnName+";binary";
                     	}else{
                     		return columnName;
                     	}
@@ -55,6 +55,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 		//////////////////////////
 		boolean encodingBase64_<%=cid%> = false;
+		boolean encodedBase64_<%=cid%> = false;
 <%
     	List<? extends IConnection> conns = node.getIncomingConnections();
     	for (IConnection conn : conns) {
@@ -75,6 +76,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					boolean isPrimitive = JavaTypesManager.isJavaPrimitiveType( javaType, column.isNullable());
 %>
             		encodingBase64_<%=cid%> = false;
+            		encodedBase64_<%=cid%> = false;
             		String value_<%=column.getLabel() %>_<%=cid %> = "";
             		<%//For bug TDI-26863
             		String modify_operation = null;
@@ -117,6 +119,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 					} else if(javaType == JavaTypesManager.BYTE_ARRAY) {
 %>
 		org.apache.commons.codec.binary.Base64.encodeBase64String(<%=conn.getName() %>.<%=column.getLabel() %>);
+		encodedBase64_<%=cid%> = true;
 <%
 					} else {
 %>
@@ -226,7 +229,7 @@ Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
 				<%
 			}
 			%>
-				item_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,item_<%=cid %>,<%=encoding%>);
+				item_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,encodedBase64_<%=cid%>,item_<%=cid %>,<%=encoding%>);
 				util_<%=cid %>.breakString(sb_<%=cid %>, "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinary) %>" + item_<%=cid %>, wrap_<%=cid %>);
 		}
 <%
@@ -253,7 +256,7 @@ Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
 			<%
 		}
 		%>
-			value_<%=column.getLabel() %>_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,value_<%=column.getLabel() %>_<%=cid %>,<%=encoding%>);
+			value_<%=column.getLabel() %>_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,encodedBase64_<%=cid%>,value_<%=column.getLabel() %>_<%=cid %>,<%=encoding%>);
 			util_<%=cid %>.breakString(sb_<%=cid %>, "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinary) %>" + value_<%=column.getLabel() %>_<%=cid %>, wrap_<%=cid %>);
 <%
 	}
@@ -284,7 +287,7 @@ sb_<%=cid %>.append("-\n");
                     if(isBinary && !isBase64){
 %>
 //////////////////////////////////////////////////
-Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
+Please check "isBase64" for column <%=columnName%> when "isBinary" is checked.
 //////////////////////////////////////////////////
 <%
                     }
@@ -325,7 +328,7 @@ Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
 					<%
 				}
 				%>
-	                item_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,item_<%=cid %>,<%=encoding%>);
+	                item_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,encodedBase64_<%=cid%>,item_<%=cid %>,<%=encoding%>);
 	                util_<%=cid %>.breakString(sb_<%=cid %>, "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinary) %>" + item_<%=cid %>, wrap_<%=cid %>);
 		}
 <%
@@ -352,7 +355,7 @@ Please check "isBase64" for column <%=columnName%> when "isBianry" is checked.
 				<%
 				}
 			%>
-				value_<%=column.getLabel() %>_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,value_<%=column.getLabel() %>_<%=cid %>,<%=encoding%>);
+				value_<%=column.getLabel() %>_<%=cid %> = util_<%=cid %>.getBase64StringOrNot(encodingBase64_<%=cid%>,encodedBase64_<%=cid%>,value_<%=column.getLabel() %>_<%=cid %>,<%=encoding%>);
 				util_<%=cid %>.breakString(sb_<%=cid %>, "<%=ldifUtil.getAttributeType(metadata,column.getLabel(),isBinary) %>" + value_<%=column.getLabel() %>_<%=cid %>, wrap_<%=cid %>);
 <%
 	}

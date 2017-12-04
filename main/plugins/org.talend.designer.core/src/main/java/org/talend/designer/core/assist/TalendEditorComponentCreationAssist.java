@@ -152,11 +152,11 @@ public class TalendEditorComponentCreationAssist {
         // TODO the trigger way may need improved, currently, any visible character will trigger it
         // TalendEditorComponentProposalProvider proposalProvider = new
         // TalendEditorComponentProposalProvider(components);
-        TalendEditorComponentProposalProvider proposalProvider = new TalendEditorComponentProposalProvider(this, proposalList);
+        TalendEditorComponentProposalProvider proposalProvider = new TalendEditorComponentProposalProvider(this, proposalList, process);
         contentProposalAdapter = new ContentProposalAdapter(assistText, new TextContentAdapter(), proposalProvider, null, null);
         contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
         contentProposalAdapter.setLabelProvider(new TalendEditorComponentLabelProvider());
-    }
+    } 
 
     private void highlightOveredConnection(org.eclipse.swt.graphics.Point cursorRelativePosition) {
         if (overedConnection != null) {

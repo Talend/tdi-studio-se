@@ -1,1 +1,11 @@
 <%@ include file="../templates/DB/Input/AbstractDBInputEnd.javajet"%>
+
+<%
+String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
+if ("false".equalsIgnoreCase(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"))
+&& !logLevel.equals("0")) {
+%>
+		logWriter_<%=cid %>.close();
+<%
+}
+%>

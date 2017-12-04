@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -130,6 +130,8 @@ public class RepositoryReviewDialog extends Dialog {
     private static final String ISSPARK = "ISSPARK"; //$NON-NLS-1$
 
     private static final String USEYARN = "USEYARN"; //$NON-NLS-1$
+
+    private static final String ELEMENT = "ELEMENT"; //$NON-NLS-1$
 
     private boolean filterReferenceNode = false;
 
@@ -359,7 +361,7 @@ public class RepositoryReviewDialog extends Dialog {
                     attributes.putAll(attr);
                 }
             }
-
+            attributes.put(ELEMENT, elem);
             IRepositoryTypeProcessor processor = hadoopClusterService.getHadoopSubMultiRepTypeProcessor(repTypeList
                     .toArray(new String[0]));
             processor.setAttributes(attributes);

@@ -62,7 +62,7 @@ public class DiConverters {
         LOGICAL_CONVERTERS.put(LogicalTypeUtils.TIMESTAMP_MILLIS, new DateLogicalTimestampConverter());
 
         DI_TYPES_CONVERTERS = new HashMap<>();
-        DI_TYPES_CONVERTERS.put(BigDecimal.class.getCanonicalName(), new BigDecimalStringConverter());
+        DI_TYPES_CONVERTERS.put(BigDecimal.class.getCanonicalName(), new BigDecimalStringDoubleConverter());
         DI_TYPES_CONVERTERS.put(Byte.class.getCanonicalName(), new ByteIntegerConverter());
         DI_TYPES_CONVERTERS.put(Character.class.getCanonicalName(), new CharStringConverter());
         DI_TYPES_CONVERTERS.put(Short.class.getCanonicalName(), new ShortIntegerConverter());

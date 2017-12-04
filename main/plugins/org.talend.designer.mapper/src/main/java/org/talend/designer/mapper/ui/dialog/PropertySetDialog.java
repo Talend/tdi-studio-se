@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,7 +30,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Slider;
 import org.talend.commons.ui.swt.formtools.LabelledDirectoryField;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.core.model.components.ComponentCategory;
@@ -63,9 +65,22 @@ public class PropertySetDialog extends Dialog {
 
     private LabelledText sizeField;
 
+    private Slider levenshteinSlider;
+
+    private Slider jaccardSlider;
+
+    private Label levenshteinWeightLabel;
+
+    private Label jaccardWeightLabel;
+
     public static final String QUOTATION_MARK = "\""; //$NON-NLS-1$
 
+    private Group autoMapGroup;
+
     private final Color color = new Color(Display.getDefault(), 238, 238, 0);
+
+    private Scale scale;
+
 
     /**
      * Create the dialog
@@ -89,7 +104,7 @@ public class PropertySetDialog extends Dialog {
         final GridLayout gridLayout = new GridLayout();
         gridLayout.marginLeft = 10;
         gridLayout.marginTop = 10;
-        gridLayout.marginHeight = 10;
+        gridLayout.marginHeight = 0;
         container.setLayout(gridLayout);
 
         dieOnErrorButton = new Button(container, SWT.CHECK);
@@ -119,12 +134,70 @@ public class PropertySetDialog extends Dialog {
         label.setText("*");
         label.setToolTipText("Required filed.");
 
+        autoMapGroup = new Group(container, SWT.NONE);
+        autoMapGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));//$NON-NLS-1$
+
+        GridLayout AutogridLayout = new GridLayout(3, false);
+        AutogridLayout.horizontalSpacing = 10;
+        AutogridLayout.marginRight = 100;
+        
+        autoMapGroup.setLayout(AutogridLayout);
+        scale = new Scale(autoMapGroup, SWT.HORIZONTAL);
+        scale.setMaximum(4);
+        scale.setMinimum(0);
+        scale.setPageIncrement(1);
+        GridData grid = new GridData();
+        grid.horizontalSpan = 3;
+        grid.widthHint = 490;
+        grid.heightHint = 30;
+        scale.setLayoutData(grid);
+        Composite comp = new Composite(autoMapGroup, SWT.NONE);
+        GridLayout compLayout = new GridLayout(5, false);
+        compLayout.horizontalSpacing = 34;
+        comp.setLayout(compLayout);
+        GridData grid1 = new GridData();
+        grid1.horizontalSpan = 3;
+        grid1.widthHint = 500;
+        grid1.heightHint = 19;
+        comp.setLayoutData(grid1);
+        Label label1 = new Label(comp, SWT.NONE);
+        label1.setText("Exact Match");
+        Label label2 = new Label(comp, SWT.NONE);
+        label2.setText("Simple Match");
+        Label label3 = new Label(comp, SWT.NONE);
+        label3.setText("Full Levenshtein");
+        Label label4 = new Label(comp, SWT.NONE);
+        label4.setText("Full Jaccard");
+        Label label5 = new Label(comp, SWT.NONE);
+        label5.setText("Super Fuzzy");
+
+        Label levenshteinLabel = new Label(autoMapGroup, SWT.NONE);
+        levenshteinLabel.setText("Levenshtein");
+        levenshteinSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
+        levenshteinSlider.setSize(200, 25);
+        levenshteinSlider.setMaximum(101);
+        levenshteinSlider.setMinimum(0);
+        levenshteinSlider.setThumb(1);
+        levenshteinWeightLabel = new Label(autoMapGroup, SWT.NONE);
+
+        Label jaccardLabel = new Label(autoMapGroup, SWT.NONE);
+        jaccardLabel.setText("Jaccard");
+        jaccardSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
+        jaccardSlider.setSize(200, 25);
+        jaccardSlider.setMaximum(101);
+        jaccardSlider.setMinimum(0);
+        jaccardSlider.setThumb(1);
+        jaccardWeightLabel = new Label(autoMapGroup, SWT.NONE);
+
         init();
         addListener();
         updateStatus();
+        updateScale();
         //
         return container;
     }
+
 
     private void init() {
         MapperSettingModel currnentModel = settingsManager.getCurrnentModel();
@@ -133,6 +206,11 @@ public class PropertySetDialog extends Dialog {
         enableAutoConvertTypeBtn.setSelection(currnentModel.isEnableAutoConvertType());
         directoryField.setText(StringUtils.trimToEmpty(currnentModel.getTempDataDir()));
         sizeField.setText(StringUtils.trimToEmpty(currnentModel.getRowBufferSize()));
+
+        levenshteinWeightLabel.setText(String.valueOf(currnentModel.getLevenshteinWeight()));
+        levenshteinSlider.setSelection(currnentModel.getLevenshteinWeight());
+        jaccardWeightLabel.setText(String.valueOf(currnentModel.getJaccardWeight()));
+        jaccardSlider.setSelection(currnentModel.getJaccardWeight());
     }
 
     private void addListener() {
@@ -168,6 +246,72 @@ public class PropertySetDialog extends Dialog {
             }
         });
 
+        levenshteinSlider.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateAutoMapLabel();
+                updateScale();
+            }
+        });
+
+        jaccardSlider.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                updateAutoMapLabel();
+                updateScale();
+            }
+        });
+
+
+
+        scale.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (scale.getSelection() == 0) {
+                    levenshteinSlider.setSelection(0);
+                    jaccardSlider.setSelection(0);
+                    updateAutoMapLabel();
+                } else if (scale.getSelection() == 1) {
+                    levenshteinSlider.setSelection(40);
+                    jaccardSlider.setSelection(40);
+                    updateAutoMapLabel();
+                } else if (scale.getSelection() == 2) {
+                    levenshteinSlider.setSelection(100);
+                    jaccardSlider.setSelection(0);
+                    updateAutoMapLabel();
+                } else if (scale.getSelection() == 3) {
+                    levenshteinSlider.setSelection(0);
+                    jaccardSlider.setSelection(100);
+                    updateAutoMapLabel();
+                } else if (scale.getSelection() == 4) {
+                    levenshteinSlider.setSelection(100);
+                    jaccardSlider.setSelection(100);
+                    updateAutoMapLabel();
+                }
+            }
+        });
+
+    }
+
+    /**
+     * DOC xwen Comment method "updateScale".
+     */
+    private void updateScale() {
+        if ((levenshteinSlider.getSelection() <= 20) && (jaccardSlider.getSelection() <= 20)) {// exact match
+            scale.setSelection(0);
+        } else if ((levenshteinSlider.getSelection() <= 20) && (jaccardSlider.getSelection() >= 70)) {// full jaccard
+            scale.setSelection(3);
+        } else if ((levenshteinSlider.getSelection() >= 70) && ((jaccardSlider.getSelection()) <= 20)) {// full
+                                                                                                        // levenshtein
+            scale.setSelection(2);
+        } else if ((levenshteinSlider.getSelection() >= 70) && (jaccardSlider.getSelection() >= 70)) {// supper fuzzy
+            scale.setSelection(4);
+        } else {
+            scale.setSelection(1);
+        }
     }
 
     private void updateStatus() {
@@ -207,6 +351,12 @@ public class PropertySetDialog extends Dialog {
         }
     }
 
+    private void updateAutoMapLabel() {
+        levenshteinWeightLabel.setText(String.valueOf(levenshteinSlider.getSelection()));
+        jaccardWeightLabel.setText(String.valueOf(jaccardSlider.getSelection()));
+        autoMapGroup.layout();
+    }
+
     /**
      * Create contents of the button bar
      * 
@@ -223,7 +373,7 @@ public class PropertySetDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(600, 350);
+        return new Point(600, 380);
     }
 
     @Override
@@ -248,6 +398,8 @@ public class PropertySetDialog extends Dialog {
         currentModel.setEnableAutoConvertType(enableAutoConvertTypeBtn.getSelection());
         currentModel.setTempDataDir(directory);
         currentModel.setRowBufferSize(sizeField.getText());
+        currentModel.setLevenshteinWeight(Integer.valueOf(levenshteinSlider.getSelection()));
+        currentModel.setJaccardWeight(Integer.valueOf(jaccardSlider.getSelection()));
 
         if (dieOnErrorButton.getSelection()) {
             mapperManager.removeRejectOutput();
@@ -256,6 +408,7 @@ public class PropertySetDialog extends Dialog {
                 mapperManager.addRejectOutput();
             }
         }
+
 
         super.okPressed();
     }

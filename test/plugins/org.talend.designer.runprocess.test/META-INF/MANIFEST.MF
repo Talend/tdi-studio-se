@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
 Bundle-SymbolicName: org.talend.designer.runprocess.test
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Fragment-Host: org.talend.designer.runprocess
 Require-Bundle: org.junit;bundle-version="4.11.0",
  org.talend.utils;bundle-version="6.0.0",

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.talend.studio</groupId>
 		<artifactId>parent-pom</artifactId>
-		<version>6.5.0-SNAPSHOT</version>
+		<version>7.0.1-SNAPSHOT</version>
 		<relativePath />
 	</parent>
 	<artifactId>tdi-studio-se</artifactId>
@@ -130,6 +130,7 @@
 		<module>main/plugins/org.talend.libraries.uniserv</module>
 		<module>main/plugins/org.talend.libraries.w3c</module>
 		<module>main/plugins/org.talend.libraries.xml</module>
+		<module>main/plugins/org.talend.libraries.zmq</module>
 		<module>main/plugins/org.talend.libraries.hadoop.mapr.5.0.0</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource</module>
 		<module>main/plugins/org.talend.presentation.onboarding.resource.tos</module>

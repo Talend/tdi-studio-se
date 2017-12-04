@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Client Plug-in
 Bundle-SymbolicName: org.talend.sbi.engines.client;singleton:=true
-Bundle-Version: 6.5.0.qualifier
+Bundle-Version: 7.0.1.qualifier
 Bundle-Activator: org.talend.sbi.engines.client.Activator
 Require-Bundle: org.talend.core,
  org.eclipse.ui.ide,

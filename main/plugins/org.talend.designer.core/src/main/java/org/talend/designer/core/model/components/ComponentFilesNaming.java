@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,6 +65,10 @@ public final class ComponentFilesNaming implements IComponentFileNaming {
 
     public String getJetFileName(IComponent component, String languageSuffix, ECodePart codePart) {
         return component.getName() + "_" + codePart + "." + languageSuffix + "jet"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    }
+
+    public String getJetFileName(String filePrefix, String languageSuffix, ECodePart codePart) {
+        return filePrefix + "_" + codePart + "." + languageSuffix + "jet"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public String getIcon32FileName(String componentName) {

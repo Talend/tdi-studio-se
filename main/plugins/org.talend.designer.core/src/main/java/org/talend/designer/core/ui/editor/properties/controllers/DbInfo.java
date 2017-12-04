@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -251,7 +251,8 @@ public class DbInfo {
             if (EDatabaseVersion4Drivers.VERTICA_6.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_5_1.getVersionValue().equals(dbVersion)
                     || EDatabaseVersion4Drivers.VERTICA_6_1_X.getVersionValue().equals(dbVersion)
-                    || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)) {
+                    || EDatabaseVersion4Drivers.VERTICA_7.getVersionValue().equals(dbVersion)
+                    || EDatabaseVersion4Drivers.VERTICA_9.getVersionValue().equals(dbVersion)) {
                 driverClassName = EDatabase4DriverClassName.VERTICA2.getDriverClass();
             }
         } else if (EDatabaseTypeName.SYBASEASE.getDisplayName().equals(dbType)) {

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -17,8 +17,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
@@ -553,6 +556,15 @@ public class StatsAndLogsManager {
 
     private static void setConnectionParameter(DataNode connectionNode, IProcess process, String connectionUID,
             DataNode dataNode, List<DataNode> nodeList) {
+        // db type
+        String dbType = null;
+        IElementParameter dbTypeParameter = connectionNode.getElementParameter("TYPE");//$NON-NLS-1$
+        if (dbTypeParameter != null) {
+            Object dbTypeObj = dbTypeParameter.getValue();
+            if (dbTypeObj != null) {
+                dbType = dbTypeObj.toString();
+            }
+        }
         if (connectionNode.getElementParameter(EParameterName.HOST.getName()) != null) {
             connectionNode.getElementParameter(EParameterName.HOST.getName()).setValue(
                     process.getElementParameter(EParameterName.HOST.getName()).getValue());
@@ -620,6 +632,12 @@ public class StatsAndLogsManager {
         if (connectionNode.getElementParameter(EParameterName.DB_VERSION.getName()) != null) {
             connectionNode.getElementParameter(EParameterName.DB_VERSION.getName()).setValue(
                     process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
+        }
+        if (StringUtils.isNotEmpty(dbType) && EDatabaseTypeName.MSSQL.getXmlName().equalsIgnoreCase(dbType)) {
+            if (connectionNode.getElementParameter("DRIVER") != null) {//$NON-NLS-1$
+                connectionNode.getElementParameter("DRIVER") //$NON-NLS-1$
+                        .setValue(process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
+            }
         }
         if (connectionNode.getElementParameter(EParameterName.PROPERTIES.getName()) != null) {
             connectionNode.getElementParameter(EParameterName.PROPERTIES.getName()).setValue(
@@ -1015,7 +1033,7 @@ public class StatsAndLogsManager {
 
         // jdbc child param
         if (moduleNameList == null) {
-            List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+            Set<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
             moduleNameList = new ArrayList<String>();
             moduleValueList = new ArrayList<String>();
             for (ModuleNeeded module : moduleNeededList) {

@@ -1,0 +1,8 @@
+<%@ jet %>
+
+java.text.DateFormat dateStrFormat = new java.text.SimpleDateFormat("yyyyMMddHHmmss");
+final String queryIdentifier = projectName + "_" + jobName + "_" + jobVersion.replace(".", "_") + "_<%=cid%>_" + dateStrFormat.format(new Date(startTime));
+// For MapReduce Mode
+stmt_<%=cid %>.execute("set mapred.job.name=" + queryIdentifier);
+// For Tez Mode
+stmt_<%=cid %>.execute("set hive.query.name=" + queryIdentifier);

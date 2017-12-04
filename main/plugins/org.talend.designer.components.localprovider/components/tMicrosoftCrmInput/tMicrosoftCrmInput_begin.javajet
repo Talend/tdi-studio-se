@@ -42,7 +42,8 @@ imports="
     }else{
     	  String crmOnlineVersion = ElementParameterParser.getValue(node, "__API_VERSION__");
     	  boolean isOnline2016WithOdata="ONLINE".equals(authenticationType) && "API_2016_ODATA".equals(crmOnlineVersion);
-    	  if(isOnline2016WithOdata){
+    	  boolean isMsCrm2016OnPremise = "ON_PREMISE".equals(authenticationType) && "CRM_2016".equals(crmVersion);
+    	  if(isOnline2016WithOdata || isMsCrm2016OnPremise){
     	  %>
            <%@ include file="./tMicrosoftCrmInput_begin_odata.javajet"%>
         <%

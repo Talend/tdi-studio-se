@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -90,7 +90,9 @@ import org.talend.core.ui.component.settings.ComponentsSettingsHelper;
 import org.talend.core.ui.services.IComponentsLocalProviderService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.NamedThing;
+import org.talend.daikon.exception.TalendRuntimeException;
 import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.ReferenceProperties;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.SchemaProperty;
@@ -198,9 +200,14 @@ public class Component extends AbstractBasicComponent {
     }
 
     @Override
-    public List<NodeReturn> createReturns() {
+    public List<NodeReturn> createReturns(INode parentNode) {
         List<NodeReturn> listReturn = new ArrayList<>();
-        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+
+        ComponentProperties componentProperties = parentNode.getComponentProperties();
+        if (componentProperties == null) {
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            componentProperties = parentNode.getComponentProperties();
+        }
         if (!(componentProperties instanceof ComponentPropertiesImpl)) {
             return listReturn;
         }
@@ -215,8 +222,7 @@ public class Component extends AbstractBasicComponent {
         for (Property<?> child : componentDefinition.getReturnProperties()) {
             nodeRet = new NodeReturn();
             nodeRet.setType(ComponentsUtils.getTalendTypeFromProperty(child).getId());
-            nodeRet.setDisplayName(
-                    ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
+            nodeRet.setDisplayName(ComponentReturnVariableUtils.getTranslationForVariable(child.getName(), child.getDisplayName()));
             nodeRet.setName(ComponentReturnVariableUtils.getStudioNameFromVariable(child.getName()));
             if (nodeRet.getName().equals(ERROR_MESSAGE)) {
                 continue;
@@ -947,7 +953,11 @@ public class Component extends AbstractBasicComponent {
     public List<INodeConnector> createConnectors(INode parentNode) {
         List<INodeConnector> listConnector = new ArrayList<>();
 
-        ComponentProperties componentProperties = ComponentsUtils.getComponentProperties(getName());
+        ComponentProperties componentProperties = parentNode.getComponentProperties();
+        if (componentProperties == null) {
+            parentNode.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
+            componentProperties = parentNode.getComponentProperties();
+        }
         Set<? extends Connector> inputConnectors = componentProperties.getPossibleConnectors(false);
 
         if (inputConnectors.isEmpty()) {
@@ -1052,8 +1062,7 @@ public class Component extends AbstractBasicComponent {
      * @param listConnector list of all {@link Component} connectors
      * @param parentNode parent node
      */
-    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector,
-            INode parentNode) {
+    private void createIterateConnectors(Set<ConnectorTopology> topologies, List<INodeConnector> listConnector, INode parentNode) {
         boolean inputOrNone = topologies.contains(ConnectorTopology.NONE) || topologies.contains(ConnectorTopology.OUTGOING);
         INodeConnector iterateConnector = addStandardType(listConnector, EConnectionType.ITERATE, parentNode);
         iterateConnector.setMaxLinkOutput(-1);
@@ -1112,7 +1121,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -1149,6 +1158,9 @@ public class Component extends AbstractBasicComponent {
         } catch (Exception e) {
             if (node == null) {
                 // not handled, must because the runtime info must have a node configuration (properties are null)
+            } else if (e instanceof TalendRuntimeException) {
+                // no need to check talend runtime exception in design time.
+                e.printStackTrace(); // only for debug.
             } else {
                 ExceptionHandler.process(e);
             }
@@ -1156,11 +1168,8 @@ public class Component extends AbstractBasicComponent {
         if (runtimeInfo != null) {
             if (runtimeInfo instanceof JarRuntimeInfo) {
                 JarRuntimeInfo currentRuntimeInfo = (JarRuntimeInfo) runtimeInfo;
-                JarRuntimeInfo localRuntimeInfo = new JarRuntimeInfo(
-                        currentRuntimeInfo.getJarUrl().toString().replace("mvn:", //$NON-NLS-1$
-                                "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!") //$NON-NLS-1$ //$NON-NLS-2$
-                        , currentRuntimeInfo.getDepTxtPath(), currentRuntimeInfo.getRuntimeClassName());
-                runtimeInfo = localRuntimeInfo;
+                runtimeInfo = currentRuntimeInfo.cloneWithNewJarUrlString(currentRuntimeInfo.getJarUrl().toString()
+                        .replace("mvn:", "mvn:" + MavenConstants.LOCAL_RESOLUTION_URL + "!"));
             }
             final Bundle bundle = FrameworkUtil.getBundle(componentDefinition.getClass());
             for (URL mvnUri : runtimeInfo.getMavenUrlDependencies()) {
@@ -1169,13 +1178,13 @@ public class Component extends AbstractBasicComponent {
 
                 if (bundle != null) { // update module location
                     try {
-                        final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getMavenUri());
+                        final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getDefaultMavenURI());
                         final String moduleFileName = artifact.getFileName();
                         final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
                         if (bundleFile != null && bundleFile.exists()) {
                             // FIXME, better install the embed jars from bundle directly in this way.
-                            moduleNeeded.setModuleLocaion(
-                                    ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName() + '/' + moduleFileName);
+                            moduleNeeded.setModuleLocaion(ExtensionModuleManager.URIPATH_PREFIX + bundle.getSymbolicName() + '/'
+                                    + moduleFileName);
                         }
                     } catch (IOException e) {
                         ExceptionHandler.process(e);
@@ -1185,7 +1194,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.0");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.2");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1337,10 +1346,13 @@ public class Component extends AbstractBasicComponent {
     protected void processCodegenPropInfos(List<CodegenPropInfo> propList, Properties props, String fieldString) {
         for (NamedThing prop : props.getProperties()) {
             if (prop instanceof Properties) {
+                if (prop instanceof ReferenceProperties) {
+                    ReferenceProperties rp = (ReferenceProperties) prop;
+                    rp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
+                }
                 if (prop instanceof ComponentReferenceProperties) {
                     ComponentReferenceProperties crp = (ComponentReferenceProperties) prop;
                     crp.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
-                    crp.referenceDefinitionName.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                 }
                 CodegenPropInfo childPropInfo = new CodegenPropInfo();
                 if (fieldString.equals("")) {//$NON-NLS-1$
@@ -1367,9 +1379,9 @@ public class Component extends AbstractBasicComponent {
         return propsList;
     }
 
-    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(
-            new CharSequenceTranslator[] { new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
-                    new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
+    public static final CharSequenceTranslator ESCAPE_SCHEMA = new AggregateTranslator(new CharSequenceTranslator[] {
+            new LookupTranslator(new String[][] { { "\"", "\\\"" }, { "\\", "\\\\" } }),
+            new LookupTranslator(EntityArrays.JAVA_CTRL_CHARS_ESCAPE()), JavaUnicodeEscaper.outsideOf(32, 127) });
 
     public String getCodegenValue(Property property, String value) {
         if (property.isFlag(Property.Flags.ENCRYPT)) {
@@ -1415,7 +1427,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -1447,15 +1459,20 @@ public class Component extends AbstractBasicComponent {
         return true;
     }
 
+    public void initNodeProperties(INode newNode, INode oldNode) {
+        this.initNodePropertiesFromSerialized(newNode, oldNode.getComponentProperties().toSerialized());
+    }
+
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
-            node.setComponentProperties(
-                    Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class, new PostDeserializeSetup() {
+            node.setComponentProperties(Properties.Helper.fromSerializedPersistent(serialized, ComponentProperties.class,
+                    new PostDeserializeSetup() {
 
                         @Override
                         public void setup(Object properties) {
                             ((Properties) properties).setValueEvaluator(new ComponentContextPropertyValueEvaluator(node));
+                            ComponentsUtils.getComponentService().postDeserialize(((Properties) properties));
                         }
 
                     }).object);
@@ -1566,7 +1583,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#isVisible()
      */
     @Override
@@ -1598,7 +1615,7 @@ public class Component extends AbstractBasicComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#isTechnical()
      */
     @Override
@@ -1631,6 +1648,19 @@ public class Component extends AbstractBasicComponent {
             return version.toString();
         }
         return super.getVersion();
+    }
+
+    public String getJetFileNamePrefix() {
+        return "component";
+    }
+
+    @Override
+    public String getTemplateFolder() {
+        return "jet_stub/generic";
+    }
+
+    public String getTemplateNamePrefix() {
+        return "component";
     }
 
 }

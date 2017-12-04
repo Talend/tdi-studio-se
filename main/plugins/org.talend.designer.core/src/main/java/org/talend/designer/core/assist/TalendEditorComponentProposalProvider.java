@@ -9,8 +9,11 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.process.IProcess2;
+import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.core.ui.component.TalendCreationToolEntry;
@@ -26,6 +29,7 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
 
     protected TalendEditorComponentCreationAssist componentAssistant;
 
+    protected IProcess2 process;
     /**
      * Construct a TalendEditorComponentProposalProvider whose content proposals are always the specified set of
      * Component.
@@ -33,10 +37,11 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
      * @param components the Map of Components to be returned whenever proposals are requested.
      */
     public TalendEditorComponentProposalProvider(TalendEditorComponentCreationAssist componentAssist,
-            List<IContentProposal> proposalList) {
+            List<IContentProposal> proposalList, IProcess2 process) {
         super();
         this.componentAssistant = componentAssist;
         this.proposalList = proposalList;
+        this.process = process;
     }
 
     /**
@@ -54,15 +59,17 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
         }
         proposalList.clear();
         // add joblet components in joblet editor.
-        List<PaletteEntry> extraPaletteEntry = ComponentPaletteUtilities.getExtraPaletteEntry();
-        if (extraPaletteEntry != null) {
-            for (PaletteEntry entry : extraPaletteEntry) {
-                if (entry != null && entry.isVisible() && entry instanceof TalendCreationToolEntry) {
-                    TalendCreationToolEntry tool = (TalendCreationToolEntry) entry;
-                    CreationFactory creationFactory = tool.getFactory();
-                    if (creationFactory != null && creationFactory instanceof PaletteComponentFactory) {
-                        PaletteComponentFactory componentFactory = (PaletteComponentFactory) creationFactory;
-                        proposalList.add(new ComponentContentProposal(componentFactory.getComponent()));
+        if (isJobletItem()) {
+            List<PaletteEntry> extraPaletteEntry = ComponentPaletteUtilities.getExtraPaletteEntry();
+            if (extraPaletteEntry != null) {
+                for (PaletteEntry entry : extraPaletteEntry) {
+                    if (entry != null && entry.isVisible() && entry instanceof TalendCreationToolEntry) {
+                        TalendCreationToolEntry tool = (TalendCreationToolEntry) entry;
+                        CreationFactory creationFactory = tool.getFactory();
+                        if (creationFactory != null && creationFactory instanceof PaletteComponentFactory) {
+                            PaletteComponentFactory componentFactory = (PaletteComponentFactory) creationFactory;
+                            proposalList.add(new ComponentContentProposal(componentFactory.getComponent()));
+                        }
                     }
                 }
             }
@@ -87,5 +94,15 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
 
         return proposalList.toArray(new IContentProposal[0]);
 
+    }
+    
+    private boolean isJobletItem() {
+        IJobletProviderService jobletservice = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                .getService(IJobletProviderService.class);
+        if (jobletservice != null && process != null && process.getProperty() != null) {
+            return jobletservice.isJobletItem(process.getProperty().getItem());
+        }
+
+        return false;
     }
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -424,7 +424,7 @@ public class StatsAndLogsHelper extends Utils {
         paramList.add(param);
 
         // jdbc child param
-        List<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
+        Set<ModuleNeeded> moduleNeededList = ModulesNeededProvider.getModulesNeeded();
         Set<String> moduleNameList = new TreeSet<String>();
         Set<String> moduleValueList = new TreeSet<String>();
         for (ModuleNeeded module : moduleNeededList) {

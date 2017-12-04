@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -132,15 +132,22 @@ public class ExcelReader implements Callable {
             XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) r.getSheetsData();
             // List<InputStream> iss = new ArrayList<InputStream>();
             LinkedHashMap<String, InputStream> issmap = new LinkedHashMap<String, InputStream>();
+            List<String> allSheetNames= new ArrayList<String>();
             int sheetPosition = 0;
             while (sheets.hasNext()) {
                 InputStream sheet = sheets.next();
                 String sheetName = sheets.getSheetName();
+                if(allSheetNames.contains(sheetName)){
+                    sheet.close();
+                    continue;
+                }else{
+                    allSheetNames.add(sheetName);
+                }
                 boolean match = false;
                 if (sheetNames.size() > 0) {
                     for (int i = 0; i < sheetNames.size(); i++) {
                         if ((asRegexs.get(i) && sheetName.matches(sheetNames.get(i)))
-                                || (!asRegexs.get(i) && sheetName.equals(sheetNames.get(i)))) {
+                                || (!asRegexs.get(i) && sheetName.equalsIgnoreCase(sheetNames.get(i)))) {
                             match = true;
                             // iss.add(sheet);
                             issmap.put(sheetName, sheet);

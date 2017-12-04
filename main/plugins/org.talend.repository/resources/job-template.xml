@@ -8,9 +8,7 @@
 #end
 
 	<bean id="job" class="${className}" #if(${hasDestroyMethod})destroy-method="destroy"#end>
-#if ($useSAM)
-		<property name="eventFeature" ref="eventFeature" />
-#end
+
 #if (!$dataSources.isEmpty())
 		<property name="dataSources">
 			<map>

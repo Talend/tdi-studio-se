@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -974,6 +974,8 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                                 }
                                 currentLine.put(curParam.getName(), newValue);
                             }
+                        }else if(itemsToDisplay.length >0){
+                        	  currentLine.put(curParam.getName(), 0);
                         }
                         break;
                     default:

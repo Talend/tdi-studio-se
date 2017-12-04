@@ -11,16 +11,30 @@ imports="
 	
 		public void createURL(INode node) {
 			super.createURL(node);
-			
-    		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
-    		%>
-    			String url_<%=cid %> = "jdbc:redshift://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
-    		<%
-    		} else {
-    		%>
-    			String url_<%=cid%> = "jdbc:redshift://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
-    		<%
-    		}
+
+			String logLevel= ElementParameterParser.getValue(node, "__LOG_LEVEL__");
+			String logFile= ElementParameterParser.getValue(node, "__LOG_FILE__");
+
+			if (!logLevel.equals("0")) {
+%>
+				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
+				java.io.PrintWriter logWriter_<%=cid %> = new java.io.PrintWriter(output_<%=cid %>,true);
+				globalMap.put("logWriter_<%=cid %>", logWriter_<%=cid %>);
+				java.sql.DriverManager.setLogWriter(logWriter_<%=cid %>);
+<%
+			}
+%>
+			StringBuilder sbuilder_<%=cid%> = new StringBuilder();
+			sbuilder_<%=cid%>.append("jdbc:redshift://").append(<%=dbhost%>).append(":").append(<%=dbport%>).append("/").append(<%=dbname%>).append("?loglevel=").append(<%= logLevel %>);
+<%
+			if(dbproperties != null && !"\"\"".equals(dbproperties) && !"".equals(dbproperties)) {
+%>
+				sbuilder_<%=cid%>.append("&").append(<%=dbproperties%>);
+<%
+			}
+%>
+			String url_<%=cid%> = sbuilder_<%=cid%>.toString();
+<%
 		}
 		
 		public String getDirverClassName(INode node){
@@ -33,7 +47,6 @@ imports="
 <%//----------------------------component codes-----------------------------------------%>
 
 	<%@ include file="../templates/DB/AbstractDBConnection.javajet"%>
-
 	globalMap.put("schema_" + "<%=cid%>",<%=dbschema%>);
 
 	globalMap.put("conn_" + "<%=cid%>",conn_<%=cid%>);

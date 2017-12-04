@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -368,6 +368,9 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
         }
         countSubjobs = false;
         if (!newAddedSubjobs.isEmpty()) {
+            for (ItemVersionObject subjob : newAddedSubjobs) {
+                subjob.setNewVersion(getNewVersionWithOption(subjob));
+            }
             addItemElements(newAddedSubjobs);
             checkButtonsState();
             refreshCheckedTreeView();

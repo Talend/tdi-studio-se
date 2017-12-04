@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -117,6 +117,7 @@ import org.talend.designer.mapper.model.tableentry.TableEntryLocation;
 import org.talend.designer.mapper.model.tableentry.VarTableEntry;
 import org.talend.designer.mapper.ui.MapperUI;
 import org.talend.designer.mapper.ui.commands.DataMapTableViewSelectedCommand;
+import org.talend.designer.mapper.ui.dialog.AutoMappingDialog;
 import org.talend.designer.mapper.ui.dialog.MapReducePropertySetDialog;
 import org.talend.designer.mapper.ui.dialog.OutputAddDialog;
 import org.talend.designer.mapper.ui.dialog.PropertySetDialog;
@@ -2015,6 +2016,16 @@ public class UIManager extends AbstractUIManager {
         } else {
             new PropertySetDialog(getShell(), mapperManager).open();
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.abstractmap.managers.AbstractUIManager#openAutoMapDialog()
+     */
+    @Override
+    public void openAutoMappingDialog() {
+        new AutoMappingDialog(getShell(), mapperManager).open();
     }
 
     public boolean isTableViewMoveable(Zone zone, boolean moveUp) {

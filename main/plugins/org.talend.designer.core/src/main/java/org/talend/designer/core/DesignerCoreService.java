@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -805,6 +805,14 @@ public class DesignerCoreService implements IDesignerCoreService {
     }
 
     @Override
+    public void setTACConnectionTimeout(int timeout) {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore != null) {
+            preferenceStore.setValue(ITalendCorePrefConstants.PERFORMANCE_TAC_CONNECTION_TIMEOUT, timeout);
+        }
+    }
+
+    @Override
     public int getTACReadTimeout() {
         final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
         int timeOut = -1;
@@ -815,5 +823,13 @@ public class DesignerCoreService implements IDesignerCoreService {
             timeOut = 0;
         }
         return timeOut;
+    }
+
+    @Override
+    public void setTACReadTimeout(int timeout) {
+        final IPreferenceStore preferenceStore = DesignerPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore != null) {
+            preferenceStore.setValue(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT, timeout);
+        }
     }
 }

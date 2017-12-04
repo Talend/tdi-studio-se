@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -133,7 +133,7 @@ public class GenericHiddenTextController extends TextController {
                     Control control = super.createDialogArea(parent);
                     String paramName = (String) button.getData(PARAMETER_NAME);
                     getText().setData(PARAMETER_NAME, paramName);
-                    // editionControlHelper.register(paramName, getText());
+                    editionControlHelper.register(paramName, getText());
                     return control;
                 }
             };

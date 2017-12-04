@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -65,7 +65,8 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
     			}
         		ElementParameterType customModuleName = ParameterUtilTool.findParameterType(node, paramName);
         		if(customModuleName != null){
-            		paramType.setValue(StringUtils.strip(String.valueOf(ParameterUtilTool.convertParameterValue(customModuleName)),"\""));
+            		String ModuleName = StringUtils.strip(String.valueOf(ParameterUtilTool.convertParameterValue(customModuleName)),"\"");
+            		paramType.setValue(ModuleName.replaceAll("\r|\n|\r\n", ""));
         		}
             }else if("CONNECTION".equals(paramName) && value!=null && !"".equals(value)){
         		ElementParameterType useConnection = ParameterUtilTool.findParameterType(node, "USE_EXISTING_CONNECTION");

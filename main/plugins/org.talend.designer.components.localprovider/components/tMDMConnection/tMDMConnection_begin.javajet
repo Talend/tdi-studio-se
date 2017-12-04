@@ -32,3 +32,19 @@ globalMap.put("username_<%=cid %>", <%=username %>);
 globalMap.put("password_<%=cid %>", decryptedPassword_<%=cid %>);
 globalMap.put("useTransaction_<%=cid %>", <%=useTransaction %>);
 globalMap.put("useClientTranId_<%=cid %>", <%=useClientTranId %>);
+
+String murl_<%=cid %> = <%=mdmUrl %>;
+String username_<%=cid%> = <%=username %>;
+String password_<%=cid%> = decryptedPassword_<%=cid %>;
+if(murl_<%=cid %>.endsWith("?wsdl")) {
+  murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
+}
+org.talend.mdm.webservice.TMDMService service_<%=cid %> = new org.talend.mdm.webservice.TMDMService_Service(null).getTMDMPort();
+javax.xml.ws.BindingProvider stub_<%=cid %> = (javax.xml.ws.BindingProvider) service_<%=cid %>;
+java.util.Map<String, Object> context_<%=cid %> = stub_<%=cid %>.getRequestContext();
+context_<%=cid %>.put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
+context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
+context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, username_<%=cid %>);
+context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, password_<%=cid %>);
+service_<%=cid %>.ping(new org.talend.mdm.webservice.WSPing());
+service_<%=cid %>.logout(new org.talend.mdm.webservice.WSLogout());

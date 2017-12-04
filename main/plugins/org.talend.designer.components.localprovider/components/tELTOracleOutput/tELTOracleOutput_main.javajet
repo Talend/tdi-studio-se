@@ -31,9 +31,10 @@ imports="
 
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
+	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
 
 	%>
-	String select_query = null;
+	String select_query_<%=cid %> = null;
 	String tableName_<%=cid%> = null;
 	<%
 	List<IConnection> connections = (List<IConnection>) node.getIncomingConnections();
@@ -45,17 +46,26 @@ imports="
 		uniqueNameConnection = connection.getUniqueName();
 
 		%>
-		select_query = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
+		select_query_<%=cid %> = (String) globalMap.get("<%=previousComponentName%>"+"QUERY"+"<%=uniqueNameConnection%>");
 
 		<%
 	}
-
+	 String tableName=null;
+	 if(useDifferentTable){
+		  tableName=differenttable;
+	 }else{
+	 	  if(isTableNameVariable){
+	 	      tableName=dbtable;
+	 	  }else{
+	 	      tableName="\""+dbtable +"\"";
+	 	  }
+	 }
 	%>
 	String dbschema_<%=cid%> = <%=dbschema%>;
 	if(dbschema_<%=cid%> != null && dbschema_<%=cid%>.trim().length() > 0) {
-		tableName_<%=cid%> = <%=dbschema%> + "." + <%=useDifferentTable? differenttable:"\""+dbtable +"\""%>;
+		tableName_<%=cid%> = <%=dbschema%> + "." + <%=tableName%>;
 	}else {
-		tableName_<%=cid%> = <%=useDifferentTable? differenttable:"\""+dbtable +"\""%>;
+		tableName_<%=cid%> = <%=tableName%>;
 	}
 	<%
 	String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
@@ -379,22 +389,22 @@ if (useHintOptions) {
 
 	if(("INSERT").equals(dataAction)){
 %>
-	String insertQuery = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>) ("+select_query+")";
+	String insertQuery_<%=cid %> = "INSERT INTO "+tableName_<%=cid%>+"(<%=insertColName.toString()%>) ("+select_query_<%=cid %>+")";
 <%
 		if (useHintOptions && hintsValues.get("INSERT") != null){
 %>
-	    StringBuffer insertStringBuffer_<%=cid%> = new StringBuffer(insertQuery);
-	    insertStringBuffer_<%=cid%>.insert(insertQuery.indexOf("INSERT")+ "INSERT".length() + 1 , <%=hintsValues.get("INSERT")%> + " ");
-	    insertQuery =insertStringBuffer_<%=cid%>.toString();
+	    StringBuffer insertStringBuffer_<%=cid%> = new StringBuffer(insertQuery_<%=cid %>);
+	    insertStringBuffer_<%=cid%>.insert(insertQuery_<%=cid %>.indexOf("INSERT")+ "INSERT".length() + 1 , <%=hintsValues.get("INSERT")%> + " ");
+	    insertQuery_<%=cid %> =insertStringBuffer_<%=cid%>.toString();
 <%
 		}
 %>
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery);
+	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertQuery_<%=cid %>);
 
 <%
 	}else if (("UPDATE").equals(dataAction)){
 %>
-	String updateQuery = "UPDATE "+tableName_<%=cid%>+" SET (<%=insertColName.toString()%>) = ("+select_query+") "
+	String updateQuery_<%=cid %> = "UPDATE "+tableName_<%=cid%>+" SET (<%=insertColName.toString()%>) = ("+select_query_<%=cid %>+") "
 <%
 		if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {
 %>
@@ -405,19 +415,19 @@ if (useHintOptions) {
 	;
 <%		if (useHintOptions && hintsValues.get("UPDATE") != null){
 %>
-	    StringBuffer updateStringBuffer_<%=cid%> = new StringBuffer(updateQuery);
-	    updateStringBuffer_<%=cid%>.insert(updateQuery.indexOf("UPDATE")+ "UPDATE".length() +1 , <%=hintsValues.get("UPDATE")%>  + " ");
-	    updateQuery =updateStringBuffer_<%=cid%>.toString();
+	    StringBuffer updateStringBuffer_<%=cid%> = new StringBuffer(updateQuery_<%=cid %>);
+	    updateStringBuffer_<%=cid%>.insert(updateQuery_<%=cid %>.indexOf("UPDATE")+ "UPDATE".length() +1 , <%=hintsValues.get("UPDATE")%>  + " ");
+	    updateQuery_<%=cid %> =updateStringBuffer_<%=cid%>.toString();
 <%
 		}
 %>
-	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery);
+	pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(updateQuery_<%=cid %>);
 
 <%
 	}else if (("DELETE").equals(dataAction)){
 	%>
 
-String deleteQuery = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query+") "
+String deleteQuery_<%=cid %> = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+select_query_<%=cid %>+") "
 <%if(CodeGenerationUtils.hasAlphaNumericCharacter(whereClause)) {%>
 +"  AND " + <%=CodeGenerationUtils.replaceAllCrBySpace(whereClause)%>
 <%}%>
@@ -425,12 +435,12 @@ String deleteQuery = "DELETE  FROM "+ tableName_<%=cid%>+" WHERE EXISTS ("+selec
 <%
 	if(useHintOptions && hintsValues.get("DELETE") != null) {
 %>
-    StringBuffer deleteStringBuffer_<%=cid%> = new StringBuffer(deleteQuery);
-    deleteStringBuffer_<%=cid%>.insert(deleteQuery.indexOf("DELETE")+ "DELETE".length()+1 , <%=hintsValues.get("DELETE")%>  + " " );
-    deleteQuery =deleteStringBuffer_<%=cid%>.toString();
+    StringBuffer deleteStringBuffer_<%=cid%> = new StringBuffer(deleteQuery_<%=cid %>);
+    deleteStringBuffer_<%=cid%>.insert(deleteQuery_<%=cid %>.indexOf("DELETE")+ "DELETE".length()+1 , <%=hintsValues.get("DELETE")%>  + " " );
+    deleteQuery_<%=cid %> =deleteStringBuffer_<%=cid%>.toString();
   <%
   }%>
-pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery);
+pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery_<%=cid %>);
 
 	<%
 	}else if ("MERGE".equals(dataAction)) {
@@ -451,7 +461,7 @@ pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(deleteQuery);
 	StringBuilder mergeInsertName = new StringBuilder() ;
 	StringBuilder mergeInsertValue = new StringBuilder() ;
 	%>
-	String mergeQuery = "MERGE INTO "+ tableName_<%=cid%> +" target"  + " USING (" + select_query + ") source ON (" +
+	String mergeQuery = "MERGE INTO "+ tableName_<%=cid%> +" target"  + " USING (" + select_query_<%=cid %> + ") source ON (" +
 
 		"<%=mergeCondition%>" + ")" ;
 
@@ -552,8 +562,8 @@ if(dbtable != null && columnList != null){
 	if(("INSERT").equals(dataAction)){
 	%>
 
-System.out.println("Inserting with : \n" + insertQuery + "\n");
-<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery+\"");%>
+System.out.println("Inserting with : \n" + insertQuery_<%=cid %> + "\n");
+<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+insertQuery_"+ cid +"+\"");%>
 nb_line_inserted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
@@ -562,16 +572,16 @@ System.out.println("--> " + nb_line_inserted_<%=cid%> + " rows inserted. \n");
 	}else if(("UPDATE").equals(dataAction)){
 
 	%>
-System.out.println("Updating with : \n" + updateQuery +"\n");
-<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery+\"");%>
+System.out.println("Updating with : \n" + updateQuery_<%=cid %> +"\n");
+<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+updateQuery_"+ cid +"+\"");%>
 nb_line_updated_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 <%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 	System.out.println("--> " + nb_line_updated_<%=cid%> + " rows updated. \n");
 	<%
 	}else if (("DELETE").equals(dataAction)){
 		%>
-	System.out.println("Deleting with : \n" + deleteQuery +"\n");
-		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery+\"");%>
+	System.out.println("Deleting with : \n" + deleteQuery_<%=cid %> +"\n");
+		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executing SQL:\"+deleteQuery_"+ cid +"+\"");%>
 		nb_line_deleted_<%=cid%> = pstmt_<%=cid %>.executeUpdate();
 		<%log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Executed successfully.");%>
 	System.out.println("--> " + nb_line_deleted_<%=cid%> + " rows deleted. \n");

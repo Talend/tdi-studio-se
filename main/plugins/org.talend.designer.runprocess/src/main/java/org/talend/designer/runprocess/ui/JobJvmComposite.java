@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -18,6 +18,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.talend.commons.exception.BusinessException;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.i18n.Messages;
@@ -88,7 +90,7 @@ public class JobJvmComposite extends Composite {
 
     }
 
-    public void exec() {
+    public void exec() throws PersistenceException, BusinessException{
 
     }
 

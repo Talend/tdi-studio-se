@@ -11,6 +11,7 @@ imports="
 		java.util.Map
 		java.util.Set
 		java.util.HashSet
+		java.text.DateFormat
 "
 %>
 
@@ -186,7 +187,8 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 	}
 	%>
 	try {
-	<%		
+		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Hive/SetQueryName.javajet"%>
+		<%		
 		if (usePrepareStatement) {
 		
 			for (Map<String, String> param : prepareStatementParameters) {
@@ -214,16 +216,17 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			
 		} else {
 			if(("true").equals(propagateRecordset)){
-	%>
-			rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
+			%>
+				rs_<%=cid %> = stmt_<%=cid %>.executeQuery(query_<%=cid %>);
 			<%
-		} else {
+			} else {
 		    %>
-	    	stmt_<%=cid %>.execute(query_<%=cid %>);
+		  	stmt_<%=cid %>.execute(query_<%=cid %>);
 	    	<%
 			}
 		}
-	    %>
+		%>
+		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier + "]");
 	    } catch (java.lang.Exception e) {
 	        whetherReject_<%=cid%> = true;
 	        <%

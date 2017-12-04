@@ -1,6 +1,23 @@
+// ============================================================================
+//
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+//
+// This source code is available under agreement available at
+// %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
+//
+// You should have received a copy of the agreement
+// along with this program; if not, write to Talend SA
+// 9 rue Pages 92150 Suresnes, France
+//
+// ============================================================================
 package org.talend.ms.crm.odata;
 
-public class ClientConfiguration {
+public final class ClientConfiguration {
+    
+    /*
+     * Implemented authentication strategies for OData/MS CRM. 
+     */
+    public static enum AuthStrategyEnum {NTLM, OAUTH};
 
     /*
      * This would be obtained after you register the Dynamic CRM in Active Directory on the Microsoft Azure portal
@@ -23,6 +40,16 @@ public class ClientConfiguration {
     private String password;
 
     /*
+     * Workstation for NTLM authentication.
+     */
+    private String workstation;
+    
+    /*
+     * Domain for NTLM authentication.
+     */
+    private String domain;
+    
+    /*
      * The URL of the authenticating authority
      */
     private String authoryEndpoint;
@@ -40,19 +67,12 @@ public class ClientConfiguration {
     private int timeout = 60;
 
     private boolean reuseHttpClient;
+    
+    private AuthStrategyEnum authStrategy = AuthStrategyEnum.OAUTH;
 
-    /**
-     * @param clientId
-     * @param resource
-     * @param userName
-     * @param password
-     * @param authoryEndpoint
-     */
-    public ClientConfiguration(String clientId, String userName, String password, String authoryEndpoint) {
-        this.clientId = clientId;
-        this.userName = userName;
-        this.password = password;
-        this.authoryEndpoint = authoryEndpoint;
+    
+    ClientConfiguration(AuthStrategyEnum authStrategy) {
+        this.authStrategy = authStrategy;
     }
 
     public String getClientId() {
@@ -126,6 +146,34 @@ public class ClientConfiguration {
 
     public void setReuseHttpClient(boolean reuseHttpClient) {
         this.reuseHttpClient = reuseHttpClient;
+    }
+    
+    
+    public AuthStrategyEnum getAuthStrategy() {
+        return authStrategy;
+    }
+    
+    public void setAuthStrategy(AuthStrategyEnum authStrategy) {
+        this.authStrategy = authStrategy;
+    }
+    
+    public String getWorkstation() {
+        return workstation;
+    }
+
+    
+    public void setWorkstation(String workstation) {
+        this.workstation = workstation;
+    }
+
+    
+    public String getDomain() {
+        return domain;
+    }
+
+    
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
 }

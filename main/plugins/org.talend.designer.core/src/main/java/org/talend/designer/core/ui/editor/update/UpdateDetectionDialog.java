@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -74,6 +74,8 @@ public class UpdateDetectionDialog extends SelectionDialog {
     private static final int SIZING_COLUMN_WIDTH = 25;
 
     private List<UpdateResult> inputElement;
+    
+    private List<UpdateResult> selectedElement;
 
     private CheckboxTreeViewer viewer;
 
@@ -377,7 +379,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
         tree.setLayoutData(new GridData(GridData.FILL_BOTH));
         addViewerListener();
         createColumns(tree);
-
+        helper.selectAll(true);
         return composite;
     }
 
@@ -449,7 +451,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
 
     @Override
     protected void okPressed() {
-
+        selectedElement = getCheckedElements();
         Tree tree = viewer.getTree();
         if (tree.isDisposed()) {
             return;
@@ -518,5 +520,24 @@ public class UpdateDetectionDialog extends SelectionDialog {
             }
         }
         return false;
+    }
+    
+    private List<UpdateResult> getCheckedElements(){
+        Object[] objs = getViewer().getCheckedElements();
+        List<UpdateResult> results = new ArrayList<UpdateResult>();
+        if(objs != null){
+            for(Object obj:objs){
+                if(obj instanceof UpdateResult){
+                    results.add((UpdateResult)obj);
+                }else if(obj instanceof Item){
+                    results.add(((Item)obj).getResultObject());
+                }
+            }
+        }
+        return results;
+    }
+    
+    public List<UpdateResult> getSelectedElements(){
+        return selectedElement;
     }
 }

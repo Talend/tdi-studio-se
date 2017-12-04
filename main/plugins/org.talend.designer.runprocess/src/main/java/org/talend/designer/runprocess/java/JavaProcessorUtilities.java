@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,10 +13,14 @@
 package org.talend.designer.runprocess.java;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -241,6 +245,25 @@ public class JavaProcessorUtilities {
                 }
             }
         }
+        // move high priority modules to front.
+        Set<ModuleNeeded> highPriorityModuleNeeded = LastGenerationInfo.getInstance().getHighPriorityModuleNeeded();
+        if (!highPriorityModuleNeeded.isEmpty()) {
+            Iterator<ModuleNeeded> iterator = highPriorityModuleNeeded.iterator();
+            while (iterator.hasNext()) {
+                ModuleNeeded needed = iterator.next();
+                if (highPriorityModuleNeeded.contains(needed)) {
+                    neededLibraries.remove(needed);
+                }
+            }
+            // order should be main -> sub1 -> sub_sub1 -> normal modules
+            List<ModuleNeeded> tempList = new ArrayList<>(highPriorityModuleNeeded);
+            Collections.reverse(tempList);
+            Set<ModuleNeeded> orderedNeededLibraries = new LinkedHashSet<>();
+            orderedNeededLibraries.addAll(tempList);
+            orderedNeededLibraries.addAll(neededLibraries);
+            return orderedNeededLibraries;
+        }
+
         return neededLibraries;
     }
 
@@ -252,12 +275,15 @@ public class JavaProcessorUtilities {
     public static void checkJavaProjectLib(Collection<ModuleNeeded> jarsNeeded) {
         File libDir = getJavaProjectLibFolder();
         if ((libDir != null) && (libDir.isDirectory())) {
-            Set<String> jarsNeedRetrieve = new HashSet<String>();
+            Set<ModuleNeeded> jarsNeedRetrieve = new HashSet<ModuleNeeded>(jarsNeeded);
+            File[] listFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
             for (ModuleNeeded moduleNeeded : jarsNeeded) {
-                jarsNeedRetrieve.add(moduleNeeded.getModuleName());
-            }
-            for (File externalLib : libDir.listFiles(FilesUtils.getAcceptJARFilesFilter())) {
-                jarsNeedRetrieve.remove(externalLib.getName());
+                for (File externalLib : listFiles) {
+                    if (moduleNeeded.getModuleName().equals(externalLib.getName())) {
+                        jarsNeedRetrieve.remove(moduleNeeded);
+                        break;
+                    }
+                }
             }
 
             if (!jarsNeedRetrieve.isEmpty()) {
@@ -389,7 +415,7 @@ public class JavaProcessorUtilities {
                 }
             }
         }
-        repositoryBundleService.deployModules(listModulesReallyNeeded, null);
+        repositoryBundleService.installModules(listModulesReallyNeeded, null);
         if (missingJars != null) {
             handleMissingJarsForProcess(missingJarsForRoutinesOnly, missingJarsForProcessOnly, missingJars);
         }
@@ -446,7 +472,7 @@ public class JavaProcessorUtilities {
             } else {
                 subForMsg(sb.toString());
             }
-            if (!CommonsPlugin.isHeadless()) {
+            if (!CommonsPlugin.isHeadless() && !CommonsPlugin.isJUnitTest()) {
                 Display display = DisplayUtils.getDisplay();
                 if (display != null) {
                     display.syncExec(new Runnable() {

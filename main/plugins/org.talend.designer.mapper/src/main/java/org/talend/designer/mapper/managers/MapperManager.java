@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1140,6 +1140,8 @@ public class MapperManager extends AbstractMapperManager {
 
             defaultSettingMap.put(MapperSettingsManager.REPLICATED_JOIN, false);
             defaultSettingMap.put(MapperSettingsManager.DIE_ON_ERROR, true);
+            defaultSettingMap.put(MapperSettingsManager.LEVENSHTEIN, 0);
+            defaultSettingMap.put(MapperSettingsManager.JACCARD, 0);
 
             // boolean parallel = false;
             // IElementParameter paraEle = getAbstractMapComponent().getElementParameter("LKUP_PARALLELIZE");

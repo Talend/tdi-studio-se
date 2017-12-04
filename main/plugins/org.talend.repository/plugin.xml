@@ -2467,15 +2467,6 @@
         <projecttask
               beforeLogon="false"
               breaks="6.0.0"
-              class="org.talend.repository.model.migration.SetUrltStewardshipXXXTDI32354"
-              description="concat host and port to a url"
-              id="org.talend.repository.model.migration.SetUrltStewardshipXXXTDI32354"
-              name="SetUrltStewardshipXXXTDI32354"
-              version="6.0.0">
-        </projecttask>
-        <projecttask
-              beforeLogon="false"
-              breaks="6.0.0"
               class="org.talend.repository.model.migration.ChangeMongoDBMinimalVersion"
               id="org.talend.repository.model.migration.ChangeMongoDBMinimalVersion"
               description="Change mongoDB version to 3.0.X"
@@ -2926,19 +2917,34 @@
         </projecttask>
         <projecttask
               beforeLogon="false"
-              breaks="6.4.1"
-              class="org.talend.repository.model.migration.DecodeURIInTFileFetch"
-              id="org.talend.repository.model.migration.DecodeURIInTFileFetch"
-              name="Decode URI to save functionality of component correct"
-              version="6.5.0">
-        </projecttask>
-        <projecttask
-              beforeLogon="false"
               breaks="6.5.0"
               class="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               name="reset the 'COLUMN_DELIMITER' parameter"
               version="6.5.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              id="org.talend.repository.model.migration.AddIncludTrashFilesOnGoogleDriveListTask"
+              name="Configure the new INCLUDTRASHFILES property to 'true' in order to keep the same behavior as before"
+              version="6.5.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              class="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
+              id="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
+              name="UpdateToJava8VersionMigrationTask"
+              version="6.5.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.0"
+              class="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              id="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              name="Fill the default db version of mssql for Jobsetting"
+              version="6.3.1">
         </projecttask>
    </extension>
 

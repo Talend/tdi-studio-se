@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -30,6 +30,7 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.core.ui.action.SaveJobBeforeRunAction;
@@ -193,6 +194,17 @@ public class RunProcessService implements IRunProcessService {
     public void updateLibraries(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws ProcessorException {
         delegateService.updateLibraries(jobModuleList, process, alreadyRetrievedModules);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.talend.designer.runprocess.IRunProcessService#updateLibraries(org.talend.core.model.properties.RoutineItem)
+     */
+    @Override
+    public void updateLibraries(RoutineItem routineItem) {
+        delegateService.updateLibraries(routineItem);
     }
 
     @Override

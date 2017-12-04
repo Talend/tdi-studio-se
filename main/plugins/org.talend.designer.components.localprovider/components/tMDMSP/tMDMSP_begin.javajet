@@ -25,6 +25,9 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 %>
 
 int nb_line_<%=cid %> = 0;
+
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/MDM/TimeoutUtil.javajet"%>
+
 <%if(!useExistingConn){%>
     String murl_<%=cid %> = <%=mdmUrl %>;
     if(murl_<%=cid %>.endsWith("?wsdl")) {
@@ -38,8 +41,8 @@ int nb_line_<%=cid %> = 0;
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.SESSION_MAINTAIN_PROPERTY, false);
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, <%=username %>);
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
-    context_<%=cid %>.put(routines.MDM.WS_CLIENT_CONNECTION_TIMEOUT_KEY, routines.MDM.getWSClientTimeout(routines.MDM.WS_CLIENT_CONNECTION_TIME_VALUE));
-    context_<%=cid %>.put(routines.MDM.WS_CLIENT_RECEIVE_TIMEOUT_KEY, routines.MDM.getWSClientTimeout(routines.MDM.WS_CLIENT_RECEIVE_TIME_VALUE));
+    context_<%=cid %>.put(TimeoutUtil_<%=cid %>.CONNECTION_TIMEOUT_KEY, timeoutUtil_<%=cid %>.getWSClientTimeout(TimeoutUtil_<%=cid %>.CONNECTION_TIME_VALUE));
+    context_<%=cid %>.put(TimeoutUtil_<%=cid %>.RECEIVE_TIMEOUT_KEY, timeoutUtil_<%=cid %>.getWSClientTimeout(TimeoutUtil_<%=cid %>.RECEIVE_TIME_VALUE));
     <% String passwordFieldName = "__PASSWORD__"; %>
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
     context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, decryptedPassword_<%=cid %>);
@@ -64,8 +67,8 @@ int nb_line_<%=cid %> = 0;
         context_<%=cid %>.put(javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY, murl_<%=cid %>);
         context_<%=cid %>.put(javax.xml.ws.BindingProvider.USERNAME_PROPERTY, username_<%=cid %>);
         context_<%=cid %>.put(javax.xml.ws.BindingProvider.PASSWORD_PROPERTY, password_<%=cid %>);
-        context_<%=cid %>.put(routines.MDM.WS_CLIENT_CONNECTION_TIMEOUT_KEY, routines.MDM.getWSClientTimeout(routines.MDM.WS_CLIENT_CONNECTION_TIME_VALUE));
-        context_<%=cid %>.put(routines.MDM.WS_CLIENT_RECEIVE_TIMEOUT_KEY, routines.MDM.getWSClientTimeout(routines.MDM.WS_CLIENT_RECEIVE_TIME_VALUE));
+        context_<%=cid %>.put(TimeoutUtil_<%=cid %>.CONNECTION_TIMEOUT_KEY, timeoutUtil_<%=cid %>.getWSClientTimeout(TimeoutUtil_<%=cid %>.CONNECTION_TIME_VALUE));
+        context_<%=cid %>.put(TimeoutUtil_<%=cid %>.RECEIVE_TIMEOUT_KEY, timeoutUtil_<%=cid %>.getWSClientTimeout(TimeoutUtil_<%=cid %>.RECEIVE_TIME_VALUE));
         <% logUtil.debug("\"Got service successfully with key=\" + connKey_" + cid);%>
 
         if((Boolean)globalMap.get("useTransaction_<%=connection %>")) {

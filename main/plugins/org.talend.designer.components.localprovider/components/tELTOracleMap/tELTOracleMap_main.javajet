@@ -101,11 +101,6 @@
 					<%= sqlQuery.replaceAll("[\r\n]", " ") %>
 				);
 				<%
-				if(!tablesProcessed.contains(outputTable.getTableName())) {
-				%>
-					Object <%= outputTable.getTableName() %> = new Object();
-				<%
-				}
 				tablesProcessed.add(outputTable.getTableName());
         }
 

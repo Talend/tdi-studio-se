@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -218,6 +218,8 @@ public class JarBuilder {
                 FileChannel dstChannel = null;
                 try {
                     srcChannel = new FileInputStream(subf.getAbsoluteFile()).getChannel();
+                    // Create intermediate folders (needed for contexts folder)
+                    new File(tempFolderPath + File.separatorChar + desFileName).getParentFile().mkdirs();
                     dstChannel = new FileOutputStream(tempFolderPath + File.separatorChar + desFileName).getChannel();
                     dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
                 } finally {

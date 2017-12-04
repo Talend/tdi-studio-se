@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -317,7 +317,7 @@ public class LoginFirstTimeStartupActionPage extends AbstractLoginActionPage {
                             LoginHelper.getInstance().saveConnections(storedConnections);
 
                             boolean shouldGotoNextPage = false;
-                            if (LoginHelper.isRemoteConnection(defaultConnectionBean)) {
+                            if (LoginHelper.isRemotesConnection(defaultConnectionBean)) {
                                 shouldGotoNextPage = true;
                             } else if (!LoginHelper.isWorkspaceSame(defaultConnectionBean)) {
                                 shouldGotoNextPage = true;

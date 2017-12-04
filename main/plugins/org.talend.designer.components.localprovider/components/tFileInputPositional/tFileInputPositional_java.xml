@@ -162,6 +162,7 @@
       FIELD="TEXT"
       NUM_ROW="70"
       REPOSITORY_VALUE="FOOTER"
+      SHOW_IF="(UNCOMPRESS=='false')"
     >
       <DEFAULT>0</DEFAULT>
     </PARAMETER>

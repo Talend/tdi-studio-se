@@ -76,7 +76,26 @@
    		 >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    
+    
+     <PARAMETER
+      NAME="LEVENSHTEIN"
+       FIELD = "TEXT"
+      NUM_ROW="120"
+      SHOW="false"
+   		 >
+      <DEFAULT>0</DEFAULT>
+    </PARAMETER>
 	
+	 <PARAMETER
+      NAME="JACCARD"
+       FIELD = "TEXT"
+      NUM_ROW="120"
+      SHOW="false"
+   		 >
+      <DEFAULT>0</DEFAULT>
+    </PARAMETER>
+    
 	<PARAMETER
       NAME="ENABLE_AUTO_CONVERT_TYPE"
       FIELD="CHECK"

@@ -189,6 +189,13 @@ skeleton="tXMLMap_java.skeleton"
 		} // for (outputXMLTree)
 		%>
 		<%
+		if(hasDocumentInAnyLookupTable) {//it's impossible that hasDocumentInMainInputTable is true, please see org.talend.designer.xmlmap.util.XMLMapperHelper
+		%>
+		treeNodeAPI_<%=cid %>.clear();
+		<%
+		}
+		
+		//TODO should remove the code as it's never been used, please see org.talend.designer.xmlmap.util.XMLMapperHelper
 		String mainInputName = mainInputTable.getName();
 		for(TreeNode tmpNode : mainInputTable.getNodes()){
 			boolean isInnerJoin = true;

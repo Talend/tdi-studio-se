@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -367,6 +367,10 @@ public enum EParameterName {
     STREAMING_BATCH_SIZE("STREAMING_BATCH_SIZE"), //$NON-NLS-1$
 
     REPAINT("REPAINT"), //$NON-NLS-1$
+    
+    //for automap algorithms
+    LEVENSHTEIN("LEVENSHTEIN"),//$NON-NLS-1$
+    JACCARD("JACCARD"),//$NON-NLS-1$
 
     // for tDataprepRun
     PREPARATION_ID("PREPARATION_ID");

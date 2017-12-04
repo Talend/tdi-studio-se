@@ -128,7 +128,12 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
                         load();
                     }
 
-                    return buffer[index++];
+					rowStruct_<%=cid %> result = buffer[index];
+					//release the reference asap to avoid the memory leak for the worst case
+					buffer[index] = null;
+					index++;
+					
+                    return result;
                 }
 
                 public void remove() {
@@ -136,6 +141,10 @@ if ((metadatas!=null)&&(metadatas.size()>0) && !("").equals(connName)) {//HSS___
                 }
 
                 public void close() throws IOException {
+                	//we release the buffer when calling close, but the worst case is that :
+                	//all the close methods are called one by one at the last, so it's not enough.
+            		buffer = null;
+                	
                     if (ois != null) {
                         ois.close();
                         ois = null;
