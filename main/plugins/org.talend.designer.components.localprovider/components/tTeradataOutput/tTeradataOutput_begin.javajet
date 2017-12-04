@@ -237,6 +237,7 @@ int count_<%=cid%>=0;
 if(columnList != null && columnList.size() > 0) {
     %>
      <%@ include file="../templates/_tableActionForOutput.javajet"%>
+	 conn_<%=cid%>.commit();
     <%
     Map<String, StringBuilder> actionSQLMap = getManager(dbmsId, cid).createProcessSQL(stmtStructure);
     StringBuilder insertColName = actionSQLMap.get(INSERT_COLUMN_NAME);
