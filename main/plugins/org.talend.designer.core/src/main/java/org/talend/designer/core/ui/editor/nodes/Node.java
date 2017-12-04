@@ -475,7 +475,7 @@ public class Node extends Element implements IGraphicalNode {
         init(oldNode.getComponent());
         if (component != null && component instanceof AbstractBasicComponent) {
             AbstractBasicComponent comp = (AbstractBasicComponent) component;
-            comp.initNodePropertiesFromSerialized(this, oldNode.getComponentProperties().toSerialized());
+            comp.initNodeProperties(this, oldNode);
         }
         needlibrary = false;
     }
