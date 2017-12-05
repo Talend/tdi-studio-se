@@ -86,6 +86,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.core.model.process.statsandlogs.StatsAndLogsManager;
+import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.model.utils.emf.talendfile.RoutinesParameterType;
 import org.talend.designer.core.ui.AbstractMultiPageTalendEditor;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -269,18 +270,18 @@ public class DataProcess implements IGeneratingProcess {
         if (graphicalNode.getExternalNode() == null) {
             dataNode = new DataNode();
         } else {
+            // mapper
             dataNode = (AbstractNode) ExternalNodesFactory.getInstance(graphicalNode.getComponent().getPluginExtension());
             IExternalData externalData = graphicalNode.getExternalData();
             IExternalNode externalNode = graphicalNode.getExternalNode();
-            // mapper
             if (externalData != null) {
                 ((IExternalNode) dataNode).setExternalData(externalData);
             }
             // xmlmap
-            ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData());
-            // sap eltmap
-            ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
-
+            if (externalNode != null) {
+                ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData());
+                ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
+            }
         }
         dataNode.setActivate(graphicalNode.isActivate());
         dataNode.setStart(graphicalNode.isStart());
@@ -831,17 +832,16 @@ public class DataProcess implements IGeneratingProcess {
             if (component.getPluginExtension() == null) {
                 curNode = new DataNode(component, uniqueName);
             } else {
+                // mapper
                 curNode = (AbstractNode) ExternalNodesFactory.getInstance(component.getPluginExtension());
                 IExternalData externalData = graphicalNode.getExternalData();
                 IExternalNode externalNode = graphicalNode.getExternalNode();
-                if (curNode instanceof IExternalNode) {
-                    // mapper
-                    if (externalData != null) {
-                        ((IExternalNode) curNode).setExternalData(externalData);
-                    }
-                    // xmlmap
+                if (externalData != null) {
+                    ((IExternalNode) curNode).setExternalData(externalData);
+                }
+                // xmlmap
+                if (externalNode != null) {
                     ((IExternalNode) curNode).setExternalEmfData(externalNode.getExternalEmfData());
-                    // sap eltmap
                     ((IExternalNode) curNode).setInternalMapperModel(externalNode.getInternalMapperModel());
                 }
 
@@ -3122,16 +3122,19 @@ public class DataProcess implements IGeneratingProcess {
         // IExternalData externalData = graphicalNode.getExternalData();
 
         IExternalNode externalNode = graphicalNode.getExternalNode();
-        IExternalData externalData = graphicalNode.getExternalData();
         if (externalNode != null) {
-            // mapper
-            if (externalData != null) {
-                newGraphicalNode.getExternalNode().setExternalData(externalData);
-            }
-            // xmlmap
-            newGraphicalNode.getExternalNode().setExternalEmfData(externalNode.getExternalEmfData());
-            // sap eltmap
+            AbstractExternalData externalEmfData = externalNode.getExternalEmfData();
+            newGraphicalNode.getExternalNode().setExternalEmfData(externalEmfData);
             newGraphicalNode.getExternalNode().setInternalMapperModel(externalNode.getInternalMapperModel());
+        }
+        // fwang fixed bug TDI-8027
+        IExternalData externalData = graphicalNode.getExternalData();
+        if (externalData != null) {
+            try {
+                newGraphicalNode.setExternalData(externalData.clone());
+            } catch (CloneNotSupportedException e) {
+                newGraphicalNode.setExternalData(externalData);
+            }
         }
 
         copyElementParametersValue(graphicalNode, newGraphicalNode);
@@ -3450,4 +3453,5 @@ public class DataProcess implements IGeneratingProcess {
 
         return parallelizeNode;
     }
+
 }

@@ -2737,7 +2737,7 @@
               id="org.talend.repository.model.migration.SubstituteRemovedMDMOperatorMigrationTask"
               name="SubstituteRemovedMDMOperatorMigrationTask"
               version="6.2.0">
-		</projecttask>
+        </projecttask>
         <projecttask
               beforeLogon="false"
               breaks="5.6.2"
@@ -2783,7 +2783,7 @@
               version="6.2.1">
         </projecttask>
         <projecttask
-        	  beforeLogon="false"
+              beforeLogon="false"
               breaks="6.2.0"
               class="org.talend.repository.model.migration.ReplaceVarcharArrayWithVarcharIssueTDI35719"
               id="org.talend.repository.model.migration.ReplaceVarcharArrayWithVarcharIssueTDI35719"
@@ -2791,7 +2791,7 @@
               version="6.2.1">
         </projecttask>
         <projecttask
-        	  beforeLogon="false"
+              beforeLogon="false"
               breaks="6.2.0"
               class="org.talend.repository.model.migration.AddDefaultVersionValueForElasticsearchLookupInput"
               id="org.talend.repository.model.migration.AddDefaultVersionValueForElasticsearchLookupInput"
@@ -2859,7 +2859,7 @@
               version="6.4.0">
         </projecttask>
         <projecttask
-        	  beforeLogon="false"
+              beforeLogon="false"
               breaks="6.2.1"
               class="org.talend.repository.model.migration.AddNewIgnoreNullSettingForTMicrosoftCrmOutputTask"
               id="org.talend.repository.model.migration.AddNewIgnoreNullSettingForTMicrosoftCrmOutputTask"
@@ -2916,14 +2916,14 @@
               name="Set the Spark Dataframe Alphabatical sort order in tHiveOutput and tFileOutputParquet"
               version="6.1.0">
         </projecttask>
-		<projecttask
+        <projecttask
               beforeLogon="false"
               breaks="6.5.0"
               class="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               id="org.talend.repository.model.migration.ChangeColumnDelimiter4tExaBulkExec"
               name="reset the 'COLUMN_DELIMITER' parameter"
-			  version="6.5.0">
-		</projecttask>	  
+              version="6.5.0">
+        </projecttask>    
         <projecttask
               beforeLogon="false"
               breaks="6.5.0"
@@ -2939,6 +2939,14 @@
               id="org.talend.repository.model.migration.AddProductValuesItemMigrationTask"
               name="Add Product Values"
               version="6.5.0">
+        </projecttask>
+         <projecttask
+              beforeLogon="false"
+              breaks="6.3.0"
+              class="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              id="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              name="Fill the default db version of mssql for Jobsetting"
+              version="6.3.1">
         </projecttask>
    </extension>
 

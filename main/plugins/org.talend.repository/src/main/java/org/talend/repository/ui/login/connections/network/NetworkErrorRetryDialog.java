@@ -90,6 +90,8 @@ public class NetworkErrorRetryDialog extends MessageDialog {
     protected void buttonPressed(int buttonId) {
         if (buttonId == BUTTON_RETRY_INDEX) {
             form.performFinish();
+        } else {
+            form.performCancel();
         }
         super.buttonPressed(buttonId);
     }

@@ -40,20 +40,7 @@ file_<%=cid%>.createNewFile();
 if(("PROPERTIES_FORMAT").equals(fileFormat)){
 %>
 	java.io.InputStream fis_<%=cid%> = new java.io.FileInputStream(file_<%=cid%>);
-	java.util.Properties properties_<%=cid%> = new java.util.Properties() {
-		private final java.util.LinkedHashSet<Object> keyOrder = new java.util.LinkedHashSet<>();
-
-		@Override
-		public synchronized java.util.Enumeration<Object> keys() {
-			return java.util.Collections.enumeration(keyOrder);
-		}
-
-		@Override
-		public synchronized Object put(Object key, Object value) {
-			keyOrder.add(key);
-			return super.put(key, value);
-		}
-	};
+	java.util.Properties properties_<%=cid%> = new java.util.Properties();
 	properties_<%=cid%>.load(fis_<%=cid%>);
 	fis_<%=cid%>.close();
 <%

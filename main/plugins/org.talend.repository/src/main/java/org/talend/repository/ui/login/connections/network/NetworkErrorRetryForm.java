@@ -203,6 +203,10 @@ public class NetworkErrorRetryForm extends Composite {
         donnotAskAgainBeforeRestart = donnotAskAgainBtn.getSelection();
     }
 
+    public void performCancel() {
+        donnotAskAgainBeforeRestart = donnotAskAgainBtn.getSelection();
+    }
+
     private boolean checkConnectionTimeout() {
         connectTimeoutText.setBackground(null);
         String timeoutStr = connectTimeoutText.getText();
