@@ -101,11 +101,6 @@ public class Dataprep701MigrationTask extends AbstractJobMigrationTask {
                     Property moduleNameProperty = (Property) nt;
                     moduleNameProperty.removeFlag(DESIGN_TIME_ONLY);
                     String moduleName = (String) moduleNameProperty.getValue();
-                    if (ContextParameterUtils.isContainContextParam(moduleName)) {
-                        moduleName = TalendQuoteUtils.removeQuotes(moduleName);
-                    } else {
-                        moduleName = TalendQuoteUtils.addPairQuotesIfNotExist(moduleName);
-                    }
                     moduleNameProperty.setStoredValue(moduleName);
                 }
                 elemParamType.setValue(newProperties.toSerialized());
