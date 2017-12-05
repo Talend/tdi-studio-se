@@ -106,7 +106,7 @@ public class Dataprep701MigrationTask extends AbstractJobMigrationTask {
                 elemParamType.setValue(newProperties.toSerialized());
             }
         };
-        String componentsName = "tDatasetOutput"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+        String componentsName = "tDatasetOutput"; //$NON-NLS-1$
         boolean modified = false;
         for (Object obj : processType.getNode()) {
             if (obj != null && obj instanceof NodeType) {
