@@ -14,8 +14,6 @@ package org.talend.repository.ui.wizards.newproject;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -376,10 +374,8 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     }
 
+    @SuppressWarnings("restriction")
     private void evaluateSpecifiedPath(String path) {
-        if (path.equals(lastPath)) {
-            return;
-        }
 
         // on an empty path empty selectedProjects
         if (path == null || path.length() == 0) {
@@ -388,10 +384,6 @@ public class ImportProjectAsWizardPage extends WizardPage {
         }
 
         final boolean dirSelected = this.projectFromDirectoryRadio.getSelection();
-        File directory = new File(path);
-
-        Collection projectFiles = new ArrayList();
-        Collection talendProjectFiles = new ArrayList();
         if (!dirSelected && ArchiveFileManipulations.isTarFile(path)) {
             TarFile sourceTarFile = getSpecifiedTarSourceFile(path);
             if (sourceTarFile == null) {
@@ -409,7 +401,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         org.talend.core.model.properties.Project project = null;
         ImportProjectHelper helper = new ImportProjectHelper();
         try {
-            project = helper.retrieveProjectFilesFromProvider(null, directory);
+            project = helper.retrieveProjectFilesFromProvider(null, new File(path));
         } catch (OperationCanceledException e) {
             return;
         }
