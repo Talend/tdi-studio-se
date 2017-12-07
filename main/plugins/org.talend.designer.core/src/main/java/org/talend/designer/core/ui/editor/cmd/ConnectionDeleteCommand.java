@@ -69,6 +69,7 @@ public class ConnectionDeleteCommand extends Command {
                 List<IMetadataTable> metaList = source.getMetadataList();
                 if (metaList != null && deletedInfo.metadataTable != null) {
                     deletedInfo.metadataTableIndex = metaList.indexOf(deletedInfo.metadataTable);
+                    metaList.remove(deletedInfo.metadataTable);
                 }
             }
 

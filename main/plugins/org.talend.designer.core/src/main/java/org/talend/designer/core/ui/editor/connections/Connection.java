@@ -1236,6 +1236,15 @@ public class Connection extends Element implements IConnection, IPerformance {
                         TableController.updateSubjobStarts(target, param);
                     }
                 }
+            }            
+            if (((lineStyle == EConnectionType.TABLE || lineStyle == EConnectionType.TABLE_REF)
+                    && getSourceNodeConnector().isMultiSchema())
+                    || lineStyle.hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
+                if (target.getJobletNode() == null && !target.getProcess().checkValidConnectionName(uniqueName)) {
+                    target.getProcess().removeUniqueConnectionName(uniqueName);
+                } else if (source.getJobletNode() == null && !source.getProcess().checkValidConnectionName(uniqueName)) {
+                    source.getProcess().removeUniqueConnectionName(uniqueName);
+                }
             }
         }
     }
