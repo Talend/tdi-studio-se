@@ -360,7 +360,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 					System.out.println("Redirect to: " + method_<%=cid%>.getURI());
 					finalURL_<%=cid%> = method_<%=cid%>.getURI().toString();
-				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK) {
+				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK || status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_ACCEPTED) {
 					redirect_<%=cid%> = false;
 				} else {
 					throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
