@@ -69,12 +69,16 @@ public class ConnectionDeleteCommand extends Command {
                 List<IMetadataTable> metaList = source.getMetadataList();
                 if (metaList != null && deletedInfo.metadataTable != null) {
                     deletedInfo.metadataTableIndex = metaList.indexOf(deletedInfo.metadataTable);
+                    metaList.remove(deletedInfo.metadataTable);
                 }
             }
 
             connection.disconnect();
             final INode target = connection.getTarget();
-            if (target.getExternalNode() instanceof AbstractNode) {
+            if (source.isExternalNode()) {
+                ((AbstractNode) source.getExternalNode()).removeOutput(connection);
+            }
+            if (target.isExternalNode()) {
                 ((AbstractNode) target.getExternalNode()).removeInput(connection);
             }
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
