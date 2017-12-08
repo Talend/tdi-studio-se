@@ -32,8 +32,6 @@
 		</repository>
 	</repositories>
 	<modules>
-		<module>i18n/plugins/org.talend.componentdesigner.nl</module>
-		<module>i18n/plugins/org.talend.componentdesigner.rcp.nl</module>
 		<module>i18n/plugins/org.talend.designer.abstractmap.nl</module>
 		<module>i18n/plugins/org.talend.designer.alfrescooutput.nl</module>
 		<module>i18n/plugins/org.talend.designer.business.diagram.nl</module>
@@ -62,7 +60,6 @@
 		<module>i18n/plugins/org.talend.sbi.engines.client.nl</module>
 		<module>i18n/plugins/org.talend.spagic.engines.client.nl</module>
 		<module>i18n/plugins/org.talend.sqlbuilder.nl</module>
-		<module>main/features/org.talend.componentdesigner.feature</module>
 		<module>main/features/org.talend.designer.feature</module>
 		<module>main/features/org.talend.designer.business.feature</module>
 		<module>main/features/org.talend.rcp.branding.tos.feature</module>
@@ -73,8 +70,6 @@
 		<module>main/features/org.talend.tos.feature</module>
 		<module>main/features/org.talend.tos.components.feature</module>
 		<module>main/features/org.talend.tos.libraries.feature</module>
-		<module>main/plugins/org.talend.componentdesigner</module>
-		<module>main/plugins/org.talend.componentdesigner.rcp</module>
 		<module>main/plugins/org.talend.designer.core.generic</module>
 		<module>main/plugins/org.talend.repository.generic</module>
 		<module>main/plugins/org.talend.designer.abstractmap</module>
