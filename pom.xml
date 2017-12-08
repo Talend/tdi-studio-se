@@ -44,7 +44,6 @@
 		<module>i18n/plugins/org.talend.designer.documentation.nl</module>
 		<module>i18n/plugins/org.talend.designer.fileoutputxml.nl</module>
 		<module>i18n/plugins/org.talend.designer.gefabstractmap.nl</module>
-		<module>i18n/plugins/org.talend.designer.hl7.nl</module>
 		<module>i18n/plugins/org.talend.designer.mapper.nl</module>
 		<module>i18n/plugins/org.talend.designer.maven.job.nl</module>
 		<module>i18n/plugins/org.talend.designer.rowgenerator.nl</module>
@@ -90,7 +89,6 @@
 		<module>main/plugins/org.talend.designer.filemultischemas</module>
 		<module>main/plugins/org.talend.designer.fileoutputxml</module>
 		<module>main/plugins/org.talend.designer.gefabstractmap</module>
-		<module>main/plugins/org.talend.designer.hl7</module>
 		<module>main/plugins/org.talend.designer.mapper</module>
 		<module>main/plugins/org.talend.designer.mapper.advanced</module>
 		<module>main/plugins/org.talend.designer.maven.job</module>
@@ -114,8 +112,6 @@
 		<module>main/plugins/org.talend.libraries.ftp</module>
 		<module>main/plugins/org.talend.libraries.groovy</module>
 		<module>main/plugins/org.talend.libraries.guava</module>
-		<module>main/plugins/org.talend.libraries.hl7</module>
-		<module>main/plugins/org.talend.libraries.hl7.jars</module>
 		<module>main/plugins/org.talend.libraries.jax</module>
 		<module>main/plugins/org.talend.libraries.jersey</module>
 		<module>main/plugins/org.talend.libraries.jetty</module>
