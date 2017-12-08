@@ -2629,12 +2629,12 @@
 			<!-- ############## -->
 
 			<!-- MAPR600 -->
-			<IMPORT NAME="hive-service-1.2.0.jar" MODULE="hive-service-1.2.0.jar"
+			<!-- IMPORT NAME="hive-service-1.2.0.jar" MODULE="hive-service-1.2.0.jar"
 				MVN="mvn:org.talend.libraries/hive-service-1.2.0/6.0.0"
 				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
-			<!-- IMPORT NAME="hive-service-2.1.1-mapr-1710.jar" MODULE="hive-service-2.1.1-mapr-1710.jar"
+			<IMPORT NAME="hive-service-2.1.1-mapr-1710.jar" MODULE="hive-service-2.1.1-mapr-1710.jar"
 				MVN="mvn:org.talend.libraries/hive-service-2.1.1-mapr-1710/6.0.0"
-				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" /-->
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="hive-exec-1.2.0-mapr-1710.jar" MODULE="hive-exec-1.2.0-mapr-1710.jar"
 				MVN="mvn:org.talend.libraries/hive-exec-1.2.0-mapr-1710/6.0.0"
 				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
@@ -2670,7 +2670,7 @@
 				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
 			<IMPORT NAME="parquet-hive-bundle-1.6.0.jar" MODULE="parquet-hive-bundle-1.6.0.jar"
 				MVN="mvn:org.talend.libraries/parquet-hive-bundle-1.6.0/6.0.0"
-				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" /-->
 
 			<!-- Cloudera_CDH5_1 -->
 			<IMPORT MODULE_GROUP="HIVE-LIB-CDH_5_1_LASTEST"
@@ -2722,6 +2722,10 @@
 			<!-- MAPR500 -->
 			<IMPORT MODULE_GROUP="HIVE-LIB-MAPR50X_LASTEST"
 				REQUIRED_IF="HIVE_VERSION=='MAPR500' AND (DISTRIBUTION!='CUSTOM')" />
+
+			<!-- MAPR600 -->
+			<IMPORT MODULE_GROUP="HIVE-LIB-MAPR600"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
 
 			<!-- MAPR401 Hbase -->
 			<IMPORT MODULE_GROUP="HIVE-HBASE-LIB-MAPR40X_LASTEST"
