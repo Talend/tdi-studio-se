@@ -2628,6 +2628,50 @@
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH5' AND STORE_BY_HBASE=='true') AND (DISTRIBUTION!='CUSTOM')" />
 			<!-- ############## -->
 
+			<!-- MAPR600 -->
+			<IMPORT NAME="hive-service-1.2.0.jar" MODULE="hive-service-1.2.0.jar"
+				MVN="mvn:org.talend.libraries/hive-service-1.2.0/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<!-- IMPORT NAME="hive-service-2.1.1-mapr-1710.jar" MODULE="hive-service-2.1.1-mapr-1710.jar"
+				MVN="mvn:org.talend.libraries/hive-service-2.1.1-mapr-1710/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" /-->
+			<IMPORT NAME="hive-exec-1.2.0-mapr-1710.jar" MODULE="hive-exec-1.2.0-mapr-1710.jar"
+				MVN="mvn:org.talend.libraries/hive-exec-1.2.0-mapr-1710/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="hive-metastore-1.2.0-mapr-1710.jar" MODULE="hive-metastore-1.2.0-mapr-1710.jar"
+				MVN="mvn:org.talend.libraries/hive-metastore-1.2.0-mapr-1710/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="hive-jdbc-1.2.0-mapr-1710.jar" MODULE="hive-jdbc-1.2.0-mapr-1710.jar"
+				MVN="mvn:org.talend.libraries/hive-jdbc-1.2.0-mapr-1710/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="curator-client-2.7.1.jar" MODULE="curator-client-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/curator-client-2.7.1/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="curator-framework-2.7.1.jar" MODULE="curator-framework-2.7.1.jar"
+				MVN="mvn:org.talend.libraries/curator-framework-2.7.1/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="httpclient-4.5.2.jar" MODULE="httpclient-4.5.2.jar"
+				MVN="mvn:org.talend.libraries/httpclient-4.5.2/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="httpcore-4.4.4.jar" MODULE="httpcore-4.4.4.jar"
+				MVN="mvn:org.talend.libraries/httpcore-4.4.4/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="libfb303-0.9.3.jar" MODULE="libfb303-0.9.3.jar"
+				MVN="mvn:org.talend.libraries/libfb303-0.9.3/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="libthrift-0.9.3.jar" MODULE="libthrift-0.9.3.jar"
+				MVN="mvn:org.talend.libraries/libthrift-0.9.3/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="antlr-runtime-3.4.jar" MODULE="antlr-runtime-3.4.jar"
+				MVN="mvn:org.talend.libraries/antlr-runtime-3.4/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="jdo-api-3.0.1.jar" MODULE="jdo-api-3.0.1.jar"
+				MVN="mvn:org.talend.libraries/jdo-api-3.0.1/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+			<IMPORT NAME="parquet-hive-bundle-1.6.0.jar" MODULE="parquet-hive-bundle-1.6.0.jar"
+				MVN="mvn:org.talend.libraries/parquet-hive-bundle-1.6.0/6.0.0"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
+
 			<!-- Cloudera_CDH5_1 -->
 			<IMPORT MODULE_GROUP="HIVE-LIB-CDH_5_1_LASTEST"
 				REQUIRED_IF="HIVE_VERSION=='Cloudera_CDH5_1' AND (DISTRIBUTION!='CUSTOM')" />
@@ -2675,9 +2719,9 @@
 			<IMPORT MODULE_GROUP="HIVE-LIB-MAPR40X_LASTEST"
 				REQUIRED_IF="HIVE_VERSION=='MAPR401' AND (DISTRIBUTION!='CUSTOM')" />
 
-			<!-- MAPR500 -->
-			<IMPORT MODULE_GROUP="HIVE-LIB-MAPR50X_LASTEST"
-				REQUIRED_IF="HIVE_VERSION=='MAPR500' AND (DISTRIBUTION!='CUSTOM')" />
+			<!-- MAPR600 -->
+			<IMPORT MODULE_GROUP="HIVE-LIB-MAPR600"
+				REQUIRED_IF="HIVE_VERSION=='MAPR600' AND (DISTRIBUTION!='CUSTOM')" />
 
 			<!-- MAPR401 Hbase -->
 			<IMPORT MODULE_GROUP="HIVE-HBASE-LIB-MAPR40X_LASTEST"
