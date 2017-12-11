@@ -43,7 +43,7 @@ imports="
 				String baseDN_<%=cid%> = "";
 <%
 				if(("false").equals(useExistingConn)){
-					String useAuth =ElementParameterParser.getValue(node, "__AUTHENTIFICATION__");
+					boolean useAuth = "true".equals(ElementParameterParser.getValue(node, "__AUTHENTIFICATION__"));
 					String user =ElementParameterParser.getValue(node, "__USER__");
 
 					String host=ElementParameterParser.getValue(node, "__HOST__");

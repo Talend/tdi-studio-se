@@ -28,7 +28,7 @@ if(("false").equals(useExistingConn)){
 	boolean alwaysTrust = ("true").equals(ElementParameterParser.getValue(node, "__ALWAYS_TRUST__"));
 	String storepath=ElementParameterParser.getValue(node, "__STORECA__");
 	String storepwd = ElementParameterParser.getValue(node, "__STORECAPWD__");
-	String useAuth =ElementParameterParser.getValue(node, "__AUTHENTIFICATION__");
+	boolean useAuth = "true".equals(ElementParameterParser.getValue(node, "__AUTHENTIFICATION__"));
 	String user =ElementParameterParser.getValue(node, "__USER__");
 
 	String referrals=ElementParameterParser.getValue(node, "__REFERRALS__");
