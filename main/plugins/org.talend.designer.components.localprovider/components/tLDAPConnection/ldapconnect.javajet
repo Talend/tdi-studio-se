@@ -32,7 +32,7 @@
 	}
 %>
 
-javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
+<%if(!cid.contains("tLDAPInput")){%>javax.naming.ldap.InitialLdapContext<%}%> ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
 
 <%
 if("TLS".equals(protocol)){

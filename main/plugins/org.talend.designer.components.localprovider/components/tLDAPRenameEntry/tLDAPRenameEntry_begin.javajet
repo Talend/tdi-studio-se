@@ -94,7 +94,6 @@ if(("false").equals(useExistingConn)){
 	<%@ include file="../tLDAPConnection/ldapconnect.javajet"%>
 	
 <%
-	}
 }else{
 %>
 javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = (javax.naming.ldap.InitialLdapContext)globalMap.get("<%=exConn%>");
