@@ -37,6 +37,10 @@ public class ChangeTMatchGroupOutputConnectorTask extends AbstractJobMigrationTa
 
     private ProcessType processType = null;
 
+    private final String OLDCONNECTORNAME = "FLOW"; //$NON-NLS-1$
+
+    private final String NEWCONNECTORNAME = "FLOW_OUTPUT"; //$NON-NLS-1$
+
     /*
      * (non-Javadoc)
      * 
@@ -78,7 +82,7 @@ public class ChangeTMatchGroupOutputConnectorTask extends AbstractJobMigrationTa
             for (Object o : node.getMetadata()) {
                 MetadataType mt = (MetadataType) o;
                 String connector = mt.getConnector();
-                if ("FLOW".equals(connector)) { //$NON-NLS-1$
+                if (OLDCONNECTORNAME.equals(connector)) {
                     metadataName = mt.getName();
                     createNewMetadata(node, mt);
                     changeConnection(metadataName);
@@ -97,9 +101,9 @@ public class ChangeTMatchGroupOutputConnectorTask extends AbstractJobMigrationTa
         private void changeConnection(String metadataName) {
             for (Object o : processType.getConnection()) {
                 ConnectionType ct = (ConnectionType) o;
-                if (metadataName.equals(ct.getMetaname())) {
-                    ct.setConnectorName("FLOW_OUTPUT"); //$NON-NLS-1$
-                    ct.setMetaname("FLOW_OUTPUT"); //$NON-NLS-1$
+                if (metadataName.equals(ct.getMetaname()) && OLDCONNECTORNAME.equals(ct.getConnectorName())) {
+                    ct.setConnectorName(NEWCONNECTORNAME);
+                    ct.setMetaname(NEWCONNECTORNAME);
                     break;
                 }
             }
@@ -111,8 +115,8 @@ public class ChangeTMatchGroupOutputConnectorTask extends AbstractJobMigrationTa
          */
         private void createNewMetadata(NodeType node, MetadataType mt) {
             newMT = EcoreUtil.copy(mt);
-            newMT.setConnector("FLOW_OUTPUT"); //$NON-NLS-1$
-            newMT.setName("FLOW_OUTPUT"); //$NON-NLS-1$
+            newMT.setConnector(NEWCONNECTORNAME);
+            newMT.setName(NEWCONNECTORNAME);
 
         }
     }
