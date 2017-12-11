@@ -306,6 +306,7 @@ public class ExportItemWizardPage extends WizardPage {
                 if (objectType == ERepositoryObjectType.METADATA_CON_TABLE
                         || objectType == ERepositoryObjectType.METADATA_CON_VIEW
                         || objectType == ERepositoryObjectType.METADATA_CON_SYNONYM
+                        || objectType == ERepositoryObjectType.METADATA_CON_CALCULATION_VIEW
                         || objectType == ERepositoryObjectType.METADATA_CON_QUERY) {
                     if (node.getObject() != null) {
                         property = node.getObject().getProperty();
@@ -369,6 +370,7 @@ public class ExportItemWizardPage extends WizardPage {
         if (objectType != null) {
             if (objectType == ERepositoryObjectType.METADATA_CON_TABLE || objectType == ERepositoryObjectType.METADATA_CON_VIEW
                     || objectType == ERepositoryObjectType.METADATA_CON_SYNONYM
+                    || objectType == ERepositoryObjectType.METADATA_CON_CALCULATION_VIEW
                     || objectType == ERepositoryObjectType.METADATA_CON_QUERY
                     || objectType == ERepositoryObjectType.METADATA_CONNECTIONS
                     || objectType == ERepositoryObjectType.METADATA_FILE_DELIMITED

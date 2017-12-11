@@ -2938,6 +2938,14 @@
               name="UpdateToJava8VersionMigrationTask"
               version="6.5.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.0"
+              class="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              id="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              name="Fill the default db version of mssql for Jobsetting"
+              version="6.3.1">
+        </projecttask>
    </extension>
 
    <extension

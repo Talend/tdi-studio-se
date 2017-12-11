@@ -24,7 +24,7 @@
   </DOCUMENTATION>
 
   <CONNECTORS>
-    <CONNECTOR CTYPE="FLOW" MAX_INPUT="0" MAX_OUTPUT="0"/>
+    <CONNECTOR CTYPE="FLOW" MAX_INPUT="1" MAX_OUTPUT="0"/>
     <CONNECTOR CTYPE="ITERATE" MAX_OUTPUT="1" MAX_INPUT="1"/>
     <CONNECTOR CTYPE="SUBJOB_OK" MAX_INPUT="1" />
     <CONNECTOR CTYPE="SUBJOB_ERROR" MAX_INPUT="1" />
@@ -35,11 +35,31 @@
 
   <PARAMETERS>
 
+    <PARAMETER
+      NAME="IS_STREAM_LABEL"
+      FIELD="LABEL"
+      NUM_ROW="5"
+      REQUIRED="false"
+      SHOW_IF="#LINK@CONNECTOR.IN.FLOW_MAIN == '1'"
+    >
+      <DEFAULT>Note: You are in streaming mode, remove input flow to be able to select a file.</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="IS_FILE_LABEL"
+      FIELD="LABEL"
+      NUM_ROW="5"
+      REQUIRED="false"
+      SHOW_IF="#LINK@CONNECTOR.IN.FLOW_MAIN == '0'"
+    >
+      <DEFAULT>Note: Connect an input flow to switch to streaming mode.</DEFAULT>
+    </PARAMETER>
+
    <PARAMETER
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="1"
+      NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:VERTICA"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     />
@@ -47,27 +67,28 @@
 	<PARAMETER
 		NAME="DB_VERSION"
 		FIELD="CLOSED_LIST"
-		NUM_ROW="10"
+		NUM_ROW="100"
 		REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
-		<ITEMS DEFAULT="VERTICA_3">
+		<ITEMS DEFAULT="VERTICA_9_0">
 			<ITEM NAME="VERTICA_3" VALUE="vertica_3.0_jdk_5.jar" />
 			<ITEM NAME="VERTICA_3.5" VALUE="vertica_3.5_jdk_5.jar" />
 			<ITEM NAME="VERTICA_4" VALUE="vertica_4.0_jdk_5.jar" />
 			<ITEM NAME="VERTICA_4.1" VALUE="vertica_4.1.7_jdk_5.jar" />
 			<ITEM NAME="VERTICA_5.0" VALUE="vertica_4.1.14_jdk_5.jar" />
-            <ITEM NAME="VERTICA_5_1" VALUE="VERTICA_5_1" />
+			<ITEM NAME="VERTICA_5_1" VALUE="VERTICA_5_1" />
 			<ITEM NAME="VERTICA_6_0" VALUE="VERTICA_6_0" />
 			<ITEM NAME="VERTICA_6_1_X" VALUE="VERTICA_6_1_X" />
 			<ITEM NAME="VERTICA_7_0_X" VALUE="VERTICA_7_0_X" />
 			<ITEM NAME="VERTICA_7_1_X" VALUE="VERTICA_7_1_X" />
+			<ITEM NAME="VERTICA_9_0" VALUE="VERTICA_9_0" />
 		</ITEMS>
 	</PARAMETER>
 
     <PARAMETER
       NAME="USE_EXISTING_CONNECTION"
       FIELD="CHECK"
-      NUM_ROW="20"
+      NUM_ROW="200"
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -76,7 +97,7 @@
       NAME="CONNECTION"
       FIELD="COMPONENT_LIST"
       REQUIRED="true" FILTER="tVerticaConnection"
-      NUM_ROW="20"
+      NUM_ROW="200"
       SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
       DYNAMIC_SETTINGS="true"
     />
@@ -84,7 +105,7 @@
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="300"
       REPOSITORY_VALUE="SERVER_NAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -94,7 +115,7 @@
     <PARAMETER
       NAME="TYPE"
       FIELD="TEXT"
-      NUM_ROW="40"
+      NUM_ROW="400"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
@@ -104,7 +125,7 @@
     <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="300"
       REPOSITORY_VALUE="PORT"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -114,7 +135,7 @@
     <PARAMETER
       NAME="SERVER"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="300"
       SHOW_IF="ACTION=='EXPORT'"
     >
       <DEFAULT>"DB SERVER"</DEFAULT>
@@ -123,7 +144,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="40"
+      NUM_ROW="400"
       REPOSITORY_VALUE="SID"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -133,7 +154,7 @@
     <PARAMETER
 		NAME="SCHEMA_DB"
 		FIELD="TEXT"
-		NUM_ROW="40"
+		NUM_ROW="400"
 		REPOSITORY_VALUE="SCHEMA"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 		<DEFAULT>""</DEFAULT>
@@ -142,7 +163,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="50"
+      NUM_ROW="500"
       REPOSITORY_VALUE="USERNAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -152,7 +173,7 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="50"
+      NUM_ROW="500"
       REPOSITORY_VALUE="PASSWORD"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     >
@@ -162,7 +183,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="60"
+      NUM_ROW="600"
       NOT_SHOW_IF="PARALLELIZE == 'true'"
     >
       <ITEMS DEFAULT="NONE">
@@ -175,7 +196,7 @@
       </ITEMS>
     </PARAMETER>
 
-	<PARAMETER NAME="NOTE" FIELD="LABEL" NUM_ROW="60"
+	<PARAMETER NAME="NOTE" FIELD="LABEL" NUM_ROW="600"
 			NOT_SHOW_IF="(TABLE_ACTION == 'NONE') OR (USE_EXISTING_CONNECTION == 'false')"
 		>
 		<DEFAULT>Warning : this component configuration will automatically generate a commit before bulk insert</DEFAULT>
@@ -184,7 +205,7 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="DBTABLE"
-      NUM_ROW="59"
+      NUM_ROW="590"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
@@ -193,28 +214,44 @@
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="70"
+      NUM_ROW="700"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
-    <PARAMETER NAME="USE_SCHEMA_FOR_COPY" FIELD="CHECK" NUM_ROW="80">
+    <PARAMETER NAME="USE_SCHEMA_FOR_COPY" FIELD="CHECK" NUM_ROW="800">
         <DEFAULT>false</DEFAULT>
      </PARAMETER> 
 
     <PARAMETER
       NAME="REMOTE_FILENAME"
       FIELD="FILE"
-      NUM_ROW="90"
-      REQUIRED="true"
+      NUM_ROW="900"
+      REQUIRED="false"
+      SHOW_IF="#LINK@CONNECTOR.IN.FLOW_MAIN == '0'"
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
+      NAME="COMPRESSION"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="950"
+      REQUIRED="true"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
+    >
+        <ITEMS DEFAULT="UNCOMPRESSED">
+            <ITEM NAME="UNCOMPRESSED" VALUE="UNCOMPRESSED" />
+            <ITEM NAME="BZIP" VALUE="BZIP" />
+            <ITEM NAME="GZIP" VALUE="GZIP" />
+            <ITEM NAME="LZO" VALUE="LZO" />
+        </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
-      NUM_ROW="130"
+      NUM_ROW="1300"
       SHOW="false"
     >
       <DEFAULT>vertica_id</DEFAULT>
@@ -226,7 +263,7 @@
 	<PARAMETER
 		NAME="PROPERTIES"
 		FIELD="TEXT"
-		NUM_ROW="1"
+		NUM_ROW="10"
 		REPOSITORY_VALUE="PROPERTIES_STRING"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 		<DEFAULT>""</DEFAULT>
@@ -235,7 +272,7 @@
    	<PARAMETER
       NAME="DATA_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="6"
+      NUM_ROW="60"
     >
       <ITEMS DEFAULT="INSERT">
         <ITEM NAME="INSERT"           VALUE="INSERT"/>
@@ -244,9 +281,18 @@
     </PARAMETER>
 
     <PARAMETER
+        NAME="STREAM_NAME"
+        FIELD="TEXT"
+        NUM_ROW="65"
+        REQUIRED="true"
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+        <DEFAULT>"talend"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
       NAME="ROS"
       FIELD="CHECK"
-      NUM_ROW="7"
+      NUM_ROW="70"
     >
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
@@ -254,20 +300,70 @@
     <PARAMETER
       NAME="EXIT_ON_NO_ROWS"
       FIELD="CHECK"
-      NUM_ROW="8"
+      NUM_ROW="80"
     >
       <DEFAULT>true</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="TRAILING_NULL"
+        FIELD="CHECK"
+        NUM_ROW="81"
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+            <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+     <PARAMETER
+        NAME="SKIP_OPTION" FIELD="CHECK"
+        REQUIRED="true"
+        NUM_ROW="87"
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+        NAME="SKIP_VALUE" FIELD="TEXT"
+        SHOW_IF="SKIP_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
+        NUM_ROW="87">
+      <DEFAULT>"1"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="RECORD_TERMINATOR_OPTION" FIELD="CHECK"
+        REQUIRED="true"
+        NUM_ROW="88"
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+        NAME="RECORD_TERMINATOR_VALUE" FIELD="TEXT"
+        SHOW_IF="RECORD_TERMINATOR_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
+        NUM_ROW="88">
+      <DEFAULT>"\n"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="ENCLOSED_BY_OPTION" FIELD="CHECK"
+        REQUIRED="true"
+        NUM_ROW="89"
+        SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+        NAME="ENCLOSED_BY_VALUE" FIELD="TEXT"
+        SHOW_IF="ENCLOSED_BY_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
+        NUM_ROW="89">
+      <DEFAULT>"\""</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
    		NAME="ESCAPE_CHARACTER_OPTION" FIELD="CHECK"
 		REPOSITORY_VALUE="ESCAPE_CHARACTER_OPTION"
 		REQUIRED="true"
-   		NUM_ROW="9">
+   		NUM_ROW="90">
       <DEFAULT>true</DEFAULT>
     </PARAMETER>
 	
-	<PARAMETER NAME="ESCAPE_CHAR" FIELD="TEXT" NUM_ROW="9"
+	<PARAMETER NAME="ESCAPE_CHAR" FIELD="TEXT" NUM_ROW="90"
 			REPOSITORY_VALUE="ESCAPE_CHAR" REQUIRED="true" SHOW_IF="ESCAPE_CHARACTER_OPTION == 'true'">
 			<DEFAULT>"\\"</DEFAULT>
 	</PARAMETER>
@@ -275,7 +371,7 @@
     <PARAMETER
       NAME="FIELDS_TERMINATED_BY"
       FIELD="TEXT"
-      NUM_ROW="10"
+      NUM_ROW="100"
       MAX_LENGTH="1"
       REQUIRED="true"
     >
@@ -285,16 +381,59 @@
    <PARAMETER
       NAME="NULL_STRING"
       FIELD="TEXT"
-      NUM_ROW="10"
+      NUM_ROW="100"
       REQUIRED="true"
     >
       <DEFAULT>"null"</DEFAULT>
     </PARAMETER>
     
+    <PARAMETER
+      NAME="ENFORCELENGTH_OPTION"
+      FIELD="CHECK"
+      NUM_ROW="125"
+      REQUIRED="true"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+        NAME="REJECTMAX_OPTION" FIELD="CHECK"
+        REQUIRED="true"
+        NUM_ROW="150"
+        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND (DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+        NAME="REJECTMAX_VALUE" FIELD="TEXT"
+        SHOW_IF="ON_ERROR_ABORT_OPTION == 'false' AND REJECTMAX_OPTION == 'true' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))"
+        NUM_ROW="150">
+      <DEFAULT>"1000"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="ON_ERROR_ABORT_OPTION"
+      FIELD="CHECK"
+      NUM_ROW="160"
+      REQUIRED="true"
+      SHOW_IF="REJECTMAX_OPTION == 'false' AND ((DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0'))">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="NO_COMMIT_OPTION"
+      FIELD="CHECK"
+      NUM_ROW="170"
+      REQUIRED="true"
+      SHOW_IF="(DB_VERSION == 'VERTICA_6_0') OR (DB_VERSION == 'VERTICA_6_1_X') OR  (DB_VERSION == 'VERTICA_7_0_X') OR (DB_VERSION == 'VERTICA_7_1_X') OR (DB_VERSION == 'VERTICA_9_0')"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
 	<PARAMETER
 	   NAME="REJECTED_DATA_FILE"
 	   FIELD="FILE"
-	   NUM_ROW="20"
+	   NUM_ROW="172"
 	   REQUIRED="true"
 	   SHOW_IF="DATA_ACTION=='INSERT'"
 	 >
@@ -304,31 +443,34 @@
 	<PARAMETER
 	   NAME="EXCEPTION_FILE"
 	   FIELD="FILE"
-	   NUM_ROW="40"
+	   NUM_ROW="174"
 	   REQUIRED="true"
 	   SHOW_IF="DATA_ACTION=='INSERT'"
 	 >
 	   <DEFAULT>""</DEFAULT>
 	 </PARAMETER>
 	 
-     <PARAMETER NAME="CID" FIELD="TEXT" REQUIRED="true" NUM_ROW="50" SHOW="false" >
+     <PARAMETER NAME="CID" FIELD="TEXT" REQUIRED="true" NUM_ROW="500" SHOW="false" >
        <DEFAULT>""</DEFAULT>
-     </PARAMETER>	 
+     </PARAMETER>
      
+
+
    </ADVANCED_PARAMETERS>
 
    <CODEGENERATION>
-       <IMPORTS>
+    <IMPORTS>
 		<IMPORT NAME="Driver-VERTICA" MODULE="vertica_3.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.0_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_3.5" MODULE="vertica_3.5_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.5_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_4" MODULE="vertica_4.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.0_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_4.1" MODULE="vertica_4.1.7_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.7_jdk_5/6.0.0"   REQUIRED="false" />
 		<IMPORT NAME="Driver-VERTICA_5.0" MODULE="vertica_4.1.14_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_4.1.14_jdk_5/6.0.0"   REQUIRED="false" />
-        <IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
+    	<IMPORT NAME="Driver-VERTICA_5.1" MODULE="vertica_5.1.6_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_5.1.6_jdk_5/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_5_1')" />
 		<IMPORT NAME="Driver-VERTICA_6.0" MODULE="vertica-jdk5-6.0.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.0.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_0')" />
 		<IMPORT NAME="Driver-VERTICA_6.1.2" MODULE="vertica-jdk5-6.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdk5-6.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_6_1_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.0.1" MODULE="vertica-jdbc-7.0.1-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.0.1-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_0_X')" />
 		<IMPORT NAME="Driver-VERTICA_7.1.2" MODULE="vertica-jdbc-7.1.2-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-7.1.2-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_7_1_X')" />
+		<IMPORT NAME="Driver-VERTICA_9.0" MODULE="vertica-jdbc-9.0.0-0.jar" MVN="mvn:org.talend.libraries/vertica-jdbc-9.0.0-0/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') and (DB_VERSION=='VERTICA_9_0')" />
     </IMPORTS>
   </CODEGENERATION>
 

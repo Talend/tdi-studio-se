@@ -3,3 +3,11 @@
 if (null != java.sql.DriverManager.getLogWriter()) {
 	java.sql.DriverManager.getLogWriter().close();
 }
+
+<% 
+	String connectionComponent = ElementParameterParser.getValue(node,"__CONNECTION__");
+%>
+java.io.PrintWriter logWriter_<%=cid %> = (java.io.PrintWriter) globalMap.get("logWriter_<%=connectionComponent %>");
+if (logWriter_<%=cid %> != null) {
+	logWriter_<%=cid %>.close();
+}

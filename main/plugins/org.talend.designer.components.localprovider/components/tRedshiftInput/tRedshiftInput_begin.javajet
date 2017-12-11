@@ -24,7 +24,8 @@ imports="
 			if (!logLevel.equals("0")) {
 %>
 				java.io.Writer output_<%=cid %> = new java.io.FileWriter(<%= logFile %>, true);
-				java.sql.DriverManager.setLogWriter(new java.io.PrintWriter(output_<%=cid %>,true));
+				java.io.PrintWriter logWriter_<%=cid %> = new java.io.PrintWriter(output_<%=cid %>,true);
+				java.sql.DriverManager.setLogWriter(logWriter_<%=cid %>);
 <%
 			}
 %>

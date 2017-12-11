@@ -188,6 +188,17 @@ if ((metadatas != null) && (metadatas.size() > 0)) {
 		        					%>
 		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_Date(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString(), <%= patternValue %>);
 		        					<%
+		        					}else if(javaType == JavaTypesManager.BYTE_ARRAY){ // Byte[]
+		        					%>
+		        					    String property_<%=column.getLabel()%>_<%=cid%>_type = property_<%=column.getLabel()%>_<%=cid%>.getValue().getTypeName();
+		        						if("Edm.Binary".equals(property_<%=column.getLabel()%>_<%=cid%>_type)){
+		        						    <%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = (byte[])property_<%=column.getLabel()%>_<%=cid%>.getValue().asPrimitive().toValue();
+		        						}
+		        						else{
+		        						    org.apache.olingo.commons.api.edm.EdmPrimitiveType edmpt = org.apache.olingo.commons.core.edm.primitivetype.EdmPrimitiveTypeFactory.getInstance(org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.Binary);
+                                            <%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = (byte[])edmpt.valueOfString(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString(), null, null, org.apache.olingo.commons.api.Constants.DEFAULT_PRECISION, org.apache.olingo.commons.api.Constants.DEFAULT_SCALE, null, byte[].class);
+		        						}
+		        					<%
 		        					}else{ // other
 		        					%>
 		        						<%=outgoingConn.getName()%>.<%=columnList.get(i).getLabel()%> = ParserUtils.parseTo_<%=typeToGenerate%>(property_<%=column.getLabel()%>_<%=cid%>.getValue().toString());

@@ -52,7 +52,10 @@ public enum ColorInfo {
     COLOR_FOREGROUND_ERROR_EXPRESSION_CELL(255, 255, 255), // red
     COLOR_BACKGROUND_VALID_EXPRESSION_CELL(255, 255, 255), // white
 
-    COLOR_DRAGGING_INSERTION_INDICATOR(0, 78, 152); // blue
+    COLOR_DRAGGING_INSERTION_INDICATOR(0, 78, 152),
+
+    COLOR_WARN_INDICATOR(0, 78, 152) // warnning yellow
+    ; // blue
 
     private int red;
 

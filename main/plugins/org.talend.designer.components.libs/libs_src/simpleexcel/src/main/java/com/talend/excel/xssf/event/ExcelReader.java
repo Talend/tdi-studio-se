@@ -147,7 +147,7 @@ public class ExcelReader implements Callable {
                 if (sheetNames.size() > 0) {
                     for (int i = 0; i < sheetNames.size(); i++) {
                         if ((asRegexs.get(i) && sheetName.matches(sheetNames.get(i)))
-                                || (!asRegexs.get(i) && sheetName.equals(sheetNames.get(i)))) {
+                                || (!asRegexs.get(i) && sheetName.equalsIgnoreCase(sheetNames.get(i)))) {
                             match = true;
                             // iss.add(sheet);
                             issmap.put(sheetName, sheet);
