@@ -18,12 +18,19 @@
 
 <%
 	//the authentication is being performed after establishment of the TLS session
-	if(useAuth && !"TLS".equals(protocol)){
+	if(!"TLS".equals(protocol)){
+		//we only keep the logic like before now, we may need to move it in the "useAuth" block.
 %>
-  env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
-  env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
-  env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
-<%}%>
+		env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
+<%
+		if(useAuth){
+%>
+    env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
+    env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
+<%
+		}
+	}
+%>
 
 javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
 
