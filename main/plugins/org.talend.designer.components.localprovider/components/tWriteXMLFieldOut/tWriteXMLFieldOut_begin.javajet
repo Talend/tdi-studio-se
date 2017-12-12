@@ -200,19 +200,9 @@ class NestXMLTool_<%=cid%>{
 		if(value instanceof String){
 		    parseAndAdd(nestRoot,(String)value);
 		}else if (value instanceof java.util.List){
-		    try {
-		        nestRoot.setContent((java.util.List)value);
-		        } catch (java.lang.Exception e) {
-				    e.printStackTrace();
-				    nestRoot.setText(value.toString());
-			    }
+		    setList(nestRoot,(java.util.List)value);
 		}else if (value.getClass().isArray()){
-		    try {
-		        nestRoot.setContent(java.util.Arrays.asList((Object[])value));
-		        } catch (java.lang.Exception e) {
-				    e.printStackTrace();
-				    nestRoot.setText(value.toString());
-			    }
+		    setList(nestRoot,java.util.Arrays.asList((Object[])value));
 		}else{
 		    parseAndAdd(nestRoot,value.toString());
 		}
@@ -228,23 +218,22 @@ class NestXMLTool_<%=cid%>{
         }
 	}
 	
+	public void setList(org.dom4j.Element element, java.util.List value){
+	    try {
+		        element.setContent((java.util.List)value);
+		    } catch (java.lang.Exception e) {
+				e.printStackTrace();
+				element.setText(value.toString());
+			}
+	}
+	
 	public void setText(org.dom4j.Element element, Object value){
 		if(value instanceof String){
 		    setText(element,(String)value);
 		}else if (value instanceof java.util.List){
-		    try {
-		        element.setContent((java.util.List)value);
-		        } catch (java.lang.Exception e) {
-				    e.printStackTrace();
-				    element.setText(value.toString());
-			    }
+		    setList(element,(java.util.List)value);
 		}else if (value.getClass().isArray()){
-		    try {
-		        element.setContent(java.util.Arrays.asList((Object[])value));
-		        } catch (java.lang.Exception e) {
-				    e.printStackTrace();
-				    element.setText(value.toString());
-			    }
+		    setList(element,java.util.Arrays.asList((Object[])value));
 		}else{
 		    setText(element,value.toString());
 		}
