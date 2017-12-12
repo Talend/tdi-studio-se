@@ -309,7 +309,7 @@
 
 	  <!-- Websphere MQ -->
       <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mq-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
-      <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq.allclient-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mq.allclient-8.0.0.4/6.0.0"  REQUIRED_IF="(SERVER == 'WEBSPHERE')" />
+      <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq.allclient-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mq.allclient-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
       <IMPORT NAME="WEBSPHERE JMS LIB" MODULE="com.ibm.mqjms-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mqjms-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
       <IMPORT NAME="WEBSPHERE CONNECTOR" MODULE="websphere-connector-1_5.jar" MVN="mvn:org.talend.libraries/websphere-connector-1_5/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
       <IMPORT NAME="TALENDMQRFH2" MODULE="talendMQRFH2.jar" MVN="mvn:org.talend.libraries/talendMQRFH2/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />

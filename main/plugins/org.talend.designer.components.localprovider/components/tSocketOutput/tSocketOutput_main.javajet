@@ -34,32 +34,24 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
         String escapeChar = escapeChar1.substring(1,escapeChar1.length()-1);
         String textEnclosure1 = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");
         String textEnclosure = textEnclosure1.substring(1,textEnclosure1.length()-1);
-        if ("".equals(textEnclosure)) textEnclosure = "\0";
-        
         List< ? extends IConnection> conns = node.getIncomingConnections();
         if(!("\\n").equals(rowSeparator) && !("\\r").equals(rowSeparator)){
 %>
             CsvWriter<%=cid %>.setLineEnd(""+'<%=rowSeparator%>');
 <%              
         }
-        if(("\\\\").equals(escapeChar)){
+        if(!"".equals(textEnclosure)){
 %>
-            CsvWriter<%=cid %>.setEscapeChar('\\');
-<%
-        }else if(escapeChar.equals(textEnclosure)){
-%>
-            CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
-<%
-        }else{
-%>
-            //doesn't work for other escapeChar
-            CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
-<%
-        }
-%>
-        
-        CsvWriter<%=cid %>.setQuoteChar('<%=textEnclosure %>'); 
-        CsvWriter<%=cid %>.setQuoteStatus(com.talend.csv.CSVWriter.QuoteStatus.FORCE);
+			<%if(("\\\\").equals(escapeChar)){%>
+			     CsvWriter<%=cid %>.setEscapeChar('\\');
+			<%}else{%>
+				 CsvWriter<%=cid %>.setEscapeChar('<%=textEnclosure %>');
+			<%}%>
+        	CsvWriter<%=cid %>.setQuoteChar('<%=textEnclosure %>'); 
+        	CsvWriter<%=cid %>.setQuoteStatus(com.talend.csv.CSVWriter.QuoteStatus.FORCE);
+        <%} else {%>
+        	CsvWriter<%=cid %>.setQuoteStatus(com.talend.csv.CSVWriter.QuoteStatus.NO);
+        <% } %>
 <%      
         if(conns!=null){
             if (conns.size()>0){

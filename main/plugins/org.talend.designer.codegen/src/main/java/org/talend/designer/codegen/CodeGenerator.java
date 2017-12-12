@@ -29,7 +29,6 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.language.ECodeLanguage;
-import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentFileNaming;
 import org.talend.core.model.components.IComponentsFactory;
@@ -740,15 +739,20 @@ public class CodeGenerator implements ICodeGenerator {
             IComponentFileNaming componentFileNaming = ComponentsFactoryProvider.getFileNamingInstance();
 
             IComponent component = node.getComponent();
-            String templateURI = component.getPathSource() + TemplateUtil.DIR_SEP + node.getComponent().getName()
-                    + TemplateUtil.DIR_SEP
-                    + componentFileNaming.getJetFileName(node.getComponent(), language.getExtension(), part);
-            // Need rewrite templateURI for generic component since create a new JetBean .
-            if (EComponentType.GENERIC.equals(component.getComponentType())) {
-                templateURI = TemplateUtil.JET_STUB_DIRECTORY + TemplateUtil.DIR_SEP + TemplateUtil.RESOURCES_DIRECTORY_GENERIC
-                        + TemplateUtil.DIR_SEP + "component_" + part.getName()//$NON-NLS-1$
-                        + TemplateUtil.EXT_SEP + language.getExtension() + TemplateUtil.TEMPLATE_EXT;
-            }
+            // some code unification to handle all component types the same way.
+            String templateURI = component.getTemplateFolder() + TemplateUtil.DIR_SEP
+                    + componentFileNaming.getJetFileName(component.getTemplateNamePrefix(), language.getExtension(), part);
+
+            // String templateURI = component.getPathSource() + TemplateUtil.DIR_SEP + node.getComponent().getName()
+            // + TemplateUtil.DIR_SEP
+            // + componentFileNaming.getJetFileName(node.getComponent(), language.getExtension(), part);
+            // // Need rewrite templateURI for generic component since create a new JetBean .
+            // if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            // templateURI = TemplateUtil.JET_STUB_DIRECTORY + TemplateUtil.DIR_SEP +
+            // TemplateUtil.RESOURCES_DIRECTORY_GENERIC
+            // + TemplateUtil.DIR_SEP + "component_" + part.getName()//$NON-NLS-1$
+            // + TemplateUtil.EXT_SEP + language.getExtension() + TemplateUtil.TEMPLATE_EXT;
+            // }
 
             jetBean.setTemplateRelativeUri(templateURI);
             JetProxy proxy = new JetProxy(jetBean);

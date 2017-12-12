@@ -82,7 +82,7 @@ if(hasInput) {
     }
 }
 ProcessPropertiesGenerator generator = new ProcessPropertiesGenerator(cid, component);
-List<Property> dynamicProperties = new ArrayList<Property>();
+List<String> referenceableProperties = new ArrayList<String>();
 
 for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
     List<NamedThing> properties = propInfo.props.getProperties();
@@ -95,9 +95,32 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) { // propInfo
         } else if (prop instanceof ComponentReferenceProperties) {
             final String fieldString = propInfo.fieldName + "." + prop.getName();
             referenceProperties.add(fieldString);
+            referenceableProperties.add(propInfo.fieldName);
         } //else may be a ComponentProperties so ignore
     } // property
 } // propInfo
+
+// Now that we know all ComponentReferenceProperties, we can re-itereate to remove tags for related properties.
+// So it removes tag for context variables for properties such as connection.
+for (Component.CodegenPropInfo propInfo : propsToProcess) {
+    for (NamedThing prop : propInfo.props.getProperties()) {
+        if (prop instanceof Property) {
+            Property property = (Property)prop;
+            if (property.getFlags() != null &&
+                (property.getFlags().contains(Property.Flags.DESIGN_TIME_ONLY) || property.getFlags().contains(Property.Flags.HIDDEN)) &&
+                (property.getTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE) == null)){
+                continue;
+            }
+            boolean referenced = false;
+            for(String r: referenceableProperties){
+                referenced = referenced || propInfo.fieldName.startsWith(r);
+            }
+            if (referenced){
+                property.setTaggedValue(IGenericConstants.DYNAMIC_PROPERTY_VALUE, "false");
+            }
+        }
+    }
+}
 
 for (final String fieldString : referenceProperties) {
     %>

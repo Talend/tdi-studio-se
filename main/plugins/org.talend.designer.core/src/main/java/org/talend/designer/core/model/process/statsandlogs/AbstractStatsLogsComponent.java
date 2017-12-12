@@ -662,4 +662,12 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
         return true;
     }
 
+    public String getTemplateFolder() {
+        return getPathSource() == null ? null : (getPathSource() + "/" + getName());
+    }
+
+    public String getTemplateNamePrefix() {
+        return getName();
+    }
+
 }
