@@ -3123,6 +3123,14 @@
             id="projectsetting.JavaVersion"
             title="%ProjectSetting_JavaVersion">
       </page>
+      <page
+            class="org.talend.repository.preference.ProjectRefSettingPage"
+            id="org.talend.repository.preference.ProjectRefSettingPage"
+            title="%projectSetting.projectRefSettingPage">
+         <tester
+               class="org.talend.repository.preference.ProjectRefSettingPageTester">
+         </tester>
+      </page>
    </extension>
    <extension
          id="CreateAutomaticConnectionApplication"

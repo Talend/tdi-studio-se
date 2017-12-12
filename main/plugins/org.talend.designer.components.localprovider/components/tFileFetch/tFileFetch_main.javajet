@@ -37,6 +37,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	String proxyDomain = ElementParameterParser.getValue(node, "__PROXY_DOMAIN__");
 	boolean post = "true".equals(ElementParameterParser.getValue(node, "__POST__"));
 	boolean printResponse = "true".equals(ElementParameterParser.getValue(node, "__PRINT__"));
+	boolean uploadFile = "true".equals(ElementParameterParser.getValue(node,"__UPLOAD__"));
 	boolean needAuth = "true".equals(ElementParameterParser.getValue(node, "__NEED_AUTH__"));
 	boolean saveCookie = "true".equals(ElementParameterParser.getValue(node, "__SAVE_COOKIE__"));
 	boolean readCookie = "true".equals(ElementParameterParser.getValue(node, "__READ_COOKIE__"));
@@ -46,6 +47,8 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 	boolean useProxyNTLM = "true".equals(ElementParameterParser.getValue(node, "__PROXY_NTLM__"));
 	boolean addHeader = "true".equals(ElementParameterParser.getValue(node, "__ADD_HEADER__"));
 	boolean encodeURI = "true".equals(ElementParameterParser.getValue(node, "__ENCODE_URI__"));
+
+	String scaccepted_uploadfile = ((uploadFile) ? " || status_"+cid+" == org.apache.commons.httpclient.HttpStatus.SC_ACCEPTED": "");
 %>	
 	java.net.URI uriToFetch_<%=cid %> = null;
 	try {
@@ -290,7 +293,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 			<%
 		}
 
-		if ("true".equals(ElementParameterParser.getValue(node,"__UPLOAD__"))) {
+		if (uploadFile) {
 			List<Map<String, String>> fileParams = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__FILE_PARAMS__");
 			int j = 0;
 
@@ -360,7 +363,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 					System.out.println("Redirect to: " + method_<%=cid%>.getURI());
 					finalURL_<%=cid%> = method_<%=cid%>.getURI().toString();
-				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK) {
+				} else if (status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>) {
 					redirect_<%=cid%> = false;
 				} else {
 					throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());

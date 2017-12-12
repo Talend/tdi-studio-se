@@ -2036,7 +2036,7 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             return branch;
             // }
         } else if (!isRemoteConnection && project != null) {
-            List<ProjectReference> referenceProjects = project.getEmfProject().getReferencedProjects();
+            List<ProjectReference> referenceProjects = project.getProjectReferenceList();
             String currentBranch = null;
             if (referenceProjects != null && !referenceProjects.isEmpty()) {
                 boolean allBranchesAreSame = true;

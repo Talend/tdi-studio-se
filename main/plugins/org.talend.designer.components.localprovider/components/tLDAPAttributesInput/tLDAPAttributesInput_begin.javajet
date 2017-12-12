@@ -43,7 +43,7 @@ imports="
 				String baseDN_<%=cid%> = "";
 <%
 				if(("false").equals(useExistingConn)){
-					String authen =ElementParameterParser.getValue(node, "__AUTHENTIFICATION__");
+					boolean useAuth = "true".equals(ElementParameterParser.getValue(node, "__AUTHENTIFICATION__"));
 					String user =ElementParameterParser.getValue(node, "__USER__");
 
 					String host=ElementParameterParser.getValue(node, "__HOST__");
@@ -58,24 +58,10 @@ imports="
 %>
 					java.util.Hashtable env_<%=cid%> = new java.util.Hashtable();
 					env_<%=cid%>.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-					env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
 					env_<%=cid%>.put(javax.naming.Context.REFERRAL, "<%=referrals%>");
 					env_<%=cid%>.put("java.naming.ldap.derefAliases","<%=aliases%>");
 					env_<%=cid%>.put(javax.naming.Context.PROVIDER_URL, "ldap://"+<%=host%>+":"+<%=port%>);
 <%
-					if(("true").equals(authen)){
-%>
-						env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
-						
-                        <%
-                        String passwordFieldName = "__PASS__";
-                        %>
-                            
-                        <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-                        
-						env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
-<%
-					}
 					if(("LDAPS").equals(protocol)){
 %>
 						env_<%=cid%>.put(javax.naming.Context.SECURITY_PROTOCOL, "ssl");
@@ -119,22 +105,9 @@ imports="
 						}
 					}
 %>
-					<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - Connection attempt to '"+ <%=host%> + "'.");
-					<%}%>
-					javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
-<%
-					if(("TLS").equals(protocol)){
-%>
-						javax.naming.ldap.StartTlsRequest tldsReq_<%=cid%> = new javax.naming.ldap.StartTlsRequest();
-						javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)ctx_<%=cid%>.extendedOperation(tldsReq_<%=cid%>);
-						javax.net.ssl.SSLSession session_<%=cid%> = tls_<%=cid%>.negotiate((javax.net.ssl.SSLSocketFactory)talend.ssl.AdvancedSocketFactory.getDefault());
-<%
-					}
-%>
-					<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - Connection to '"+<%=host%>+"' has succeeded.");
-					<%}%>
+					
+					<%@ include file="../tLDAPConnection/ldapconnect.javajet"%>
+					
 <%
 				}else{
 %>
