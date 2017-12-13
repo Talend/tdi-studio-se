@@ -29,7 +29,7 @@
 <%
              if(needClientAuth){
 %>
-                 if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.keyStore")==null){
+                 if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.keyStoreType")==null){
                      atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStoreType","PKCS12");
                  }
                  atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStore", <%=keyStorePath %>);
