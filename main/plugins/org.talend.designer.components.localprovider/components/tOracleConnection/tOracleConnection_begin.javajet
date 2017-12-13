@@ -106,6 +106,7 @@ imports="
 		if("ORACLE_RAC".equals(connectionType) && ("ORACLE_11".equals(dbVersion) || "ORACLE_11-6".equals(dbVersion) || "ORACLE_12".equals(dbVersion))){
 		    useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
 		}
+		boolean disableCDCProtection="true".equals(ElementParameterParser.getValue(node,"__DISABLE_CBC_PROTECTION__"));
 			if((("ORACLE_WALLET").equals(connectionType))) {
 %>
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>);
@@ -129,6 +130,11 @@ imports="
 %>
 			    atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
 			    atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
+<%
+		    }
+		    if(disableCDCProtection && useSSL && "ORACLE_12".equals(dbVersion)){
+%>
+                System.setProperty("jsse.enableCBCProtection","false");
 <%
 		    }
 %>
