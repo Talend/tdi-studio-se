@@ -40,24 +40,39 @@ org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org
         String transKey_<%=cid %> = "<%=trans%>_" + Thread.currentThread().getThreadGroup().getName();
         com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
         if(mdmTransaction_<%=cid %> == null) {
-            String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
-            if(murl_<%=cid %>.endsWith("?wsdl")) {
-                murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
+            Boolean transInitStart_<%=cid%> = false;
+            synchronized(globalMap){
+                if(globalMap.containsKey(transKey_<%=cid %> + "_initStart")){
+                    transInitStart_<%=cid%> = true;
+                }else{
+                    globalMap.put(transKey_<%=cid %> + "_initStart", true);
+                }
             }
-            String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
-            String username_<%=cid %> = (String)globalMap.get("username_<%=connection %>");
-            String password_<%=cid %> = (String)globalMap.get("password_<%=connection %>");
-            if((Boolean)globalMap.get("useClientTranId_<%=connection %>")) {
-                String sessionID_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getSessionID(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
-                mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
-                mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
-                mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
-                mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
-                mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
-                mdmTransaction_<%=cid %>.setSessionId(sessionID_<%=cid %>);
-            } else {
-                <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
-                mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+            if(transInitStart_<%=cid%> == false){
+                String murl_<%=cid %> = (String)globalMap.get("mdmUrl_<%=connection %>");
+                if(murl_<%=cid %>.endsWith("?wsdl")) {
+                    murl_<%=cid %> = murl_<%=cid %>.substring(0, murl_<%=cid %>.length() - 5);
+                }
+                String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
+                String username_<%=cid %> = (String)globalMap.get("username_<%=connection %>");
+                String password_<%=cid %> = (String)globalMap.get("password_<%=connection %>");
+                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
+                    List<String> cookies_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getCookies(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+                    mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
+                    mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
+                    mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
+                    mdmTransaction_<%=cid %>.setCookies(cookies_<%=cid%>);
+                }else{
+                    <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
+                    mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+                }
+            }else{
+                while(mdmTransaction_<%=cid %> == null){
+                    Thread.sleep(10);
+                    mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
+                }
             }
             globalMap.put(transKey_<%=cid %>, mdmTransaction_<%=cid %>);
             <% logUtil.debug("\"Got transaction successfully with key=\" + transKey_" + cid);%>
