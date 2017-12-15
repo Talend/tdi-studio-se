@@ -192,7 +192,8 @@
       FIELD="CHECK"
       NUM_ROW="43"
       REQUIRED="true"
-      SHOW_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12'))"
+      REPOSITORY_VALUE="USE_SSL"
+      SHOW_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (DB_VERSION=='ORACLE_12')"
       GROUP="SSL_CONFIG"
     >
         <DEFAULT>false</DEFAULT>
@@ -202,6 +203,7 @@
  	   NAME="SSL_TRUSTSERVER_TRUSTSTORE"
 	   FIELD="FILE"
 	   NUM_ROW="44"
+	   REPOSITORY_VALUE="SSL_TRUSTSERVER_TRUSTSTORE"
 	   SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
 	   GROUP="SSL_CONFIG"
     >
@@ -212,6 +214,7 @@
 		NAME="SSL_TRUSTSERVER_PASSWORD"
 		FIELD="PASSWORD"
 		NUM_ROW="45"
+		REPOSITORY_VALUE="SSL_TRUSTSERVER_PASSWORD"
 		SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
 		GROUP="SSL_CONFIG"
 	>
@@ -222,6 +225,7 @@
 		NAME="NEED_CLIENT_AUTH"
 		FIELD="CHECK"
 		NUM_ROW="46"
+		REPOSITORY_VALUE="NEED_CLIENT_AUTH"
 		SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
 		GROUP="SSL_CONFIG"
 	>
@@ -232,6 +236,7 @@
 		NAME="SSL_KEYSTORE"
 		FIELD="FILE"
 		NUM_ROW="47"
+		REPOSITORY_VALUE="SSL_KEYSTORE"
 		SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
 		GROUP="SSL_CONFIG"
 	>
@@ -241,6 +246,7 @@
 		NAME="SSL_KEYSTORE_PASSWORD"
 		FIELD="PASSWORD"
 		NUM_ROW="48"
+		REPOSITORY_VALUE="SSL_KEYSTORE_PASSWORD"
 		SHOW_IF="isShow[NEED_CLIENT_AUTH] AND (NEED_CLIENT_AUTH == 'true')"
 		GROUP="SSL_CONFIG"
 	>
@@ -251,7 +257,8 @@
       NAME="DISABLE_CBC_PROTECTION"
       FIELD="CHECK"
       NUM_ROW="49"
-      SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true') AND (DB_VERSION=='ORACLE_12')"
+      REPOSITORY_VALUE="DISABLE_CBC_PROTECTION"
+      SHOW_IF="isShow[USE_SSL] AND (USE_SSL == 'true')"
       GROUP="SSL_CONFIG"
     >
         <DEFAULT>true</DEFAULT>
@@ -361,9 +368,9 @@
        <IMPORT NAME="ORACLE_10"  MODULE="ojdbc14.jar" MVN="mvn:org.talend.libraries/ojdbc14/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_10') " />
        <IMPORT NAME="ORACLE_9"  MODULE="ojdbc14-9i.jar" MVN="mvn:org.talend.libraries/ojdbc14-9i/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_9') " />
        <IMPORT NAME="ORACLE_8"  MODULE="ojdbc12.jar" MVN="mvn:org.talend.libraries/ojdbc12/6.0.0"  BundleID="" REQUIRED_IF="(DB_VERSION == 'ORACLE_8') " />
-       <IMPORT NAME="oraclepki.jar" MODULE="oraclepki.jar" MVN="mvn:org.talend.libraries/oraclepki/6.0.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-       <IMPORT NAME="osdt_cert.jar" MODULE="osdt_cert.jar" MVN="mvn:org.talend.libraries/osdt_cert/6.0.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
-       <IMPORT NAME="osdt_core.jar" MODULE="osdt_core.jar" MVN="mvn:org.talend.libraries/osdt_core/6.0.0"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND ((DB_VERSION == 'ORACLE_11-6')  OR (DB_VERSION=='ORACLE_11') OR (DB_VERSION=='ORACLE_12')) AND (USE_SSL == 'true')" />
+       <IMPORT NAME="ORACLEPKI" MODULE="oraclepki-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/oraclepki/12.2.0.1"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (DB_VERSION=='ORACLE_12') AND (USE_SSL == 'true')" />
+       <IMPORT NAME="OSDT_CERT" MODULE="osdt_cert-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/osdt_cert/12.2.0.1"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (DB_VERSION=='ORACLE_12') AND (USE_SSL == 'true')" />
+       <IMPORT NAME="OSDT_CORE" MODULE="osdt_core-12.2.0.1.jar" MVN="mvn:com.oracle.jdbc/osdt_core/12.2.0.1"  REQUIRED_IF="(CONNECTION_TYPE == 'ORACLE_RAC') AND (DB_VERSION=='ORACLE_12') AND (USE_SSL == 'true')" />
     </IMPORTS>
    </CODEGENERATION>
 
