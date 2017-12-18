@@ -510,7 +510,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         XmiResourceManager xmiManager = new XmiResourceManager();
         final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
             final ImportProjectHelper importHelper = new ImportProjectHelper();
 
             for (Object element : selected) {
@@ -563,7 +563,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
             }
         } finally {
             xmiManager.unloadResources();
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
         }
         return created;
         //

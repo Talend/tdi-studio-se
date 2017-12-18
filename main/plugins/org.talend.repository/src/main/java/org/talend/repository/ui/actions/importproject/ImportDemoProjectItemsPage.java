@@ -336,7 +336,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
                 ResourceOption demoImportOption = ResourceOption.DEMO_IMPORTATION;
                 final String optionName = demoImportOption.getName();
                 try {
-                    EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(optionName, demoImportOption.getProvider());
+                    EmfResourcesFactoryReader.INSTANCE.addOption(demoImportOption, false);
 
                     for (ResourcesManager resManager : finalCheckManagers) {
                         List<ImportItem> projectRecords = importManager.populateImportingItems(resManager, true, monitorWrap);
@@ -347,7 +347,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 } finally {
-                    EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(optionName);
+                    EmfResourcesFactoryReader.INSTANCE.removOption(demoImportOption, false);
                 }
                 monitorWrap.done();
                 if (monitor.isCanceled()) {
