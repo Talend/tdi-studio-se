@@ -11613,7 +11613,7 @@
 </TABLE>
 
 <!-- crm 2016 odata -->
-<TABLE IF="((ENTITYSET=='accountleadscollection') AND ((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
+<TABLE IF="(ENTITYSET=='accountleadscollection') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="accountid" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="accountleadid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="leadid" TYPE="id_String"  />
@@ -11697,7 +11697,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress1" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress2" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress3" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -11781,7 +11781,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="attachmentnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="body" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filesize" TYPE="id_Integer"  />
@@ -11876,7 +11876,7 @@
     <COLUMN KEY="true" LENGTH="0" NAME="annotationid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filesize" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
@@ -12032,7 +12032,7 @@
 <TABLE IF="(ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="true" LENGTH="0" NAME="attachmentid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="body" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filesize" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String"  />
@@ -12689,7 +12689,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="codename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -12879,7 +12879,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="address2_utcoffset" TYPE="id_Integer"  />
     <COLUMN KEY="true" LENGTH="0" NAME="competitorid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -12970,7 +12970,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveend" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectivestart" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -13120,12 +13120,12 @@
     <COLUMN KEY="false" LENGTH="0" NAME="aging60_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="aging90" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="aging90_base" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="anniversary" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="anniversary" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="annualincome" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="annualincome_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="assistantname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="assistantphone" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="birthdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="birthdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="business2" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="callback" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="childrensnames" TYPE="id_String"  />
@@ -13151,7 +13151,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress2" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress3" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="employeeid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -13299,7 +13299,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="duration" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="effectivitycalendar" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -13708,7 +13708,7 @@
     <COLUMN KEY="true" LENGTH="0" NAME="emailserverprofileid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailservertypename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="encodingcodepage" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -13716,7 +13716,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="exchangeversion" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingauthenticationprotocol" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingcredentialretrieval" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="incomingpassword" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingportnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incomingserverlocation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="incominguseimpersonation" TYPE="id_Boolean"  />
@@ -13740,7 +13739,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingauthenticationprotocol" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingautograntdelegateaccess" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingcredentialretrieval" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="outgoingpassword" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingportnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingserverlocation" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoinguseimpersonation" TYPE="id_Boolean"  />
@@ -14266,7 +14264,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="customrollupfieldmoney_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="customrollupfieldstring" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="depth" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -14587,7 +14585,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="customersatisfactioncode" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="decremententitlementterm" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -14755,8 +14753,8 @@
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="duedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="duedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -14848,7 +14846,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -15156,13 +15154,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress1" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress2" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress3" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedamount_base" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_Double"  />
     <COLUMN KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
@@ -15368,7 +15366,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="enabledforact" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="enabledforincomingemail" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="enabledforoutgoingemail" TYPE="id_Boolean"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -15410,7 +15408,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="orgmarkedasprimaryforexchangesync" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingemaildeliverymethod" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="outgoingemailstatus" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="password" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="postponemailboxprocessinguntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="postponeofficeappsdeploymentuntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="postponesendinguntil" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -15689,7 +15686,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String"  />
 </TABLE>
 <TABLE IF="(ENTITYSET=='opportunities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
-    <COLUMN KEY="false" LENGTH="0" NAME="actualclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="actualclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="actualvalue_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="budgetamount" TYPE="id_BigDecimal"  />
@@ -15710,13 +15707,13 @@
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="estimatedclosedate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="estimatedvalue_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filedebrief" TYPE="id_Boolean"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="finaldecisiondate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="finaldecisiondate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="identifycompetitors" TYPE="id_Boolean"  />
@@ -15866,7 +15863,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="baseamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -16043,7 +16040,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="enablepricingoncreate" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="enablesmartmatching" TYPE="id_Boolean"  />
     <COLUMN KEY="false" LENGTH="0" NAME="enforcereadonlyplugins" TYPE="id_Boolean"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -16214,7 +16211,6 @@
     <COLUMN KEY="false" LENGTH="0" NAME="timeseparator" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="tokenexpiry" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="tokenkey" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingprefix" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingtokenidbase" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="trackingtokeniddigits" TYPE="id_Integer"  />
@@ -16329,7 +16325,7 @@
 <TABLE IF="(ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="culture" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="customizationlevel" TYPE="id_Integer"  />
@@ -16560,7 +16556,6 @@
 </TABLE>
 <TABLE IF="(ENTITYSET=='productassociations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="dmtimportstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="modifiedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
@@ -16620,8 +16615,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currentcost_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="dmtimportstate" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -16655,8 +16649,8 @@
     <COLUMN KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="traversedpath" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="validfromdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
-    <COLUMN KEY="false" LENGTH="0" NAME="validtodate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="validfromdate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="validtodate" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="vendorpartnumber" TYPE="id_String"  />
@@ -16789,7 +16783,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="customizationprefix" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -16873,7 +16867,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailaddress" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailrouteraccessapproval" TYPE="id_Integer"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -17044,7 +17038,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="billto_postalcode" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_stateorprovince" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="billto_telephone" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="closedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="closedon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
@@ -17053,7 +17047,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="effectivefrom" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="effectiveto" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="exchangerate" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="expireson" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
+    <COLUMN KEY="false" LENGTH="0" NAME="expireson" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freightamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="freighttermscode" TYPE="id_Integer"  />
@@ -17333,7 +17327,7 @@
 </TABLE>
 <TABLE IF="(ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="bodyurl" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
@@ -17393,7 +17387,7 @@
 <TABLE IF="(ENTITYSET=='resources') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="calendarid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="displayinserviceviews" TYPE="id_Boolean"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -17482,7 +17476,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filename" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filesize" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="filetypecode" TYPE="id_Integer"  />
@@ -17505,7 +17499,7 @@
 <TABLE IF="(ENTITYSET=='salesliteratures') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -17623,7 +17617,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountamount_base" TYPE="id_BigDecimal"  />
     <COLUMN KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -17997,9 +17991,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="namespaceformat" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="overwritetime" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="path" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="saskey" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="saskeyname" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="sastoken" TYPE="id_String"  />
     <COLUMN KEY="true" LENGTH="0" NAME="serviceendpointid" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="serviceendpointidunique" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="solutionid" TYPE="id_String"  />
@@ -18575,7 +18567,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="domainname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="emailrouteraccessapproval" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="employeeid" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -18816,7 +18808,7 @@
 <TABLE IF="(ENTITYSET=='territories') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -18975,7 +18967,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="currencyname" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currencyprecision" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="currencysymbol" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -19195,7 +19187,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="componentstate" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="content" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="createdon" TYPE="id_Date" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="displayname" TYPE="id_String"  />
@@ -19273,7 +19265,7 @@
     <COLUMN KEY="false" LENGTH="0" NAME="createstage" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="deletestage" TYPE="id_Integer"  />
     <COLUMN KEY="false" LENGTH="0" NAME="description" TYPE="id_String"  />
-    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_String"  />
+    <COLUMN KEY="false" LENGTH="0" NAME="entityimage" TYPE="id_byte[]"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_timestamp" TYPE="id_Long"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimage_url" TYPE="id_String"  />
     <COLUMN KEY="false" LENGTH="0" NAME="entityimageid" TYPE="id_String"  />
@@ -19357,14 +19349,14 @@
                         <ITEM NAME="LESSTHAN" VALUE="LessThan" />
                         <ITEM NAME="GREATEREQUAL" VALUE="GreaterEqual" />
                         <ITEM NAME="LESSEQUAL" VALUE="LessEqual" />
-                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="(((AUTH_TYPE != 'ONLINE') OR (API_VERSION != 'API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))"/>
+                        <ITEM NAME="LIKE" VALUE="Like" SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION != 'API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION != 'CRM_2016'))"/>
                     </ITEMS>
                 </ITEM>
                 <ITEM NAME="RVALUE" FIELD="String" />
             </ITEMS>
         </PARAMETER>
         
-        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA') OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
+        <PARAMETER NAME="ORDER_BY" FIELD="CHECK" NUM_ROW="85" REQUIRED="false" SHOW_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" >
             <DEFAULT>false</DEFAULT>
         </PARAMETER>
         
@@ -19428,7 +19420,7 @@
                 <IMPORT NAME="jcifs" MODULE="jcifs-1.3.0.jar" MVN="mvn:org.talend.libraries/jcifs-1.3.0/6.0.0"  REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" />
                 <!-- 2011 -->
                 <!-- crm client -->
-                <IMPORT NAME="talend-mscrm-3.1-20170825" MODULE="talend-mscrm-3.1-20170825.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.1-20170825/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.1-20170825.jar" REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
+                <IMPORT NAME="talend-mscrm-3.2-20171107" MODULE="talend-mscrm-3.2-20171107.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.2-20171107/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.2-20171107.jar" REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
                 <!-- axis2 1.7.4 -->
                 <IMPORT NAME="activation-1.1" MODULE="activation-1.1.jar" MVN="mvn:org.talend.libraries/activation-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation-1.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="axiom-api-1.2.20" MODULE="axiom-api-1.2.20.jar" MVN="mvn:org.talend.libraries/axiom-api-1.2.20/6.0.0"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -19475,84 +19467,89 @@
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/asm-5.0.4.jar"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-core-3.1.11"
-                    MODULE="cxf-core-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-core-3.1.11/6.4.0"
+                    NAME="cxf-core-3.1.14"
+                    MODULE="cxf-core-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-core/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-bindings-soap-3.1.11"
-                    MODULE="cxf-rt-bindings-soap-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-bindings-soap-3.1.11/6.4.0"
+                    NAME="cxf-rt-bindings-soap-3.1.14"
+                    MODULE="cxf-rt-bindings-soap-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-bindings-xml-3.1.11"
-                    MODULE="cxf-rt-bindings-xml-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-bindings-xml-3.1.11/6.4.0"
+                    NAME="cxf-rt-bindings-xml-3.1.14"
+                    MODULE="cxf-rt-bindings-xml-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-databinding-jaxb-3.1.11"
-                    MODULE="cxf-rt-databinding-jaxb-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.11/6.4.0"
+                    NAME="cxf-rt-databinding-jaxb-3.1.14"
+                    MODULE="cxf-rt-databinding-jaxb-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-databinding-xmlbeans-3.1.11"
-                    MODULE="cxf-rt-databinding-xmlbeans-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-databinding-xmlbeans-3.1.11/6.4.0"
+                    NAME="cxf-rt-databinding-xmlbeans-3.1.14"
+                    MODULE="cxf-rt-databinding-xmlbeans-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-databinding-xmlbeans/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-frontend-jaxws-3.1.11"
-                    MODULE="cxf-rt-frontend-jaxws-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-frontend-jaxws-3.1.11/6.4.0"
+                    NAME="cxf-rt-frontend-jaxws-3.1.14"
+                    MODULE="cxf-rt-frontend-jaxws-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-jaxws/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-frontend-simple-3.1.11"
-                    MODULE="cxf-rt-frontend-simple-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-frontend-simple-3.1.11/6.4.0"
+                    NAME="cxf-rt-frontend-simple-3.1.14"
+                    MODULE="cxf-rt-frontend-simple-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-security-3.1.11"
-                    MODULE="cxf-rt-security-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-security-3.1.11/6.4.0"
+                    NAME="cxf-rt-security-3.1.14"
+                    MODULE="cxf-rt-security-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-security/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-transports-http-3.1.11"
-                    MODULE="cxf-rt-transports-http-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-transports-http-3.1.11/6.4.0"
+                    NAME="cxf-rt-transports-http-3.1.14"
+                    MODULE="cxf-rt-transports-http-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-addr-3.1.11"
-                    MODULE="cxf-rt-ws-addr-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-ws-addr-3.1.11/6.4.0"
+                    NAME="cxf-rt-ws-addr-3.1.14"
+                    MODULE="cxf-rt-ws-addr-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-addr/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-mex-3.1.11"
-                    MODULE="cxf-rt-ws-mex-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-ws-mex-3.1.11/6.4.0"
+                    NAME="cxf-rt-ws-mex-3.1.14"
+                    MODULE="cxf-rt-ws-mex-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-mex/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-policy-3.1.11"
-                    MODULE="cxf-rt-ws-policy-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-ws-policy-3.1.11/6.4.0"
+                    NAME="cxf-rt-ws-policy-3.1.14"
+                    MODULE="cxf-rt-ws-policy-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-policy/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-rm-3.1.11"
-                    MODULE="cxf-rt-ws-rm-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-ws-rm-3.1.11/6.4.0"
+                    NAME="cxf-rt-ws-rm-3.1.14"
+                    MODULE="cxf-rt-ws-rm-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-rm/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-ws-security-3.1.11"
-                    MODULE="cxf-rt-ws-security-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-ws-security-3.1.11/6.4.0"
+                    NAME="cxf-rt-ws-security-3.1.14"
+                    MODULE="cxf-rt-ws-security-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-ws-security/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-rt-wsdl-3.1.11"
-                    MODULE="cxf-rt-wsdl-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-rt-wsdl-3.1.11/6.4.0"
+                    NAME="cxf-rt-security-saml-3.1.14"
+                    MODULE="cxf-rt-security-saml-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-security-saml/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="cxf-services-sts-core-3.1.11"
-                    MODULE="cxf-services-sts-core-3.1.11.jar"
-                    MVN="mvn:org.talend.libraries/cxf-services-sts-core-3.1.11/6.4.0"
+                    NAME="cxf-rt-wsdl-3.1.14"
+                    MODULE="cxf-rt-wsdl-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.1.14"
+                    REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
+                <IMPORT
+                    NAME="cxf-services-sts-core-3.1.14"
+                    MODULE="cxf-services-sts-core-3.1.14.jar"
+                    MVN="mvn:org.apache.cxf/cxf-services-sts-core/3.1.14"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
                     NAME="ehcache-2.9.0"
@@ -19621,34 +19618,34 @@
                     UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wsdl4j-1.6.3.jar"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-bindings-2.1.9"
-                    MODULE="wss4j-bindings-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-bindings-2.1.9/6.4.0"
+                    NAME="wss4j-bindings-2.1.11"
+                    MODULE="wss4j-bindings-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-bindings/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-policy-2.1.9"
-                    MODULE="wss4j-policy-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-policy-2.1.9/6.4.0"
+                    NAME="wss4j-policy-2.1.11"
+                    MODULE="wss4j-policy-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-policy/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-ws-security-common-2.1.9"
-                    MODULE="wss4j-ws-security-common-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-ws-security-common-2.1.9/6.4.0"
+                    NAME="wss4j-ws-security-common-2.1.11"
+                    MODULE="wss4j-ws-security-common-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-ws-security-common/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-ws-security-dom-2.1.9"
-                    MODULE="wss4j-ws-security-dom-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-ws-security-dom-2.1.9/6.4.0"
+                    NAME="wss4j-ws-security-dom-2.1.11"
+                    MODULE="wss4j-ws-security-dom-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-ws-security-dom/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-ws-security-policy-stax-2.1.9"
-                    MODULE="wss4j-ws-security-policy-stax-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-ws-security-policy-stax-2.1.9/6.4.0"
+                    NAME="wss4j-ws-security-policy-stax-2.1.11"
+                    MODULE="wss4j-ws-security-policy-stax-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-ws-security-policy-stax/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
-                    NAME="wss4j-ws-security-stax-2.1.9"
-                    MODULE="wss4j-ws-security-stax-2.1.9.jar"
-                    MVN="mvn:org.talend.libraries/wss4j-ws-security-stax-2.1.9/6.4.0"
+                    NAME="wss4j-ws-security-stax-2.1.11"
+                    MODULE="wss4j-ws-security-stax-2.1.11.jar"
+                    MVN="mvn:org.apache.wss4j/wss4j-ws-security-stax/2.1.11"
                     REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
                 <IMPORT
                     NAME="xmlbeans-2.6.0"

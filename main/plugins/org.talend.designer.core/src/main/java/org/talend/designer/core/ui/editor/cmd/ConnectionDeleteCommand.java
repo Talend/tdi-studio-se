@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +21,11 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.process.AbstractNode;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -40,6 +42,8 @@ public class ConnectionDeleteCommand extends Command {
     private List<Connection> connectionList;
 
     private Map<Connection, ConnectionDeletedInfo> connectionDeletedInfosMap;
+    
+    private List<ExternalNodeChangeCommand> externalNodeChangeCommands = new ArrayList<ExternalNodeChangeCommand>();
 
     /**
      * Initialisation of the command that will delete the given connection.
@@ -74,8 +78,19 @@ public class ConnectionDeleteCommand extends Command {
 
             connection.disconnect();
             final INode target = connection.getTarget();
-            if (target.getExternalNode() instanceof AbstractNode) {
-                ((AbstractNode) target.getExternalNode()).removeInput(connection);
+            if (source.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+                externalNode.removeOutput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+                cmd.execute();
+                externalNodeChangeCommands.add(cmd);
+            }
+            if (target.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+                externalNode.removeInput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+                cmd.execute();
+                externalNodeChangeCommands.add(cmd);
             }
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
@@ -95,8 +110,8 @@ public class ConnectionDeleteCommand extends Command {
         for (Connection connection : connectionList) {
             collpseJoblet(connection);
             ConnectionDeletedInfo deletedInfo = connectionDeletedInfosMap.get(connection);
+            INode source = connection.getSource();
             if (deletedInfo != null) {
-                INode source = connection.getSource();
                 if (source != null && deletedInfo.metadataTable != null) {
                     List<IMetadataTable> metaList = source.getMetadataList();
                     if (!metaList.contains(deletedInfo.metadataTable)) {
@@ -106,10 +121,18 @@ public class ConnectionDeleteCommand extends Command {
             }
             connection.reconnect();
             INode target = connection.getTarget();
-            if (target.getExternalNode() instanceof AbstractNode) {
-                ((AbstractNode) target.getExternalNode()).addInput(connection);
+            if (source.isExternalNode()) {
+                IExternalNode externalNode = source.getExternalNode();
+                externalNode.addOutput(connection);
             }
-
+            if (target.isExternalNode()) {
+                IExternalNode externalNode = target.getExternalNode();
+                externalNode.addInput(connection);
+            }
+            for (ExternalNodeChangeCommand cmd : externalNodeChangeCommands) {
+                cmd.undo();
+            }
+            externalNodeChangeCommands.clear();            
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
             if (nodeConnectorSource != null) {

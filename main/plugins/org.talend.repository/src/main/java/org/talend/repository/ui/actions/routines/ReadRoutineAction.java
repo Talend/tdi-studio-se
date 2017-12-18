@@ -22,6 +22,7 @@ import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.core.CorePlugin;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
@@ -53,6 +54,7 @@ public class ReadRoutineAction extends AbstractRoutineAction {
      * @see org.talend.repository.ui.actions.ITreeContextualAction#init(org.eclipse.jface.viewers.TreeViewer,
      * org.eclipse.jface.viewers.IStructuredSelection)
      */
+    @Override
     public void init(TreeViewer viewer, IStructuredSelection selection) {
         super.init(viewer, selection);
         boolean canWork = !selection.isEmpty() && selection.size() == 1;
@@ -74,6 +76,7 @@ public class ReadRoutineAction extends AbstractRoutineAction {
      * 
      * @see org.eclipse.jface.action.Action#run()
      */
+    @Override
     protected void doRun() {
         if (repositoryNode == null && getSelection() != null) {
             repositoryNode = (RepositoryNode) ((IStructuredSelection) getSelection()).getFirstElement();
@@ -94,6 +97,7 @@ public class ReadRoutineAction extends AbstractRoutineAction {
         routineItem = (RoutineItem) repositoryNode.getObject().getProperty().getItem();
         try {
             openRoutineEditor(routineItem, true);
+            CorePlugin.getDefault().getRunProcessService().updateLibraries(routineItem);
         } catch (PartInitException e) {
             MessageBoxExceptionHandler.process(e);
         } catch (SystemException e) {

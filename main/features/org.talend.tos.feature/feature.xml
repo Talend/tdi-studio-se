@@ -67,11 +67,6 @@
          search-location="self"/>
 
    <includes
-         id="org.talend.componentdesigner.feature"
-         version="0.0.0"
-         search-location="self"/>
-
-   <includes
          id="org.talend.tos.components.feature"
          version="0.0.0"/>
 

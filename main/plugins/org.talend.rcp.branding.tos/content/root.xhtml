@@ -72,8 +72,9 @@ div#header {height: 150px; margin-left: auto; margin-right: auto; }
 	<table  id="table" border="0" cellpadding="0" cellspacing="0" align="center">
 		<tr  align="left"><!--header over-->
 			<td colspan="3" valign="top">
-			 <div id="header">
+			 <div id="header" style="position:relative;">
 				<img src="imgs/welcome_logo.png" width="880px"/>
+				<contentProvider id="TOP_MESSAGE" class="org.talend.rcp.intro.contentProvider.DynamicContentProvider" pluginId="org.talend.rcp"></contentProvider>
 			 </div>
 			</td>
 		</tr>
@@ -103,7 +104,7 @@ div#header {height: 150px; margin-left: auto; margin-right: auto; }
 			   <p align="center"><a href="http://org.eclipse.ui.intro/close"><img src="imgs/startNow.jpg" width="120px" height="25px" /></a></p> 
 			  </div>
 			</td>
-			<contentProvider id="CUSTOMER_PAGE" class="org.talend.rcp.intro.contentProvider.DynamicContentProvider" pluginId="org.talend.rcp">
+			<contentProvider id="INTEGRATION_CLOUD" class="org.talend.rcp.intro.contentProvider.DynamicContentProvider" pluginId="org.talend.rcp">
  	                </contentProvider>
 
 

@@ -655,7 +655,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
             throw new ProcessorException(Messages.getString("Processor.tempFailed"), e1); //$NON-NLS-1$
         }
     }
-
+    @Override
     public ITargetExecutionConfig getTargetExecutionConfig() {
         return this.targetExecutionConfig;
     }

@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Designer Plug-in Nl Fragment
-Bundle-SymbolicName: org.talend.componentdesigner.nl
-Bundle-Version: 7.0.1.qualifier
-Fragment-Host: org.talend.componentdesigner
-Bundle-Localization: plugin
-Bundle-Vendor: .Talend SA.

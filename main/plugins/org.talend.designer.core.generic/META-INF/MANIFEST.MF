@@ -35,5 +35,6 @@ Import-Package: org.talend.components.api.component,
  org.talend.components.api.service,
  org.talend.components.api.wizard,
  org.talend.daikon.runtime,
- org.talend.daikon.properties.property
+ org.talend.daikon.properties.property,
+ org.talend.daikon.properties.runtime
 

@@ -1,0 +1,123 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.metadata.IMetadataTable 
+    org.talend.core.model.metadata.MetadataTalendType    
+    org.talend.core.model.metadata.MappingTypeRetriever     
+    org.talend.core.model.utils.NodeUtil
+    java.util.List
+    java.util.ArrayList
+    java.util.Map
+    java.util.HashMap    
+" 
+skeleton="../templates/db_output_bulk.skeleton"
+%>
+<%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
+
+<%
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    String cid = node.getUniqueName();
+    String globalCid = ElementParameterParser.getValue(node, "__CID__");
+    if(globalCid == null || "".equals(globalCid) || "\"\"".equals(globalCid)) {
+        globalCid = cid;
+    }
+    
+    String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
+    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+    Manager manager = getManager(dbmsId, cid);
+    
+    
+    List<IMetadataColumn> columnList = getColumnList(node);    
+    boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+    String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
+    boolean exitOnNoRows = ("true").equals(ElementParameterParser.getValue(node, "__EXIT_ON_NO_ROWS__"));
+    boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    
+    if(useExistingConnection) {
+        String dbConnName = ElementParameterParser.getValue(node,"__CONNECTION__");
+        INode con_node = NodeUtil.getNodeByUniqueName(node.getProcess(), dbConnName);
+        if(con_node!=null){
+            db_version = ElementParameterParser.getValue(con_node,"__DB_VERSION__");
+        }
+    }
+    
+    boolean is_old_version = "vertica_3.0_jdk_5.jar".equals(db_version) || "vertica_3.5_jdk_5.jar".equals(db_version) || "vertica_4.0_jdk_5.jar".equals(db_version) || "vertica_4.1.7_jdk_5.jar".equals(db_version) || "vertica_4.1.14_jdk_5.jar".equals(db_version);
+%>
+<%
+if(is_old_version){
+%>
+    ((com.vertica.PGStatement) stmt_<%=cid%>).finishCopyIn();
+    
+    rs_<%=cid%>= stmt_<%=cid%>.executeQuery("select count(*) from " + tableName_<%=cid%>);
+    int nbLineAfterLoad_<%=cid%>= 0;
+    while (rs_<%=cid%>.next()) {
+        nbLineAfterLoad_<%=cid%>= rs_<%=cid%>.getInt(1);
+    }
+    stmt_<%=cid%>.close();
+    if(<%=exitOnNoRows%>&& nbLineBeforeLoad_<%=cid%>>= nbLineAfterLoad_<%=cid%>){
+        throw new RuntimeException("No record was inserted in component<%=cid%>");
+    }
+    else{
+<%
+        if(isLog4jEnabled){
+%>
+        log.info("<%=cid%>- Number of records inserted to table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>by<%=cid%>: " + (nbLineAfterLoad_<%=cid%>- nbLineBeforeLoad_<%=cid%>)+".");
+<%
+        }
+%>
+        System.out.println("Number of records inserted to table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>by<%=cid%>: " + (nbLineAfterLoad_<%=cid%>- nbLineBeforeLoad_<%=cid%>));
+    }
+    globalMap.put("<%=globalCid%>_ACCEPTED_ROW_NUMBER",nbLineAfterLoad_<%=cid%>- nbLineBeforeLoad_<%=cid%>);
+<%
+}
+else {
+%>
+    vcs_<%=cid%>.finish();
+
+    long copyNumber_<%=cid%> = vcs_<%=cid%>.getRowCount();
+    
+    //get rejected and accepted row number
+    java.sql.Statement stmt_accept_reject_<%=cid %> = conn_<%=cid %>.createStatement();
+    
+    java.sql.ResultSet rs_<%=cid %> = stmt_accept_reject_<%=cid %>.executeQuery("select get_num_accepted_rows()");
+    int acceptedRowNumber_<%=cid%> = 0;
+    while (rs_<%=cid %>.next()) {
+        acceptedRowNumber_<%=cid %> = rs_<%=cid %>.getInt(1);
+    }
+    
+    rs_<%=cid %> = stmt_accept_reject_<%=cid %>.executeQuery("select get_num_rejected_rows()");
+    int rejectedRowNumber_<%=cid%> = 0;
+    while (rs_<%=cid %>.next()) {
+        rejectedRowNumber_<%=cid %> = rs_<%=cid %>.getInt(1);
+    }
+    
+    stmt_accept_reject_<%=cid %>.close();
+    
+    if(<%=exitOnNoRows%> && copyNumber_<%=cid%> <= 0){
+        throw new RuntimeException("No record was inserted into component <%=cid %>");
+    }else{
+        <%if(isLog4jEnabled){%>
+            log.info("<%=cid%> - Number of records inserted into table <%=manager.getLProtectedChar()%>" + tableName_<%=cid %> + "<%=manager.getRProtectedChar()%> by <%=cid %>: " + (copyNumber_<%=cid%>)+".");
+        <%}%>
+        System.out.println("Number of records inserted into table <%=manager.getLProtectedChar()%>" + tableName_<%=cid %> + "<%=manager.getRProtectedChar()%> by <%=cid %>: " + (copyNumber_<%=cid%>));
+    }
+    
+    globalMap.put("<%=globalCid %>_ACCEPTED_ROW_NUMBER",acceptedRowNumber_<%=cid %>);
+    globalMap.put("<%=globalCid %>_REJECTED_ROW_NUMBER",rejectedRowNumber_<%=cid%>);
+<%
+}
+//try..finally is open in tVerticaBulkExec_begin
+if(!useExistingConnection) {
+%>
+}
+finally {
+<%
+    log4jCodeGenerateUtil.close(node);
+%>   
+}
+<%
+}
+%>

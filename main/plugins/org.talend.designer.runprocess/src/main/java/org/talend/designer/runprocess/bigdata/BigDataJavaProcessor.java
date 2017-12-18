@@ -200,7 +200,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
         Iterator<String> it = libNames.iterator();
         while (it.hasNext()) {
             String jarName = it.next();
-            if (!allNeededLibsAfterAdjuster.contains(jarName)) {
+            if (!allNeededLibsAfterAdjuster.contains(jarName) && !JavaUtils.ROUTINES_JAR.equals(jarName) && !JavaUtils.BEANS_JAR.equals(jarName) && !JavaUtils.PIGUDFS_JAR.equals(jarName)) {
                 it.remove();
             }
         }

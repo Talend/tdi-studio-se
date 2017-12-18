@@ -208,15 +208,15 @@
     <CODEGENERATION>
         <IMPORTS>
             <IMPORT
-                NAME="cxf-core-3.1.11"
-                MODULE="cxf-core-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-core-3.1.11/6.4.0"
+                NAME="cxf-core-3.1.14"
+                MODULE="cxf-core-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-core/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-frontend-simple-3.1.11"
-                MODULE="cxf-rt-frontend-simple-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-frontend-simple-3.1.11/6.4.0"
+                NAME="cxf-rt-frontend-simple-3.1.14"
+                MODULE="cxf-rt-frontend-simple-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
@@ -227,15 +227,15 @@
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-tools-common-3.1.11"
-                MODULE="cxf-tools-common-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-tools-common-3.1.11/6.4.0"
+                NAME="cxf-tools-common-3.1.14"
+                MODULE="cxf-tools-common-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-tools-common/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-wsdl-3.1.11"
-                MODULE="cxf-rt-wsdl-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-wsdl-3.1.11/6.4.0"
+                NAME="cxf-rt-wsdl-3.1.14"
+                MODULE="cxf-rt-wsdl-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
@@ -253,27 +253,27 @@
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-bindings-soap-3.1.11"
-                MODULE="cxf-rt-bindings-soap-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-bindings-soap-3.1.11/6.4.0"
+                NAME="cxf-rt-bindings-soap-3.1.14"
+                MODULE="cxf-rt-bindings-soap-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-databinding-jaxb-3.1.11"
-                MODULE="cxf-rt-databinding-jaxb-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.11/6.4.0"
+                NAME="cxf-rt-databinding-jaxb-3.1.14"
+                MODULE="cxf-rt-databinding-jaxb-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-transports-http-jetty-3.1.11"
-                MODULE="cxf-rt-transports-http-jetty-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-transports-http-jetty-3.1.11/6.4.0"
+                NAME="cxf-rt-transports-http-jetty-3.1.14"
+                MODULE="cxf-rt-transports-http-jetty-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.1.14"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-transports-http-3.1.11"
-                MODULE="cxf-rt-transports-http-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-transports-http-3.1.11/6.4.0"
+                NAME="cxf-rt-transports-http-3.1.14"
+                MODULE="cxf-rt-transports-http-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.1.14"
                 REQUIRED="true"
             />
 
@@ -373,14 +373,12 @@
                 NAME="jaxb-xjc"
                 MODULE="jaxb-xjc-2.2.6-modified.jar"
                 MVN="mvn:org.talend.libraries/jaxb-xjc-2.2.6-modified/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/jaxb-xjc-2.2.6-modified.jar"
                 REQUIRED="true"
             />
             <IMPORT
                 NAME="jaxb-impl"
                 MODULE="jaxb-impl-2.2.6-modified.jar"
                 MVN="mvn:org.talend.libraries/jaxb-impl-2.2.6-modified/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/jaxb-impl-2.2.6-modified.jar"
                 REQUIRED="true"
             />
         </IMPORTS>
