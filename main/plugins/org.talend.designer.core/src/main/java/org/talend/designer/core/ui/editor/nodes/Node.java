@@ -3327,7 +3327,8 @@ public class Node extends Element implements IGraphicalNode {
         // check not startable components not linked
         INodeConnector connectorFromType = getConnectorFromType(EConnectionType.FLOW_MAIN);
         if (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
-            if (connectorFromType != null && (getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
+            if (connectorFromType != null && connectorFromType.isShow()
+                    && (getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
                     && (connectorFromType.getMinLinkInput() == 0) & (connectorFromType.getMaxLinkInput() != 0)) {
                 String errorMessage = Messages.getString("Node.noInputLink"); //$NON-NLS-1$
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -3564,7 +3565,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (nbMinOut != 0) {
-                        if (curLinkOut < nbMinOut) {
+                        if (nodeConnector.isShow() && curLinkOut < nbMinOut) {
                             String errorMessage = Messages.getString("Node.notEnoughTypeOutput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
@@ -3575,14 +3576,15 @@ public class Node extends Element implements IGraphicalNode {
                 if (!isJoblet) {
 
                     if (nbMaxIn != -1) {
-                        if (curLinkIn > nbMaxIn) {
+                        boolean notShow = !nodeConnector.isShow() && curLinkIn > 0;
+                        if (notShow || curLinkIn > nbMaxIn) {
                             String errorMessage = Messages.getString("Node.tooMuchTypeInput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
                     }
                     if (needCheckInput) {
                         if (nbMinIn != 0) {
-                            if (curLinkIn < nbMinIn) {
+                            if (nodeConnector.isShow() && curLinkIn < nbMinIn) {
                                 String errorMessage = Messages.getString("Node.notEnoughTypeInput", typeName); //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }

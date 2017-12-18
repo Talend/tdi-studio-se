@@ -574,7 +574,7 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
-            if (connectorFromType == null) {
+            if (connectorFromType == null || !connectorFromType.isShow()) {
                 return false;
             }
             int maxInput = connectorFromType.getMaxLinkInput();
@@ -704,7 +704,7 @@ public class ConnectionManager {
         }
         if (!isJoblet) {
             INodeConnector connectorFromType = newTarget.getConnectorFromType(newlineStyle);
-            if (connectorFromType == null) {
+            if (connectorFromType == null || !connectorFromType.isShow()) {
                 return false;
             }
             int maxInput = connectorFromType.getMaxLinkInput();

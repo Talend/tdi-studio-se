@@ -288,7 +288,7 @@ public class ConnectionManagerTest {
     }
 
     @Test
-    public void testCanConnectToSourceNOT_SHOW_IF() {
+    public void testCanConnectToSourceSHOW_IF() {
         // the NOT_SHOW_IF should only work with node's output connector required by DQ
         IComponent compMatchGroup = ComponentsFactoryProvider.getInstance().get("tMatchGroup",
                 ComponentCategory.CATEGORY_4_DI.getName());
@@ -299,7 +299,7 @@ public class ConnectionManagerTest {
         Node outputNode = new Node(componentTarget, process);
 
         boolean canConnect = ConnectionManager.canConnectToSource(oldSourceNode, matchGroupNode, outputNode,
-                EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(), "test");
+                EConnectionType.FLOW_MAIN, "FLOW_OUTPUT", "test");
         Assert.assertTrue(canConnect);
         canConnect = ConnectionManager.canConnectToSource(oldSourceNode, matchGroupNode, outputNode, EConnectionType.FLOW_MAIN,
                 "UNIQUE_ROWS", "test");
@@ -314,7 +314,7 @@ public class ConnectionManagerTest {
         // change the NOT_SHOW_IF condition as true to change show output connector for tMatchGroup
         matchGroupNode.getElementParameter("SEPARATE_OUTPUT").setValue(true);
         canConnect = ConnectionManager.canConnectToSource(oldSourceNode, matchGroupNode, outputNode, EConnectionType.FLOW_MAIN,
-                EConnectionType.FLOW_MAIN.getName(), "test");
+                "FLOW_OUTPUT", "test");
         Assert.assertFalse(canConnect);
 
         canConnect = ConnectionManager.canConnectToSource(oldSourceNode, matchGroupNode, outputNode, EConnectionType.FLOW_MAIN,
@@ -329,7 +329,7 @@ public class ConnectionManagerTest {
     }
 
     @Test
-    public void testCanConnectToTargetNOT_SHOW_IF() {
+    public void testCanConnectToTargetSHOW_IF() {
         // the NOT_SHOW_IF should only work with node's output connector but not affact input conector required by DQ
         IComponent compMatchGroup = ComponentsFactoryProvider.getInstance().get("tMatchGroup",
                 ComponentCategory.CATEGORY_4_DI.getName());
@@ -347,6 +347,18 @@ public class ConnectionManagerTest {
         canConnect = ConnectionManager.canConnectToTarget(sourceNode, matchGroupNode, matchGroupNode, EConnectionType.FLOW_MAIN,
                 EConnectionType.FLOW_MAIN.getName(), "test");
         Assert.assertTrue(canConnect);
+
+        IComponent compMatchModel = ComponentsFactoryProvider.getInstance().get("tMatchModel",
+                ComponentCategory.CATEGORY_4_SPARK.getName());
+        Node matchModelNode = new Node(compMatchModel, process);
+        canConnect = ConnectionManager.canConnectToTarget(sourceNode, matchModelNode, matchModelNode, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "test");
+        Assert.assertTrue(canConnect);
+
+        matchModelNode.getElementParameter("IS_USING_TDS").setValue(true);
+        canConnect = ConnectionManager.canConnectToTarget(sourceNode, matchModelNode, matchModelNode, EConnectionType.FLOW_MAIN,
+                EConnectionType.FLOW_MAIN.getName(), "test");
+        Assert.assertFalse(canConnect);
 
     }
 

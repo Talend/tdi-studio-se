@@ -1,7 +1,6 @@
 package org.talend.designer.dbmap.language.generation;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class DbGenerationManagerTest {
         externalDbMapTable.setAlias("t1");
         externalDbMapTable.setTableName("t1");
         externalDbMapTable.setJoinType("NO_JOIN");
-        
+
         tableEntries = new ArrayList<>();
         externalDbMapTable.setMetadataTableEntries(tableEntries);
         extMapEntry = new ExternalDbMapEntry("id", "t1.id");

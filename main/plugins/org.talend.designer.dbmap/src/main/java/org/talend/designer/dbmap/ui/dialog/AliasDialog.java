@@ -29,10 +29,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.talend.core.model.process.Problem;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.UIManager;
+import org.talend.designer.dbmap.utils.problems.ProblemsAnalyser;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -56,6 +58,8 @@ public class AliasDialog {
 
     private String[] visibleTables;
 
+    ProblemsAnalyser problemsAnalyser;
+
     /**
      * DOC amaumont AliasDialog constructor comment.
      * 
@@ -66,6 +70,7 @@ public class AliasDialog {
         this.physicalTables = physicalTables;
         this.aliases = aliases;
         this.visibleTables = visibleTables;
+        problemsAnalyser = new ProblemsAnalyser(mapperManager);
     }
 
     public boolean open() {
@@ -76,8 +81,9 @@ public class AliasDialog {
         //
         String proposedAlias = ""; //$NON-NLS-1$
 
-        IInputValidator inputValidator = new IInputValidator() { //$NON-NLS-1$
+        IInputValidator inputValidator = new IInputValidator() {
 
+            @Override
             public String isValid(String newText) {
 
                 String selectedPhysicalTable = aliasInternalDialog.getTableName();
@@ -103,8 +109,8 @@ public class AliasDialog {
 
         };
 
-        aliasInternalDialog = new AliasInternalDialog(mapperManager.getUiManager().getShell(), Messages
-                .getString("AliasDialog.addNewAlias"), //$NON-NLS-1$
+        aliasInternalDialog = new AliasInternalDialog(mapperManager.getUiManager().getShell(),
+                Messages.getString("AliasDialog.addNewAlias"), //$NON-NLS-1$
                 Messages.getString("AliasDialog.typeAliasOfTable"), proposedAlias, inputValidator); //$NON-NLS-1$
 
         int response = aliasInternalDialog.open();
@@ -180,7 +186,7 @@ public class AliasDialog {
         /**
          * Error message label widget.
          */
-        private Text errorMessageText;
+        private Label errorMessageText;
 
         /**
          * Error message string.
@@ -209,6 +215,7 @@ public class AliasDialog {
         public AliasInternalDialog(Shell parentShell, String dialogTitle, String dialogMessage, String initialValue,
                 IInputValidator validator) {
             super(parentShell);
+            setShellStyle(getShellStyle() | SWT.APPLICATION_MODAL | SWT.RESIZE);
             this.title = dialogTitle;
             message = dialogMessage;
             if (initialValue == null) {
@@ -222,6 +229,7 @@ public class AliasDialog {
         /*
          * (non-Javadoc) Method declared on Dialog.
          */
+        @Override
         protected void buttonPressed(int buttonId) {
             if (buttonId == IDialogConstants.OK_ID) {
                 value = text.getText();
@@ -236,8 +244,10 @@ public class AliasDialog {
          * 
          * @see org.eclipse.jface.window.Window#configureShell(org.eclipse.swt.widgets.Shell)
          */
+        @Override
         protected void configureShell(Shell shell) {
             super.configureShell(shell);
+            shell.setMinimumSize(300, 300);
             if (title != null) {
                 shell.setText(title);
             }
@@ -248,6 +258,7 @@ public class AliasDialog {
          * 
          * @see org.eclipse.jface.dialogs.Dialog#createButtonsForButtonBar(org.eclipse.swt.widgets.Composite)
          */
+        @Override
         protected void createButtonsForButtonBar(Composite parent) {
             // create OK and Cancel buttons by default
             okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
@@ -264,6 +275,7 @@ public class AliasDialog {
         /*
          * (non-Javadoc) Method declared on Dialog.
          */
+        @Override
         protected Control createDialogArea(Composite parent) {
             // create composite
             Composite composite = (Composite) super.createDialogArea(parent);
@@ -272,16 +284,18 @@ public class AliasDialog {
             Label label = new Label(composite, SWT.WRAP);
             label.setText(Messages.getString("AliasDialog.SelectTableToUse")); //$NON-NLS-1$
 
-            combo = new Combo((Composite) composite, SWT.DROP_DOWN | SWT.READ_ONLY);
+            combo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
             combo.setItems(physicalTables);
             combo.addSelectionListener(new SelectionListener() {
 
+                @Override
                 public void widgetDefaultSelected(SelectionEvent e) {
                 }
 
+                @Override
                 public void widgetSelected(SelectionEvent e) {
                     internalTableName = combo.getText();
-                    validateInput();
+                    validateInput(combo.getText(), text.getText());
                 }
 
             });
@@ -303,14 +317,14 @@ public class AliasDialog {
             text.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
             text.addModifyListener(new ModifyListener() {
 
+                @Override
                 public void modifyText(ModifyEvent e) {
-                    validateInput();
+                    validateInput(combo.getText(), text.getText());
 
                 }
             });
-            errorMessageText = new Text(composite, SWT.READ_ONLY);
-            errorMessageText.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL));
-            errorMessageText.setBackground(errorMessageText.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+            errorMessageText = new Label(composite, SWT.WRAP);
+            errorMessageText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL | GridData.GRAB_HORIZONTAL));
             // Set the error message text
             // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=66292
             setErrorMessage(errorMessage);
@@ -325,6 +339,7 @@ public class AliasDialog {
          * @return the error message label
          * @deprecated use setErrorMessage(String) instead
          */
+        @Deprecated
         protected Label getErrorMessageLabel() {
             return null;
         }
@@ -373,10 +388,17 @@ public class AliasDialog {
          * method is called whenever the text changes in the input field.
          * </p>
          */
-        protected void validateInput() {
+        protected void validateInput(String tableName, String alias) {
             String errorMessage = null;
             if (validator != null) {
-                errorMessage = validator.isValid(text.getText());
+                errorMessage = validator.isValid(alias);
+            }
+            if (errorMessage == null) {
+                Problem needAliasProblem = problemsAnalyser.getNeedAliasProblem(mapperManager.getComponent(), combo.getText(),
+                        text.getText());
+                if (needAliasProblem != null) {
+                    errorMessage = needAliasProblem.getDescription();
+                }
             }
             // Bug 16256: important not to treat "" (blank error) the same as null
             // (no error)
@@ -394,6 +416,7 @@ public class AliasDialog {
             if (errorMessageText != null && !errorMessageText.isDisposed()) {
                 errorMessageText.setText(errorMessage == null ? "" : errorMessage); //$NON-NLS-1$
                 errorMessageText.getParent().update();
+                errorMessageText.getParent().layout();
                 // Access the ok button by id, in case clients have overridden button creation.
                 // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=113643
                 Control button = getButton(IDialogConstants.OK_ID);

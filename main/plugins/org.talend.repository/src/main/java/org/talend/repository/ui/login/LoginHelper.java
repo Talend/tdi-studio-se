@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -72,6 +73,7 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.login.AbstractLoginActionPage.ErrorManager;
@@ -709,24 +711,12 @@ public class LoginHelper {
     }
 
     public List<String> getProjectBranches(Project p) throws JSONException {
-        List<String> branchesList = new ArrayList<String>();
-        if (p != null && svnProviderService != null) {
-            try {
-                if (!p.isLocal() && svnProviderService.isSVNProject(p)) {
-                    branchesList.add(SVNConstant.NAME_TRUNK);
-                    String[] branchList = svnProviderService.getBranchList(p);
-                    if (branchList != null) {
-                        branchesList.addAll(Arrays.asList(branchList));
-                    }
-
-                } else if (!p.isLocal() && gitProviderService.isGITProject(p)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(p)));
-                }
-            } catch (PersistenceException e) {
-                CommonExceptionHandler.process(e);
-            }
+        IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
+                .getService(IRepositoryService.class);
+        if (repositoryService != null) {
+            return repositoryService.getProjectBranch(p);
         }
-        return branchesList;
+        return Collections.EMPTY_LIST;
     }
 
     public Project getLastUsedProject(Project[] projects) {

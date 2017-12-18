@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -51,14 +52,22 @@ import org.eclipse.ui.internal.wizards.datatransfer.WizardProjectsImportPage;
 import org.eclipse.ui.internal.wizards.datatransfer.ZipLeveledStructureProvider;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
+import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Project;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.utils.XmiResourceManager;
+import org.talend.core.service.IRemoteService;
+import org.talend.core.ui.branding.IBrandingService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
+import org.talend.repository.ui.actions.importproject.ImportProjectBean;
+import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
+import org.talend.repository.ui.utils.AfterImportProjectUtil;
 
 /**
  * DOC zhangchao.wang class global comment. Detailled comment
@@ -499,7 +508,11 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         //
         final Object[] selected = getProjectsList().getCheckedElements();
         XmiResourceManager xmiManager = new XmiResourceManager();
+        final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            final ImportProjectHelper importHelper = new ImportProjectHelper();
+
             for (Object element : selected) {
                 final ProjectRecord record = (ProjectRecord) element;
                 String projectName = record.getProjectName();
@@ -516,17 +529,41 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                     loadProject.setType(null);
                     xmiManager.saveResource(loadProject.eResource());
 
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
+                        IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault().getService(
+                                IRemoteService.class);
+                        if (!remoteService.isAuthorized(loadProject.getProductVersion())) {
+                            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+                                    IBrandingService.class);
+                            String compatibleMessage = Messages.getString("ImportProjectAsWizardPage.compatible.message"); //$NON-NLS-1$
+                            String confirmMessage = Messages.getString(
+                                    "ImportProjectAsWizardPage.confirm.message", loadProject.getLabel()); //$NON-NLS-1$
+                            boolean confirm = MessageDialog.openConfirm(this.getShell(), brandingService.getProductName(),
+                                    compatibleMessage + "\n\n" + confirmMessage); //$NON-NLS-1$
+                            if (!confirm) {
+                                project.delete(true, null); // if invalid, delete it
+                                continue;
+                            }
+                        }
+                    }
                     // FIXME TDI-22786, migrate the project name.
                     if (ProjectManager.enableSpecialTechnicalProjectName()) {
                         ChangeProjectTechinicalNameMigrationTask migrationTask = new ChangeProjectTechinicalNameMigrationTask();
                         migrationTask.migrateTalendProject(project, loadProject, xmiManager);
                     }
+                    importHelper.checkProjectItems(new org.talend.core.model.general.Project(loadProject));
+
+                    AfterImportProjectUtil.runAfterImportProjectActions(new ImportProjectBean(
+                            new org.talend.core.model.general.Project(loadProject), null));
                 } catch (PersistenceException e) {
+                    //
+                } catch (CoreException e) {
                     //
                 }
             }
         } finally {
             xmiManager.unloadResources();
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
         }
         return created;
         //

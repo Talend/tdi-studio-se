@@ -16,12 +16,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.talend.core.model.process.IConnection;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.Problem;
+import org.talend.core.model.process.Problem.ProblemStatus;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.abstractmap.model.tableentry.IColumnEntry;
+import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.MapperMain;
 import org.talend.designer.dbmap.external.connection.IOConnection;
 import org.talend.designer.dbmap.external.converter.ExternalDataConverter;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
+import org.talend.designer.dbmap.i18n.Messages;
 import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.managers.ProblemsManager;
 import org.talend.designer.dbmap.model.table.AbstractInOutTable;
@@ -63,8 +69,8 @@ public class ProblemsAnalyser {
             List<IOConnection> inputsIOConnections = mapperMain.createIOConnections(incomingConnections);
             ArrayList<InputTable> inputTables = converter.prepareInputTables(inputsIOConnections, externalData);
             List<IOConnection> outputsIOConnections = mapperMain.createIOConnections(outgoingConnections);
-            ArrayList<OutputTable> outputTables = converter.prepareOutputTables(outputsIOConnections,
-                    this.mapperManager.getComponent().getMetadataList(), externalData);
+            ArrayList<OutputTable> outputTables = converter.prepareOutputTables(outputsIOConnections, this.mapperManager
+                    .getComponent().getMetadataList(), externalData);
 
             List<? super AbstractInOutTable> tablesWriteMode = new ArrayList<AbstractInOutTable>();
             tablesWriteMode.addAll(inputTables);
@@ -88,6 +94,14 @@ public class ProblemsAnalyser {
 
             }
             problems.addAll(problemsLocal);
+
+            for (InputTable inputTable : inputTables) {
+                Problem needAliasProblem = getNeedAliasProblem(mapperManager.getComponent(), inputTable.getName(),
+                        inputTable.getAlias());
+                if (needAliasProblem != null) {
+                    problems.add(needAliasProblem);
+                }
+            }
 
         }
 
@@ -118,4 +132,100 @@ public class ProblemsAnalyser {
         return mapperManager.getProblemsManager().checkExpressionSyntax(expression);
     }
 
+    public Problem getNeedAliasProblem(DbMapComponent component, String tableName, String alias) {
+        if (alias != null && !"".equals(alias.trim())) {
+            return null;
+        }
+        List<IConnection> inputConnections = (List<IConnection>) component.getIncomingConnections();
+        String handledTableName = "";
+        for (IConnection iconn : inputConnections) {
+            boolean inputIsELTDBMap = false;
+            INode source = iconn.getSource();
+            String schemaValue = "";
+            String tableValue = "";
+            if (source != null) {
+                inputIsELTDBMap = source.isELTComponent() && source.getComponent().getName().endsWith("Map");
+                if (inputIsELTDBMap) {
+                    tableValue = iconn.getName();
+                } else {
+                    IElementParameter schemaParam = source.getElementParameter("ELT_SCHEMA_NAME");
+                    IElementParameter tableParam = source.getElementParameter("ELT_TABLE_NAME");
+                    if (schemaParam != null && schemaParam.getValue() != null) {
+                        schemaValue = schemaParam.getValue().toString();
+                    }
+                    if (tableParam != null && tableParam.getValue() != null) {
+                        tableValue = tableParam.getValue().toString();
+                    }
+                }
+            }
+
+            String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
+            String tableNoQuote = TalendTextUtils.removeQuotes(tableValue);
+            String sourceTable = "";
+            boolean hasSchema = !"".equals(schemaNoQuote);
+            if (hasSchema) {
+                sourceTable = schemaNoQuote + ".";
+            }
+            sourceTable = sourceTable + tableNoQuote;
+            if (sourceTable.equals(tableName)) {
+                boolean needAlias = needAlias(schemaValue);
+                if (!needAlias) {
+                    needAlias = needAlias(tableValue);
+                }
+                if (needAlias) {
+                    String errorMessage = Messages.getString("ProblemsAnalyser.needAlias.error", tableName);
+                    return new Problem(null, errorMessage, ProblemStatus.WARNING);
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean needAlias(String value) {
+        List<Integer> quoteLocations = getQuoteLocations(value, 0);
+        if (!quoteLocations.isEmpty()) {
+            for (int i = -1; i < quoteLocations.size(); i = i + 2) {
+                if (i < quoteLocations.size()) {
+                    Integer start = i < 0 ? 0 : quoteLocations.get(i);
+                    Integer end = (i + 1) >= quoteLocations.size() ? value.length() : quoteLocations.get(i + 1);
+                    int indexOf = value.substring(start, end).indexOf("+");
+                    if (indexOf != -1) {
+                        return true;
+                    }
+                }
+            }
+        } else {
+            if (value.indexOf("+") != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<Integer> getQuoteLocations(String text, int index) {
+        List<Integer> locations = new ArrayList<Integer>();
+        if (index > text.length()) {
+            return locations;
+        }
+        int indexOf = text.indexOf("\"", index);
+        if (indexOf != -1) {
+            boolean isQuote = true;
+            if (indexOf > 0) {
+                char slash = '\\';
+                char charAt = text.charAt(indexOf - 1);
+                if (charAt == slash) {
+                    isQuote = false;
+                }
+            }
+            if (isQuote) {
+                locations.add(indexOf);
+                indexOf = indexOf + 1;
+            }
+            if (indexOf < text.length()) {
+                locations.addAll(getQuoteLocations(text, indexOf));
+            }
+
+        }
+        return locations;
+    }
 }

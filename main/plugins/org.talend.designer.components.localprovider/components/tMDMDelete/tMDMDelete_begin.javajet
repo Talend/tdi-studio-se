@@ -77,18 +77,34 @@ int nb_line_<%=cid %> = 0;
             String turl_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.getMDMTransactionURL(murl_<%=cid %>, true);
             com.talend.mdm.transaction.client.MDMTransaction mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
             if(mdmTransaction_<%=cid %> == null){
-                if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
-                    List<String> cookies_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getCookies(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
-                    mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
-                    mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
-                    mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
-                    mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
-                    mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
-                    mdmTransaction_<%=cid %>.setCookies(cookies_<%=cid%>);
-                }else{
-                    <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
-                    mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+                Boolean transInitStart_<%=cid%> = false;
+                synchronized(globalMap){
+                    if(globalMap.containsKey(transKey_<%=cid %> + "_initStart")){
+                        transInitStart_<%=cid%> = true;
+                    }else{
+                        globalMap.put(transKey_<%=cid %> + "_initStart", true);
+                    }
                 }
+                if(transInitStart_<%=cid%> == false){
+                    if((Boolean)globalMap.get("useClientTranId_<%=connection %>")){
+                        List<String> cookies_<%=cid%> = com.talend.mdm.transaction.client.MDMTransactionClient.getCookies(turl_<%=cid%>,username_<%=cid%>,password_<%=cid%>);
+                        mdmTransaction_<%=cid %> = new com.talend.mdm.transaction.client.MDMTransaction();
+                        mdmTransaction_<%=cid %>.setUrl(turl_<%=cid %>);
+                        mdmTransaction_<%=cid %>.setId("<%=cid %>_" + java.util.UUID.randomUUID());
+                        mdmTransaction_<%=cid %>.setUsername(username_<%=cid %>);
+                        mdmTransaction_<%=cid %>.setPassword(password_<%=cid %>);
+                        mdmTransaction_<%=cid %>.setCookies(cookies_<%=cid%>);
+                    }else{
+                        <% logUtil.debug("\"Attempt to get a remote transaction from url: \" + murl_" + cid);%>
+                        mdmTransaction_<%=cid %> = com.talend.mdm.transaction.client.MDMTransactionClient.newTransaction(turl_<%=cid %>,username_<%=cid %>,password_<%=cid %>);
+                    }
+                }else{
+                    while(mdmTransaction_<%=cid %> == null){
+                        Thread.sleep(10);
+                        mdmTransaction_<%=cid %> = (com.talend.mdm.transaction.client.MDMTransaction)globalMap.get(transKey_<%=cid %>);
+                    }
+                }
+
                 java.util.List<org.apache.cxf.headers.Header> soapHeaders_<%=cid %> = new java.util.ArrayList<org.apache.cxf.headers.Header>();
                 javax.xml.namespace.QName qName_<%=cid %> = new javax.xml.namespace.QName("http://www.talend.com/mdm", "transaction-id");
                 org.apache.cxf.databinding.DataBinding dataBinding_<%=cid %> = new org.apache.cxf.jaxb.JAXBDataBinding(String.class);

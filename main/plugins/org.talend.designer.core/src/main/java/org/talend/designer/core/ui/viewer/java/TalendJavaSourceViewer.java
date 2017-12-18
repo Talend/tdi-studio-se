@@ -454,7 +454,6 @@ public class TalendJavaSourceViewer extends ReconcilerViewer {
         IRepositoryService service = (IRepositoryService) GlobalServiceRegister.getDefault().getService(IRepositoryService.class);
 
         IProxyRepositoryFactory repositoryFactory = service.getProxyRepositoryFactory();
-        Project project = ProjectManager.getInstance().getProject(null);
         try {
             List<IRepositoryViewObject> routines = repositoryFactory.getAll(ERepositoryObjectType.ROUTINES);
             for (IRepositoryViewObject routine : routines) {
