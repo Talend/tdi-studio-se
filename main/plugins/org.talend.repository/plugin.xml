@@ -2962,6 +2962,14 @@
               name="ChangeTMatchGroupOutputConnectorTask"
               version="6.4.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
+              id="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
+              name="MigrationTaskFortOleDbCoseConnection"
+              version="7.0.1">
+        </projecttask>
    </extension>
 
    <extension
