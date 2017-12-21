@@ -22,7 +22,6 @@ imports="
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node,"__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node,"__BATCH_SIZE__");
-    boolean useFIFO = "true".equals(ElementParameterParser.getValue(node,"__USE_FIFO__"));
     String messageGroupId = ElementParameterParser.getValue(node,"__GROUP_ID__");
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
@@ -35,9 +34,6 @@ imports="
 	%>
 				sendMsgRequest_<%=cid%> = new com.amazonaws.services.sqs.model.<%=useBatch?"SendMessageBatchRequest":"SendMessageRequest"%>();
 				sendMsgRequest_<%=cid%>.setQueueUrl(<%=queueUrl%>);
-				<%if(useFIFO){%>
-				sendMsgRequest_<%=cid%>.setMessageGroupId(<%=messageGroupId%>);
-				<%}%>
 				nbline_<%=cid %>++;
     <%
 				if(useBatch){
@@ -67,7 +63,17 @@ imports="
 					        sendMsgRequest_<%=cid%>.setMessageDeduplicationId(<%=conn.getName()%>.<%=column.getLabel()%>);
 					<%
 						}
-					}else {
+					}else if (column.getLabel().equalsIgnoreCase("MessageGroupId")){
+						if(useBatch){
+	%>
+							entry_<%=cid%>.setMessageGroupId(<%=conn.getName()%>.<%=column.getLabel()%>);
+	<%
+						}else{
+						%>
+					        sendMsgRequest_<%=cid%>.setMessageGroupId(<%=conn.getName()%>.<%=column.getLabel()%>);
+					<%
+						}
+					}else{
 						String dataType=null;;
 						if ("id_String".equals(column.getTalendType())) {
 							dataType="String";
