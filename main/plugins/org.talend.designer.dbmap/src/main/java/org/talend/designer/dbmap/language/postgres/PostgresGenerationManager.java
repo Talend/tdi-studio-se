@@ -102,27 +102,22 @@ public class PostgresGenerationManager extends DbGenerationManager {
 
                 if (inputTable.getAlias() != null && !"".equals(inputTable.getAlias())
                         && !replacedStrings.contains(inputTable.getAlias())) {
-                    expression = expression.replaceAll("\\b" + inputTable.getAlias() + "\\b",
-                            getHandledField(inputTable.getAlias(), true));
+                    expression = replaceFields4Expression(expression, inputTable.getAlias());
                     replacedStrings.add(inputTable.getAlias());
                 } else {
                     if (needReplaceSchema && !replacedStrings.contains(schemaStr)) {
-                        expression = expression.replaceAll("\\b" + schemaStr + "\\b", getHandledField(schemaStr, true));
+                        expression = replaceFields4Expression(expression, schemaStr);
                         replacedStrings.add(schemaStr);
                     }
                     if (needReplaceTable && !replacedStrings.contains(tableNameStr)) {
-                        expression = expression.replaceAll("\\b" + tableNameStr + "\\b", getHandledField(tableNameStr, true));
+                        expression = replaceFields4Expression(expression, tableNameStr);
                         replacedStrings.add(tableNameStr);
                     }
                 }
                 for (IMetadataColumn co : connection.getMetadataTable().getListColumns()) {
                     String columnLabel = co.getOriginalDbColumnName();
-                    if (columnLabel == null || "".equals(columnLabel)) {
-                        columnLabel = co.getLabel();
-
-                    }
                     if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
-                        expression = expression.replaceAll("\\b" + columnLabel + "\\b", getHandledField(columnLabel, true));
+                        expression = replaceFields4Expression(expression, columnLabel);
                         replacedStrings.add(columnLabel);
                     }
                 }
@@ -130,6 +125,16 @@ public class PostgresGenerationManager extends DbGenerationManager {
         }
 
         return expression;
+
+    }
+
+    private String replaceFields4Expression(String expression, String subExpression) {
+        String subExpressionWithQuote = getHandledField(subExpression);
+        if (expression.indexOf(subExpressionWithQuote) != -1) {
+            return expression;
+        } else {
+            return expression.replaceAll("\\b" + subExpression + "\\b", getHandledField(subExpression, true));
+        }
 
     }
 
