@@ -90,29 +90,6 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         dbMapComponent.setProcess(process);
     }
 
-    private MetadataTable getMetadataTable(String[] entitiesName, String[] dbColumns) {
-        MetadataTable table = new MetadataTable();
-        for (String element : entitiesName) {
-            MetadataColumn column = new MetadataColumn();
-            column.setLabel(element);
-            table.getListColumns().add(column);
-        }
-        return table;
-    }
-
-    private List<ExternalDbMapEntry> getMetadataEntities(String[] entitiesName, String[] expressions) {
-        List<ExternalDbMapEntry> entities = new ArrayList<ExternalDbMapEntry>();
-        for (int i = 0; i < entitiesName.length; i++) {
-            ExternalDbMapEntry entity = new ExternalDbMapEntry();
-            entity.setName(entitiesName[i]);
-            if (i < expressions.length && !"".equals(expressions[i]) && expressions[i] != null) {
-                entity.setExpression(expressions[i]);
-            }
-            entities.add(entity);
-        }
-        return entities;
-    }
-
     private IConnection mockConnection(String schemaName, String tableName, String[] columns, String[] dbColumns) {
         Connection connection = mock(Connection.class);
         Node node = mock(Node.class);
@@ -300,7 +277,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String[] columns = new String[] { "_String", "_void" };
         String[] dbColumns = new String[] { "String", "void", "age" };
         String[] expressions = new String[] { schema + "." + tableName + "._String", schema + "." + tableName + "._void" };
-        initForExpression(schema, tableName, columns, dbColumns, columns, dbColumns, expressions);
+        initForExpression(schema, tableName, columns, dbColumns, "grade", columns, dbColumns, expressions);
         ExternalDbMapTable externalData = (ExternalDbMapTable) dbMapComponent.getExternalData().getOutputTables().get(0);
         ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
         whereEntity.setName("where_entity");
@@ -320,15 +297,45 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         tableName = "elttable";
         expressions = new String[] { "\\\"eltschema\\\".\\\"elttable\\\".\\\"String\\\"",
                 "\\\"eltschema\\\".\\\"elttable\\\".\\\"void\\\"" };
-        initForExpression(schema, tableName, columns, dbColumns, columns, dbColumns, expressions);
+        initForExpression(schema, tableName, columns, dbColumns, "grade", columns, dbColumns, expressions);
         expectedQuery = "\"SELECT\n"
                 + "\\\"eltschema\\\".\\\"elttable\\\".\\\"String\\\", \\\"eltschema\\\".\\\"elttable\\\".\\\"void\\\"\n"
                 + "FROM\n" + " \\\"eltschema\\\".\\\"elttable\\\" ";
 
     }
 
+    @Test
+    public void testBuildSqlSelectForUpdateOutputTable() {
+        // fix for tuj BugTDI32594_tELTPostgresqlOutput_ColFunc/BugTDI22916_tELTPostgresqlXX_FullOutterJoin
+        PostgresGenerationManager manager = new PostgresGenerationManager();
+        String schema = "context.schema";
+        String tableName = "bugtdi32594_src";
+        String outputTable = "bugtdi32594_dest";
+        String[] inputColumns = new String[] { "name", "register" };
+        String[] outputColumns = new String[] { "name", "name_uppercase", "register" };
+        String[] expressions = new String[] { "context.schema.bugtdi32594_src.name",
+                "UPPER(context.schema.bugtdi32594_src.name)", "to_date(context.schema.bugtdi32594_src.register, 'yyyy-MM-dd')" };
+        initForExpression(schema, tableName, inputColumns, inputColumns, outputTable, outputColumns, outputColumns, expressions);
+        ExternalDbMapTable externalData = (ExternalDbMapTable) dbMapComponent.getExternalData().getOutputTables().get(0);
+        ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
+        whereEntity.setName("where_entity");
+        whereEntity.setExpression("bugtdi32594_src.id=bugtdi32594_dest.id");
+        List<ExternalDbMapEntry> whereEntries = new ArrayList<ExternalDbMapEntry>();
+        whereEntries.add(whereEntity);
+        externalData.setCustomWhereConditionsEntries(whereEntries);
+
+        String expectedQuery = "\"SELECT\n"
+                + "\\\"\"+context.schema+\"\\\".\\\"bugtdi32594_src\\\".\\\"name\\\", UPPER(\\\"\"+context.schema+\"\\\".\\\"bugtdi32594_src\\\".\\\"name\\\"), "
+                + "to_date(\\\"\"+context.schema+\"\\\".\\\"bugtdi32594_src\\\".\\\"register\\\", 'yyyy-MM-dd')\n" + "FROM\n"
+                + " \\\"\"+context.schema+\"\\\".\\\"bugtdi32594_src\\\"\n"
+                + "WHERE \\\"bugtdi32594_src\\\".id=\\\"bugtdi32594_dest\\\".id\"";
+        String query = manager.buildSqlSelect(dbMapComponent, outputTable);
+        assertEquals(expectedQuery, query);
+
+    }
+
     private void initForExpression(String schema, String main_table, String[] inputColumns, String[] inputDbColumns,
-            String[] outputColumns, String[] outputDbColumns, String[] expressions) {
+            String outputTableName, String[] outputColumns, String[] outputDbColumns, String[] expressions) {
         List<IConnection> incomingConnections = new ArrayList<IConnection>();
         incomingConnections.add(mockConnection(schema, main_table, inputColumns, inputDbColumns));
         dbMapComponent.setIncomingConnections(incomingConnections);
@@ -349,7 +356,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
 
         // output
         ExternalDbMapTable outputTable = new ExternalDbMapTable();
-        outputTable.setName("grade");
+        outputTable.setName(outputTableName);
         outputTable.setMetadataTableEntries(getMetadataEntities(outputColumns, expressions));
         outputs.add(outputTable);
 
@@ -358,7 +365,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         dbMapComponent.setExternalData(externalData);
         List<IMetadataTable> metadataList = new ArrayList<IMetadataTable>();
         MetadataTable metadataTable = getMetadataTable(outputColumns, outputDbColumns);
-        metadataTable.setLabel("grade");
+        metadataTable.setLabel(outputTableName);
         metadataList.add(metadataTable);
         dbMapComponent.setMetadataList(metadataList);
         JobContext newContext = new JobContext("Default");

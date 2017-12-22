@@ -156,7 +156,7 @@ public class DbGenerationManagerTestHelper {
         return connection;
     }
 
-    private List<ExternalDbMapEntry> getMetadataEntities(String[] entitiesName, String[] expressions) {
+    protected List<ExternalDbMapEntry> getMetadataEntities(String[] entitiesName, String[] expressions) {
         List<ExternalDbMapEntry> entities = new ArrayList<ExternalDbMapEntry>();
         for (int i = 0; i < entitiesName.length; i++) {
             ExternalDbMapEntry entity = new ExternalDbMapEntry();
@@ -169,11 +169,20 @@ public class DbGenerationManagerTestHelper {
         return entities;
     }
 
-    private MetadataTable getMetadataTable(String[] entitiesName) {
+    protected MetadataTable getMetadataTable(String[] entitiesName) {
+        return getMetadataTable(entitiesName, null);
+    }
+
+    protected MetadataTable getMetadataTable(String[] entitiesName, String[] dbColumns) {
+        if (dbColumns == null) {
+            dbColumns = entitiesName;
+        }
         MetadataTable table = new MetadataTable();
-        for (String element : entitiesName) {
+        for (int i = 0; i < entitiesName.length; i++) {
+            String element = entitiesName[i];
             MetadataColumn column = new MetadataColumn();
             column.setLabel(element);
+            column.setOriginalDbColumnName(dbColumns[i]);
             table.getListColumns().add(column);
         }
         return table;

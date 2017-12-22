@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.talend.core.model.metadata.IMetadataColumn;
+import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -119,6 +120,23 @@ public class PostgresGenerationManager extends DbGenerationManager {
                     if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
                         expression = replaceFields4Expression(expression, columnLabel);
                         replacedStrings.add(columnLabel);
+                    }
+                }
+            }
+
+            // for update , the sql might have output table and columns
+            List<IMetadataTable> metadataList = component.getMetadataList();
+            if (metadataList != null) {
+                for (IMetadataTable table : metadataList) {
+                    String tableName = table.getLabel();
+                    expression = replaceFields4Expression(expression, tableName);
+                    replacedStrings.add(expression);
+                    for (IMetadataColumn column : table.getListColumns()) {
+                        String columnLabel = column.getOriginalDbColumnName();
+                        if (!replacedStrings.contains(columnLabel) && expression.contains(columnLabel)) {
+                            expression = replaceFields4Expression(expression, columnLabel);
+                            replacedStrings.add(columnLabel);
+                        }
                     }
                 }
             }
