@@ -2178,8 +2178,12 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             String connectionName = prj.getName();
             if (LoginHelper.isRemoteConnection(prj)) {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.remote"); //$NON-NLS-1$//$NON-NLS-2$
-            } else if (LoginHelper.isCloudConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud"); //$NON-NLS-1$//$NON-NLS-2$
+            } else if (LoginHelper.isCloudUSConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.us"); //$NON-NLS-1$//$NON-NLS-2$
+            } else if (LoginHelper.isCloudEUConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.eu"); //$NON-NLS-1$//$NON-NLS-2$
+            } else if (LoginHelper.isCloudCustomConnection(prj)) {
+                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.custom"); //$NON-NLS-1$//$NON-NLS-2$
             } else {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.local"); //$NON-NLS-1$//$NON-NLS-2$
             }
