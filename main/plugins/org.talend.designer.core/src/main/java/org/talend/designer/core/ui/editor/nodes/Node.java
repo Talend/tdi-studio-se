@@ -2865,12 +2865,15 @@ public class Node extends Element implements IGraphicalNode {
                 case COMPONENT_LIST:
                     if (param != null) {
                         String errorMessage;
+                        boolean isContextMode = false;
                         if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
                             errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
                         } else {
                             errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$
+                            isContextMode = param.isDynamicSettings();
                         }
-                        if ((!hasUseExistingConnection(this)) || (isUseExistedConnetion(this))) {
+
+                        if (!isContextMode && ((!hasUseExistingConnection(this)) || (isUseExistedConnetion(this)))) {
                             List<INode> list = (List<INode>) this.getProcess().getNodesOfType(param.getFilter());
                             if (list == null || list.size() == 0 || list.isEmpty()) {
                                 Problems.add(ProblemStatus.ERROR, this, errorMessage);
