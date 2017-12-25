@@ -27,6 +27,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
+import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
@@ -88,15 +90,17 @@ public class TalendImportUtil {
 
     public static boolean importItems(String zipPath, IProgressMonitor monitor, final boolean overwrite, final boolean openThem,
             boolean needMigrationTask) throws IOException {
-        // File srcFile = new File(zipPath);
         ZipFile srcZipFile = new ZipFile(zipPath);
-        final ImportExportHandlersManager importManager = new ImportExportHandlersManager();
         final ResourcesManager resourcesManager = ResourcesManagerFactory.getInstance().createResourcesManager(srcZipFile);
-        // resourcesManager.collectPath2Object(srcFile);
-        resourcesManager.collectPath2Object(srcZipFile);
-        final List<ImportItem> items = populateItems(importManager, resourcesManager, monitor, overwrite);
-        final List<String> itemIds = new ArrayList<String>();
+        final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+
+            resourcesManager.collectPath2Object(srcZipFile);
+            final ImportExportHandlersManager importManager = new ImportExportHandlersManager();
+            final List<ImportItem> items = populateItems(importManager, resourcesManager, monitor, overwrite);
+            final List<String> itemIds = new ArrayList<String>();
+
             for (ImportItem itemRecord : items) {
                 Item item = itemRecord.getProperty().getItem();
                 if (item instanceof ProcessItem) {
@@ -129,6 +133,8 @@ public class TalendImportUtil {
                 resourcesManager.closeResource();
             }
             nodesBuilder.clear();
+
+            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
         }
         return true;
     }
