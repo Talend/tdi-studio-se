@@ -251,7 +251,7 @@
     </PARAMETER>
     
     <PARAMETER
-      NAME="FILE"
+      NAME="FILE_OR_STREAM"
       FIELD="FILE"
       NUM_ROW="50"
       REQUIRED="true"
