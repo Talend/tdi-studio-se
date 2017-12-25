@@ -20,17 +20,9 @@ imports="
 	String cid = node.getUniqueName();
 	String queueUrl = ElementParameterParser.getValue(node,"__QUEUE_URL__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
-	//String useExistingConn = ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__");
 	%>
 	<%@ include file="../tSQSConnection/SQSClient.javajet" %>
 	try{
-		<%
-		if(isLog4jEnabled){
-		%>	
-			//log.info("<%=cid%> - Change message visibility recipet handle:" + <%=queueUrl%>);
-		<%
-		}
-		%>
 		com.amazonaws.services.sqs.model.GetQueueAttributesRequest <%=cid%>_receiveAttributsRequest = new com.amazonaws.services.sqs.model.GetQueueAttributesRequest(<%=queueUrl%>).withAttributeNames("All");
 		com.amazonaws.services.sqs.model.GetQueueAttributesResult <%=cid%>_receiveAttributesResult = conn_<%=cid%>.getQueueAttributes(<%=cid%>_receiveAttributsRequest);
 		java.util.Map<String, String> <%=cid%>_receiveAttributeMap = <%=cid%>_receiveAttributesResult.getAttributes();
