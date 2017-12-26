@@ -149,7 +149,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 		ITargetExecutionConfig config = processContext.getSelectedTargetExecutionConfig();
         if (config != null) {
         	isRemoteRun = config.isRemote();
-        	isCommandlineRun = config.getCommandlineServerConfig() == null ? false: true;
+            isCommandlineRun = false;
         	this.isRemoteMonitoring = config.isUseJMX();
         }
 	}
@@ -247,7 +247,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         GridData contextComboData = new GridData();
         contextComboData.grabExcessHorizontalSpace = true;
         contextComboData.horizontalAlignment = GridData.END;
-        execSize = computeSize("Default"); //$NON-NLS-N$
+        execSize = computeSize("Default"); 
         contextComboData.minimumWidth = execSize.x;
         contextCombo.getCombo().setLayoutData(contextComboData);
         contextCombo.setContentProvider(ArrayContentProvider.getInstance());
