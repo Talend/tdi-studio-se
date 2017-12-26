@@ -123,8 +123,9 @@ String proxyPort = helper.getStringParam("__PROXY_PORT__");
 			parentFolderId_<%= cid %> = <%=cid%>_resultFile.getId();
 		}
 
-		
-		parentFolderId_<%= cid %> = <%=cid%>_files.getItems().get(0).getId();
+		if(null == parentFolderId_<%= cid %> || "root".equals(parentFolderId_<%=cid%>)){
+		    parentFolderId_<%= cid %> = <%=cid%>_files.getItems().get(0).getId();
+		}
 		
 		<% }%>
 		
