@@ -13,9 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.gef.commands.Command;
@@ -51,8 +49,6 @@ public class DeleteNodeContainerCommand extends Command {
     private List<String> joinTableNames = new ArrayList<String>();
 
     private MultiKeyMap connectionDeletedInfosMap;
-    
-    private Map<INode, ExternalNodeChangeCommand> externalNodeChangeCommandMap = new HashMap<INode, ExternalNodeChangeCommand>();
     
     public DeleteNodeContainerCommand(IProcess2 process, List<INode> nodeList) {
         this.process = process;
@@ -108,13 +104,12 @@ public class DeleteNodeContainerCommand extends Command {
                     }
                     storeMetadata(connection, prevNode, remove);
                     prevNode.removeOutput(connection);
-                    if (prevNode.isExternalNode()) {
-                        IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)prevNode);
-                        externalNode.removeOutput(connection);
-                        ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
-                        cmd.execute();
-                        externalNodeChangeCommandMap.put(prevNode, cmd);
-                    }
+					if (prevNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) prevNode);
+						externalNode.removeOutput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
+						cmd.execute();
+					}
                     if (!builtInPrevNode && remove) {
                         process.removeUniqueConnectionName(connection.getUniqueName());
                     }
@@ -144,14 +139,12 @@ public class DeleteNodeContainerCommand extends Command {
                             nextNodeConnection.updateName();
                         }
                     }
-
-                    if (nextNode.isExternalNode()) {
-                        IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)nextNode);
-                        externalNode.removeInput(connection);
-                        ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) nextNode, externalNode);
-                        cmd.execute();
-                        externalNodeChangeCommandMap.put(nextNode, cmd);
-                    }
+					if (nextNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) nextNode);
+						externalNode.removeInput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) nextNode, externalNode);
+						cmd.execute();
+					}
                 }
                 if (!builtIn) {
                     process.removeUniqueConnectionName(connection.getUniqueName());
@@ -210,19 +203,20 @@ public class DeleteNodeContainerCommand extends Command {
                     restoreMetadata(connection, jobletnode);
                 }
 				if (!nodeList.contains(prevNode)) {
+					boolean isAddOutput = false;
 					if (!prevNode.getOutgoingConnections().contains(connection)) {
 						prevNode.addOutput(connection);
-						if (prevNode.isExternalNode() && prevNode.getExternalNode() != null) {
-							prevNode.getExternalNode().addOutput(connection);
-							if (externalNodeChangeCommandMap.get(prevNode) != null) {
-								externalNodeChangeCommandMap.get(prevNode).undo();
-							}
-						}
+						isAddOutput = true;
 					}
 					restoreMetadata(connection, prevNode);
 					connection.reconnect();
 					connection.updateAllId();
-
+					if (isAddOutput && prevNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) prevNode);
+						externalNode.addOutput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
+						cmd.execute();
+					}			
 					boolean builtInPrevNode = prevNode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
 							| node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
 					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)
@@ -246,20 +240,21 @@ public class DeleteNodeContainerCommand extends Command {
 					Node jobletnode = (Node) nextNode.getJobletNode();
 					((AbstractJobletContainer) jobletnode.getNodeContainer()).getInputs().add(connection);
 				}
+				boolean isAddInput = false;
 				if (!nodeList.contains(nextNode)) {
 					if (!nextNode.getIncomingConnections().contains(connection)) {
 						nextNode.addInput(connection);
-						if (nextNode.isExternalNode() && nextNode.getExternalNode() != null) {
-							nextNode.getExternalNode().addInput(connection);
-							if (externalNodeChangeCommandMap.get(nextNode) != null) {
-								externalNodeChangeCommandMap.get(nextNode).undo();
-							}
-						}
+						isAddInput = true;
 					}
 					INodeConnector nodeConnector = nextNode.getConnectorFromType(connection.getLineStyle());
 					nodeConnector.setCurLinkNbInput(nodeConnector.getCurLinkNbInput() + 1);
 					connection.reconnect();
-
+					if (isAddInput && nextNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) nextNode);
+						externalNode.addInput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) nextNode, externalNode);
+						cmd.execute();
+					}
 				}
 				if (!builtIn) {
 					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
@@ -271,7 +266,6 @@ public class DeleteNodeContainerCommand extends Command {
 					}
 				}
 			}
-            externalNodeChangeCommandMap.clear();
             if (builtIn) {
                 for (IMetadataTable meta : node.getMetadataList()) {
                     String metaName = meta.getTableName();

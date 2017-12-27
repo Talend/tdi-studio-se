@@ -409,7 +409,17 @@ public class ConnectionCreateCommand extends Command {
                         }
                     }
                 }
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
                 this.connection = new Connection(source, target, newLineStyle, connectorName, metaName, connectionName,
                         monitorConnection);
             } else {
@@ -418,7 +428,17 @@ public class ConnectionCreateCommand extends Command {
             }
         } else { // in case of redo, reuse the same instance
             if (newMetadata != null) {
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
             }
             connection.reconnect(source, target, newLineStyle);
         }
