@@ -75,8 +75,6 @@ public class ConnectionCreateCommand extends Command {
     private static boolean creatingConnection = false;
 
     private boolean insertTMap;
-    
-    private List<ExternalNodeChangeCommand> externalNodeChangeCommands = new ArrayList<ExternalNodeChangeCommand>();
 
     /**
      * Initialisation of the creation of the connection with a source and style of connection.
@@ -429,14 +427,12 @@ public class ConnectionCreateCommand extends Command {
             externalNode.addOutput(connection);
             ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
             cmd.execute();
-            externalNodeChangeCommands.add(cmd);
         }
         if (target.isExternalNode()) {
             IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
             externalNode.addInput(connection);
             ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
             cmd.execute();
-            externalNodeChangeCommands.add(cmd);
         }
         INodeConnector nodeConnectorSource, nodeConnectorTarget;
         nodeConnectorSource = connection.getSourceNodeConnector();
@@ -478,18 +474,17 @@ public class ConnectionCreateCommand extends Command {
             nodeConnectorTarget.setCurLinkNbInput(nodeConnectorTarget.getCurLinkNbInput() - 1);
         }       
         if (source.isExternalNode()) {
-            IExternalNode externalNode = source.getExternalNode();
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
             externalNode.removeOutput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+            cmd.execute();
         }
         if (target.isExternalNode()) {
-            IExternalNode externalNode = target.getExternalNode();
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
             externalNode.removeInput(connection);
-        }    
-        for (ExternalNodeChangeCommand cmd : externalNodeChangeCommands) {
-            cmd.undo();
-        }
-        externalNodeChangeCommands.clear();
-        
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+            cmd.execute();
+        }   
         if (newMetadata != null) {
             source.getMetadataList().remove(newMetadata);
         }
