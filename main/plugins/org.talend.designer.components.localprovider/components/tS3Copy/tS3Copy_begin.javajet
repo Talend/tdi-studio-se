@@ -16,8 +16,9 @@ imports="
     String to_bucket = ElementParameterParser.getValue(node,"__TO_BUCKET__");
     String to_key = ElementParameterParser.getValue(node,"__TO_KEY__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
-	
 	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
+	String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
+	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-KMS__"));
 	
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>
@@ -32,14 +33,56 @@ imports="
 		com.amazonaws.services.s3.model.CopyObjectRequest copyRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(<%=from_bucket%>, <%=from_key%>, <%=to_bucket%>, <%=to_key%>);
 		
 		<%
-		if(enableServerSideEncryption){
+		if(!enableKMS && enableServerSideEncryption){
 		%>
+		        <%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - No KMS - Normal SSE");
+				<%
+				}
+				%>
 			com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = new com.amazonaws.services.s3.model.ObjectMetadata();
 			objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 			copyRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
 		<%
-		}
-		%>
+		}else if(enableKMS){ /* KMS is enabled, so test for default or presence of key */
+			%>
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - KMS-Enabled - kmsid="+<%=kmsid%>);
+				<%
+				}
+				%>
+				<%
+				if("\"\"".equals(kmsid)){
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - No KMS key - use default");
+					<%
+					}
+					%>
+					copyRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams ());
+				<%
+				} else {
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - Key found - use key");
+					<%
+					}
+					%>
+					copyRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams (<%=kmsid%>));
+				<%
+				}
+				%>
+			<%
+			}
+			%>
 		
 		conn_<%=cid%>.copyObject(copyRequest_<%=cid%>);
 		<%
