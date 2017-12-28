@@ -14,7 +14,7 @@ imports="
     String cid = node.getUniqueName();
     String bucket = ElementParameterParser.getValue(node,"__BUCKET__");
     String key = ElementParameterParser.getValue(node,"__KEY__");
-    String fileOrStream = ElementParameterParser.getValue(node,"__FILE_OR_STREAM__");
+    String file = ElementParameterParser.getValue(node,"__FILE__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
     String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
@@ -51,7 +51,7 @@ imports="
 		java.io.InputStream sourceStream_<%=cid%> = null;
 		byte[] buffer_<%=cid%> = null;
 		long curPartSize_<%=cid%> = 0;
-		Object fileOrStream_<%=cid%> = <%=fileOrStream%>;
+		Object fileOrStream_<%=cid%> = <%=file%>;
 	
 	try{
 		<%
