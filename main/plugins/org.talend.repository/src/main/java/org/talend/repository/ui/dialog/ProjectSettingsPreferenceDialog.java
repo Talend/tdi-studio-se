@@ -67,6 +67,8 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     public static final int IMPORT = 97;
 
     public static final int EXPORT = 98;
+    
+    private static boolean isInReopen = false;
 
     /**
      * wchen ProjectSettingsPreferenceDialog constructor comment.
@@ -136,6 +138,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     protected void okPressed() {
         super.okPressed();
         rollBack(false);
+        setInReopen(false);
     }
 
     /**
@@ -162,6 +165,7 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
     protected void cancelPressed() {
         super.cancelPressed();
         rollBack(true);
+        setInReopen(false);
     }
 
     private void importPressed() {
@@ -185,9 +189,11 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
 
         // close the projec settings and open it again to get new settings
         if (!error) {
+            setInReopen(true);
             close();
             ProjectSettingDialog dialog = new ProjectSettingDialog();
             dialog.open();
+            setInReopen(false);
         }
     }
 
@@ -374,4 +380,11 @@ public class ProjectSettingsPreferenceDialog extends PreferenceDialog implements
         return false;
     }
 
+    public static boolean isInReopen() {
+        return isInReopen;
+    }
+
+    public static void setInReopen(boolean isInReopen) {
+        ProjectSettingsPreferenceDialog.isInReopen = isInReopen;
+    }
 }

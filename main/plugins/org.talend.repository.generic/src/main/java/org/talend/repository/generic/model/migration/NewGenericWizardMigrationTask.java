@@ -186,9 +186,10 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
         newProperty.setDisplayName(oldProperty.getDisplayName());
         newProperty.setDescription(oldProperty.getDescription());
         newProperty.setAuthor(oldProperty.getAuthor());
-        newProperty.setCreationDate(oldProperty.getCreationDate());
+        newProperty.getAdditionalProperties().putAll(oldProperty.getAdditionalProperties());
+        // newProperty.setCreationDate(oldProperty.getCreationDate());
         newProperty.setMaxInformationLevel(oldProperty.getMaxInformationLevel());
-        newProperty.setModificationDate(oldProperty.getModificationDate());
+        // newProperty.setModificationDate(oldProperty.getModificationDate());
         newProperty.setOldStatusCode(oldProperty.getOldStatusCode());
         newProperty.setPurpose(oldProperty.getPurpose());
         newProperty.setStatusCode(oldProperty.getStatusCode());

@@ -127,7 +127,7 @@
         </PARAMETER>
 
         <PARAMETER NAME="TIMEOUT" FIELD="TEXT" NUM_ROW="45" REQUIRED="true">
-            <DEFAULT>2</DEFAULT>
+            <DEFAULT>60</DEFAULT>
         </PARAMETER>
 
         <PARAMETER NAME="ENTITYNAME" FIELD="CLOSED_LIST" NUM_ROW="50" NOT_SHOW_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))"
@@ -17430,7 +17430,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="attachmentnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
@@ -17493,7 +17493,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='annotations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="isdocument" TYPE="id_Boolean" />
@@ -17612,7 +17612,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="subject" TYPE="id_String" />
@@ -18429,11 +18429,11 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="address3_telephone3" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="address3_upszone" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="address3_utcoffset" TYPE="id_Integer" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="anniversary" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="anniversary" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="annualincome" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="assistantname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="assistantphone" TYPE="id_String" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="birthdate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="birthdate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="business2" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="callback" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="childrensnames" TYPE="id_String" />
@@ -19553,7 +19553,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="duedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="duedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="invoicenumber" TYPE="id_String" />
@@ -19847,7 +19847,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="emailaddress2" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="emailaddress3" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="estimatedamount" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Double" KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_Double" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="fax" TYPE="id_String" />
@@ -20193,7 +20193,7 @@
             <COLUMN DBTYPE="Guid" KEY="false" LENGTH="0" NAME="_transactioncurrencyid_value" TYPE="id_String" />
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='opportunities') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="actualclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="actualclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="actualvalue" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="budgetamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="budgetstatus" TYPE="id_Integer" />
@@ -20210,11 +20210,11 @@
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="developproposal" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="estimatedclosedate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="estimatedvalue" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="evaluatefit" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="filedebrief" TYPE="id_Boolean" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="finaldecisiondate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="finaldecisiondate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="identifycompetitors" TYPE="id_Boolean" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="identifycustomercontacts" TYPE="id_Boolean" />
@@ -20724,7 +20724,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="culture" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -20935,8 +20935,8 @@
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="timezoneruleversionnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="traversedpath" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="utcconversiontimezonecode" TYPE="id_Integer" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="validfromdate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="validtodate" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="validfromdate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="validtodate" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="vendorpartnumber" TYPE="id_String" />
@@ -21230,13 +21230,13 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_postalcode" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_stateorprovince" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="billto_telephone" TYPE="id_String" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="closedon" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="closedon" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="discountpercentage" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="effectivefrom" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="effectiveto" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
-            <COLUMN DBTYPE="DateTimeOffset" KEY="false" LENGTH="0" NAME="expireson" PATTERN="&quot;yyyy-MM-dd&apos;T&apos;HH:mm:ss&apos;Z&apos;&quot;" TYPE="id_Date" />
+            <COLUMN DBTYPE="Date" KEY="false" LENGTH="0" NAME="expireson" PATTERN="&quot;yyyy-MM-dd&quot;" TYPE="id_Date" />
             <COLUMN DBTYPE="Decimal" KEY="false" LENGTH="0" NAME="freightamount" TYPE="id_BigDecimal" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="freighttermscode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
@@ -21438,7 +21438,7 @@
         </TABLE>
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodyurl" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="createdinmajorversion" TYPE="id_Integer" />
@@ -21533,7 +21533,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attacheddocumenturl" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="filetypecode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
@@ -22814,7 +22814,7 @@
         <TABLE IF="(ACTION=='insert') AND (ENTITYSET=='webresourceset') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_Boolean" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="displayname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -23051,7 +23051,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attachmentcontentid" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="attachmentnumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="objecttypecode" TYPE="id_String" />
@@ -23117,7 +23117,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='annotations') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="annotationid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="isdocument" TYPE="id_Boolean" />
@@ -23240,7 +23240,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='attachments') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="attachmentid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="body_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="mimetype" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="subject" TYPE="id_String" />
@@ -26468,7 +26468,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='pluginassemblies') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="pluginassemblyid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="culture" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -27219,7 +27219,7 @@
         <TABLE IF="(ACTION=='update') AND (ENTITYSET=='reports') AND (((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))">
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="reportid" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="bodybinary_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodytext" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="bodyurl" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="createdinmajorversion" TYPE="id_Integer" />
@@ -27322,7 +27322,7 @@
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="attacheddocumenturl" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="authorname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="documentbody_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="filename" TYPE="id_String" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="filetypecode" TYPE="id_Integer" />
             <COLUMN DBTYPE="Int32" KEY="false" LENGTH="0" NAME="importsequencenumber" TYPE="id_Integer" />
@@ -28650,7 +28650,7 @@
             <COLUMN DBTYPE="Guid" KEY="true" LENGTH="0" NAME="webresourceid" TYPE="id_String" />
             <COLUMN DBTYPE="Boolean" KEY="false" LENGTH="0" NAME="canbedeleted" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content" TYPE="id_String" />
-            <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_String" />
+            <COLUMN DBTYPE="Binary" KEY="false" LENGTH="0" NAME="content_binary" TYPE="id_byte[]" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="description" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="displayname" TYPE="id_String" />
             <COLUMN DBTYPE="String" KEY="false" LENGTH="0" NAME="introducedversion" TYPE="id_String" />
@@ -28838,7 +28838,7 @@
             <IMPORT NAME="jcifs" MODULE="jcifs-1.3.0.jar" MVN="mvn:org.talend.libraries/jcifs-1.3.0/6.0.0"  REQUIRED_IF="((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2011')) OR (API_VERSION=='API_2007')" />
             <!-- 2011 -->
             <!-- crm client -->
-            <IMPORT NAME="talend-mscrm-3.1-20170825" MODULE="talend-mscrm-3.1-20170825.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.1-20170825/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.1-20170825.jar" REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
+            <IMPORT NAME="talend-mscrm-3.2-20171107" MODULE="talend-mscrm-3.2-20171107.jar" MVN="mvn:org.talend.libraries/talend-mscrm-3.2-20171107/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.crm/lib/talend-mscrm-3.2-20171107.jar" REQUIRED_IF="((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011' OR API_VERSION =='API_2016_ODATA')) OR ((AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016'))" />
             <!-- axis2 1.7.4 -->
             <IMPORT NAME="activation-1.1" MODULE="activation-1.1.jar" MVN="mvn:org.talend.libraries/activation-1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/activation-1.1.jar" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
             <IMPORT NAME="axiom-api-1.2.20" MODULE="axiom-api-1.2.20.jar" MVN="mvn:org.talend.libraries/axiom-api-1.2.20/6.0.0"  REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
@@ -28885,84 +28885,89 @@
                 UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/asm-5.0.4.jar"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-core-3.1.11"
-                MODULE="cxf-core-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-core-3.1.11/6.4.0"
+                NAME="cxf-core-3.1.14"
+                MODULE="cxf-core-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-core/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-bindings-soap-3.1.11"
-                MODULE="cxf-rt-bindings-soap-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-bindings-soap-3.1.11/6.4.0"
+                NAME="cxf-rt-bindings-soap-3.1.14"
+                MODULE="cxf-rt-bindings-soap-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-bindings-xml-3.1.11"
-                MODULE="cxf-rt-bindings-xml-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-bindings-xml-3.1.11/6.4.0"
+                NAME="cxf-rt-bindings-xml-3.1.14"
+                MODULE="cxf-rt-bindings-xml-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-bindings-xml/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-databinding-jaxb-3.1.11"
-                MODULE="cxf-rt-databinding-jaxb-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-databinding-jaxb-3.1.11/6.4.0"
+                NAME="cxf-rt-databinding-jaxb-3.1.14"
+                MODULE="cxf-rt-databinding-jaxb-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-databinding-xmlbeans-3.1.11"
-                MODULE="cxf-rt-databinding-xmlbeans-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-databinding-xmlbeans-3.1.11/6.4.0"
+                NAME="cxf-rt-databinding-xmlbeans-3.1.14"
+                MODULE="cxf-rt-databinding-xmlbeans-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-databinding-xmlbeans/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-frontend-jaxws-3.1.11"
-                MODULE="cxf-rt-frontend-jaxws-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-frontend-jaxws-3.1.11/6.4.0"
+                NAME="cxf-rt-frontend-jaxws-3.1.14"
+                MODULE="cxf-rt-frontend-jaxws-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-frontend-jaxws/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-frontend-simple-3.1.11"
-                MODULE="cxf-rt-frontend-simple-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-frontend-simple-3.1.11/6.4.0"
+                NAME="cxf-rt-frontend-simple-3.1.14"
+                MODULE="cxf-rt-frontend-simple-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-security-3.1.11"
-                MODULE="cxf-rt-security-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-security-3.1.11/6.4.0"
+                NAME="cxf-rt-security-3.1.14"
+                MODULE="cxf-rt-security-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-security/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-transports-http-3.1.11"
-                MODULE="cxf-rt-transports-http-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-transports-http-3.1.11/6.4.0"
+                NAME="cxf-rt-transports-http-3.1.14"
+                MODULE="cxf-rt-transports-http-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-ws-addr-3.1.11"
-                MODULE="cxf-rt-ws-addr-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-ws-addr-3.1.11/6.4.0"
+                NAME="cxf-rt-ws-addr-3.1.14"
+                MODULE="cxf-rt-ws-addr-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-ws-addr/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-ws-mex-3.1.11"
-                MODULE="cxf-rt-ws-mex-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-ws-mex-3.1.11/6.4.0"
+                NAME="cxf-rt-ws-mex-3.1.14"
+                MODULE="cxf-rt-ws-mex-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-ws-mex/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-ws-policy-3.1.11"
-                MODULE="cxf-rt-ws-policy-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-ws-policy-3.1.11/6.4.0"
+                NAME="cxf-rt-ws-policy-3.1.14"
+                MODULE="cxf-rt-ws-policy-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-ws-policy/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-ws-rm-3.1.11"
-                MODULE="cxf-rt-ws-rm-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-ws-rm-3.1.11/6.4.0"
+                NAME="cxf-rt-ws-rm-3.1.14"
+                MODULE="cxf-rt-ws-rm-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-ws-rm/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-ws-security-3.1.11"
-                MODULE="cxf-rt-ws-security-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-ws-security-3.1.11/6.4.0"
+                NAME="cxf-rt-ws-security-3.1.14"
+                MODULE="cxf-rt-ws-security-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-ws-security/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-rt-wsdl-3.1.11"
-                MODULE="cxf-rt-wsdl-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-rt-wsdl-3.1.11/6.4.0"
+                NAME="cxf-rt-security-saml-3.1.14"
+                MODULE="cxf-rt-security-saml-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-security-saml/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="cxf-services-sts-core-3.1.11"
-                MODULE="cxf-services-sts-core-3.1.11.jar"
-                MVN="mvn:org.talend.libraries/cxf-services-sts-core-3.1.11/6.4.0"
+                NAME="cxf-rt-wsdl-3.1.14"
+                MODULE="cxf-rt-wsdl-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.1.14"
+                REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
+            <IMPORT
+                NAME="cxf-services-sts-core-3.1.14"
+                MODULE="cxf-services-sts-core-3.1.14.jar"
+                MVN="mvn:org.apache.cxf/cxf-services-sts-core/3.1.14"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
                 NAME="ehcache-2.9.0"
@@ -29031,34 +29036,34 @@
                 UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/wsdl4j-1.6.3.jar"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-bindings-2.1.9"
-                MODULE="wss4j-bindings-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-bindings-2.1.9/6.4.0"
+                NAME="wss4j-bindings-2.1.11"
+                MODULE="wss4j-bindings-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-bindings/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-policy-2.1.9"
-                MODULE="wss4j-policy-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-policy-2.1.9/6.4.0"
+                NAME="wss4j-policy-2.1.11"
+                MODULE="wss4j-policy-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-policy/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-ws-security-common-2.1.9"
-                MODULE="wss4j-ws-security-common-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-ws-security-common-2.1.9/6.4.0"
+                NAME="wss4j-ws-security-common-2.1.11"
+                MODULE="wss4j-ws-security-common-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-ws-security-common/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-ws-security-dom-2.1.9"
-                MODULE="wss4j-ws-security-dom-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-ws-security-dom-2.1.9/6.4.0"
+                NAME="wss4j-ws-security-dom-2.1.11"
+                MODULE="wss4j-ws-security-dom-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-ws-security-dom/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-ws-security-policy-stax-2.1.9"
-                MODULE="wss4j-ws-security-policy-stax-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-ws-security-policy-stax-2.1.9/6.4.0"
+                NAME="wss4j-ws-security-policy-stax-2.1.11"
+                MODULE="wss4j-ws-security-policy-stax-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-ws-security-policy-stax/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
-                NAME="wss4j-ws-security-stax-2.1.9"
-                MODULE="wss4j-ws-security-stax-2.1.9.jar"
-                MVN="mvn:org.talend.libraries/wss4j-ws-security-stax-2.1.9/6.4.0"
+                NAME="wss4j-ws-security-stax-2.1.11"
+                MODULE="wss4j-ws-security-stax-2.1.11.jar"
+                MVN="mvn:org.apache.wss4j/wss4j-ws-security-stax/2.1.11"
                 REQUIRED_IF="(AUTH_TYPE == 'ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2015')" />
             <IMPORT
                 NAME="xmlbeans-2.6.0"

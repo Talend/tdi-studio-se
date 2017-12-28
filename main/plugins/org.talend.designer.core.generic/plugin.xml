@@ -57,6 +57,15 @@
                name="NewNetsuiteMigrationTask"
                version="6.4.0">
        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.designer.core.generic.model.migration.Dataprep701MigrationTask"
+              description="This Migration task aim for remove the DESIGN_TIME_ONLY flag of TDataSetOutputProperties."
+              id="org.talend.designer.core.generic.model.migration.Dataprep701MigrationTask"
+              name="Dataprep701MigrationTask"
+              version="7.0.1">
+        </projecttask>
        <!--<projecttask
              beforeLogon="false"
              breaks="6.3.0"

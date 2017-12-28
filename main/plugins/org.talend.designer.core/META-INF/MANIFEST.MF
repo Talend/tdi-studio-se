@@ -204,6 +204,7 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.core.ui.editor.properties.controllers,
  org.talend.designer.core.ui.editor.properties.controllers.creator,
  org.talend.designer.core.ui.editor.properties.controllers.generator,
+ org.talend.designer.core.ui.editor.properties.controllers.uidialog,
  org.talend.designer.core.ui.editor.properties.macrowidgets.tableeditor,
  org.talend.designer.core.ui.editor.properties.nodes,
  org.talend.designer.core.ui.editor.properties.notes,

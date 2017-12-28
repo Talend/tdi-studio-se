@@ -1459,6 +1459,10 @@ public class Component extends AbstractBasicComponent {
         return true;
     }
 
+    public void initNodeProperties(INode newNode, INode oldNode) {
+        this.initNodePropertiesFromSerialized(newNode, oldNode.getComponentProperties().toSerialized());
+    }
+
     @Override
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         if (node != null) {
@@ -1644,6 +1648,19 @@ public class Component extends AbstractBasicComponent {
             return version.toString();
         }
         return super.getVersion();
+    }
+
+    public String getJetFileNamePrefix() {
+        return "component";
+    }
+
+    @Override
+    public String getTemplateFolder() {
+        return "jet_stub/generic";
+    }
+
+    public String getTemplateNamePrefix() {
+        return "component";
     }
 
 }

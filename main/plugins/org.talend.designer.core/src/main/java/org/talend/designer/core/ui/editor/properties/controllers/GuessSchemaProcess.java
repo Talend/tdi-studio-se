@@ -13,18 +13,11 @@
 package org.talend.designer.core.ui.editor.properties.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.talend.commons.utils.VersionUtils;
-import org.talend.core.CorePlugin;
-import org.talend.core.context.Context;
-import org.talend.core.context.RepositoryContext;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.language.LanguageManager;
@@ -35,52 +28,23 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
-import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.utils.ProcessStreamTrashReaderUtil;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
-import org.talend.core.utils.CsvArray;
-import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.EDatabaseComponentName;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.JavaProcessUtil;
-import org.talend.designer.runprocess.IProcessor;
-import org.talend.designer.runprocess.ProcessorException;
-import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.utils.sql.ConnectionUtils;
 
 /**
  * DOC hyWang class global comment. Detailled comment
  */
-public class GuessSchemaProcess {
-
-    protected static final int maximumRowsToPreview = CorePlugin.getDefault().getPreferenceStore()
-            .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT);
-
-    private static final String DEFAULT_JOB_NAME = "Mock_job_for_Guess_schema"; //$NON-NLS-1$
+public class GuessSchemaProcess extends AbstractGuessSchemaProcess {
 
     private String memoSQL;
 
-    private Process process;
-
-    private Property property;
-
-    private INode node;
-
     private IComponent outputComponent;
-
-    private static final String CSV_EXT = "csv"; //$NON-NLS-1$
-
-    private IPath outpath;
-
-    private IPath temppath;
-
-    private String currentProcessEncoding = "GBK"; //$NON-NLS-1$
-
-    private IContext selectContext;
 
     private Connection conn;
 
@@ -90,38 +54,31 @@ public class GuessSchemaProcess {
 
     private static String LIB_NODE = "tLibraryLoad"; //$NON-NLS-1$
 
-    private static String TEMPFILE_APPEND_NAME = "GuessSchemaDelimitedFile"; //$NON-NLS-1$
-
     public GuessSchemaProcess(Property property, INode node, IContext selectContext, String memoSQL, DbInfo info) {
-        this.property = property;
-        this.node = node;
-        this.selectContext = selectContext;
+        super(property, node, selectContext);
         this.memoSQL = memoSQL.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
         this.info = info;
         this.conn = info.getConn();
-        initOutpath();
+        this.originalProcess = null;
     }
 
     public GuessSchemaProcess(Property property, INode node, IContext selectContext, String memoSQL, DbInfo info,
             IProcess originalProcess) {
-        this.property = property;
-        this.node = node;
-        this.selectContext = selectContext;
+        super(property, node, selectContext);
         this.memoSQL = memoSQL.replace("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
         this.info = info;
         this.conn = info.getConn();
         this.originalProcess = originalProcess;
-        initOutpath();
     }
 
-    private void initOutpath() {
-        outpath = new Path(System.getProperty("user.dir")).append("Temp"); //$NON-NLS-1$ //$NON-NLS-2$ 
-    }
-
-    private void buildProcess() {
+    @Override
+    protected void buildProcess() {
+        Property property = getProperty();
+        Process process = null;
         process = new Process(property);
-        process.getContextManager().getListContext().addAll(node.getProcess().getContextManager().getListContext());
-        process.getContextManager().setDefaultContext(this.selectContext);
+        setProcess(process);
+        INode node = getNode();
+        configContext(process, node);
         outputComponent = ComponentsFactoryProvider.getInstance().get(
                 EDatabaseComponentName.FILEDELIMITED.getOutPutComponentName(), ComponentCategory.CATEGORY_4_DI.getName());
 
@@ -162,9 +119,9 @@ public class GuessSchemaProcess {
             if (connector != null) {
                 String connectorValue = connector.getValue().toString();
                 List<? extends INode> generatingNodes = originalProcess.getGeneratingNodes();
-                for (INode node : generatingNodes) {
-                    if (node.getUniqueName().equals(connectorValue)) {
-                        connectionNode = node;
+                for (INode generatingNode : generatingNodes) {
+                    if (generatingNode.getUniqueName().equals(connectorValue)) {
+                        connectionNode = generatingNode;
                         break;
                     }
                 }
@@ -200,7 +157,6 @@ public class GuessSchemaProcess {
             fetchSize = 1000;
         }
         String codeStart, codeMain, codeEnd;
-        temppath = buildTempCSVFilename();
         // Should also replace "/r". NMa.
         memoSQL = memoSQL.replace("\r", " ");// ISO-8859-15
 
@@ -276,8 +232,10 @@ public class GuessSchemaProcess {
     }
     
     private String getCodeStart(INode connectionNode, String createStatament, int fetchSize){
+        IPath temppath = getTemppath();
         String codeStart = null;
         if(EDatabaseTypeName.REDSHIFT.getXmlName().equals(info.getDbType())){
+            INode node = getNode();
             String tableName = (String) node.getElementParameter("TABLE").getValue();
             String dbName = null;
             String schema = null;
@@ -370,107 +328,10 @@ public class GuessSchemaProcess {
         return codeStart;
     }
 
-    // write content to a temp .csv file
-    private IPath buildTempCSVFilename() {
-        String filename = outpath.lastSegment();
-
-        if (outpath.getFileExtension() != null) {
-            filename = filename.substring(0, filename.length() - outpath.getFileExtension().length());
-        } else // Check if file has no suffix.
-        {
-            int length = filename.length();
-            filename = filename.substring(0, length) + TEMPFILE_APPEND_NAME + "."; //$NON-NLS-1$
-        }
-
-        filename += CSV_EXT;
-        IPath tempPath;
-        tempPath = Path.fromOSString(CorePlugin.getDefault().getPreferenceStore()
-                .getString(ITalendCorePrefConstants.FILE_PATH_TEMP));
-        tempPath = tempPath.append(filename);
-
-        return tempPath;
-    }
-
-    public CsvArray run() throws ProcessorException {
-
-        CsvArray array = new CsvArray();
-        buildProcess();
-        IProcessor processor = ProcessorUtilities.getProcessor(process, null);
-        processor.setContext(selectContext);
-        File previousFile = temppath.toFile();
-        if (previousFile.exists()) {
-            previousFile.delete();
-        }
-        java.lang.Process executeprocess = processor.run(IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, null);
-        StringBuffer buffer = new StringBuffer();
-        ProcessStreamTrashReaderUtil.readAndForget(executeprocess, buffer);
-        final String errorMessage = buffer.toString();
-        boolean checkError = !info.isHive() | !previousFile.exists();
-        if (checkError && !"".equals(buffer.toString())) {
-            throw new ProcessorException(errorMessage) {
-
-                private static final long serialVersionUID = 1L;
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see java.lang.Throwable#initCause(java.lang.Throwable)
-                 */
-                @Override
-                public synchronized Throwable initCause(Throwable cause) {
-                    // TODO Auto-generated method stub
-                    return super.initCause(cause);
-                }
-
-                /*
-                 * (non-Javadoc)
-                 * 
-                 * @see java.lang.Throwable#getMessage()
-                 */
-                @Override
-                public String getMessage() {
-                    StringTokenizer tokenizer = new StringTokenizer(errorMessage, "\n");
-                    StringBuilder sqlError = new StringBuilder();
-                    if (tokenizer.countTokens() > 2) {
-                        tokenizer.nextToken();
-                        sqlError.append(tokenizer.nextToken()).append("\n");
-                    }
-                    return sqlError.toString();
-                }
-
-            };
-        } else {
-            try {
-                array = array.createFrom(previousFile, currentProcessEncoding);
-            } catch (IOException ioe) {
-                throw new ProcessorException(ioe) {
-
-                    /*
-                     * (non-Javadoc)
-                     * 
-                     * @see java.lang.Throwable#getMessage()
-                     */
-                    @Override
-                    public String getMessage() {
-                        return Messages.getString("GuessSchemaController.0", System.getProperty("line.separator")); //$NON-NLS-1$ //$NON-NLS-2$                        
-                    }
-                };
-            }
-        }
-        return array;
-    }
-
-    public static Property getNewmockProperty() {
-
-        Property mockProperty = PropertiesFactory.eINSTANCE.createProperty();
-        mockProperty.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY))
-                .getUser());
-        mockProperty.setVersion(VersionUtils.DEFAULT_VERSION);
-        mockProperty.setStatusCode(""); //$NON-NLS-1$
-        mockProperty.setId("ID"); //$NON-NLS-1$
-        mockProperty.setLabel(DEFAULT_JOB_NAME);
-
-        return mockProperty;
+    @Override
+    protected boolean isCheckError() {
+        File previousFile = getTemppath().toFile();
+        return !info.isHive() | !previousFile.exists();
     }
 
 }

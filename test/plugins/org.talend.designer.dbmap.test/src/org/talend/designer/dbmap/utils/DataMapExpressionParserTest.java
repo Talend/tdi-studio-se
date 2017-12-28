@@ -2,20 +2,26 @@ package org.talend.designer.dbmap.utils;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.oro.text.regex.MatchResult;
 import org.apache.oro.text.regex.Pattern;
 import org.apache.oro.text.regex.PatternMatcherInput;
 import org.apache.oro.text.regex.Perl5Compiler;
 import org.apache.oro.text.regex.Perl5Matcher;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.talend.designer.dbmap.language.IDbLanguage;
 import org.talend.designer.dbmap.language.mysql.MysqlLanguage;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 
 public class DataMapExpressionParserTest {
 
     private DataMapExpressionParser parser;
-    
+
     @Before
     public void setUp() throws Exception {
         parser = new DataMapExpressionParser(new MysqlLanguage());
@@ -23,7 +29,7 @@ public class DataMapExpressionParserTest {
 
     @Test
     public void testParseTableEntryLocations() {
-        //test context and built-in expression
+        // test context and built-in expression
         verifyParseResult("context.schema.context.table.column");
         verifyParseResult("context.schema.table.column");
         verifyParseResult("schema.context.table.column");
@@ -33,7 +39,10 @@ public class DataMapExpressionParserTest {
         verifyParseResult(" context .  schema. context . table.column");
         verifyParseResult(" schema . context .table .column");
         verifyParseResult("schema. table . column");
-        verifyParseResult("table. column ");
+        verifyParseResult("((String)globalMap.get(\"schema\")). ((String)globalMap.get(\"main_table\")).column ");
+        verifyParseResult("schema. ((String)globalMap.get(\"main_table\")).column ");
+        verifyParseResult("((String)globalMap.get(\"schema\")). table.column ");
+        verifyParseResult("((String)globalMap.get(\"main_table\")).column ");
     }
 
     private void verifyParseResult(String expression) {
@@ -60,11 +69,9 @@ public class DataMapExpressionParserTest {
         Perl5Matcher matcher = new Perl5Matcher();
         Perl5Compiler compiler = new Perl5Compiler();
         // String PATTERN_STR = "\\s*(\\w+)\\s*(\\.\\s*(\\w+)\\s*)+"; // can't get correct group count.
-        String PATTERN_STR = 
-                  "(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)"
+        String PATTERN_STR = "(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)"
                 + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)"
-                + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)"
-                + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)";
+                + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)" + "|(\\s*(\\w+)\\s*\\.\\s*(\\w+)\\s*)";
         String expression = "context. schema.  context  .table.column";
         // String expression = "context.schema.table.column";
         // String expression = "schema.table.column";
@@ -80,4 +87,134 @@ public class DataMapExpressionParserTest {
             }
         }
     }
+
+    @Test
+    public void testGetGlobalMapSet() {
+        String sqlQuery = "select * from myTable";
+        Set<String> globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 0);
+
+        sqlQuery = "\"SELECT \" +((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"main_table\"))+ \".id,"
+                + " \" +((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"main_table\"))+ \".name,"
+                + " \" +((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"main_table\"))+ \".age, \""
+                + "+((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"lookup_table\"))+ \".score\n" + "FROM"
+                + " \" +((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"main_table\"))+ \" , "
+                + "\" +((String)globalMap.get(\"schema\"))+ \".\" +((String)globalMap.get(\"lookup_table\"))";
+        globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 3);
+        List<String> list = new ArrayList<String>(globalList);
+        java.util.Collections.sort(list);
+        Assert.assertEquals(list.get(0), "((String)globalMap.get(\"lookup_table\"))");
+        Assert.assertEquals(list.get(1), "((String)globalMap.get(\"main_table\"))");
+        Assert.assertEquals(list.get(2), "((String)globalMap.get(\"schema\"))");
+
+        sqlQuery = "\"SELECT\n"
+                + "\" +((String)globalMap.get(\"#main_table%\"))+ \".id, \" +((String)globalMap.get(\"#main_table%\"))+ \".name,"
+                + " \" +((String)globalMap.get(\"#main_table%\"))+ \".age, \" +((String)globalMap.get(\"@lookup_table*\"))+ \".score\n"
+                + "FROM\n"
+                + " \" +((String)globalMap.get(\"#main_table%\"))+ \" , \" +((String)globalMap.get(\"@lookup_table*\"))";
+
+        globalList = parser.getGlobalMapSet(sqlQuery);
+        Assert.assertEquals(globalList.size(), 2);
+        list = new ArrayList<String>(globalList);
+        java.util.Collections.sort(list);
+        Assert.assertEquals(list.get(0), "((String)globalMap.get(\"#main_table%\"))");
+        Assert.assertEquals(list.get(1), "((String)globalMap.get(\"@lookup_table*\"))");
+
+    }
+
+    @Test
+    public void testReplaceLocation() {
+        String expression = "((String)globalMap.get(\"schema\")). ((String)globalMap.get(\"main_table\")).column ";
+        String expectedExp = "((String)globalMap.get(\"schema_1\")). ((String)globalMap.get(\"main_table_1\")).column ";
+        TableEntryLocation oldLocation = new TableEntryLocation();
+        oldLocation.tableName = "((String)globalMap.get(\"schema\")). ((String)globalMap.get(\"main_table\"))";
+        oldLocation.columnName = "column";
+        TableEntryLocation newLocation = new TableEntryLocation();
+        newLocation.tableName = "((String)globalMap.get(\"schema_1\")). ((String)globalMap.get(\"main_table_1\"))";
+        newLocation.columnName = "column";
+        String replaceLocation = parser.replaceLocation(expression, oldLocation, newLocation);
+        Assert.assertEquals(expectedExp, replaceLocation);
+
+        expression = "schema. ((String)globalMap.get(\"main_table\")).column ";
+        expectedExp = "schema_1. ((String)globalMap.get(\"main_table_1\")).column ";
+        oldLocation = new TableEntryLocation();
+        oldLocation.tableName = "schema. ((String)globalMap.get(\"main_table\"))";
+        oldLocation.columnName = "column";
+        newLocation = new TableEntryLocation();
+        newLocation.tableName = "schema_1. ((String)globalMap.get(\"main_table_1\"))";
+        newLocation.columnName = "column";
+        replaceLocation = parser.replaceLocation(expression, oldLocation, newLocation);
+        Assert.assertEquals(expectedExp, replaceLocation);
+
+        expression = "((String)globalMap.get(\"schema\")). table.column ";
+        expectedExp = "((String)globalMap.get(\"schema_1\")). table_1.column ";
+        oldLocation = new TableEntryLocation();
+        oldLocation.tableName = "((String)globalMap.get(\"schema\")). table";
+        oldLocation.columnName = "column";
+        newLocation = new TableEntryLocation();
+        newLocation.tableName = "((String)globalMap.get(\"schema_1\")). table_1";
+        newLocation.columnName = "column";
+        replaceLocation = parser.replaceLocation(expression, oldLocation, newLocation);
+        Assert.assertEquals(expectedExp, replaceLocation);
+
+        expression = "((String)globalMap.get(\"main_table\")).column ";
+        expectedExp = "main_table.column ";
+        oldLocation = new TableEntryLocation();
+        oldLocation.tableName = "((String)globalMap.get(\"main_table\"))";
+        oldLocation.columnName = "column";
+        newLocation = new TableEntryLocation();
+        newLocation.tableName = "main_table";
+        newLocation.columnName = "column";
+        replaceLocation = parser.replaceLocation(expression, oldLocation, newLocation);
+        Assert.assertEquals(expectedExp, replaceLocation);
+    }
+
+    @Test
+    public void testGetGlobalMapExpressionRegexAndReplacement() {
+        IDbLanguage language = new MysqlLanguage();
+        DataMapExpressionParser paser = new DataMapExpressionParser(language);
+        // test 1
+        String exp1 = "((String)globalMap.get(\"\\source*test{\"))";
+        String globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
+        // test expression
+        Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"\\\\source\\*test\\{\"\\)\\)");
+        // test replacement
+        String replacement = paser.getGlobalMapReplacement(exp1);
+        exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
+        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\source*test{\"))+\"");
+
+        // test 2
+        exp1 = "((String)globalMap.get(\"\\\\source*test{\"))";
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
+        // test expression
+        Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"\\\\\\\\source\\*test\\{\"\\)\\)");
+        // test replacement
+        replacement = paser.getGlobalMapReplacement(exp1);
+        exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
+        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\\\source*test{\"))+\"");
+
+        // test 3
+        exp1 = "((String)globalMap.get(\"\\\\source\\*test\\{\"))";
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
+        // test expression
+        Assert.assertEquals(globalMapReplaceExpression,
+                "\\(\\(String\\)globalMap\\.get\\(\"\\\\\\\\source\\\\\\*test\\\\\\{\"\\)\\)");
+        // test replacement
+        replacement = paser.getGlobalMapReplacement(exp1);
+        exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
+        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"\\\\source\\*test\\{\"))+\"");
+
+        // test 4
+        exp1 = "((String)globalMap.get(\"#main\\$table)\"))";
+        globalMapReplaceExpression = paser.getGlobalMapExpressionRegex(exp1);
+        // test expression
+        Assert.assertEquals(globalMapReplaceExpression, "\\(\\(String\\)globalMap\\.get\\(\"#main\\\\\\$table\\)\"\\)\\)");
+        // test replacement
+        replacement = paser.getGlobalMapReplacement(exp1);
+        exp1 = exp1.replaceAll(globalMapReplaceExpression, "\"+" + replacement + "+\"");
+        Assert.assertEquals(exp1, "\"+((String)globalMap.get(\"#main\\$table)\"))+\"");
+
+    }
+
 }

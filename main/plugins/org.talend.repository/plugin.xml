@@ -2914,6 +2914,14 @@
               id="org.talend.repository.model.migration.UnselectChangeEqualsAndHashcodeForBigDecimalInTMap"
               name="Set the 'skip tailing zeros for BigDecimal' setting to false if it was null"
               version="6.5.0">
+		</projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.AddProductValuesItemMigrationTask"
+              id="org.talend.repository.model.migration.AddProductValuesItemMigrationTask"
+              name="Add Product Values"
+              version="6.5.0">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -2937,6 +2945,30 @@
               id="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
               name="UpdateToJava8VersionMigrationTask"
               version="6.5.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.3.0"
+              class="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              id="org.talend.repository.model.migration.ChangeJobsettingDBversionForMssqlMigrationTask"
+              name="Fill the default db version of mssql for Jobsetting"
+              version="6.3.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.0"
+              class="org.talend.repository.model.migration.ChangeTMatchGroupOutputConnectorTask"
+              id="org.talend.repository.model.migration.ChangeTMatchGroupOutputConnectorTask"
+              name="ChangeTMatchGroupOutputConnectorTask"
+              version="6.4.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
+              id="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
+              name="MigrationTaskFortOleDbCoseConnection"
+              version="7.0.1">
         </projecttask>
    </extension>
 
@@ -3114,6 +3146,14 @@
             class="org.talend.repository.preference.JavaVersionProjectSettingPage"
             id="projectsetting.JavaVersion"
             title="%ProjectSetting_JavaVersion">
+      </page>
+      <page
+            class="org.talend.repository.preference.ProjectRefSettingPage"
+            id="org.talend.repository.preference.ProjectRefSettingPage"
+            title="%projectSetting.projectRefSettingPage">
+         <tester
+               class="org.talend.repository.preference.ProjectRefSettingPageTester">
+         </tester>
       </page>
    </extension>
    <extension

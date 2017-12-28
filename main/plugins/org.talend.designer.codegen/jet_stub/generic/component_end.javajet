@@ -38,6 +38,7 @@ if (metadata == null) {
 boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutputOnly = hasOutput && !hasInput;
+boolean isTopologyNone = !hasOutput && !hasInput;
 
 Set<ConnectorTopology> connectorTopologies = def.getSupportedConnectorTopologies();
 boolean asInputComponent = connectorTopologies!=null && (connectorTopologies.size() < 3) && connectorTopologies.contains(ConnectorTopology.OUTGOING);
@@ -46,7 +47,10 @@ boolean asInputComponent = connectorTopologies!=null && (connectorTopologies.siz
 resourceMap.put("finish_<%=cid%>", Boolean.TRUE);
 
 <%
-if(hasOutputOnly || asInputComponent){
+if(isTopologyNone){
+	return stringBuffer.toString();
+}
+else if(hasOutputOnly || asInputComponent){
 %>
     } // while
     reader_<%=cid%>.close();

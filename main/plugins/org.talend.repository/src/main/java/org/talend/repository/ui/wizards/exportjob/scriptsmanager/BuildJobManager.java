@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.FrameworkUtil;
@@ -204,13 +205,22 @@ public class BuildJobManager {
                         buildJobHandler.generateItemFiles(true, new SubProgressMonitor(wrMonitor, scale));
                         wrMonitor.worked(scale);
                         TimeMeasure.step(timeMeasureId, "generateItemFiles");
+                        if (wrMonitor.isCanceled()) {
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                        }
 
                         buildJobHandler.generateJobFiles(new SubProgressMonitor(wrMonitor, scale));
                         wrMonitor.worked(scale);
                         TimeMeasure.step(timeMeasureId, "generateJobFiles");
+                        if (wrMonitor.isCanceled()) {
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                        }
 
                         buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
                         TimeMeasure.step(timeMeasureId, "build and package");
+                        if (wrMonitor.isCanceled()) {
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                        }
                         wrMonitor.done();
                     } catch (Exception e) {
                         throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(

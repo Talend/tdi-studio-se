@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -37,6 +39,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.model.process.ConnectionManager;
 import org.talend.designer.core.ui.dialog.mergeorder.ConnectionTableAndSchemaNameDialog;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -72,6 +75,8 @@ public class ConnectionCreateCommand extends Command {
     private static boolean creatingConnection = false;
 
     private boolean insertTMap;
+    
+    private List<ExternalNodeChangeCommand> externalNodeChangeCommands = new ArrayList<ExternalNodeChangeCommand>();
 
     /**
      * Initialisation of the creation of the connection with a source and style of connection.
@@ -419,6 +424,20 @@ public class ConnectionCreateCommand extends Command {
             }
             connection.reconnect(source, target, newLineStyle);
         }
+        if (source.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+            externalNode.addOutput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+            cmd.execute();
+            externalNodeChangeCommands.add(cmd);
+        }
+        if (target.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+            externalNode.addInput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+            cmd.execute();
+            externalNodeChangeCommands.add(cmd);
+        }
         INodeConnector nodeConnectorSource, nodeConnectorTarget;
         nodeConnectorSource = connection.getSourceNodeConnector();
         nodeConnectorSource.setCurLinkNbOutput(nodeConnectorSource.getCurLinkNbOutput() + 1);
@@ -457,7 +476,20 @@ public class ConnectionCreateCommand extends Command {
         nodeConnectorTarget = connection.getTargetNodeConnector();
         if (nodeConnectorTarget != null) {
             nodeConnectorTarget.setCurLinkNbInput(nodeConnectorTarget.getCurLinkNbInput() - 1);
+        }       
+        if (source.isExternalNode()) {
+            IExternalNode externalNode = source.getExternalNode();
+            externalNode.removeOutput(connection);
         }
+        if (target.isExternalNode()) {
+            IExternalNode externalNode = target.getExternalNode();
+            externalNode.removeInput(connection);
+        }    
+        for (ExternalNodeChangeCommand cmd : externalNodeChangeCommands) {
+            cmd.undo();
+        }
+        externalNodeChangeCommands.clear();
+        
         if (newMetadata != null) {
             source.getMetadataList().remove(newMetadata);
         }
