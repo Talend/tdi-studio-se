@@ -17,6 +17,9 @@ imports="
     String file = ElementParameterParser.getValue(node,"__FILE__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
+    String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
+	
+	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-KMS__"));
 	
 	if(partSizeMb == null) {
 		partSizeMb = "5";
@@ -78,8 +81,16 @@ imports="
 		if(!multiUpload_<%=cid%>) {
 		    
 		<%
-		if(enableServerSideEncryption){
+		if(!enableKMS && enableServerSideEncryption){
 		%>
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - No KMS - Normal SSE");
+				<%
+				}
+				%>
+			objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 			
 			objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 		<%
@@ -94,14 +105,58 @@ imports="
 		  }else{
 		      putRequest_<%=cid%> = new com.amazonaws.services.s3.model.PutObjectRequest(<%=bucket%>, key_<%=cid%>, inputFile_<%=cid%>).withMetadata(objectMetadata_<%=cid%>);
 		  }
+		  <%if(enableKMS){ /* KMS is enabled, so test for default or presence of key */
+			%>
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - KMS-Enabled - kmsid="+<%=kmsid%>);
+				<%
+				}
+				%>
+				<%
+				if("\"\"".equals(kmsid)){
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - No KMS key - use default");
+					<%
+					}
+					%>
+					putRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams ());
+				<%
+				} else {
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - Key found - use key");
+					<%
+					}
+					%>
+					putRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams (<%=kmsid%>));
+				<%
+				}
+				%>
+			<%
+			}
+			%>
 		
 
 		
 		conn_<%=cid%>.putObject(putRequest_<%=cid%>);
 		} else {
 			<%
-			if(enableServerSideEncryption){
+			if(!enableKMS && enableServerSideEncryption){
 			%>
+							<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - No KMS - Normal SSE");
+				<%
+				}
+				%>
 				objectMetadata_<%=cid%>.setSSEAlgorithm(com.amazonaws.services.s3.model.ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
 			<%
 			}
@@ -111,6 +166,43 @@ imports="
 			long filePosition_<%=cid%> = 0;
 			java.util.List<com.amazonaws.services.s3.model.PartETag> partTags_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.s3.model.PartETag>();
 			com.amazonaws.services.s3.model.InitiateMultipartUploadRequest initRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(<%=bucket%>, key_<%=cid%>,objectMetadata_<%=cid%>);
+			<%if(enableKMS){ /* KMS is enabled, so test for default or presence of key */
+			%>
+				<%
+				if(isLog4jEnabled){
+				%>	
+					log.info("<%=cid%> - KMS-Enabled - kmsid="+<%=kmsid%>);
+				<%
+				}
+				%>
+				<%
+				if("\"\"".equals(kmsid)){
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - No KMS key - use default");
+					<%
+					}
+					%>
+					initRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams ());
+				<%
+				} else {
+				%>
+					<%
+					if(isLog4jEnabled){
+					%>	
+						log.info("<%=cid%> - Key found - use key");
+					<%
+					}
+					%>
+					initRequest_<%=cid%>.setSSEAwsKeyManagementParams(new com.amazonaws.services.s3.model.SSEAwsKeyManagementParams (<%=kmsid%>));
+				<%
+				}
+				%>
+			<%
+			}
+			%>
 
 			com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResponse_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(initRequest_<%=cid%>);
 			String uploadId_<%=cid%> = initResponse_<%=cid%>.getUploadId();
