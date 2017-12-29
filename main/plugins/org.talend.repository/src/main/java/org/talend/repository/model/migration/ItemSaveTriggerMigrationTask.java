@@ -37,7 +37,7 @@ public class ItemSaveTriggerMigrationTask extends AbstractItemMigrationTask {
 
     @Override
     public Date getOrder() {
-        GregorianCalendar gc = new GregorianCalendar(2017, 12, 12, 12, 0, 0);
+        GregorianCalendar gc = new GregorianCalendar(2017, 12, 28, 12, 0, 0);
         return gc.getTime();
     }
 
