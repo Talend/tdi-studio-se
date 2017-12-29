@@ -2,7 +2,7 @@
 	<%
 	String application = ElementParameterParser.getValue(node, "__APPLICATION__");
 	if("ALL_APPLICATIONS".equals(application)) {
-		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\",\"emr-4.9.2\",\"emr-5.11.0\"".contains(cluster_version)) {
 		%>
 		{}
 		<%
@@ -24,7 +24,10 @@
 		<%
 		}
 	} else if("CORE_HADOOP".equals(application)) {
-		if("\"emr-4.6.0\"".equals(cluster_version)) {
+	    if("\"emr-5.11.0\"".equals(cluster_version)){%>
+	    {"Ganglia","Hadoop","Hive","Hue","Mahout","Pig","Tez"}
+	    <%
+	    }else if("\"emr-4.6.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Hive","Hue","Mahout","Pig"}
 		<%
@@ -46,7 +49,7 @@
 		<%
 		}
 	} else if("PRESTO_SANDBOX".equals(application)) {
-		if("\"emr-4.6.0\"".equals(cluster_version)) {
+		if("\"emr-4.6.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)) {
 		%>
 		{"Hadoop","Hive","Presto-Sandbox"}
 		<%
@@ -63,8 +66,20 @@
 		{"Hadoop","Hive","Presto-Sandbox"}
 		<%
 		}
+    } else if("PRESTO".equals(application)) {
+        if("\"emr-5.11.0\"".equals(cluster_version)){%>
+        {"Hadoop","Hive","Presto"}
+    <% } else { %>
+        if(true) {
+		    throw new java.lang.RuntimeException("\"PRESTO\" option is not supported by this version of EMR");
+	    }
+        <%
+        }
 	} else if("SPARK".equals(application)) {
-		if("\"emr-4.6.0\"".equals(cluster_version)) {
+	    if("\"emr-5.11.0\"".equals(cluster_version)){%>
+        {"Ganglia","Hadoop","Spark","Zeppelin"}
+        <%  
+        } else if("\"emr-4.6.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)) {
 		%>
 		{"Ganglia","Hadoop","Spark"}
 		<%
@@ -86,7 +101,10 @@
 		<%
 		}
 	} else if("HBASE".equals(application)) {
-		if("\"emr-4.6.0\"".equals(cluster_version)) {
+	    if("\"emr-5.11.0\"".equals(cluster_version) || "\"emr-4.9.2\"".equals(cluster_version)){%>
+        {"HBase","Ganglia","Hadoop","Hive","Hue","Phoenix","ZooKeeper"}
+        <%  
+        } else if("\"emr-4.6.0\"".equals(cluster_version)) {
 		%>
 		{"HBase","Ganglia","Hadoop","Hive","Hue","ZooKeeper-Sandbox"}
 		<%
@@ -96,14 +114,15 @@
 	;
 	
 	<%
-	if("ALL_APPLICATIONS".equals(application) && "\"emr-4.6.0\"".equals(cluster_version)) {
+	if("ALL_APPLICATIONS".equals(application) && "\"emr-4.6.0\",\"emr-4.9.2\",\"emr-5.11.0\"".contains(cluster_version)) {
 	%>
 	if(true) {
-		throw new java.lang.RuntimeException("\"All Applications\" option is not supported by EMR 4.6.0");
+		throw new java.lang.RuntimeException("\"All Applications\" option is not supported by this version of EMR");
 	}
 	<%
 	}
 	%>
+	
 		
     java.util.List<com.amazonaws.services.elasticmapreduce.model.Application> apps_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Application>();
 	for(String application_<%=cid%> : applications_<%=cid%>) {
