@@ -92,7 +92,7 @@ public class TalendImportUtil {
             boolean needMigrationTask) throws IOException {
         ZipFile srcZipFile = new ZipFile(zipPath);
         final ResourcesManager resourcesManager = ResourcesManagerFactory.getInstance().createResourcesManager(srcZipFile);
-        final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
+        final ResourceOption importOption = ResourceOption.DEMO_IMPORTATION;
         try {
             EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
 
