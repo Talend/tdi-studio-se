@@ -2177,7 +2177,13 @@ public class LoginProjectPage extends AbstractLoginActionPage {
             ConnectionBean prj = (ConnectionBean) element;
             String connectionName = prj.getName();
             if (LoginHelper.isRemoteConnection(prj)) {
-                connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.remote"); //$NON-NLS-1$//$NON-NLS-2$
+                String remoteLabel = null;
+                if (brandingService.isPoweredbyTalend()) {
+                    remoteLabel = Messages.getString("LoginProjectPage.remote.talend"); //$NON-NLS-1$
+                } else {
+                    remoteLabel = Messages.getString("LoginProjectPage.remote"); //$NON-NLS-1$
+                }
+                connectionName = connectionName + " (" + remoteLabel; //$NON-NLS-1$
             } else if (LoginHelper.isCloudUSConnection(prj)) {
                 connectionName = connectionName + " (" + Messages.getString("LoginProjectPage.cloud.us"); //$NON-NLS-1$//$NON-NLS-2$
             } else if (LoginHelper.isCloudEUConnection(prj)) {
