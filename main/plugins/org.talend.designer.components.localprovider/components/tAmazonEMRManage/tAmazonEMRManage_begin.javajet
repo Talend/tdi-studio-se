@@ -122,6 +122,7 @@
 	String additional_master_security_groups = ElementParameterParser.getValue(node, "__ADDITIONAL_MASTER_SECURITY_GROUPS__");
 	String slave_security_group = ElementParameterParser.getValue(node, "__SLAVE_SECURITY_GROUP__");
 	String additional_slave_security_groups = ElementParameterParser.getValue(node, "__ADDITIONAL_SLAVE_SECURITY_GROUPS__");
+	String service_Access_Security_Group = ElementParameterParser.getValue(node, "__SERVICE_ACCESS_SECURITY_GROUP__");
 	
 	boolean wait_for_cluster_ready = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_CLUSTER_READY__"));
 	boolean wait_for_steps_complete = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_STEPS_COMPLETE__"));
@@ -360,6 +361,10 @@
     			
     			<%if(parameterUtil.isValid(additional_slave_security_groups)){%>
     			.withAdditionalSlaveSecurityGroups(<%=additional_slave_security_groups%>.split(","))
+    			<%}%>
+    			
+    			<%if(parameterUtil.isValid(service_Access_Security_Group)){%>
+    			.withServiceAccessSecurityGroup(<%=service_Access_Security_Group%>)
     			<%}%>
     			
     			<%if(termination_protected) {%>
