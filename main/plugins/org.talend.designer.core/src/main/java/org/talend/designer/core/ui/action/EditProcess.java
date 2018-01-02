@@ -162,12 +162,8 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
     }
 
     protected JobEditorInput getEditorInput(final ProcessItem processItem) throws PersistenceException {
-        if (forceReadonly) {
-            return new ProcessEditorInput(processItem, true, true, forceReadonly);
-        } else {
-            // return new ProcessEditorInput(processItem, true, true,null); //same
-            return new ProcessEditorInput(processItem, true, true);
-        }
+        // return new ProcessEditorInput(processItem, true, true,null); //same
+        return new ProcessEditorInput(processItem, true, true);
     }
 
     protected String getEditorId() {
