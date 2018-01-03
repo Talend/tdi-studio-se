@@ -19701,7 +19701,7 @@
             <IMPORT
                 NAME="adal4j-1.1.1-patch"
                 MODULE="adal4j-1.1.1-patch.jar"
-                MVN="mvn:org.talend.libraries/adal4j/1.1.1-patch"
+                MVN="mvn:com.microsoft.azure/adal4j/1.1.1-patch"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
                 NAME="commons-codec-1.9"
