@@ -27,11 +27,13 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.model.process.ConnectionManager;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -241,9 +243,21 @@ public class ConnectionReconnectCommand extends Command {
             } else {
                 connection.setMetaName(newSource.getUniqueName());
             }
+
             connection.reconnect(newSource, oldTarget, newLineStyle);
             connection.updateName();
-
+			if (oldSource.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) oldSource);
+				externalNode.removeOutput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) oldSource, externalNode);
+				cmd.execute();
+			}
+			if (newSource.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) newSource);
+				externalNode.addOutput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) newSource, externalNode);
+				cmd.execute();
+			}
             if (newSourceSchemaType != null && connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
                 IMetadataTable sourceMetadataTable = newSource.getMetadataFromConnector(connector.getName());
                 // IMetadataTable targetMetadataTable = oldTarget.getMetadataFromConnector(connector.getName());
@@ -279,6 +293,18 @@ public class ConnectionReconnectCommand extends Command {
             connection.reconnect(oldSource, newTarget, newLineStyle);
             connection.updateName();
 
+			if (oldTarget.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) oldTarget);
+				externalNode.removeInput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) oldTarget, externalNode);
+				cmd.execute();
+			}
+			if (newTarget.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) newTarget);
+				externalNode.addInput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) newTarget, externalNode);
+				cmd.execute();
+			}
             if (newTargetSchemaType != null) {
                 // TDI-28557:if target is repository mode,can not propagate to target and set to build-in,or target is
                 // build-in mode,need user to choose by the pop up dialog
@@ -397,6 +423,34 @@ public class ConnectionReconnectCommand extends Command {
         }
         connection.reconnect(oldSource, oldTarget, oldLineStyle);
         connection.updateName();
+		if (newSource != null) {
+			if (oldSource.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) oldSource);
+				externalNode.addOutput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) oldSource, externalNode);
+				cmd.execute();
+			}
+			if (newSource.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) newSource);
+				externalNode.removeOutput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) newSource, externalNode);
+				cmd.execute();
+			}
+		}
+		if (newTarget != null) {
+			if (oldTarget.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) oldTarget);
+				externalNode.addInput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) oldTarget, externalNode);
+				cmd.execute();
+			}
+			if (newTarget.isExternalNode()) {
+				IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) newTarget);
+				externalNode.removeInput(connection);
+				ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) newTarget, externalNode);
+				cmd.execute();
+			}
+		}
         ((Process) oldSource.getProcess()).checkStartNodes();
         ((Process) oldSource.getProcess()).checkProcess();
     }

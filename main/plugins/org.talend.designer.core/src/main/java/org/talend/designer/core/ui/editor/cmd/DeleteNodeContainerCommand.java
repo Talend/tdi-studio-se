@@ -19,14 +19,15 @@ import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.gef.commands.Command;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IConnectionCategory;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.IProcess2;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
@@ -48,7 +49,7 @@ public class DeleteNodeContainerCommand extends Command {
     private List<String> joinTableNames = new ArrayList<String>();
 
     private MultiKeyMap connectionDeletedInfosMap;
-
+    
     public DeleteNodeContainerCommand(IProcess2 process, List<INode> nodeList) {
         this.process = process;
         this.nodeList = nodeList;
@@ -103,6 +104,12 @@ public class DeleteNodeContainerCommand extends Command {
                     }
                     storeMetadata(connection, prevNode, remove);
                     prevNode.removeOutput(connection);
+					if (prevNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) prevNode);
+						externalNode.removeOutput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
+						cmd.execute();
+					}
                     if (!builtInPrevNode && remove) {
                         process.removeUniqueConnectionName(connection.getUniqueName());
                     }
@@ -132,10 +139,12 @@ public class DeleteNodeContainerCommand extends Command {
                             nextNodeConnection.updateName();
                         }
                     }
-
-                    if (nextNode.getExternalNode() instanceof AbstractNode) {
-                        ((AbstractNode) nextNode.getExternalNode()).removeInput(connection);
-                    }
+					if (nextNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) nextNode);
+						externalNode.removeInput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) nextNode, externalNode);
+						cmd.execute();
+					}
                 }
                 if (!builtIn) {
                     process.removeUniqueConnectionName(connection.getUniqueName());
@@ -193,57 +202,70 @@ public class DeleteNodeContainerCommand extends Command {
                     ((AbstractJobletContainer) jobletnode.getNodeContainer()).getOutputs().add(connection);
                     restoreMetadata(connection, jobletnode);
                 }
-                if (!nodeList.contains(prevNode)) {
-                    if (!prevNode.getOutgoingConnections().contains(connection)) {
-                        prevNode.addOutput(connection);
-                    }
-                    restoreMetadata(connection, prevNode);
-                    connection.reconnect();
-                    connection.updateAllId();
-                    boolean builtInPrevNode = prevNode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
-                            | node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
-                    if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME) && !builtInPrevNode) {
-                        // for bug 10024
-                        // see 10583
-                        String name = connection.getUniqueName();
-                        if (connection.getConnectorName().startsWith("TRIGGER_OUTPUT")) {
-                            if (process.checkValidConnectionName(name)) {
-                                process.addUniqueConnectionName(name);
-                            }
-                        } else {
-                            process.addUniqueConnectionName(name);
-                        }
-                    }
-                }
+				if (!nodeList.contains(prevNode)) {
+					boolean isAddOutput = false;
+					if (!prevNode.getOutgoingConnections().contains(connection)) {
+						prevNode.addOutput(connection);
+						isAddOutput = true;
+					}
+					restoreMetadata(connection, prevNode);
+					connection.reconnect();
+					connection.updateAllId();
+					if (isAddOutput && prevNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) prevNode);
+						externalNode.addOutput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) prevNode, externalNode);
+						cmd.execute();
+					}			
+					boolean builtInPrevNode = prevNode.getConnectorFromType(EConnectionType.FLOW_MAIN).isMultiSchema()
+							| node.getConnectorFromType(EConnectionType.TABLE).isMultiSchema();
+					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)
+							&& !builtInPrevNode) {
+						// for bug 10024
+						// see 10583
+						String name = connection.getUniqueName();
+						if (connection.getConnectorName().startsWith("TRIGGER_OUTPUT")) {
+							if (process.checkValidConnectionName(name)) {
+								process.addUniqueConnectionName(name);
+							}
+						} else {
+							process.addUniqueConnectionName(name);
+						}
+					}
+				}
             }
-            for (IConnection connection : outputList) {
-                INode nextNode = connection.getTarget();
-                if ((nextNode instanceof Node) && ((Node) nextNode).getJobletNode() != null) {
-                    Node jobletnode = (Node) nextNode.getJobletNode();
-                    ((AbstractJobletContainer) jobletnode.getNodeContainer()).getInputs().add(connection);
-                }
-                if (!nodeList.contains(nextNode)) {
-                    if (!nextNode.getIncomingConnections().contains(connection)) {
-                        nextNode.addInput(connection);
-                    }
-                    INodeConnector nodeConnector = nextNode.getConnectorFromType(connection.getLineStyle());
-                    nodeConnector.setCurLinkNbInput(nodeConnector.getCurLinkNbInput() + 1);
-                    connection.reconnect();
-
-                    if (nextNode.getExternalNode() instanceof AbstractNode) {
-                        ((AbstractNode) nextNode.getExternalNode()).addInput(connection);
-                    }
-                }
-                if (!builtIn) {
-                    if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
-                        // for bug 10024
-                        // see 10583
-                        String name = connection.getUniqueName();
-                        // name = process.generateUniqueConnectionName(name);
-                        process.addUniqueConnectionName(name);
-                    }
-                }
-            }
+			for (IConnection connection : outputList) {
+				INode nextNode = connection.getTarget();
+				if ((nextNode instanceof Node) && ((Node) nextNode).getJobletNode() != null) {
+					Node jobletnode = (Node) nextNode.getJobletNode();
+					((AbstractJobletContainer) jobletnode.getNodeContainer()).getInputs().add(connection);
+				}
+				boolean isAddInput = false;
+				if (!nodeList.contains(nextNode)) {
+					if (!nextNode.getIncomingConnections().contains(connection)) {
+						nextNode.addInput(connection);
+						isAddInput = true;
+					}
+					INodeConnector nodeConnector = nextNode.getConnectorFromType(connection.getLineStyle());
+					nodeConnector.setCurLinkNbInput(nodeConnector.getCurLinkNbInput() + 1);
+					connection.reconnect();
+					if (isAddInput && nextNode.isExternalNode()) {
+						IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node) nextNode);
+						externalNode.addInput(connection);
+						ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) nextNode, externalNode);
+						cmd.execute();
+					}
+				}
+				if (!builtIn) {
+					if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
+						// for bug 10024
+						// see 10583
+						String name = connection.getUniqueName();
+						// name = process.generateUniqueConnectionName(name);
+						process.addUniqueConnectionName(name);
+					}
+				}
+			}
             if (builtIn) {
                 for (IMetadataTable meta : node.getMetadataList()) {
                     String metaName = meta.getTableName();
@@ -281,18 +303,25 @@ public class DeleteNodeContainerCommand extends Command {
         }
     }
 
-    private void restoreMetadata(IConnection connection, INode node) {
-        ConnectionDeletedInfo deletedInfo = (ConnectionDeletedInfo) connectionDeletedInfosMap.get(connection, node);
-        if (deletedInfo != null) {
-            INode source = connection.getSource();
-            if (source != null && deletedInfo.metadataTable != null) {
-                List<IMetadataTable> metaList = source.getMetadataList();
-                if (!metaList.contains(deletedInfo.metadataTable)) {
-                    metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
-                }
-            }
-        }
-    }
+	private void restoreMetadata(IConnection connection, INode node) {
+		ConnectionDeletedInfo deletedInfo = (ConnectionDeletedInfo) connectionDeletedInfosMap.get(connection, node);
+		if (deletedInfo != null) {
+			INode source = connection.getSource();
+			if (source != null && deletedInfo.metadataTable != null) {
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(deletedInfo.metadataTable.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
+				}
+			}
+		}
+	}
 
     private class ConnectionDeletedInfo {
 

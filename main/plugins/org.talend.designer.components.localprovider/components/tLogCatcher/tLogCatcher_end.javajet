@@ -9,18 +9,8 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-	boolean ignoreInternalErrors = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__IGNORE_LOG_CATCHER_INTERNAL_ERRORS__"));
-	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
-
 %>
 	}
-	<%if(ignoreInternalErrors){%>
-	} catch (Exception e_<%=cid%>) {
-		String error_<%=cid%> = String.format("<%=cid%> - LogCatcher failed to process log message(s) due to internal error: %s", e_<%=cid%>);
-		<%if(isLog4jEnabled){%>
-			log.error(error_<%=cid%>, e_<%=cid%>);
-		<%} else {%>
-			System.err.println(error_<%=cid%>);
-		<%}%>
-	}
-	<%}%>
+} catch (Exception e_<%=cid%>) {
+	logIgnoredError(String.format("<%=cid%> - tLogCatcher failed to process log message(s) due to internal error: %s", e_<%=cid%>), e_<%=cid%>);
+}

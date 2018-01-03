@@ -233,6 +233,12 @@ public class ConnectionFormComposite extends Composite {
                 if (currentField.getDefaultValue() != null) {
                     text.setText(currentField.getDefaultValue());
                 }
+                boolean isReadonly = currentField.isReadonly();
+                text.setEditable(!isReadonly);
+                if (isReadonly) {
+                    text.setForeground(null);
+                    text.setBackground(null);
+                }
 
                 formDefaultFactory.copy().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(text);
                 LabelText labelText = new LabelText(label, text);
@@ -606,7 +612,15 @@ public class ConnectionFormComposite extends Composite {
                         if (dynamicFieldBean != null) {
                             text = dynamicFieldBean.getDefaultValue();
                         }
-                        map.get(fieldKey).setText(text);
+                        LabelText labelText = map.get(fieldKey);
+                        labelText.setText(text);
+                        boolean isReadonly = dynamicFieldBean.isReadonly();
+                        Text textCtrl = labelText.getTextControl();
+                        textCtrl.setEditable(!isReadonly);
+                        if (isReadonly) {
+                            textCtrl.setForeground(null);
+                            textCtrl.setBackground(null);
+                        }
                     }
                     connFields.put(fieldKey, map.get(fieldKey).getText());
                 }

@@ -12,12 +12,9 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-	boolean ignoreInternalErrors = "true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__IGNORE_LOG_CATCHER_INTERNAL_ERRORS__"));
 
 %>
-	<%if(ignoreInternalErrors){%>
-	try {
-	<%}%>
+try {
 	for (LogCatcherUtils.LogCatcherMessage lcm : <%=cid %>.getMessages()) {
 <%
 	for (IConnection conn : node.getOutgoingConnections()) {

@@ -2199,6 +2199,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 createUpdateCheckResult(node, propertiesResults, newValueParameter, openedProcesses);
                             }
                         }
+                    } else if (item != null && item instanceof RulesItem) {
+                        // Added TDQ-14232 when the name is changed, need to update, otherwise no
+                        // Nothing to do
                     } else {
                         result = new UpdateCheckResult(node);
                         result.setResult(EUpdateItemType.NODE_PROPERTY, EUpdateResult.BUIL_IN, repositoryPropertyParam);

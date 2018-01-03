@@ -163,6 +163,17 @@ public class <%=className%> implements <%=talendJobInterfaces%> {
 	private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(<%=className%>.class);
 <%}%>
 
+protected static void logIgnoredError(String message, Throwable cause) {
+<%if (isLog4jEnabled){%>
+       log.error(message, cause);
+<%} else {%>
+       System.err.println(message);
+       if (cause != null) {
+               cause.printStackTrace();
+       }
+<%}%>
+
+}
 <% if (talendEsbJob) { %>
 	private ESBEndpointRegistry registry = null;
 
@@ -197,6 +208,11 @@ public class <%=className%> implements <%=talendJobInterfaces%> {
 		}
 		// fix for TESB-7714
 		talendESBJob.setEndpointRegistry(registry);
+
+		// TESB-15920 tRESTClient and SAM not working
+		<% if (hasSAM4RS) { %>
+		talendESBJob.setEventFeature(eventFeature);
+		<% } %>
 
 		return talendESBJob;
 	}

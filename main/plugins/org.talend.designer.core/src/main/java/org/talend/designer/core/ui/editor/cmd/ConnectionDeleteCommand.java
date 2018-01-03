@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +41,6 @@ public class ConnectionDeleteCommand extends Command {
     private List<Connection> connectionList;
 
     private Map<Connection, ConnectionDeletedInfo> connectionDeletedInfosMap;
-    
-    private List<ExternalNodeChangeCommand> externalNodeChangeCommands = new ArrayList<ExternalNodeChangeCommand>();
 
     /**
      * Initialisation of the command that will delete the given connection.
@@ -83,14 +80,12 @@ public class ConnectionDeleteCommand extends Command {
                 externalNode.removeOutput(connection);
                 ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
                 cmd.execute();
-                externalNodeChangeCommands.add(cmd);
             }
             if (target.isExternalNode()) {
                 IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
                 externalNode.removeInput(connection);
                 ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
                 cmd.execute();
-                externalNodeChangeCommands.add(cmd);
             }
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
@@ -114,25 +109,32 @@ public class ConnectionDeleteCommand extends Command {
             if (deletedInfo != null) {
                 if (source != null && deletedInfo.metadataTable != null) {
                     List<IMetadataTable> metaList = source.getMetadataList();
-                    if (!metaList.contains(deletedInfo.metadataTable)) {
-                        metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
-                    }
+                    boolean isFind = false;
+    				for (IMetadataTable table : metaList) {
+    					if (table.getTableName().equals(deletedInfo.metadataTable.getTableName())) {
+    						isFind = true;
+    						break;
+    					}
+    				}
+    				if (!isFind) {
+    					metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
+    				}
                 }
             }
             connection.reconnect();
             INode target = connection.getTarget();
             if (source.isExternalNode()) {
-                IExternalNode externalNode = source.getExternalNode();
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
                 externalNode.addOutput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+                cmd.execute();
             }
             if (target.isExternalNode()) {
-                IExternalNode externalNode = target.getExternalNode();
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
                 externalNode.addInput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+                cmd.execute();
             }
-            for (ExternalNodeChangeCommand cmd : externalNodeChangeCommands) {
-                cmd.undo();
-            }
-            externalNodeChangeCommands.clear();            
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
             if (nodeConnectorSource != null) {

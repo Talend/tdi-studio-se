@@ -11,6 +11,7 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
+	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	log = new LogUtil(node);
 %>
 	
@@ -31,6 +32,8 @@ if(priority.equals("1")){
 	label = "FATAL";
 }
 %>	
+try {
+	
 	resumeUtil.addLog("USER_DEF_LOG", "NODE:<%=cid %>", "", Thread.currentThread().getId() + "", "<%=label %>","",<%=ElementParameterParser.getValue(node, "__MESSAGE__") %>,"", "");
 <%
 	log.log4j(label.toLowerCase(), log.str("Message: "), ElementParameterParser.getValue(node, "__MESSAGE__"), log.str(". Code: "), ElementParameterParser.getValue(node, "__CODE__"));
@@ -47,7 +50,11 @@ if(priority.equals("1")){
 				}
 			}
 %>
-globalMap.put("<%=cid %>_WARN_MESSAGES", <%=ElementParameterParser.getValue(node, "__MESSAGE__")%>); 
-globalMap.put("<%=cid %>_WARN_PRIORITY", <%=ElementParameterParser.getValue(node, "__PRIORITY__") %>);
-globalMap.put("<%=cid %>_WARN_CODE", <%=ElementParameterParser.getValue(node, "__CODE__") %>);
+	globalMap.put("<%=cid %>_WARN_MESSAGES", <%=ElementParameterParser.getValue(node, "__MESSAGE__")%>); 
+	globalMap.put("<%=cid %>_WARN_PRIORITY", <%=ElementParameterParser.getValue(node, "__PRIORITY__") %>);
+	globalMap.put("<%=cid %>_WARN_CODE", <%=ElementParameterParser.getValue(node, "__CODE__") %>);
+	
+} catch (Exception e_<%=cid%>) {
+	logIgnoredError(String.format("<%=cid%> - tWarn failed to log message due to internal error: %s", e_<%=cid%>), e_<%=cid%>);
+}
 
