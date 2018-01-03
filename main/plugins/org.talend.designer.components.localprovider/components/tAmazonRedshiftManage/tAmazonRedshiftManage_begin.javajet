@@ -40,7 +40,7 @@
 	boolean wait_for_cluster_ready = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_CLUSTER_READY__"));
 	
 	String original_cluster_id_of_snapshot = ElementParameterParser.getValue(node, "__ORIGINAL_CLUSTER_ID_OF_SNAPSHOT__");
-	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+	final String AWSTracker = org.talend.core.utils.TrackerUtil.getAWSTracker();
 	
 	class ParameterUtil {
 		
@@ -56,7 +56,7 @@
    	
 	com.amazonaws.services.redshift.AmazonRedshiftClient client_<%=cid%> = new com.amazonaws.services.redshift.AmazonRedshiftClient(
 		credentialsProvider_<%=cid%>,
-		new com.amazonaws.ClientConfiguration().withUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"))
+		new com.amazonaws.ClientConfiguration().withUserAgent("<%=AWSTracker%>")
 	);
 
 	<%

@@ -21,7 +21,7 @@
 	if(sessionDuration == null || sessionDuration.isEmpty()) {
 		sessionDuration = "15";
 	}
-	final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+    final String AWSTracker = org.talend.core.utils.TrackerUtil.getAWSTracker();
 	
 	if(("true").equals(useExistingConn)) {
 		String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
@@ -59,7 +59,7 @@
 		}
 		%>
 		com.amazonaws.ClientConfiguration cc_<%=cid%> = new com.amazonaws.ClientConfiguration();
-		cc_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"));
+		cc_<%=cid%>.setUserAgent(routines.system.Constant.getUserAgent("<%=AWSTracker%>"));
 		<%
 		if(configClient && clientConfiguration.size()>0){
 			boolean setBuffer = false;
