@@ -1110,7 +1110,7 @@ if (execStat) {
         <%} else if ("sftp".equals(type)) { %>
                 ((com.jcraft.jsch.ChannelSftp) obj_conn).quit();
         <%} else { %>
-                ((it.sauronsoftware.ftp4j.FTPClient) obj_conn).disconnect(true);
+                ((org.apache.commons.net.ftp.FTPSClient) obj_conn).disconnect();
         <%}%>
             }
 <%  } %>

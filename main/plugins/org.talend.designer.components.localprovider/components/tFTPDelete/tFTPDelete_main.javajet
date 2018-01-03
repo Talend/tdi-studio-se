@@ -18,25 +18,27 @@
 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	boolean sftp = false;
+	boolean ftps = false;
 	boolean usePerl5 = ("true").equals(ElementParameterParser.getValue(node, "__PERL5_REGEX__"));
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 		for(INode n : nodeList){
 			if(n.getUniqueName().equals(connection)){
 				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
 			}
 		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 	}
 %>
 	try{
+		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
+		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
 <%
 		if(sftp){// *** sftp *** //
 %>
-
-			globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
-			java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
 			for (String key<%=cid %> : keySet<%=cid %>) {     
 				String filemask<%=cid %> = key<%=cid %>; 
 		    	String dir<%=cid %> = null;
@@ -92,11 +94,30 @@
    
     
 <%
-		}else{// *** ftp *** //
+		}else if (ftps) {
+%>
+			for (String key<%=cid %> : keySet<%=cid %>) {
+				<% /*prepare filemask*/ %>
+				String filemask<%=cid %> = key<%=cid %>;
+				String dir<%=cid %> = null;
+				String mask<%=cid %> = null;
+<%
+				if(!usePerl5) { //perl5 mode not support windows(\) path separator at the mask string
+%>
+					mask<%=cid %> = filemask<%=cid %>.replaceAll("\\\\", "/") ;
+<%
+				} else {
+%>
+					mask<%=cid %> = filemask<%=cid %>;
+<%
+				}
 %>
 
-			globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
-		    java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
+				
+			}
+<%
+		}else {// *** ftp *** //
+%>
 		    try {
 				for (String key<%=cid %> : keySet<%=cid %>) {     
 					String filemask<%=cid %> = key<%=cid %>; 

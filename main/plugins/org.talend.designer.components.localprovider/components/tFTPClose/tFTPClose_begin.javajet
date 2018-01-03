@@ -26,8 +26,8 @@
 			  channel.disconnect();
               session.disconnect();
 <%        } else if (ftps) { %>
-              it.sauronsoftware.ftp4j.FTPClient conn = (it.sauronsoftware.ftp4j.FTPClient) connObj;
-              conn.disconnect(true);
+              org.apache.commons.net.ftp.FTPSClient conn = (org.apache.commons.net.ftp.FTPSClient) connObj;
+              conn.disconnect();
 <%        } else { %>
               System.err.println("Invalid tFTPConnection configuration.");
 <%        } %>
