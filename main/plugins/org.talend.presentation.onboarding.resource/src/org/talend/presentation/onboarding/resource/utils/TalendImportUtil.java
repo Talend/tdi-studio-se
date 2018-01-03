@@ -94,7 +94,7 @@ public class TalendImportUtil {
         final ResourcesManager resourcesManager = ResourcesManagerFactory.getInstance().createResourcesManager(srcZipFile);
         final ResourceOption importOption = ResourceOption.DEMO_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
+            EmfResourcesFactoryReader.INSTANCE.addOption(importOption);
 
             resourcesManager.collectPath2Object(srcZipFile);
             final ImportExportHandlersManager importManager = new ImportExportHandlersManager();
@@ -134,7 +134,7 @@ public class TalendImportUtil {
             }
             nodesBuilder.clear();
 
-            EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
+            EmfResourcesFactoryReader.INSTANCE.removOption(importOption);
         }
         return true;
     }
