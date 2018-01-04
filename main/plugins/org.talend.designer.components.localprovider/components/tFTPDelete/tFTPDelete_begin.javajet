@@ -247,9 +247,15 @@ int nb_file_<%=cid%> = 0;
 %>
 			org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
 <%
+			if (moveToCurrentDir) {
+%>
+				ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+<%
+			}
 		}
 %>
-			//prepare list here
+			<% /*store real pwd*/ %>
+			String rootWorkDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 			java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<>();
 <%
 			for (int i=0; i<files.size(); i++) {
