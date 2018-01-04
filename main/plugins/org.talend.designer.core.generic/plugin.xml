@@ -57,6 +57,15 @@
                name="NewNetsuiteMigrationTask"
                version="6.4.0">
        </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.0.1"
+               class="org.talend.designer.core.generic.model.migration.NewMarkLogicMigrationTask"
+               description="Migration task for jobs using MarkLogic components to TCOMP"
+               id="org.talend.designer.core.generic.model.migration.NewMarkLogicMigrationTask"
+               name="NewMarkLogicMigrationTask"
+               version="7.0.1">
+       </projecttask>
        <!--<projecttask
              beforeLogon="false"
              breaks="6.3.0"
