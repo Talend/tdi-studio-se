@@ -684,6 +684,12 @@ public class ComponentsUtils {
             return JavaTypesManager.STRING;
         } else if (GenericTypeUtils.isIntegerType(property)) {
             return JavaTypesManager.INTEGER;
+        } else if (GenericTypeUtils.isLongType(property)) {
+            return JavaTypesManager.LONG;
+        } else if (GenericTypeUtils.isFloatType(property)) {
+            return JavaTypesManager.FLOAT;
+        } else if (GenericTypeUtils.isDoubleType(property)) {
+            return JavaTypesManager.DOUBLE;
         } else if (GenericTypeUtils.isBooleanType(property)) {
             return JavaTypesManager.BOOLEAN;
         } else {
