@@ -304,8 +304,6 @@
 			SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION =='true')">
 			<ITEMS>
 				<ITEM NAME="NAME" />
-				<ITEM NAME="VERSION" />
-				<ITEM NAME="ARGS" />
 			</ITEMS>
 		</PARAMETER>
 		

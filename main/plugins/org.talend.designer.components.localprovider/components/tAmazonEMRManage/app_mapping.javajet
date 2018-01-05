@@ -1,5 +1,8 @@
-	String[] applications_<%=cid%> = 
+	java.util.List<com.amazonaws.services.elasticmapreduce.model.Application> apps_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Application>();
+	
 	<%
+if(!use_customize_version){
+%>String[] applications_<%=cid%> = <%
 	String application = ElementParameterParser.getValue(node, "__APPLICATION__");
 	if("ALL_APPLICATIONS".equals(application)) {
 		if("\"emr-4.6.0\",\"emr-4.9.2\",\"emr-5.11.0\"".contains(cluster_version)) {
@@ -120,13 +123,37 @@
 		throw new java.lang.RuntimeException("\"All Applications\" option is not supported by this version of EMR");
 	}
 	<%
-	}
-	%>
-	
-		
-    java.util.List<com.amazonaws.services.elasticmapreduce.model.Application> apps_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.elasticmapreduce.model.Application>();
+	}%>
 	for(String application_<%=cid%> : applications_<%=cid%>) {
     	com.amazonaws.services.elasticmapreduce.model.Application app_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Application();
     	app_<%=cid%>.withName(application_<%=cid%>);
     	apps_<%=cid%>.add(app_<%=cid%>);
     }
+	
+	<%
+}else{//use_customize_version
+    	List<Map<String, String>> customize_application_table = (List<Map<String, String>>)ElementParameterParser.getObjectValue(node, "__CUSTOMIZE_APPLICATION_TABLE__");
+		if(customize_application_table!=null) {
+		int app_size = customize_application_table.size();
+		if(app_size == 0){%>
+	        if(true) {
+		          throw new java.lang.RuntimeException("Applications must be specified if using Customize Version.");
+	        }
+		<%}
+			for (int i=0; i< app_size ; i++) {
+				Map<String, String> application = customize_application_table.get(i);
+				%>
+                apps_<%=cid%>.add(new com.amazonaws.services.elasticmapreduce.model.Application()
+                <%if(parameterUtil.isValid(application.get("NAME"))){%>
+    			.withName(<%=application.get("NAME")%>)
+    			<%}%>
+    			);
+
+			<%
+			}
+    }
+}
+	%>
+	
+		
+
