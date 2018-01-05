@@ -16,7 +16,7 @@
 	String code = ElementParameterParser.getValue(node, "__CODE__");
 	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
-
+	try {
 <%
 	if (node.getProcess().getNodesOfType("tLogCatcher").size() > 0) {
 		List<INode> logCatchers = (List<INode>)node.getProcess().getNodesOfType("tLogCatcher");
@@ -41,6 +41,11 @@
 	%>
 	globalMap.put("<%=cid %>_DIE_MESSAGE", <%=ElementParameterParser.getValue(node, "__MESSAGE__") %>);
 	globalMap.put("<%=cid %>_DIE_MESSAGES", <%=ElementParameterParser.getValue(node, "__MESSAGE__") %>);
+	
+	} catch (Exception | Error e_<%=cid%>) {
+		logIgnoredError(String.format("<%=cid%> - tDie failed to log message due to internal error: %s", e_<%=cid%>), e_<%=cid%>);
+	}
+	
 	currentComponent = "<%=cid %>";
 	status = "failure";
     <%

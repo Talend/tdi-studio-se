@@ -30,21 +30,6 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 %>
 java.util.Hashtable env_<%=cid%> = new java.util.Hashtable();
 env_<%=cid%>.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
-<%if(useAuth){%>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Authentication using username and password.");
-	<%}%>
-	env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
-	
-	<%
-    String passwordFieldName = "__PASS__";
-    %>
-        
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-                        
-	env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
-<%}%>
 env_<%=cid%>.put(javax.naming.Context.REFERRAL, "<%=referrals%>");
 env_<%=cid%>.put("java.naming.ldap.derefAliases","<%=aliases%>");
 env_<%=cid%>.put(javax.naming.Context.PROVIDER_URL, "ldap://"+<%=host%>+":"+<%=port%>+"/"+<%=baseDN%>);
@@ -92,21 +77,8 @@ if(("LDAPS").equals(protocol) || ("TLS").equals(protocol)){
 	}
 }
 %>
-<%if(isLog4jEnabled){%>
-	log.info("<%=cid%> - Connection attempt to '"+ <%=host%> + "'.");
-<%}%>
-javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
+
+<%@ include file="./ldapconnect.javajet"%>
+
 globalMap.put("conn_<%=cid%>",ctx_<%=cid%>);
 globalMap.put("connBaseDN_<%=cid%>",<%=baseDN%>);
-<%
-if(("TLS").equals(protocol)){
-%>
-	javax.naming.ldap.StartTlsRequest tldsReq_<%=cid%> = new javax.naming.ldap.StartTlsRequest();
-    javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)ctx_<%=cid%>.extendedOperation(tldsReq_<%=cid%>);
-    javax.net.ssl.SSLSession session_<%=cid%> = tls_<%=cid%>.negotiate((javax.net.ssl.SSLSocketFactory)talend.ssl.AdvancedSocketFactory.getDefault());
-<%
-}
-%>
-<%if(isLog4jEnabled){%>
-	log.info("<%=cid%> - Connection to '"+<%=host%> + "' has succeeded.");
-<%}%>

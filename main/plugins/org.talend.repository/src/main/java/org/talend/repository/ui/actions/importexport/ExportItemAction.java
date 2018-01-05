@@ -85,8 +85,9 @@ public final class ExportItemAction extends AContextualAction implements IWorkbe
                                 && !nodProperty.equals(ERepositoryObjectType.METADATA_CON_TABLE)
                                 && !nodProperty.equals(ERepositoryObjectType.METADATA_CON_QUERY)
                                 && !nodProperty.equals(ERepositoryObjectType.SVN_ROOT)
-                                && !nodProperty.equals(ERepositoryObjectType.SERVICESOPERATION) && !nodProperty
-                                    .equals(ERepositoryObjectType.SERVICESPORT))) {
+                                && !nodProperty.equals(ERepositoryObjectType.SERVICESOPERATION) 
+                                && !nodProperty.equals(ERepositoryObjectType.SERVICESPORT)
+                                && !nodProperty.equals(ERepositoryObjectType.REFERENCED_PROJECTS))) {
                     visible = true;
                 }
 

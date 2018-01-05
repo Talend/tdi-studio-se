@@ -13,7 +13,6 @@
 package org.talend.repository.ui.wizards.routines;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -119,7 +118,6 @@ public class NewRoutineWizardPage extends PropertiesWizardPage {
         if (property != null && nameStatus.getSeverity() == IStatus.OK) {
             property.setLabel(getPropertyLabel(StringUtils.trimToNull(nameText.getText())));
             property.setDisplayName(StringUtils.trimToNull(nameText.getText()));
-            property.setModificationDate(new Date());
         }
         updatePageStatus();
         if (nameStatus.getSeverity() == IStatus.OK) {

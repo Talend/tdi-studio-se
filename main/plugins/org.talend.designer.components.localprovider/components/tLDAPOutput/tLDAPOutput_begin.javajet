@@ -33,19 +33,11 @@ if(("false").equals(useExistingConn)){
 
 	String referrals=ElementParameterParser.getValue(node, "__REFERRALS__");
 	String aliases=ElementParameterParser.getValue(node, "__ALIASES__");
+	
+	boolean useAuth = true;
 %>
 	java.util.Hashtable env_<%=cid%> = new java.util.Hashtable();
 	env_<%=cid%>.put(javax.naming.Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-    env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
-    env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
-    
-	<%
-    String passwordFieldName = "__PASS__";
-    %>
-        
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-
-    env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
 	env_<%=cid%>.put(javax.naming.Context.REFERRAL, "<%=referrals%>");
 	env_<%=cid%>.put("java.naming.ldap.derefAliases","<%=aliases%>");
 	String baseDN_<%=cid %> = <%=baseDN%>;
@@ -85,7 +77,7 @@ if(("false").equals(useExistingConn)){
 				if(storepwd !=null && storepwd.length() !=0 ){%>
 				
                     <%
-                    passwordFieldName = "__STORECAPWD__";
+                    String passwordFieldName = "__STORECAPWD__";
                     %>
             
                     <%if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
@@ -101,22 +93,9 @@ if(("false").equals(useExistingConn)){
 		}
     }
 %>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Connection attempt to '"+ <%=host%> + "'.");
-	<%}%>
-    javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
-<%
-	if(("TLS").equals(protocol)){
-%>
-	javax.naming.ldap.StartTlsRequest tldsReq_<%=cid%> = new javax.naming.ldap.StartTlsRequest();
-    javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)ctx_<%=cid%>.extendedOperation(tldsReq_<%=cid%>);
-    javax.net.ssl.SSLSession session_<%=cid%> = tls_<%=cid%>.negotiate((javax.net.ssl.SSLSocketFactory)talend.ssl.AdvancedSocketFactory.getDefault());
-<%
-	}
-%>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Connection to '"+<%=host%>+"' has succeeded.");
-	<%}%>
+
+	<%@ include file="../tLDAPConnection/ldapconnect.javajet"%>
+	
 <%
 }else{
 %>

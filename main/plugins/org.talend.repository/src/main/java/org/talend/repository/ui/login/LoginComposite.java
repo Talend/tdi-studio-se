@@ -1295,7 +1295,7 @@ public class LoginComposite extends Composite {
             Object firstElement = selection.getFirstElement();
             if (firstElement instanceof ConnectionBean) {
                 ConnectionBean bean = (ConnectionBean) firstElement;
-                isRemote = RepositoryConstants.REPOSITORY_REMOTE_ID.equals(bean.getRepositoryId());
+                isRemote = LoginHelper.isRemotesRepository(bean.getRepositoryId());
             }
         }
         return isRemote;
@@ -1427,7 +1427,7 @@ public class LoginComposite extends Composite {
             if (user2 != null && !"".equals(user2) && repositoryId2 != null && !"".equals(repositoryId2) && workSpace != null //$NON-NLS-1$ //$NON-NLS-2$
                     && !"".equals(workSpace) && name != null && !"".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
                 boolean valid = Pattern.matches(RepositoryConstants.MAIL_PATTERN, user2);
-                if (valid && RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId2)) {
+                if (valid && LoginHelper.isRemotesRepository(repositoryId2)) {
                     String url = bean.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     valid = url != null || !"".equals(url); //$NON-NLS-1$
                 }
@@ -1837,7 +1837,7 @@ public class LoginComposite extends Composite {
     private String getAdminURL() {
         String tacURL = null;
         ConnectionBean currentBean = getConnection();
-        if (currentBean != null && currentBean.getRepositoryId().equals(RepositoryConstants.REPOSITORY_REMOTE_ID)) {
+        if (currentBean != null && LoginHelper.isRemotesRepository(currentBean.getRepositoryId())) {
             tacURL = currentBean.getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
         }
         return tacURL;
@@ -2092,7 +2092,7 @@ public class LoginComposite extends Composite {
             if (user2 != null && !"".equals(user2) && repositoryId2 != null && !"".equals(repositoryId2) && workSpace != null //$NON-NLS-1$ //$NON-NLS-2$
                     && !"".equals(workSpace) && name != null && !"".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
                 boolean valid = Pattern.matches(RepositoryConstants.MAIL_PATTERN, user2);
-                if (valid && RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId2)) {
+                if (valid && LoginHelper.isRemotesRepository(repositoryId2)) {
                     String url = getConnection().getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     valid = url != null || !"".equals(url); //$NON-NLS-1$
                 }
@@ -2236,7 +2236,7 @@ public class LoginComposite extends Composite {
             if (user2 != null && !"".equals(user2) && repositoryId2 != null && !"".equals(repositoryId2) && workSpace != null //$NON-NLS-1$ //$NON-NLS-2$
                     && !"".equals(workSpace) && name != null && !"".equals(name)) { //$NON-NLS-1$ //$NON-NLS-2$
                 boolean valid = Pattern.matches(RepositoryConstants.MAIL_PATTERN, user2);
-                if (valid && RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId2)) {
+                if (valid && LoginHelper.isRemotesRepository(repositoryId2)) {
                     String url = getConnection().getDynamicFields().get(RepositoryConstants.REPOSITORY_URL);
                     valid = url != null || !"".equals(url); //$NON-NLS-1$
                 }

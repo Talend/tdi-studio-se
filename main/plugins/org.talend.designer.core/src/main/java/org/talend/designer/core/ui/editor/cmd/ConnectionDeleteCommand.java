@@ -20,10 +20,11 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.talend.core.model.metadata.IMetadataTable;
-import org.talend.core.model.process.AbstractNode;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -74,8 +75,17 @@ public class ConnectionDeleteCommand extends Command {
 
             connection.disconnect();
             final INode target = connection.getTarget();
-            if (target.getExternalNode() instanceof AbstractNode) {
-                ((AbstractNode) target.getExternalNode()).removeInput(connection);
+            if (source.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+                externalNode.removeOutput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+                cmd.execute();
+            }
+            if (target.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+                externalNode.removeInput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+                cmd.execute();
             }
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
@@ -95,21 +105,36 @@ public class ConnectionDeleteCommand extends Command {
         for (Connection connection : connectionList) {
             collpseJoblet(connection);
             ConnectionDeletedInfo deletedInfo = connectionDeletedInfosMap.get(connection);
+            INode source = connection.getSource();
             if (deletedInfo != null) {
-                INode source = connection.getSource();
                 if (source != null && deletedInfo.metadataTable != null) {
                     List<IMetadataTable> metaList = source.getMetadataList();
-                    if (!metaList.contains(deletedInfo.metadataTable)) {
-                        metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
-                    }
+                    boolean isFind = false;
+    				for (IMetadataTable table : metaList) {
+    					if (table.getTableName().equals(deletedInfo.metadataTable.getTableName())) {
+    						isFind = true;
+    						break;
+    					}
+    				}
+    				if (!isFind) {
+    					metaList.add(deletedInfo.metadataTableIndex, deletedInfo.metadataTable);
+    				}
                 }
             }
             connection.reconnect();
             INode target = connection.getTarget();
-            if (target.getExternalNode() instanceof AbstractNode) {
-                ((AbstractNode) target.getExternalNode()).addInput(connection);
+            if (source.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+                externalNode.addOutput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+                cmd.execute();
             }
-
+            if (target.isExternalNode()) {
+                IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+                externalNode.addInput(connection);
+                ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+                cmd.execute();
+            }
             INodeConnector nodeConnectorSource, nodeConnectorTarget;
             nodeConnectorSource = connection.getSourceNodeConnector();
             if (nodeConnectorSource != null) {

@@ -176,7 +176,13 @@ imports="
 	    <%
 	    }%>
         if(pstmt_<%=cid %> != null) {
+        		<%
+        		boolean usingStatsLogs = cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
+        		if(!usingStatsLogs){%>
             pstmt_<%=cid %>.close();
+            <%} else {%>
+            SharedDBPreparedStatement.releasePreparedStatement(keyPsmt_<%=cid%>);
+            <%}%>
         }
         <%
     }

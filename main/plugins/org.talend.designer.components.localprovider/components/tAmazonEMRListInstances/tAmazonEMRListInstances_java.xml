@@ -118,8 +118,8 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.10.52.jar" MODULE="aws-java-sdk-1.10.52.jar"
-				MVN="mvn:org.talend.libraries/aws-java-sdk-1.10.52/6.0.0"
+			<IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.223"
 				REQUIRED="true" />
 			<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"

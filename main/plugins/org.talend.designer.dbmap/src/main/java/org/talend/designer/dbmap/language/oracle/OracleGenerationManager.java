@@ -31,7 +31,6 @@ import org.talend.designer.dbmap.language.AbstractDbLanguage;
 import org.talend.designer.dbmap.language.IJoinType;
 import org.talend.designer.dbmap.language.generation.DbGenerationManager;
 import org.talend.designer.dbmap.language.generation.DbMapSqlConstants;
-import org.talend.designer.dbmap.managers.MapperManager;
 import org.talend.designer.dbmap.model.tableentry.TableEntryLocation;
 import org.talend.designer.dbmap.utils.DataMapExpressionParser;
 
@@ -137,35 +136,29 @@ public class OracleGenerationManager extends DbGenerationManager {
                         columnSegment = DbMapSqlConstants.COMMA + DbMapSqlConstants.SPACE + columnSegment;
                     }
                     if (expression != null && expression.trim().length() > 0) {
-                        appendSqlQuery(sb, expression);
-                        if (component.getMapperMain() == null) {
-                            component.getExternalEmfData();
-                        }
-                        if (component.getMapperMain() != null) {
-                            MapperManager mapperManager = component.getMapperMain().getMapperManager();
-                            DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(
-                                    mapperManager.getCurrentLanguage());
-                            TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser
-                                    .parseTableEntryLocations(expression);
-                            boolean columnChanged = false;
-                            if (tableEntriesLocationsSources.length > 1) {
-                                columnChanged = true;
-                            } else {
-                                for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
-                                    TableEntryLocation location = tableEntriesLocationsSource;
-                                    String entryName = getAliasOf(dbMapEntry.getName());
-                                    if (location != null && entryName != null
-                                            && !entryName.startsWith("_") && !entryName.equals(location.columnName)) {//$NON-NLS-1$
-                                        columnChanged = true;
+                        String exp = replaceVariablesForExpression(component, expression);
+                        appendSqlQuery(sb, exp);
+                        DataMapExpressionParser dataMapExpressionParser = new DataMapExpressionParser(language);
+                        TableEntryLocation[] tableEntriesLocationsSources = dataMapExpressionParser
+                                .parseTableEntryLocations(expression);
+                        boolean columnChanged = false;
+                        if (tableEntriesLocationsSources.length > 1) {
+                            columnChanged = true;
+                        } else {
+                            for (TableEntryLocation tableEntriesLocationsSource : tableEntriesLocationsSources) {
+                                TableEntryLocation location = tableEntriesLocationsSource;
+                                String entryName = getAliasOf(dbMapEntry.getName());
+                                if (location != null && entryName != null
+                                        && !entryName.startsWith("_") && !entryName.equals(location.columnName)) {//$NON-NLS-1$
+                                    columnChanged = true;
 
-                                    }
                                 }
                             }
-                            if (!added && columnChanged) {
-                                String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
-                                        + getAliasOf(dbMapEntry.getName());
-                                appendSqlQuery(sb, name);
-                            }
+                        }
+                        if (!added && columnChanged) {
+                            String name = DbMapSqlConstants.SPACE + DbMapSqlConstants.AS + DbMapSqlConstants.SPACE
+                                    + getAliasOf(dbMapEntry.getName());
+                            appendSqlQuery(sb, name);
                         }
                         queryColumnsName += expression;
                         queryColumnsSegments.add(columnSegment);
@@ -253,7 +246,7 @@ public class OracleGenerationManager extends DbGenerationManager {
                         // if (rightTable != null) {
                         // } else {
                         // sb.append(" <!! NO JOIN CLAUSES FOR '" + inputTable.getName() + "' !!> ");
-                        // }                       
+                        // }
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
                         appendSqlQuery(sb, DbMapSqlConstants.ON);
                         appendSqlQuery(sb, DbMapSqlConstants.LEFT_BRACKET);
@@ -299,8 +292,10 @@ public class OracleGenerationManager extends DbGenerationManager {
                             // containWhereAddition.add(exp);
                             // } else
                             if (containWith(exp, DbMapSqlConstants.OR, true) || containWith(exp, DbMapSqlConstants.AND, true)) {
+                                exp = replaceVariablesForExpression(component, exp);
                                 originalWhereAddition.add(exp);
                             } else {
+                                exp = replaceVariablesForExpression(component, exp);
                                 whereAddition.add(exp);
                             }
                         }
@@ -333,7 +328,7 @@ public class OracleGenerationManager extends DbGenerationManager {
             }
             if (whereAddFlag) {
                 for (int i = 0; i < whereAddition.size(); i++) {
-                    if (i == 0 && whereFlag || i > 0) {                      
+                    if (i == 0 && whereFlag || i > 0) {
                         appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
                         appendSqlQuery(sb, tabSpaceString);
                         appendSqlQuery(sb, DbMapSqlConstants.SPACE);
@@ -361,34 +356,7 @@ public class OracleGenerationManager extends DbGenerationManager {
             }
         }
         String sqlQuery = sb.toString();
-        if (DEFAULT_TAB_SPACE_STRING.equals(tabSpaceString)) {
-            List<String> contextList = getContextList(component);
-            boolean haveReplace = false;
-            for (String context : contextList) {
-                if (sqlQuery.contains(context)) {
-                    sqlQuery = sqlQuery.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    haveReplace = true;
-                }
-                replaceQueryContext(querySegments, context);
-                if (queryColumnsName.contains(context)) {
-                    queryColumnsName = queryColumnsName.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                }
-                replaceQueryContext(queryColumnsSegments, context);
-            }
-            if (!haveReplace) {
-                List<String> connContextList = getConnectionContextList(component);
-                for (String context : connContextList) {
-                    if (sqlQuery.contains(context)) {
-                        sqlQuery = sqlQuery.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    }
-                    replaceQueryContext(querySegments, context);
-                    if (queryColumnsName.contains(context)) {
-                        queryColumnsName = queryColumnsName.replaceAll("\\b" + context + "\\b", "\" +" + context + "+ \""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                    }
-                    replaceQueryContext(queryColumnsSegments, context);
-                }
-            }
-        }
+
         sqlQuery = handleQuery(sqlQuery);
         queryColumnsName = handleQuery(queryColumnsName);
 

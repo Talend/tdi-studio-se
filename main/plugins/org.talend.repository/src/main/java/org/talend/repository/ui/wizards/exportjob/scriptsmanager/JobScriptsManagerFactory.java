@@ -16,7 +16,6 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.repository.constants.FileConstants;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -44,12 +43,6 @@ public class JobScriptsManagerFactory {
                 }
             }
             return new JobJavaScriptsManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort);
-        case WSWAR:
-            return new JobJavaScriptsWSManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort,
-                    FileConstants.WAR_FILE_SUFFIX);
-        case WSZIP:
-            return new JobJavaScriptsWSManager(exportChoiceMap, contextName, launcher, statisticPort, tracePort,
-                    FileConstants.ZIP_FILE_SUFFIX);
         case OSGI:
             if (exportChoiceMap.containsKey(ExportChoice.needMavenScript)
                     && exportChoiceMap.get(ExportChoice.needMavenScript) == Boolean.TRUE) {

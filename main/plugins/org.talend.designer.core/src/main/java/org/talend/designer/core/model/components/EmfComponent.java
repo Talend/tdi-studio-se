@@ -4242,4 +4242,8 @@ public class EmfComponent extends AbstractBasicComponent {
         return getName() + ":" + getLongName(); //$NON-NLS-1$
     }
 
+    public String getTemplateFolder() {
+        return getPathSource() + "/" + getName();
+    }
+
 }

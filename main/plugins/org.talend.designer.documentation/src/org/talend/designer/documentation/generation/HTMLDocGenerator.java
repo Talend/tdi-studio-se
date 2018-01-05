@@ -95,6 +95,8 @@ import org.talend.core.model.utils.ParameterValueUtil;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.document.IDocumentationGenerator;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.runtime.repository.item.ItemProductKeys;
+import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.service.IMRProcessService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.documentation.generation.ExternalNodeComponentHandler;
@@ -1265,8 +1267,12 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
 
         //        jobElement.addAttribute("description", HTMLDocUtils.checkString(property.getDescription())); //$NON-NLS-1$
 
-        jobElement.addAttribute("creation", HTMLDocUtils.checkDate(property.getCreationDate())); //$NON-NLS-1$
-        jobElement.addAttribute("modification", HTMLDocUtils.checkDate(property.getModificationDate())); //$NON-NLS-1$
+        jobElement
+                .addAttribute(
+                        "creation", HTMLDocUtils.checkDate(ItemDateParser.parseAdditionalDate(property, ItemProductKeys.DATE.getCreatedKey()))); //$NON-NLS-1$
+        jobElement
+                .addAttribute(
+                        "modification", HTMLDocUtils.checkDate(ItemDateParser.parseAdditionalDate(property, ItemProductKeys.DATE.getModifiedKey()))); //$NON-NLS-1$
 
         Element descr = jobElement.addElement("description"); //$NON-NLS-1$
         // bug 22608

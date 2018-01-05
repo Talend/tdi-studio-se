@@ -164,9 +164,24 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 			}
 		}
-	    %>
-	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
-	    <%
+		
+		boolean usingStatsLogs = cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
+		if(!usingStatsLogs) {
+    %>
+    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+    <%
+    } else {
+    %>
+    pstmt_<%=cid %> = null;
+    String keyPsmt_<%=cid %> = conn_<%=cid%> + "[psmt]" + "[" + <%=table%> + "]";
+    if(GlobalResource.resourceMap.get(keyPsmt_<%=cid %>)== null){
+        pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+        GlobalResource.resourceMap.put(keyPsmt_<%=cid %>, pstmt_<%=cid %>);
+    }else{
+        pstmt_<%=cid %> = (java.sql.PreparedStatement)GlobalResource.resourceMap.get(keyPsmt_<%=cid %>);
+    }
+    <%
+    }
 	} else if (("UPDATE").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
 		if(conns_dynamic!=null && conns_dynamic.size()>0){

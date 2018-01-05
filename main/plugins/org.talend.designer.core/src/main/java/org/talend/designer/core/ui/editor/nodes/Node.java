@@ -475,7 +475,7 @@ public class Node extends Element implements IGraphicalNode {
         init(oldNode.getComponent());
         if (component != null && component instanceof AbstractBasicComponent) {
             AbstractBasicComponent comp = (AbstractBasicComponent) component;
-            comp.initNodePropertiesFromSerialized(this, oldNode.getComponentProperties().toSerialized());
+            comp.initNodeProperties(this, oldNode);
         }
         needlibrary = false;
     }
@@ -2865,12 +2865,15 @@ public class Node extends Element implements IGraphicalNode {
                 case COMPONENT_LIST:
                     if (param != null) {
                         String errorMessage;
+                        boolean isContextMode = false;
                         if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
                             errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
                         } else {
                             errorMessage = Messages.getString("Node.parameterNotExist", param.getDisplayName(), param.getValue()); //$NON-NLS-1$
+                            isContextMode = param.isDynamicSettings();
                         }
-                        if ((!hasUseExistingConnection(this)) || (isUseExistedConnetion(this))) {
+
+                        if (!isContextMode && ((!hasUseExistingConnection(this)) || (isUseExistedConnetion(this)))) {
                             List<INode> list = (List<INode>) this.getProcess().getNodesOfType(param.getFilter());
                             if (list == null || list.size() == 0 || list.isEmpty()) {
                                 Problems.add(ProblemStatus.ERROR, this, errorMessage);
@@ -3327,7 +3330,8 @@ public class Node extends Element implements IGraphicalNode {
         // check not startable components not linked
         INodeConnector connectorFromType = getConnectorFromType(EConnectionType.FLOW_MAIN);
         if (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName())) {
-            if (connectorFromType != null && (getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
+            if (connectorFromType != null && connectorFromType.isShow()
+                    && (getCurrentActiveLinksNbInput(EConnectionType.FLOW_MAIN) == 0)
                     && (connectorFromType.getMinLinkInput() == 0) & (connectorFromType.getMaxLinkInput() != 0)) {
                 String errorMessage = Messages.getString("Node.noInputLink"); //$NON-NLS-1$
                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
@@ -3564,7 +3568,7 @@ public class Node extends Element implements IGraphicalNode {
                         }
                     }
                     if (nbMinOut != 0) {
-                        if (curLinkOut < nbMinOut) {
+                        if (nodeConnector.isShow() && curLinkOut < nbMinOut) {
                             String errorMessage = Messages.getString("Node.notEnoughTypeOutput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
@@ -3575,14 +3579,15 @@ public class Node extends Element implements IGraphicalNode {
                 if (!isJoblet) {
 
                     if (nbMaxIn != -1) {
-                        if (curLinkIn > nbMaxIn) {
+                        boolean notShow = !nodeConnector.isShow() && curLinkIn > 0;
+                        if (notShow || curLinkIn > nbMaxIn) {
                             String errorMessage = Messages.getString("Node.tooMuchTypeInput", typeName); //$NON-NLS-1$
                             Problems.add(ProblemStatus.WARNING, this, errorMessage);
                         }
                     }
                     if (needCheckInput) {
                         if (nbMinIn != 0) {
-                            if (curLinkIn < nbMinIn) {
+                            if (nodeConnector.isShow() && curLinkIn < nbMinIn) {
                                 String errorMessage = Messages.getString("Node.notEnoughTypeInput", typeName); //$NON-NLS-1$
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }

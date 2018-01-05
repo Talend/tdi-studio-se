@@ -199,7 +199,8 @@ public class ConnectionCreateAction extends SelectionAction {
                         boolean nameUsed = false;
                         for (Connection connec : (List<Connection>) node.getOutgoingConnections()) {
                             if (connec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
-                                if (connec.getMetadataTable() != null && connec.getMetadataTable().getTableName().equals(table.getTableName())) {
+                                if (connec.getMetadataTable() != null
+                                        && connec.getMetadataTable().getTableName().equals(table.getTableName())) {
                                     nameUsed = true;
                                 }
                             }
@@ -418,7 +419,9 @@ public class ConnectionCreateAction extends SelectionAction {
             List<INodeConnector> nodeConnectorList = new ArrayList<INodeConnector>(node.getConnectorsFromType(connecType));
             List<INodeConnector> toRemove = new ArrayList<INodeConnector>();
             for (INodeConnector connector : nodeConnectorList) {
-                if (!connector.isShow() || ((connector.getMaxLinkOutput() != -1) && (connector.getCurLinkNbOutput() >= connector.getMaxLinkOutput()))) {
+                if (!connector.isShow()
+                        || ((connector.getMaxLinkOutput() != -1) && (connector.getCurLinkNbOutput() >= connector
+                                .getMaxLinkOutput()))) {
                     toRemove.add(connector);
                 } else {
                     if (PluginChecker.isJobLetPluginLoaded()) {
@@ -486,10 +489,10 @@ public class ConnectionCreateAction extends SelectionAction {
         }
         IElementParameter elementParam = node.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
         if (elementParam != null) {
-            String paraValue = TalendTextUtils.addQuotes(id.getValue());
+            String paraValue = id.getValue();
             elementParam.setValue(paraValue);
         }
-        return id.getValue();
+        return TalendTextUtils.removeQuotes(id.getValue());
     }
 
     /**
@@ -513,22 +516,22 @@ public class ConnectionCreateAction extends SelectionAction {
             IElementParameter elementParam = node.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
             IElementParameter schemaParam = node.getElementParameter("ELT_SCHEMA_NAME");//$NON-NLS-1$
             if (schemaParam != null) {
-                String schemaValue = TalendTextUtils.addQuotes(id.getSchemaName());
+                String schemaValue = id.getSchemaName();
                 schemaParam.setValue(schemaValue);
             }
             if (elementParam != null) {
-                String tableValue = TalendTextUtils.addQuotes(id.getTableName());
+                String tableValue = id.getTableName();
                 elementParam.setValue(tableValue);
             }
 
-            outName = id.getSchemaName() + "." + id.getTableName(); //$NON-NLS-1$
+            outName = TalendTextUtils.removeQuotes(id.getSchemaName()) + "." + TalendTextUtils.removeQuotes(id.getTableName()); //$NON-NLS-1$
         } else if (id.getSchemaName().length() == 0 && id.getTableName().length() != 0) {
             IElementParameter elementParam = node.getElementParameter("ELT_TABLE_NAME"); //$NON-NLS-1$
             if (elementParam != null) {
-                String tableValue = TalendTextUtils.addQuotes(id.getTableName());
+                String tableValue = id.getTableName();
                 elementParam.setValue(tableValue);
             }
-            outName = id.getTableName();
+            outName = TalendTextUtils.removeQuotes(id.getTableName());
         }
 
         return outName;

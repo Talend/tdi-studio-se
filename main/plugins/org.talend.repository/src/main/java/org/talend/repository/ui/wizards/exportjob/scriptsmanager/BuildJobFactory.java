@@ -54,18 +54,17 @@ public class BuildJobFactory {
     public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType) {
 
-        if (jobExportType != null)
+        if (jobExportType != null) {
             switch (jobExportType) {
             case POJO:
                 break; // continue
-            case WSWAR:
-            case WSZIP:
             case OSGI: // TODO, later, when osgi pom is finished, will try to enable it.
                 return null; // don't support others
             default:
                 jobExportType = null; // try the first one by default
                 break;
             }
+        }
 
         String buildType = null;
         if (jobExportType != null) {

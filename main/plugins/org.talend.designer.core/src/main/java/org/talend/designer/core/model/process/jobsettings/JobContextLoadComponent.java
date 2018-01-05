@@ -757,4 +757,12 @@ public class JobContextLoadComponent implements IComponent {
         return null;
     }
 
+    public String getTemplateFolder() {
+        return getPathSource() == null ? null : (getPathSource() + "/" + getName());
+    }
+
+    public String getTemplateNamePrefix() {
+        return getName();
+    }
+
 }

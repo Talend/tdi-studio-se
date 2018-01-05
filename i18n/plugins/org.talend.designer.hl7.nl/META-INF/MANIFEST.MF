@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Nl
-Bundle-SymbolicName: org.talend.designer.hl7.nl
-Bundle-Version: 7.0.1.qualifier
-Fragment-Host: org.talend.designer.hl7

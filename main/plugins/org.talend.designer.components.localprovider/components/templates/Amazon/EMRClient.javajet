@@ -1,11 +1,13 @@
-<%@ jet 
-%>
+<%@ jet %>
 
-	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/CredentialsProvider.javajet"%>
+<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/CredentialsProvider.javajet"%>
+<%
+final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+%>
 	
 	com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient emr_<%=cid%> = new com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient(
 		credentialsProvider_<%=cid%>,
-		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent(routines.system.Constant.TALEND_USER_AGENT)
+		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"))
 	);
 	
 	<%

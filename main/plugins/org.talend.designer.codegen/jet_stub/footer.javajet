@@ -1361,39 +1361,37 @@ if (execStat) {
     
     private static final String NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY = "<TALEND_NULL>";
 
-	private final char[][] escapeChars = { { 'n', '\n' }, { 'r', '\r' }, { 'f', '\f' }, { 'b', '\b' }, { 't', '\t' },
-			{ '\"', '\"' }, { '\\', '\\' }, { '\'', '\'' } };
-			
-    private String replaceEscapeChars (String contentToReplace) {
+    private final String[][] escapeChars = {
+        {"\\\\","\\"},{"\\n","\n"},{"\\'","\'"},{"\\r","\r"},
+        {"\\f","\f"},{"\\b","\b"},{"\\t","\t"}
+        };
+    private String replaceEscapeChars (String keyValue) {
 
-		if (contentToReplace == null || ("").equals(contentToReplace.trim())) {
-			return contentToReplace;
+		if (keyValue == null || ("").equals(keyValue.trim())) {
+			return keyValue;
 		}
 
-		char[] contextChars = contentToReplace.toCharArray();
 		StringBuilder result = new StringBuilder();
-		int length = contentToReplace.length();
-		boolean flag = false;
+		int currIndex = 0;
+		while (currIndex < keyValue.length()) {
+			int index = -1;
+			// judege if the left string includes escape chars
+			for (String[] strArray : escapeChars) {
+				index = keyValue.indexOf(strArray[0],currIndex);
+				if (index>=0) {
 
-		for (int i = 0; i < length; i++) {
-
-			if (contextChars[i] == '\\') {
-				for (char[] escapeChar : escapeChars) {
-					if (i + 1 < length && contextChars[i + 1] == escapeChar[0]) {
-						result.append(escapeChar[1]);
-						i++;
-						flag = true;
-						break;
-					}
+					result.append(keyValue.substring(currIndex, index + strArray[0].length()).replace(strArray[0], strArray[1]));
+					currIndex = index + strArray[0].length();
+					break;
 				}
-
 			}
-			if (!flag) {
-				result.append(contextChars[i]);
+			// if the left string doesn't include escape chars, append the left into the result
+			if (index < 0) {
+				result.append(keyValue.substring(currIndex));
+				currIndex = currIndex + keyValue.length();
 			}
-			flag = false;
-
 		}
+
 		return result.toString();
     }
 

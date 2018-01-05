@@ -1,0 +1,101 @@
+<%@ jet 
+imports="
+    org.talend.core.model.process.INode 
+    org.talend.core.model.process.ElementParameterParser 
+    org.talend.designer.codegen.config.CodeGeneratorArgument
+	org.talend.core.model.metadata.IMetadataColumn
+	org.talend.core.model.metadata.IMetadataTable
+	org.talend.core.model.metadata.types.JavaType
+	org.talend.core.model.metadata.types.JavaTypesManager
+	org.talend.core.model.process.EConnectionType
+	org.talend.core.model.process.IConnection
+	org.talend.core.model.process.INode
+	java.util.List
+	java.util.Map
+" 
+%>
+	<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();
+	String cid = node.getUniqueName();
+	String queueUrl = ElementParameterParser.getValue(node,"__QUEUE_URL__");
+	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+	%>
+	<%@ include file="../tSQSConnection/SQSClient.javajet" %>
+	try{
+		com.amazonaws.services.sqs.model.GetQueueAttributesRequest <%=cid%>_receiveAttributsRequest = new com.amazonaws.services.sqs.model.GetQueueAttributesRequest(<%=queueUrl%>).withAttributeNames("All");
+		com.amazonaws.services.sqs.model.GetQueueAttributesResult <%=cid%>_receiveAttributesResult = conn_<%=cid%>.getQueueAttributes(<%=cid%>_receiveAttributsRequest);
+		java.util.Map<String, String> <%=cid%>_receiveAttributeMap = <%=cid%>_receiveAttributesResult.getAttributes();
+
+		<%
+		List<IMetadataTable> metadatas = node.getMetadataList();
+		if ((metadatas != null) && (metadatas.size() > 0)) {//b
+ 			IMetadataTable metadata = metadatas.get(0);
+ 			if (metadata != null) {//a
+  				List<IMetadataColumn> columns = metadata.getListColumns();	
+  				List< ? extends IConnection> outConns = node.getOutgoingConnections();
+  				for (IConnection conn : outConns) 
+  				{ //2	
+   					if (conn.getLineStyle().equals(EConnectionType.FLOW_MAIN)||conn.getLineStyle().equals(EConnectionType.FLOW_MERGE))
+   					{ //3
+    					String outputConnName = conn.getName();
+    					for (int i = 0; i < columns.size(); i++) 
+    					{//4
+     						IMetadataColumn column = columns.get(i);
+     						String column_label = column.getLabel();
+     							String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getTalendType(), column.isNullable());
+								JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
+										if (javaType == JavaTypesManager.STRING || javaType == JavaTypesManager.OBJECT) {//5
+   	%>
+											<%=outputConnName %>.<%=column.getLabel() %> = <%=cid%>_receiveAttributeMap.get("<%=column.getLabel()%>");
+   	<%
+										}else if (javaType == JavaTypesManager.INTEGER){
+	%>
+											<%=outputConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Integer(<%=cid%>_receiveAttributeMap.get("<%=column.getLabel()%>"));
+										<%} else if (javaType == JavaTypesManager.BOOLEAN){%>
+											<%=outputConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Boolean(<%=cid%>_receiveAttributeMap.get("<%=column.getLabel()%>"));
+										<%} else if (javaType == JavaTypesManager.LONG){%>
+											<%=outputConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Long(<%=cid%>_receiveAttributeMap.get("<%=column.getLabel()%>"));
+	<%
+							}//5
+    					}//4
+   					}//3
+  				}//2
+ 			}//a
+		}//b
+	%>
+		
+		<%
+		if(isLog4jEnabled){
+		%>	
+			log.info("<%=cid%> - Change message visibility successfully.");
+		<%
+		}
+		%>
+	}catch(java.lang.Exception e_<%=cid%>){
+		<%
+		if (("true").equals(dieOnError)) {
+		%>
+			throw(e_<%=cid%>);
+		<%
+		} else {
+			if(isLog4jEnabled){
+			%>
+				log.error("<%=cid%> - " + e_<%=cid%>.getMessage());
+			<%
+			}
+			%>
+			System.err.println(e_<%=cid%>.getMessage());
+		<%
+		}
+		if(!("true").equals(useExistingConn)) {
+		%>
+	}finally{
+		if(conn_<%=cid%> !=null){
+			conn_<%=cid%>.shutdown();
+		}
+		<%
+		}
+		%>
+	}
+	

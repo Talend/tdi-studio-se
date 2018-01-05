@@ -1,0 +1,55 @@
+<%@ jet%>
+
+<%if(isLog4jEnabled){%>
+	log.info("<%=cid%> - Connection attempt to '"+ <%=host%> + "'.");
+<%}%>
+
+<%if(useAuth){%>
+	<%if(isLog4jEnabled) {%>
+	log.info("<%=cid%> - Authentication using username and password.");
+	<%}%>
+	
+	<%
+  String passwordFieldName = "__PASS__";
+  %>
+  
+  <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+<%}%>
+
+<%
+	//the authentication is being performed after establishment of the TLS session
+	if(!"TLS".equals(protocol)){
+		//we only keep the logic like before now, we may need to move it in the "useAuth" block.
+%>
+		env_<%=cid%>.put(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");// "none","simple","strong"
+<%
+		if(useAuth){
+%>
+    env_<%=cid%>.put(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
+    env_<%=cid%>.put(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
+<%
+		}
+	}
+%>
+
+<%if(!cid.contains("tLDAPInput")){%>javax.naming.ldap.InitialLdapContext<%}%> ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(env_<%=cid%>, null);
+
+<%
+if("TLS".equals(protocol)){
+%>
+	javax.naming.ldap.StartTlsRequest tldsReq_<%=cid%> = new javax.naming.ldap.StartTlsRequest();
+  javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)ctx_<%=cid%>.extendedOperation(tldsReq_<%=cid%>);
+  javax.net.ssl.SSLSession session_<%=cid%> = tls_<%=cid%>.negotiate((javax.net.ssl.SSLSocketFactory)talend.ssl.AdvancedSocketFactory.getDefault());
+  
+  <%if(useAuth){%>
+  ctx_<%=cid%>.addToEnvironment(javax.naming.Context.SECURITY_AUTHENTICATION, "simple");
+  ctx_<%=cid%>.addToEnvironment(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
+  ctx_<%=cid%>.addToEnvironment(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
+  <%}%>
+<%
+}
+%>
+
+<%if(isLog4jEnabled){%>
+	log.info("<%=cid%> - Connection to '"+<%=host%> + "' has succeeded.");
+<%}%>

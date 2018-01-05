@@ -61,6 +61,8 @@
 							}
 							fis_<%=cid%>.close();
 							fos_<%=cid%>.close();
+						} else {
+						    org.apache.commons.io.FileUtils.writeStringToFile(file_<%=cid%>, content_<%=cid%>.toString(), <%=encoding%>);
 						}
 					}
 				} catch (java.lang.Exception e_<%=cid%>) {

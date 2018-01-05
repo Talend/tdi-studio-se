@@ -42,6 +42,7 @@ import org.talend.core.utils.ReflectionUtils;
 import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.property.Property;
+import org.talend.daikon.serialize.migration.PostDeserializeHandler;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
@@ -89,7 +90,6 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
 
             ComponentWizard componentWizard = service.getComponentWizard(TYPE_NAME, genericConnectionItem.getProperty().getId());
             ComponentProperties componentProperties = (ComponentProperties) componentWizard.getForms().get(0).getProperties();
-            componentProperties.init();
 
             // Update
             modify = updateComponentProperties(connection, componentProperties, props);
@@ -133,6 +133,12 @@ public class NewSalesforceWizardMigrationTask extends NewGenericWizardMigrationT
             componentProperties.setValue("userPassword.securityKey", ""); //$NON-NLS-1$ //$NON-NLS-2$
             Property property = componentProperties.getValuedProperty("userPassword.securityKey"); //$NON-NLS-1$
             property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, "securityKey"); //$NON-NLS-1$
+	         // we call postDeserialize method before serializing the properties
+	         // This needed to achieve a full migration task
+            if (componentProperties != null && componentProperties instanceof PostDeserializeHandler) {
+	         	((PostDeserializeHandler) componentProperties).postDeserialize(0, null, true);
+	         }
+
             genericConnection.setCompProperties(componentProperties.toSerialized());
             genericConnectionItem.setConnection(genericConnection);
             updateMetadataTable(connection, genericConnection, componentProperties);

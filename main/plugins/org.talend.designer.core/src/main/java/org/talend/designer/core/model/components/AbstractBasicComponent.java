@@ -214,6 +214,10 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
         return null;
     }
 
+    public void initNodeProperties(INode newNode, INode oldNode) {
+        // do nothing
+    }
+
     public void initNodePropertiesFromSerialized(INode node, String serialized) {
         // do nothing
     }

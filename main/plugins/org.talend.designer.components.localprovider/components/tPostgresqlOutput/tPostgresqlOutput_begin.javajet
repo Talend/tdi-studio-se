@@ -268,8 +268,19 @@ if(columnList != null && columnList.size()>0) {
 	if(("INSERT").equals(dataAction)) {
 	    %>
 	    String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
+	    <%
+	    boolean usingStatsLogs = cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB");
+	    if(!usingStatsLogs) {
+	    %>
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
 	    <%
+	    } else {
+	    %>
+	    java.sql.PreparedStatement pstmt_<%=cid %> = null;
+			String keyPsmt_<%=cid %> = conn_<%=cid%> + "[psmt]" + "[" + <%=table%> + "]";
+      pstmt_<%=cid %> = SharedDBPreparedStatement.getSharedPreparedStatement(conn_<%=cid%>,insert_<%=cid%>,keyPsmt_<%=cid%>);
+	    <%
+	    }
 	} else if (("UPDATE").equals(dataAction)) {
 	    %>
 	    String update_<%=cid%> = "UPDATE \"" + tableName_<%=cid%> + "\" SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
