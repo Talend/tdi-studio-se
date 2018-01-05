@@ -1886,21 +1886,21 @@ public class DataProcess implements IGeneratingProcess {
             }
         }
         
-        IGenericDBService dbService = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-                    IGenericDBService.class);
-        }
-        if(dbService != null){
-            for (INode node : dataNodeList) {
-                if(node.getComponent().getComponentType() == EComponentType.GENERIC){
-                    
-                    for(IMetadataTable iTable : node.getMetadataList()){
-                       iTable = dbService.converTable(node, iTable);
-                    }
-                }
-            }
-        }
+//        IGenericDBService dbService = null;
+//        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+//            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+//                    IGenericDBService.class);
+//        }
+//        if(dbService != null){
+//            for (INode node : dataNodeList) {
+//                if(node.getComponent().getComponentType() == EComponentType.GENERIC){
+//                    
+//                    for(IMetadataTable iTable : node.getMetadataList()){
+//                       iTable = dbService.converTable(node, iTable);
+//                    }
+//                }
+//            }
+//        }
         
 
         checkRefList = null;

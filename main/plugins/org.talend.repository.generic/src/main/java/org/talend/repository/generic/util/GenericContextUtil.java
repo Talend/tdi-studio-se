@@ -91,7 +91,17 @@ public class GenericContextUtil {
                                 Object propertyValue = map.get(key);
                                 String keyWithPrefix = prefixName + ConnectionContextHelper.LINE + ContextParameterUtils.getValidParameterName(key);
                                 if(propertyValue instanceof List){
-                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, propertyValue, JavaTypesManager.VALUE_LIST);
+//                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, propertyValue, JavaTypesManager.VALUE_LIST);
+                                    
+                                    String value = null;
+                                    for(Object obj : (List)propertyValue){
+                                        if(value == null){
+                                            value = obj.toString();
+                                        }else{
+                                            value = value + ";" + obj.toString(); //$NON-NLS-1$
+                                        }
+                                    }
+                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, value, JavaTypesManager.STRING);
                                 }
                             }
                         }
@@ -273,9 +283,9 @@ public class GenericContextUtil {
                                             property.setValue(possibleValue);
                                         }
                                     }
-                                } else {
-                                    property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
-                                }
+                                } 
+                            }else {
+                                property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                             }
                         }
                     }
