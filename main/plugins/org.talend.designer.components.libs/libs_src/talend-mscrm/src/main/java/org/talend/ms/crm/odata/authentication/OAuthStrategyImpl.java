@@ -20,6 +20,7 @@ import java.util.concurrent.Future;
 import javax.naming.AuthenticationException;
 import javax.naming.ServiceUnavailableException;
 
+import com.microsoft.aad.adal4j.ClientCredential;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.olingo.client.api.communication.request.ODataRequest;
 import org.apache.olingo.commons.api.http.HttpHeader;
@@ -114,6 +115,22 @@ public class OAuthStrategyImpl implements IAuthStrategy {
         }
     }
 
+    private Future<AuthenticationResult> acquireToken(AuthenticationContext context) throws Exception {
+        Future<AuthenticationResult> future;
+
+        if(conf.getAppRegisteredType() == ClientConfiguration.AppRegisteredType.NATIVE_APP){
+            future = context.acquireToken(conf.getResource(), conf.getClientId(), conf.getUserName(), conf.getPassword(), null);
+        }
+        else if(conf.getAppRegisteredType() == ClientConfiguration.AppRegisteredType.WEB_APP && conf.getWebAppPermission() == ClientConfiguration.WebAppPermission.DELEGATED){
+            future = context.acquireToken(conf.getResource(), new ClientCredential(conf.getClientId(), conf.getClientSecret()), conf.getUserName(), conf.getPassword(), null);
+        }
+        else{
+            throw new Exception("Can't retrieve token with this configuration : registered application type: "+conf.getAppRegisteredType()+", Web application permission: "+conf.getWebAppPermission());
+        }
+
+        return future;
+    }
+
     private AuthenticationResult getAccessToken() throws ServiceUnavailableException {
         AuthenticationContext context = null;
         AuthenticationResult result = null;
@@ -125,8 +142,7 @@ public class OAuthStrategyImpl implements IAuthStrategy {
             if (proxy != null) {
                 context.setProxy(proxy);
             }
-            Future<AuthenticationResult> future = context.acquireToken(conf.getResource(), conf.getClientId(), conf.getUserName(),
-                    conf.getPassword(), null);
+            Future<AuthenticationResult> future = this.acquireToken(context);
             result = future.get();
         } catch (Exception e) {
             throw new ServiceUnavailableException(e.getMessage());

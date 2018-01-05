@@ -75,8 +75,6 @@ public class ConnectionCreateCommand extends Command {
     private static boolean creatingConnection = false;
 
     private boolean insertTMap;
-    
-    private List<ExternalNodeChangeCommand> externalNodeChangeCommands = new ArrayList<ExternalNodeChangeCommand>();
 
     /**
      * Initialisation of the creation of the connection with a source and style of connection.
@@ -411,7 +409,17 @@ public class ConnectionCreateCommand extends Command {
                         }
                     }
                 }
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
                 this.connection = new Connection(source, target, newLineStyle, connectorName, metaName, connectionName,
                         monitorConnection);
             } else {
@@ -420,7 +428,17 @@ public class ConnectionCreateCommand extends Command {
             }
         } else { // in case of redo, reuse the same instance
             if (newMetadata != null) {
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
             }
             connection.reconnect(source, target, newLineStyle);
         }
@@ -429,14 +447,12 @@ public class ConnectionCreateCommand extends Command {
             externalNode.addOutput(connection);
             ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
             cmd.execute();
-            externalNodeChangeCommands.add(cmd);
         }
         if (target.isExternalNode()) {
             IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
             externalNode.addInput(connection);
             ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
             cmd.execute();
-            externalNodeChangeCommands.add(cmd);
         }
         INodeConnector nodeConnectorSource, nodeConnectorTarget;
         nodeConnectorSource = connection.getSourceNodeConnector();
@@ -478,18 +494,17 @@ public class ConnectionCreateCommand extends Command {
             nodeConnectorTarget.setCurLinkNbInput(nodeConnectorTarget.getCurLinkNbInput() - 1);
         }       
         if (source.isExternalNode()) {
-            IExternalNode externalNode = source.getExternalNode();
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
             externalNode.removeOutput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+            cmd.execute();
         }
         if (target.isExternalNode()) {
-            IExternalNode externalNode = target.getExternalNode();
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
             externalNode.removeInput(connection);
-        }    
-        for (ExternalNodeChangeCommand cmd : externalNodeChangeCommands) {
-            cmd.undo();
-        }
-        externalNodeChangeCommands.clear();
-        
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+            cmd.execute();
+        }   
         if (newMetadata != null) {
             source.getMetadataList().remove(newMetadata);
         }

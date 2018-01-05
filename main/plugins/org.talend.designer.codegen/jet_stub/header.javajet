@@ -140,7 +140,7 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
 boolean talendEsbJob = actAsProvider || actAsConsumer || !process.getNodesOfType("tRouteInput").isEmpty();
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
 
-boolean talendStepTemplate = !process.getNodesOfType("tActionInput").isEmpty() || !process.getNodesOfType("tActionOutput").isEmpty() || !process.getNodesOfType("tActionReject").isEmpty();
+boolean talendStepTemplate = !process.getNodesOfType("tActionInput").isEmpty() || !process.getNodesOfType("tActionOutput").isEmpty() || !process.getNodesOfType("tJobReject").isEmpty();
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
 

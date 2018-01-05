@@ -72,6 +72,12 @@ public class GenericContextUtil {
                     }
                     if (GenericTypeUtils.isIntegerType(property)) {
                         type = JavaTypesManager.INTEGER;
+                    } else if (GenericTypeUtils.isLongType(property)) {
+                        type = JavaTypesManager.LONG;
+                    } else if (GenericTypeUtils.isFloatType(property)) {
+                        type = JavaTypesManager.FLOAT;
+                    } else if (GenericTypeUtils.isDoubleType(property)) {
+                        type = JavaTypesManager.DOUBLE;
                     }
                     String value = property == null || property.getValue() == null ? null
                             : StringEscapeUtils.escapeJava(String.valueOf(property.getValue()));
@@ -253,6 +259,12 @@ public class GenericContextUtil {
                                 property.setValue(new Boolean(valueFromContext));
                             } else if (GenericTypeUtils.isIntegerType(property) && !valueFromContext.isEmpty()) {
                                 property.setValue(Integer.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isLongType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Long.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isFloatType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Float.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isDoubleType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Double.valueOf(valueFromContext));
                             } else if (GenericTypeUtils.isEnumType(property)) {
                                 List<?> propertyPossibleValues = ((Property<?>) property).getPossibleValues();
                                 if (propertyPossibleValues != null) {
@@ -261,9 +273,9 @@ public class GenericContextUtil {
                                             property.setValue(possibleValue);
                                         }
                                     }
+                                } else {
+                                    property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                                 }
-                            } else {
-                                property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                             }
                         }
                     }

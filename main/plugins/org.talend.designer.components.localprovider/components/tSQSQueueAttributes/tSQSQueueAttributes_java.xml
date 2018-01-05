@@ -169,8 +169,9 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.10.52.jar" MODULE="aws-java-sdk-1.10.52.jar"
-				MVN="mvn:org.talend.libraries/aws-java-sdk-1.10.52/6.0.0" REQUIRED="true" />
+            <IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
+			    MVN="mvn:com.amazonaws/aws-java-sdk/1.11.223"
+			    REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="Driver-Commons-Logging-1.1.1" MODULE="commons-logging-1.1.1.jar"
 				MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"
 				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"
@@ -188,15 +189,15 @@
 			<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
-				REQUIRED="true" />
+				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="jackson-databind-2.5.3.jar" MODULE="jackson-databind-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
-				REQUIRED="true" />
+				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
 			<IMPORT NAME="jackson-annotations-2.5.3.jar" MODULE="jackson-annotations-2.5.3.jar"
 				MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
-				REQUIRED="true" />
+				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="joda-time" MODULE="joda-time-2.8.1.jar"
 				MVN="mvn:org.talend.libraries/joda-time-2.8.1/6.0.0" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		</IMPORTS>
