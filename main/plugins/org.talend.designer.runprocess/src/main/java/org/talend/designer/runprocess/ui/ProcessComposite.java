@@ -1201,7 +1201,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     if (msg != null) {
                         messages.add(msg);
                         doAppendToConsole(messages);
-                        scrollToEnd();
                     }
 
                     // do a poll here to remove the first element that we just displayed.
@@ -1279,104 +1278,115 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         return newStyle;
     }
 
-    private void doAppendToConsole(Collection<IProcessMessage> messages, boolean checkMessage) {
+    private void doAppendToConsole(Collection<IProcessMessage> messages) {
         try {
             if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
                 return;
             }
             System.out.println("messages " + messages.size());
-
+            int linesLimit = getConsoleRowLimit();
             List<IProcessMessage> newMsgs = new ArrayList<IProcessMessage>();
+            if (messages.size() > 1) {
+                System.out.println();
+            }
             for (IProcessMessage message : messages) {
-                if (checkMessage && message.getType() == MsgType.STD_OUT) {
+                if (message.getType() == MsgType.STD_OUT) {
                     String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
+                    int maxlines = linesLimit;
+                    if (maxlines < 1000) {
+                        maxlines = 1000;
+                    }
                     for (String lineContent : splitLines) {
                         IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
                         newMsgs.add(lineMsg);
-                        if (newMsgs.size() == 1000) {
-                            doAppendToConsole(newMsgs, false);
-                            newMsgs.clear();
+                        if (newMsgs.size() >= maxlines) {
+                            printToConsole(newMsgs);
+                            newMsgs = new ArrayList<IProcessMessage>();
                         }
                     }
                 } else {
                     newMsgs.add(message);
                 }
-                if (checkMessage && writer != null) {
+                if (writer != null) {
                     writer.write(message.getContent());
                 }
 
             }
-
-            int linesLimit = getConsoleRowLimit();
-            int currentLines = consoleText.getLineCount();
-            List<StyleRange> styles = new ArrayList<StyleRange>();
-            StringBuffer consoleMsgText = new StringBuffer();
-            int startLength = consoleText.getText().length();
-            for (StyleRange curStyle : consoleText.getStyleRanges()) {
-                styles.add(curStyle);
-            }
-
-            boolean append = false;
-            int newStart = 0;
-            int totalLines = currentLines + newMsgs.size();
-            int diff = totalLines - linesLimit;
-            if (diff > 0) {
-                newStart = currentLines - diff;
-                if (newStart == 0) {
-                    append = true;
-                } else {
-                    startLength = 0;
-                    if (newStart > 0) {
-                        newStart = diff;
-                        int offsetAtLine = consoleText.getOffsetAtLine(newStart - 1);
-                        Iterator<StyleRange> iterator = styles.iterator();
-                        while (iterator.hasNext()) {
-                            StyleRange curStyle = iterator.next();
-                            if (offsetAtLine >= (curStyle.start + curStyle.length)) {
-                                iterator.remove();
-                            }
-                        }
-                        String text = consoleText.getText(offsetAtLine, consoleText.getCharCount() - 1);
-                        consoleMsgText.append(text);
-                        newStart = 0;
-                    } else {
-                        newStart = Math.abs(newStart);
-                        styles.clear();
-                    }
-                }
-            } else {
-                append = true;
-            }
-
-            boolean newStyle = false;
-            for (int i = newStart; i < newMsgs.size(); i++) {
-                IProcessMessage message = newMsgs.get(i);
-                newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
-            }
-
-            newMsgs.clear();
-
-            // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-            // System.out.println(consoleMsgText.toString());
-            System.out.println(append);
-            if (append) {
-                consoleText.append(consoleMsgText.toString());
-            } else {
-                consoleText.setText(consoleMsgText.toString());
-            }
-
-            if (newStyle) {
-                StyleRange[] stylesArray = styles.toArray(new StyleRange[0]);
-                consoleText.setStyleRanges(stylesArray);
-            }
+            printToConsole(newMsgs);
         } catch (IOException e) {
             ExceptionHandler.process(e);
         }
 
     }
 
-    private void doAppendToConsole(Collection<IProcessMessage> messages) {
-        doAppendToConsole(messages, true);
+    private void printToConsole(List<IProcessMessage> newMsgs) {
+        System.out.println(newMsgs.size());
+        getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                int linesLimit = getConsoleRowLimit();
+                int currentLines = consoleText.getLineCount();
+                List<StyleRange> styles = new ArrayList<StyleRange>();
+                StringBuffer consoleMsgText = new StringBuffer();
+                int startLength = consoleText.getText().length();
+                for (StyleRange curStyle : consoleText.getStyleRanges()) {
+                    styles.add(curStyle);
+                }
+
+                boolean append = false;
+                int newStart = 0;
+                int totalLines = currentLines + newMsgs.size();
+                int diff = totalLines - linesLimit;
+                if (diff > 0) {
+                    newStart = currentLines - diff;
+                    if (newStart == 0) {
+                        append = true;
+                    } else {
+                        startLength = 0;
+                        if (newStart > 0) {
+                            newStart = diff;
+                            int offsetAtLine = consoleText.getOffsetAtLine(newStart - 1);
+                            Iterator<StyleRange> iterator = styles.iterator();
+                            while (iterator.hasNext()) {
+                                StyleRange curStyle = iterator.next();
+                                if (offsetAtLine >= (curStyle.start + curStyle.length)) {
+                                    iterator.remove();
+                                }
+                            }
+                            String text = consoleText.getText(offsetAtLine, consoleText.getCharCount() - 1);
+                            consoleMsgText.append(text);
+                            newStart = 0;
+                        } else {
+                            newStart = Math.abs(newStart);
+                            styles.clear();
+                        }
+                    }
+                } else {
+                    append = true;
+                }
+
+                boolean newStyle = false;
+                for (int i = newStart; i < newMsgs.size(); i++) {
+                    IProcessMessage message = newMsgs.get(i);
+                    newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
+                }
+
+                newMsgs.clear();
+
+                if (append) {
+                    consoleText.append(consoleMsgText.toString());
+                } else {
+                    consoleText.setText(consoleMsgText.toString());
+                }
+
+                if (newStyle) {
+                    StyleRange[] stylesArray = styles.toArray(new StyleRange[0]);
+                    consoleText.setStyleRanges(stylesArray);
+                }
+                scrollToEnd();
+            }
+        });
     }
 
     /**
@@ -1408,7 +1418,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
         consoleText.setText(""); //$NON-NLS-1$
         doAppendToConsole(messages);
-        scrollToEnd();
     }
 
     private void scrollToEnd() {
@@ -1802,7 +1811,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                         messagesToDisplay.add(newMessages.poll());
                     }
                     doAppendToConsole(messagesToDisplay);
-                    scrollToEnd();
                     messagesToDisplay.clear();
                     if (!running && writer != null) {
                         try {
