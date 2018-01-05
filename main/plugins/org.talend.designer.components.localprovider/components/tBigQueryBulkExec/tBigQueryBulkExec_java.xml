@@ -168,8 +168,8 @@
 		<!-- REQUIRED FOR GOOGLE STORAGE -->
 		<IMPORT NAME="jets3t-0.9.1" MODULE="jets3t-0.9.1.jar" MVN="mvn:org.talend.libraries/jets3t-0.9.1/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="commons-logging-1.1.1" MODULE="commons-logging-1.1.1.jar" MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"  UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar" REQUIRED="true" />
-		<IMPORT NAME="httpclient-4.2.1" MODULE="httpclient-4.2.1.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.2.1.jar" REQUIRED="true" />
-		<IMPORT NAME="httpcore-4.2.1" MODULE="httpcore-4.2.1.jar" MVN="mvn:org.talend.libraries/httpcore-4.2.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.2.1.jar" REQUIRED="true" />
+		<IMPORT NAME="httpclient-4.5.1" MODULE="httpclient-4.5.1.jar" MVN="mvn:org.talend.libraries/httpclient-4.5.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpclient-4.5.1.jar" REQUIRED="true" />
+		<IMPORT NAME="httpcore-4.4.3" MODULE="httpcore-4.4.3.jar" MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpcore-4.4.3.jar" REQUIRED="true" />
 		<IMPORT NAME="commons-codec-1.4" MODULE="commons-codec-1.4.jar" MVN="mvn:org.talend.libraries/commons-codec-1.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.4.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
