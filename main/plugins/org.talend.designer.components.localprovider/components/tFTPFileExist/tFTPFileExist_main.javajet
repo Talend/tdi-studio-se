@@ -10,7 +10,7 @@
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
-boolean isFileExists = "FILE".equals(ElementParameterParser.getValue(node, "__TARGETTYPE__"));
+boolean isFileType = "FILE".equals(ElementParameterParser.getValue(node, "__TARGETTYPE__"));
 String remoteDir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 String directoryname = ElementParameterParser.getValue(node, "__DIRECTORYNAME__");
@@ -32,7 +32,7 @@ if (("true").equals(useExistingConn)) {
 }
 
 if (sftp) {
-	if (isFileExists) {%>
+	if (isFileType) {%>
 		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
 		try{
 			if (c_<%=cid %>.stat(remoteDir_<%=cid %> + "/" + <%=filename %>).getAtimeString() != null) {
@@ -67,7 +67,7 @@ if (sftp) {
 		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
 	<%}
 } else {
-	if (isFileExists){%>
+	if (isFileType){%>
 		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
 		if (ftp_<%=cid %>.exists<%="File" %>(remoteDir_<%=cid %> + "/" + <%=filename %>)) {
 			<%if(isLog4jEnabled){%>
