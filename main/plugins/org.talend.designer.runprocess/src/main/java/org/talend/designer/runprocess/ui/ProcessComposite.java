@@ -14,6 +14,10 @@ package org.talend.designer.runprocess.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -30,7 +34,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -78,7 +86,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IProgressService;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -86,6 +97,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IContext;
@@ -94,6 +106,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.branding.IBrandingService;
@@ -128,6 +141,7 @@ import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.designer.runprocess.ui.actions.SaveJobBeforeRunAction;
 import org.talend.designer.runprocess.ui.views.IProcessViewHelper;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.repository.ProjectManager;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
@@ -199,11 +213,11 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private boolean hideConsoleLine = false;
 
-    private Button enableLineLimitButton;
-
     private Text lineLimitText;
 
     private Button wrapButton;
+
+    private Button fullLogButton;
 
     // private SashForm sash;
     private Button run;
@@ -219,6 +233,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     public HashMap<String, IProcessMessage> errorMessMap = new HashMap<String, IProcessMessage>();
 
     private final ProcessManager processManager;
+
+    private FileWriter writer;
 
     /**
      * DOC chuger ProcessComposite2 constructor comment.
@@ -598,7 +614,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         layouData.left = new FormAttachment(0, 10);
         layouData.right = new FormAttachment(100, 0);
         layouData.top = new FormAttachment(0, 50);
-        layouData.bottom = new FormAttachment(100, -30);
+        layouData.bottom = new FormAttachment(100, -35);
 
         consoleText.setLayoutData(layouData);
         // feature 6875, add searching capability, nma
@@ -684,7 +700,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         FormData layouData = new FormData();
         layouData.left = new FormAttachment(0, 10);
         layouData.right = new FormAttachment(100, 0);
-        layouData.top = new FormAttachment(100, -30);
+        layouData.top = new FormAttachment(100, -35);
         layouData.bottom = new FormAttachment(100, -3);
         composite.setLayoutData(layouData);
 
@@ -694,27 +710,16 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         formLayout.spacing = 7;
         composite.setLayout(formLayout);
 
-        enableLineLimitButton = new Button(composite, SWT.CHECK);
-        enableLineLimitButton.setText(Messages.getString("ProcessComposite.lineLimited")); //$NON-NLS-1$
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(Messages.getString("ProcessComposite.lineLimited")); //$NON-NLS-1$
         FormData formData = new FormData();
-        enableLineLimitButton.setLayoutData(formData);
-        enableLineLimitButton.setEnabled(false);
-        enableLineLimitButton.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                lineLimitText.setEditable(enableLineLimitButton.getSelection());
-                RunProcessPlugin.getDefault().getPluginPreferences()
-                        .setValue(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT, enableLineLimitButton.getSelection());
-            }
-        });
+        label.setLayoutData(formData);
 
         lineLimitText = new Text(composite, SWT.BORDER);
         formData = new FormData();
         formData.width = 120;
-        formData.left = new FormAttachment(enableLineLimitButton, 0, SWT.RIGHT);
+        formData.left = new FormAttachment(label, 0, SWT.RIGHT);
         lineLimitText.setLayoutData(formData);
-        lineLimitText.setEnabled(false);
         lineLimitText.addListener(SWT.Verify, new Listener() {
 
             // this text only receive number here.
@@ -741,10 +746,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         });
 
-        boolean enable = RunProcessPlugin.getDefault().getPluginPreferences()
-                .getBoolean(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT);
-        enableLineLimitButton.setSelection(enable);
-        lineLimitText.setEditable(enable);
         String count = RunProcessPlugin.getDefault().getPluginPreferences()
                 .getString(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT);
         if (count.equals("")) { //$NON-NLS-1$
@@ -769,16 +770,39 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                 }
             }
         });
+
+        formData = new FormData();
+        formData.left = new FormAttachment(wrapButton, 15, SWT.RIGHT);
+        formData.top = new FormAttachment(wrapButton, 0, SWT.TOP);
+        formData.height = 25;
+        fullLogButton = new Button(composite, SWT.PUSH);
+        fullLogButton.setLayoutData(formData);
+        fullLogButton.setText("Open full log"); //$NON-NLS-1$
+        fullLogButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                try {
+                    IFile fullLogFile = getFullLogFile();
+                    if (fullLogFile.exists()) {
+                        fullLogFile.getParent().refreshLocal(IResource.DEPTH_ONE, null);
+                        FileEditorInput fileEditorInput = new FileEditorInput(fullLogFile);
+                        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                        page.openEditor(fileEditorInput, "org.eclipse.ui.DefaultTextEditor");
+                    }
+                } catch (PartInitException e1) {
+                    ExceptionHandler.process(e1);
+                } catch (CoreException e1) {
+                    ExceptionHandler.process(e1);
+                }
+            }
+        });
     }
 
     private int getConsoleRowLimit() {
-        if (!enableLineLimitButton.isDisposed()) {
-            if (enableLineLimitButton.getSelection()) {
-                try {
-                    return Integer.parseInt(lineLimitText.getText());
-                } catch (Exception e) {
-                }
-            }
+        try {
+            return Integer.parseInt(lineLimitText.getText());
+        } catch (Exception e) {
         }
         return SWT.DEFAULT;
     }
@@ -1047,7 +1071,22 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(processContext != null);
         // clearBeforeExec.setSelection(processContext != null && processContext.isClearBeforeExec());
         // contextComposite.setProcess(((processContext != null) && !disableAll ? processContext.getProcess() : null));
-        fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
+        Collection<IProcessMessage> messages = new ArrayList<IProcessMessage>();
+        if (processContext != null) {
+            messages = processContext.getMessages();
+            messages.clear();
+        }
+        try {
+            IFile fullLogFile = getFullLogFile();
+            if (fullLogFile.exists()) {
+                fullLogFile.setContents(new ByteArrayInputStream(new byte[0]), IResource.FORCE, null);
+            }
+            writer = new FileWriter(new File(fullLogFile.getLocation().toPortableString()));
+        } catch (IOException | CoreException e) {
+            ExceptionHandler.process(e);
+        }
+
+        fillConsole(messages);
 
         // remove trace if basic run tab active
         if (processContext != null) {
@@ -1092,9 +1131,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(runnable);
         // saveJobBeforeRunButton.setEnabled(runnable);
         // watchBtn.setEnabled(runnable);
-        if (enableLineLimitButton != null && !enableLineLimitButton.isDisposed()) {
-            enableLineLimitButton.setEnabled(runnable);
-        }
         if (lineLimitText != null && !lineLimitText.isDisposed()) {
             lineLimitText.setEnabled(runnable);
         }
@@ -1243,53 +1279,104 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         return newStyle;
     }
 
-    private void doAppendToConsole(Collection<IProcessMessage> messages) {
-        if (consoleText == null || consoleText.isDisposed()) {
-            return;
-        }
-        int linesLimit = getConsoleRowLimit();
-        int currentLines = consoleText.getLineCount();
-        if (linesLimit > 0 && currentLines > linesLimit) {
-            return;
-        }
+    private void doAppendToConsole(Collection<IProcessMessage> messages, boolean checkMessage) {
+        try {
+            if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
+                return;
+            }
+            System.out.println("messages " + messages.size());
 
-        List<StyleRange> styles = new ArrayList<StyleRange>();
-        StringBuffer consoleMsgText = new StringBuffer();
-        int startLength = consoleText.getText().length();
-        for (StyleRange curStyle : consoleText.getStyleRanges()) {
-            styles.add(curStyle);
-        }
-
-        boolean newStyle = false;
-        for (IProcessMessage message : messages) {
-            if (message.getType() == MsgType.STD_OUT) {
-                String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
-                for (String lineContent : splitLines) {
-                    if (linesLimit > 0 && currentLines > linesLimit) {
-                        return;
+            List<IProcessMessage> newMsgs = new ArrayList<IProcessMessage>();
+            for (IProcessMessage message : messages) {
+                if (checkMessage && message.getType() == MsgType.STD_OUT) {
+                    String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
+                    for (String lineContent : splitLines) {
+                        IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
+                        newMsgs.add(lineMsg);
+                        if (newMsgs.size() == 1000) {
+                            doAppendToConsole(newMsgs, false);
+                            newMsgs.clear();
+                        }
                     }
-                    currentLines++;
-                    IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
-                    newStyle = newStyle | processMessage(consoleMsgText, lineMsg, startLength, styles);
+                } else {
+                    newMsgs.add(message);
+                }
+                if (checkMessage && writer != null) {
+                    writer.write(message.getContent());
+                }
+
+            }
+
+            int linesLimit = getConsoleRowLimit();
+            int currentLines = consoleText.getLineCount();
+            List<StyleRange> styles = new ArrayList<StyleRange>();
+            StringBuffer consoleMsgText = new StringBuffer();
+            int startLength = consoleText.getText().length();
+            for (StyleRange curStyle : consoleText.getStyleRanges()) {
+                styles.add(curStyle);
+            }
+
+            boolean append = false;
+            int newStart = 0;
+            int totalLines = currentLines + newMsgs.size();
+            int diff = totalLines - linesLimit;
+            if (diff > 0) {
+                newStart = currentLines - diff;
+                if (newStart == 0) {
+                    append = true;
+                } else {
+                    startLength = 0;
+                    if (newStart > 0) {
+                        newStart = diff;
+                        int offsetAtLine = consoleText.getOffsetAtLine(newStart - 1);
+                        Iterator<StyleRange> iterator = styles.iterator();
+                        while (iterator.hasNext()) {
+                            StyleRange curStyle = iterator.next();
+                            if (offsetAtLine >= (curStyle.start + curStyle.length)) {
+                                iterator.remove();
+                            }
+                        }
+                        String text = consoleText.getText(offsetAtLine, consoleText.getCharCount() - 1);
+                        consoleMsgText.append(text);
+                        newStart = 0;
+                    } else {
+                        newStart = Math.abs(newStart);
+                        styles.clear();
+                    }
                 }
             } else {
-                if (linesLimit > 0 && currentLines > linesLimit) {
-                    return;
-                }
-                currentLines++;
-                // count as only one line for the error, to avoid the error to be cut from original
+                append = true;
+            }
+
+            boolean newStyle = false;
+            for (int i = newStart; i < newMsgs.size(); i++) {
+                IProcessMessage message = newMsgs.get(i);
                 newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
             }
+
+            newMsgs.clear();
+
+            // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
+            // System.out.println(consoleMsgText.toString());
+            System.out.println(append);
+            if (append) {
+                consoleText.append(consoleMsgText.toString());
+            } else {
+                consoleText.setText(consoleMsgText.toString());
+            }
+
+            if (newStyle) {
+                StyleRange[] stylesArray = styles.toArray(new StyleRange[0]);
+                consoleText.setStyleRanges(stylesArray);
+            }
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
         }
 
-        if (messages.size() > 1) {
-            consoleText.setText(consoleText.getText() + consoleMsgText);
-        } else {
-            consoleText.append(consoleMsgText.toString());
-        }
-        if (newStyle) {
-            consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
-        }
+    }
+
+    private void doAppendToConsole(Collection<IProcessMessage> messages) {
+        doAppendToConsole(messages, true);
     }
 
     /**
@@ -1717,6 +1804,15 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     doAppendToConsole(messagesToDisplay);
                     scrollToEnd();
                     messagesToDisplay.clear();
+                    if (!running && writer != null) {
+                        try {
+                            writer.flush();
+                            writer.close();
+                            writer = null;
+                        } catch (IOException e) {
+                            ExceptionHandler.process(e);
+                        }
+                    }
                 }
             });
         }
@@ -2143,4 +2239,19 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // TODO Auto-generated method stub
         this.processViewHelper = processViewHelper;
     }
+
+    private IFile getFullLogFile() {
+        Project project = ProjectManager.getInstance().getCurrentProject();
+        IProject physProject;
+        IFile file = null;
+        try {
+            physProject = ResourceModelUtils.getProject(project);
+
+            file = physProject.getFolder("temp").getFile(".console_log"); //$NON-NLS-1$
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return file;
+    }
+
 }
