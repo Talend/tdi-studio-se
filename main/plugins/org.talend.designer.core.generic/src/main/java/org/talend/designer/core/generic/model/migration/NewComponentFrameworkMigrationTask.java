@@ -86,6 +86,14 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                 String currComponentName = nodeType.getComponentName();
                 String newComponentName = props.getProperty(currComponentName);
                 nodeType.setComponentName(newComponentName);
+                String label = ParameterUtilTool.getParameterValue(nodeType, "LABEL"); //$NON-NLS-1$
+                if(label != null){
+                    ElementParameterType paraType = ParameterUtilTool.findParameterType(nodeType, label.replaceAll("_", "")); //$NON-NLS-1$ //$NON-NLS-2$
+                    if(paraType != null){
+                        ParameterUtilTool.findParameterType(nodeType,"LABEL").setValue(paraType.getValue()); //$NON-NLS-1$
+                        modified = true;
+                    }
+                }
                 IComponent component = ComponentsFactoryProvider.getInstance().get(newComponentName, category.getName());
                 ComponentProperties compProperties = ComponentsUtils.getComponentProperties(newComponentName);
                 FakeNode fNode = new FakeNode(component);
