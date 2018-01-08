@@ -87,11 +87,16 @@ public class GenericAction extends AbstractCreateAction {
         if(repObjType == null || repositoryNode.getType() != ENodeType.REPOSITORY_ELEMENT){
             repObjType = (ERepositoryObjectType) repositoryNode.getProperties(EProperties.CONTENT_TYPE);
         }
+        if(repObjType == null){
+            setEnabled(false);
+            return;
+        }
         if (compWizard == null) {
             compWizard = GenericWizardServiceFactory.getGenericWizardInternalService().getComponentWizard(repObjType.getType(),
                     null);
         }
         if (compWizard == null) {
+            setEnabled(false);
             return;
         }
         ComponentWizardDefinition wizardDefinition = compWizard.getDefinition();

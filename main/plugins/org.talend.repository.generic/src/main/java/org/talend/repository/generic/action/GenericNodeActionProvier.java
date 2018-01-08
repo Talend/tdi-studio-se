@@ -98,7 +98,9 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
                 ((GenericAction)action).setGenericData(wizard, sel);
             }
         }
-        manager.add(action);
+        if(action.isVisible()){
+            manager.add(action);
+        }
     }
     
     private boolean allowedCreateAndAdd(IStructuredSelection sel){
