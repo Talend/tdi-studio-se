@@ -1819,8 +1819,12 @@ public class DataProcess implements IGeneratingProcess {
                     break;
                 }
             }
+            
             for (DataNode node : statsAndLogsNodeList) {
                 buildCheckMap.put(node, node);
+            }
+            
+            for (DataNode node : statsAndLogsNodeList) {
                 addDataNode(node);
                 replaceMultipleComponents(node);
                 if(connNode == null){

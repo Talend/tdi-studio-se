@@ -19,8 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.avro.Schema;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.database.conn.DatabaseConnStrUtil;
@@ -31,6 +34,8 @@ import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
@@ -44,7 +49,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.NamedThing;
-import org.talend.daikon.properties.presentation.Widget;
+import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -208,6 +213,13 @@ public class StatsAndLogsManager {
         }
 
         if (useLogs) {
+            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
+            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if(tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tLogCatcher" ,"LOGS");
+                return nodeList;
+            }
+          
             DataNode logsNode = createLogsNode(file, console, dbOutput);
             if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                 logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -255,6 +267,13 @@ public class StatsAndLogsManager {
         }
 
         if (useStats) {
+            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
+            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if(tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS");
+                return nodeList;
+            }
+            
             DataNode statsNode = createStatsNode(file, console, dbOutput);
             if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                 statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -295,6 +314,13 @@ public class StatsAndLogsManager {
         }
 
         if (useMetter) {
+            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
+            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if(tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tFlowMeterCatcher" ,"METTER");
+                return nodeList;
+            }
+          
             DataNode meterNode = createMetterNode(file, console, dbOutput);
             if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                 meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -333,6 +359,78 @@ public class StatsAndLogsManager {
             meterNode.setProcess(process);
             nodeList.add(meterNode);
         }
+        
+        return nodeList;
+    }
+
+    private static DataNode addGenericDataNodes(IProcess process, List<DataNode> nodeList, DataNode connectionNode, DataNode commitNode, IComponent dbOutputComponent, String prefixName, String inputComponentName, String inputComponentId) {
+        IComponent inputComponent = ComponentsFactoryProvider.getInstance().get(
+            inputComponentName, ComponentCategory.CATEGORY_4_DI.getName());
+        String inputComponentUniqueName = prefixName + "_" + inputComponentId;
+        DataNode inputNode = new DataNode(inputComponent, inputComponentUniqueName);
+        inputNode.setStart(true);
+        inputNode.setSubProcessStart(true);
+        inputNode.setActivate(true);
+        inputNode.setProcess(process);
+        nodeList.add(inputNode);
+        
+        boolean found = false;
+        IMetadataTable sourceMetadataValue = null;
+        for (int k = 0; k < inputNode.getElementParameters().size() && !found; k++) {
+            IElementParameter currentParam = inputNode.getElementParameters().get(k);
+            if (currentParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                    || currentParam.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
+                Object value = currentParam.getValue();
+                if (value instanceof IMetadataTable) {
+                    sourceMetadataValue = ((IMetadataTable) value).clone();
+                    sourceMetadataValue.setTableName(prefixName);
+                    sourceMetadataValue.setAttachedConnector(currentParam.getContext());
+                }
+                found = true;
+            }
+        }
+        
+        DataNode outputNode = new DataNode(dbOutputComponent, prefixName + "_" + "DB");
+        outputNode.setStart(false);
+        outputNode.setSubProcessStart(false);
+        outputNode.setActivate(true);
+        outputNode.setProcess(process);
+        nodeList.add(outputNode);
+        
+        ComponentProperties tcomp_properties = outputNode.getComponentProperties();
+        outputNode.getElementParameter("tableSelection.tablename").setValue(process.getElementParameter(EParameterName.TABLE_STATS.getName()).getValue());
+        NamedThing referencedComponent = tcomp_properties.getProperty("referencedComponent");
+        if (referencedComponent instanceof ComponentReferenceProperties) {
+            ComponentReferenceProperties refProps = (ComponentReferenceProperties) referencedComponent;
+            refProps.referenceType.setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
+            refProps.componentInstanceId.setStoredValue(CONNECTION_UID);
+            refProps.componentInstanceId.setTaggedValue("ADD_QUOTES", true);
+        }
+        
+        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, inputNode, nodeList, commitNode, true);
+        
+        DataConnection dataConnec = new DataConnection();
+        dataConnec.setActivate(true);
+        dataConnec.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnec.setConnectorName("FLOW");
+        dataConnec.setMetadataTable(sourceMetadataValue);
+        dataConnec.setName("row_" + inputComponentUniqueName);
+        dataConnec.setSource(inputNode);
+        dataConnec.setTarget(outputNode);
+        ((List<IConnection>) inputNode.getOutgoingConnections()).add(dataConnec);
+        ((List<IConnection>) outputNode.getIncomingConnections()).add(dataConnec);
+        
+        List<IMetadataTable> tables = new ArrayList<>();
+        IMetadataTable outputMetadata = sourceMetadataValue.clone();
+        tables.add(outputMetadata);
+        outputNode.setMetadataList(tables);
+        
+        Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(outputMetadata));
+        tcomp_properties.setValue("main.schema", schema);
+        tcomp_properties.setValue("schemaFlow.schema", schema);
+        
+        resetShowIf(outputNode);
+        
         IElementParameter refPara = commitNode.getElementParameter("referencedComponent");
         if(refPara != null){
             refPara.setValue(connectionNode.getUniqueName());
@@ -345,7 +443,7 @@ public class StatsAndLogsManager {
                 dbService.initReferencedComponent(refPara, connectionNode.getUniqueName());
             }
         }
-        return nodeList;
+        return connectionNode;
     }
 
     private static void useNoConnectionComponentDB(DataNode dataNode, IProcess process, String connectionUID) {
@@ -389,14 +487,21 @@ public class StatsAndLogsManager {
     }
 
     private static DataNode addConnection(DataNode connectionNode, IProcess process, String connectionUID, DataNode dataNode,
-            List<DataNode> nodeList, DataNode commitNode) {
-        IElementParameter param = dataNode.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
-        if (param != null) {
-            param.setValue(Boolean.TRUE);
-        }
-        param = dataNode.getElementParameter(EParameterName.CONNECTION.getName());
-        if (param != null) {
-            param.setValue(connectionUID);
+        List<DataNode> nodeList, DataNode commitNode) {
+        return addConnection(connectionNode, process, connectionUID, dataNode, nodeList,commitNode, false);
+    }
+    
+    private static DataNode addConnection(DataNode connectionNode, IProcess process, String connectionUID, DataNode dataNode,
+            List<DataNode> nodeList, DataNode commitNode, boolean tcomp) {
+        if(!tcomp) {
+            IElementParameter param = dataNode.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
+            if (param != null) {
+                param.setValue(Boolean.TRUE);
+            }
+            param = dataNode.getElementParameter(EParameterName.CONNECTION.getName());
+            if (param != null) {
+                param.setValue(connectionUID);
+            }
         }
         if (connectionNode == null) {
             IComponent component = null;
@@ -452,6 +557,11 @@ public class StatsAndLogsManager {
                             }
                         }
                         setConnectionParameter(connectionNode, process, connectionUID, dataNode, nodeList);
+                        
+                        if(isGeneric) {//reset the show if
+                            resetShowIf(connectionNode);
+                        }
+                        
                         if (connectionComponentName.contains("Oracle")) {//$NON-NLS-1$
                             if (connectionNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName()) != null) {
                                 connectionNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName())
@@ -482,6 +592,20 @@ public class StatsAndLogsManager {
         ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
         
         return connectionNode;
+    }
+
+    private static void resetShowIf(DataNode connectionNode) {
+      ComponentProperties tcomp_properties = connectionNode.getComponentProperties();
+      if(tcomp_properties!=null) {
+          List<Form> forms = tcomp_properties.getForms();
+          if(forms!=null) {
+              for(Form form : forms) {
+                tcomp_properties.refreshLayout(form);
+              }
+          }
+      }
+      //we set it for avoiding to depend on the getComponentProperties implement
+      connectionNode.setComponentProperties(tcomp_properties);
     }
     
     /**
