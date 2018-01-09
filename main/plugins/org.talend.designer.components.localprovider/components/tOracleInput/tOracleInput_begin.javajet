@@ -156,7 +156,17 @@ imports="
 		public void afterUseExistConnection(INode node) {
 			String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
 			if(!"ORACLE_8".equals(dbVersion)){%>
-				if(((oracle.jdbc.OracleConnection)conn_<%=cid%>).getSessionTimeZone() == null){
+                boolean isTimeZoneNull_<%=cid%> = false;
+                if (!(conn_<%=cid%> instanceof oracle.jdbc.OracleConnection) &&
+                        conn_<%=cid%>.isWrapperFor(oracle.jdbc.OracleConnection.class)) {
+                    if (conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class) != null) {
+                        isTimeZoneNull_<%=cid%> = (((oracle.jdbc.OracleConnection)conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class)).getSessionTimeZone() == null);
+                    }
+                } else {
+                    isTimeZoneNull_<%=cid%> = (((oracle.jdbc.OracleConnection)conn_<%=cid%>).getSessionTimeZone() == null);
+                }
+
+				if(isTimeZoneNull_<%=cid%>) {
 					java.sql.Statement stmtGetTZ_<%=cid%> = conn_<%=cid%>.createStatement();
 					java.sql.ResultSet rsGetTZ_<%=cid%> = stmtGetTZ_<%=cid%>.executeQuery("select sessiontimezone from dual");
 					String sessionTimezone_<%=cid%> = java.util.TimeZone.getDefault().getID();
@@ -165,7 +175,7 @@ imports="
 					}
 					if (!(conn_<%=cid%> instanceof oracle.jdbc.OracleConnection) &&
                                                 conn_<%=cid%>.isWrapperFor(oracle.jdbc.OracleConnection.class)) {
-                                            if (conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class) != null) {
+                            if (conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class) != null) {
                                                 ((oracle.jdbc.OracleConnection)conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class)).setSessionTimeZone(sessionTimezone_<%=cid%>);
                                             }
                                         } else {
