@@ -60,7 +60,7 @@
 %>
 				log.info("<%=cid%> - Connection to the server closed.");
 <%
-			}  
+			}
 		}
 	} else {// *** ftp *** //
 		if(!("true").equals(useExistingConn)){

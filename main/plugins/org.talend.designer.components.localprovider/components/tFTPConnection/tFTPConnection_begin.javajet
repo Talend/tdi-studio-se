@@ -29,7 +29,8 @@ boolean ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__")
 String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
 String sEncoding = ElementParameterParser.getValue(node, "__ENCODING__");
 String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
-
+String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
 
@@ -214,7 +215,8 @@ if (!sftp && !ftps) { // *** ftp *** //
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 	   	
     	ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
-		ftp_<%=cid %>.execPROT("P"); //TODO add property
+		ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+		ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
   	} catch (Exception e) {
 		<%if(isLog4jEnabled){%>
 			log.error("<%=cid%> - " + e.getMessage());

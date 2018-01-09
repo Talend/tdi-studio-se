@@ -180,29 +180,60 @@
 					for (org.apache.commons.net.ftp.FTPFile file_<%=cid %> : filesInDirectory_<%=cid%>) {
 						String fileName_<%=cid%> = file_<%=cid %>.getName();
 						if (fileName_<%=cid%>.matches(mask<%=cid %>)) {
+							boolean successDeleted_<%=cid %> = false;
 <%
 								if("FILE".equals(targetType)){
 %>
 									if (file_<%=cid %>.isFile()) {
-										ftp_<%=cid %>.deleteFile(fileName_<%=cid%>);
+										successDeleted_<%=cid %> = ftp_<%=cid %>.deleteFile(fileName_<%=cid%>);
+										if (successDeleted_<%=cid %>) {
+											globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
+											nb_file_<%=cid%>++;
+											<%if(isLog4jEnabled){%>
+												log.debug("<%=cid%> - File '" + fileName_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %>);
+											<%}%>
+										} else {
+											String responceFTPMessage = ftp_<%=cid %>.getReplyString();
+											String errorMessageDeleteFail = "<%=cid%> - File '" + fileName_<%=cid%>  + "' was not deleted. Error message: " + responceFTPMessage;
+											<%if(isLog4jEnabled){%>
+												log.error(errorMessageDeleteFail);
+											<%} else { %>
+												System.err.println(errorMessageDeleteFail);
+											<%}%>
+
+											<%if (("true").equals(dieOnError)) { %>
+												throw new RuntimeException(errorMessageDeleteFail);
+											<% } %>
+										}
 									}
-									<%if(isLog4jEnabled){%>
-										log.debug("<%=cid%> - File '" + file_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
-									<%}%>
 <%
 								}else{
 %>
 									if (file_<%=cid %>.isDirectory()) {
-										ftp_<%=cid %>.removeDirectory(fileName_<%=cid%>);
+										successDeleted_<%=cid %> = ftp_<%=cid %>.removeDirectory(fileName_<%=cid%>);
+										if (successDeleted_<%=cid %>) {
+											globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
+											nb_file_<%=cid%>++;
+											<%if(isLog4jEnabled){%>
+												log.debug("<%=cid%> - Directory '" + fileName_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %>);
+											<%}%>
+										} else {
+											String responceFTPMessage = ftp_<%=cid %>.getReplyString();
+											String errorMessageDeleteFail = "<%=cid%> - Directory '" + fileName_<%=cid%>  + "' was not deleted. Error message: " + responceFTPMessage;
+											<%if(isLog4jEnabled){%>
+												log.error(errorMessageDeleteFail);
+											<%} else { %>
+												System.err.println(errorMessageDeleteFail);
+											<%}%>
+
+											<%if (("true").equals(dieOnError)) { %>
+												throw new RuntimeException(errorMessageDeleteFail);
+											<% } %>
+										}
 									}
-									<%if(isLog4jEnabled){%>
-										log.debug("<%=cid%> - Directory '" + file_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %> + ".");
-									<%}%>
 <%
 								}
 %>
-								globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
-								nb_file_<%=cid%>++;
 							}
 					}
 				}
