@@ -75,8 +75,10 @@ public class GenericRepository implements Repository<ComponentProperties> {
                 if (schemaProperty != null) {
                     schemaProperty.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, null);
                 }
-                SchemaUtils.createCatalog(name, properties, connection, schemaPropertyName);
+//                SchemaUtils.createCatalog(name, properties, connection, schemaPropertyName);
+                childElement = SchemaUtils.createSchema(name, properties, schemaPropertyName);
             }
+            parentContainer.getOwnedElement().add(childElement);
             return repositoryLocation + IGenericConstants.REPOSITORY_LOCATION_SEPARATOR + name;
         } else {// simple properties to be set
             ConnectionItem item = getGenericConnectionItem(repositoryLocation);
