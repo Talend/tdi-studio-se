@@ -503,7 +503,7 @@ public final class TalendEditorPaletteFactory {
             componentSet.addAll(componentAll);
         }
 
-        addDelegateComponents(componentSet);
+        addDelegateComponents(compFac, componentSet, lowerCasedKeyword);
 
         List<IComponent> relatedComponents = null;
         if (componentSet == null || componentSet.isEmpty()) {
@@ -635,7 +635,8 @@ public final class TalendEditorPaletteFactory {
         }
     }
 
-    private static void addDelegateComponents(Collection<IComponent> componentSet) {
+    private static void addDelegateComponents(IComponentsFactory compFac, Collection<IComponent> componentSet,
+            String lowerCasedKeyword) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
             IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
@@ -655,6 +656,19 @@ public final class TalendEditorPaletteFactory {
 
             // add delegate components
             componentSet.addAll(delegateMap.values());
+
+            if (compFac != null && compFac.getComponentsHandler() != null) {
+                String paletteType = compFac.getComponentsHandler().extractComponentsCategory().getName();
+                LinkedHashSet<IComponent> delegateCompSet = new LinkedHashSet<IComponent>();
+                List<IComponent> delegateComponents = new ArrayList<IComponent>(service.getDelegateComponents(paletteType));
+                addComponentsByNameFilter(compFac, delegateCompSet, delegateComponents, lowerCasedKeyword);
+                for (IComponent delegateComp : delegateCompSet) {
+                    if (!delegateMap.values().contains(delegateComp)) {
+                        componentSet.add(delegateComp);
+                    }
+                }
+            }
+
         }
     }
 
