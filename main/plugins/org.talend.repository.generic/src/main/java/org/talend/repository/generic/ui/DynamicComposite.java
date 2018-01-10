@@ -418,6 +418,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
     }
 
     private void reset(boolean refresh) {
+        resetParameters();
         if (refresh) {
             Display.getDefault().asyncExec(new Runnable() {
 
@@ -426,14 +427,11 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                     refresh();
                 }
             });
-        }else{
-            resetParameters();
         }
     }
 
     @Override
     public void refresh() {
-        resetParameters();
         if (element instanceof FakeElement) {
             DisplayUtils.getDisplay().syncExec(new Runnable() {
 
