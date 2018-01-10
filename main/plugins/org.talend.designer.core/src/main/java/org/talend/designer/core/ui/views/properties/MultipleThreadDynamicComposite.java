@@ -502,6 +502,14 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         }
         minHeight = heightSize;
         resizeScrolledComposite();
+
+        // change back row number after create control
+        if (unifiedParam != null) {
+            for (IElementParameter param : listParam) {
+                int numRow = param.getNumRow();
+                param.setNumRow(numRow - 1);
+            }
+        }
     }
 
     protected boolean isShouldCreateControl(IElementParameter curParam) {

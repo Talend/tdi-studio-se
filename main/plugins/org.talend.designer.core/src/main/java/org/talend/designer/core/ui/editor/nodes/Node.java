@@ -697,7 +697,6 @@ public class Node extends Element implements IGraphicalNode {
             createElementParameters.addAll(component.createElementParameters(this));
         }
         setElementParameters(createElementParameters);
-
     }
 
     @Override
