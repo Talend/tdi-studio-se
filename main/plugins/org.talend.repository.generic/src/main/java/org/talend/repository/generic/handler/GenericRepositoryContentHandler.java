@@ -180,6 +180,8 @@ public class GenericRepositoryContentHandler extends AbstractRepositoryContentHa
             RepositoryNode parent = parentNode;
             if(metadataTable.getTableType() != null){
                 parent = nodeMap.get(metadataTable.getTableType());
+            }else{
+                parent = nodeMap.get(MetadataManager.TYPE_TABLE);
             }
             createTable(parent, repObj, metadataTable);
         }
