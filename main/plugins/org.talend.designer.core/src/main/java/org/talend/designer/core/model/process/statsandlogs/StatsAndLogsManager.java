@@ -216,7 +216,7 @@ public class StatsAndLogsManager {
             IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tLogCatcher" ,"LOGS");
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, LOG_UNIQUE_NAME, "tLogCatcher" ,"LOGS");
                 return nodeList;
             }
           
