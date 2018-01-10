@@ -25,7 +25,6 @@ import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1426,15 +1425,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         RunProcessContext runProcessContext = RunProcessPlugin.getDefault().getRunProcessContextManager().getActiveContext();
         if (runProcessContext != null) {
             ITargetExecutionConfig config = runProcessContext.getSelectedTargetExecutionConfig();
-            if (config != null && config.getCommandlineServerConfig() == null) {
-                if (config.isRemote()) {
-                    if (config.isUseJMX()) {
-                        asList.add("-Dcom.sun.management.jmxremote"); //$NON-NLS-1$
-                        asList.add("-Dcom.sun.management.jmxremote.port=" + config.getRemotePort()); //$NON-NLS-1$
-                        asList.add("-Dcom.sun.management.jmxremote.ssl=false"); //$NON-NLS-1$
-                        asList.add("-Dcom.sun.management.jmxremote.authenticate=false"); //$NON-NLS-1$
-                    }
-                }
+            if (config != null && config.isRemote() && config.isUseJMX()) {
+                asList.add("-Dcom.sun.management.jmxremote"); //$NON-NLS-1$
+                asList.add("-Dcom.sun.management.jmxremote.port=" + config.getRemotePort()); //$NON-NLS-1$
+                asList.add("-Dcom.sun.management.jmxremote.ssl=false"); //$NON-NLS-1$
+                asList.add("-Dcom.sun.management.jmxremote.authenticate=false"); //$NON-NLS-1$
             }
         }
 

@@ -193,6 +193,26 @@
     	<DEFAULT>false</DEFAULT>
     </PARAMETER>
     
+        <PARAMETER 
+			NAME="ENABLE-KMS"
+			FIELD="CHECK"
+			NUM_ROW="85"
+			SHOW_IF="(ENABLE-SERVER-SIDE-ENCRYPTION == 'true')"
+			REQUIRED="false"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>		
+		
+		<PARAMETER 
+			NAME="KMSID"
+			FIELD="TEXT"
+			NUM_ROW="85"
+			SHOW_IF="(ENABLE-SERVER-SIDE-ENCRYPTION == 'true' AND ENABLE-KMS == 'true')"
+			REQUIRED="false"
+		>
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
+    
     <PARAMETER
         NAME="DIE_ON_ERROR"
         FIELD="CHECK"

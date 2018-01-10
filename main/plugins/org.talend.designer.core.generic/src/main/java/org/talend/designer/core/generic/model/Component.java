@@ -1410,6 +1410,15 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";
         }
+        if (GenericTypeUtils.isFloatType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Float.valueOf(" + value + ") : null";
+        }
+        if (GenericTypeUtils.isDoubleType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Double.valueOf(" + value + ") : null";
+        }
+        if (GenericTypeUtils.isLongType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Long.valueOf(" + value + ") : null";
+        }
         if ("\"\"\"".equals(value)) {
             value = "\"\\\"\"";
         }

@@ -32,20 +32,6 @@ import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 public class BuildJobFactoryTest {
 
     @Test
-    public void test_createBuildJobHandler_JobExportType_war() {
-        IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(PropertiesFactory.eINSTANCE.createProcessItem(),
-                "Default", "0.1", JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.WSWAR);
-        Assert.assertNull("Have supportted WAR, not support before", handler);
-    }
-
-    @Test
-    public void test_createBuildJobHandler_JobExportType_ZIP() {
-        IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(PropertiesFactory.eINSTANCE.createProcessItem(),
-                "Default", "0.1", JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.WSZIP);
-        Assert.assertNull("Have supportted ZIP, not support before", handler);
-    }
-
-    @Test
     public void test_createBuildJobHandler_JobExportType_OSGi() {
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(PropertiesFactory.eINSTANCE.createProcessItem(),
                 "Default", "0.1", JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.OSGI);
