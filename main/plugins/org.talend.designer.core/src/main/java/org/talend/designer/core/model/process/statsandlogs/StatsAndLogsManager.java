@@ -211,106 +211,104 @@ public class StatsAndLogsManager {
                 }
             }
         }
+        
+        if (useStats) {
+            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
+            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if(tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS");
+            }else{
+                DataNode statsNode = createStatsNode(file, console, dbOutput);
+                if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
+                    statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
+                                    + process.getElementParameter(EParameterName.FILENAME_STATS.getName()).getValue() + ")"); //$NON-NLS-1$
+                } else {
+                    statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            basePath + process.getElementParameter(EParameterName.FILENAME_STATS.getName()).getValue());
+                }
+                if (dbFlag) {
+                    if (commitNode != null && isNotInformixDB) {
+                        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, statsNode, nodeList, commitNode);
+                    } else {
+                        useNoConnectionComponentDB(statsNode, process, CONNECTION_UID);
+                    }
+                    statsNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
+                            process.getElementParameter(EParameterName.TABLE_STATS.getName()).getValue());
+                }
+
+                if (file) {
+                    IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
+                    if (encodingParameter != null) {
+                        Object value = encodingParameter.getValue();
+                        if (value != null && !"".equals(value)) {
+                            IElementParameter elementParameter = statsNode.getElementParameter(EParameterName.ENCODING.getName());
+                            if (elementParameter != null) {
+                                String encoding = value.toString();
+                                if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
+                                    encoding = TalendTextUtils.addQuotes(encoding);
+                                }
+                                elementParameter.setValue(encoding);
+                            }
+                        }
+                    }
+                }
+                statsNode.setProcess(process);
+                nodeList.add(statsNode);
+            }
+        }
 
         if (useLogs) {
             IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
                 connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, LOG_UNIQUE_NAME, "tLogCatcher" ,"LOGS");
-                return nodeList;
-            }
-          
-            DataNode logsNode = createLogsNode(file, console, dbOutput);
-            if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
-                logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
-                                + process.getElementParameter(EParameterName.FILENAME_LOGS.getName()).getValue() + ")"); //$NON-NLS-1$
-            } else {
-                logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        basePath + process.getElementParameter(EParameterName.FILENAME_LOGS.getName()).getValue());
-            }
-            if (dbFlag) {
-                if (commitNode != null && isNotInformixDB) {
-                    connectionNode = addConnection(connectionNode, process, CONNECTION_UID, logsNode, nodeList, commitNode);
+            }else{
+                DataNode logsNode = createLogsNode(file, console, dbOutput);
+                if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
+                    logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
+                                    + process.getElementParameter(EParameterName.FILENAME_LOGS.getName()).getValue() + ")"); //$NON-NLS-1$
                 } else {
-                    useNoConnectionComponentDB(logsNode, process, CONNECTION_UID);
+                    logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            basePath + process.getElementParameter(EParameterName.FILENAME_LOGS.getName()).getValue());
                 }
-                logsNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
-                        process.getElementParameter(EParameterName.TABLE_LOGS.getName()).getValue());
-            }
-            if (file) {
-                IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
-                if (encodingParameter != null) {
-                    Object value = encodingParameter.getValue();
-                    if (value != null && !"".equals(value)) {
-                        IElementParameter elementParameter = logsNode.getElementParameter(EParameterName.ENCODING.getName());
-                        if (elementParameter != null) {
-                            String encoding = value.toString();
-                            if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
-                                encoding = TalendTextUtils.addQuotes(encoding);
+                if (dbFlag) {
+                    if (commitNode != null && isNotInformixDB) {
+                        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, logsNode, nodeList, commitNode);
+                    } else {
+                        useNoConnectionComponentDB(logsNode, process, CONNECTION_UID);
+                    }
+                    logsNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
+                            process.getElementParameter(EParameterName.TABLE_LOGS.getName()).getValue());
+                }
+                if (file) {
+                    IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
+                    if (encodingParameter != null) {
+                        Object value = encodingParameter.getValue();
+                        if (value != null && !"".equals(value)) {
+                            IElementParameter elementParameter = logsNode.getElementParameter(EParameterName.ENCODING.getName());
+                            if (elementParameter != null) {
+                                String encoding = value.toString();
+                                if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
+                                    encoding = TalendTextUtils.addQuotes(encoding);
+                                }
+                                elementParameter.setValue(encoding);
                             }
-                            elementParameter.setValue(encoding);
                         }
                     }
                 }
-            }
 
-            logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                    process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-            logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                    process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-            logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                    process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
 
-            logsNode.setProcess(process);
-            nodeList.add(logsNode);
-        }
-
-        if (useStats) {
-            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
-            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
-            if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS");
-                return nodeList;
+                logsNode.setProcess(process);
+                nodeList.add(logsNode); 
             }
-            
-            DataNode statsNode = createStatsNode(file, console, dbOutput);
-            if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
-                statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
-                                + process.getElementParameter(EParameterName.FILENAME_STATS.getName()).getValue() + ")"); //$NON-NLS-1$
-            } else {
-                statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        basePath + process.getElementParameter(EParameterName.FILENAME_STATS.getName()).getValue());
-            }
-            if (dbFlag) {
-                if (commitNode != null && isNotInformixDB) {
-                    connectionNode = addConnection(connectionNode, process, CONNECTION_UID, statsNode, nodeList, commitNode);
-                } else {
-                    useNoConnectionComponentDB(statsNode, process, CONNECTION_UID);
-                }
-                statsNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
-                        process.getElementParameter(EParameterName.TABLE_STATS.getName()).getValue());
-            }
-
-            if (file) {
-                IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
-                if (encodingParameter != null) {
-                    Object value = encodingParameter.getValue();
-                    if (value != null && !"".equals(value)) {
-                        IElementParameter elementParameter = statsNode.getElementParameter(EParameterName.ENCODING.getName());
-                        if (elementParameter != null) {
-                            String encoding = value.toString();
-                            if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
-                                encoding = TalendTextUtils.addQuotes(encoding);
-                            }
-                            elementParameter.setValue(encoding);
-                        }
-                    }
-                }
-            }
-            statsNode.setProcess(process);
-            nodeList.add(statsNode);
         }
 
         if (useMetter) {
@@ -318,46 +316,45 @@ public class StatsAndLogsManager {
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
                 connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tFlowMeterCatcher" ,"METTER");
-                return nodeList;
-            }
-          
-            DataNode meterNode = createMetterNode(file, console, dbOutput);
-            if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
-                meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
-                                + process.getElementParameter(EParameterName.FILENAME_METTER.getName()).getValue() + ")"); //$NON-NLS-1$
-            } else {
-                meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
-                        basePath + process.getElementParameter(EParameterName.FILENAME_METTER.getName()).getValue());
-            }
-            if (dbFlag) {
-                if (commitNode != null && isNotInformixDB) {
-                    connectionNode = addConnection(connectionNode, process, CONNECTION_UID, meterNode, nodeList, commitNode);
+            }else{
+                DataNode meterNode = createMetterNode(file, console, dbOutput);
+                if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
+                    meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            "File::Spec->catfile(" + basePath + "," //$NON-NLS-1$ //$NON-NLS-2$
+                                    + process.getElementParameter(EParameterName.FILENAME_METTER.getName()).getValue() + ")"); //$NON-NLS-1$
                 } else {
-                    useNoConnectionComponentDB(meterNode, process, CONNECTION_UID);
+                    meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                            basePath + process.getElementParameter(EParameterName.FILENAME_METTER.getName()).getValue());
                 }
-                meterNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
-                        process.getElementParameter(EParameterName.TABLE_METER.getName()).getValue());
-            }
+                if (dbFlag) {
+                    if (commitNode != null && isNotInformixDB) {
+                        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, meterNode, nodeList, commitNode);
+                    } else {
+                        useNoConnectionComponentDB(meterNode, process, CONNECTION_UID);
+                    }
+                    meterNode.getElementParameter("TABLE").setValue(//$NON-NLS-1$
+                            process.getElementParameter(EParameterName.TABLE_METER.getName()).getValue());
+                }
 
-            if (file) {
-                IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
-                if (encodingParameter != null) {
-                    Object value = encodingParameter.getValue();
-                    if (value != null && !"".equals(value)) {
-                        IElementParameter elementParameter = meterNode.getElementParameter(EParameterName.ENCODING.getName());
-                        if (elementParameter != null) {
-                            String encoding = value.toString();
-                            if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
-                                encoding = TalendTextUtils.addQuotes(encoding);
+                if (file) {
+                    IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
+                    if (encodingParameter != null) {
+                        Object value = encodingParameter.getValue();
+                        if (value != null && !"".equals(value)) {
+                            IElementParameter elementParameter = meterNode.getElementParameter(EParameterName.ENCODING.getName());
+                            if (elementParameter != null) {
+                                String encoding = value.toString();
+                                if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
+                                    encoding = TalendTextUtils.addQuotes(encoding);
+                                }
+                                elementParameter.setValue(encoding);
                             }
-                            elementParameter.setValue(encoding);
                         }
                     }
                 }
+                meterNode.setProcess(process);
+                nodeList.add(meterNode); 
             }
-            meterNode.setProcess(process);
-            nodeList.add(meterNode);
         }
         
         return nodeList;
