@@ -442,22 +442,17 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 %>
 				}
-<%
-				String actualLogFilePath;
-				if (isLogFilePathSpecified) {
-					actualLogFilePath = parametersList.get(parametersList.indexOf("\"-lf\"") + 1);
-				} else {
-					actualLogFilePath = new StringBuilder("\"")
-										.append(dbtable.toUpperCase().replaceAll("\"", ""))
-										.append(".")
-										.append(dbuser.toUpperCase().replaceAll("\"", ""))
-										.append(".")
-										.append(dbname.toUpperCase().replaceAll("\"", ""))
-										.append(".nzlog\"").toString();
-				}
-%>
-				nb_line_<%=cid%>.set(getProcessedRowsCount(<%=actualLogFilePath%>));
 
+				String actualLogFilePath = <%if(isLogFilePathSpecified){%>
+					<%=parametersList.get(parametersList.indexOf("\"-lf\"") + 1)%>;
+				<%} else {%>
+					"\"" + <%=dbtable%>.toUpperCase().replaceAll("\"", "")
+					+ "." + <%=dbuser%>.toUpperCase().replaceAll("\"", "")
+					+ "." + <%=dbname%>.toUpperCase().replaceAll("\"", "")
+					+ ".nzlog\"";
+				<%}%>
+
+				nb_line_<%=cid%>.set(getProcessedRowsCount(actualLogFilePath));
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_NZLOAD_ERROR",e.getMessage());
