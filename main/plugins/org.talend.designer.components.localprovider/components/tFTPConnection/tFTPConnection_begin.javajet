@@ -163,13 +163,13 @@ if (!sftp && !ftps) { // *** ftp *** //
 			session_<%=cid%>.setProxy(proxy_<%=cid%>);
 		}
 	<%}%>
-  	<%if(isLog4jEnabled){%>
+	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Attempt to connect to  '" + <%=host %> + "' with username '" + <%=user%> + "'.");
 	<%}%>
 	session_<%=cid%>.connect();
 	com.jcraft.jsch. Channel channel_<%=cid%> = session_<%=cid%>.openChannel("sftp"); 
 	channel_<%=cid%>.connect();
-  	<%if(isLog4jEnabled){%>
+	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 	<%}%>
 	com.jcraft.jsch.ChannelSftp c_<%=cid%> = (com.jcraft.jsch.ChannelSftp)channel_<%=cid%>;
@@ -184,44 +184,44 @@ if (!sftp && !ftps) { // *** ftp *** //
 %>
 
 	<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%> 
-	javax.net.ssl.SSLContext sslContext = null;
-	javax.net.ssl.TrustManager[] trustManager = null;
-	javax.net.ssl.SSLSocketFactory sslSocketFactory = null;
-	org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
+	javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
+	javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
+	javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
+	org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
 	MyTrust_<%=cid%> myTrust_<%=cid%> = null;
 
 	try {
-		sslContext = javax.net.ssl.SSLContext.getInstance("SSL");
+		sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
 		myTrust_<%=cid%> = new MyTrust_<%=cid%>();
-		trustManager = myTrust_<%=cid%>.getTrustManagers();
-		sslContext.init(null, trustManager, new java.security.SecureRandom());
-		sslSocketFactory = sslContext.getSocketFactory();
-		ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext);
-		ftp_<%=cid %>.setControlEncoding(<%=sEncoding%>);
+		trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
+		sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+		sslSocketFactory_<%=cid %> = sslContext.getSocketFactory();
+		ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+		ftp_<%=cid %>.setControlEncoding(<%=sEncoding %>);
 
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
 			log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 		<%}%>
-    	ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
-  		<%if(isLog4jEnabled){%>
+		ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
+		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 		<%}%>
-	        
+
 		<%
 		passwordFieldName = "__PASS__";
 		%>
 		
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-	   	
-    	ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+
+		ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
 		ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 		ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
-  	} catch (Exception e) {
+	} catch (Exception e) {
 		<%if(isLog4jEnabled){%>
 			log.error("<%=cid%> - " + e.getMessage());
 		<%}%>
-    	e.printStackTrace();
+		e.printStackTrace();
 	}
 	globalMap.put("conn_<%=cid%>", ftp_<%=cid %>);
 <%

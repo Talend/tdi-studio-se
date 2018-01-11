@@ -249,19 +249,19 @@ if (sftp) {// *** sftp *** //
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
 		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
-		javax.net.ssl.SSLContext sslContext = null;
-		javax.net.ssl.TrustManager[] trustManager = null;
-		javax.net.ssl.SSLSocketFactory sslSocketFactory = null;
+		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
+		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
+		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
 		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
 		MyTrust_<%=cid %> myTrust_<%=cid%> = null;
 
 		try {
-			sslContext = javax.net.ssl.SSLContext.getInstance("SSL");
+			sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
 			myTrust_<%=cid%> = new MyTrust_<%=cid%>();
-			trustManager = myTrust_<%=cid%>.getTrustManagers();
-			sslContext.init(null, trustManager, new java.security.SecureRandom());
-			sslSocketFactory = sslContext.getSocketFactory();
-			ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext);
+			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
+			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+			sslSocketFactory_<%=cid %> = sslContext.getSocketFactory();
+			ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
 			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
 
 			<%if(isLog4jEnabled){%>
