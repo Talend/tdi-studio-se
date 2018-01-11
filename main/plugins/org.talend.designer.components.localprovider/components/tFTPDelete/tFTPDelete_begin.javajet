@@ -216,7 +216,7 @@ int nb_file_<%=cid%> = 0;
 				myTrust_<%=cid%> = new MyTrust_<%=cid%>();
 				trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
 				sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
-				sslSocketFactory_<%=cid %> = sslContext.getSocketFactory();
+				sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
 				ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
 				ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
 
