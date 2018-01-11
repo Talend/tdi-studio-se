@@ -825,7 +825,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     }
                 }
                 Image jobSettingImage = null;
-                ERepositoryObjectType repositoryObjectType = repositoryNode.getObjectType();
+                ERepositoryObjectType repositoryObjectType = repositoryNode.getContentType();
+                if(repositoryObjectType == null){
+                    repositoryObjectType = repositoryNode.getObjectType();
+                }
                 if (repositoryObjectType == ERepositoryObjectType.PROCESS_MR
                         || repositoryObjectType == ERepositoryObjectType.PROCESS_STORM) {
                     jobSettingImage = getImage(repositoryObject);
