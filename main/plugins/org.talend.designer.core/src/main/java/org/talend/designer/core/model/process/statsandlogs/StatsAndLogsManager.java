@@ -253,12 +253,18 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
-                statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-                statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-                statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                if(statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
+                    statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                }
+                if(statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
+                    statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                }
+                if(statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
+                    statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                }
                 statsNode.setProcess(process);
                 nodeList.add(statsNode);
             }
@@ -305,12 +311,18 @@ public class StatsAndLogsManager {
                     }
                 }
 
-                logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-                logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-                logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                if(logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
+                    logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                }
+                if(logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
+                    logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                }
+                if(logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
+                    logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                }
 
                 logsNode.setProcess(process);
                 nodeList.add(logsNode); 
@@ -358,12 +370,18 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
-                meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-                meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-                meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                if(meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
+                    meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                }
+                if(meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
+                    meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                }
+                if(meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
+                    meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                }
                 
                 meterNode.setProcess(process);
                 nodeList.add(meterNode); 
