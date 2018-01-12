@@ -11,28 +11,46 @@ imports="
 	
 		public void createURL(INode node) {
 			super.createURL(node);
+		    String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
+			if("SYBSEIQ_16_SA".equals(dbVersion)){
+				if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+		String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %>; 
+<%
+				}
+				else{
+%>
+		String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+<%
+				}
+			}
+			else {
 %>
 <%
-			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+				if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
 		String url_<%=cid%> = "jdbc:sybase:Tds:" + <%=dbhost %> + ":" + <%=dbport %> + "/" + <%=dbname %>; 
 <%
-			} else {
+				} else {
 %>
 		String url_<%=cid%> = "jdbc:sybase:Tds:" + <%=dbhost %> + ":" + <%=dbport %> + "/" + <%=dbname %> + "?" + <%=dbproperties%>;
 <%
-			}
+				}
 %>
 <%	
+			}
 		}
 	
 		public String getDirverClassName(INode node){
-		    String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
-			if("SYBSEIQ_16".equals(dbVersion)){
+		        String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
+			if("SYBSEIQ_16_SA".equals(dbVersion)){
+                            return "sap.jdbc4.sqlanywhere.IDriver";
+			}
+			else if("SYBSEIQ_16".equals(dbVersion)){
 			    return "com.sybase.jdbc4.jdbc.SybDriver";
-			    }else{
+			}else{
 			    return "com.sybase.jdbc3.jdbc.SybDriver";
-			    }
+			}
 		}
 		
 	}//end class
