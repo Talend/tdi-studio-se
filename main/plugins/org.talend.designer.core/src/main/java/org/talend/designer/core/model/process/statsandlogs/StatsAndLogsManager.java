@@ -253,6 +253,12 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
+                statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
                 statsNode.setProcess(process);
                 nodeList.add(statsNode);
             }
@@ -352,6 +358,13 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
+                meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
+                        process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                
                 meterNode.setProcess(process);
                 nodeList.add(meterNode); 
             }
