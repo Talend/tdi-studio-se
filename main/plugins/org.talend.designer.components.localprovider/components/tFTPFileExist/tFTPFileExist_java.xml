@@ -135,11 +135,25 @@ COMPATIBILITY="ALL"
       <DEFAULT>"."</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="FILENAME" FIELD="TEXT" REQUIRED="false" NUM_ROW="71">
+    <PARAMETER
+      NAME="TARGETTYPE"
+      FIELD="CLOSED_LIST"
+      NUM_ROW="71">
+      <ITEMS DEFAULT="FILE">
+        <ITEM NAME="FILE"  VALUE="FILE" />
+        <ITEM NAME="DIRECTORY"  VALUE="DIRECTORY" />
+      </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER NAME="FILENAME" FIELD="TEXT" REQUIRED="false" NUM_ROW="81" SHOW_IF="TARGETTYPE=='FILE'">
       <DEFAULT>"filename.suffix"</DEFAULT>
     </PARAMETER>
 
-    <PARAMETER NAME="CONNECT_MODE" FIELD="CLOSED_LIST" NUM_ROW="101" REPOSITORY_VALUE="CONNECT_MODE" SHOW_IF="(SFTP=='false') AND (USE_EXISTING_CONNECTION == 'false')">
+    <PARAMETER NAME="DIRECTORYNAME" FIELD="TEXT" REQUIRED="false" NUM_ROW="81" SHOW_IF="TARGETTYPE=='DIRECTORY'">
+      <DEFAULT>"directoryname"</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER NAME="CONNECT_MODE" FIELD="CLOSED_LIST" NUM_ROW="111" REPOSITORY_VALUE="CONNECT_MODE" SHOW_IF="(SFTP=='false') AND (USE_EXISTING_CONNECTION == 'false')">
       <ITEMS DEFAULT="PASSIVE">
         <ITEM NAME="PASSIVE"  VALUE="PASSIVE" />
      	<ITEM NAME="ACTIVE"  VALUE="ACTIVE" />
@@ -149,7 +163,7 @@ COMPATIBILITY="ALL"
     <PARAMETER
       NAME="USE_ENCODING"
       FIELD="CHECK"
-      NUM_ROW="105"
+      NUM_ROW="115"
       REPOSITORY_VALUE="USE_ENCODING"
       REQUIRED="true" SHOW_IF="(USE_EXISTING_CONNECTION == 'false') and (SFTP == 'true')">
        <DEFAULT>false</DEFAULT>
@@ -158,7 +172,7 @@ COMPATIBILITY="ALL"
     <PARAMETER
       NAME="ENCODING"
       FIELD="ENCODING_TYPE"
-      NUM_ROW="111"
+      NUM_ROW="121"
       REQUIRED="true"
       REPOSITORY_VALUE="ENCODING"
       NOT_SHOW_IF="(USE_EXISTING_CONNECTION == 'true') or ((SFTP == 'true') and (USE_ENCODING == 'false'))">
@@ -200,7 +214,7 @@ COMPATIBILITY="ALL"
 
   <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="Java-FTP" MODULE="edtftpj-2.4.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.4.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.4.0.jar" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
+		<IMPORT NAME="Java-FTP" MODULE="edtftpj-2.5.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.5.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.5.0.jar" REQUIRED_IF="(SFTP == 'false') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		<IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.53.jar" MVN="mvn:org.talend.libraries/jsch-0.1.53/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.53.jar" REQUIRED_IF="(SFTP == 'true') AND (USE_EXISTING_CONNECTION == 'false')"/>
      </IMPORTS>
    </CODEGENERATION>

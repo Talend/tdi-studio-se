@@ -204,7 +204,7 @@
 
   <CODEGENERATION>
      <IMPORTS>
-       <IMPORT NAME="Java-FTP" MODULE="edtftpj-2.4.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.4.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.4.0.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false')"/>
+       <IMPORT NAME="Java-FTP" MODULE="edtftpj-2.5.0.jar" MVN="mvn:org.talend.libraries/edtftpj-2.5.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.5.0.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false')"/>
        <IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.53.jar" MVN="mvn:org.talend.libraries/jsch-0.1.53/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.53.jar" REQUIRED_IF="(SFTP == 'true')"/>
        <IMPORT NAME="Java-FTPS" MODULE="ftp4j-1.7.2.jar" MVN="mvn:org.talend.libraries/ftp4j-1.7.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/ftp4j-1.7.2.jar" REQUIRED_IF="(FTPS == 'true')" />
      </IMPORTS>
