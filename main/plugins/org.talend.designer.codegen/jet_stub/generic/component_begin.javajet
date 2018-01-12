@@ -164,6 +164,7 @@ org.talend.components.api.component.ConnectorTopology topology_<%=cid%> = null;
 <%
 boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutputOnly = hasOutput && !hasInput;
+boolean isTopologyNone = !hasOutput && !hasInput;
 
 if (hasInput && hasOutput) {
 %>
@@ -212,6 +213,10 @@ if(componentRuntime_<%=cid%> instanceof org.talend.components.api.component.runt
 <%
 // Return at this point if there is no metadata.
 if (metadata == null) {
+    return stringBuffer.toString();
+}
+
+if(isTopologyNone) {
     return stringBuffer.toString();
 }
 

@@ -100,8 +100,8 @@ public class Neo4jBatchInserterNode extends Neo4jBatchInserterAbstract {
 
                 // update properties
                 Map<String, Object> props = this.batchDb.getInserter().getNodeProperties(id);
-                properties.putAll(props);
-                this.batchDb.getInserter().setNodeProperties(id, properties);
+                props.putAll(properties);
+                this.batchDb.getInserter().setNodeProperties(id, props);
 
                 // update labels
                 List<Label> labelList = new ArrayList<>(Arrays.asList(labels));

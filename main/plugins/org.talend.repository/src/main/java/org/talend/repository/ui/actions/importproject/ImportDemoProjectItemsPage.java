@@ -57,6 +57,8 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExportPage1;
 import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
+import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.commons.ui.swt.dialogs.ProgressDialog;
@@ -331,7 +333,11 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                 monitorWrap = new EventLoopProgressMonitor(monitor);
+                ResourceOption demoImportOption = ResourceOption.DEMO_IMPORTATION;
+                final String optionName = demoImportOption.getName();
                 try {
+                    EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(optionName, demoImportOption.getProvider());
+
                     for (ResourcesManager resManager : finalCheckManagers) {
                         List<ImportItem> projectRecords = importManager.populateImportingItems(resManager, true, monitorWrap);
                         // clearOverWriteErrorMessages(projectRecords, overwrite);
@@ -340,6 +346,8 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
                     }
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
+                } finally {
+                    EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(optionName);
                 }
                 monitorWrap.done();
                 if (monitor.isCanceled()) {

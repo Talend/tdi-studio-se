@@ -75,10 +75,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
      * */
     public static enum JobExportType {
         POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
-        WSWAR(Messages.getString("JavaJobScriptsExportWSWizardPage.WSWAR") + " (Deprecated)", false), //$NON-NLS-1$
-        WSZIP(Messages.getString("JavaJobScriptsExportWSWizardPage.WSZIP") + " (Deprecated)", false), //$NON-NLS-1$
-                                      OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
-                                      MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false);//$NON-NLS-1$
+        OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
+        MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false);//$NON-NLS-1$
         public final String label;
 
         public final boolean deprecate;
@@ -418,8 +416,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         chkButton = new Button(left, SWT.CHECK);
         chkButton.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.extractZipFile")); //$NON-NLS-1$
         JobExportType comboType = JobExportType.getTypeFromString(exportTypeCombo.getText());
-        if (comboType.equals(JobExportType.WSWAR) || comboType.equals(JobExportType.OSGI)
-                || comboType.equals(JobExportType.MSESB)) {
+        if (comboType.equals(JobExportType.OSGI) || comboType.equals(JobExportType.MSESB)) {
             chkButton.setVisible(false);
             zipOption = null;
         } else {
@@ -457,8 +454,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 pageComposite.setSize(pageComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
                 pageComposite.layout();
                 JobExportType comboType = JobExportType.getTypeFromString(exportTypeCombo.getText());
-                if (comboType.equals(JobExportType.WSWAR) || comboType.equals(JobExportType.OSGI)
-                        || comboType.equals(JobExportType.MSESB)) {
+                if (comboType.equals(JobExportType.OSGI) || comboType.equals(JobExportType.MSESB)) {
                     chkButton.setVisible(false);
                     zipOption = null;
                 } else {
@@ -501,8 +497,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
     @Override
     protected String getOutputSuffix() {
         switch (getCurrentExportType1()) {
-        case WSWAR:
-            return FileConstants.WAR_FILE_SUFFIX;
         case OSGI:
             return FileConstants.JAR_FILE_SUFFIX;
         case MSESB:
@@ -524,9 +518,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         FileDialog dialog = new FileDialog(getContainer().getShell(), SWT.SAVE);
         JobExportType jobExportType = getCurrentExportType1();
         switch (jobExportType) {
-        case WSWAR:
-            dialog.setFilterExtensions(new String[] { "*" + FileConstants.WAR_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
-            break;
         case OSGI:
             if (isAddMavenScript()) {
                 dialog.setFilterExtensions(new String[] { "*" + FileConstants.ZIP_FILE_SUFFIX, "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
@@ -747,65 +738,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         }
     }
 
-    protected void restoreWidgetValuesForWS() {
-        IDialogSettings settings = getDialogSettings();
-        if (settings != null) {
-            String[] directoryNames = settings.getArray(STORE_DESTINATION_NAMES_ID);
-            if (directoryNames != null && directoryNames.length > 0) {
-                String fileName = getDefaultFileNameWithType();
-                // destination
-                for (int i = 0; i < directoryNames.length; i++) {
-                    if (directoryNames[i].toLowerCase().endsWith(FileConstants.WAR_FILE_SUFFIX)
-                            || directoryNames[i].toLowerCase().endsWith(FileConstants.ZIP_FILE_SUFFIX)) {
-                        directoryNames[i] = (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
-                        addDestinationItem(directoryNames[i]);
-                    }
-                }
-                File dest = new File(new File(directoryNames[0]).getParentFile(), fileName);
-                setDestinationValue(dest.getAbsolutePath());
-            } else {
-                setDefaultDestination();
-            }
-
-            webXMLButton.setSelection(settings.getBoolean(STORE_WEBXML_ID));
-            configFileButton.setSelection(settings.getBoolean(STORE_CONFIGFILE_ID));
-            axisLibButton.setSelection(settings.getBoolean(STORE_AXISLIB_ID));
-            wsddButton.setSelection(settings.getBoolean(STORE_WSDD_ID));
-            wsdlButton.setSelection(settings.getBoolean(STORE_WSDL_ID));
-            jobScriptButton.setSelection(settings.getBoolean(STORE_SOURCE_ID));
-            contextButton.setSelection(settings.getBoolean(STORE_CONTEXT_ID));
-            applyToChildrenButton.setSelection(settings.getBoolean(APPLY_TO_CHILDREN_ID));
-            chkButton.setSelection(settings.getBoolean(EXTRACT_ZIP_FILE));
-            // TDI-26294:should use getVisible here since the isVisible need the parent's isVisible()
-            if (chkButton.getVisible()) {
-                zipOption = String.valueOf(chkButton.getSelection());
-            } else {
-                zipOption = "false"; //$NON-NLS-1$
-            }
-
-        }
-
-        if (getProcessItem() != null && contextCombo != null) {
-            try {
-                setProcessItem((ProcessItem) ProxyRepositoryFactory.getInstance()
-                        .getUptodateProperty(getProcessItem().getProperty()).getItem());
-            } catch (PersistenceException e) {
-                e.printStackTrace();
-            }
-            List<String> contextNames = ExportJobUtil.getJobContexts(getProcessItem());
-            contextCombo.setItems(contextNames.toArray(new String[contextNames.size()]));
-            if (contextNames.size() > 0) {
-                contextCombo.select(0);
-            }
-        }
-        if (log4jLevelCombo != null) {
-            log4jLevelCombo.setItems(Log4jPrefsSettingManager.getLevel());
-            if (Log4jPrefsSettingManager.getLevel().length > 0) {
-                log4jLevelCombo.select(2);
-            }
-        }
-    }
-
     protected void restoreWidgetValuesForPOJO() {
         IDialogSettings settings = getDialogSettings();
 
@@ -930,13 +862,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 settings.put(STORE_SHELL_LAUNCHER_ID, shellLauncherButton.getSelection());
                 settings.put(EXTRACT_ZIP_FILE, chkButton.getSelection());
                 return;
-            } else if (getCurrentExportType1().equals(JobExportType.WSZIP)) {
-                settings.put(STORE_WEBXML_ID, webXMLButton.getSelection());
-                settings.put(STORE_CONFIGFILE_ID, configFileButton.getSelection());
-                settings.put(STORE_AXISLIB_ID, axisLibButton.getSelection());
-                settings.put(STORE_WSDD_ID, wsddButton.getSelection());
-                settings.put(STORE_WSDL_ID, wsdlButton.getSelection());
-                settings.put(EXTRACT_ZIP_FILE, chkButton.getSelection());
             }
         }
     }
@@ -985,16 +910,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         exportChoiceMap.put(ExportChoice.needJobScript, Boolean.TRUE);
         exportChoiceMap.put(ExportChoice.needContext, contextButton.getSelection());
         exportChoiceMap.put(ExportChoice.applyToChildren, applyToChildrenButton.getSelection());
-
-        if (comboType.equals(JobExportType.WSWAR)) {
-            exportChoiceMap.put(ExportChoice.needMetaInfo, true);
-            exportChoiceMap.put(ExportChoice.needJobItem, true);
-            exportChoiceMap.put(ExportChoice.needDependencies, true);
-            exportChoiceMap.put(ExportChoice.needSourceCode, true);
-        } else {
-            exportChoiceMap.put(ExportChoice.needMetaInfo, false);
-        }
-
+        exportChoiceMap.put(ExportChoice.needMetaInfo, false);
         return exportChoiceMap;
     }
 
@@ -1277,25 +1193,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             gd.horizontalSpan = 2;
             log4jLevelCombo.setLayoutData(gd);
             log4jLevelCombo.setEnabled(false);
-        }
-
-        restoreWidgetValuesForWS();
-
-        if (JobExportType.getTypeFromString(exportTypeCombo.getText()).equals(JobExportType.WSWAR)) {
-            webXMLButton.setEnabled(false);
-            webXMLButton.setSelection(true);
-            configFileButton.setEnabled(false);
-            configFileButton.setSelection(true);
-            wsddButton.setEnabled(false);
-            wsddButton.setSelection(true);
-            wsdlButton.setEnabled(false);
-            wsdlButton.setSelection(true);
-            jobScriptButton.setEnabled(false);
-            jobScriptButton.setSelection(true);
-            axisLibButton.setEnabled(false);
-            axisLibButton.setSelection(true);
-            contextButton.setEnabled(false);
-            contextButton.setSelection(true);
         }
     }
 

@@ -96,13 +96,13 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
 
     }
     
-    private boolean isJobletItem() {
-        IJobletProviderService jobletservice = (IJobletProviderService) GlobalServiceRegister.getDefault()
-                .getService(IJobletProviderService.class);
-        if (jobletservice != null && process != null && process.getProperty() != null) {
-            return jobletservice.isJobletItem(process.getProperty().getItem());
-        }
-
-        return false;
-    }
+	private boolean isJobletItem() {
+		if (process != null && process.getProperty() != null
+				&& GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+			IJobletProviderService jobletservice = (IJobletProviderService) GlobalServiceRegister.getDefault()
+					.getService(IJobletProviderService.class);
+			return jobletservice.isJobletItem(process.getProperty().getItem());
+		}
+		return false;
+	}
 }

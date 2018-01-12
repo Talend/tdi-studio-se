@@ -1,0 +1,57 @@
+<%
+         if(useSSL){
+             String trustStorePath = ElementParameterParser.getValue(node,"__SSL_TRUSTSERVER_TRUSTSTORE__");
+             String trustStorePwd = ElementParameterParser.getValue(node,"__SSL_TRUSTSERVER_PASSWORD__");
+             boolean needClientAuth = "true".equals(ElementParameterParser.getValue(node,"__NEED_CLIENT_AUTH__"));
+             String keyStorePath = ElementParameterParser.getValue(node,"__SSL_KEYSTORE__");
+             String keyStorePwd = ElementParameterParser.getValue(node,"__SSL_KEYSTORE_PASSWORD__");
+%>
+             if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.trustStoreType")==null){
+                 atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStoreType","PKCS12");
+             }
+             atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStore", <%=trustStorePath %>);
+<%
+             passwordFieldName = "__SSL_TRUSTSERVER_PASSWORD__";
+%>
+<%
+             if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+                 String trustStorePwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+<%
+             } else {
+%>
+                 String trustStorePwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+<%
+             }
+%>
+             if(trustStorePwd_<%=cid%>!=null && trustStorePwd_<%=cid%>.length()>0){
+                 atnParamsPrope_<%=cid%>.put("javax.net.ssl.trustStorePassword", trustStorePwd_<%=cid%>);
+             }
+<%
+             if(needClientAuth){
+%>
+                 if(atnParamsPrope_<%=cid%>.getProperty("javax.net.ssl.keyStoreType")==null){
+                     atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStoreType","PKCS12");
+                 }
+                 atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStore", <%=keyStorePath %>);
+    
+<%
+                 passwordFieldName = "__SSL_KEYSTORE_PASSWORD__";
+%>
+    
+<%
+                 if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {%> 
+                      String keyStorePwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+<%
+                 } else {
+%>
+                      String keyStorePwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+<%
+                 }
+%>
+                 if(keyStorePwd_<%=cid%>!=null && keyStorePwd_<%=cid%>.length()>0){
+                     atnParamsPrope_<%=cid%>.put("javax.net.ssl.keyStorePassword",keyStorePwd_<%=cid%>);
+                 }
+<%
+             }
+         }
+%>

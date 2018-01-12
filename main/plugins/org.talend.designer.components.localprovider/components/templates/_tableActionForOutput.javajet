@@ -42,6 +42,13 @@ if (!isParallelize) {
             stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
             <%dbLog.table().dropDone(dbLog.var("tableName"));%>
             stmtDrop_<%=cid%>.close();
+            <%
+                if (TERADATA.equalsIgnoreCase(dbmsId)) {
+            %>
+                 conn_<%=cid%>.commit();
+            <%
+                }
+            %>
             java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
             <%
                if(setQueryTimeOut){
@@ -318,6 +325,13 @@ if (!isParallelize) {
                                     stmtDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>" <%=(useCascade ? " + \" cascade\"" : "")%>);
                                     <%dbLog.table().dropDone(dbLog.var("tableName"));%>
                                     stmtDrop_<%=cid%>.close();
+                                    <%
+                                        if (TERADATA.equalsIgnoreCase(dbmsId)) {
+                                    %>
+                                            conn_<%=cid%>.commit();
+                                    <%
+                                        }
+                                    %>
                                 }
                                 java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
                                 <%

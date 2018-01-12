@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +49,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.BusinessException;
+import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.OperationCancelException;
@@ -106,6 +109,7 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
+import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -158,6 +162,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     private static Logger log = Logger.getLogger(RepositoryService.class);
 
+    private ISVNProviderService svnProviderService;
+    private IGITProviderService gitProviderService;
+    private boolean isInitedProviderService = false;
     private final Semaphore askUserForNetworkIssueSemaphore = new Semaphore(1, true);
 
     private volatile boolean askUserForNetworkIssueRetryCache = false;
@@ -873,6 +880,44 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     }
 
     @Override
+    public List<String> getProjectBranch(Project project) {
+        List<String> branchesList = new ArrayList<String>();
+        if (!isInitedProviderService) {
+            initProviderService();
+        }
+        if (project != null) {
+            try {
+                if (!project.isLocal() && svnProviderService != null && svnProviderService.isSVNProject(project)) {
+                    branchesList.add(SVNConstant.NAME_TRUNK);
+                    String[] branchList = svnProviderService.getBranchList(project);
+                    if (branchList != null) {
+                        branchesList.addAll(Arrays.asList(branchList));
+                    }
+                }
+                if (!project.isLocal() && gitProviderService != null && gitProviderService.isGITProject(project)) {
+                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(project)));
+                }
+            } catch (PersistenceException e) {
+                CommonExceptionHandler.process(e);
+            }
+        }
+        return branchesList;
+    }
+    
+    private void initProviderService() {
+        if (PluginChecker.isSVNProviderPluginLoaded()) {
+            try {
+                svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault()
+                        .getService(ISVNProviderService.class);
+                gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault()
+                        .getService(IGITProviderService.class);
+            } catch (RuntimeException e) {
+                // nothing to do
+            }
+        }
+        isInitedProviderService = true;
+    }
+    
     public boolean askRetryForNetworkIssue(Throwable ex) {
         if (donnotRetryAgainBeforeRestart) {
             return false;
@@ -944,5 +989,4 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         donnotRetryAgainBeforeRestart = dialog.donnotRetryAgainBeforeRestart();
         return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
     }
-
 }

@@ -96,7 +96,11 @@ try {
 		for (Map<String, String> param : prepareStatementParameters) {
 			if ("Date".equals(param.get("PARAMETER_TYPE"))) {
 %>
-			pstmt_<%=cid %>.setTimestamp(<%=param.get("PARAMETER_INDEX")%>,new java.sql.Timestamp(<%=param.get("PARAMETER_VALUE")%>.getTime()));
+			if((<%=param.get("PARAMETER_VALUE")%>)==null) {
+				pstmt_<%=cid %>.setNull(<%=param.get("PARAMETER_INDEX")%>, java.sql.Types.TIMESTAMP);
+			} else {
+				pstmt_<%=cid %>.setTimestamp(<%=param.get("PARAMETER_INDEX")%>,new java.sql.Timestamp(<%=param.get("PARAMETER_VALUE")%>.getTime()));
+			}
 <%
 			} else {
 %>

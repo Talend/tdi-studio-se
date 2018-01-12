@@ -44,9 +44,11 @@ import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
+import org.talend.core.model.metadata.builder.connection.Properties;
 import org.talend.core.model.properties.BusinessProcessItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ItemState;
+import org.talend.core.model.properties.PropertiesPackage;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -341,6 +343,15 @@ public class BusinessDiagramEditor extends FileDiagramEditor implements IGotoMar
 
         @Override
         public void notifyChanged(Notification notification) {
+            int featureID = notification.getFeatureID(Properties.class);
+            if (featureID == PropertiesPackage.PROPERTY__MODIFICATION_DATE
+                    || featureID == PropertiesPackage.PROPERTY__CREATION_DATE) {
+                if (notification.getNewValue() == null || notification.getOldValue() == null
+                        || notification.getOldValue() != null && notification.getOldValue().equals(notification.getNewValue())) {
+                    // no date or same date
+                    return;
+                }
+            }
             if (notification.getEventType() != Notification.REMOVING_ADAPTER
                     && notification.getEventType() != Notification.RESOLVE) {
                 propertyIsDirty = true;
@@ -571,7 +582,6 @@ public class BusinessDiagramEditor extends FileDiagramEditor implements IGotoMar
         }
         return image;
     }
-
 
     @Override
     public String getPartName() {

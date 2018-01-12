@@ -20,9 +20,12 @@ import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -88,7 +91,21 @@ public abstract class DemosImportTest {
     @AfterClass
     public static void relogonOriginalProject() throws Exception {
         if (originalProject != null) {
-            ProxyRepositoryFactory.getInstance().logOnProject(originalProject, new NullProgressMonitor());
+            IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+
+                @Override
+                public void run(IProgressMonitor monitor) throws CoreException {
+                    try {
+                        ProxyRepositoryFactory.getInstance().logOnProject(originalProject, new NullProgressMonitor());
+                    } catch (Exception e) {
+                        throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR,
+                                "org.talend.repository.svnprovider.test", e.getMessage(), e)); //$NON-NLS-1$
+                    }
+                }
+            };
+
+            ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE,
+                    new NullProgressMonitor());
         }
         originalProject = null;
     }
@@ -151,14 +168,28 @@ public abstract class DemosImportTest {
         if (currentDemo == null) { // maybe license problem, the demo plugin is not loaded.
             return;
         }
-        createTempDemoProject(demoName);
-        Context ctx = CoreRuntimePlugin.getInstance().getContext();
-        RepositoryContext repositoryContext = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
-        originalProject = repositoryContext.getProject();
-        ProxyRepositoryFactory.getInstance().logOnProject(tempDemoProject, new NullProgressMonitor());
-        // initilize the DQ sturcture for the original default project
-        initDQStructure();
-        repositoryContext.setProject(tempDemoProject);
+        IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+
+            @Override
+            public void run(IProgressMonitor monitor) throws CoreException {
+                try {
+                    createTempDemoProject(demoName);
+                    Context ctx = CoreRuntimePlugin.getInstance().getContext();
+                    RepositoryContext repositoryContext = (RepositoryContext) ctx.getProperty(Context.REPOSITORY_CONTEXT_KEY);
+                    originalProject = repositoryContext.getProject();
+                    ProxyRepositoryFactory.getInstance().logOnProject(tempDemoProject, new NullProgressMonitor());
+                    // initilize the DQ sturcture for the original default project
+                    initDQStructure();
+                    repositoryContext.setProject(tempDemoProject);
+                } catch (Exception e) {
+                    throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR,
+                            "org.talend.repository.svnprovider.test", e.getMessage(), e)); //$NON-NLS-1$
+                }
+            }
+        };
+
+        ResourcesPlugin.getWorkspace().run(runnable, ResourcesPlugin.getWorkspace().getRoot(), IWorkspace.AVOID_UPDATE,
+                new NullProgressMonitor());
     }
 
     protected void initDQStructure() {
@@ -241,8 +272,8 @@ public abstract class DemosImportTest {
         List<File> demoRoutineItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(baseFolder,
                 FileConstants.ITEM_EXTENSION, true);
         // remove the code, only routines left, and add system, so should return routines/system
-        IPath systemRoutinesPath = new Path(ERepositoryObjectType.ROUTINES.getFolder()).removeFirstSegments(1).append(
-                RepositoryConstants.SYSTEM_DIRECTORY);
+        IPath systemRoutinesPath = new Path(ERepositoryObjectType.ROUTINES.getFolder()).removeFirstSegments(1)
+                .append(RepositoryConstants.SYSTEM_DIRECTORY);
         int demoRoutineItemsSize = 0;
         for (File f : demoRoutineItemsFiles) {
             IPath itemPath = new Path(f.getAbsolutePath()).makeRelativeTo(new Path(baseFolder.getAbsolutePath()));

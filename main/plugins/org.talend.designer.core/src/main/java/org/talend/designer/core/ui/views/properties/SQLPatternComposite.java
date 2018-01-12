@@ -816,14 +816,14 @@ public class SQLPatternComposite extends ScrolledComposite implements IDynamicPr
             }
             String parentBranch = ProjectManager.getInstance().getMainProjectBranch(project);
 
-            List<ProjectReference> referencedProjects = project.getEmfProject().getReferencedProjects();
+            List<ProjectReference> referencedProjects = project.getProjectReferenceList();
             for (ProjectReference referenced : referencedProjects) {
                 if (referenced.getBranch() != null && !parentBranch.equals(referenced.getBranch())) {
                     continue;
                 }
 
                 org.talend.core.model.properties.Project referencedEmfProject = referenced.getReferencedProject();
-                EList refeInRef = referencedEmfProject.getReferencedProjects();
+                List<ProjectReference> refeInRef = new Project(referencedEmfProject).getProjectReferenceList();
                 Project newProject = new Project(referencedEmfProject);
                 if (refeInRef != null && refeInRef.size() > 0) {
                     addReferencedSQLTemplate(list, newProject);

@@ -132,6 +132,8 @@ import org.talend.core.model.utils.AccessingEmfJob;
 import org.talend.core.repository.constants.Constant;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
+import org.talend.core.runtime.repository.item.ItemProductKeys;
+import org.talend.core.runtime.util.ItemDateParser;
 import org.talend.core.services.ICreateXtextProcessService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.services.IUIRefresher;
@@ -207,8 +209,15 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             if (notification.getEventType() != Notification.REMOVING_ADAPTER
                     && notification.getEventType() != Notification.RESOLVE) {
                 int featureID = notification.getFeatureID(Properties.class);
-                if (featureID == PropertiesPackage.PROPERTY__INFORMATIONS) {
-                    // || featureID == PropertiesPackage.PROPERTY__MODIFICATION_DATE) {
+                if (featureID == PropertiesPackage.PROPERTY__MODIFICATION_DATE
+                        || featureID == PropertiesPackage.PROPERTY__CREATION_DATE) {
+                    if (notification.getNewValue() == null || notification.getOldValue() == null
+                            || notification.getOldValue() != null
+                            && notification.getOldValue().equals(notification.getNewValue())) {
+                        // no date or same date
+                        return;
+                    }
+                } else if (featureID == PropertiesPackage.PROPERTY__INFORMATIONS) {
                     // ignore
                     return;
                 } else if (featureID == PropertiesPackage.PROPERTY__MAX_INFORMATION_LEVEL) {
@@ -543,9 +552,11 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
                 }
             }
         } else {
-            Date currentModifiedDate = currentItem.getProperty().getModificationDate();
-            Date refreshedModifiedDate = refreshedItem.getProperty().getModificationDate();
-            isChanged = !currentModifiedDate.equals(refreshedModifiedDate);
+            Date currentModifiedDate = ItemDateParser.parseAdditionalDate(currentItem.getProperty(),
+                    ItemProductKeys.DATE.getModifiedKey());
+            Date refreshedModifiedDate = ItemDateParser.parseAdditionalDate(refreshedItem.getProperty(),
+                    ItemProductKeys.DATE.getModifiedKey());
+            isChanged = currentModifiedDate != null && !currentModifiedDate.equals(refreshedModifiedDate);
         }
         return isChanged;
     }

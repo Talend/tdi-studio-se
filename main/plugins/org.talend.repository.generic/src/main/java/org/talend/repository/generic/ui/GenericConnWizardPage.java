@@ -15,7 +15,6 @@ package org.talend.repository.generic.ui;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +37,6 @@ import org.talend.components.api.service.ComponentService;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.EComponentCategory;
-import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Property;
@@ -256,7 +254,6 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
             String propertyName = StringUtils.trimToNull(newPropertyName);
             connectionProperty.setDisplayName(propertyName);
             connectionProperty.setLabel(propertyName);
-            connectionProperty.setModificationDate(new Date());
             connectionProperty.setLabel(propertyName);
             connection.setName(propertyName);
             connection.setLabel(propertyName);

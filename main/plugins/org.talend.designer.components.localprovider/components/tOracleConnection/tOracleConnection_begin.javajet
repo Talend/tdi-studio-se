@@ -7,7 +7,22 @@ imports="
 %>
 	<%@ include file="../templates/DB/HelpClass/HelpClass.javajet"%>
 <%
-	class ConnectionUtil extends DefaultConnectionUtil{
+    class ConnectionUtil extends DefaultConnectionUtil{
+    
+        public void beforeComponentProcess(INode node){
+            super.beforeComponentProcess(node);
+            cid = node.getUniqueName();
+            String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
+            String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
+			if("ORACLE_RAC".equals(connectionType) && "ORACLE_12".equals(dbVersion)){
+	            boolean useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
+	            if( useSSL){
+	            %>
+	                java.security.Security.insertProviderAt(new oracle.security.pki.OraclePKIProvider(), 3);
+	            <%
+	            }
+			}
+	    }
 
 	public void createURL(INode node) {
 			super.createURL(node);
@@ -86,22 +101,51 @@ imports="
 		public void createConnection(INode node) {
 		//dbproperties = ElementParameterParser.getValue(node, "__PROPERTIES__");
 		String connectionType = ElementParameterParser.getValue(node, "__CONNECTION_TYPE__");
-			if(("ORACLE_WALLET").equals(connectionType)) {
+		boolean useSSL = false;
+		String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
+		if("ORACLE_RAC".equals(connectionType) && "ORACLE_12".equals(dbVersion)){
+		    useSSL = "true".equals(ElementParameterParser.getValue(node,"__USE_SSL__"));
+		}
+		boolean disableCDCProtection="true".equals(ElementParameterParser.getValue(node,"__DISABLE_CBC_PROTECTION__"));
+			if((("ORACLE_WALLET").equals(connectionType))) {
 %>
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>);
 <%
-			} else if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+			} else if(!useSSL && (dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties))) {
 %>
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
 <%
 			} else {
 %>
 			java.util.Properties atnParamsPrope_<%=cid%> = new java.util.Properties();
-			atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
-			atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
+<%
+            if("ORACLE_RAC".equals(connectionType) && useSSL){
+%>
+			    if(dbUser_<%=cid%>!=null && dbPwd_<%=cid%>!=null && !"".equals(dbUser_<%=cid%>)&& !"".equals(dbPwd_<%=cid%>)){
+			        atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
+			        atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
+				}
+<%
+			}else{
+%>
+			    atnParamsPrope_<%=cid%>.put("user",dbUser_<%=cid%>);
+			    atnParamsPrope_<%=cid%>.put("password",dbPwd_<%=cid%>);
+<%
+		    }
+		    if(disableCDCProtection && useSSL){
+%>
+                System.setProperty("jsse.enableCBCProtection","false");
+<%
+		    }
+%>
 			if(<%= dbproperties %> != null && !"\"\"".equals(<%= dbproperties %>) && !"".equals(<%= dbproperties %>)){
                 atnParamsPrope_<%=cid%>.load(new java.io.ByteArrayInputStream(<%=dbproperties%>.replace("&", "\n").getBytes()));
             }
+<%
+         String passwordFieldName = null;
+%>
+         <%@ include file="../tOracleConnection/Oracle_SSL_inc.javajet"%>
+         
 			conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid%>, atnParamsPrope_<%=cid%>);
 <%
 			}

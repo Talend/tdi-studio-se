@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.talend.libraries</groupId>
 	<artifactId>talend-mscrm</artifactId>
-	<version>3.2-20171107</version>
+	<version>3.3-20171205</version>
 	<packaging>jar</packaging>
 	
 	<name>talend-mscrm</name>
@@ -102,9 +102,9 @@
             <version>4.12</version>
         </dependency>
         <dependency>
-            <groupId>com.microsoft.azure</groupId>
+	    <groupId>com.microsoft.azure</groupId>
             <artifactId>adal4j</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.1-patch</version>
         </dependency>
 	</dependencies>
 	<build>

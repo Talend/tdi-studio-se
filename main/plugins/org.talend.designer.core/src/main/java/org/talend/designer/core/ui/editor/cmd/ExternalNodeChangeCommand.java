@@ -467,7 +467,7 @@ public class ExternalNodeChangeCommand extends Command {
                     || connection.getLineStyle().equals(EConnectionType.TABLE)
                     || connection.getLineStyle().equals(EConnectionType.TABLE_REF)) {
                 IODataComponent currentIO = inAndOut.getDataComponent(connection);
-                if (currentIO.hasChanged()) {
+                if (currentIO != null && currentIO.hasChanged()) {
                     // IMetadataTable metadata = inAndOut.getTable(connection);
                     INode sourceNode = currentIO.getSource();
                     sourceNode.metadataOutputChanged(currentIO, currentIO.getName());

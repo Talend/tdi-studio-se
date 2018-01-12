@@ -101,11 +101,34 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
                                         value = Boolean.FALSE;
                                     }
                                 }
-                            }
-                            if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
+                            } else if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
                                 if (value != null && value instanceof String) {
                                     try {
                                         value = new Integer((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isLongType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Long((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isFloatType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Float((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isDoubleType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Double((String) value);
                                     } catch (Exception e) {
                                         value = 0;
                                     }
@@ -186,9 +209,10 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
         newProperty.setDisplayName(oldProperty.getDisplayName());
         newProperty.setDescription(oldProperty.getDescription());
         newProperty.setAuthor(oldProperty.getAuthor());
-        newProperty.setCreationDate(oldProperty.getCreationDate());
+        newProperty.getAdditionalProperties().putAll(oldProperty.getAdditionalProperties());
+        // newProperty.setCreationDate(oldProperty.getCreationDate());
         newProperty.setMaxInformationLevel(oldProperty.getMaxInformationLevel());
-        newProperty.setModificationDate(oldProperty.getModificationDate());
+        // newProperty.setModificationDate(oldProperty.getModificationDate());
         newProperty.setOldStatusCode(oldProperty.getOldStatusCode());
         newProperty.setPurpose(oldProperty.getPurpose());
         newProperty.setStatusCode(oldProperty.getStatusCode());

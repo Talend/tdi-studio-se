@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,7 +58,6 @@ import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.User;
-import org.talend.core.model.repository.SVNConstant;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.IRepositoryFactory;
@@ -72,6 +72,7 @@ import org.talend.core.ui.branding.IBrandingService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
+import org.talend.repository.model.IRepositoryService;
 import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.dialog.OverTimePopupDialogTask;
 import org.talend.repository.ui.login.AbstractLoginActionPage.ErrorManager;
@@ -218,7 +219,7 @@ public class LoginHelper {
      */
     public static boolean isRemotesRepository(String repositoryId) {
         return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId)
-                || RepositoryConstants.REPOSITORY_CLOUD_ID.equals(repositoryId);
+                || isCloudRepository(repositoryId);
     }
 
     /**
@@ -240,11 +241,55 @@ public class LoginHelper {
         return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(connectionBean.getRepositoryId());
     }
 
+    /**
+     * if the connection is Cloud US/EU/Custom
+     * 
+     * @param connectionBean
+     * @return true if connection is Cloud US or Cloud EU or Cloud Custom
+     */
     public static boolean isCloudConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
         }
-        return RepositoryConstants.REPOSITORY_CLOUD_ID.equals(connectionBean.getRepositoryId());
+        return isCloudUSConnection(connectionBean) || isCloudEUConnection(connectionBean)
+                || isCloudCustomConnection(connectionBean);
+    }
+
+    public static boolean isCloudUSConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_US_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudEUConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudCustomConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudRepository(String repositoryId) {
+        return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudCustomRepository(repositoryId);
+    }
+
+    public static boolean isCloudUSRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_US_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudEURepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudCustomRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(repositoryId);
     }
 
     public void saveConnections() {
@@ -709,24 +754,12 @@ public class LoginHelper {
     }
 
     public List<String> getProjectBranches(Project p) throws JSONException {
-        List<String> branchesList = new ArrayList<String>();
-        if (p != null && svnProviderService != null) {
-            try {
-                if (!p.isLocal() && svnProviderService.isSVNProject(p)) {
-                    branchesList.add(SVNConstant.NAME_TRUNK);
-                    String[] branchList = svnProviderService.getBranchList(p);
-                    if (branchList != null) {
-                        branchesList.addAll(Arrays.asList(branchList));
-                    }
-
-                } else if (!p.isLocal() && gitProviderService.isGITProject(p)) {
-                    branchesList.addAll(Arrays.asList(gitProviderService.getBranchList(p)));
-                }
-            } catch (PersistenceException e) {
-                CommonExceptionHandler.process(e);
-            }
+        IRepositoryService repositoryService = (IRepositoryService) GlobalServiceRegister.getDefault()
+                .getService(IRepositoryService.class);
+        if (repositoryService != null) {
+            return repositoryService.getProjectBranch(p);
         }
-        return branchesList;
+        return Collections.EMPTY_LIST;
     }
 
     public Project getLastUsedProject(Project[] projects) {

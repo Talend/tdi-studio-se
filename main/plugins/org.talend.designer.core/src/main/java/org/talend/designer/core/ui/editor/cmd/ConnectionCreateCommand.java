@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.editor.cmd;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -37,6 +39,7 @@ import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.model.components.ExternalUtilities;
 import org.talend.designer.core.model.process.ConnectionManager;
 import org.talend.designer.core.ui.dialog.mergeorder.ConnectionTableAndSchemaNameDialog;
 import org.talend.designer.core.ui.editor.connections.Connection;
@@ -406,7 +409,17 @@ public class ConnectionCreateCommand extends Command {
                         }
                     }
                 }
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
                 this.connection = new Connection(source, target, newLineStyle, connectorName, metaName, connectionName,
                         monitorConnection);
             } else {
@@ -415,9 +428,31 @@ public class ConnectionCreateCommand extends Command {
             }
         } else { // in case of redo, reuse the same instance
             if (newMetadata != null) {
-                source.getMetadataList().add(newMetadata);
+				List<IMetadataTable> metaList = source.getMetadataList();
+				boolean isFind = false;
+				for (IMetadataTable table : metaList) {
+					if (table.getTableName().equals(newMetadata.getTableName())) {
+						isFind = true;
+						break;
+					}
+				}
+				if (!isFind) {
+					source.getMetadataList().add(newMetadata);
+				}
             }
             connection.reconnect(source, target, newLineStyle);
+        }
+        if (source.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+            externalNode.addOutput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+            cmd.execute();
+        }
+        if (target.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+            externalNode.addInput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+            cmd.execute();
         }
         INodeConnector nodeConnectorSource, nodeConnectorTarget;
         nodeConnectorSource = connection.getSourceNodeConnector();
@@ -457,7 +492,19 @@ public class ConnectionCreateCommand extends Command {
         nodeConnectorTarget = connection.getTargetNodeConnector();
         if (nodeConnectorTarget != null) {
             nodeConnectorTarget.setCurLinkNbInput(nodeConnectorTarget.getCurLinkNbInput() - 1);
+        }       
+        if (source.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)source);
+            externalNode.removeOutput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) source, externalNode);
+            cmd.execute();
         }
+        if (target.isExternalNode()) {
+            IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+            externalNode.removeInput(connection);
+            ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
+            cmd.execute();
+        }   
         if (newMetadata != null) {
             source.getMetadataList().remove(newMetadata);
         }

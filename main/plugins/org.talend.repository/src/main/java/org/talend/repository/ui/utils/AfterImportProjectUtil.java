@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
-import org.talend.core.model.general.Project;
+import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 
 /**
  * 
@@ -59,9 +59,18 @@ public class AfterImportProjectUtil {
         return new ArrayList<IAfterImportProjectAction>();
     }
 
-    public static void runAfterImportProjectActions(Project project) {
+    public static void runAfterImportProjectActions(ImportProjectBean projectBean) {
         for (IAfterImportProjectAction action : getAfterImportProjectActions()) {
-            action.run(project);
+            if (action instanceof AbsAfterImportProjectAction) {
+                ((AbsAfterImportProjectAction) action).projectBean = projectBean;
+            }
+            try {
+                action.run(projectBean.newProject);
+            } finally {
+                if (action instanceof AbsAfterImportProjectAction) {
+                    ((AbsAfterImportProjectAction) action).projectBean = null;
+                }
+            }
         }
     }
 }

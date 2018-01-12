@@ -373,14 +373,12 @@
                 NAME="jaxb-xjc"
                 MODULE="jaxb-xjc-2.2.6-modified.jar"
                 MVN="mvn:org.talend.libraries/jaxb-xjc-2.2.6-modified/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/jaxb-xjc-2.2.6-modified.jar"
                 REQUIRED="true"
             />
             <IMPORT
                 NAME="jaxb-impl"
                 MODULE="jaxb-impl-2.2.6-modified.jar"
                 MVN="mvn:org.talend.libraries/jaxb-impl-2.2.6-modified/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.axis2/lib/jaxb-impl-2.2.6-modified.jar"
                 REQUIRED="true"
             />
         </IMPORTS>
