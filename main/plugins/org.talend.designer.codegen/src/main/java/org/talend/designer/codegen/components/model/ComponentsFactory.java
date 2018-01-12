@@ -349,11 +349,7 @@ public class ComponentsFactory implements IComponentsFactory {
     }
 
     private void loadComponentsFromFolder(String pathSource, AbstractComponentsProvider provider) {
-        boolean isCustom = false;
-        if ("org.talend.designer.components.model.UserComponentsProvider".equals(provider.getId())
-                || "org.talend.designer.components.exchange.ExchangeComponentsProvider".equals(provider.getId())) {
-            isCustom = true;
-        }
+        boolean isCustom = provider.isCustom();
 
         File source;
         try {
@@ -413,8 +409,10 @@ public class ComponentsFactory implements IComponentsFactory {
         String bundleName;
         if (!isCustom) {
             bundleName = admin.getBundle(provider.getClass()).getSymbolicName();
-        } else {
+        } else if(provider.getComponentsBundle() == null) {
             bundleName = IComponentsFactory.COMPONENTS_LOCATION;
+        } else {
+            bundleName = provider.getComponentsBundle();
         }
 
         if (childDirectories != null) {
