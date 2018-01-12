@@ -525,5 +525,27 @@ public class TalendEditorPaletteFactoryTest {
             return getName();
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
+         */
+        @Override
+        public void setOriginalFamilyName(String familyName) {
+            // TODO Auto-generated method stub
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
+         */
+        @Override
+        public void setTranslatedFamilyName(String translatedFamilyName) {
+            // TODO Auto-generated method stub
+
+        }
+
     }
 }

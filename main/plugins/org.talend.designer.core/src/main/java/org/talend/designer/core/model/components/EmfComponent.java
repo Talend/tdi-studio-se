@@ -2622,6 +2622,9 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getOriginalFamilyName() {
+        if (familyName != null) {
+            return familyName;
+        }
         String originalFamilyName = ""; //$NON-NLS-1$
         if (!isAlreadyLoad) {
             int nbTotal = compType.getFAMILIES().getFAMILY().size();
@@ -2652,6 +2655,9 @@ public class EmfComponent extends AbstractBasicComponent {
      */
     @Override
     public String getTranslatedFamilyName() {
+        if (newTranslatedFamilyName != null) {
+            return newTranslatedFamilyName;
+        }
 
         if (!isAlreadyLoad) {
             if (translatedFamilyName != null) {

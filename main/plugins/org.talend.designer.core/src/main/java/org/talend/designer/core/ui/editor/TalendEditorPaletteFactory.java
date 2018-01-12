@@ -96,6 +96,10 @@ public final class TalendEditorPaletteFactory {
 
     private static final String FAMILY_HIER_SEPARATOR = "/"; //$NON-NLS-1$
 
+    private static final String FAMILY_DATABASES = "Databases"; //$NON-NLS-1$
+
+    private static final String FAMILY_DATABASES_SPECIFIED = "Databases/DB Specifics"; //$NON-NLS-1$
+
     /** Preference ID used to persist the palette location. */
     public static final String PALETTE_DOCK_LOCATION = "TalendEditorPaletteFactory.Location"; //$NON-NLS-1$
 
@@ -640,33 +644,14 @@ public final class TalendEditorPaletteFactory {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
             IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
-            Map<String, IComponent> delegateMap = new HashMap<String, IComponent>();
-            // filter unified components
-            Iterator<IComponent> iterator = componentSet.iterator();
-            while (iterator.hasNext()) {
-                IComponent next = iterator.next();
-                IComponent delegateComp = service.getDelegateComponent(next);
-                if (service.isDelegateComponent(delegateComp)) {
-                    if (!delegateMap.containsKey(delegateComp.getName())) {
-                        delegateMap.put(delegateComp.getName(), delegateComp);
-                    }
-                    iterator.remove();
-                }
-            }
-
-            // add delegate components
-            componentSet.addAll(delegateMap.values());
+            service.filterUnifiedComponentForPalette(compFac, componentSet, lowerCasedKeyword);
 
             if (compFac != null && compFac.getComponentsHandler() != null) {
                 String paletteType = compFac.getComponentsHandler().extractComponentsCategory().getName();
                 LinkedHashSet<IComponent> delegateCompSet = new LinkedHashSet<IComponent>();
                 List<IComponent> delegateComponents = new ArrayList<IComponent>(service.getDelegateComponents(paletteType));
                 addComponentsByNameFilter(compFac, delegateCompSet, delegateComponents, lowerCasedKeyword);
-                for (IComponent delegateComp : delegateCompSet) {
-                    if (!delegateMap.values().contains(delegateComp)) {
-                        componentSet.add(delegateComp);
-                    }
-                }
+                componentSet.addAll(delegateComponents);
             }
 
         }
@@ -828,8 +813,12 @@ public final class TalendEditorPaletteFactory {
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
-                    if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
-                        continue;
+                    try {
+                        if (!needHiddenComponent && !xmlComponent.isVisible(oraStrings[j])) {
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        System.out.println();
                     }
                     // String key = null;
                     // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$

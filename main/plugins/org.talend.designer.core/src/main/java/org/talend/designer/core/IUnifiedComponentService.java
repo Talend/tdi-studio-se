@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.utils.IComponentName;
@@ -78,4 +79,7 @@ public interface IUnifiedComponentService extends IService {
             List<? extends IElementParameter> oldParms);
 
     public String getUnifiedCompDisplayName(IComponent delegateComponent, String emfComponent);
+
+    public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
+            String lowerCasedKeyword);
 }

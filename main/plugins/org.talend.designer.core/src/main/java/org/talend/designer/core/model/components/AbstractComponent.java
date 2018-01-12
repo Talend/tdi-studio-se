@@ -27,6 +27,10 @@ public abstract class AbstractComponent implements IComponent {
 
     private String paletteType;
 
+    protected String familyName;
+
+    protected String newTranslatedFamilyName;
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -108,7 +112,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -118,7 +122,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -128,7 +132,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -153,7 +157,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -166,17 +170,39 @@ public abstract class AbstractComponent implements IComponent {
     public boolean isAllowedPropagated() {
         return true;
     }
-    
+
     @Override
-    public String getOriginalName(){
+    public String getOriginalName() {
         return getName();
     }
 
+    @Override
     public String getTemplateFolder() {
         return getPathSource() == null ? null : (getPathSource() + "/" + getName());
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return getName();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setOriginalFamilyName()
+     */
+    @Override
+    public void setOriginalFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    /**
+     * Sets the translatedFamilyName.
+     * 
+     * @param translatedFamilyName the translatedFamilyName to set
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        this.newTranslatedFamilyName = translatedFamilyName;
     }
 }
