@@ -227,12 +227,12 @@ public class GenericDBService implements IGenericDBService{
                         compService.afterFormFinish(form.getName(), form.getProperties());
                     }
                     IRepositoryViewObject repViewObj = factory.getLastVersion(connItem.getProperty().getId());
-                    String compProperties = connItem.getConnection().getCompProperties();
+//                    String compProperties = connItem.getConnection().getCompProperties();
                     if(repViewObj != null){
                         Property property = repViewObj.getProperty();
                         if (property != null) {
                             connItem = (ConnectionItem) property.getItem();
-                            connItem.getConnection().setCompProperties(compProperties);
+//                            connItem.getConnection().setCompProperties(compProperties);
                         }
                     }
                     convertPropertiesToDBElements(form.getProperties(), connItem.getConnection());
@@ -304,6 +304,9 @@ public class GenericDBService implements IGenericDBService{
                 // copy the value
                 String proName = ((org.talend.daikon.properties.property.Property) otherProp).getName();
                 Object value = ((org.talend.daikon.properties.property.Property) otherProp).getStoredValue();
+                if(value == null){
+                    continue;
+                }
                 if(proName.equals("jdbcUrl")){//$NON-NLS-1$
                     dbConnection.setURL((String)value);
                 }else if(proName.equals("driverClass")){//$NON-NLS-1$
