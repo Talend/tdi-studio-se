@@ -255,6 +255,44 @@ if(!("true").equals(useExistingConn)) {
 	}
 }
 
+if("INSERT".equals(dataAction) && extendedInsert) {
+%>
+	class Util_<%=cid%> {
+		
+		int correctNumPerInsert(String source, int numPerInsert) {
+			if(source == null) {
+				return numPerInsert;
+			}
+			
+			int columnCountEveryRow = 0;
+			
+			for(int i=0;i<source.length();i++) {
+				if('?' == source.charAt(i)) {
+					columnCountEveryRow++;
+				}
+			}
+			
+			if(columnCountEveryRow == 0) {
+				return numPerInsert;
+			}
+			
+			int maxNumForParameterSize = 32767;
+			int maxNumPerInsert = maxNumForParameterSize / columnCountEveryRow;
+			
+			if(numPerInsert > maxNumPerInsert) {
+				return maxNumPerInsert;
+			}
+			
+			return numPerInsert;
+		}
+		
+	}
+	
+	final Util_<%=cid%> util_<%=cid%> = new Util_<%=cid%>();
+	int numPerInsert_<%=cid%> = <%=numPerInsert%>;
+<%
+}
+
 if(!isDynamic) {
 %>
 int count_<%=cid%>=0;
@@ -304,11 +342,13 @@ if(columnList != null && columnList.size()>0) {
 			java.util.List<BufferLine_<%=cid%>> exInsertColValueList<%=cid%> = new java.util.ArrayList();
 			BufferLine_<%=cid%> exInsertColValue<%=cid%> = null;
 
-
+			String valueList_<%=cid%> = "(<%=insertValueStmt.toString()%>)";
+			numPerInsert_<%=cid%> = util_<%=cid%>.correctNumPerInsert(valueList_<%=cid%>, numPerInsert_<%=cid%>);
+			
 			StringBuilder extendInsertValueStmt_<%=cid%> = new StringBuilder();
-			for(int i_<%=cid%>=0;i_<%=cid%> < <%=numPerInsert%>;i_<%=cid%>++){
-				 extendInsertValueStmt_<%=cid%>.append("(<%=insertValueStmt.toString()%>)");
-				 if (i_<%=cid%>!=<%=numPerInsert%>-1) extendInsertValueStmt_<%=cid%>.append(",");
+			for(int i_<%=cid%>=0;i_<%=cid%> < numPerInsert_<%=cid%>;i_<%=cid%>++){
+				 extendInsertValueStmt_<%=cid%>.append(valueList_<%=cid%>);
+				 if (i_<%=cid%>!=numPerInsert_<%=cid%>-1) extendInsertValueStmt_<%=cid%>.append(",");
 			}
 
 			String insert_<%=cid%> = "INSERT INTO \"" + tableName_<%=cid%> + "\" (<%=insertColName.toString()%>) VALUES " + extendInsertValueStmt_<%=cid%>.toString();

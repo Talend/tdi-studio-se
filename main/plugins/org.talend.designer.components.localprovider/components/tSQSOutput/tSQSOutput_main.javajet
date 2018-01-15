@@ -22,6 +22,7 @@ imports="
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node,"__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node,"__BATCH_SIZE__");
+    String messageGroupId = ElementParameterParser.getValue(node,"__GROUP_ID__");
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if ((metadatas!=null)&&(metadatas.size()>0)) {
 		IMetadataTable metadata = metadatas.get(0);
@@ -52,7 +53,27 @@ imports="
 							sendMsgRequest_<%=cid%>.setMessageBody(<%=conn.getName()%>.Body);							
 	<% 
 						}
-					}else {
+					}else if (column.getLabel().equalsIgnoreCase("MessageDeduplicationId")){
+						if(useBatch){
+	%>
+							entry_<%=cid%>.setMessageDeduplicationId(<%=conn.getName()%>.<%=column.getLabel()%>);
+	<%
+						}else{
+						%>
+					        sendMsgRequest_<%=cid%>.setMessageDeduplicationId(<%=conn.getName()%>.<%=column.getLabel()%>);
+					<%
+						}
+					}else if (column.getLabel().equalsIgnoreCase("MessageGroupId")){
+						if(useBatch){
+	%>
+							entry_<%=cid%>.setMessageGroupId(<%=conn.getName()%>.<%=column.getLabel()%>);
+	<%
+						}else{
+						%>
+					        sendMsgRequest_<%=cid%>.setMessageGroupId(<%=conn.getName()%>.<%=column.getLabel()%>);
+					<%
+						}
+					}else{
 						String dataType=null;;
 						if ("id_String".equals(column.getTalendType())) {
 							dataType="String";

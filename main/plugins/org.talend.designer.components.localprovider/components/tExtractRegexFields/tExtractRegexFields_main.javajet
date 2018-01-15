@@ -124,6 +124,7 @@ if(inConn!=null && outConn!=null){
     
 		    int groupCount_<%=cid %> = matcher_<%= cid %>.groupCount();
 		    while(<%="".equals(rejectConnName)?"":"isNotMatch_"+cid + "||" %> matcher_<%= cid %>.find()){
+		    currentComponent = "<%=cid%>";
 		
 <%			
             break;

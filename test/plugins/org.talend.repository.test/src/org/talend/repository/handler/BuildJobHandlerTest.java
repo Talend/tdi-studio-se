@@ -1,6 +1,9 @@
 package org.talend.repository.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,22 +63,22 @@ public class BuildJobHandlerTest {
     private String destinationPath;
 
     private Project bridgeProject;
-    
+
     private Map<ExportChoice, Object> exportChoiceMap;
-    
+
     private IRunProcessService runProcessService;
 
     private ProjectPreferenceManager projectPreferenceManager;
 
     @Before
     public void setUp() throws Exception {
-        
+
         projectPreferenceManager = DesignerMavenPlugin.getPlugin().getProjectPreferenceManager();
-        
+
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
-        
+
         // Fix the NPE for org.talend.designer.core.ui.editor.process.Process.createMainParameters(Process.java:401)
         bridgeProject = ReponsitoryContextBridge.getProject();
         ReponsitoryContextBridge.setProject(ProjectManager.getInstance().getCurrentProject().getEmfProject());
@@ -99,7 +102,7 @@ public class BuildJobHandlerTest {
         Item item = obj.getProperty().getItem();
         assertTrue(item instanceof ProcessItem);
         processItem = (ProcessItem) item;
-        
+
         initExportChoice();
     }
 
@@ -116,7 +119,8 @@ public class BuildJobHandlerTest {
         destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
         BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-        String projectDefaultVersion = projectPreferenceManager.getPreferenceStore().getDefaultString(MavenConstants.PROJECT_VERSION);
+        String projectDefaultVersion = projectPreferenceManager.getPreferenceStore().getDefaultString(
+                MavenConstants.PROJECT_VERSION);
         String itemDefaultVersion = VersionUtils.getPublishVersion(processItem.getProperty().getVersion());
         // check project pom.
         validateVersioningResult(TalendMavenConstants.POM_FILE_NAME, projectDefaultVersion, null);
@@ -125,20 +129,20 @@ public class BuildJobHandlerTest {
         // check job pom.
         validateVersioningResult("pom_testBuildJob_0.1.xml", itemDefaultVersion, projectDefaultVersion);
     }
-    
+
     @Test
     public void testCustomVersioningSettings() throws Exception {
         EMap additionalProperties = processItem.getProperty().getAdditionalProperties();
         String customItemVersion = "8.8.0";
         additionalProperties.put(MavenConstants.NAME_USER_VERSION, customItemVersion);
-        
+
         String customProjectVersion = "8.7.0";
         projectPreferenceManager.setValue(MavenConstants.PROJECT_VERSION, customProjectVersion);
-        
+
         destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
         BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-        
+
         // check project pom.
         validateVersioningResult(TalendMavenConstants.POM_FILE_NAME, customProjectVersion, null);
         // check routine pom.
@@ -146,20 +150,20 @@ public class BuildJobHandlerTest {
         // check job pom.
         validateVersioningResult("pom_testBuildJob_0.1.xml", customItemVersion, customProjectVersion);
     }
-    
+
     @Test
     public void testCustomVersioningSettingsWithSnapshot() throws Exception {
         EMap additionalProperties = processItem.getProperty().getAdditionalProperties();
         additionalProperties.put(MavenConstants.NAME_USER_VERSION, "8.8.0");
         additionalProperties.put(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, "true");
-        
+
         projectPreferenceManager.setValue(MavenConstants.PROJECT_VERSION, "8.7.0");
         projectPreferenceManager.setValue(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, true);
-        
+
         destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
         BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-        
+
         String customProjectVersion = "8.7.0-SNAPSHOT";
         String customItemVersion = "8.8.0-SNAPSHOT";
         // check project pom.
@@ -169,7 +173,7 @@ public class BuildJobHandlerTest {
         // check job pom.
         validateVersioningResult("pom_testBuildJob_0.1.xml", customItemVersion, customProjectVersion);
     }
-    
+
     private Map<ExportChoice, Object> initExportChoice() {
         exportChoiceMap = new HashMap<ExportChoice, Object>();
         exportChoiceMap.put(ExportChoice.needLauncher, true);
@@ -285,7 +289,7 @@ public class BuildJobHandlerTest {
             }
         }
     }
-    
+
     private void validateVersioningResult(String pomFileName, String version, String parentVersion) throws CoreException {
         assertNotNull(runProcessService);
         MavenModelManager manager = MavenPlugin.getMavenModelManager();
@@ -300,20 +304,24 @@ public class BuildJobHandlerTest {
     @After
     public void tearDown() throws Exception {
         ReponsitoryContextBridge.setProject(bridgeProject);
-        
+
         projectPreferenceManager.getPreferenceStore().setToDefault(MavenConstants.PROJECT_VERSION);
         projectPreferenceManager.getPreferenceStore().setToDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-        
-        IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        IRepositoryViewObject repObj = factory.getLastVersion(processItem.getProperty().getId());
-        if (repObj != null) {
-            factory.deleteObjectPhysical(repObj);
+
+        if (processItem != null) {
+            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+            IRepositoryViewObject repObj = factory.getLastVersion(processItem.getProperty().getId());
+            if (repObj != null) {
+                factory.deleteObjectPhysical(repObj);
+            }
         }
-        
+
         ExportJobUtil.deleteTempFiles();
-        File file = new File(destinationPath);
-        if (file.exists()) {
-            file.delete();
+        if (destinationPath != null) {
+            File file = new File(destinationPath);
+            if (file.exists()) {
+                file.delete();
+            }
         }
     }
 }

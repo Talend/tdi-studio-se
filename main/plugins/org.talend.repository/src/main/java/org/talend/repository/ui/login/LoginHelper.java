@@ -58,7 +58,6 @@ import org.talend.core.model.general.ConnectionBean;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.User;
-import org.talend.core.model.repository.SVNConstant;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.prefs.PreferenceManipulator;
 import org.talend.core.repository.model.IRepositoryFactory;
@@ -220,7 +219,7 @@ public class LoginHelper {
      */
     public static boolean isRemotesRepository(String repositoryId) {
         return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(repositoryId)
-                || RepositoryConstants.REPOSITORY_CLOUD_ID.equals(repositoryId);
+                || isCloudRepository(repositoryId);
     }
 
     /**
@@ -242,11 +241,55 @@ public class LoginHelper {
         return RepositoryConstants.REPOSITORY_REMOTE_ID.equals(connectionBean.getRepositoryId());
     }
 
+    /**
+     * if the connection is Cloud US/EU/Custom
+     * 
+     * @param connectionBean
+     * @return true if connection is Cloud US or Cloud EU or Cloud Custom
+     */
     public static boolean isCloudConnection(ConnectionBean connectionBean) {
         if (connectionBean == null) {
             return false;
         }
-        return RepositoryConstants.REPOSITORY_CLOUD_ID.equals(connectionBean.getRepositoryId());
+        return isCloudUSConnection(connectionBean) || isCloudEUConnection(connectionBean)
+                || isCloudCustomConnection(connectionBean);
+    }
+
+    public static boolean isCloudUSConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_US_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudEUConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudCustomConnection(ConnectionBean connectionBean) {
+        if (connectionBean == null) {
+            return false;
+        }
+        return RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(connectionBean.getRepositoryId());
+    }
+
+    public static boolean isCloudRepository(String repositoryId) {
+        return isCloudUSRepository(repositoryId) || isCloudEURepository(repositoryId) || isCloudCustomRepository(repositoryId);
+    }
+
+    public static boolean isCloudUSRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_US_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudEURepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_EU_ID.equals(repositoryId);
+    }
+
+    public static boolean isCloudCustomRepository(String repositoryId) {
+        return RepositoryConstants.REPOSITORY_CLOUD_CUSTOM_ID.equals(repositoryId);
     }
 
     public void saveConnections() {
