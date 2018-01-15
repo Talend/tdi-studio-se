@@ -1,0 +1,89 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tSybaseInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tSybaseOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tSybaseClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tSybaseCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tSybaseConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tSybaseRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tSybaseRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSCDELT",
+    "component":"tSybaseSCDELT",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tSybaseBulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tSybaseCDC",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tSybaseOutputBulk",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tSybaseOutputBulkExec",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tSybaseSCD",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSP",
+    "component":"tSybaseSP",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]

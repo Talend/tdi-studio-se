@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="ParAccelComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.paraccel.ParAccelComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

@@ -1,0 +1,58 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tNetezzaInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tNetezzaOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tNetezzaClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tNetezzaCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tNetezzaConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tNetezzaRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tNetezzaRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tNetezzaBulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tNetezzaSCD",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

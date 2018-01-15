@@ -1,0 +1,70 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tVerticaInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tVerticaOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tVerticaClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tVerticaCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tVerticaConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tVerticaRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tVerticaRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tVerticaBulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tVerticaOutputBulk",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tVerticaOutputBulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tVerticaSCD",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]
