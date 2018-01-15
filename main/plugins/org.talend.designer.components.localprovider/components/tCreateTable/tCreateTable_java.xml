@@ -805,8 +805,8 @@
 		<IMPORT NAME="Driver-SQLITE-JDBC-NESTED" MODULE="sqlitejdbc-v056.jar" MVN="mvn:org.talend.libraries/sqlitejdbc-v056/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.sqlite3/lib/sqlitejdbc-v056.jar" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SQLITE')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_12_15')" />
 		<IMPORT NAME="Driver-SYBASE-JCONN4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0" BundleID="" REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='SYBASE') AND (DB_SYBASE_VERSION == 'SYBSEIQ_16')" />
-		<IMPORT NAME="Driver-Teradata_jdbc" MODULE="terajdbc4-16.10.00.05.jar" MVN="mvn:org.talend.libraries/terajdbc4-16.10.00.05/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
-		<IMPORT NAME="Driver-Teradata_config" MODULE="tdgssconfig-16.10.00.05.jar" MVN="mvn:org.talend.libraries/tdgssconfig-16.10.00.05/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
+		<IMPORT NAME="Driver-Teradata_jdbc" MODULE="terajdbc4-16.20.00.02.jar" MVN="mvn:org.talend.libraries/terajdbc4-16.20.00.02/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
+		<IMPORT NAME="Driver-Teradata_config" MODULE="tdgssconfig-16.20.00.02.jar" MVN="mvn:org.talend.libraries/tdgssconfig-16.20.00.02/6.0.0"   REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='TERADATA')" />
 		<IMPORT NAME="Driver-Netezza" MODULE="nzjdbc.jar" MVN="mvn:org.talend.libraries/nzjdbc/6.0.0"  REQUIRED_IF="(USE_EXISTING_CONNECTION == 'false') AND (DBTYPE=='NETEZZA')" />
 		
 		<IMPORT NAME="Driver-VERTICA" MODULE="vertica_3.0_jdk_5.jar" MVN="mvn:org.talend.libraries/vertica_3.0_jdk_5/6.0.0"   			REQUIRED_IF="(DBTYPE=='VERTICA') and (USE_EXISTING_CONNECTION == 'false') and (DB_VERTICA_VERSION=='VERTICA_3')" />
