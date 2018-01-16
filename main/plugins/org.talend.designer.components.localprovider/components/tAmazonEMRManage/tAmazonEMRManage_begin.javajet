@@ -421,7 +421,7 @@
                		.withClusterId(result_<%=cid%>.getJobFlowId())
             );
             String status_<%=cid%> = result2_<%=cid%>.getCluster().getStatus().getState();
-            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>) || "TERMINATING".equalsIgnoreCase(status_<%=cid%>)) {
+            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>)) {
             	break;
             } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>)) {
             	System.err.println("Fail to complete steps.");
