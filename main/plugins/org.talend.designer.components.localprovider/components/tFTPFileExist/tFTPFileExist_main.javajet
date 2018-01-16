@@ -10,8 +10,10 @@
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
+boolean isFileType = "FILE".equals(ElementParameterParser.getValue(node, "__TARGETTYPE__"));
 String remoteDir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
+String directoryname = ElementParameterParser.getValue(node, "__DIRECTORYNAME__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 boolean sftp = false;
@@ -30,36 +32,69 @@ if (("true").equals(useExistingConn)) {
 }
 
 if (sftp) {
-%>
-	String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
-  
-	try{
-		if (c_<%=cid %>.stat(<%=remoteDir %> + "/" + <%=filename %>).getAtimeString() != null) {
+	if (isFileType) {%>
+		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
+		try{
+			if (c_<%=cid %>.stat(remoteDir_<%=cid %> + "/" + <%=filename %>).getAtimeString() != null) {
+				<%if(isLog4jEnabled){%>
+					log.debug("<%=cid%> - '" + <%=filename %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+				<%}%>
+				globalMap.put("<%=cid %>_EXISTS", true);
+			}
+		} catch (java.lang.Exception e) {
 			<%if(isLog4jEnabled){%>
-				log.debug("<%=cid%> - '" + <%=filename %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+				log.debug("<%=cid%> - '" + <%=filename %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
 			<%}%>
-      		globalMap.put("<%=cid %>_EXISTS", true);
+			globalMap.put("<%=cid %>_EXISTS", false);
 		}
-	} catch (java.lang.Exception e) {
-		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - '" + <%=filename %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
-		<%}%>
-		globalMap.put("<%=cid %>_EXISTS", false);
-	}
-	globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
-<%} else {%>
-	String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
-
-	if (ftp_<%=cid %>.exists(<%=remoteDir %> + "/" + <%=filename%>)) {
-		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - '" + <%=filename%> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
-		<%}%>
-    	globalMap.put("<%=cid %>_EXISTS", true);
-	} else {
-		<%if(isLog4jEnabled){%>
-			log.debug("<%=cid%> - '" + <%=filename%> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
-		<%}%>
-		globalMap.put("<%=cid %>_EXISTS", false);
-	}
-	globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
-<%}%>
+		globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
+	<%} else {%>
+		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
+		String directoryname_<%=cid %> = <%=directoryname %>.replaceAll("\\\\","/");
+		try{
+			if (c_<%=cid %>.stat(remoteDir_<%=cid %> + "/" + directoryname_<%=cid %>).getAtimeString() != null) {
+				<%if(isLog4jEnabled){%>
+					log.debug("<%=cid%> - '" + <%=directoryname %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+				<%}%>
+				globalMap.put("<%=cid %>_EXISTS", true);
+			}
+		} catch (java.lang.Exception e) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
+	<%}
+} else {
+	if (isFileType){%>
+		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
+		if (ftp_<%=cid %>.exists<%="File" %>(remoteDir_<%=cid %> + "/" + <%=filename %>)) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename%> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename%> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+		globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
+	<%} else {%>
+		String remoteDir_<%=cid %> = <%=remoteDir %>.replaceAll("\\\\","/");
+		String directoryname_<%=cid %> = <%=directoryname %>.replaceAll("\\\\","/");
+		if (ftp_<%=cid %>.exists<%="Directory" %>(remoteDir_<%=cid %> + "/" + directoryname_<%=cid %>)) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
+	<%}
+}%>
