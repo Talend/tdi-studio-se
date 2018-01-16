@@ -81,18 +81,22 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 Property mappingFile = (Property) properties.getProperty("mappingFile");
                 if(url != null){
                     url.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+                    url.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, url.getName());
                     url.setValue(connection.getURL());
                 }
                 if(driClass != null){
                     driClass.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+                    driClass.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, driClass.getName());
                     driClass.setValue(connection.getDriverClass());
                 }
                 if(user != null){
                     user.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+                    user.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, user.getName());
                     user.setValue(connection.getUsername());
                 }
                 if(pass != null){
                     pass.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
+                    pass.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, pass.getName());
                     String password = connection.getValue(connection.getRawPassword(), false);
                     pass.setValue(password);
                 }
@@ -100,7 +104,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                     mappingFile.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
                     mappingFile.setValue(connection.getDbmsId());
                 }
-                setDrivers(dirJar, connection.getDriverJarPath());
+                setDrivers(dirJar, connection.getDriverJarPath(), isContextMode);
                 connection.setCompProperties(properties.toSerialized());
                 try {
                     factory.save(item, true);
@@ -114,7 +118,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
         return ExecutionResult.NOTHING_TO_DO;
     }
     
-    private void setDrivers(Property dirJar, String jars){
+    private void setDrivers(Property dirJar, String jars, boolean isContextMode){
         if(dirJar == null){
             return;
         }
@@ -131,6 +135,8 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
             jarList.add(dbService.getMVNPath(jar));
         }
         dirJar.setValue(jarList);
+        dirJar.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, dirJar.getName());
+        dirJar.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, isContextMode);
     }
 
 }

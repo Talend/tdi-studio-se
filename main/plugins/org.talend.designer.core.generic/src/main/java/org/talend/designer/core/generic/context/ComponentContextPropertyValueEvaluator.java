@@ -60,7 +60,8 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
         String stringStoredValue = String.valueOf(storedValue);
         if (context != null && ContextParameterUtils.isContainContextParam(stringStoredValue)) {
             if (storedValue instanceof List) {
-                storedValue = ContextParameterUtils.parseScriptContextCodeList(storedValue, context);
+                boolean isDrivers = property.getName() != null && property.getName().equals("drivers");
+                storedValue = ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers);
                 return getTypedValue(property, storedValue);
             } else {
                 // the simple convert which only can process the simple case like : context.var or
