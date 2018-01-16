@@ -3155,6 +3155,12 @@
                class="org.talend.repository.preference.ProjectRefSettingPageTester">
          </tester>
       </page>
+      <page
+            category="projectsetting.Maven"
+            class="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
+            id="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
+            title="%ProjectSetting.groupId">
+      </page>
    </extension>
    <extension
          id="CreateAutomaticConnectionApplication"
