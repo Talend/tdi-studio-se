@@ -34,7 +34,22 @@ if(useExistingConn) {
 	String dbschema_<%=cid%> = <%=dbschema%>;
 	String dbUser_<%=cid%> = <%=userName %>;
 <%
-	if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {//sybase IQ 12/16
+        if ("SYBSEIQ_16_SA".equals(dbVersion)) {
+                if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName=" + <%=dbName %>; 
+<%
+                }
+                else{
+%>
+                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName" + <%=dbName %> + ";" + <%=dbproperties%>;
+<%
+                }
+%>
+                        String driverClass_<%=cid%> = "sap.jdbc4.sqlanywhere.IDriver";
+<%
+        }
+	else if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {//sybase IQ 12/16
 %>
 
 <%
