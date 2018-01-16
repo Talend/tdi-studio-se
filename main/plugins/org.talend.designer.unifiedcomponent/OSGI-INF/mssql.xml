@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="MSSqlComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.mssql.MSSqlComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

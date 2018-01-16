@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="tDBClose">
+  <implementation class="org.talend.designer.unifiedcomponent.delegate.tDBClose"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate"/>
+  </service>
+</component>

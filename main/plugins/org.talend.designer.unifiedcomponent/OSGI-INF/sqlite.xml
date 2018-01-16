@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="SQLiteComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.sqlite.SQLiteComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

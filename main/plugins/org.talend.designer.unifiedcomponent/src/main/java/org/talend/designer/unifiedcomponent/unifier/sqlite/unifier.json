@@ -1,0 +1,36 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tSQLiteInput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tSQLiteOutput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tSQLiteClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tSQLiteCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tSQLiteConnection",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tSQLiteRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tSQLiteRow",
+    "category":"DI"
+}
+]

@@ -139,6 +139,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.projectsetting.ElementParameter2ParameterType;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.UpgradeElementHelper;
 import org.talend.designer.joblet.model.JobletNode;
 import org.talend.designer.joblet.model.JobletProcess;
@@ -210,6 +211,8 @@ public class Node extends Element implements IGraphicalNode {
     protected List<? extends INodeReturn> listReturn;
 
     protected List<? extends INodeConnector> listConnector;
+
+    private IComponent delegateComponent;
 
     private IComponent component;
 
@@ -420,6 +423,7 @@ public class Node extends Element implements IGraphicalNode {
      */
     public Node(IComponent component) {
         this.oldcomponent = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         this.process = ActiveProcessTracker.getCurrentProcess();
         currentStatus = 0;
 
@@ -435,6 +439,7 @@ public class Node extends Element implements IGraphicalNode {
 
     public Node(IComponent component, IProcess2 process, boolean insertSet, boolean template) {
         this.oldcomponent = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         this.insertSet = insertSet;
         this.template = template;
         this.process = ActiveProcessTracker.getCurrentProcess();
@@ -452,6 +457,7 @@ public class Node extends Element implements IGraphicalNode {
 
     public Node(IComponent component, IProcess2 process) {
         this.oldcomponent = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         this.process = process;
         init(component);
         IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
@@ -463,6 +469,7 @@ public class Node extends Element implements IGraphicalNode {
 
     public Node(IComponent component, IProcess2 process, String inOutUniqueName) {
         this.oldcomponent = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         this.inOutUniqueName = inOutUniqueName;
         this.process = process;
         init(component);
@@ -471,6 +478,7 @@ public class Node extends Element implements IGraphicalNode {
 
     public Node(INode oldNode, IProcess2 process) {
         this.oldcomponent = oldNode.getComponent();
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(oldNode.getComponent());
         this.process = process;
         init(oldNode.getComponent());
         if (component != null && component instanceof AbstractBasicComponent) {
@@ -486,7 +494,7 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     private void init(IComponent newComponent) {
-        this.component = newComponent;
+        this.component = UnifiedComponentUtil.getEmfComponent(this, newComponent);
         this.label = component.getName();
         updateComponentStatusIfNeeded(true);
         IPreferenceStore store = DesignerPlugin.getDefault().getPreferenceStore();
@@ -515,7 +523,7 @@ public class Node extends Element implements IGraphicalNode {
         if (unparam != null && !"".equals(unparam.getValue())) { //$NON-NLS-1$
             uniqueName2 = (String) unparam.getValue();
         }
-        setElementParameters(component.createElementParameters(this));
+        createElementParameters();
 
         // if (hasMetadata) {
         boolean hasSchemaType = false;
@@ -680,6 +688,17 @@ public class Node extends Element implements IGraphicalNode {
         updateComponentStatusIfNeeded(false);
     }
 
+    private void createElementParameters() {
+        List<IElementParameter> createElementParameters = new ArrayList<IElementParameter>();
+        if (UnifiedComponentUtil.isDelegateComponent(delegateComponent)) {
+            UnifiedComponentUtil.createParameters(this, createElementParameters, delegateComponent, component);
+        }
+        if (!UnifiedComponentUtil.isDelegateComponent(component)) {
+            createElementParameters.addAll(component.createElementParameters(this));
+        }
+        setElementParameters(createElementParameters);
+    }
+
     @Override
     public IProcess getProcess() {
         return process;
@@ -803,11 +822,11 @@ public class Node extends Element implements IGraphicalNode {
      * @return ImageDescriptor
      */
     public ImageDescriptor getIcon32() {
-        return oldcomponent.getIcon32();
+        return delegateComponent.getIcon32();
     }
 
     public ImageDescriptor getIcon24() {
-        return oldcomponent.getIcon24();
+        return delegateComponent.getIcon24();
     }
 
     /**
@@ -4429,7 +4448,8 @@ public class Node extends Element implements IGraphicalNode {
 
     @Override
     public void setComponent(IComponent component) {
-        this.component = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
+        this.component = UnifiedComponentUtil.getEmfComponent(this, component);
     }
 
     public boolean canModifySchema() {
@@ -4741,6 +4761,7 @@ public class Node extends Element implements IGraphicalNode {
         this.isUpdate = isUpdate;
         reloadingComponent = true;
         currentStatus = 0;
+        oldStatus = 0;
         Object obj = parameters.get(INode.RELOAD_PARAMETER_ELEMENT_PARAMETERS);
         Map<String, Object> storeValueMap = storeValue(obj);
         init(component);
@@ -4758,47 +4779,53 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         if (obj != null) {
-            List<? extends IElementParameter> oldElementParameters = (List<? extends IElementParameter>) obj;
-            for (IElementParameter sourceParam : oldElementParameters) {
-                IElementParameter targetParam = getElementParameter(sourceParam.getName());
-                // add for bug TDI-25654, each time should get the specific version or the joblet.
-                String sourceParamName = sourceParam.getName();
-                if (isJobletNode && (EParameterName.PROCESS_TYPE_VERSION.getName()).equals(sourceParamName)) {
-                    Object versionObj = storeValueMap.get(sourceParamName);
-                    if (versionObj != null && !versionObj.equals(sourceParam.getValue())) {
-                        sourceParam.setValue(versionObj);
-                    }
-                }
-                if (targetParam != null) {
-                    if (sourceParam.getName().equals(EParameterName.LABEL.getName())
-                            && (sourceParam.getValue() == null || "".equals(sourceParam.getValue()))) { //$NON-NLS-1$
-                        setPropertyValue(sourceParam.getName(), component.getProcess().getName());
-                    } else {
-                        setPropertyValue(sourceParam.getName(), sourceParam.getValue());
-                    }
-                    if (targetParam.getFieldType() == EParameterFieldType.TABLE) {
-                        targetParam.setListItemsValue(sourceParam.getListItemsValue());
-                    }
-                    for (String name : targetParam.getChildParameters().keySet()) {
-                        IElementParameter targetChildParam = targetParam.getChildParameters().get(name);
-                        IElementParameter sourceChildParam = sourceParam.getChildParameters().get(name);
-                        if (sourceChildParam == null) {
-                            continue;
+            if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+                Object object = parameters.get(INode.OLD_UNIFIED_COMPONENT);
+                String oldComponent = object == null ? null : object.toString();
+                UnifiedComponentUtil.switchComponent(this, component, oldComponent, (List<? extends IElementParameter>) obj);
+            } else {
+                List<? extends IElementParameter> oldElementParameters = (List<? extends IElementParameter>) obj;
+                for (IElementParameter sourceParam : oldElementParameters) {
+                    IElementParameter targetParam = getElementParameter(sourceParam.getName());
+                    // add for bug TDI-25654, each time should get the specific version or the joblet.
+                    String sourceParamName = sourceParam.getName();
+                    if (isJobletNode && (EParameterName.PROCESS_TYPE_VERSION.getName()).equals(sourceParamName)) {
+                        Object versionObj = storeValueMap.get(sourceParamName);
+                        if (versionObj != null && !versionObj.equals(sourceParam.getValue())) {
+                            sourceParam.setValue(versionObj);
                         }
-                        String pname = sourceParam.getName() + ":" + sourceChildParam.getName();//$NON-NLS-1$
-                        if (storeValueMap.get(pname) != null) {
-                            setPropertyValue(pname, storeValueMap.get(pname));
+                    }
+                    if (targetParam != null) {
+                        if (sourceParam.getName().equals(EParameterName.LABEL.getName())
+                                && (sourceParam.getValue() == null || "".equals(sourceParam.getValue()))) { //$NON-NLS-1$
+                            setPropertyValue(sourceParam.getName(), component.getProcess().getName());
                         } else {
-                            setPropertyValue(pname, sourceChildParam.getValue());
+                            setPropertyValue(sourceParam.getName(), sourceParam.getValue());
                         }
+                        if (targetParam.getFieldType() == EParameterFieldType.TABLE) {
+                            targetParam.setListItemsValue(sourceParam.getListItemsValue());
+                        }
+                        for (String name : targetParam.getChildParameters().keySet()) {
+                            IElementParameter targetChildParam = targetParam.getChildParameters().get(name);
+                            IElementParameter sourceChildParam = sourceParam.getChildParameters().get(name);
+                            if (sourceChildParam == null) {
+                                continue;
+                            }
+                            String pname = sourceParam.getName() + ":" + sourceChildParam.getName();//$NON-NLS-1$
+                            if (storeValueMap.get(pname) != null) {
+                                setPropertyValue(pname, storeValueMap.get(pname));
+                            } else {
+                                setPropertyValue(pname, sourceChildParam.getValue());
+                            }
 
-                        if (targetChildParam.getFieldType() == EParameterFieldType.TABLE) {
-                            targetChildParam.setListItemsValue(sourceChildParam.getListItemsValue());
-                        } else if (targetChildParam.getFieldType() == EParameterFieldType.CONNECTION_LIST) {
-                            if (((getPropertyValue(pname) == null || getPropertyValue(pname).toString().length() == 0))
-                                    && component.getProcess() instanceof IProcess2
-                                    && storeValueMap.containsKey(sourceParam.getName()) && !storeValueMap.containsKey(pname)) {
-                                storeConn(sourceParam, pname);
+                            if (targetChildParam.getFieldType() == EParameterFieldType.TABLE) {
+                                targetChildParam.setListItemsValue(sourceChildParam.getListItemsValue());
+                            } else if (targetChildParam.getFieldType() == EParameterFieldType.CONNECTION_LIST) {
+                                if (((getPropertyValue(pname) == null || getPropertyValue(pname).toString().length() == 0))
+                                        && component.getProcess() instanceof IProcess2
+                                        && storeValueMap.containsKey(sourceParam.getName()) && !storeValueMap.containsKey(pname)) {
+                                    storeConn(sourceParam, pname);
+                                }
                             }
                         }
                     }
@@ -5411,4 +5438,14 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isJunitStart() {
         return this.isJunitStart;
     }
+
+    /**
+     * Getter for delegateComponent.
+     * 
+     * @return the delegateComponent
+     */
+    public IComponent getDelegateComponent() {
+        return this.delegateComponent;
+    }
+
 }

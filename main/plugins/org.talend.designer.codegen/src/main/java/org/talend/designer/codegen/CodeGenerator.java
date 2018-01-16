@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
@@ -24,6 +25,7 @@ import org.eclipse.emf.codegen.jet.JETException;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.components.api.component.ConnectorTopology;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
@@ -43,6 +45,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.temp.ETypeGen;
+import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.codegen.config.CloseBlocksCodeArgument;
@@ -517,7 +520,11 @@ public class CodeGenerator implements ICodeGenerator {
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.BEGIN, incomingName, typeGen));
 
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.MAIN, incomingName, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
 
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END, incomingName, typeGen));
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.END, typeGen));
@@ -533,7 +540,11 @@ public class CodeGenerator implements ICodeGenerator {
                             ECodePart.END, incomingName, subProcess));
                 } else {
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.MAIN, incomingName, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
                 }
                 break;
             case END:
@@ -543,7 +554,11 @@ public class CodeGenerator implements ICodeGenerator {
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.BEGIN, incomingName, typeGen));
 
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.MAIN, incomingName, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
+                    codeComponent
+                            .append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
 
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END, incomingName, typeGen));
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.END, typeGen));
@@ -553,12 +568,30 @@ public class CodeGenerator implements ICodeGenerator {
                     codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END, incomingName, typeGen));
                     // }
                     if (node.getComponent() instanceof Component) {
-                        if (((Component) node.getComponent()).getComponentDefinition().isRejectAfterClose()) {
-                            codeComponent.append(generateTypedComponentCode(EInternalTemplate.HANDLE_REJECTS_START, node,
-                                    ECodePart.END, incomingName, subProcess));
+                        Set<ConnectorTopology> supportedTopologies = ((Component) node.getComponent()).getComponentDefinition()
+                                .getSupportedConnectorTopologies();
+                        List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+                        boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+                        boolean hasOutput = false;
+                        if (outgoingConns!=null){
+                            for (int i = 0; i < outgoingConns.size(); i++) {
+                                IConnection outgoingConn = outgoingConns.get(i);
+                                if ("MAIN".equals(outgoingConn.getConnectorName())) {
+                                    hasOutput = true;
+                                    break;
+                                }
+                                if ("REJECT".equals(outgoingConn.getConnectorName())) {
+                                    hasOutput = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (supportedTopologies.contains(ConnectorTopology.INCOMING_AND_OUTGOING) && hasOutput && hasInput) {
+                            codeComponent.append(
+                                    generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
                             codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
-                            codeComponent.append(generateTypedComponentCode(EInternalTemplate.HANDLE_REJECTS_END, node,
-                                    ECodePart.END, incomingName, subProcess));
+                            codeComponent.append(
+                                    generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
                         }
                     }
                     codeComponent.append(generatesTreeCode(subProcess, node, part, typeGen));

@@ -1,0 +1,141 @@
+<%@ jet imports="
+		java.util.List
+		org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+		org.talend.core.model.metadata.types.JavaType
+        org.talend.core.model.metadata.types.JavaTypesManager
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.utils.NodeUtil
+        "
+%>
+<%@include file="@{org.talend.designer.codegen}/jet_stub/generic/component_util_indexedrecord_to_rowstruct.javajet"%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+if(hasInput){
+    // These will be initialized if there are outgoing connections and will be
+    // null if there isn't a corresponding outgoing connection.
+    IndexedRecordToRowStructGenerator mainIrToRow = null;
+    IndexedRecordToRowStructGenerator rejectIrToRow = null;
+
+    List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    if (outgoingConns!=null){
+        for (int i = 0; i < outgoingConns.size(); i++) {
+            IConnection outgoingConn = outgoingConns.get(i);
+            if (outgoingConn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+                %>
+                <%=outgoingConn.getName()%> = null;
+                <%
+            }
+            if ("MAIN".equals(outgoingConn.getConnectorName())) {
+                mainIrToRow = new IndexedRecordToRowStructGenerator(cid + "OutMain",
+                        outgoingConn);
+            }
+            if ("REJECT".equals(outgoingConn.getConnectorName())) {
+                rejectIrToRow = new IndexedRecordToRowStructGenerator(cid + "OutReject",
+                        outgoingConn);
+            }
+        }
+    }
+    // Generate the code to handle the incoming records.
+    IConnection inputConn = null;
+    List< ? extends IConnection> inputConns = node.getIncomingConnections();
+    if(inputConns!=null) {
+	   	for (IConnection conn : inputConns) {
+	   		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	   			inputConn = conn;
+	    	}
+	   	}
+   	}
+
+   	boolean hasValidInput = inputConn!=null;
+
+   	IMetadataTable metadata;
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    boolean haveValidNodeMetadata = ((metadatas != null) && (metadatas.size() > 0) && (metadata = metadatas.get(0)) != null);
+    if(haveValidNodeMetadata && hasValidInput) {
+    	List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
+    	if (input_columnList!=null && !input_columnList.isEmpty()) {
+			if (mainIrToRow != null) {
+                %>
+            	if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback) {
+					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackMain_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
+					writerWithFeedbackMain_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackMain_<%=cid%>, container_<%=cid%>);
+					java.lang.Iterable<?> outgoingRecs = writerWithFeedbackMain_<%=cid%>.getSuccessfulWrites();
+                    java.util.Iterator outgoingMainRecords_<%=cid%> = outgoingRecs.iterator();
+                    Object outgoingMain_<%=cid%> = null;
+                    if (outgoingMainRecords_<%=cid%>.hasNext()) {
+                    	outgoingMainRecordsList_<%=cid%> = outgoingRecs;
+                    }
+              	}
+            <%
+            }
+            if (rejectIrToRow != null) {
+            %>
+            		java.lang.Iterable<?> outgoingRejectRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
+					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackReject_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
+					writerWithFeedbackReject_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackReject_<%=cid%>, container_<%=cid%>);
+					java.lang.Iterable<?> outgoingRejectRecs = writerWithFeedbackReject_<%=cid%>.getRejectedWrites();
+                    java.util.Iterator outgoingRejectRecords_<%=cid%> = outgoingRejectRecs.iterator();
+                    if (outgoingRejectRecords_<%=cid%>.hasNext()) {
+                    	outgoingRejectRecordsList_<%=cid%> = outgoingRejectRecs;
+                    }
+            <%
+            }
+            if(mainIrToRow != null) {
+            %>
+            	java.util.Iterator outgoingMainRecordsIt_<%=cid%> = outgoingMainRecordsList_<%=cid%>.iterator();
+            <%
+            }
+            if(rejectIrToRow != null) {
+            %>
+            	java.util.Iterator outgoingRejectRecordsIt_<%=cid%> = outgoingRejectRecordsList_<%=cid%>.iterator();
+            <%
+            }
+            if(mainIrToRow != null || rejectIrToRow != null) {
+            	StringBuilder loopConditionBuilder = new StringBuilder();
+            	if(mainIrToRow != null) {
+            		loopConditionBuilder.append("outgoingMainRecordsIt_").append(cid).append(".hasNext()");
+            	}
+            	if(mainIrToRow != null && rejectIrToRow != null) {
+            		loopConditionBuilder.append(" || ");
+            	}
+            	if(rejectIrToRow != null) {
+            		loopConditionBuilder.append("outgoingRejectRecordsIt_").append(cid).append(".hasNext()");
+            	}
+            	String loopCondition = loopConditionBuilder.toString();
+            %>
+            	while(<%=loopCondition%>) { //Start of data processing while block
+            		<%if(mainIrToRow != null) {%>
+            			if(outgoingMainRecordsIt_<%=cid%>.hasNext()) {
+            				<%=mainIrToRow.getConnection().getName()%> = new <%=mainIrToRow.getConnection().getName() %>Struct();
+            				Object outgoingMain_<%=cid%> = outgoingMainRecordsIt_<%=cid%>.next();
+            				<%
+                    	    mainIrToRow.generateConvertRecord("outgoingMain_" + cid, mainIrToRow.getConnection().getName());
+                    	    %>
+            			} else {
+            				<%=mainIrToRow.getConnection().getName()%> = null;
+            			}
+            		<%}
+            		if(rejectIrToRow != null) {
+            		%>
+            			if(outgoingRejectRecordsIt_<%=cid%>.hasNext()) {
+            				<%=rejectIrToRow.getConnection().getName()%> = new <%=rejectIrToRow.getConnection().getName() %>Struct();
+            				Object outgoingReject_<%=cid%> = outgoingRejectRecordsIt_<%=cid%>.next();
+            				<%
+                    	    rejectIrToRow.generateConvertRecord("outgoingReject_" + cid, rejectIrToRow.getConnection().getName());
+                    	    %>
+            			} else {
+            				<%=rejectIrToRow.getConnection().getName()%> = null;
+            			}
+            		<%}
+            }
+    	}
+	}
+}
+%>

@@ -1,0 +1,61 @@
+<%@ jet imports="
+		java.util.List
+		org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.INode
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.utils.NodeUtil
+        "
+%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+boolean hasInput = !NodeUtil.getIncomingConnections(node, IConnectionCategory.DATA).isEmpty();
+if(hasInput){
+	boolean hasMainIrToRow = false;
+    boolean hasRejectIrToRow = false;
+	List<? extends IConnection> outgoingConns = node.getOutgoingSortedConnections();
+    if (outgoingConns!=null){
+        for (int i = 0; i < outgoingConns.size(); i++) {
+            IConnection outgoingConn = outgoingConns.get(i);
+            if ("MAIN".equals(outgoingConn.getConnectorName())) {
+                hasMainIrToRow = true;
+            }
+            if ("REJECT".equals(outgoingConn.getConnectorName())) {
+                hasRejectIrToRow = true;
+            }
+        }
+    }
+    // Generate the code to handle the incoming records.
+    IConnection inputConn = null;
+    List< ? extends IConnection> inputConns = node.getIncomingConnections();
+    if(inputConns!=null) {
+	   	for (IConnection conn : inputConns) {
+	   		if (conn.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
+	   			inputConn = conn;
+	    	}
+	   	}
+   	}
+
+   	boolean hasValidInput = inputConn!=null;
+
+   	IMetadataTable metadata;
+    List<IMetadataTable> metadatas = node.getMetadataList();
+    boolean haveValidNodeMetadata = ((metadatas != null) && (metadatas.size() > 0) && (metadata = metadatas.get(0)) != null);
+    if(haveValidNodeMetadata && hasValidInput) {
+    	List<IMetadataColumn> input_columnList = inputConn.getMetadataTable().getListColumns();
+
+        if (input_columnList!=null && !input_columnList.isEmpty() && (hasMainIrToRow || hasRejectIrToRow)) {
+	%>
+	} //end of data processing while block
+	if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback) {
+    	((org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>).cleanWrites();
+    }
+	<%
+		}
+	}
+}
+%>
