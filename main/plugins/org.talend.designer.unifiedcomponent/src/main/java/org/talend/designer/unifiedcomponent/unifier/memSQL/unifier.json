@@ -1,0 +1,34 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tMemSQLInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tMemSQLOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tMemSQLClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tMemSQLConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tMemSQLRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]

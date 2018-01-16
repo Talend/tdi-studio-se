@@ -1,0 +1,51 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tEXAInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tEXAOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tEXAClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tEXACommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tEXAConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tEXARollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tEXARow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tEXABulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]

@@ -32,5 +32,20 @@
     "component_delegate":"tDBRow",
     "component":"tAccessRow",
     "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tAccessOutputBulk",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tAccessOutputBulk",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tAccessOutputBulk",
+    "category":"DI"
 }
 ]

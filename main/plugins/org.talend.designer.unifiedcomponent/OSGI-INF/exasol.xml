@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="ExasolComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.exasol.ExasolComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>
