@@ -38,6 +38,8 @@ import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ITDQRepositoryService;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
@@ -52,9 +54,9 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.check.IChecker;
@@ -79,7 +81,6 @@ import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
-
 import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
@@ -245,6 +246,37 @@ public class GenericDBService implements IGenericDBService{
         // Move it from WorkspaceRunnable to avoid the conflicting rules with other jobs.
         if (!creation) {
             GenericUpdateManager.updateGenericConnection(item, oldMetadataTable);
+        }
+        updateConnectionOnDQSide(creation, item);
+    }
+
+    /**
+     * Update some attributes on DQ side(same as other type database connections)
+     * 
+     * @param creation
+     * @param connectionItem
+     */
+    private void updateConnectionOnDQSide(boolean creation, ConnectionItem connectionItem) {
+        ITDQRepositoryService tdqRepService = null;
+
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
+            tdqRepService =
+                    (ITDQRepositoryService) GlobalServiceRegister.getDefault().getService(ITDQRepositoryService.class);
+        }
+        if (tdqRepService != null) {
+            // MOD qiongli 2012-11-19 TDQ-6287
+            String label = connectionItem.getProperty().getLabel();
+            connectionItem.getConnection().setName(label);
+            connectionItem.getConnection().setLabel(label);
+            if (creation) {
+                tdqRepService.notifySQLExplorer(connectionItem);
+                tdqRepService.openConnectionEditor(connectionItem);
+            } else {
+                tdqRepService.updateAliasInSQLExplorer(connectionItem, connectionItem.getProperty().getDisplayName());
+                // refresh the opened connection editor whatever is in DI or DQ perspective.
+                tdqRepService.refreshConnectionEditor(connectionItem);
+
+            }
         }
     }
     
