@@ -2979,6 +2979,14 @@
               name="Trigger to save the item"
               version="7.0.0">
         </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
+              id="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
+              name="RepositoryProjectDate"
+              version="7.0.0">
+        </projecttask>
    </extension>
 
    <extension
