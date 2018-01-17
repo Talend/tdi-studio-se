@@ -48,4 +48,15 @@ public class SimpleInputComponent extends AbstractFakeComponent implements IComp
         return nodeConnectors;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        // TODO Auto-generated method stub
+
+    }
+
 }

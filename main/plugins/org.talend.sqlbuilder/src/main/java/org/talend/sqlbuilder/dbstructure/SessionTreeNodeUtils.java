@@ -20,11 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sourceforge.sqlexplorer.IdentifierFactory;
-import net.sourceforge.sqlexplorer.SQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
-import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
-
 import org.talend.core.database.EDatabase4DriverClassName;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.metadata.IMetadataConnection;
@@ -38,6 +33,11 @@ import org.talend.sqlbuilder.SqlBuilderPlugin;
 import org.talend.sqlbuilder.dbstructure.nodes.INode;
 import org.talend.sqlbuilder.sessiontree.model.SessionTreeModel;
 import org.talend.sqlbuilder.sessiontree.model.SessionTreeNode;
+
+import net.sourceforge.sqlexplorer.IdentifierFactory;
+import net.sourceforge.sqlexplorer.SQLAlias;
+import net.sourceforge.squirrel_sql.fw.sql.ISQLAlias;
+import net.sourceforge.squirrel_sql.fw.sql.SQLConnection;
 
 /**
  * Detailled comment for this class. <br/>
@@ -94,6 +94,7 @@ public class SessionTreeNodeUtils {
         // hyWang add for bug 0007014
         IMetadataConnection iMetadataConnection = null;
         iMetadataConnection = ConvertionHelper.convert(dbconnection, false, selectedContext);
+        iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(dbconnection));
         String url = dbconnection.getURL();
         if (url == null || url.equals("")) {
             url = iMetadataConnection.getUrl();

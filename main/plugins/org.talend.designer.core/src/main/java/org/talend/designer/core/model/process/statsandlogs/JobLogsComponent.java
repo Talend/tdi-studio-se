@@ -42,6 +42,7 @@ public class JobLogsComponent extends AbstractStatsLogsComponent {
         loadMultipleComponentManager();
     }
 
+    @Override
     public String getVersion() {
         return "0.1"; //$NON-NLS-1$
     }
@@ -102,13 +103,26 @@ public class JobLogsComponent extends AbstractStatsLogsComponent {
      * 
      * @see org.talend.core.model.components.IComponent#getComponentType()
      */
+    @Override
     public EComponentType getComponentType() {
         return EComponentType.JOB_LOGS;
     }
 
+    @Override
     public IProcess getProcess() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
+     */
+    @Override
+    public void setOriginalFamilyName(String familyName) {
+        // TODO Auto-generated method stub
+
     }
 
 }

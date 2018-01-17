@@ -157,6 +157,9 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public String getOriginalFamilyName() {
+        if (familyName != null) {
+            return familyName;
+        }
         String[] families = componentDefinition.getFamilies();
         StringBuffer sb = new StringBuffer();
         for (String familyName : families) {
@@ -1470,6 +1473,7 @@ public class Component extends AbstractBasicComponent {
         return true;
     }
 
+    @Override
     public void initNodeProperties(INode newNode, INode oldNode) {
         this.initNodePropertiesFromSerialized(newNode, oldNode.getComponentProperties().toSerialized());
     }
@@ -1670,6 +1674,7 @@ public class Component extends AbstractBasicComponent {
         return "jet_stub/generic";
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return "component";
     }

@@ -183,6 +183,7 @@ public final class EMFRepositoryNodeManager {
                 DatabaseConnection databaseConnection = (DatabaseConnection) SQLBuilderRepositoryNodeManager.getItem(root)
                         .getConnection();
                 iMetadataConnection = ConvertionHelper.convert(databaseConnection, false, selectedContext);
+                iMetadataConnection.setAdditionalParams(ConvertionHelper.convertAdditionalParameters(databaseConnection));
                 dbMetaData = rnmanager.getDatabaseMetaData(iMetadataConnection);
             } catch (final Exception e) {
                 final String mainMsg = Messages.getString("EMFRepositoryNodeManager.DBConnection.Text"); //$NON-NLS-1$

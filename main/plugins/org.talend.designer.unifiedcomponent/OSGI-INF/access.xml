@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="AccessComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.access.AccessComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>
