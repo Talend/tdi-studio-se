@@ -146,21 +146,7 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             Set<UnifiedObject> unifiedObjects = dComp.getUnifiedObjectsByPalette(dComp.getPaletteType());
             for (UnifiedObject obj : unifiedObjects) {
                 if (obj.getComponentName().equals(component.getName())) {
-                    Set<String> hideFamilies = obj.getHideFamilies();
-                    String[] originFamilies = component.getOriginalFamilyName().split(
-                            ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-                    if (!hideFamilies.isEmpty()) {
-                        for (String family : originFamilies) {
-                            if (hideFamilies.contains(family)) {
-
-                            }
-                        }
-
-                    } else {
-                        // treat the component in all families as unified component if the "family" element is not
-                        // sepcified in the json
-                        return dComp;
-                    }
+                    return dComp;
                 }
             }
         }
@@ -371,9 +357,6 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             IComponent next = iterator.next();
             String[] originFamilies = next.getOriginalFamilyName().split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
             String[] translatedFamilies = next.getTranslatedFamilyName().split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
-            if (translatedFamilies.length != originFamilies.length) {
-                System.out.println("");
-            }
             IComponent delegateComp = service.getDelegateComponent(next);
             if (delegateComp instanceof DelegateComponent) {
                 UnifiedObject unifiedObject = ((DelegateComponent) delegateComp).getUnifiedObjectByName(next.getName());
@@ -393,34 +376,6 @@ public class UnifiedComponentService implements IUnifiedComponentService {
                     familyChanged = false;
                     iterator.remove();
                 }
-            }
-            if (translatedFamilies.length != originFamilies.length) {
-                System.out.println("");
-            }
-            if (!hideAll) {
-                // change all not unified components in family "Databases" to "Databases/DB Specifics"
-                for (int fcount = 0; fcount < originFamilies.length; fcount++) {
-                    String oFamily = originFamilies[fcount];
-                    String[] split = oFamily.split(FAMILY_HIER_SEPARATOR);
-                    if (split.length > 1 && FAMILY_DATABASES.equals(split[0]) && !FAMILY_SPECIFIED.equals(split[1])) {
-                        familyChanged = true;
-                        split[0] = FAMILY_DATABASES_SPECIFIED;
-                        String newFamily = "";
-                        for (int j = 0; j < split.length; j++) {
-                            String element = split[j];
-                            newFamily = newFamily + element;
-                            if (j < split.length - 1) {
-                                newFamily = newFamily + FAMILY_HIER_SEPARATOR;
-                            }
-                        }
-                        if (newFamily.endsWith(FAMILY_HIER_SEPARATOR)) {
-                            System.out.println();
-                        }
-                        originFamilies[fcount] = newFamily;
-                        translatedFamilies[fcount] = newFamily;
-                    }
-                }
-
             }
             if (familyChanged) {
                 String newOriginal = "";
