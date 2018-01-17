@@ -270,7 +270,7 @@ public class ErDiagramComposite extends SashForm {
             schema = connection.getUiSchema();
         }
 
-        if (connection.isContextMode()) {
+        if (connection.isContextMode() && !EDatabaseTypeName.SAPHana.getDisplayName().equals(getCurrentDbType())) {
             schema = DatabaseConnectionParameterUtil.getContextTrueValue(connection, schema);
         }
         return schema;
