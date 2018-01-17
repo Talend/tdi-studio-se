@@ -64,7 +64,8 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
+     * @see
+     * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
     private Command createCommand(SelectionEvent event) {
         Set<String> elementsName;
@@ -119,6 +120,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
     IControlCreator cbCtrl = new IControlCreator() {
 
+        @Override
         public Control createControl(final Composite parent, final int style) {
             CCombo cb = new CCombo(parent, style);
             return cb;
@@ -128,7 +130,8 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
+     * @see
+     * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
     @Override
     public Control createControl(final Composite subComposite, final IElementParameter param, final int numInRow,
@@ -136,13 +139,13 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
         DecoratedField dField = new DecoratedField(subComposite, SWT.BORDER, cbCtrl);
         if (param.isRequired()) {
-            FieldDecoration decoration = FieldDecorationRegistry.getDefault()
-                    .getFieldDecoration(FieldDecorationRegistry.DEC_REQUIRED);
+            FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                    FieldDecorationRegistry.DEC_REQUIRED);
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.TOP, false);
         }
         if (param.isRepositoryValueUsed()) {
-            FieldDecoration decoration = FieldDecorationRegistry.getDefault()
-                    .getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
+            FieldDecoration decoration = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                    FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
             decoration.setDescription(Messages.getString("ComboController.valueFromRepository")); //$NON-NLS-1$
             dField.addFieldDecoration(decoration, SWT.RIGHT | SWT.BOTTOM, false);
         }
@@ -202,6 +205,24 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
         Point initialSize = dField.getLayoutControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
+
+        if (isInWizard()) {
+            labelLabel.setAlignment(SWT.RIGHT);
+            if (lastControl != null) {
+                data.right = new FormAttachment(lastControl, 0);
+            } else {
+                data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+            }
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth
+                    + ITabbedPropertyConstants.HSPACE);
+
+            data = (FormData) labelLabel.getLayoutData();
+            data.right = new FormAttachment(cLayout, 0);
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+
+            return labelLabel;
+        }
+
         return cLayout;
     }
 
@@ -209,9 +230,8 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
      * (non-Javadoc)
      * 
      * @see
-     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize(org.
-     * eclipse.swt.widgets.Composite,
-     * org.talend.core.model.process.IElementParameter)
+     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
+     * (org. eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
@@ -227,12 +247,14 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
      * 
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // TODO Auto-generated method stub
     }
 
     SelectionListener listenerSelection = new SelectionAdapter() {
 
+        @Override
         public void widgetSelected(SelectionEvent event) {
             // dynamicTabbedPropertySection.updateRepositoryList();
             Command cmd = createCommand(event);
