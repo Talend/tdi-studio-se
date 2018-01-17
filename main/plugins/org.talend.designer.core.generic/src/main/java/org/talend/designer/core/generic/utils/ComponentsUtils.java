@@ -80,7 +80,6 @@ import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.ElementParameterDefaultValue;
-import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 
 /**
@@ -159,8 +158,7 @@ public class ComponentsUtils {
         }
     }
 
-    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition,
-            String paletteType) {
+    private static void loadComponent(Set<IComponent> componentsList, ComponentDefinition componentDefinition, String paletteType) {
         try {
             Component currentComponent = new Component(componentDefinition, paletteType);
 
@@ -217,8 +215,8 @@ public class ComponentsUtils {
      * @return parameters list
      */
     private static List<ElementParameter> getParametersFromForm(IElement element, boolean isInitializing,
-            EComponentCategory category, ComponentProperties rootProperty, Properties compProperties, String parentPropertiesPath,
-            Form form, Widget parentWidget, AtomicInteger lastRowNum) {
+            EComponentCategory category, ComponentProperties rootProperty, Properties compProperties,
+            String parentPropertiesPath, Form form, Widget parentWidget, AtomicInteger lastRowNum) {
         List<ElementParameter> elementParameters = new ArrayList<>();
         List<String> parameterNames = new ArrayList<>();
         EComponentCategory compCategory = category;
@@ -247,6 +245,7 @@ public class ComponentsUtils {
 
         // Have to initialize for the messages
         Collection<Widget> formWidgets = form.getWidgets();
+        boolean isDriverContextMode = false;
         for (Widget widget : formWidgets) {
             NamedThing widgetProperty = widget.getContent();
 
@@ -258,8 +257,8 @@ public class ComponentsUtils {
                 if (!isSameComponentProperties(componentProperties, widgetProperty)) {
                     propertiesPath = getPropertiesPath(parentPropertiesPath, subProperties.getName());
                 }
-                elementParameters.addAll(getParametersFromForm(element, isInitializing, compCategory, rootProperty, subProperties,
-                        propertiesPath, subForm, widget, lastRN));
+                elementParameters.addAll(getParametersFromForm(element, isInitializing, compCategory, rootProperty,
+                        subProperties, propertiesPath, subForm, widget, lastRN));
                 continue;
             }
 
@@ -339,7 +338,8 @@ public class ComponentsUtils {
                         sibling_param.setShow(true);
                         sibling_param.setNumRow(rowNum);
                         sibling_param.getChildParameters().get(EParameterName.QUERYSTORE_TYPE.getName()).setNumRow(rowNum);
-                        sibling_param.getChildParameters().get(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName()).setNumRow(rowNum);
+                        sibling_param.getChildParameters().get(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName())
+                                .setNumRow(rowNum);
                         param.setShowIf(EParameterName.QUERYSTORE_TYPE.getName() + " =='" + AbstractBasicComponent.BUILTIN + "'");
                     }
                 }
@@ -349,7 +349,7 @@ public class ComponentsUtils {
                 param.setValue(getParameterValue(element, property, fieldType, parameterName));
                 boolean isNameProperty = IGenericConstants.NAME_PROPERTY.equals(param.getParameterName());
                 if (EParameterFieldType.NAME_SELECTION_AREA.equals(fieldType) || EParameterFieldType.JSON_TABLE.equals(fieldType)
-                        || EParameterFieldType.CHECK.equals(fieldType)|| isNameProperty) {
+                        || EParameterFieldType.CHECK.equals(fieldType) || isNameProperty) {
                     // Disable context support for those filed types and name parameter.
                     param.setSupportContext(false);
                 } else {
@@ -357,7 +357,8 @@ public class ComponentsUtils {
                 }
                 property.setTaggedValue(IComponentConstants.SUPPORT_CONTEXT, param.isSupportContext());
                 Object cmTV = property.getTaggedValue(IGenericConstants.IS_CONTEXT_MODE);
-                param.setReadOnly(Boolean.valueOf(String.valueOf(cmTV)));
+                boolean isContext = Boolean.valueOf(String.valueOf(cmTV));
+                param.setReadOnly(isContext);
                 boolean isDynamic = Boolean.valueOf(String.valueOf(property.getTaggedValue(IGenericConstants.IS_DYNAMIC)));
                 param.setContextMode(isDynamic);
                 List<?> values = property.getPossibleValues();
@@ -389,6 +390,9 @@ public class ComponentsUtils {
                     param.setListItemsDisplayName(possValsDisplay.toArray(new String[0]));
                     param.setListItemsDisplayCodeName(possValsDisplay.toArray(new String[0]));
                     param.setListItemsValue(possVals.toArray(new String[0]));
+                }
+                if (param.getName().equals("connection.driverClass")) {
+                    isDriverContextMode = isContext;
                 }
             } else if (fieldType != null && fieldType.equals(EParameterFieldType.TABLE) && widgetProperty instanceof Properties) {
                 Properties table = (Properties) widgetProperty;
@@ -433,8 +437,8 @@ public class ComponentsUtils {
                 param.setListItemsShowIf(listItemsShowIf);
                 param.setListItemsNotShowIf(listItemsNotShowIf);
                 param.setValue(GenericTableUtils.getTableValues(table, param));
-                param.setBasedOnSchema(
-                        Boolean.valueOf(String.valueOf(widget.getConfigurationValue(Widget.HIDE_TOOLBAR_WIDGET_CONF))));
+                param.setBasedOnSchema(Boolean.valueOf(String.valueOf(widget
+                        .getConfigurationValue(Widget.HIDE_TOOLBAR_WIDGET_CONF))));
             }
 
             if (!param.isReadOnly()) {
@@ -451,6 +455,13 @@ public class ComponentsUtils {
             if (!parameterNames.contains(parameterName)) {
                 elementParameters.add(param);
                 parameterNames.add(parameterName);
+            }
+        }
+        if (isDriverContextMode) {
+            for (ElementParameter param : elementParameters) {
+                if (param.getName().equals("connection.selectClass")) {
+                    param.setReadOnly(isDriverContextMode);
+                }
             }
         }
         return elementParameters;
@@ -555,8 +566,7 @@ public class ComponentsUtils {
             String value = (String) paramValue;
             // If property is not initialized by client and value is not context mode and is not in wizard then add
             // double quotes.
-            if (needInitializeProperty
-                    && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
+            if (needInitializeProperty && !(element instanceof FakeElement || ContextParameterUtils.isContainContextParam(value))) {
                 if (value == null) {
                     value = StringUtils.EMPTY;
                 }
@@ -765,8 +775,8 @@ public class ComponentsUtils {
     public static ComponentProperties getComponentPropertiesFromSerialized(String serialized, Connection connection,
             boolean withEvaluator) {
         if (serialized != null) {
-            SerializerDeserializer.Deserialized<ComponentProperties> fromSerialized = Properties.Helper
-                    .fromSerializedPersistent(serialized, ComponentProperties.class, new PostDeserializeSetup() {
+            SerializerDeserializer.Deserialized<ComponentProperties> fromSerialized = Properties.Helper.fromSerializedPersistent(
+                    serialized, ComponentProperties.class, new PostDeserializeSetup() {
 
                         @Override
                         public void setup(Object properties) {
@@ -822,31 +832,31 @@ public class ComponentsUtils {
         }
         return nals;
     }
-    
-    public static void initReferencedComponent(IElementParameter refPara, String newValue){
 
-        if(!(refPara instanceof GenericElementParameter)){
+    public static void initReferencedComponent(IElementParameter refPara, String newValue) {
+
+        if (!(refPara instanceof GenericElementParameter)) {
             return;
         }
-        Widget widget = ((GenericElementParameter)refPara).getWidget();
+        Widget widget = ((GenericElementParameter) refPara).getWidget();
         NamedThing widgetProperty = widget.getContent();
-        if (widgetProperty instanceof ComponentReferenceProperties 
+        if (widgetProperty instanceof ComponentReferenceProperties
                 && Widget.COMPONENT_REFERENCE_WIDGET_TYPE.equals(widget.getWidgetType())) {
-            IElementParameter propertyParameter = refPara.getElement().
-                    getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-            ComponentReferenceProperties props = (ComponentReferenceProperties)widgetProperty;
-            if(newValue == null || newValue.toString().length() <= 0){
+            IElementParameter propertyParameter = refPara.getElement().getElementParameterFromField(
+                    EParameterFieldType.PROPERTY_TYPE);
+            ComponentReferenceProperties props = (ComponentReferenceProperties) widgetProperty;
+            if (newValue == null || newValue.toString().length() <= 0) {
                 props.referenceType.setValue(ComponentReferenceProperties.ReferenceType.THIS_COMPONENT);
                 props.componentInstanceId.setValue(null);
                 props.setReference(null);
                 propertyParameter.setShow(true);
-            }else{
+            } else {
                 props.referenceType.setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
                 props.componentInstanceId.setValue(newValue);
                 if (refPara.getElement() != null && refPara.getElement() instanceof INode) {
                     INode node = (INode) refPara.getElement();
-                    for(INode refNode : node.getProcess().getGraphicalNodes()){
-                        if(refNode.getUniqueName().equals(newValue)){
+                    for (INode refNode : node.getProcess().getGraphicalNodes()) {
+                        if (refNode.getUniqueName().equals(newValue)) {
                             props.setReference(refNode.getComponentProperties());
                         }
                     }
@@ -856,13 +866,13 @@ public class ComponentsUtils {
         }
         IElementParameter parent = refPara.getParentParameter();
         Widget parentWidget = null;
-        if(parent != null){
-            parentWidget = ((GenericElementParameter)parent).getWidget();
+        if (parent != null) {
+            parentWidget = ((GenericElementParameter) parent).getWidget();
         }
-        for(IElementParameter param : refPara.getElement().getElementParameters()){
-            if(param instanceof GenericElementParameter){
+        for (IElementParameter param : refPara.getElement().getElementParameters()) {
+            if (param instanceof GenericElementParameter) {
                 widget.setHidden();
-                if(param.getName().startsWith("connection")){
+                if (param.getName().startsWith("connection")) {
                     param.setShow(false);
                     continue;
                 }
