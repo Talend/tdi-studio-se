@@ -96,18 +96,34 @@ if(useExistingConnection) {
     String host_<%=cid%> = <%=host%>;
 <%	if(!"NONE".equals(tableAction) || ("UPDATE").equals(dataAction)){%>
     	String port_<%=cid%> = <%=port%>;
-<%		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+<%		
+            	if("SYBSEIQ_16_SA".equals(dbVersion)){
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+			String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + host_<%=cid%> + ":" + port_<%=cid%> + ";DatabaseName=" + db_<%=cid%>; 
+<%
+			}
+			else {
+%>
+			String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + host_<%=cid%> + ":" + port_<%=cid%> + ";DatabaseName" + db_<%=cid%> + ";" + <%=dbproperties%>;
+<%
+			}
+		}
+		else {
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
 			String url_<%=cid %> = "jdbc:sybase:Tds:" + host_<%=cid%> + ":" + port_<%=cid%> + "/" + db_<%=cid%>;
 <%
-		} else {
+			} else {
 %>
 			String url_<%=cid %> = "jdbc:sybase:Tds:" + host_<%=cid%> + ":" + port_<%=cid%> + "/" + db_<%=cid%> + "?" + <%=dbproperties%>;
 <%
+			}
 		}
 %>
-
-		<%if("SYBSEIQ_16".equals(dbVersion)){%>
+		<%if("SYBSEIQ_16_SA".equals(dbVersion)){%>
+			 String driverClass_<%=cid%> = "sap.jdbc4.sqlanywhere.IDriver";
+		<%} else if("SYBSEIQ_16".equals(dbVersion)){%>
 			 String driverClass_<%=cid%> = "com.sybase.jdbc4.jdbc.SybDriver";
 		<%}else{%>
 			 String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";

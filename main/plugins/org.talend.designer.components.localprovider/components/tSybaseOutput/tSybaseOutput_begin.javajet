@@ -168,7 +168,10 @@ if(useExistingConn){
     <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
     String dbPwd_<%=cid %> = decryptedPassword_<%=cid%>;
-	<% if("SYBSEIQ_16".equals(dbVersion)){
+	<% if("SYBSEIQ_16_SA".equals(dbVersion)){
+	    dbLog.conn().logJDBCDriver(dbLog.str("sap.jdbc4.sqlanywhere.IDriver"));%>
+		java.lang.Class.forName("sap.jdbc4.sqlanywhere.IDriver");
+	<% } else if("SYBSEIQ_16".equals(dbVersion)){
 	    dbLog.conn().logJDBCDriver(dbLog.str("com.sybase.jdbc4.jdbc.SybDriver"));%>
 		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
 	<%}else{
@@ -176,14 +179,28 @@ if(useExistingConn){
 	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
 	<%}%>
 <%
-	if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+	if("SYBSEIQ_16_SA".equals(dbVersion)){
+		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+		    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %>; 
+<%
+		}
+		else{
+%>
+		    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+<%
+		}
+	}
+	else {
+		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
 		String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
 <%
-	} else {
+		} else {
 %>
 		String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
 <%
+		}
 	}
 %>
 	<%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>
