@@ -1,0 +1,79 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tDB2Input",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tDB2Output",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tDB2Close",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tDB2Commit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tDB2Connection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tDB2Rollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tDB2Row",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBSCDELT",
+    "component":"tDB2SCDELT",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tDB2CDC",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tDB2BulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tDB2SCD",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBSP",
+    "component":"tDB2SP",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

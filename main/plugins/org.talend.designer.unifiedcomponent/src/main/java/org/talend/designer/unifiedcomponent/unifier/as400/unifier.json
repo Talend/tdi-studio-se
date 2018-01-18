@@ -1,0 +1,56 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tAS400Input",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tAS400Output",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tAS400Close",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tAS400Commit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tAS400Connection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tAS400Rollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tAS400Row",
+    "category":"DI",
+    "parameter":{
+        "exclude":"DB_VERSION"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tAS400CDC",
+    "category":"DI",
+    "parameter":{
+        "exclude":"DB_VERSION"}
+},
+{
+    "component_delegate":"tDBLastInsertId",
+    "component":"tAS400LastInsertId",
+    "category":"DI"
+}
+]

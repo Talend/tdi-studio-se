@@ -28,7 +28,7 @@ import org.talend.components.common.component.runtime.RootRecordUtils;
  * So, components which produce flow variables should implement {@link WriterWithFeedback} interface. This class is supposed to be
  * used in
  * job generated code. It adds flow variables handling functionality for component {@link WriterWithFeedback}
- * 
+ *
  * <p>
  * It adds additional functionality for {@link WriterWithFeedback#getRejectedWrites()} and
  * {@link WriterWithFeedback#getSuccessfulWrites()}
@@ -68,7 +68,7 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
 
     /**
      * Constructor sets wrapped {@link WriterWithFeedback} and job {@link RuntimeContainer}
-     * 
+     *
      * @param writerWithFeedback {@link WriterWithFeedback} to be wrapped inside this Decorator
      * @param runtimeContainer {@link RuntimeContainer} which is used to set flow variables
      */
@@ -101,20 +101,20 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
      * Retrieves successful writes from wrapped {@link WriterWithFeedback}. Cleans writes from flow variables (aka Out of band)
      * data,
      * stores flow variables in {@link RuntimeContainer} in case they are present
-     * 
+     *
      * <p>
      * It checks whether {@link Iterable} content is Root records or not and chooses appropriate processing strategy
      * during first call to this method.
-     * 
+     *
      * <p>
      * Flow variables data is retrieved and stored only from first element of incoming {@link Iterable}
      * It is assumed that {@link Iterable} contains only 1 element in most cases. More elements have no sense
      * for flow variables mechanism, so they are ignored.
-     * 
+     *
      * <p>
      * Also it is assumed that every element in {@link Iterable} is instance of the same class (has same schema if it is
      * {@link IndexedRecord}). Otherwise errors could appeared during Runtime
-     * 
+     *
      * @return {@link Iterable} with main data which is released from flow variables data
      */
     @Override
@@ -148,20 +148,20 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
      * Retrieves rejected writes from wrapped {@link WriterWithFeedback}. Cleans writes from flow variables (aka Out of band)
      * data,
      * stores flow variables in {@link RuntimeContainer} in case they are present
-     * 
+     *
      * <p>
      * It checks whether {@link Iterable} content is Root records or not and chooses appropriate processing strategy
      * during first call to this method.
-     * 
+     *
      * <p>
      * Flow variables data is retrieved and stored only from first element of incoming {@link Iterable}
      * It is assumed that {@link Iterable} contains only 1 element in most cases. More elements have no sense
      * for flow variables mechanism, so they are ignored.
-     * 
+     *
      * <p>
      * Also it is assumed that every element in {@link Iterable} is instance of the same class (has same schema if it is
      * {@link IndexedRecord}). Otherwise errors could appeared during Runtime
-     * 
+     *
      * @return {@link Iterable} with rejected data which is released from flow variables data
      */
     @Override
@@ -189,6 +189,11 @@ public class FlowVariablesWriter<WriteT> implements WriterWithFeedback<WriteT, O
             }
         }
         return rejectDataProcessor.processDataIterable(rejectedWrites);
+    }
+
+    @Override
+    public void cleanWrites() {
+        wrappedWriter.cleanWrites();
     }
 
 }

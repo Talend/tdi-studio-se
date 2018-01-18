@@ -1,0 +1,118 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tMysqlInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tMysqlOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tMysqlClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBColumnList",
+    "component":"tMysqlColumnList",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tMysqlCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tMysqlConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tMysqlRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tMysqlRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSCDELT",
+    "component":"tMysqlSCDELT",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBTableList",
+    "component":"tMysqlTableList",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tMysqlBulkExec",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tMysqlCDC",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBInvalidRows",
+    "component":"tMySQLInvalidRows",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBLastInsertId",
+    "component":"tMysqlLastInsertId",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tMysqlOutputBulk",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tMysqlOutputBulkExec",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tMysqlSCD",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSP",
+    "component":"tMysqlSP",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBValidRows",
+    "component":"tMySQLValidRows",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]

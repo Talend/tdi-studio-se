@@ -1,0 +1,37 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tAmazonAuroraInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tAmazonAuroraOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tAmazonAuroraClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tAmazonAuroraCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tAmazonAuroraConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tAmazonAuroraRollback",
+    "category":"DI"
+}
+]

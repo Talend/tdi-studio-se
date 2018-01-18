@@ -82,6 +82,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.designer.core.ui.views.subjob.SubjobBasicComposite;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.repository.RepositoryPlugin;
 
 /**
@@ -547,13 +548,21 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
         String label = null;
         Image image = null;
         if (elem instanceof Node) {
-            label = ((Node) elem).getLabel();
+            Node node = (Node) elem;
+            label = node.getLabel();
 
-            String uniqueName = ((Node) elem).getUniqueName();
+            String uniqueName = node.getUniqueName();
             if (!label.equals(uniqueName)) {
                 label = label + "(" + uniqueName + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
-            image = CoreImageProvider.getComponentIcon(((Node) elem).getComponent(), ICON_SIZE.ICON_24);
+            if (node.getComponent() != node.getDelegateComponent()) {
+                String dispalyName = UnifiedComponentUtil.getUnifiedCompDisplayName(node.getDelegateComponent(), node
+                        .getComponent().getName());
+                if (dispalyName != null) {
+                    label = label + "(" + dispalyName + ")";
+                }
+            }
+            image = CoreImageProvider.getComponentIcon(node.getComponent(), ICON_SIZE.ICON_24);
         } else if (elem instanceof Connection) {
             label = ((Connection) elem).getElementName();
             image = ImageProvider.getImage(EImage.RIGHT_ICON);

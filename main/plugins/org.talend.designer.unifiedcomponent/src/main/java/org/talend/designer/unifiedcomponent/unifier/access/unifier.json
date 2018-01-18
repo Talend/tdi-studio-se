@@ -1,0 +1,36 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tAccessInput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tAccessOutput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tAccessClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tAccessCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tAccessConnection",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tAccessRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tAccessRow",
+    "category":"DI"
+}
+]
