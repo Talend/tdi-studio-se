@@ -53,7 +53,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.utils.sql.metadata.constants.GetTable;
-
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -288,17 +287,25 @@ public class QueryGuessCommand extends Command {
         if (dbType != null && dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
             isJdbc = true;
             boolean isGeneralJDBC = dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName());
-            
+
             String driverClassName = null;
-            if(isGeneralJDBC){
+            if (isGeneralJDBC) {
                 driverClassName = node.getElementParameter("DRIVER_CLASS").getValue().toString();
                 if (connectionNode != null) {
                     driverClassName = connectionNode.getElementParameter("DRIVER_CLASS").getValue().toString();
                 }
-            }else{
-                driverClassName = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()).getValue().toString();
+            } else {
+                IElementParameter elementParameter = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS
+                        .getDisplayName());
+                if (elementParameter == null) {
+                    // for mr process , it still use old JDBC component but can use new connection from repository
+                    elementParameter = node.getElementParameter("DRIVER_CLASS");
+                }
+                driverClassName = elementParameter.getValue().toString();
                 if (connectionNode != null) {
-                    driverClassName = connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()).getValue().toString();
+                    driverClassName = connectionNode
+                            .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()).getValue()
+                            .toString();
                 }
             }
 
@@ -319,15 +326,24 @@ public class QueryGuessCommand extends Command {
 
             // DRIVER_JAR:
             String driverJarName = null;
-            if(isGeneralJDBC){
+            if (isGeneralJDBC) {
                 driverJarName = node.getElementParameter("DRIVER_JAR").getValue().toString();
                 if (connectionNode != null) {
                     driverJarName = connectionNode.getElementParameter("DRIVER_JAR").getValue().toString();
                 }
-            }else{
-                driverJarName = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()).getValue().toString();
+            } else {
+                IElementParameter elementParameter = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR
+                        .getDisplayName());
+                if (elementParameter == null) {
+                    // for mr process , it still use old JDBC component but can use new connection from repository
+                    elementParameter = node.getElementParameter("DRIVER_JAR");
+                }
+                driverJarName = elementParameter.getValue().toString();
+
                 if (connectionNode != null) {
-                    driverJarName = connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()).getValue().toString();
+                    driverJarName = connectionNode
+                            .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()).getValue()
+                            .toString();
                 }
             }
             if (driverJarName != null && driverJarName.startsWith("[") && driverJarName.endsWith("]")) {
