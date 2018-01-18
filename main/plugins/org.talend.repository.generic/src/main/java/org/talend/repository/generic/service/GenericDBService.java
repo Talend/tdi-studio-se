@@ -89,7 +89,7 @@ import orgomg.cwm.objectmodel.core.TaggedValue;
  */
 public class GenericDBService implements IGenericDBService{
     
-    private List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
+    private static List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
     
     @Override
     public Map<String, Composite> creatDBDynamicComposite(Composite composite, EComponentCategory sectionCategory, boolean isReadOnly, boolean isCreation,

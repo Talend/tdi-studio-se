@@ -401,6 +401,15 @@ public class JavaProcessUtil {
                                                         ModuleNeeded module = new ModuleNeeded(null, jar, null, true);
                                                         modulesNeeded.add(module);
                                                     }
+                                                }if (curParam.getName().equals("connection.driverTable")  //$NON-NLS-1$
+                                                        && value.contains(";")) { //$NON-NLS-1$
+                                                    String[] jars = value.split(";"); //$NON-NLS-1$
+                                                    for (String jar2 : jars) {
+                                                        String jar = jar2;
+                                                        jar = jar.substring(jar.lastIndexOf("\\") + 1); //$NON-NLS-1$
+                                                        ModuleNeeded module = new ModuleNeeded(null, jar, null, true);
+                                                        modulesNeeded.add(module);
+                                                    }
                                                 } else {
                                                     value = value.substring(value.lastIndexOf("\\") + 1); //$NON-NLS-1$
                                                     ModuleNeeded module = new ModuleNeeded(null, value, null, true);
@@ -457,14 +466,19 @@ public class JavaProcessUtil {
     public static void findMoreLibraries(final IProcess process, List<ModuleNeeded> modulesNeeded, IElementParameter curParam) {
         Object value = curParam.getValue();
         String name = curParam.getName();
-        if (name.equals("DRIVER_JAR")) { //$NON-NLS-1$
+        if (name.equals("DRIVER_JAR") || name.equals("connection.driverTable")) { //$NON-NLS-1$
             // added for bug 13592. new parameter DRIVER_JAR was used for jdbc connection
             if (value != null && value instanceof List) {
                 List list = (List) value;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i) instanceof HashMap) {
                         HashMap map = (HashMap) list.get(i); // JAR_NAME
-                        Object object = map.get("JAR_NAME"); //$NON-NLS-1$
+                        Object object = null;
+                        if(name.equals("DRIVER_JAR")){ //$NON-NLS-1$
+                            object = map.get("JAR_NAME"); //$NON-NLS-1$
+                        }else{
+                            object = map.get("drivers");//$NON-NLS-1$
+                        }
                         if (object != null && object instanceof String) {
                             String driverName = (String) object;
                             if (driverName != null && !"".equals(driverName)) { //$NON-NLS-1$
