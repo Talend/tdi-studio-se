@@ -357,15 +357,17 @@ if(("true").equals(use_existing_ctl_file)) {
     }
 
 	 String directValueStr = parametersMap.get("DIRECT");
-	 if(directValueStr != null && directValueStr.startsWith("\"") && directValueStr.endsWith("\"")){
-	     directValueStr = directValueStr.substring(1,directValueStr.length()-1);
-    }
-    if("true".equalsIgnoreCase(directValueStr) || "false".equalsIgnoreCase(directValueStr)){
-		directValueStr = directValueStr.toLowerCase();
-	 }
-    %>
-    isDirect_<%=cid%> = <%=directValueStr%>;
+	 if(directValueStr != null && !"".equals(directValueStr)){
+		 if(directValueStr.startsWith("\"") && directValueStr.endsWith("\"")){
+		     directValueStr = directValueStr.substring(1,directValueStr.length()-1);
+	    }
+	    if("true".equalsIgnoreCase(directValueStr) || "false".equalsIgnoreCase(directValueStr)){
+			directValueStr = directValueStr.toLowerCase();
+		 }
+		 %>
+       isDirect_<%=cid%> = <%=directValueStr%>;
     <%
+	 }
     java.util.Set<String> keySet = parametersMap.keySet();
     boolean flag = false;
     String tempvalue=null;
