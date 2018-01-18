@@ -17,15 +17,22 @@
 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	boolean sftp = false;
+	boolean ftps = false;
+
+	String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+	String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 		for(INode n : nodeList){
 			if(n.getUniqueName().equals(connection)){
 				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
 			}
 		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 	}
 %>
 try{
@@ -49,9 +56,38 @@ try{
    			nb_file_<%=cid%>++;
    		}
 	
+<%
+	} else if (ftps) { // *** ftps *** //
+%>
+		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file renamed.");
+		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
+		for (String key<%=cid %> : keySet<%=cid %>) {
+			try{
+				ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
+				<%if(isLog4jEnabled){%>
+					log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
+				<%}%>
+				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+			}catch(IOException e){
+				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
+<%
+				if(isLog4jEnabled){
+%>
+					log.error("<%=cid%> - " + e.getMessage());
+<%
+				}
 
-
-	<%}else{%>//normal ftp
+				if (("true").equals(dieOnError)) {
+%>
+					throw e;
+<%
+				}
+%>
+			}
+			nb_file_<%=cid%>++;
+		}
+<%
+	} else {%>//normal ftp
 	 	
 		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
 		String tmp_<%=cid%> = pid + System.currentTimeMillis();
