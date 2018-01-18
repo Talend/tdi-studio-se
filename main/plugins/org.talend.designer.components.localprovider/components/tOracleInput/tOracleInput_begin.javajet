@@ -157,10 +157,12 @@ imports="
 			String dbVersion =  ElementParameterParser.getValue(node, "__DB_VERSION__");
 			if(!"ORACLE_8".equals(dbVersion)){%>
                 boolean isTimeZoneNull_<%=cid%> = false;
-                if (!(conn_<%=cid%> instanceof oracle.jdbc.OracleConnection) &&
-                        conn_<%=cid%>.isWrapperFor(oracle.jdbc.OracleConnection.class)) {
-                    if (conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class) != null) {
-                        isTimeZoneNull_<%=cid%> = (((oracle.jdbc.OracleConnection)conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class)).getSessionTimeZone() == null);
+				boolean isConnectionWrapped_<%=cid%> = !(conn_<%=cid%> instanceof oracle.jdbc.OracleConnection) && conn_<%=cid%>.isWrapperFor(oracle.jdbc.OracleConnection.class);
+				oracle.jdbc.OracleConnection unwrappedOraConn_<%=cid%> = null;
+                if (isConnectionWrapped_<%=cid%>) {
+					unwrappedOraConn_<%=cid%> = conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class);
+                    if (unwrappedOraConn_<%=cid%> != null) {
+                        isTimeZoneNull_<%=cid%> = (unwrappedOraConn_<%=cid%>.getSessionTimeZone() == null);
                     }
                 } else {
                     isTimeZoneNull_<%=cid%> = (((oracle.jdbc.OracleConnection)conn_<%=cid%>).getSessionTimeZone() == null);
@@ -173,14 +175,11 @@ imports="
 					while (rsGetTZ_<%=cid%>.next()) {
 						sessionTimezone_<%=cid%> = rsGetTZ_<%=cid%>.getString(1);
 					}
-					if (!(conn_<%=cid%> instanceof oracle.jdbc.OracleConnection) &&
-                                                conn_<%=cid%>.isWrapperFor(oracle.jdbc.OracleConnection.class)) {
-                            if (conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class) != null) {
-                                                ((oracle.jdbc.OracleConnection)conn_<%=cid%>.unwrap(oracle.jdbc.OracleConnection.class)).setSessionTimeZone(sessionTimezone_<%=cid%>);
-                                            }
-                                        } else {
-                                            ((oracle.jdbc.OracleConnection)conn_<%=cid%>).setSessionTimeZone(sessionTimezone_<%=cid%>);
-                                        }
+					if (isConnectionWrapped_<%=cid%> && unwrappedOraConn_<%=cid%> != null) {
+                        unwrappedOraConn_<%=cid%>.setSessionTimeZone(sessionTimezone_<%=cid%>);
+                    } else {
+                        ((oracle.jdbc.OracleConnection)conn_<%=cid%>).setSessionTimeZone(sessionTimezone_<%=cid%>);
+                    }
 				}
 			<%
 			}
