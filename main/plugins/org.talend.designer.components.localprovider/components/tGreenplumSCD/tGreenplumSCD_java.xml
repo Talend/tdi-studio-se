@@ -19,7 +19,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Greenplum</FAMILY>
+    <FAMILY>Databases/DB Specifics/Greenplum</FAMILY>
     <FAMILY>Business_Intelligence/DB_SCD</FAMILY>
   </FAMILIES>
 

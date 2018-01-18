@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tParAccelInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tParAccelOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tParAccelClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tParAccelCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tParAccelConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tParAccelRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tParAccelRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -45,23 +52,27 @@
     "component_delegate":"tDBBulkExec",
     "component":"tParAccelBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBOutputBulk",
     "component":"tParAccelOutputBulk",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulkExec",
     "component":"tParAccelOutputBulkExec",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBSCD",
     "component":"tParAccelSCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 }

@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tMSSqlInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -9,52 +10,61 @@
     "component_delegate":"tDBOutput",
     "component" : "tMSSqlOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tMSSqlClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBColumnList",
     "component":"tMSSqlColumnList",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tMSSqlCommit",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tMSSqlConnection",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tMSSqlRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tMSSqlRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBTableList",
     "component":"tMSSqlTableList",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBBulkExec",
     "component":"tMSSqlBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -62,6 +72,7 @@
     "component_delegate":"tDBCDC",
     "component":"tMSSqlCDC",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -69,28 +80,33 @@
     "component_delegate":"tDBInvalidRows",
     "component":"tMSSqlInvalidRows",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBLastInsertId",
     "component":"tMSSqlLastInsertId",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulk",
     "component":"tMSSqlOutputBulk",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulkExec",
     "component":"tMSSqlOutputBulkExec",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBSCD",
     "component":"tMSSqlSCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -98,6 +114,7 @@
     "component_delegate":"tDBSP",
     "component":"tMSSqlSP",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -105,6 +122,7 @@
     "component_delegate":"tDBValidRows",
     "component":"tMSSqlValidRows",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 }

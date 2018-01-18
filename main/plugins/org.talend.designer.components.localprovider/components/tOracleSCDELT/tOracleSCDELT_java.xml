@@ -15,7 +15,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Oracle</FAMILY>
+    <FAMILY>Databases/DB Specifics/Oracle</FAMILY>
     <FAMILY>Business_Intelligence/DB_SCD</FAMILY>
   </FAMILIES>
 

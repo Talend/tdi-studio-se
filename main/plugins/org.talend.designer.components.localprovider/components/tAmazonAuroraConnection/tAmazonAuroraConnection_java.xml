@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Amazon/Aurora</FAMILY>
+    <FAMILY>Databases/DB Specifics/Amazon/Aurora</FAMILY>
     <FAMILY>Cloud/Amazon/Aurora</FAMILY>
   </FAMILIES>
 

@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/MS_SQL_Server</FAMILY>
+    <FAMILY>Databases/DB Specifics/MS_SQL_Server</FAMILY>
     <FAMILY>ELT/Connections</FAMILY>
   </FAMILIES>
 

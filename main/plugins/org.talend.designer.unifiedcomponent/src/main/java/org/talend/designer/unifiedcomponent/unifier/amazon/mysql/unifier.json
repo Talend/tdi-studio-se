@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tAmazonMysqlInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tAmazonMysqlOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tAmazonMysqlClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tAmazonMysqlCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tAmazonMysqlConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tAmazonMysqlRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tAmazonMysqlRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 }

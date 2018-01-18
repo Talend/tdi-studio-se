@@ -15,7 +15,7 @@
   </HEADER>
 
   <FAMILIES>
-		<FAMILY>Databases/Amazon/Oracle</FAMILY>
+		<FAMILY>Databases/DB Specifics/Amazon/Oracle</FAMILY>
     <FAMILY>Cloud/Amazon/Oracle</FAMILY>
   </FAMILIES>
 

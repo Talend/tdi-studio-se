@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tVerticaInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tVerticaOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tVerticaClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tVerticaCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tVerticaConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tVerticaRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tVerticaRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -45,18 +52,21 @@
     "component_delegate":"tDBBulkExec",
     "component":"tVerticaBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBOutputBulk",
     "component":"tVerticaOutputBulk",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulkExec",
     "component":"tVerticaOutputBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -64,6 +74,7 @@
     "component_delegate":"tDBSCD",
     "component":"tVerticaSCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 }
