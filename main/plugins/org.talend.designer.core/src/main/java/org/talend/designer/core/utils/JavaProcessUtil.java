@@ -348,9 +348,15 @@ public class JavaProcessUtil {
                 continue;
             }
             if (curParam.getFieldType().equals(EParameterFieldType.MODULE_LIST)) {
-                if (curParam.getValue() != null && !"".equals(curParam.getValue())) { // if the parameter //$NON-NLS-1$
-                    // is not empty.
-                    modulesNeeded.add(getModuleValue(process, (String) curParam.getValue()));
+                Object curParamValue = curParam.getValue();
+                if (curParamValue != null) {
+                    if (curParamValue instanceof String) {
+                        if (StringUtils.isNotEmpty((String) curParamValue)) {
+                            modulesNeeded.add(getModuleValue(process, (String) curParamValue));
+                        }
+                    } else if (curParamValue instanceof List) {
+                        getModulesInTable(process, curParam, modulesNeeded);
+                    }
                 }
             } else if (curParam.getFieldType() == EParameterFieldType.TABLE) {
                 getModulesInTable(process, curParam, modulesNeeded);
