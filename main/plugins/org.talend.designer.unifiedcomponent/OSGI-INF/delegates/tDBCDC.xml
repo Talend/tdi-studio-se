@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="tDBCDC">
+  <implementation class="org.talend.designer.unifiedcomponent.delegate.tDBCDC"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate"/>
+  </service>
+</component>

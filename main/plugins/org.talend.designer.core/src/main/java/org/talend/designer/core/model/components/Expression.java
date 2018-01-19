@@ -568,10 +568,18 @@ public final class Expression {
                                             case JAVA:
                                                 value = JavaTypesManager.getTypeToGenerate(baseColumn.getTalendType(),
                                                         baseColumn.isNullable());
+                                                // PARTICULAR_SURVIVORSHIP is the table name of survivorship rule for columns
+                                                if ("PARTICULAR_SURVIVORSHIP".equals(param.getName()) //$NON-NLS-1$
+                                                        // Number is from DefaultSurvivorShipDataTypeEnum in record.linkage plugin
+                                                        && "Number".equals(variableValue) //$NON-NLS-1$
+                                                        && JavaTypesManager.isNumber(baseColumn.getTalendType())) {
+                                                    value = variableValue;
+                                                }
                                                 break;
                                             default:
                                                 value = baseColumn.getTalendType();
                                             }
+
                                             if (value.equals(variableValue)) {
                                                 found = true;
                                             }
@@ -766,7 +774,7 @@ public final class Expression {
             ElementParameter currentParam) {
         INode node = retrieveNodeElementFromParameter(currentParam, listParam);
         ESparkVersion version = SparkVersionUtil.getSparkVersion(node);
-        if(version == null){
+        if (version == null) {
             return false;
         }
         Pattern p = java.util.regex.Pattern.compile("(lt|le|gt|ge|eq|ne)\\s*'(SPARK_.*)'"); //$NON-NLS-1$

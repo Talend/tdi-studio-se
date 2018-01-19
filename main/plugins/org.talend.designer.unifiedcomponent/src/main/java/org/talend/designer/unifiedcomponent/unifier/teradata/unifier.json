@@ -1,0 +1,51 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tTeradataInput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tTeradataOutput",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tTeradataClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tTeradataCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tTeradataConnection",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tTeradataRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tTeradataRow",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBSCDELT",
+    "component":"tTeradataSCDELT",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tTeradataCDC",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tTeradataSCD",
+    "category":"DI"
+}
+]

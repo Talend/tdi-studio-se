@@ -157,6 +157,9 @@ public class Component extends AbstractBasicComponent {
 
     @Override
     public String getOriginalFamilyName() {
+        if (familyName != null) {
+            return familyName;
+        }
         String[] families = componentDefinition.getFamilies();
         StringBuffer sb = new StringBuffer();
         for (String familyName : families) {
@@ -1194,7 +1197,7 @@ public class Component extends AbstractBasicComponent {
         }
         ModuleNeeded moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/slf4j-log4j12-1.7.2/6.0.0");
         componentImportNeedsList.add(moduleNeeded);
-        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.2");
+        moduleNeeded = new ModuleNeeded(getName(), "", true, "mvn:org.talend.libraries/talend-codegen-utils/0.20.3");
         componentImportNeedsList.add(moduleNeeded);
         return componentImportNeedsList;
     }
@@ -1236,6 +1239,8 @@ public class Component extends AbstractBasicComponent {
         ArrayList<ECodePart> theCodePartList = new ArrayList<>();
         theCodePartList.add(ECodePart.BEGIN);
         theCodePartList.add(ECodePart.MAIN);
+        theCodePartList.add(ECodePart.PROCESS_DATA_BEGIN);
+        theCodePartList.add(ECodePart.PROCESS_DATA_END);
         theCodePartList.add(ECodePart.END);
         theCodePartList.add(ECodePart.FINALLY);
         return theCodePartList;
@@ -1410,6 +1415,15 @@ public class Component extends AbstractBasicComponent {
         if (GenericTypeUtils.isIntegerType(property) && ContextParameterUtils.isContainContextParam(value)) {
             value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Integer.valueOf(" + value + ") : null";
         }
+        if (GenericTypeUtils.isFloatType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Float.valueOf(" + value + ") : null";
+        }
+        if (GenericTypeUtils.isDoubleType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Double.valueOf(" + value + ") : null";
+        }
+        if (GenericTypeUtils.isLongType(property) && ContextParameterUtils.isContainContextParam(value)) {
+            value = "routines.system.ObjectUtil.nonNull(" + value + ") ? Long.valueOf(" + value + ") : null";
+        }
         if ("\"\"\"".equals(value)) {
             value = "\"\\\"\"";
         }
@@ -1459,6 +1473,7 @@ public class Component extends AbstractBasicComponent {
         return true;
     }
 
+    @Override
     public void initNodeProperties(INode newNode, INode oldNode) {
         this.initNodePropertiesFromSerialized(newNode, oldNode.getComponentProperties().toSerialized());
     }
@@ -1659,6 +1674,7 @@ public class Component extends AbstractBasicComponent {
         return "jet_stub/generic";
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return "component";
     }
