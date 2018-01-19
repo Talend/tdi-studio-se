@@ -589,12 +589,15 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                                     if (value instanceof Map) {
                                         Map map = new HashMap();
                                         String driver = String.valueOf(((Map) value).get("drivers"));
-                                        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                                        if (artifact != null) {
-                                            driver = artifact.getFileName();
+                                        if (driver != null) {
+                                            MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils
+                                                    .removeQuotes(driver));
+                                            if (artifact != null) {
+                                                driver = artifact.getFileName();
+                                            }
+                                            map.put("JAR_NAME", driver);
+                                            newValue.add(map);
                                         }
-                                        map.put("JAR_NAME", driver);
-                                        newValue.add(map);
                                     }
                                 }
                                 objectValue = newValue;
