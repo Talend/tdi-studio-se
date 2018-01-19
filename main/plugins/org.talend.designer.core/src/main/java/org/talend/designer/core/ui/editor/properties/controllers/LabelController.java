@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
@@ -67,17 +68,22 @@ public class LabelController extends AbstractElementPropertySectionController {
         }
 
         RGB rgb = param.getColor();
-        if (rgb != null) {
-            Color color = new Color(null, rgb);
-            addResourceDisposeListener(labelLabel, color);
-            labelLabel.setForeground(color);
-        }
-
         RGB bgRgb = param.getBackgroundColor();
-        if (bgRgb != null) {
-            Color bgColor = new Color(null, bgRgb);
-            addResourceDisposeListener(labelLabel, bgColor);
-            labelLabel.setBackground(bgColor);
+        if (rgb != null || bgRgb != null) {
+            CoreUIPlugin.setCSSClass(labelLabel, "", false);
+            if (rgb != null) {
+                CoreUIPlugin.removeCSSAttribute(labelLabel, "color"); //$NON-NLS-1$
+                Color color = new Color(null, rgb);
+                addResourceDisposeListener(labelLabel, color);
+                labelLabel.setForeground(color);
+            }
+
+            if (bgRgb != null) {
+                CoreUIPlugin.removeCSSAttribute(labelLabel, "background-color"); //$NON-NLS-1$
+                Color bgColor = new Color(null, bgRgb);
+                addResourceDisposeListener(labelLabel, bgColor);
+                labelLabel.setBackground(bgColor);
+            }
         }
 
         labelLabel.setData(PARAMETER_NAME, param.getName());
@@ -144,6 +150,7 @@ public class LabelController extends AbstractElementPropertySectionController {
      * 
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // TODO Auto-generated method stub
 
