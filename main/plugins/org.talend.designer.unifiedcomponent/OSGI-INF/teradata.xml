@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="TeradataComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.teradata.TeradataComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

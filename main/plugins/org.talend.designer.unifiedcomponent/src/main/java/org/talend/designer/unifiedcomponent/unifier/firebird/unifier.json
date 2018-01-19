@@ -1,0 +1,44 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tFirebirdInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tFirebirdOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tFirebirdClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tFirebirdCommit",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tFirebirdConnection",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tFirebirdRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tFirebirdRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

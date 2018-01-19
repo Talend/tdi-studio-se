@@ -47,11 +47,11 @@ public abstract class AbstractBasicComponent extends AbstractComponent {
     private List<IMultipleComponentManager> multipleComponentManagers;
 
     private boolean initializing;
-    
+
     protected Boolean visible = null;
-    
+
     protected Boolean technical = null;
-    
+
     protected Boolean visibleFromComponentDefinition = null;
 
     @Override

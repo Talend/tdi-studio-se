@@ -376,7 +376,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 		if (!redirect) {
 		%>
-			if (status_<%=cid%> != org.apache.commons.httpclient.HttpStatus.SC_OK) {      
+			if (!(status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_OK<%= scaccepted_uploadfile%>)) {      
 				throw new java.lang.Exception("Method failed: " + method_<%=cid%>.getStatusLine());
 			}
 		<%

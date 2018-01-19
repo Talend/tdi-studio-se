@@ -45,9 +45,9 @@ import org.talend.designer.core.ui.editor.TalendEditorPaletteFactory.RecentlyUse
 @SuppressWarnings("nls")
 public class TalendEditorPaletteFactoryTest {
 
-    private static final String TMYSQLSP = "tMysqlSP";
+    private static final String TDBSP = "tDBSP";
 
-    private static final String TMYSQLROW = "tMysqlRow";
+    private static final String TDBROW = "tDBRow";
 
     private static final String TJAVA = "tJava";
 
@@ -69,12 +69,13 @@ public class TalendEditorPaletteFactoryTest {
         IComponentsFactory componentsFactory = ComponentsFactoryProvider.getInstance();
         String keyword = "mysql";
         Set<IComponent> componentHits = new LinkedHashSet<IComponent>();
-        TalendEditorPaletteFactory.addComponentsByNameFilter(componentsFactory, componentHits, keyword);
+        List<IComponent> componentAll = new ArrayList<IComponent>(componentsFactory.readComponents());
+        TalendEditorPaletteFactory.addComponentsByNameFilter(componentsFactory, componentHits, componentAll, keyword);
 
         /**
          * NOTE: the expect result may change if we add/change some new components in someday
          */
-        assert (componentHits.iterator().next().getName().equals(TMYSQLSP));
+        assert (componentHits.iterator().next().getName().equals(TDBSP));
     }
 
     @Test
@@ -162,13 +163,13 @@ public class TalendEditorPaletteFactoryTest {
         List<IComponent> componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword);
         Assert.assertFalse("Can't find any components", componentHits.isEmpty());
         assertExistedComponent(TJAVAROW, keyword, componentHits);
-        assertExistedComponent(TMYSQLROW, keyword, componentHits);
+        assertExistedComponent(TDBROW, keyword, componentHits);
 
         keyword = "Row";
         componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword);
         Assert.assertFalse("Can't find any components", componentHits.isEmpty());
         assertExistedComponent(TJAVAROW, keyword, componentHits);
-        assertExistedComponent(TMYSQLROW, keyword, componentHits);
+        assertExistedComponent(TDBROW, keyword, componentHits);
     }
 
     @Test
@@ -204,7 +205,7 @@ public class TalendEditorPaletteFactoryTest {
         List<RecentlyUsedComponent> recentlyUsedList = new ArrayList<RecentlyUsedComponent>(3);
         RecentlyUsedComponent urc = new RecentlyUsedComponent();
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        urc.setName(TMYSQLROW);
+        urc.setName(TDBROW);
         gregorianCalendar.set(2016, 7, 22);
         urc.setTimestamp(gregorianCalendar.getTime());
         recentlyUsedList.add(urc);
@@ -219,7 +220,7 @@ public class TalendEditorPaletteFactoryTest {
     }
 
     private void removeRecentlyUsed() {
-        TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TMYSQLROW);
+        TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TDBROW);
         TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TJAVAROW);
     }
 
@@ -514,12 +515,36 @@ public class TalendEditorPaletteFactoryTest {
             return getModulesNeeded();
         }
 
+        @Override
         public String getTemplateFolder() {
             return null;
         }
 
+        @Override
         public String getTemplateNamePrefix() {
             return getName();
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
+         */
+        @Override
+        public void setOriginalFamilyName(String familyName) {
+            // TODO Auto-generated method stub
+
+        }
+
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
+         */
+        @Override
+        public void setTranslatedFamilyName(String translatedFamilyName) {
+            // TODO Auto-generated method stub
+
         }
 
     }
