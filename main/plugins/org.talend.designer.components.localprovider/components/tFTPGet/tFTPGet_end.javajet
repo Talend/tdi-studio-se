@@ -110,7 +110,7 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Closing the connection to the server.");
 		<%}%>
-    	ftp_<%=cid%>.disconnect(true);
+    	ftp_<%=cid%>.disconnect();
 		<%if(isLog4jEnabled){%>
 			log.info("<%=cid%> - Connection to the server closed.");
 		<%}%>
