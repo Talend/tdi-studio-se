@@ -12,11 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings.tabs;
 
-import static org.talend.repository.utils.MavenVersionUtils.containsKey;
-import static org.talend.repository.utils.MavenVersionUtils.get;
-import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
-import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
-import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
+import static org.talend.repository.utils.MavenVersionUtils.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -328,7 +324,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             @Override
             public void modifyText(ModifyEvent e) {
                 String currentGroupId = groupIdText.getText();
-                if (!StringUtils.isBlank(currentGroupId)) {
+                if (PomIdsHelper.isValidGroupId(currentGroupId)) {
                     groupIdText.setBackground(getBackground());
                     groupIdText.setToolTipText(""); //$NON-NLS-1$
                     if (!defaultGroupId.equals(currentGroupId)) {

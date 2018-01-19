@@ -28,6 +28,7 @@ import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.designer.maven.DesignerMavenPlugin;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -72,7 +73,7 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
             @Override
             public void modifyText(ModifyEvent e) {
                 String text = groupIdText.getText();
-                if (!isValidGroupId(text)) {
+                if (!PomIdsHelper.isValidGroupId(text)) {
                     setErrorMessage(Messages.getString("MavenGroupIdProjectSettingPage.groupIdErrMsg"));
                     setValid(false);
                 } else {
@@ -86,13 +87,6 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
         BooleanFieldEditor appendFolderText = new BooleanFieldEditor(MavenConstants.APPEND_FOLDER_TO_GROUPID,
                 Messages.getString("MavenGroupIdProjectSettingPage.appendFolderLabel"), parent); //$NON-NLS-1$
         addField(appendFolderText);
-    }
-
-    protected boolean isValidGroupId(String text) {
-        if (text != null && text.matches("[\\w\\.]+")) { //$NON-NLS-1$
-            return true;
-        }
-        return false;
     }
 
     @Override
