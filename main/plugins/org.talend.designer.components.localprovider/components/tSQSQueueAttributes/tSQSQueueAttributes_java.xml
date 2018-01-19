@@ -186,17 +186,14 @@
 				MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-			<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
+			<IMPORT NAME="jackson-core-2.5.4.jar" MODULE="jackson-core-2.5.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-			<IMPORT NAME="jackson-databind-2.5.3.jar" MODULE="jackson-databind-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
+			<IMPORT NAME="jackson-databind-2.5.4.redhat-2.jar" MODULE="jackson-databind-2.5.4.redhat-2.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'"/>
-			<IMPORT NAME="jackson-annotations-2.5.3.jar" MODULE="jackson-annotations-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
+			<IMPORT NAME="jackson-annotations-2.5.4.jar" MODULE="jackson-annotations-2.5.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="joda-time" MODULE="joda-time-2.8.1.jar"
 				MVN="mvn:org.talend.libraries/joda-time-2.8.1/6.0.0" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />

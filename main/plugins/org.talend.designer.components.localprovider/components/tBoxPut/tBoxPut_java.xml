@@ -109,16 +109,13 @@
                     MODULE="boxjavalibv2-v3.0.10.jar" MVN="mvn:org.talend.libraries/boxjavalibv2-v3.0.10/6.0.0" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="jackson-core"
-                    MODULE="jackson-core-2.5.3.jar" MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0" 
-                    UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
+                    MODULE="jackson-core-2.5.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="jackson-databind"
-                    MODULE="jackson-databind-2.5.3.jar" MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0" 
-                    UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
+                    MODULE="jackson-databind-2.5.4.redhat-2.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="jackson-annotations"
-                    MODULE="jackson-annotations-2.5.3.jar" MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0" 
-                    UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
+                    MODULE="jackson-annotations-2.5.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4" 
                     REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
                <IMPORT NAME="apache-http-client"
                     MODULE="httpclient-4.2.5.jar" MVN="mvn:org.talend.libraries/httpclient-4.2.5/6.0.0" 
