@@ -68,12 +68,12 @@
         </projecttask>
        <projecttask
                beforeLogon="false"
-               breaks="6.5.0"
+               breaks="7.0.1"
                class="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
                description="Migration task for jobs using Google Drive components to TCOMP"
                id="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
-               name="NewNetsuiteMigrationTask"
-               version="6.5.0">
+               name="NewGoogleDriveMigrationTask"
+               version="7.0.1">
        </projecttask>
        <!--<projecttask
              beforeLogon="false"
