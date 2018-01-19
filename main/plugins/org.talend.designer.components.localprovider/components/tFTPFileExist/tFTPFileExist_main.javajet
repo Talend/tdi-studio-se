@@ -79,14 +79,8 @@ if (sftp) { // *** sftp *** //
 	if (isFileType) {
 %>
 		//get listFiles, find something
-		String[] allFileNames_<%=cid %> = ftp_<%=cid %>.listNames();
-		boolean fileExist_<%=cid %> = false;
-		for (String fileName_<%=cid %>: allFileNames_<%=cid %>) {
-			if (fileName_<%=cid %>.equals(<%=filename %>)) {
-				fileExist_<%=cid %> = true;
-				break;
-			}
-		}
+		String[] allFileNames_<%=cid %> = ftp_<%=cid %>.listNames(<%=filename %>);
+		boolean fileExist_<%=cid %> = (null != allFileNames_<%=cid %>) && (allFileNames_<%=cid %>.length > 0);
 
 		if (fileExist_<%=cid %>) {
 			<%if(isLog4jEnabled){%>
