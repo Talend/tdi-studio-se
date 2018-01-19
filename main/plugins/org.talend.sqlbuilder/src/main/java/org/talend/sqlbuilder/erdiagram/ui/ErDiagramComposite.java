@@ -275,7 +275,6 @@ public class ErDiagramComposite extends SashForm {
             schema = connection.getUiSchema();
         }
        
-        //contect
         if (connection.isContextMode() && !isCalculationView) {
             schema = DatabaseConnectionParameterUtil.getContextTrueValue(connection, schema);
         }
@@ -442,7 +441,6 @@ public class ErDiagramComposite extends SashForm {
      */
     private String getSelectStatement(List<String> tables, List<String> columns, List<String> wheres) {
     
-    	String schema = this.getSchema();
         String sql = ""; //$NON-NLS-1$
         if (tables.isEmpty() || columns.isEmpty()) {
             return sql;
