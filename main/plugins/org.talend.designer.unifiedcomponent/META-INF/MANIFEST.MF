@@ -33,4 +33,4 @@ Service-Component: OSGI-INF/delegates/tDBInput.xml,OSGI-INF/delegates/tDBOutput.
  OSGI-INF/sqlite.xml,OSGI-INF/vector_wise.xml,OSGI-INF/saphana.xml,
  OSGI-INF/snowflake.xml,OSGI-INF/sybaseIQ.xml,OSGI-INF/exasol.xml,OSGI-INF/memSQL.xml,
  OSGI-INF/amazon_aurora.xml,OSGI-INF/amazon_mysql.xml,OSGI-INF/amazon_oracle.xml,
- OSGI-INF/amazon_redshift.xml
+ OSGI-INF/amazon_redshift.xml,OSGI-INF/jdbc.xml
