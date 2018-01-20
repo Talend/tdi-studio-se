@@ -41,6 +41,10 @@ String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_C
 String mode = ElementParameterParser.getValue(node, "__MODE__");
 boolean MD5 = new Boolean(ElementParameterParser.getValue(node, "__MD5__"));
 boolean sftp = false;
+boolean ftps = false;
+
+String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
 
 log4jFileUtil.componentStartInfo(node);
 
@@ -50,10 +54,12 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
@@ -102,7 +108,7 @@ if (outputConnName == null) {
 if (sftp) {  // *** sftp *** //
 
 	if (("false").equals(useExistingConn)) {
-	%>
+%>
 		class MyUserInfo_<%=cid%> implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
 		
 		    <%
@@ -228,6 +234,97 @@ if (sftp) {  // *** sftp *** //
 	      is_<%=cid %>.close();
 		<%}%>
 	}  
+<%
+} else if (ftps) {
+	if (("false").equals(useExistingConn)) {
+		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
+		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+%>
+		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
+		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
+		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
+		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
+		MyTrust_<%=cid %> myTrust_<%=cid%> = null;
+		try {
+			sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
+			myTrust_<%=cid%> = new MyTrust_<%=cid%>();
+			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
+			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+			sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
+			ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
+
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
+				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
+			<%}%>
+			ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
+			<%}%>
+<%
+			passwordFieldName = "__PASSWORD__";
+%>
+
+			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+			ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+			ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+			ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+		} catch (Exception e) {
+			<%if(isLog4jEnabled){%>
+				log.error("<%=cid%> - " + e.getMessage());
+			<%}%>
+			e.printStackTrace();
+		}
+<%
+	} else {
+%>
+		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+<%
+	}
+%>
+	// made all we need
+	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\", "/");
+	org.apache.commons.net.ftp.FTPFile[] allFiles_<%=cid %> = ftp_<%=cid %>.listFiles(remoteDir_<%=cid %>);
+
+	org.apache.commons.net.ftp.FTPFile expectedFile_<%=cid %> = null;
+
+	for (org.apache.commons.net.ftp.FTPFile file_<%=cid %> : allFiles_<%=cid %>) {
+		if (<%=filename%>.equals(file_<%=cid %>.getName())) {
+			expectedFile_<%=cid %> = file_<%=cid %>;
+			break;
+		}
+	}
+
+	<%=outputConnName %> = new <%=outputConnName %>Struct();
+	if (expectedFile_<%=cid %> != null) {
+		String fullFilePath_<%=cid %> = (remoteDir_<%=cid %> + "/" + expectedFile_<%=cid %>.getName()).replaceAll("//", "/");
+		<%=outputConnName %>.abs_path = fullFilePath_<%=cid %>;
+		<%=outputConnName %>.dirname = remoteDir_<%=cid %>;
+		<%=outputConnName %>.basename = expectedFile_<%=cid %>.getName();
+		<%=outputConnName %>.size = expectedFile_<%=cid %>.getSize();
+		<%=outputConnName %>.mtime = expectedFile_<%=cid %>.getTimestamp().getTimeInMillis();
+		<%=outputConnName %>.mtime_string = expectedFile_<%=cid %>.getTimestamp().getTime().toString();
+
+		<%if (MD5) {%>
+			// Calculation of the Message Digest MD5
+			java.io.InputStream is_<%=cid %> = ftp_<%=cid%>.retrieveFileStream(fullFilePath_<%=cid %>);
+			byte[] buffer_<%=cid %> = new byte[8192];
+			int read_<%=cid %> = 0;
+			java.security.MessageDigest dgs_<%=cid %> = java.security.MessageDigest.getInstance("MD5");
+
+			while ( (read_<%=cid %> = is_<%=cid %>.read(buffer_<%=cid %>)) > 0) {
+				dgs_<%=cid %>.update(buffer_<%=cid %>, 0, read_<%=cid %>);
+			}
+			<%=outputConnName %>.md5 =String.format("%032x", new java.math.BigInteger(1, dgs_<%=cid %>.digest()));
+			<%if(isLog4jEnabled){%>
+				log.info("<%= cid %> - md5 message is : '"+ <%=outputConnName %>.md5 + "'."); 
+		  <%}%>
+			is_<%=cid %>.close();
+		<%}%>
+	}
 <%
 } else {// *** ftp *** //
 %>

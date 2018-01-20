@@ -17,6 +17,7 @@ String directoryname = ElementParameterParser.getValue(node, "__DIRECTORYNAME__"
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 boolean sftp = false;
+boolean ftps = false;
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 if (("true").equals(useExistingConn)) {
@@ -25,13 +26,15 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
-if (sftp) {
+if (sftp) { // *** sftp *** //
 	if (isFileType) {%>
 		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 		try{
@@ -65,8 +68,59 @@ if (sftp) {
 			globalMap.put("<%=cid %>_EXISTS", false);
 		}
 		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
-	<%}
-} else {
+<%}
+} else if (ftps) { // *** ftps *** //
+%>
+	//change working dir and save root
+	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
+	String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+	ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+<%
+	if (isFileType) {
+%>
+		//get listFiles, find something
+		String[] allFileNames_<%=cid %> = ftp_<%=cid %>.listNames(<%=filename %>);
+		boolean fileExist_<%=cid %> = (null != allFileNames_<%=cid %>) && (allFileNames_<%=cid %>.length > 0);
+
+		if (fileExist_<%=cid %>) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=filename %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+
+		globalMap.put("<%=cid %>_FILENAME", <%=filename %>);
+<%
+	} else {
+%>
+		String directoryname_<%=cid %> = (<%=directoryname %>).replaceAll("\\\\","/");
+		
+		boolean isDirExists_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(directoryname_<%=cid %>);
+		
+		if (isDirExists_<%=cid %>) {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' exists in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", true);
+		} else {
+			<%if(isLog4jEnabled){%>
+				log.debug("<%=cid%> - '" + <%=directoryname %> + "' doesn't exist in the remote directory '"+ <%=remoteDir %> + "' .");
+			<%}%>
+			globalMap.put("<%=cid %>_EXISTS", false);
+		}
+
+		globalMap.put("<%=cid %>_DIRECTORYNAME", <%=directoryname %>);
+<%
+	}
+%>
+	ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+<%
+} else { // *** ftp *** //
 	if (isFileType){%>
 		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 		if (ftp_<%=cid %>.exists<%="File" %>(remoteDir_<%=cid %> + "/" + <%=filename %>)) {

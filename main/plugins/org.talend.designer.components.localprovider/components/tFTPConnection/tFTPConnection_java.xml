@@ -200,13 +200,23 @@
 			NUM_ROW="89" SHOW_IF="USE_PROXY == 'true'" REPOSITORY_VALUE="PROXY_PASSWORD">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
+
+		<PARAMETER NAME="FTPS_PROT" FIELD="TEXT"
+			NUM_ROW="90" SHOW_IF="(FTPS=='true')" REPOSITORY_VALUE="FTPS_PROT">
+			<DEFAULT>"P"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER NAME="FTPS_PROTECTION_BUFF_SIZE" FIELD="TEXT"
+			NUM_ROW="90" SHOW_IF="(FTPS=='true')" REPOSITORY_VALUE="FTPS_PROTECTION_BUFF_SIZE">
+			<DEFAULT>0</DEFAULT>
+		</PARAMETER>
 	</ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
      <IMPORTS>
        <IMPORT NAME="Java-FTP" MODULE="edtftpj-2.5.0.jar" MVN="mvn:com.enterprisedt/edtftpj/2.5.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/edtftpj-2.5.0.jar" REQUIRED_IF="(SFTP == 'false') AND (FTPS == 'false')"/>
        <IMPORT NAME="Java-SFTP" MODULE="jsch-0.1.53.jar" MVN="mvn:org.talend.libraries/jsch-0.1.53/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/jsch-0.1.53.jar" REQUIRED_IF="(SFTP == 'true')"/>
-       <IMPORT NAME="Java-FTPS" MODULE="ftp4j-1.7.2.jar" MVN="mvn:org.talend.libraries/ftp4j-1.7.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.ftp/lib/ftp4j-1.7.2.jar" REQUIRED_IF="(FTPS == 'true')" />
+       <IMPORT NAME="Java-FTPS" MODULE="commons-net-3.6.jar" MVN="mvn:commons-net/commons-net/3.6" REQUIRED_IF="(FTPS == 'true')" />
      </IMPORTS>
    </CODEGENERATION>
 

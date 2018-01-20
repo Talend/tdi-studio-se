@@ -41,6 +41,9 @@ boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node,
 boolean sftp = false;
 boolean ftps = false; 
 
+String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 String passwordFieldName = "";
 
@@ -285,135 +288,97 @@ int nb_file_<%=cid%> = 0;
 		<%}%>
 		for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 <%
-}else{ // *** ftps *** // 
+} else { // *** ftps *** // 
 		String keystoreFile = ElementParameterParser.getValue(node,"__KEYSTORE_FILE__"); 
 
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
-        if(("false").equals(useExistingConn)){ 
 %>
-    		class TalendTrust_<%=cid%>{ 
-	            private javax.net.ssl.TrustManager[] getTrustManagers()  
-	                throws java.security.KeyStoreException, java.security.NoSuchAlgorithmException,  
-	                java.security.cert.CertificateException, java.security.UnrecoverableKeyException, 
-	                java.io.FileNotFoundException, java.io.IOException{ 
-	                java.security.KeyStore ks = java.security.KeyStore.getInstance("JKS"); 
-	                
-    				<%
-                    passwordFieldName = "__KEYSTORE_PASS__";
-                    if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
-                    %> 
-                  	String decryptedKeyStorePassword_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
-                    <%} else {%>
-                  	String decryptedKeyStorePassword_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
-                    <%}%>
-                    
-	                ks.load(new java.io.FileInputStream(<%=keystoreFile%>), decryptedKeyStorePassword_<%=cid%>.toCharArray()); 
-	                javax.net.ssl.TrustManagerFactory tmf = javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm()); 
-	                tmf.init(ks); 
-	                return tmf.getTrustManagers(); 
-	            } 
-    		} 
-        	TalendTrust_<%=cid%> talendTrust_<%=cid%>= null; 
-<%       
-        }
-%> 
-	    javax.net.ssl.SSLContext sslContext_<%=cid%> = null; 
-	    javax.net.ssl.TrustManager[] trustManager_<%=cid%> = null; 
-	    javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid%> = null; 
-	    it.sauronsoftware.ftp4j.FTPClient ftp_<%=cid %> =null; 
-	    String remotedir_<%=cid%> = null;
-	    String rootDir_<%=cid %> = null;
-	    try{ 
-<%       
-        	if(("false").equals(useExistingConn)){ 
-%> 
-		        sslContext_<%=cid%> = javax.net.ssl.SSLContext.getInstance("SSL"); 
-		        talendTrust_<%=cid%> = new TalendTrust_<%=cid%>(); 
-		        trustManager_<%=cid%> = talendTrust_<%=cid%>.getTrustManagers(); 
-		        sslContext_<%=cid%>.init(null, trustManager_<%=cid%>, new java.security.SecureRandom()); 
-		        sslSocketFactory_<%=cid%> = sslContext_<%=cid%>.getSocketFactory(); 
-	                ftp_<%=cid %> = new it.sauronsoftware.ftp4j.FTPClient(); 
-	                ftp_<%=cid %>.setSSLSocketFactory(sslSocketFactory_<%=cid%>);
-	                ftp_<%=cid %>.setCharset(<%=encoding%>);
-					<% 
-				        if("IMPLICIT".equals(securityMode)){ 
-					%> 
-		               		ftp_<%=cid %>.setSecurity(it.sauronsoftware.ftp4j.FTPClient.SECURITY_FTPS); 
-					<% 
-				        }else if("EXPLICIT".equals(securityMode)){ 
-					%> 
-				        	ftp_<%=cid %>.setSecurity(it.sauronsoftware.ftp4j.FTPClient.SECURITY_FTPES); 
-					<% 
-					    } 
-					%>  
-				  	<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - FTPS security Mode is (<%=securityMode%>).");
-						log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
-					<%}%>
-	                ftp_<%=cid %>.connect(<%=host %>,<%=port %>); 
-					<%if(isLog4jEnabled){%>
-						log.info("<%=cid%> - Connect to '" + <%=host %> +  "' has succeeded.");
-					<%}%> 
-					
-			        <%
-                	passwordFieldName = "__PASSWORD__";
-                	%> 
-                	
-                	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
-					
-	                ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>); 
-<%       
-        	}else{ 
-                String conn= "conn_" + connection; 
-%> 
-                ftp_<%=cid %> = (it.sauronsoftware.ftp4j.FTPClient)globalMap.get("<%=conn %>"); 
+		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+<%
+		if(("false").equals(useExistingConn)){
+%>
+			<% /* create connection */ %>
+			<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+
+			javax.net.ssl.SSLContext sslContext_<%=cid%> = null;
+			javax.net.ssl.TrustManager[] trustManager_<%=cid%> = null;
+			javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid%> = null;
+
+			MyTrust_<%=cid %> myTrust_<%=cid%> = null;
+
+			try {
+				sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
+				myTrust_<%=cid%> = new MyTrust_<%=cid%>();
+				trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
+				sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+				sslSocketFactory_<%=cid %> = sslContext_<%=cid%>.getSocketFactory();
+				ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+				ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
+
 				<%if(isLog4jEnabled){%>
-					if(ftp_<%=cid %>!=null) {
-						log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + ftp_<%=cid %>.getHost() + ", Connection port: " + ftp_<%=cid %>.getPort() + "."); 
-					}
+					log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
+					log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 				<%}%>
-<%       
+				ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
+				<%if(isLog4jEnabled){%>
+					log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
+				<%}%>
+
+<%
+				passwordFieldName = "__PASSWORD__";
+%>
+
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+
+				ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+			} catch (Exception e) {
+				<%if(isLog4jEnabled){%>
+					log.error("<%=cid%> - " + e.getMessage());
+				<%}%>
+				e.printStackTrace();
+			}
+<%
+		} else {
+			String conn= "conn_" + connection; 
+%>
+			ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient)globalMap.get("<%=conn %>");
+			<%if(isLog4jEnabled){%>
+				if(ftp_<%=cid %>!=null) {
+					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " +  ftp_<%=cid %>.getRemoteAddress().toString() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
+				}
+			<%}%>
+			
+			<%
 				if(!moveToCurrentDir){
 %>
 					rootDir_<%=cid %> = ftp_<%=cid %>.currentDirectory();
 <%
 				}
-        	} 
-%> 
-            remotedir_<%=cid%> = <%=remotedir%>; 
-            ftp_<%=cid %>.changeDirectory(remotedir_<%=cid %>); 
-		    } catch (java.lang.IllegalStateException e) { 
-		        e.printStackTrace();
-		        String errMsg_<%= cid %> = e.getMessage();
-		        <% commonLog.logPrintedException(commonLog.var("errMsg")); %> 
-		    } catch (java.io.IOException e) { 
-		        e.printStackTrace();
-		        String errMsg_<%= cid %> = e.getMessage();
-		        <% commonLog.logPrintedException(commonLog.var("errMsg")); %> 
-		    } catch (it.sauronsoftware.ftp4j.FTPIllegalReplyException e) { 
-		        e.printStackTrace(); 
-		        String errMsg_<%= cid %> = e.getMessage();
-		        <% commonLog.logPrintedException(commonLog.var("errMsg")); %>
-		    } catch (it.sauronsoftware.ftp4j.FTPException e) { 
-		        e.printStackTrace();
-		        String errMsg_<%= cid %> = e.getMessage();
-		        <% commonLog.logPrintedException(commonLog.var("errMsg")); %> 
-		    } 
-  			java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
-  
-  			<%
-  			for (int i = 0; i < files.size(); i++) {
-    			Map<String, String> line = files.get(i);
-    		%>
-    		java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
-   			 map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);    
-    			list<%=cid %>.add(map<%=cid %><%=i %>);       
-  			<%
- 			 }
-  			%>  
-			String localdir<%=cid %> = <%=localdir%>;
-			<%if(isLog4jEnabled){%>
-				log.info("<%=cid%> - Uploading files to the server.");
-			<%}%>
-	     	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
-<%}%>
+		}
+%>
+		String remotedir_<%=cid%> = null;
+		String rootDir_<%=cid %> = null;
+		remotedir_<%=cid%> = <%=remotedir%>; 
+		ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>); 
+		java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
+
+<%
+		for (int i = 0; i < files.size(); i++) {
+			Map<String, String> line = files.get(i);
+%>
+			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
+			map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>, <%= line.get("NEWNAME") %>);
+			list<%=cid %>.add(map<%=cid %><%=i %>);
+<%
+		}
+%>
+		String localdir<%=cid %> = <%=localdir%>;
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Uploading files to the server.");
+		<%}%>
+		for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
+<%
+} /* close ftps */
+%>
