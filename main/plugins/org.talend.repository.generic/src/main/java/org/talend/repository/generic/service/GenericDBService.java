@@ -41,6 +41,7 @@ import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ITDQRepositoryService;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
@@ -71,6 +72,7 @@ import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
 import org.talend.repository.generic.persistence.GenericRepository;
@@ -204,7 +206,7 @@ public class GenericDBService implements IGenericDBService{
     }
 
     @Override
-    public void dbWizardPerformFinish(ConnectionItem item, Form form, boolean creation, IPath pathToSave, List<IMetadataTable> oldMetadataTable) throws CoreException {
+    public void dbWizardPerformFinish(ConnectionItem item, Form form, boolean creation, IPath pathToSave, List<IMetadataTable> oldMetadataTable, final String contextName) throws CoreException {
         ComponentService compService = new GenericWizardInternalService().getComponentService();
         compService.setRepository(new GenericRepository());
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -230,7 +232,15 @@ public class GenericDBService implements IGenericDBService{
 //                            connItem.getConnection().setCompProperties(compProperties);
                         }
                     }
-                    convertPropertiesToDBElements(form.getProperties(), connItem.getConnection());
+                    Connection connection = connItem.getConnection();
+                    convertPropertiesToDBElements(form.getProperties(), connection);
+                    IMetadataConnection metadataConnection = null;
+                    if (contextName == null) {
+                        metadataConnection = ConvertionHelper.convert(connection, true);
+                    } else {
+                        metadataConnection = ConvertionHelper.convert(connection, false, contextName);
+                    }
+                    MetadataConnectionUtils.fillConnectionInformation(connItem, metadataConnection);
                     factory.save(connItem);
                 } catch (Throwable e) {
                     e.printStackTrace();
