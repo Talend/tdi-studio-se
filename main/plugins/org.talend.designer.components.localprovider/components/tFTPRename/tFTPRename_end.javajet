@@ -16,15 +16,22 @@
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 	boolean sftp = false;
+	boolean ftps = false;
+
+	String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+	String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
+
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 		for(INode n : nodeList){
 			if(n.getUniqueName().equals(connection)){
 				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
 			}
 		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 	}
 	if(sftp){// *** sftp *** //
 %>
@@ -41,7 +48,26 @@
 			<%}%>  
 <%
 		}
-	}else{// *** ftp *** //
+	} else if (ftps) { // *** ftps *** //
+%>
+		 } <% /* close main loop */ %>
+<%
+		if (!moveToCurrentDir) {
+%>
+			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+<%
+		}
+		if(!("true").equals(useExistingConn)){
+%>
+			ftp_<%=cid %>.disconnect();
+<%
+			if(isLog4jEnabled) {
+%>
+				log.info("<%=cid%> - Connection to the server closed.");
+<%
+			}
+		}
+	} else {// *** ftp *** //
 %>
 		}
 <%

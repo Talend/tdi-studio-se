@@ -1,0 +1,35 @@
+This json array is used to define the unified components.
+[{
+    "component_delegate":<delegate_component_name>,
+    "component":<unified_component_name>,
+    "category":<supported palette typeS separate with ','>,
+    "parameter":{
+        "mapping":{<parameter_name>:<repository_value>},
+        "exclude":<parameter_names separate with ',' , indicate these param values should not be mapped>}
+}
+]
+
+exmamples :
+[{
+    "component_delegate":"tDBInput",
+    "component":"tMysqlInput",
+    "category":"DI,MR",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]
+
+[{
+    "component_delegate":"tDBInput",
+    "component":"tSnowflakeInput",
+    "category":"DI",
+    "parameter":{
+        "mapping":{
+            "connection.account":"HOST",        
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="IngresComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.ingres.IngresComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

@@ -37,6 +37,10 @@ String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 String conn= "conn_" + connection;
 String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 boolean sftp = false;
+boolean ftps = false;
+
+String protectionLevel = ElementParameterParser.getValue(node, "__FTPS_PROT__");
+String protectionBufferSize = ElementParameterParser.getValue(node, "__FTPS_PROTECTION_BUFF_SIZE__");
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 if (("true").equals(useExistingConn)) {
@@ -45,10 +49,12 @@ if (("true").equals(useExistingConn)) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
 String passwordFieldName = "";
@@ -75,7 +81,7 @@ if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
 <%
 }
 
-if (sftp) {
+if (sftp) { // *** sftp *** //
 	if (("false").equals(useExistingConn)) {
   %>
 		class MyUserInfo_<%=cid%> implements com.jcraft.jsch.UserInfo, com.jcraft.jsch.UIKeyboardInteractive {
@@ -178,9 +184,60 @@ if (sftp) {
 	    if(c_<%=cid%>.getHome()!=null && !c_<%=cid%>.getHome().equals(c_<%=cid%>.pwd())){
 	  		c_<%=cid%>.cd(c_<%=cid%>.getHome());
 	  	}
-  <%
+<%
 	}
-} else {%>
+} else if (ftps) { // *** ftps *** //
+	if (("false").equals(useExistingConn)) {
+		String keystoreFile = ElementParameterParser.getValue(node, "__KEYSTORE_FILE__");
+		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
+%>
+		<%@ include file="../templates/FTP/ftpstlsResumption.javajet"%>
+		javax.net.ssl.SSLContext sslContext_<%=cid %> = null;
+		javax.net.ssl.TrustManager[] trustManager_<%=cid %> = null;
+		javax.net.ssl.SSLSocketFactory sslSocketFactory_<%=cid %> = null;
+		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> =null;
+		MyTrust_<%=cid %> myTrust_<%=cid%> = null;
+
+		try {
+			sslContext_<%=cid %> = javax.net.ssl.SSLContext.getInstance("SSL");
+			myTrust_<%=cid%> = new MyTrust_<%=cid%>();
+			trustManager_<%=cid %> = myTrust_<%=cid%>.getTrustManagers();
+			sslContext_<%=cid %>.init(null, trustManager_<%=cid %>, new java.security.SecureRandom());
+			sslSocketFactory_<%=cid %> = sslContext_<%=cid %>.getSocketFactory();
+			ftp_<%=cid %> = new SSLSessionReuseFTPSClient_<%=cid %>(<%="IMPLICIT".equals(securityMode)%>, sslContext_<%=cid %>);
+			ftp_<%=cid %>.setControlEncoding(<%=encoding%>);
+
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
+				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
+			<%}%>
+			ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
+			<%if(isLog4jEnabled){%>
+				log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
+			<%}%>
+<%
+				passwordFieldName = "__PASSWORD__";
+%>
+				
+				<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
+				
+				ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+				ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
+				ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+		} catch (Exception e) {
+			<%if(isLog4jEnabled){%>
+				log.error("<%=cid%> - " + e.getMessage());
+			<%}%>
+			e.printStackTrace();
+		}
+<%
+	} else {
+%>
+		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = (org.apache.commons.net.ftp.FTPSClient) globalMap.get("<%=conn %>");
+<%
+	}
+} else { // *** ftp *** //
+%>
 	com.enterprisedt.net.ftp.FTPClient ftp_<%=cid %> = null;
 
 	<% if (("true").equals(useExistingConn)) {%>

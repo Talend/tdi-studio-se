@@ -17,6 +17,8 @@ String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 boolean bUseExistingConn = "true".equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 boolean sftp = false;
+boolean ftps = false;
+
 String outputConnName = null;
 List< ? extends IConnection> conns = node.getOutgoingSortedConnections();
 
@@ -42,10 +44,12 @@ if (bUseExistingConn) {
   for (INode n : nodeList) {
     if (n.getUniqueName().equals(connection)) {
       sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+      ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
     }
   }
 } else {
   sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+  ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
 if (sftp && !bUseExistingConn) { // *** sftp *** //
@@ -57,6 +61,16 @@ if (sftp && !bUseExistingConn) { // *** sftp *** //
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Connection to the server closed.");
 	<%}%>  
+<%
+} else if (ftps && bUseExistingConn) {
+%>
+	<%if(isLog4jEnabled){%>
+		log.info("<%=cid%> - Closing the connection to the server.");
+	<%}%>
+	ftp_<%=cid%>.disconnect();
+	<%if(isLog4jEnabled){%>
+		log.info("<%=cid%> - Connection to the server closed.");
+	<%}%>
 <%
 } else {// *** ftp *** //
 	if (!bUseExistingConn) {

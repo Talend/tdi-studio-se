@@ -47,4 +47,15 @@ public class SimpleOutputComponent extends AbstractFakeComponent implements ICom
         nodeConnectors.add(connector);
         return nodeConnectors;
     }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        // TODO Auto-generated method stub
+
+    }
 }

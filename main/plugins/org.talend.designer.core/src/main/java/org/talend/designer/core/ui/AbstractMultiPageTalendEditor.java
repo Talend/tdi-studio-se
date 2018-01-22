@@ -209,8 +209,15 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
             if (notification.getEventType() != Notification.REMOVING_ADAPTER
                     && notification.getEventType() != Notification.RESOLVE) {
                 int featureID = notification.getFeatureID(Properties.class);
-                if (featureID == PropertiesPackage.PROPERTY__INFORMATIONS) {
-                    // || featureID == PropertiesPackage.PROPERTY__MODIFICATION_DATE) {
+                if (featureID == PropertiesPackage.PROPERTY__MODIFICATION_DATE
+                        || featureID == PropertiesPackage.PROPERTY__CREATION_DATE) {
+                    if (notification.getNewValue() == null || notification.getOldValue() == null
+                            || notification.getOldValue() != null
+                            && notification.getOldValue().equals(notification.getNewValue())) {
+                        // no date or same date
+                        return;
+                    }
+                } else if (featureID == PropertiesPackage.PROPERTY__INFORMATIONS) {
                     // ignore
                     return;
                 } else if (featureID == PropertiesPackage.PROPERTY__MAX_INFORMATION_LEVEL) {

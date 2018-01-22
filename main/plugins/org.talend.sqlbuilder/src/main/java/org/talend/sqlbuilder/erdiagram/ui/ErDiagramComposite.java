@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Control;
 import org.talend.commons.ui.swt.colorstyledtext.ColorStyledText;
 import org.talend.core.CorePlugin;
 import org.talend.core.database.EDatabaseTypeName;
+import org.talend.core.model.metadata.MetadataManager;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataColumn;
@@ -254,12 +255,16 @@ public class ErDiagramComposite extends SashForm {
         DatabaseConnection connection = (DatabaseConnection) ((ConnectionItem) rootNode.getObject().getProperty().getItem())
                 .getConnection();
         String schema = "";
+        boolean isCalculationView = false;
         if (ConnectionUtils.isTeradata(connection.getURL())) {
             schema = connection.getSID();
         } else if (EDatabaseTypeName.SAPHana.getDisplayName().equals(getCurrentDbType())) {
             if (erDiagram != null) {
                 List<MetadataTable> tables = erDiagram.getMetadataTables();
                 for (MetadataTable table : tables) {
+                	if(MetadataManager.TYPE_CALCULATION_VIEW.equals(table.getTableType())) {
+                		isCalculationView  = true;
+                	}
                     schema = TaggedValueHelper.getValueString(GetTable.TABLE_SCHEM.name(), table);
                     if (StringUtils.isEmpty(schema)) {
                         schema = connection.getUiSchema();
@@ -269,8 +274,8 @@ public class ErDiagramComposite extends SashForm {
         } else {
             schema = connection.getUiSchema();
         }
-
-        if (connection.isContextMode()) {
+       
+        if (connection.isContextMode() && !isCalculationView) {
             schema = DatabaseConnectionParameterUtil.getContextTrueValue(connection, schema);
         }
         return schema;
@@ -390,7 +395,6 @@ public class ErDiagramComposite extends SashForm {
             }
             tables = newTables;
         }
-
         sql = getSelectStatement(tables, columns, wheres);
         if (sql.endsWith(",")) { //$NON-NLS-1$
             return sql.substring(0, sql.length() - 1);
@@ -426,7 +430,7 @@ public class ErDiagramComposite extends SashForm {
         }
         return realTableName;
     }
-
+    
     /**
      * admin Comment method "getSelectStatement".
      * 
@@ -436,6 +440,7 @@ public class ErDiagramComposite extends SashForm {
      * @return
      */
     private String getSelectStatement(List<String> tables, List<String> columns, List<String> wheres) {
+    
         String sql = ""; //$NON-NLS-1$
         if (tables.isEmpty() || columns.isEmpty()) {
             return sql;
@@ -454,7 +459,6 @@ public class ErDiagramComposite extends SashForm {
                 sql = sql + string + " and "; //$NON-NLS-1$
             }
         }
-
         return sql;
     }
 

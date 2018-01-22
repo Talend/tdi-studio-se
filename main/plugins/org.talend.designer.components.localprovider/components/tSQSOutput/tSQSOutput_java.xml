@@ -154,9 +154,19 @@
     </PARAMETER>
     
     <PARAMETER NAME="SCHEMA" FIELD="SCHEMA_TYPE" NUM_ROW="50" REQUIRED="true">
-		<TABLE READONLY="false">
+        <TABLE  IF="(USE_FIFO == 'true') AND (USE_DEDUPLICATION == 'true')">
+			<COLUMN KEY="false" NAME="Body" TYPE="id_String" CUSTOM="true"/>
+			<COLUMN KEY="false" NAME="MessageGroupId" TYPE="id_String" CUSTOM="true"/>
+		</TABLE>
+	    <TABLE  IF="(USE_FIFO == 'true') AND (USE_DEDUPLICATION == 'false')">
+			<COLUMN KEY="false" NAME="Body" TYPE="id_String" CUSTOM="true"/>
+			<COLUMN KEY="false" NAME="MessageGroupId" TYPE="id_String" CUSTOM="true"/>
+			<COLUMN KEY="false" NAME="MessageDeduplicationId" TYPE="id_String" CUSTOM="true"/>
+		</TABLE>
+		<TABLE IF="USE_FIFO == 'false'">
 			<COLUMN KEY="false" NAME="Body" TYPE="id_String" CUSTOM="true"/>
 		</TABLE>
+
 	</PARAMETER>    
 	
 	<PARAMETER
@@ -173,6 +183,9 @@
 	>
 		<DEFAULT>5</DEFAULT>
 	</PARAMETER>
+	
+	<PARAMETER NAME="USE_FIFO" FIELD="CHECK" NUM_ROW="70" />
+	<PARAMETER NAME="USE_DEDUPLICATION" FIELD="CHECK" NUM_ROW="70" SHOW_IF="USE_FIFO == 'true'"/>
 	  
     <PARAMETER
       NAME="DIE_ON_ERROR"
@@ -246,7 +259,8 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
+
+     <IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
 			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.223"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"

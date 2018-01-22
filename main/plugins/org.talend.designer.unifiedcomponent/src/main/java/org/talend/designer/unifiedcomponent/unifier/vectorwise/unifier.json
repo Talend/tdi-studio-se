@@ -1,0 +1,39 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tVectorWiseInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tVectorWiseOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tVectorWiseCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tVectorWiseConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tVectorWiseRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tVectorWiseRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

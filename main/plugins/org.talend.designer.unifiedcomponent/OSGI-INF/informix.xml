@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="InformixComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.informix.InformixComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

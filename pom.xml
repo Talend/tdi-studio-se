@@ -138,6 +138,7 @@
 		<module>main/plugins/org.talend.sqlbuilder</module>
 		<module>main/plugins/org.talend.designer.runtime.visualization</module>
 		<module>main/plugins/org.talend.designer.runtime.visualization.tools</module>
+		<module>main/plugins/org.talend.designer.unifiedcomponent</module>
 		<module>test/plugins/org.talend.designer.codegen.test</module>
 		<module>test/plugins/org.talend.designer.components.localprovider.test</module>
 		<module>test/plugins/org.talend.designer.core.test</module>
@@ -152,6 +153,7 @@
 		<module>test/plugins/org.talend.repository.view.di.test</module>
 		<module>test/plugins/org.talend.designer.webservice.test</module>
 		<module>test/plugins/org.talend.designer.scd.test</module>
+		<module>test/plugins/org.talend.designer.unifiedcomponent.test</module>
 	</modules>
 	<build>
 		<plugins>

@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.core.model.process.EComponentCategory;
+import org.talend.core.model.process.IAdvancedElementParameter;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
@@ -102,6 +103,9 @@ public class TextController extends AbstractElementPropertySectionController {
         cLayout.setBackground(subComposite.getBackground());
         if (elem instanceof Node) {
             labelText.setToolTipText(VARIABLE_TOOLTIP + param.getVariableName());
+        }
+        if (IAdvancedElementParameter.class.isInstance(param)) {
+            labelText.setMessage(IAdvancedElementParameter.class.cast(param).getMessage());
         }
         if (!isReadOnly()) {
             if (param.isRepositoryValueUsed()

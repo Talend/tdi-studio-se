@@ -123,7 +123,9 @@ if(!use_customize_version){
 		throw new java.lang.RuntimeException("\"All Applications\" option is not supported by this version of EMR");
 	}
 	<%
+
 	}%>
+
 	for(String application_<%=cid%> : applications_<%=cid%>) {
     	com.amazonaws.services.elasticmapreduce.model.Application app_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.Application();
     	app_<%=cid%>.withName(application_<%=cid%>);

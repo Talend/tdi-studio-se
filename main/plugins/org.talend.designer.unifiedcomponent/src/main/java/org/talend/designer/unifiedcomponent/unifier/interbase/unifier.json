@@ -1,0 +1,44 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tInterbaseInput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tInterbaseOutput",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tInterbaseClose",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tInterbaseCommit",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tInterbaseConnection",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tInterbaseRollback",
+    "category":"DI"
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tInterbaseRow",
+    "category":"DI",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

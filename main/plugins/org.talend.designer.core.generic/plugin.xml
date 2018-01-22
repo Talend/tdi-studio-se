@@ -66,6 +66,15 @@
               name="Dataprep701MigrationTask"
               version="7.0.1">
         </projecttask>
+       <projecttask
+               beforeLogon="false"
+               breaks="7.0.1"
+               class="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
+               description="Migration task for jobs using Google Drive components to TCOMP"
+               id="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
+               name="NewGoogleDriveMigrationTask"
+               version="7.0.1">
+       </projecttask>
        <!--<projecttask
              beforeLogon="false"
              breaks="6.3.0"

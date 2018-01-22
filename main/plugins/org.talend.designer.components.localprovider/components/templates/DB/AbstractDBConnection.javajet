@@ -41,6 +41,8 @@ imports="
 	java.sql.Connection conn_<%=cid%> = null;
 	<%@ include file="../Log4j/Log4jDBConnUtil.javajet"%>
 <%
+	connUtil.adjustDriverRegisterOrderForConflcit();
+	
 	if(isUseSharedConnection){
 %>
 	<%connUtil.useShareConnection(node);%>

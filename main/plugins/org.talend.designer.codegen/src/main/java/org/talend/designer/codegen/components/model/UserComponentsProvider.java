@@ -140,4 +140,12 @@ public class UserComponentsProvider extends AbstractCustomComponentsProvider {
         return true;
     }
 
+    public boolean isCustom() {
+        return true;
+    }
+
+    public String getComponentsBundle() {
+        return IComponentsFactory.COMPONENTS_LOCATION;
+    }
+
 }
