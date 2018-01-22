@@ -118,7 +118,7 @@ nb_file_<%=cid%> = getter_<%=cid %>.count;
   	}else{
 	    if(!moveToCurrentDir){
 %>
-	  		ftp_<%=cid %>.changeDirectory(rootDir_<%=cid %>);
+			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%	
 		}
 	}

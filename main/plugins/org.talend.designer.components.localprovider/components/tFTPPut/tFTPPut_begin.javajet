@@ -294,6 +294,7 @@ int nb_file_<%=cid%> = 0;
 		String securityMode = ElementParameterParser.getValue(node, "__SECURITY_MODE__");
 %>
 		org.apache.commons.net.ftp.FTPSClient ftp_<%=cid %> = null;
+		String rootDir_<%=cid %> = null;
 <%
 		if(("false").equals(useExistingConn)){
 %>
@@ -353,13 +354,12 @@ int nb_file_<%=cid%> = 0;
 			<%
 				if(!moveToCurrentDir){
 %>
-					rootDir_<%=cid %> = ftp_<%=cid %>.currentDirectory();
+					rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
 				}
 		}
 %>
 		String remotedir_<%=cid%> = null;
-		String rootDir_<%=cid %> = null;
 		remotedir_<%=cid%> = <%=remotedir%>; 
 		ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>); 
 		java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
