@@ -38,6 +38,12 @@ imports="
 <%
 		}
 		
+		//for example, postgresql jdbc and redshift jdbc both can process the url : jdbc:postgresql://, 
+		//we need to adjust the register order to make sure to use postgresql jdbc to process it
+		public void adjustDriverRegisterOrderForConflcit() {
+		
+		}
+		
 		public void useShareConnection(INode node) {
 			String sharedConnectionName = ElementParameterParser.getValue(node, "__SHARED_CONNECTION_NAME__");
 			String shareDBClass = "SharedDBConnection";

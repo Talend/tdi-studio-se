@@ -312,8 +312,6 @@ boolean isDirect_<%=cid%> = false;
 <%
 //table atction end
 
-boolean isDirect = false;	
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 if(("true").equals(use_existing_ctl_file)) {
     String ctl_file = ElementParameterParser.getValue(node, "__CLT_FILE__");
@@ -358,15 +356,22 @@ if(("true").equals(use_existing_ctl_file)) {
         parametersMap.put(key, value);
     }
 
-	if("True".equalsIgnoreCase((String)parametersMap.get("DIRECT"))){
-		isDirect = true;
-	}
-	
+	 String directValueStr = parametersMap.get("DIRECT");
+	 if(directValueStr != null && !"".equals(directValueStr)){
+		 if(directValueStr.startsWith("\"") && directValueStr.endsWith("\"")){
+		     directValueStr = directValueStr.substring(1,directValueStr.length()-1);
+	    }
+	    if("true".equalsIgnoreCase(directValueStr) || "false".equalsIgnoreCase(directValueStr)){
+			directValueStr = directValueStr.toLowerCase();
+		 }
+		 %>
+       isDirect_<%=cid%> = <%=directValueStr%>;
+    <%
+	 }
     java.util.Set<String> keySet = parametersMap.keySet();
     boolean flag = false;
     String tempvalue=null;
     %>
-	isDirect_<%=cid%> = <%=isDirect%>;
     java.lang.StringBuilder optionClause_<%=cid %> = new java.lang.StringBuilder();
     optionClause_<%=cid %>.append("OPTIONS (");
     <%

@@ -248,8 +248,8 @@ public class ComponentsFactory implements IComponentsFactory {
      * @throws IOException
      */
     private ComponentsCache loadComponentResource(String installLocation) throws IOException {
-        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE
-                + LanguageManager.getCurrentLanguage().toString().toLowerCase() + ComponentsFactory.TALEND_FILE_NAME;
+        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE + LanguageManager.getCurrentLanguage().toString().toLowerCase()
+                + ComponentsFactory.TALEND_FILE_NAME;
         URI uri = URI.createFileURI(installLocation).appendSegment(filePath);
         ComponentCacheResourceFactoryImpl compFact = new ComponentCacheResourceFactoryImpl();
         Resource resource = compFact.createResource(uri);
@@ -272,8 +272,8 @@ public class ComponentsFactory implements IComponentsFactory {
      * @return
      */
     private boolean hasComponentFile(String installLocation) {
-        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE
-                + LanguageManager.getCurrentLanguage().toString().toLowerCase() + ComponentsFactory.TALEND_FILE_NAME;
+        String filePath = ComponentsFactory.TALEND_COMPONENT_CACHE + LanguageManager.getCurrentLanguage().toString().toLowerCase()
+                + ComponentsFactory.TALEND_FILE_NAME;
         File file = new File(new Path(installLocation).append(filePath).toString());
         return file.exists();
     }
@@ -291,9 +291,8 @@ public class ComponentsFactory implements IComponentsFactory {
                 componentsProvider.preComponentsLoad();
                 File componentFile = componentsProvider.getInstallationFolder();
                 if (componentFile == null) {
-                    log.warn(Messages
-                            .getString(
-                                    "ComponentsFactory.loadComponents.missingFolder", componentsProvider.getFolderName(), componentsProvider.getContributer()));//$NON-NLS-1$
+                    log.warn(Messages.getString("ComponentsFactory.loadComponents.missingFolder", //$NON-NLS-1$
+                            componentsProvider.getFolderName(), componentsProvider.getContributer()));
                     return;
                 }
                 if (componentFile != null && componentFile.exists()) {
@@ -409,7 +408,7 @@ public class ComponentsFactory implements IComponentsFactory {
         String bundleName;
         if (!isCustom) {
             bundleName = admin.getBundle(provider.getClass()).getSymbolicName();
-        } else if(provider.getComponentsBundle() == null) {
+        } else if (provider.getComponentsBundle() == null) {
             bundleName = IComponentsFactory.COMPONENTS_LOCATION;
         } else {
             bundleName = provider.getComponentsBundle();
@@ -417,8 +416,8 @@ public class ComponentsFactory implements IComponentsFactory {
 
         if (childDirectories != null) {
             if (monitor != null) {
-                this.subMonitor = SubMonitor.convert(monitor,
-                        Messages.getString("ComponentsFactory.load.components"), childDirectories.length); //$NON-NLS-1$
+                this.subMonitor = SubMonitor.convert(monitor, Messages.getString("ComponentsFactory.load.components"), //$NON-NLS-1$
+                        childDirectories.length);
             }
             if (skeletonList != null) {
                 skeletonList.ensureCapacity(childDirectories.length);// to optimize the size of the array
@@ -432,8 +431,8 @@ public class ComponentsFactory implements IComponentsFactory {
                     }
 
                     try {
-                        File xmlMainFile = new File(currentFolder, ComponentFilesNaming.getInstance().getMainXMLFileName(
-                                currentFolder.getName(), getCodeLanguageSuffix()));
+                        File xmlMainFile = new File(currentFolder, ComponentFilesNaming.getInstance()
+                                .getMainXMLFileName(currentFolder.getName(), getCodeLanguageSuffix()));
                         if (!xmlMainFile.exists()) {
                             // if not a component folder, ignore it.
                             continue;
@@ -593,9 +592,8 @@ public class ComponentsFactory implements IComponentsFactory {
                     } catch (MissingMainXMLComponentFileException e) {
                         log.trace(currentFolder.getName() + " is not a " + getCodeLanguageSuffix() + " component", e); //$NON-NLS-1$ //$NON-NLS-2$
                     } catch (BusinessException e) {
-                        BusinessException ex = new BusinessException(
-                                "Cannot load component \"" + currentFolder.getName() + "\": " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + e.getMessage(), e);
+                        BusinessException ex = new BusinessException("Cannot load component \"" + currentFolder.getName() + "\": " //$NON-NLS-1$ //$NON-NLS-2$
+                                + e.getMessage(), e);
                         ExceptionHandler.process(ex, Level.ERROR);
                     }
 
@@ -621,8 +619,8 @@ public class ComponentsFactory implements IComponentsFactory {
 
     private File getComponentsLocation(String folder) {
         String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
-        IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
         if (breaningService.isPoweredOnlyCamel()) {
             componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
         }
@@ -652,8 +650,8 @@ public class ComponentsFactory implements IComponentsFactory {
             } else {
                 String componentsPath = IComponentsFactory.COMPONENTS_LOCATION;
                 Bundle b = Platform.getBundle(componentsPath);
-                IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                        IBrandingService.class);
+                IBrandingService breaningService = (IBrandingService) GlobalServiceRegister.getDefault()
+                        .getService(IBrandingService.class);
                 if (breaningService.isPoweredOnlyCamel()) {
                     componentsPath = IComponentsFactory.CAMEL_COMPONENTS_LOCATION;
                 }
@@ -704,19 +702,19 @@ public class ComponentsFactory implements IComponentsFactory {
 
                 // note: code here to review later, service like this shouldn't be used...
                 ResourceBundle bundle = null;
-                IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                        IBrandingService.class);
+                IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                        .getService(IBrandingService.class);
                 if (brandingService.isPoweredOnlyCamel()) {
                     bundle = currentProvider.getResourceBundle(label);
                 } else {
-                    ITisLocalProviderService service = (ITisLocalProviderService) GlobalServiceRegister.getDefault().getService(
-                            ITisLocalProviderService.class);
+                    ITisLocalProviderService service = (ITisLocalProviderService) GlobalServiceRegister.getDefault()
+                            .getService(ITisLocalProviderService.class);
                     bundle = service.getResourceBundle(label);
                 }
                 return bundle;
             } else {
-                ResourceBundle bundle = ResourceBundle.getBundle(label, Locale.getDefault(), new ResClassLoader(currentProvider
-                        .getClass().getClassLoader()));
+                ResourceBundle bundle = ResourceBundle.getBundle(label, Locale.getDefault(),
+                        new ResClassLoader(currentProvider.getClass().getClassLoader()));
                 return bundle;
             }
         } catch (IOException e) {
@@ -748,7 +746,7 @@ public class ComponentsFactory implements IComponentsFactory {
             if (comp != null && comp.getName().equals(name)
                     && !ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(comp.getPaletteType())) {
                 return comp;
-            }// else keep looking
+            } // else keep looking
         }
         return null;
     }
@@ -767,7 +765,7 @@ public class ComponentsFactory implements IComponentsFactory {
         for (IComponent comp : componentList) {
             if (comp != null && comp.getName().equals(name) && paletteType.equals(comp.getPaletteType())) {
                 return comp;
-            }// else keep looking
+            } // else keep looking
         }
         return null;
     }
@@ -880,8 +878,8 @@ public class ComponentsFactory implements IComponentsFactory {
             filter.cleanCache();
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (jobletService != null) {
                 jobletService.clearJobletComponent();
             }
@@ -980,9 +978,12 @@ public class ComponentsFactory implements IComponentsFactory {
                 ComponentProviderInfo info = new ComponentProviderInfo();
                 info.setId(componentsProvider.getId());
                 info.setContributer(componentsProvider.getContributer());
-                info.setLocation(componentsProvider.getInstallationFolder().getAbsolutePath());
-                list.add(info);
-            } catch (IOException e) {
+                File folder = componentsProvider.getInstallationFolder();
+                if (folder != null) {
+                    info.setLocation(folder.getAbsolutePath());
+                    list.add(info);
+                }
+            } catch (Exception e) {
                 ExceptionHandler.process(e);
                 continue;
             }

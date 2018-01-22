@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="VectorWiseComponentsUnifier">
+  <implementation class="org.talend.designer.unifiedcomponent.unifier.vectorwise.VectorWiseComponentsUnifier"/>
+  <service>
+    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
+  </service>
+</component>

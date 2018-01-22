@@ -98,7 +98,7 @@
 	String action = ElementParameterParser.getValue(node, "__ACTION__");
 	String region = ElementParameterParser.getValue(node, "__REGION__");
 	String cluster_name = ElementParameterParser.getValue(node, "__CLUSTER_NAME__");
-	String cluster_version = ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
+
 	
 	String service_role = ElementParameterParser.getValue(node, "__SERVICE_ROLE__");
 	String jobflow_role = ElementParameterParser.getValue(node, "__JOBFLOW_ROLE__");
@@ -122,6 +122,7 @@
 	String additional_master_security_groups = ElementParameterParser.getValue(node, "__ADDITIONAL_MASTER_SECURITY_GROUPS__");
 	String slave_security_group = ElementParameterParser.getValue(node, "__SLAVE_SECURITY_GROUP__");
 	String additional_slave_security_groups = ElementParameterParser.getValue(node, "__ADDITIONAL_SLAVE_SECURITY_GROUPS__");
+	String service_Access_Security_Group = ElementParameterParser.getValue(node, "__SERVICE_ACCESS_SECURITY_GROUP__");
 	
 	boolean wait_for_cluster_ready = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_CLUSTER_READY__"));
 	boolean wait_for_steps_complete = "true".equals(ElementParameterParser.getValue(node, "__WAIT_FOR_STEPS_COMPLETE__"));
@@ -134,6 +135,9 @@
 	boolean isLog4jEnabled = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 
 	boolean keep_alive = "true".equals(ElementParameterParser.getValue(node, "__KEEP_ALIVE__"));
+	
+	boolean use_customize_version = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOMIZE_VERSION__"));
+	String cluster_version = use_customize_version?ElementParameterParser.getValue(node, "__CUSTOMIZE_VERSION__").replace(' ', '-'):ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
 %>
 	        
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/EMRClient.javajet"%>
@@ -222,8 +226,19 @@
 
 	<%
 	}
-	
-	final boolean newApi = cluster_version!=null && "\"emr-4.2.0\",\"emr-4.1.0\",\"emr-4.0.0\",\"emr-4.5.0\",\"emr-4.6.0\"".contains(cluster_version);
+
+    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"\\b[ea]m[ri][- ]\\d+\\.\\d+\\.\\d+\"");
+
+	if(!pattern.matcher(cluster_version).find()){
+	%>
+		if(true) {
+		throw new java.lang.RuntimeException("Cluster version should follow the pattern emr/ami-x.x.x");
+	}
+	<%
+	}
+	final boolean newApi = cluster_version!=null && cluster_version.contains("emr") && cluster_version.charAt(5) > '3';
+
+
 	
 	boolean setApps = newApi;
 	if(setApps) {
@@ -290,7 +305,7 @@
     	
     	<%
     	if(cluster_version!=null && cluster_version.length()>1){
-    		if(Character.isDigit(cluster_version.charAt(1))) {//AMI version
+    		if(!cluster_version.contains("emr")) {//AMI version
     	%>
     		.withAmiVersion(<%=cluster_version%>)
     	<%
@@ -362,6 +377,10 @@
     			.withAdditionalSlaveSecurityGroups(<%=additional_slave_security_groups%>.split(","))
     			<%}%>
     			
+    			<%if(parameterUtil.isValid(service_Access_Security_Group)){%>
+    			.withServiceAccessSecurityGroup(<%=service_Access_Security_Group%>)
+    			<%}%>
+    			
     			<%if(termination_protected) {%>
     			.withTerminationProtected(true)
     			<%}%>
@@ -421,7 +440,7 @@
                		.withClusterId(result_<%=cid%>.getJobFlowId())
             );
             String status_<%=cid%> = result2_<%=cid%>.getCluster().getStatus().getState();
-            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>) || "TERMINATING".equalsIgnoreCase(status_<%=cid%>)) {
+            if ("WAITING".equalsIgnoreCase(status_<%=cid%>) || "TERMINATED".equalsIgnoreCase(status_<%=cid%>)) {
             	break;
             } else if("TERMINATED_WITH_ERRORS".equalsIgnoreCase(status_<%=cid%>)) {
             	System.err.println("Fail to complete steps.");

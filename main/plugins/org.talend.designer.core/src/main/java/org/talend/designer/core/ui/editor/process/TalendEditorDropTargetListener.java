@@ -141,6 +141,7 @@ import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.model.utils.SQLPatternUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.RepositoryComponentManager;
+import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
@@ -193,6 +194,7 @@ import org.talend.designer.core.ui.editor.nodes.NodePart;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainerPart;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.utils.DesignerUtilities;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.ProjectManager;
@@ -1937,10 +1939,17 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         neededComponents = (List<IComponent>) ComponentUtilities.filterVisibleComponents(neededComponents);
 
+        RepositoryComponentSetting settingCopy = new RepositoryComponentSetting();
+        settingCopy.setInputComponent(rcSetting.getInputComponentName());
+        settingCopy.setOutputComponent(rcSetting.getOutPutComponentName());
+        settingCopy.setDefaultComponent(rcSetting.getDefaultComponentName());
+
+        neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents);
+
         // Check if the components in the list neededComponents have the same category that is required by Process.
-        IComponent component = chooseOneComponent(extractComponents(neededComponents), rcSetting, quickCreateInput,
+        IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
                 quickCreateOutput);
-        store.component = component;
+        store.component = UnifiedComponentUtil.getEmfComponent(rcSetting, component);
         store.componentName = rcSetting;
     }
 
