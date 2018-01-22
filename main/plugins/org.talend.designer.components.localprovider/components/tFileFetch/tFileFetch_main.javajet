@@ -351,7 +351,7 @@ if ("http".equals(protocol) || "https".equals(protocol)) {
 
 					String redirect_url_<%=cid%> = method_<%=cid%>.getResponseHeader("location").getValue();
                     if(!redirect_url_<%=cid%>.startsWith("http")){
-                        redirect_url_<%=cid%> = "http://" + method_<%=cid%>.getURI().getHost() + redirect_url_<%=cid%>;
+                        redirect_url_<%=cid%> = method_tFileFetch_1.getHostConfiguration().getProtocol().getScheme()+"://" + method_<%=cid%>.getURI().getHost() + ":" + method_tFileFetch_1.getURI().getPort() + redirect_url_<%=cid%>;
                     }
 
                     if(status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_SEE_OTHER<% if(redirect_302_as_303) {%> || status_<%=cid%> == org.apache.commons.httpclient.HttpStatus.SC_MOVED_TEMPORARILY<% } %>) {
