@@ -473,7 +473,7 @@ public class UpdateNodeParameterCommand extends Command {
                                                     Map map = new HashMap();
                                                     String driver = String.valueOf(((Map) value).get("drivers"));
                                                     MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils
-                                                            .removeQuotes(driver));
+                                                            .removeQuotesIfExist(driver));
                                                     if (artifact != null) {
                                                         driver = artifact.getFileName();
                                                     }

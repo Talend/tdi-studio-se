@@ -22,7 +22,9 @@ import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
 
@@ -155,8 +157,9 @@ public class GenericTableUtils {
     }
     
     public static String getDriverJarPath(String mvnPath){
-        if(mvnPath.contains("/")){
-            mvnPath = mvnPath.split("/")[1]+".jar";
+        String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
+        if (MavenUrlHelper.isMvnUrl(mvnUrl)) {
+            return MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
         }
         return mvnPath;
     }
