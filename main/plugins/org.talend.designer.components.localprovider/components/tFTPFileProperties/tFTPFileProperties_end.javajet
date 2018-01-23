@@ -62,7 +62,7 @@ if (sftp && !bUseExistingConn) { // *** sftp *** //
 		log.info("<%=cid%> - Connection to the server closed.");
 	<%}%>  
 <%
-} else if (ftps && bUseExistingConn) {
+} else if (ftps && !bUseExistingConn) {
 %>
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Closing the connection to the server.");
