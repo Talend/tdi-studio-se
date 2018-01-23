@@ -41,6 +41,8 @@ imports="
         if(dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
             connectionCommandList_<%=cid%>.add("use " + dbname_<%=cid%> + ";");
         }
+        
+        stagingBucketPath_<%=cid%> = <%=ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__")%>;
 
         org.talend.bigdata.launcher.google.dataproc.DataprocHiveJob instance_<%=cid%> =
             new org.talend.bigdata.launcher.google.dataproc.DataprocHiveJob.Builder()
