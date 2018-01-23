@@ -240,16 +240,14 @@
                 <IMPORT
                     NAME="jaxb-core-2.2.11"
                     MODULE="jaxb-core-2.2.11.jar"
-                    MVN="mvn:org.talend.libraries/jaxb-core-2.2.11/6.0.0"
-                    UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/jaxb-core-2.2.11.jar"
+                    MVN="mvn:com.sun.xml.bind/jaxb-core/2.2.11"
                     REQUIRED="true"
                     BundleID=""
                     />
                 <IMPORT
                     NAME="jaxb-impl-2.2.11"
                     MODULE="jaxb-impl-2.2.11.jar"
-                    MVN="mvn:org.talend.libraries/jaxb-impl-2.2.11/6.0.0"
-                    UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/jaxb-impl-2.2.11.jar"
+                    MVN="mvn:com.sun.xml.bind/jaxb-impl/2.2.11"
                     REQUIRED="true"
                     BundleID=""
                     />
