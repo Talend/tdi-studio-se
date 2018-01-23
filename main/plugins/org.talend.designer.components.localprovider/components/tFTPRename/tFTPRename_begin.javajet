@@ -243,6 +243,18 @@ if (sftp) {  // *** sftp *** //
 			ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
 			ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 			ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
+<%
+			if ("PASSIVE".equals(connectMode)) {
+%>
+				ftp_<%=cid %>.enterLocalPassiveMode();
+<%
+				if (isLog4jEnabled) {
+%>
+					log.debug("<%=cid%> - Using the passive mode.");
+<%
+				}
+			}
+%>
 		} catch (Exception e) {
 			<%if(isLog4jEnabled){%>
 				log.error("<%=cid%> - " + e.getMessage());
