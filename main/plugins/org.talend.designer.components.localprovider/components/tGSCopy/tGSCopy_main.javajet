@@ -44,6 +44,7 @@
 	
 	       	<%
 			String passwordFieldName = "__SECRET_KEY__";
+			final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();
 	       	%>
 	
 		   <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
