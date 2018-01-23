@@ -281,7 +281,12 @@ if (sftp) {// *** sftp *** //
 
 			<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
 
-			ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+			boolean isLoginSuccessful_<%=cid %> = ftp_<%=cid %>.login(<%=user %>, decryptedPassword_<%=cid%>);
+
+			if (!isLoginSuccessful_<%=cid %>) {
+				throw new RuntimeException("Login failed");
+			}
+
 			ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 			ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
 		} catch (Exception e) {
