@@ -486,7 +486,7 @@ public class JavaProcessUtil {
                                 if (isContextMode) {
                                     getModulesInTable(process, curParam, modulesNeeded);
                                 } else {
-                                    ModuleNeeded module = new ModuleNeeded(null, driverName, null, true);
+                                    ModuleNeeded module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(driverName), null, true);
                                     modulesNeeded.add(module);
                                 }
                             }

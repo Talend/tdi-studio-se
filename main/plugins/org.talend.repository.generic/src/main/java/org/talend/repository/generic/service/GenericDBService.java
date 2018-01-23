@@ -367,10 +367,9 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public String getMVNPath(String value) {
-        ModuleNeeded module = new ModuleNeeded("", value, "", true);//$NON-NLS-1$ //$NON-NLS-2$
+        ModuleNeeded module = new ModuleNeeded("", TalendQuoteUtils.removeQuotes(value), "", true);//$NON-NLS-1$ //$NON-NLS-2$
         String mvnPath = module.getMavenUri();
-        if(mvnPath != null && mvnPath.endsWith("/jar")){//$NON-NLS-1$
-            mvnPath = mvnPath.substring(0, mvnPath.lastIndexOf("/"));//$NON-NLS-1$
+        if(mvnPath != null){//$NON-NLS-1$
             return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
         }
         return value;
