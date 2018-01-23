@@ -30,6 +30,8 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IESBService;
 import org.talend.core.ITDQPatternService;
 import org.talend.core.PluginChecker;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.IEbcdicConstant;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -70,6 +72,8 @@ import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.service.IDesignerMapperService;
 import org.talend.core.service.IEBCDICProviderService;
@@ -294,7 +298,8 @@ public class UpdateNodeParameterCommand extends Command {
                 if (result.isChecked() && connectionItem != null) {
                     List<? extends IElementParameter> elemParameters = new ArrayList<>(node.getElementParameters());
                     for (IElementParameter param : elemParameters) {
-                        String repositoryValue = param.getRepositoryValue();
+                        String repositoryValue = getReposiotryValueForOldJDBC(node, connectionItem.getConnection(), param);
+
                         if (param.getRepositoryValue() == null
                                 || (curPropertyParam != null && param.getRepositoryProperty() != null && !param
                                         .getRepositoryProperty().equals(curPropertyParam.getName()))) {
@@ -461,6 +466,25 @@ public class UpdateNodeParameterCommand extends Command {
                                         // fix 18011 :after change the jars in wizard, the update manager can't detect
                                         // it in jobs
                                         if (param.getName().equals("DRIVER_JAR") && objectValue instanceof List) {
+                                            List valueList = (List) objectValue;
+                                            List newValue = new ArrayList<>();
+                                            for (Object value : valueList) {
+                                                if (value instanceof Map) {
+                                                    Map map = new HashMap();
+                                                    String driver = String.valueOf(((Map) value).get("drivers"));
+                                                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils
+                                                            .removeQuotesIfExist(driver));
+                                                    if (artifact != null) {
+                                                        driver = artifact.getFileName();
+                                                    }
+                                                    map.put("JAR_NAME", driver);
+                                                    newValue.add(map);
+                                                }
+                                            }
+                                            if (!newValue.isEmpty()) {
+                                                objectValue = newValue;
+                                            }
+
                                             param.setValue(objectValue);
                                         }
                                     } else {
@@ -569,6 +593,29 @@ public class UpdateNodeParameterCommand extends Command {
                 }
             }
         }
+    }
+
+    private String getReposiotryValueForOldJDBC(Node node, Connection repositoryConnection, IElementParameter param) {
+        String repositoryValue = param.getRepositoryValue();
+        // for JDBC component of mr process
+        if (repositoryConnection instanceof DatabaseConnection) {
+            String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
+            if ("JDBC".equals(databaseType)) {
+                IComponent component = node.getComponent();
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                        && component.getName().startsWith("tJDBC")) {
+                    if (EParameterName.URL.getName().equals(repositoryValue)) {
+                        repositoryValue = "connection.jdbcUrl";
+                    } else if (EParameterName.DRIVER_JAR.getName().equals(repositoryValue)) {
+                        repositoryValue = "connection.driverTable";
+                    } else if (EParameterName.DRIVER_CLASS.getName().equals(repositoryValue)) {
+                        repositoryValue = "connection.driverClass";
+                    }
+
+                }
+            }
+        }
+        return repositoryValue;
     }
 
     @SuppressWarnings("unchecked")
@@ -1022,7 +1069,8 @@ public class UpdateNodeParameterCommand extends Command {
             if (conn.getLineStyle() == EConnectionType.FLOW_MAIN) {
                 IMetadataTable metadataTable = null;
                 for (IMetadataTable table : node.getMetadataList()) {
-                    if (table.getTableName() != null && conn.getMetadataTable() != null && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
+                    if (table.getTableName() != null && conn.getMetadataTable() != null
+                            && table.getTableName().equals(conn.getMetadataTable().getTableName())) {
                         metadataTable = table;
                     }
                 }

@@ -30,6 +30,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.components.api.component.Connector;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
@@ -556,12 +557,28 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         }
         return null;
     }
+    
+    public Properties getProperties() {
+        NamedThing content = widget.getContent();
+        if (content instanceof Properties) {
+            return (Properties) content;
+        }
+        return null;
+    }
 
     @Override
     public boolean isRepositoryValueUsed() {
         Property property = getProperty();
         if (property != null) {
             return property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null;
+        }
+        Properties properties = getProperties();
+        if(properties != null){
+            for(NamedThing thing : properties.getProperties()){
+                if(thing instanceof Property){
+                    return ((Property)thing).getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null;
+                }
+            }
         }
         return false;
     }
@@ -571,6 +588,14 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         Property property = getProperty();
         if (property != null) {
             property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, repositoryUsed ? property.getName() : null);
+        }
+        Properties properties = getProperties();
+        if(properties != null){
+            for(NamedThing thing : properties.getProperties()){
+                if(thing instanceof Property){
+                    ((Property)thing).setTaggedValue(IGenericConstants.REPOSITORY_VALUE, repositoryUsed ? thing.getName() : null);
+                }
+            }
         }
     }
 
@@ -582,10 +607,15 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
     @Override
     public String getRepositoryValue() {
         if (isRepositoryValueUsed() && super.getRepositoryValue() == null) {
-            Property property = getProperty();
-            if (property != null) {
-                super.setRepositoryValue((String) property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
-            }
+            super.setRepositoryValue(this.getName());
+//            Property property = getProperty();
+//            if (property != null) {
+//                super.setRepositoryValue((String) property.getTaggedValue(IGenericConstants.REPOSITORY_VALUE));
+//            }
+//            Properties properties = getProperties();
+//            if(properties != null){
+//                super.setRepositoryValue(properties.getName());
+//            }
         }
         return super.getRepositoryValue();
     }
@@ -596,6 +626,14 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         Property property = getProperty();
         if (property != null) {
             property.setTaggedValue(IGenericConstants.IS_DYNAMIC, mode);
+        }
+        Properties properties = getProperties();
+        if(properties != null){
+            for(NamedThing thing : properties.getProperties()){
+                if(thing instanceof Property){
+                    ((Property)thing).setTaggedValue(IGenericConstants.IS_DYNAMIC, mode);
+                }
+            }
         }
     }
 

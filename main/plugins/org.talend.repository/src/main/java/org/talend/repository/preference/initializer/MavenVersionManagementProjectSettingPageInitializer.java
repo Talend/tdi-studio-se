@@ -16,13 +16,20 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.designer.maven.DesignerMavenPlugin;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.repository.ProjectManager;
 
 public class MavenVersionManagementProjectSettingPageInitializer extends AbstractPreferenceInitializer {
 
     @Override
     public void initializeDefaultPreferences() {
         IPreferenceStore preferenceStore = DesignerMavenPlugin.getPlugin().getProjectPreferenceManager().getPreferenceStore();
+
+        String projectName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+        preferenceStore.setDefault(MavenConstants.PROJECT_GROUPID, PomIdsHelper.getDefaultProjetGroupId(projectName));
+        preferenceStore.setDefault(MavenConstants.APPEND_FOLDER_TO_GROUPID, false);
+
         preferenceStore.setDefault(MavenConstants.PROJECT_VERSION, PomUtil.getDefaultMavenVersion());
         preferenceStore.setDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, false);
     }

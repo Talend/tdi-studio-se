@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.core.model.metadata.Dbms;
 import org.talend.core.model.metadata.MetadataTalendType;
@@ -63,7 +64,8 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
+     * @see
+     * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createCommand()
      */
     private Command createCommand(SelectionEvent event) {
         Set<String> elementsName;
@@ -84,8 +86,7 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
                 Object data = ctrl.getData(PARAMETER_NAME);
                 if (data != null && data.equals(combo.getData(PARAMETER_NAME)) && ctrl instanceof CCombo) {
                     boolean isDisposed = ((CCombo) ctrl).isDisposed();
-                    if (!isDisposed && (!elem.getPropertyValue(name).equals(((CCombo) ctrl).getText()))) {
-
+                    if (!isDisposed && isValueChanged(elem.getPropertyValue(name), ((CCombo) ctrl).getText())) {
                         String value = new String(""); //$NON-NLS-1$
                         for (int i = 0; i < elem.getElementParameters().size(); i++) {
                             IElementParameter param = elem.getElementParameters().get(i);
@@ -105,8 +106,21 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
         return null;
     }
 
+    private boolean isValueChanged(Object o1, String s2) {
+        if (o1 == null && s2 == null) {
+            return false;
+        }
+
+        if (o1 == null) {
+            return true;
+        } else {
+            return !o1.equals(s2);
+        }
+    }
+
     IControlCreator cbCtrl = new IControlCreator() {
 
+        @Override
         public Control createControl(final Composite parent, final int style) {
             CCombo cb = new CCombo(parent, style);
             return cb;
@@ -116,7 +130,8 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
+     * @see
+     * org.talend.designer.core.ui.editor.properties2.editors.AbstractElementPropertySectionController#createControl()
      */
     @Override
     public Control createControl(final Composite subComposite, final IElementParameter param, final int numInRow,
@@ -190,14 +205,33 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
 
         Point initialSize = dField.getLayoutControl().computeSize(SWT.DEFAULT, SWT.DEFAULT);
         dynamicProperty.setCurRowSize(initialSize.y + ITabbedPropertyConstants.VSPACE);
+
+        if (isInWizard()) {
+            labelLabel.setAlignment(SWT.RIGHT);
+            if (lastControl != null) {
+                data.right = new FormAttachment(lastControl, 0);
+            } else {
+                data.right = new FormAttachment(100, -ITabbedPropertyConstants.HSPACE);
+            }
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), currentLabelWidth
+                    + ITabbedPropertyConstants.HSPACE);
+
+            data = (FormData) labelLabel.getLayoutData();
+            data.right = new FormAttachment(cLayout, 0);
+            data.left = new FormAttachment((((nbInRow - numInRow) * MAX_PERCENT) / nbInRow), 0);
+
+            return labelLabel;
+        }
+
         return cLayout;
     }
 
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize(org.eclipse.swt.widgets.Composite,
-     * org.talend.core.model.process.IElementParameter)
+     * @see
+     * org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController#estimateRowSize
+     * (org. eclipse.swt.widgets.Composite, org.talend.core.model.process.IElementParameter)
      */
     @Override
     public int estimateRowSize(Composite subComposite, IElementParameter param) {
@@ -213,12 +247,14 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
      * 
      * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
+    @Override
     public void propertyChange(PropertyChangeEvent evt) {
         // TODO Auto-generated method stub
     }
 
     SelectionListener listenerSelection = new SelectionAdapter() {
 
+        @Override
         public void widgetSelected(SelectionEvent event) {
             // dynamicTabbedPropertySection.updateRepositoryList();
             Command cmd = createCommand(event);
@@ -251,7 +287,11 @@ public class MappingTypeController extends AbstractElementPropertySectionControl
             if (!paramItems.equals(comboItems)) {
                 combo.setItems(paramItems);
             }
-            combo.setText(strValue);
+            combo.setText("".equals(strValue) ? (String) value : strValue);
+            if (param.isContextMode()) {
+                combo.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_YELLOW));
+                combo.setEnabled(false);
+            }
         }
     }
 

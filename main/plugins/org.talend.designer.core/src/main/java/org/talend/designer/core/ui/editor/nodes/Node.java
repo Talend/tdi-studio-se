@@ -3438,16 +3438,18 @@ public class Node extends Element implements IGraphicalNode {
                         // String metadataTableName = metadataTable.getLabel();
                         String rowName = connection.getUniqueName();
                         String schemaName = null;
-                        for (Map<String, String> map : maps) {
-                            if (map.containsValue(rowName)) {
-                                if (map.get("PARENT_ROW") != null && map.get("PARENT_ROW").equals(rowName)) { //$NON-NLS-1$ //$NON-NLS-2$
-                                    schemaName = map.get("SCHEMA"); //$NON-NLS-1$
-                                    // int first = schemaName.indexOf("_"); //$NON-NLS-1$
-                                    // int second = schemaName.lastIndexOf("_"); //$NON-NLS-1$
-                                    // if (first > 0 && first < second) {
-                                    // schemaName = schemaName.substring(first + 1, second);
-                                    break;
-                                    // }
+                        if (maps != null) {
+                            for (Map<String, String> map : maps) {
+                                if (map.containsValue(rowName)) {
+                                    if (map.get("PARENT_ROW") != null && map.get("PARENT_ROW").equals(rowName)) { //$NON-NLS-1$ //$NON-NLS-2$
+                                        schemaName = map.get("SCHEMA"); //$NON-NLS-1$
+                                        // int first = schemaName.indexOf("_"); //$NON-NLS-1$
+                                        // int second = schemaName.lastIndexOf("_"); //$NON-NLS-1$
+                                        // if (first > 0 && first < second) {
+                                        // schemaName = schemaName.substring(first + 1, second);
+                                        break;
+                                        // }
+                                    }
                                 }
                             }
                         }
@@ -4302,7 +4304,7 @@ public class Node extends Element implements IGraphicalNode {
         }
         for (ServiceReference<NodeProblem> sr : nodeProblems) {
             NodeProblem np = bc.getService(sr);
-            if (np.needsCheck(this)) {
+            if (np != null && np.needsCheck(this)) {
                 np.check(this);
             }
         }

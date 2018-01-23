@@ -157,13 +157,12 @@ public class ImportProjectsUtilities {
 
         ResourceOption demoImportOption = ResourceOption.DEMO_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(demoImportOption.getName(),
-                    demoImportOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(demoImportOption, false);
 
             boolean isFolder = EDemoProjectFileType.FOLDER.equals(demoProjectBean.getDemoProjectFileType());
             helper.importProjectAs(shell, newProjectName, newTechName, filePath, !isFolder, monitor);
         } finally {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(demoImportOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(demoImportOption, false);
         }
     }
 
@@ -171,12 +170,12 @@ public class ImportProjectsUtilities {
             IProgressMonitor monitor) throws Exception {
         final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
 
             ImportProjectHelper helper = new ImportProjectHelper();
             helper.importProjectAs(shell, newName, technicalName, sourcePath, isArchive, monitor);
         } finally {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
         }
     }
 }

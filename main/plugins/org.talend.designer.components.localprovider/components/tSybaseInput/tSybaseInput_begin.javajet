@@ -19,18 +19,30 @@ imports="
 	    
 		public void setURL(INode node) {
 			
+			String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
 			String dbServer = ElementParameterParser.getValue(node, "__SERVER__");
+		        if("SYBSEIQ_16_SA".equals(dbVersion)){
+				if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-
+					String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %>; 
 <%
-			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+				}
+				else{
 %>
-				String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+					String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbServer %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
 <%
-			} else {
+				}
+                        }
+			else {
+				if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-				String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+					String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
 <%
+				} else {
+%>
+					String url_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbServer%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+<%
+				}
 			}
 %>
 <%
@@ -38,11 +50,14 @@ imports="
 		
 		public String getDirverClassName(INode node){
 		    String dbVersion = ElementParameterParser.getValue(node, "__DB_VERSION__") ;
-		    if("SYBSEIQ_16".equals(dbVersion)){
+		    if("SYBSEIQ_16_SA".equals(dbVersion)){
+			    return "sap.jdbc4.sqlanywhere.IDriver";
+		    }
+		    else if("SYBSEIQ_16".equals(dbVersion)){
 			    return "com.sybase.jdbc4.jdbc.SybDriver";
-			    }else{
+		    }else{
 			    return "com.sybase.jdbc3.jdbc.SybDriver";
-			    }
+		    }
 		}
 		
 		//-----------according schema type to generate ResultSet

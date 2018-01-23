@@ -10,10 +10,10 @@ package org.talend.repository.generic.model.genericMetadata;
  *
  * <p>
  * The following features are supported:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.repository.generic.model.genericMetadata.SubContainer#getCompProperties <em>Comp Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @see org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage#getSubContainer()
  * @model

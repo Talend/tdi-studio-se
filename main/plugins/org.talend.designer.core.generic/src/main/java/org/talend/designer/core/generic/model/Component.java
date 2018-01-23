@@ -75,6 +75,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.IElementParameterDefaultValue;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.NodeUtil;
@@ -82,6 +83,7 @@ import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.maven.MavenUrlHelper;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.core.runtime.util.GenericTypeUtils;
@@ -190,9 +192,9 @@ public class Component extends AbstractBasicComponent {
         if (node.getComponentProperties() == null) {
             node.setComponentProperties(ComponentsUtils.getComponentProperties(getName()));
         }
-        List<ElementParameter> listParam;
-        listParam = new ArrayList<>();
+        List<ElementParameter> listParam = new ArrayList<>();
         addMainParameters(listParam, node);
+        node.setElementParameters(listParam); // initialize the parameters to setup the querystore, since it's needed for the jdbc components
         addPropertyParameters(listParam, node, Form.MAIN, EComponentCategory.BASIC);
         addPropertyParameters(listParam, node, Form.ADVANCED, EComponentCategory.ADVANCED);
         initializeParametersForSchema(listParam, node);
@@ -624,7 +626,11 @@ public class Component extends AbstractBasicComponent {
         param.setDisplayName(EParameterName.PROPERTY_TYPE.getDisplayName());
         param.setFieldType(EParameterFieldType.PROPERTY_TYPE);
         if (wizardDefinition != null) {
-            param.setRepositoryValue(wizardDefinition.getName());
+            if(isExtraType(wizardDefinition.getName())){
+                param.setRepositoryValue("DATABASE:"+wizardDefinition.getName());
+            }else{
+                param.setRepositoryValue(wizardDefinition.getName());
+            }
         }
         param.setValue("");//$NON-NLS-1$
         param.setNumRow(1);
@@ -667,6 +673,41 @@ public class Component extends AbstractBasicComponent {
         newParam.setSerialized(true);
         newParam.setParentParameter(param);
         listParam.add(param);
+        
+        ElementParameter sibling_param = new ElementParameter(node);
+        sibling_param.setName("QUERYSTORE");
+        sibling_param.setCategory(EComponentCategory.BASIC);
+        sibling_param.setDisplayName(EParameterName.QUERYSTORE_TYPE.getDisplayName());
+        sibling_param.setFieldType(EParameterFieldType.QUERYSTORE_TYPE);
+        sibling_param.setNumRow(0);
+        sibling_param.setShow(false);
+        sibling_param.setValue("");
+        listParam.add(sibling_param);
+
+        newParam = new ElementParameter(node);
+        newParam.setCategory(EComponentCategory.BASIC);
+        newParam.setName(EParameterName.QUERYSTORE_TYPE.getName());
+        newParam.setDisplayName(EParameterName.QUERYSTORE_TYPE.getDisplayName());
+        newParam.setListItemsDisplayName(new String[] { EmfComponent.TEXT_BUILTIN, EmfComponent.TEXT_REPOSITORY });
+        newParam.setListItemsDisplayCodeName(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
+        newParam.setListItemsValue(new String[] { EmfComponent.BUILTIN, EmfComponent.REPOSITORY });
+        newParam.setValue(EmfComponent.BUILTIN);
+        newParam.setNumRow(0);
+        newParam.setFieldType(EParameterFieldType.TECHNICAL);
+        newParam.setParentParameter(sibling_param);
+
+        newParam = new ElementParameter(node);
+        newParam.setCategory(EComponentCategory.BASIC);
+        newParam.setName(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getName());
+        newParam.setDisplayName(EParameterName.REPOSITORY_QUERYSTORE_TYPE.getDisplayName());
+        newParam.setListItemsDisplayName(new String[] {});
+        newParam.setListItemsValue(new String[] {});
+        newParam.setNumRow(0);
+        newParam.setFieldType(EParameterFieldType.TECHNICAL);
+        newParam.setValue("");
+        newParam.setRequired(true);
+        newParam.setParentParameter(sibling_param);
+        newParam.setShow(false);
 
         if (ComponentCategory.CATEGORY_4_DI.getName().equals(this.getPaletteType())) {
             boolean isStatCatcherComponent = false;
@@ -692,7 +733,7 @@ public class Component extends AbstractBasicComponent {
         // These parameters is only work when TIS is loaded
         // GLiu Added for Task http://jira.talendforge.org/browse/TESB-4279
         if (PluginChecker.isTeamEdition() && !ComponentCategory.CATEGORY_4_CAMEL.getName().equals(getPaletteType())) {
-            boolean defaultParalelize = Boolean.FALSE;
+            boolean defaultParalelize = componentDefinition.isParallelize();
             param = new ElementParameter(node);
             param.setReadOnly(!defaultParalelize);
             param.setName(EParameterName.PARALLELIZE.getName());
@@ -708,12 +749,13 @@ public class Component extends AbstractBasicComponent {
             param = new ElementParameter(node);
             param.setReadOnly(!defaultParalelize);
             param.setName(EParameterName.PARALLELIZE_NUMBER.getName());
-            param.setValue(2);
+            param.setValue("2");
             param.setDisplayName(EParameterName.PARALLELIZE_NUMBER.getDisplayName());
             param.setFieldType(EParameterFieldType.TEXT);
             param.setCategory(EComponentCategory.ADVANCED);
-            param.setNumRow(200);
+            param.setNumRow(201);
             param.setShowIf(EParameterName.PARALLELIZE.getName() + " == 'true'"); //$NON-NLS-1$
+            param.setShow(true);
             param.setDefaultValue(param.getValue());
             listParam.add(param);
 
@@ -724,11 +766,27 @@ public class Component extends AbstractBasicComponent {
             param.setDisplayName(EParameterName.PARALLELIZE_KEEP_EMPTY.getDisplayName());
             param.setFieldType(EParameterFieldType.CHECK);
             param.setCategory(EComponentCategory.ADVANCED);
-            param.setNumRow(200);
+            param.setNumRow(202);
             param.setShow(false);
             param.setDefaultValue(param.getValue());
             listParam.add(param);
         }
+    }
+    
+    private boolean isExtraType(String definame){
+        IGenericDBService dbService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                    IGenericDBService.class);
+        }
+        if(dbService != null){
+            for(ERepositoryObjectType type:dbService.getExtraTypes()){
+                if(type.getLabel().equals(definame)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private ComponentWizardDefinition getWizardDefinition(ComponentProperties componentProperties) {
@@ -1121,6 +1179,11 @@ public class Component extends AbstractBasicComponent {
     public boolean isDataAutoPropagated() {
         return componentDefinition.isDataAutoPropagate();
     }
+    
+    @Override
+    public boolean canParallelize() {
+        return componentDefinition.isParallelize();
+    }
 
     /*
      * (non-Javadoc)
@@ -1182,7 +1245,7 @@ public class Component extends AbstractBasicComponent {
                 if (bundle != null) { // update module location
                     try {
                         final MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(moduleNeeded.getDefaultMavenURI());
-                        final String moduleFileName = artifact.getFileName();
+                        final String moduleFileName = artifact.getFileName(false);
                         final File bundleFile = BundleFileUtil.getBundleFile(bundle, moduleFileName);
                         if (bundleFile != null && bundleFile.exists()) {
                             // FIXME, better install the embed jars from bundle directly in this way.

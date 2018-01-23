@@ -42,6 +42,8 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
     boolean hidenTypeSelection;
 
     boolean isHeaderButton;
+    
+    boolean isGeneric;
 
     /**
      * DOC bqian RepositoryTypeProcessor constructor comment.
@@ -50,6 +52,11 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
      */
     public RepositoryTypeProcessor(String repositoryType) {
         super(repositoryType);
+    }
+    
+    public RepositoryTypeProcessor(String repositoryType, boolean isGeneric) {
+        super(repositoryType);
+        this.isGeneric = isGeneric;
     }
 
     @Override
@@ -223,6 +230,9 @@ public class RepositoryTypeProcessor extends SingleTypeProcessor {
                         return true;
                     }
                     if (!MetadataTalendType.sameDBProductType(neededDbType, currentDbType)) {
+                        return false;
+                    }
+                    if(isGeneric && connection.getCompProperties() == null){
                         return false;
                     }
                 }

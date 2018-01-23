@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,8 @@ import org.eclipse.ui.PlatformUI;
 import org.talend.commons.runtime.xml.XmlUtil;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.ComponentCategory;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
@@ -45,6 +48,8 @@ import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IDragAndDropServiceHandler;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.seeker.RepositorySeekerManager;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.cwm.helper.SAPBWTableHelper;
@@ -311,6 +316,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                             ((ConnectionItem) item).getConnection(), param.getRepositoryValue(),
                                             newOutputMetadata);
                                     if (value != null) {
+                                        value = getParamValueForOldJDBC(param, value);
                                         param.setValue(value);
                                     }
                                 }
@@ -321,6 +327,42 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
             }
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);
+    }
+
+    private Object getParamValueForOldJDBC(IElementParameter param, Object objectValue) {
+        String paramName = param.getName();
+        // for JDBC component of mr process
+        if (connection instanceof DatabaseConnection) {
+            String databaseType = ((DatabaseConnection) connection).getDatabaseType();
+            if ("JDBC".equals(databaseType)) {
+                IComponent component = node.getComponent();
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                        && component.getName().startsWith("tJDBC")) {
+                    if (EParameterName.DRIVER_JAR.getName().equals(paramName)) {
+                        List valueList = (List) objectValue;
+                        List newValue = new ArrayList<>();
+                        for (Object value : valueList) {
+                            if (value instanceof Map) {
+                                Map map = new HashMap();
+                                String driver = String.valueOf(((Map) value).get("drivers"));
+                                MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
+                                if (artifact != null) {
+                                    driver = artifact.getFileName();
+                                }
+                                map.put("JAR_NAME", driver);
+                                newValue.add(map);
+                            }
+                        }
+                        if (!newValue.isEmpty()) {
+                            objectValue = newValue;
+                        }
+
+                    }
+
+                }
+            }
+        }
+        return objectValue;
     }
 
     protected void setTableRelevantParameterValues() {

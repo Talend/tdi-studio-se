@@ -35,7 +35,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -55,13 +54,10 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Project;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.utils.XmiResourceManager;
-import org.talend.core.service.IRemoteService;
-import org.talend.core.ui.branding.IBrandingService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
@@ -510,7 +506,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         XmiResourceManager xmiManager = new XmiResourceManager();
         final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
             final ImportProjectHelper importHelper = new ImportProjectHelper();
 
             for (Object element : selected) {
@@ -529,23 +525,6 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                     loadProject.setType(null);
                     xmiManager.saveResource(loadProject.eResource());
 
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                        IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault().getService(
-                                IRemoteService.class);
-                        if (!remoteService.isAuthorized(loadProject.getProductVersion())) {
-                            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                                    IBrandingService.class);
-                            String compatibleMessage = Messages.getString("ImportProjectAsWizardPage.compatible.message"); //$NON-NLS-1$
-                            String confirmMessage = Messages.getString(
-                                    "ImportProjectAsWizardPage.confirm.message", loadProject.getLabel()); //$NON-NLS-1$
-                            boolean confirm = MessageDialog.openConfirm(this.getShell(), brandingService.getProductName(),
-                                    compatibleMessage + "\n\n" + confirmMessage); //$NON-NLS-1$
-                            if (!confirm) {
-                                project.delete(true, null); // if invalid, delete it
-                                continue;
-                            }
-                        }
-                    }
                     // FIXME TDI-22786, migrate the project name.
                     if (ProjectManager.enableSpecialTechnicalProjectName()) {
                         ChangeProjectTechinicalNameMigrationTask migrationTask = new ChangeProjectTechinicalNameMigrationTask();
@@ -556,14 +535,12 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                     AfterImportProjectUtil.runAfterImportProjectActions(new ImportProjectBean(
                             new org.talend.core.model.general.Project(loadProject), null));
                 } catch (PersistenceException e) {
-                    //
-                } catch (CoreException e) {
-                    //
+                    ExceptionHandler.process(e);
                 }
             }
         } finally {
             xmiManager.unloadResources();
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
         }
         return created;
         //

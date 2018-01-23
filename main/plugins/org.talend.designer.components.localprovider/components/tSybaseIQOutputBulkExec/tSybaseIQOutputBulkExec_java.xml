@@ -38,7 +38,7 @@
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
-      NUM_ROW="10"
+      NUM_ROW="100"
       REPOSITORY_VALUE="DATABASE:SYBASE"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
     />
@@ -46,7 +46,7 @@
     <PARAMETER
       NAME="USE_EXISTING_CONNECTION"
       FIELD="CHECK"
-      NUM_ROW="20"
+      NUM_ROW="200"
 	  SHOW_IF="DB_VERSION != 'SYBSEIQ_15'"
     >
       <DEFAULT>false</DEFAULT>
@@ -56,22 +56,23 @@
       NAME="CONNECTION"
       FIELD="COMPONENT_LIST"
       REQUIRED="true" FILTER="tSybaseConnection"
-      NUM_ROW="20"
+      NUM_ROW="200"
       SHOW_IF="USE_EXISTING_CONNECTION == 'true'"
       DYNAMIC_SETTINGS="true"
     />
 
-	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="23"
+	<PARAMETER NAME="DB_VERSION" FIELD="CLOSED_LIST" NUM_ROW="230"
 		REPOSITORY_VALUE="DB_VERSION"
 		SHOW_IF="(USE_EXISTING_CONNECTION == 'false')">
 		<ITEMS DEFAULT="SYBSEIQ_16">
 			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
 			<ITEM NAME="SYBSEIQ_15" VALUE="SYBSEIQ_15" />
 			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+			<ITEM NAME="SYBSEIQ_16_SA" VALUE="SYBSEIQ_16_SA" />
 		</ITEMS>
 	</PARAMETER>
 
-	<PARAMETER NAME="DATA_SOURCE" FIELD="CLOSED_LIST" NUM_ROW="25"
+	<PARAMETER NAME="DATA_SOURCE" FIELD="CLOSED_LIST" NUM_ROW="250"
 		REPOSITORY_VALUE="DATA_SOURCE" SHOW_IF="(DB_VERSION == 'SYBSEIQ_15')">
 		<ITEMS DEFAULT="DATA_SOURCE_NAME">
 			<ITEM NAME="DATA_SOURCE_NAME" VALUE="DSN" />
@@ -81,7 +82,7 @@
 	<PARAMETER
       NAME="DATA_SOURCE_NAME"
       FIELD="TEXT"
-      NUM_ROW="25"
+      NUM_ROW="250"
       REPOSITORY_VALUE="DATA_SOURCE_NAME"
       REQUIRED="true"
       SHOW_IF="(DATA_SOURCE == 'DATA_SOURCE_NAME') AND (DB_VERSION == 'SYBSEIQ_15')"
@@ -89,7 +90,7 @@
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
        <PARAMETER NAME="FILE_DATA_SOURCE_NAME" FIELD="FILE"
-       NUM_ROW="25" REQUIRED="true"
+       NUM_ROW="250" REQUIRED="true"
        REPOSITORY_VALUE="FILE_DATA_SOURCE_NAME"
        SHOW_IF="(DATA_SOURCE == 'FILE_DATA_SOURCE_NAME') AND (DB_VERSION == 'SYBSEIQ_15')">
       <DEFAULT>""</DEFAULT>
@@ -98,7 +99,7 @@
     <PARAMETER
       NAME="HOST"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="300"
       REQUIRED="true"
       REPOSITORY_VALUE="SERVER_NAME"
        SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (DB_VERSION != 'SYBSEIQ_15')"
@@ -109,7 +110,7 @@
    <PARAMETER
       NAME="PORT"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="300"
       REQUIRED="true"
       REPOSITORY_VALUE="PORT"
       SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (DB_VERSION != 'SYBSEIQ_15')"
@@ -120,7 +121,7 @@
     <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
-      NUM_ROW="40"
+      NUM_ROW="400"
       REQUIRED="true"
       REPOSITORY_VALUE="SID"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -131,7 +132,7 @@
 	<PARAMETER
       NAME="DB_SCHEMA"
       FIELD="TEXT"
-      NUM_ROW="40"
+      NUM_ROW="400"
       REPOSITORY_VALUE="SCHEMA"
       REQUIRED="true"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -142,7 +143,7 @@
     <PARAMETER
       NAME="USER"
       FIELD="TEXT"
-      NUM_ROW="50"
+      NUM_ROW="500"
       REQUIRED="true"
       REPOSITORY_VALUE="USERNAME"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -153,7 +154,7 @@
     <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
-      NUM_ROW="50"
+      NUM_ROW="500"
       REQUIRED="true"
       REPOSITORY_VALUE="PASSWORD"
       SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
@@ -164,7 +165,7 @@
     <PARAMETER
       NAME="TABLE"
       FIELD="TEXT"
-      NUM_ROW="60"
+      NUM_ROW="600"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
@@ -173,7 +174,7 @@
     <PARAMETER
       NAME="TABLE_ACTION"
       FIELD="CLOSED_LIST"
-      NUM_ROW="60"
+      NUM_ROW="600"
       NOT_SHOW_IF="PARALLELIZE == 'true'"
     >
       <ITEMS DEFAULT="NONE">
@@ -189,16 +190,25 @@
     <PARAMETER
       NAME="FILENAME"
       FIELD="FILE"
-      NUM_ROW="70"
+      NUM_ROW="700"
       REQUIRED="true"
     >
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/sybaseIQ_bulk.txt"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
+      NAME="ISLOCAL"
+      FIELD="CHECK"
+      NUM_ROW="750"
+      REQUIRED="true"
+      SHOW_IF="DB_VERSION == 'SYBSEIQ_16_SA'">
+        <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
     	NAME="APPEND"
     	FIELD="CHECK"
-    	NUM_ROW="80">
+    	NUM_ROW="800">
 
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -206,7 +216,7 @@
     <PARAMETER
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
-      NUM_ROW="90"
+      NUM_ROW="900"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -214,7 +224,7 @@
     <PARAMETER
       NAME="MAPPING"
       FIELD="MAPPING_TYPE"
-      NUM_ROW="100"
+      NUM_ROW="1000"
       SHOW="false"
     >
       <DEFAULT>sybase_id</DEFAULT>
@@ -227,7 +237,7 @@
   	<PARAMETER
 		NAME="PROPERTIES"
 		FIELD="TEXT"
-		NUM_ROW="4"
+		NUM_ROW="40"
 		REPOSITORY_VALUE="PROPERTIES_STRING"
 		SHOW_IF="USE_EXISTING_CONNECTION == 'false'">
 		<DEFAULT>""</DEFAULT>
@@ -236,7 +246,7 @@
  	<PARAMETER
       NAME="FIELDS_TERMINATED_BY"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>";"</DEFAULT>
@@ -245,7 +255,7 @@
     <PARAMETER
       NAME="LINES_TERMINATED_BY"
       FIELD="TEXT"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>"\n"</DEFAULT>
@@ -254,7 +264,7 @@
     <PARAMETER
       NAME="ENCLOSED"
       FIELD="CHECK"
-      NUM_ROW="8"
+      NUM_ROW="80"
       REQUIRED="true"
     >
       <DEFAULT>false</DEFAULT>
@@ -263,7 +273,7 @@
 	<PARAMETER
     	NAME="INCLUDEHEADER"
     	FIELD="CHECK"
-    	NUM_ROW="9">
+    	NUM_ROW="90">
 
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
@@ -271,15 +281,42 @@
     <PARAMETER
        NAME="BLANK_AS_NULL"
        FIELD="CHECK"
-       NUM_ROW="10"
+       NUM_ROW="100"
     >
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
+       NAME="ON_FILE_ERROR"
+       FIELD="CLOSED_LIST"
+       NUM_ROW="102"
+       SHOW_IF="DB_VERSION == 'SYBSEIQ_16_SA'"
+    >
+       <ITEMS DEFAULT="ROLLBACK">
+            <ITEM NAME="ROLLBACK" VALUE="ROLLBACK" />
+            <ITEM NAME="FINISH" VALUE="FINISH" />
+            <ITEM NAME="CONTINUE" VALUE="CONTINUE" />
+        </ITEMS>
+    </PARAMETER>
+
+    <PARAMETER
+       NAME="MESSAGE_LOG_LOAD"
+       FIELD="TEXT"
+       NUM_ROW="104"
+       SHOW_IF="DB_VERSION == 'SYBSEIQ_16_SA'">
+    </PARAMETER>
+
+    <PARAMETER
+       NAME="ROW_LOG_LOAD"
+       FIELD="TEXT"
+       NUM_ROW="106"
+       SHOW_IF="DB_VERSION == 'SYBSEIQ_16_SA'">
+    </PARAMETER>
+
+    <PARAMETER
     	NAME="ENCODING"
     	FIELD="ENCODING_TYPE"
-    	NUM_ROW="11"
+    	NUM_ROW="110"
     	REQUIRED="true" >
 
       <DEFAULT>"ISO-8859-15"</DEFAULT>
@@ -319,6 +356,10 @@
         <TEMPLATE_PARAM SOURCE="self.DB_VERSION" TARGET="tSBE.DB_VERSION" />
         <TEMPLATE_PARAM SOURCE="self.INCLUDEHEADER" TARGET="tSBE.INCLUDEHEADER" />
         <TEMPLATE_PARAM SOURCE="self.BLANK_AS_NULL" TARGET="tSBE.BLANK_AS_NULL" />
+        <TEMPLATE_PARAM SOURCE="self.ISLOCAL" TARGET="tSBE.ISLOCAL" />
+        <TEMPLATE_PARAM SOURCE="self.ON_FILE_ERROR" TARGET="tSBE.ON_FILE_ERROR" />
+        <TEMPLATE_PARAM SOURCE="self.MESSAGE_LOG_LOAD" TARGET="tSBE.MESSAGE_LOG_LOAD" />
+        <TEMPLATE_PARAM SOURCE="self.ROW_LOG_LOAD" TARGET="tSBE.ROW_LOG_LOAD" />
 
 		<TEMPLATE_PARAM SOURCE="self.PROPERTY" TARGET="tSOB.PROPERTY"></TEMPLATE_PARAM>
 		<TEMPLATE_PARAM SOURCE="self.FILENAME" TARGET="tSOB.FILENAME" />
@@ -332,9 +373,10 @@
 
     </TEMPLATES>
     <IMPORTS>
-       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION != 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
+       <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION != 'SYBSEIQ_16') AND (DB_VERSION != 'SYBSEIQ_16_SA') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16') AND (USE_EXISTING_CONNECTION == 'false')" />
        <IMPORT NAME="Driver-Sybase" MODULE="jodbc.jar" MVN="mvn:org.talend.libraries/jodbc/6.0.0" BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_15'" />
+       <IMPORT NAME="Driver-SqlAnywhere" MODULE="sajdbc4.jar" MVN="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"  BundleID="" REQUIRED_IF = "(DB_VERSION == 'SYBSEIQ_16_SA') AND (USE_EXISTING_CONNECTION == 'false')" />
     </IMPORTS>
   </CODEGENERATION>
   <RETURNS/>

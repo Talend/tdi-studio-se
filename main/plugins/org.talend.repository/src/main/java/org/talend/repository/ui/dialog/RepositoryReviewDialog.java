@@ -46,9 +46,11 @@ import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.FolderItem;
 import org.talend.core.model.properties.Item;
@@ -303,6 +305,11 @@ public class RepositoryReviewDialog extends Dialog {
                 return processor;
             }
         }
+        boolean isGeneric = false;
+        if(this.elem != null && (this.elem instanceof INode) 
+                && ((INode)elem).getComponent().getComponentType() == EComponentType.GENERIC){
+            isGeneric = true;
+        }
         if (repositoryType != null && repositoryType.contains("|")) { //$NON-NLS-1$
             String[] repTypes = repositoryType.split("\\|"); //$NON-NLS-1$
             IRepositoryTypeProcessor hadoopTypeProcessor = getHadoopSubMultiRepTypeProcessor(repTypes);
@@ -319,7 +326,7 @@ public class RepositoryReviewDialog extends Dialog {
         }
 
         if (type == ERepositoryObjectType.METADATA) {
-            return new RepositoryTypeProcessor(repositoryType);
+            return new RepositoryTypeProcessor(repositoryType, isGeneric);
         }
 
         if (type == ERepositoryObjectType.METADATA_CON_TABLE) {

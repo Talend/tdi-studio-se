@@ -462,6 +462,10 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
                 multipleComponentManager.addParam("self.CONNECTION_TYPE", "DB.CONNECTION_TYPE"); //$NON-NLS-1$ //$NON-NLS-2$
                 multipleComponentManager.addParam("self.USE_TRANSACTION", "DB.USE_TRANSACTION"); //$NON-NLS-1$ //$NON-NLS-2$
                 multipleComponentManager.addParam("self.LOCAL_SERVICE_NAME", "DB.LOCAL_SERVICE_NAME"); //$NON-NLS-1$ //$NON-NLS-2$
+
+                // only for new framework (JDBC)
+                multipleComponentManager.addParam("self.CONNECTION", "DB.referencedComponent"); //$NON-NLS-1$ //$NON-NLS-2$ //componentInstanceId
+                multipleComponentManager.addParam("self.DATA_ACTION", "DB.dataAction"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }

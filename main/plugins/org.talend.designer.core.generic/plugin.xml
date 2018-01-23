@@ -68,6 +68,42 @@
         </projecttask>
        <projecttask
                beforeLogon="false"
+               breaks="6.5.0"
+               class="org.talend.designer.core.generic.model.migration.NewJDBCMigrationTask"
+               description="Migration task for jobs using JDBC components to TCOMP"
+               id="org.talend.designer.core.generic.model.migration.NewJDBCMigrationTask"
+               name="NewJDBCMigrationTask"
+               version="6.5.0">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.0.1"
+             class="org.talend.designer.core.generic.model.migration.NewJDBCConnectionMigrationTask"
+             description="Migration task for Generic JDBC connection  to TCOMP JDBC connection"
+             id="org.talend.designer.core.generic.model.migration.NewJDBCConnectionMigrationTask"
+             name="NewJDBCConnectionMigrationTask"
+             version="7.0.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="false"
+             breaks="7.0.1"
+             class="org.talend.designer.core.generic.model.migration.DriverJarMigration"
+             description="Migration task for Driver Jar"
+             id="org.talend.designer.core.generic.model.migration.DriverJarMigration"
+             name="DriverJarMigration"
+             version="7.0.1">
+       </projecttask>
+       <projecttask
+             beforeLogon="true"
+             breaks="7.0.1"
+             class="org.talend.designer.core.generic.model.migration.ChangeDriverJarForProjectSetting"
+             description="Migration task for Driver Jar"
+             id="org.talend.designer.core.generic.model.migration.ChangeDriverJarForProjectSetting"
+             name="ChangeDriverJarForProjectSetting"
+             version="7.0.1">
+       </projecttask>
+		<projecttask
+             beforeLogon="false"
                breaks="7.0.1"
                class="org.talend.designer.core.generic.model.migration.NewGoogleDriveMigrationTask"
                description="Migration task for jobs using Google Drive components to TCOMP"
@@ -75,6 +111,15 @@
                name="NewGoogleDriveMigrationTask"
                version="7.0.1">
        </projecttask>
+       <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.designer.core.generic.model.migration.NewMarkLogicMigrationTask"
+              description="Migration task for jobs using MarkLogic components to TCOMP"
+              id="org.talend.designer.core.generic.model.migration.NewMarkLogicMigrationTask"
+              name="NewMarkLogicMigrationTask"
+              version="7.0.1">
+        </projecttask>
        <!--<projecttask
              beforeLogon="false"
              breaks="6.3.0"
@@ -183,6 +228,31 @@
              mapFieldType="DIRECTORY"
              name="widget.type.directory"
              widgetType="widget.type.directory">
+       </Mapping>
+       <Mapping
+             mapFieldType="QUERYSTORE_TYPE"
+             name="widget.type.querystoreType"
+             widgetType="widget.type.querystoreType">
+       </Mapping>
+       <Mapping
+             mapFieldType="MEMO_SQL"
+             name="widget.type.memoSql"
+             widgetType="widget.type.memoSql">
+       </Mapping>
+       <Mapping
+             mapFieldType="MAPPING_TYPE"
+             name="widget.type.mappingType"
+             widgetType="widget.type.mappingType">
+       </Mapping>
+       <Mapping
+             mapFieldType="GUESS_SCHEMA"
+             name="widget.type.guessSchema"
+             widgetType="widget.type.guessSchema">
+       </Mapping>
+       <Mapping
+             mapFieldType="MODULE_LIST"
+             name="widget.type.moduleList"
+             widgetType="widget.type.moduleList">
        </Mapping>
    </extension>
    <extension

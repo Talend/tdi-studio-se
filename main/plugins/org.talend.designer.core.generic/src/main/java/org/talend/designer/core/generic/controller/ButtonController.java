@@ -13,7 +13,10 @@
 package org.talend.designer.core.generic.controller;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -26,11 +29,25 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ILibraryManagerService;
+import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
+import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 
 /**
  * 
@@ -38,13 +55,20 @@ import org.talend.designer.core.ui.editor.properties.controllers.AbstractElement
  *
  */
 public class ButtonController extends AbstractElementPropertySectionController {
-
+    
+    private static final String TEST_CONNECTION = "Test connection"; //$NON-NLS-1$
+    
     public ButtonController(IDynamicProperty dp) {
         super(dp);
     }
 
     public Command createCommand(Button button) {
         IElementParameter parameter = (IElementParameter) button.getData();
+        if(button.getText() != null && button.getText().equals(TEST_CONNECTION)){
+            chooseContext();
+            loadJars(parameter);
+        }
+        
         if (parameter != null) {
             callBeforeActive(parameter);
             // so as to invoke listeners to perform some actions.
@@ -52,7 +76,61 @@ public class ButtonController extends AbstractElementPropertySectionController {
         }
         return null;
     }
-
+    
+    private void chooseContext(){
+        ConnectionItem connItem = null;
+        if(dynamicProperty instanceof MissingSettingsMultiThreadDynamicComposite){
+            connItem = ((MissingSettingsMultiThreadDynamicComposite)dynamicProperty).getConnectionItem();
+        }
+        if(connItem == null){
+            return;
+        }
+        Connection conn = connItem.getConnection();
+        if(!conn.isContextMode()){
+            return;
+        }
+        ConnectionContextHelper.context = ConnectionContextHelper.getContextTypeForContextMode(conn,
+                null, false);
+    }
+    
+    private void loadJars(IElementParameter parameter){
+        ILibraryManagerService librairesManagerService = (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+                ILibraryManagerService.class);
+        if(librairesManagerService == null){
+            return;
+        }
+        if(!(parameter instanceof GenericElementParameter)){
+            return;
+        }
+        GenericElementParameter gPara = (GenericElementParameter) parameter;
+        ComponentProperties rootPro = gPara.getRootProperties();
+        if(rootPro == null){
+            return;
+        }
+        Properties connPro = rootPro.getProperties("connection"); //$NON-NLS-1$
+        if(connPro == null){
+            return;
+        }
+        Properties drivers = connPro.getProperties("driverTable"); //$NON-NLS-1$
+        if(drivers == null){
+            return;
+        }
+        List<String> jars = new ArrayList<String>();
+        for(NamedThing thing : drivers.getProperties()){
+            if(!(thing instanceof Property)){
+                continue;
+            }
+            if(GenericTypeUtils.isListStringType((Property)thing)){
+                List<String> listString = (List<String>) ((Property)thing).getValue();
+                for(String path : listString){
+                    jars.add(GenericTableUtils.getDriverJarPath(path));
+                }
+                
+            }
+        }
+        librairesManagerService.retrieve(jars, ExtractMetaDataUtils.getInstance().getJavaLibPath(), new NullProgressMonitor());
+    }
+    
     @Override
     public Control createControl(Composite subComposite, IElementParameter param, int numInRow, int nbInRow, int top,
             Control lastControl) {
@@ -88,6 +166,7 @@ public class ButtonController extends AbstractElementPropertySectionController {
             public void widgetSelected(SelectionEvent e) {
                 Command cmd = createCommand((Button) e.getSource());
                 executeCommand(cmd);
+                ConnectionContextHelper.context = null;
             }
         });
         Point initialSize = theBtn.computeSize(SWT.DEFAULT, SWT.DEFAULT);

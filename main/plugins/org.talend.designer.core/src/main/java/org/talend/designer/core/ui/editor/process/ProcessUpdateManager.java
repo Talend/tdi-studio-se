@@ -49,6 +49,7 @@ import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.QueryUtil;
 import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.FTPConnection;
 import org.talend.core.model.metadata.builder.connection.HeaderFooterConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
@@ -99,6 +100,8 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.model.update.extension.UpdateManagerProviderDetector;
 import org.talend.core.model.utils.SAPConnectionUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.repository.item.ItemProductKeys;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.ItemDateParser;
@@ -119,6 +122,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.update.UpdateCheckResult;
 import org.talend.designer.core.ui.editor.update.UpdateManagerUtils;
+import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.SAPParametersUtils;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.repository.UpdateRepositoryUtils;
@@ -817,6 +821,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             repositoryValue, null);
                                     if (repValue == null) {
                                         continue;
+                                    }
+                                    if (repositoryValue.equals("connection.driverTable")) {
+                                        ConnectionUtil.resetDriverValue(repValue);
                                     }
                                     if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                         boolean found = false;
@@ -1782,7 +1789,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                             if (param.getFieldType() == EParameterFieldType.SCHEMA_REFERENCE) {
                                 continue;
                             }
-                            String repositoryValue = param.getRepositoryValue();
+                            String repositoryValue = getReposiotryValueForOldJDBC(node, repositoryConnection, param);
                             String relatedComponent = node.getComponent().getName();
                             if ((repositoryValue != null)
                                     && (param.isShow(node.getElementParameters())
@@ -1969,20 +1976,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             // detect
                                             // it in jobs
                                             if (param.getName().equals("DRIVER_JAR") && oldList != null) {
-                                                List objectList = (List) objectValue;
-                                                if (oldList.size() != objectList.size()) {
-                                                    sameValues = false;
-                                                } else {
-                                                    for (int i = 0; i < oldList.size(); i++) {
-                                                        Map<String, Object> oldMap = oldList.get(i);
-                                                        Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                                                        if (oldMap.get("JAR_NAME").equals(objectMap.get("JAR_NAME"))) { //$NON-NLS-1$
-                                                            sameValues = true;
-                                                        } else {
-                                                            sameValues = false;
-                                                            break;
-                                                        }
-                                                    }
+                                                sameValues = sameDriverForJDBC(node, repositoryConnection, oldList, objectValue);
+                                                if (!sameValues) {
+                                                    break;
                                                 }
                                             }
                                         } else
@@ -2226,6 +2222,81 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             }
         }
         return propertiesResults;
+    }
+
+    private String getReposiotryValueForOldJDBC(Node node, Connection repositoryConnection, IElementParameter param) {
+        String repositoryValue = param.getRepositoryValue();
+        // for JDBC component of mr process
+        if (isOldJDBC(node, repositoryConnection)) {
+
+            if (EParameterName.URL.getName().equals(repositoryValue)) {
+                repositoryValue = "connection.jdbcUrl";
+            } else if (EParameterName.DRIVER_JAR.getName().equals(repositoryValue)) {
+                repositoryValue = "connection.driverTable";
+            } else if (EParameterName.DRIVER_CLASS.getName().equals(repositoryValue)) {
+                repositoryValue = "connection.driverClass";
+            }
+
+        }
+        return repositoryValue;
+    }
+
+    private boolean sameDriverForJDBC(Node node, Connection repositoryConnection, List<Map<String, Object>> oldList,
+            Object objectValue) {
+        boolean sameValues = true;
+        List objectList = (List) objectValue;
+        if (oldList.size() != objectList.size()) {
+            sameValues = false;
+        } else {
+            // for JDBC component of mr process
+            if (isOldJDBC(node, repositoryConnection)) {
+                for (int i = 0; i < oldList.size(); i++) {
+                    Map<String, Object> oldMap = oldList.get(i);
+                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                    String driver = String.valueOf(objectMap.get("drivers"));
+                    if (driver != null) {
+                        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
+                        if (artifact != null) {
+                            driver = artifact.getFileName();
+                        }
+                    }
+                    if (oldMap.get("JAR_NAME").equals(driver)) { //$NON-NLS-1$
+                        sameValues = true;
+                    } else {
+                        sameValues = false;
+                        break;
+                    }
+                }
+            } else {
+                for (int i = 0; i < oldList.size(); i++) {
+                    Map<String, Object> oldMap = oldList.get(i);
+                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                    if (oldMap.get("JAR_NAME").equals(objectMap.get("JAR_NAME"))) { //$NON-NLS-1$
+                        sameValues = true;
+                    } else {
+                        sameValues = false;
+                        break;
+                    }
+                }
+            }
+
+        }
+        return sameValues;
+    }
+
+    private boolean isOldJDBC(Node node, Connection repositoryConnection) {
+        boolean isOldJDBC = false;
+        if (repositoryConnection instanceof DatabaseConnection) {
+            String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
+            if ("JDBC".equals(databaseType)) {
+                IComponent component = node.getComponent();
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                        && component.getName().startsWith("tJDBC")) {
+                    isOldJDBC = true;
+                }
+            }
+        }
+        return isOldJDBC;
     }
 
     @SuppressWarnings("unchecked")

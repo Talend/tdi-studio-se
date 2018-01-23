@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.daikon.properties.presentation.Form;
 
 /**
@@ -24,9 +25,9 @@ import org.talend.daikon.properties.presentation.Form;
  */
 public class DBDynamicComposite extends DynamicComposite{
 
-    public DBDynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
-            boolean isCompactView, Color backgroundColor, Form form, boolean drivedByForm) {
-        super(parentComposite, styles, section, element, isCompactView, backgroundColor, form, drivedByForm);
+    public DBDynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element, 
+            ConnectionItem connectionItem, boolean isCompactView, Color backgroundColor, Form form, boolean drivedByForm) {
+        super(parentComposite, styles, section, element, connectionItem, isCompactView, backgroundColor, form, drivedByForm);
     }
 
     @Override

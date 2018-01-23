@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -33,33 +33,48 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.talend.commons.runtime.model.components.IComponentConstants;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
+import org.talend.core.GlobalServiceRegister;
+import org.talend.core.ITDQRepositoryService;
+import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.metadata.IMetadataConnection;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
+import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.check.IChecker;
+import org.talend.core.utils.TalendQuoteUtils;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.Properties;
+import org.talend.daikon.properties.PropertiesImpl;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
+import org.talend.designer.core.generic.model.GenericTableUtils;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
-import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.persistence.GenericRepository;
 import org.talend.repository.generic.ui.DBDynamicComposite;
 import org.talend.repository.generic.ui.DynamicComposite;
@@ -68,13 +83,15 @@ import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
+import orgomg.cwm.objectmodel.core.CoreFactory;
+import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
  * DOC hwang  class global comment. Detailled comment
  */
 public class GenericDBService implements IGenericDBService{
     
-    private List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
+    private static List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
     
     @Override
     public Map<String, Composite> creatDBDynamicComposite(Composite composite, EComponentCategory sectionCategory, boolean isReadOnly, boolean isCreation,
@@ -82,11 +99,13 @@ public class GenericDBService implements IGenericDBService{
         Map<String, Composite> map = new HashMap<String, Composite>();
         IGenericWizardInternalService internalService = new GenericWizardInternalService();
         Item item = property.getItem();
-        
+        if(!(item instanceof ConnectionItem)){
+            return map;
+        }
+        ConnectionItem gitem = (ConnectionItem) item;
+        Connection connection = (Connection) gitem.getConnection();
         ComponentWizard componentWizard = internalService.getComponentWizard(typeName, property.getId());;
-        if(!isCreation && (item instanceof GenericConnectionItem)){
-            GenericConnectionItem gitem = (GenericConnectionItem) item;
-            GenericConnection connection = (GenericConnection) gitem.getConnection();
+        if(!isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
             ComponentProperties componentProperties = ComponentsUtils
                     .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
             List<ComponentWizard> wizards = GenericWizardServiceFactory.getGenericWizardInternalService()
@@ -105,12 +124,29 @@ public class GenericDBService implements IGenericDBService{
         }
         
         List<Form> forms = componentWizard.getForms();
-        Element baseElement = new FakeElement(forms.get(0).getName());
+        Element baseElement = new FakeElement("");//$NON-NLS-1$
         DBDynamicComposite dynamicComposite = new DBDynamicComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
-                baseElement, true, composite.getBackground(), forms.get(0), false);
+                baseElement,(ConnectionItem)property.getItem(), true, composite.getBackground(), forms.get(0), false);
         dynamicComposite.setLayoutData(createMainFormData(true));
-        dynamicComposite.setConnectionItem((ConnectionItem)property.getItem());
         map.put("DynamicComposite", dynamicComposite);
+        
+        if(isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
+            ComponentProperties componentProperties = ComponentsUtils
+                    .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
+            for(IElementParameter param : baseElement.getElementParameters()){
+                NamedThing thing = componentProperties.getProperty(param.getName());
+                if(thing == null){
+                    continue;
+                }
+                if(thing instanceof org.talend.daikon.properties.property.Property){
+                    param.setValue(ComponentsUtils.getParameterValue(baseElement, 
+                            (org.talend.daikon.properties.property.Property)thing, param.getFieldType(), param.getName()));
+                }else if(thing instanceof Properties){
+                    param.setValue(GenericTableUtils.getTableValues(((Properties)thing), param));
+                }
+            }
+            dynamicComposite.resetParameters();
+        }
 
         Composite contextParentComp = new Composite(composite, SWT.NONE);
         contextParentComp.setLayoutData(createFooterFormData(dynamicComposite));
@@ -168,34 +204,9 @@ public class GenericDBService implements IGenericDBService{
         data.bottom = new FormAttachment(100, 0);
         return data;
     }
-    
-    @Override
-    public Connection createGenericConnection() {
-        return GenericMetadataFactory.eINSTANCE.createGenericConnection();
-    }
 
     @Override
-    public ConnectionItem createGenericConnectionItem() {
-        return GenericMetadataFactory.eINSTANCE.createGenericConnectionItem();
-    }
-
-    @Override
-    public String getGenericConnectionType(Item item) {
-        if(item instanceof GenericConnectionItem){
-            return ((GenericConnectionItem)item).getTypeName();
-        }
-        return null;
-    }
-
-    @Override
-    public void setGenericConnectionType(String type, Item item) {
-        if(item instanceof GenericConnectionItem){
-            ((GenericConnectionItem)item).setTypeName(type);
-        }
-    }
-
-    @Override
-    public void dbWizardPerformFinish(ConnectionItem item, Form form, boolean creation, IPath pathToSave, List<IMetadataTable> oldMetadataTable) throws CoreException {
+    public void dbWizardPerformFinish(ConnectionItem item, Form form, boolean creation, IPath pathToSave, List<IMetadataTable> oldMetadataTable, final String contextName) throws CoreException {
         ComponentService compService = new GenericWizardInternalService().getComponentService();
         compService.setRepository(new GenericRepository());
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
@@ -204,16 +215,35 @@ public class GenericDBService implements IGenericDBService{
 
             @Override
             public void run(IProgressMonitor monitor) throws CoreException {
+                ConnectionItem connItem = item;
                 try {
                     if (form != null && form.isCallAfterFormFinish()) {
                         if (creation) {
-                            factory.create(item, pathToSave);
+                            factory.create(connItem, pathToSave);
                         }
                         compService.afterFormFinish(form.getName(), form.getProperties());
                     }
-                    factory.save(item);
+                    IRepositoryViewObject repViewObj = factory.getLastVersion(connItem.getProperty().getId());
+//                    String compProperties = connItem.getConnection().getCompProperties();
+                    if(repViewObj != null){
+                        Property property = repViewObj.getProperty();
+                        if (property != null) {
+                            connItem = (ConnectionItem) property.getItem();
+//                            connItem.getConnection().setCompProperties(compProperties);
+                        }
+                    }
+                    Connection connection = connItem.getConnection();
+                    convertPropertiesToDBElements(form.getProperties(), connection);
+                    IMetadataConnection metadataConnection = null;
+                    if (contextName == null) {
+                        metadataConnection = ConvertionHelper.convert(connection, true);
+                    } else {
+                        metadataConnection = ConvertionHelper.convert(connection, false, contextName);
+                    }
+                    MetadataConnectionUtils.fillConnectionInformation(connItem, metadataConnection);
+                    factory.save(connItem);
                 } catch (Throwable e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     throw new CoreException(new Status(IStatus.ERROR, IGenericConstants.REPOSITORY_PLUGIN_ID,
                             "Error when saving the connection", e));
                 }
@@ -226,6 +256,37 @@ public class GenericDBService implements IGenericDBService{
         // Move it from WorkspaceRunnable to avoid the conflicting rules with other jobs.
         if (!creation) {
             GenericUpdateManager.updateGenericConnection(item, oldMetadataTable);
+        }
+        updateConnectionOnDQSide(creation, item);
+    }
+
+    /**
+     * Update some attributes on DQ side(same as other type database connections)
+     * 
+     * @param creation
+     * @param connectionItem
+     */
+    private void updateConnectionOnDQSide(boolean creation, ConnectionItem connectionItem) {
+        ITDQRepositoryService tdqRepService = null;
+
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQRepositoryService.class)) {
+            tdqRepService =
+                    (ITDQRepositoryService) GlobalServiceRegister.getDefault().getService(ITDQRepositoryService.class);
+        }
+        if (tdqRepService != null) {
+            // MOD qiongli 2012-11-19 TDQ-6287
+            String label = connectionItem.getProperty().getLabel();
+            connectionItem.getConnection().setName(label);
+            connectionItem.getConnection().setLabel(label);
+            if (creation) {
+                tdqRepService.notifySQLExplorer(connectionItem);
+                tdqRepService.openConnectionEditor(connectionItem);
+            } else {
+                tdqRepService.updateAliasInSQLExplorer(connectionItem, connectionItem.getProperty().getDisplayName());
+                // refresh the opened connection editor whatever is in DI or DQ perspective.
+                tdqRepService.refreshConnectionEditor(connectionItem);
+
+            }
         }
     }
     
@@ -258,5 +319,120 @@ public class GenericDBService implements IGenericDBService{
     public List<ERepositoryObjectType> getExtraTypes() {
         return extraTypes;
     }
+    
+    @Override
+    public void convertPropertiesToDBElements(Properties props,Connection connection){
+        if(!(connection instanceof DatabaseConnection)){
+            return;
+        }
+        if(props == null){
+            return;
+        }
+        DatabaseConnection dbConnection = (DatabaseConnection) connection;
+        for (NamedThing otherProp : props.getProperties()) {
+            NamedThing thisProp = props.getProperty(otherProp.getName());
+            if(thisProp == null){
+                continue;
+            }
+            if (otherProp instanceof PropertiesImpl) {
+                convertPropertiesToDBElements((Properties) otherProp, connection);
+            } else if (otherProp instanceof org.talend.daikon.properties.property.Property) {
+                // copy the value
+                String proName = ((org.talend.daikon.properties.property.Property) otherProp).getName();
+                Object value = ((org.talend.daikon.properties.property.Property) otherProp).getStoredValue();
+                if(value == null){
+                    continue;
+                }
+                if(proName.equals("jdbcUrl")){//$NON-NLS-1$
+                    dbConnection.setURL((String)value);
+                }else if(proName.equals("driverClass")){//$NON-NLS-1$
+                    dbConnection.setDriverClass((String)value);
+                }else if(proName.equals("userId")){//$NON-NLS-1$
+                    dbConnection.setUsername((String)value);
+                }else if(proName.equals("password")){//$NON-NLS-1$
+                    dbConnection.setPassword((String)value);
+                }else if(proName.equals("mappingFile")){//$NON-NLS-1$
+                    dbConnection.setDbmsId((String)value);
+                }else if(proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property)otherProp)){//$NON-NLS-1$
+                    List<String> listString = (List<String>) value;
+                    String jars = GenericTableUtils.getDriverJarPaths(listString);
+                    if(jars != null){
+                        dbConnection.setDriverJarPath(jars);
+                    }
+                    
+                }
+            }
+        }
+    }
 
+    @Override
+    public String getMVNPath(String value) {
+        ModuleNeeded module = new ModuleNeeded("", value, "", true);//$NON-NLS-1$ //$NON-NLS-2$
+        String mvnPath = module.getMavenUri();
+        if(mvnPath != null && mvnPath.endsWith("/jar")){//$NON-NLS-1$
+            mvnPath = mvnPath.substring(0, mvnPath.lastIndexOf("/"));//$NON-NLS-1$
+            return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
+        }
+        return value;
+    }
+
+    @Override
+    public IMetadataTable converTable(INode node, IMetadataTable iTable) {
+        org.talend.core.model.metadata.builder.connection.MetadataTable table = ConvertionHelper.convert(iTable);
+        ComponentProperties properties = node.getComponentProperties();
+        Properties mainProperties = properties.getProperties("main");
+        Properties flowProperties = properties.getProperties("schemaFlow");
+        Properties rejectProperties = properties.getProperties("schemaReject");
+        if(mainProperties != null){
+            mainProperties.setValue("schema", MetadataToolAvroHelper.convertToAvro(table));
+        }
+        if(flowProperties != null){
+            flowProperties.setValue("schema", MetadataToolAvroHelper.convertToAvro(table));
+        }
+        if(rejectProperties != null){
+            rejectProperties.setValue("schema", MetadataToolAvroHelper.convertToAvro(table));
+        }
+        
+        TaggedValue serializedPropsTV = CoreFactory.eINSTANCE.createTaggedValue();
+        serializedPropsTV.setTag(IComponentConstants.COMPONENT_PROPERTIES_TAG);
+        serializedPropsTV.setValue(properties.toSerialized());
+        table.getTaggedValue().add(serializedPropsTV);
+        TaggedValue schemaPropertyTV = CoreFactory.eINSTANCE.createTaggedValue();
+        schemaPropertyTV.setTag(IComponentConstants.COMPONENT_SCHEMA_TAG);
+        schemaPropertyTV.setValue("schema");
+        table.getTaggedValue().add(schemaPropertyTV);
+        
+        iTable = MetadataToolHelper.convert(table);
+        return iTable;
+    }
+
+    @Override
+    public void setPropertyTaggedValue(ComponentProperties properties) {
+        List<org.talend.daikon.properties.property.Property> propertyValues = ComponentsUtils.getAllValuedProperties(properties);
+        for (org.talend.daikon.properties.property.Property property : propertyValues) {
+            property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, property.getName());
+        }
+    }
+
+    @Override
+    public void initReferencedComponent(IElementParameter refPara, String newValue){
+        ComponentsUtils.initReferencedComponent(refPara, newValue);
+    }
+
+    @Override
+    public Properties getComponentProperties(String typeName, String id) {
+        IGenericWizardInternalService internalService = new GenericWizardInternalService();
+        ComponentWizard componentWizard = internalService.getComponentWizard(typeName, id);
+        List<Form> forms = componentWizard.getForms();
+        return forms.get(0).getProperties();
+    }
+
+    @Override
+    public ERepositoryObjectType getExtraDBType(ERepositoryObjectType type) {
+        if(getExtraTypes().contains(type)){
+            return ERepositoryObjectType.METADATA_CONNECTIONS;
+        }
+        return type;
+    }
+    
 }

@@ -21,6 +21,8 @@
         org.talend.core.model.process.ElementParameterParser
         org.talend.core.model.process.IContext
         org.talend.core.model.process.ProcessUtils
+        org.talend.core.model.components.IComponent
+        org.talend.core.model.components.EComponentType
     "
     class="Footer"
     skeleton="footer_java.skeleton"
@@ -255,6 +257,36 @@
     public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
 
     public String status= "";
+    
+    <%
+    boolean containGenericComponents = false;
+	for(INode node : process.getGeneratingNodes()) {
+		IComponent component = node.getComponent();
+		if(EComponentType.GENERIC.equals(component.getComponentType())) {
+			containGenericComponents = true;
+			break;
+		}
+	}
+	if(containGenericComponents) {
+    %>
+    private final org.talend.components.common.runtime.SharedConnectionsPool connectionPool = new org.talend.components.common.runtime.SharedConnectionsPool() {
+    	public java.sql.Connection getDBConnection(String dbDriver, String url, String userName, String password, String dbConnectionName)
+            throws ClassNotFoundException, java.sql.SQLException {
+            return SharedDBConnection.getDBConnection(dbDriver, url, userName, password, dbConnectionName);
+        }
+
+    	public java.sql.Connection getDBConnection(String dbDriver, String url, String dbConnectionName)
+            throws ClassNotFoundException, java.sql.SQLException {
+            return SharedDBConnection.getDBConnection(dbDriver, url, dbConnectionName);
+        }
+    };
+    
+    private static final String GLOBAL_CONNECTION_POOL_KEY = "GLOBAL_CONNECTION_POOL";
+    
+    {
+    	globalMap.put(GLOBAL_CONNECTION_POOL_KEY, connectionPool);
+    }
+    <%}%>
 
     public static void main(String[] args){
         final <%=className %> <%=className %>Class = new <%=className %>();

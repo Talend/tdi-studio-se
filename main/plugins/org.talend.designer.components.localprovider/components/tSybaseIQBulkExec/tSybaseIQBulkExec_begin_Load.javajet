@@ -3,8 +3,18 @@ String lines_separator = ElementParameterParser.getValue(node, "__LINES_TERMINAT
 String field_separator = ElementParameterParser.getValue(node, "__FIELDS_TERMINATED_BY__") ;
 boolean useEnclosed = ("true").equals(ElementParameterParser.getValue(node, "__ENCLOSED__"));
 boolean useFixedLength= ("true").equals(ElementParameterParser.getValue(node, "__FIXED_LENGTH__"));
-String fileName = ElementParameterParser.getValue(node, "__FILENAME__") ;
+String fileName = ElementParameterParser.getValue(node, "__FILENAME__");
+boolean isLocal =  ("true").equals(ElementParameterParser.getValue(node, "__ISLOCAL__"));
 boolean isIncludeHeader = ("true").equals(ElementParameterParser.getValue(node,"__INCLUDEHEADER__"));
+String onFileError = ElementParameterParser.getValue(node,"__ON_FILE_ERROR__");
+String messageLog = ElementParameterParser.getValue(node,"__MESSAGE_LOG_LOAD__").trim();
+String rowLog = ElementParameterParser.getValue(node,"__ROW_LOG_LOAD__").trim();
+
+String fromClause = "from";
+if(isLocal){
+	fromClause = "using client file";
+}
+
 
 List<IMetadataColumn> columnList = getColumnList(node);
 
@@ -24,7 +34,22 @@ if(useExistingConn) {
 	String dbschema_<%=cid%> = <%=dbschema%>;
 	String dbUser_<%=cid%> = <%=userName %>;
 <%
-	if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {//sybase IQ 12/16
+        if ("SYBSEIQ_16_SA".equals(dbVersion)) {
+                if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName=" + <%=dbName %>; 
+<%
+                }
+                else{
+%>
+                        String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=host %> + ":" + <%=port %> + ";DatabaseName" + <%=dbName %> + ";" + <%=dbproperties%>;
+<%
+                }
+%>
+                        String driverClass_<%=cid%> = "sap.jdbc4.sqlanywhere.IDriver";
+<%
+        }
+	else if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {//sybase IQ 12/16
 %>
 
 <%
@@ -156,7 +181,7 @@ if(columnList != null && columnList.size() > 0) {
 <%
 	if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {
 %>
-		strSQL_<%=cid%> +=" from '" + <%=fileName %> + "' ";
+		strSQL_<%=cid%> +=" <%=fromClause%> '" + <%=fileName %> + "' ";
 <%
     } else {
 %>
@@ -181,6 +206,7 @@ if(columnList != null && columnList.size() > 0) {
 }
 %>
     strSQL_<%=cid%> =strSQL_<%=cid%> + " escapes off ";
+    strSQL_<%=cid%> =strSQL_<%=cid%> + " on file error <%=onFileError%> ";
 
 <%
 	if (isIncludeHeader) {
@@ -188,12 +214,27 @@ if(columnList != null && columnList.size() > 0) {
 	strSQL_<%=cid%> =strSQL_<%=cid%> + " skip 1 ";
 <%
 	}
+
+	if(!"".equals(messageLog) && !"\"\"".equals(messageLog)){
+%>
+	strSQL_<%=cid%> =strSQL_<%=cid%> + " message log '"+<%=messageLog%>+"' ";
+		
+<%
+	}
+
+	if(!"".equals(rowLog) && !"\"\"".equals(rowLog)){
+%>
+		strSQL_<%=cid%> =strSQL_<%=cid%> + " row log '"+<%=rowLog%>+"' ";
+<%
+	}
+
 	if(isLog4jEnabled){
 	%>
 		log.info("<%=cid%> - Bulk load SQL:"+strSQL_<%=cid%>+".");
 		log.info("<%=cid%> - Bulk loading data into <%=manager.getLProtectedChar()%>" + tableName_<%=cid%> + "<%=manager.getRProtectedChar()%>." );
 	<%
 	}
+
 %>
 
     stmt_<%=cid %>.execute(strSQL_<%=cid%>);

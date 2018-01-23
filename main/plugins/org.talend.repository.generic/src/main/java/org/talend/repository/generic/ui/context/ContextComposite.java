@@ -26,17 +26,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.ui.swt.formtools.Form;
 import org.talend.commons.ui.swt.formtools.UtilsButton;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
-import org.talend.daikon.properties.Properties;
-import org.talend.daikon.properties.PropertiesImpl;
-import org.talend.daikon.serialize.PostDeserializeSetup;
-import org.talend.daikon.serialize.SerializerDeserializer;
 import org.talend.designer.core.generic.constants.IContextEventProperties;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
-import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.handler.IContextHandler;
 import org.talend.repository.generic.i18n.Messages;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 
 /**
  * created by ycbai on 2015年11月20日 Detailled comment
@@ -155,7 +150,7 @@ public class ContextComposite extends Composite {
 
     private ComponentProperties getComponentProperties() {
         if (connectionItem != null) {
-            GenericConnection connection = (GenericConnection) connectionItem.getConnection();
+            Connection connection = connectionItem.getConnection();
             String compPropertiesStr = connection.getCompProperties();
             if (compPropertiesStr != null) {
                 return ComponentsUtils.getComponentPropertiesFromSerialized(compPropertiesStr, connection);

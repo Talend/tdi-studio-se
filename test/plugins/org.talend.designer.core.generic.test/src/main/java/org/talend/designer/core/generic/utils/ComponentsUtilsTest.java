@@ -299,6 +299,19 @@ public class ComponentsUtilsTest {
         testProperty.setValue(null);
         parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
         assertEquals("\"\"", parameterValue); //$NON-NLS-1$
+        
+        List<String> cList = new ArrayList<String>();
+        cList.add("mvn:org.talend.libraries/mysql-connector-java-5.1.30-bin/6.0.0");
+        testProperty.setStoredValue(cList);
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals(null, parameterValue); //$NON-NLS-1$
+        
+        
+        cList = new ArrayList<String>();
+        cList.add("context.jdbc5_drivers");
+        testProperty.setStoredValue(cList);
+        parameterValue = ComponentsUtils.getParameterValue(node, testProperty, testFieldType, testParamName);
+        assertEquals("context.jdbc5_drivers", parameterValue); //$NON-NLS-1$
     }
 
     @After

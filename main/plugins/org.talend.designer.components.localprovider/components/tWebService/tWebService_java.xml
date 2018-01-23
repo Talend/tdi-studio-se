@@ -208,41 +208,39 @@
     <CODEGENERATION>
         <IMPORTS>
             <IMPORT
-                NAME="cxf-core-3.1.14"
-                MODULE="cxf-core-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-core/3.1.14"
+                NAME="cxf-core-3.2.1"
+                MODULE="cxf-core-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-core/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-frontend-simple-3.1.14"
-                MODULE="cxf-rt-frontend-simple-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.1.14"
+                NAME="cxf-rt-frontend-simple-3.2.1"
+                MODULE="cxf-rt-frontend-simple-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-frontend-simple/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
                 NAME="XMLSCHEMA-CORE"
-                MODULE="xmlschema-core-2.2.1.jar"
-                MVN="mvn:org.talend.libraries/xmlschema-core-2.2.1/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/xmlschema-core-2.2.1.jar"
+                MODULE="xmlschema-core-2.2.2.jar"
+                MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.2"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-tools-common-3.1.14"
-                MODULE="cxf-tools-common-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-tools-common/3.1.14"
+                NAME="cxf-tools-common-3.2.1"
+                MODULE="cxf-tools-common-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-tools-common/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-wsdl-3.1.14"
-                MODULE="cxf-rt-wsdl-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.1.14"
+                NAME="cxf-rt-wsdl-3.2.1"
+                MODULE="cxf-rt-wsdl-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-wsdl/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="WOODSTOX-CORE-ASL"
-                MODULE="woodstox-core-asl-4.4.1.jar"
-                MVN="mvn:org.talend.libraries/woodstox-core-asl-4.4.1/6.0.0"
-                UrlPath="platform:/plugin/org.talend.libraries.apache.cxf/lib/woodstox-core-asl-4.4.1.jar"
+                NAME="WOODSTOX-CORE"
+                MODULE="woodstox-core-5.0.3.jar"
+                MVN="mvn:com.fasterxml.woodstox/woodstox-core/5.0.3"
                 REQUIRED="true"
             />
             <IMPORT
@@ -253,27 +251,27 @@
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-bindings-soap-3.1.14"
-                MODULE="cxf-rt-bindings-soap-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.1.14"
+                NAME="cxf-rt-bindings-soap-3.2.1"
+                MODULE="cxf-rt-bindings-soap-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-bindings-soap/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-databinding-jaxb-3.1.14"
-                MODULE="cxf-rt-databinding-jaxb-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.1.14"
+                NAME="cxf-rt-databinding-jaxb-3.2.1"
+                MODULE="cxf-rt-databinding-jaxb-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-databinding-jaxb/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-transports-http-jetty-3.1.14"
-                MODULE="cxf-rt-transports-http-jetty-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.1.14"
+                NAME="cxf-rt-transports-http-jetty-3.2.1"
+                MODULE="cxf-rt-transports-http-jetty-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-transports-http-jetty/3.2.1"
                 REQUIRED="true"
             />
             <IMPORT
-                NAME="cxf-rt-transports-http-3.1.14"
-                MODULE="cxf-rt-transports-http-3.1.14.jar"
-                MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.1.14"
+                NAME="cxf-rt-transports-http-3.2.1"
+                MODULE="cxf-rt-transports-http-3.2.1.jar"
+                MVN="mvn:org.apache.cxf/cxf-rt-transports-http/3.2.1"
                 REQUIRED="true"
             />
 

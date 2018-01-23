@@ -12,12 +12,8 @@
   <foreignModel>genericMetadata.ecore</foreignModel>
   <genPackages prefix="GenericMetadata" basePackage="org.talend.repository.generic.model"
       disposableProviderFactory="true" contentTypeIdentifier="" ecorePackage="genericMetadata.ecore#/">
-    <genClasses ecoreClass="genericMetadata.ecore#//GenericConnection">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EAttribute genericMetadata.ecore#//GenericConnection/compProperties"/>
-    </genClasses>
-    <genClasses ecoreClass="genericMetadata.ecore#//GenericConnectionItem">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute genericMetadata.ecore#//GenericConnectionItem/typeName"/>
-    </genClasses>
+    <genClasses ecoreClass="genericMetadata.ecore#//GenericConnection"/>
+    <genClasses ecoreClass="genericMetadata.ecore#//GenericConnectionItem"/>
     <genClasses ecoreClass="genericMetadata.ecore#//SubContainer">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute genericMetadata.ecore#//SubContainer/compProperties"/>
     </genClasses>

@@ -57,6 +57,7 @@
 		<ITEMS DEFAULT="SYBSEIQ_16">
 			<ITEM NAME="SYBSEIQ_12_15" VALUE="SYBSEIQ_12_15" />
 			<ITEM NAME="SYBSEIQ_16" VALUE="SYBSEIQ_16" />
+			<ITEM NAME="SYBSEIQ_16_SA" VALUE="SYBSEIQ_16_SA" />
 		</ITEMS>
 	</PARAMETER>
 
@@ -133,7 +134,8 @@
 		FIELD="TEXT"
 		NUM_ROW="9"
 		REPOSITORY_VALUE="PROPERTIES_STRING">
-    <DEFAULT>"DYNAMIC_PREPARE=true&amp;ENABLE_BULK_LOAD=true"</DEFAULT>
+    <DEFAULT IF="DB_VERSION != 'SYBSEIQ_16_SA'">"DYNAMIC_PREPARE=true&amp;ENABLE_BULK_LOAD=true"</DEFAULT>
+    <DEFAULT IF="DB_VERSION == 'SYBSEIQ_16_SA'">"ConnectionName=Talend;CharSet=UTF-8;Compress=YES"</DEFAULT>
 	</PARAMETER>
 
 	<PARAMETER
@@ -165,7 +167,8 @@
    <CODEGENERATION>
      <IMPORTS>
 	   <IMPORT NAME="Driver-Sybase3" MODULE="jconn3.jar" MVN="mvn:org.talend.libraries/jconn3/6.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_12_15'" />
-       <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_16'" />
+           <IMPORT NAME="Driver-Sybase4" MODULE="jconn4.jar" MVN="mvn:org.talend.libraries/jconn4/6.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_16'" />
+           <IMPORT NAME="Driver-SqlAnywhere" MODULE="sajdbc4.jar" MVN="mvn:sap.jdbc4.sqlanywhere/sajdbc4/17.0.0"  BundleID="" REQUIRED_IF = "DB_VERSION == 'SYBSEIQ_16_SA'" />
      </IMPORTS>
    </CODEGENERATION>
 

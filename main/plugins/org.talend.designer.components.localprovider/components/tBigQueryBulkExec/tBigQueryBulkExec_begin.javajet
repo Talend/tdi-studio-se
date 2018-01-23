@@ -195,8 +195,8 @@
 
 
 		org.jets3t.service.security.GSCredentials gsCredentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>, decryptedPwd_<%=cid%>);
-		
-		org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>," (GPN:Talend)",null);
+		<%final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();%>
+		org.jets3t.service.impl.rest.httpclient.GoogleStorageService gsService_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(gsCredentials_<%=cid%>," <%=GoogleTracker%>",null);
 
 		java.io.File fileData_<%=cid%> = new java.io.File(<%=localFilename%>);
 		org.jets3t.service.model.GSObject fileObject_<%=cid%> = new org.jets3t.service.model.GSObject(fileData_<%=cid%>);

@@ -22,6 +22,7 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IODataComponent;
 import org.talend.core.model.components.IODataComponentContainer;
 import org.talend.core.model.metadata.ColumnNameChanged;
@@ -31,6 +32,7 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.Element;
@@ -814,6 +816,9 @@ public class ChangeMetadataCommand extends Command {
             IElementParameter dbTableElementField = curNode.getElementParameterFromField(EParameterFieldType.DBTABLE);
             if (dbTableElementField == null) {
                 dbTableElementField = curNode.getElementParameter(EParameterName.TABLE.getName());
+            }
+            if(((Node) curNode).getComponent().getComponentType() == EComponentType.GENERIC){
+                dbTableElementField = curNode.getElementParameter(EConnectionParameterName.GENERIC_TABLENAME.getDisplayName());
             }
             changeTableNameParameter(newdbTableName, olddbTableName, uniqueName, dbTableElementField);
             if (((Node) curNode).isELTComponent()) {

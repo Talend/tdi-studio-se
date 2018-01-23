@@ -13,6 +13,7 @@
 package org.talend.repository.generic.ui;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -39,9 +40,11 @@ import org.talend.commons.utils.VersionUtils;
 import org.talend.components.api.service.ComponentService;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.context.Context;
 import org.talend.core.context.RepositoryContext;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
@@ -49,6 +52,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.daikon.properties.presentation.Form;
 import org.talend.designer.core.generic.constants.IGenericConstants;
@@ -57,8 +61,6 @@ import org.talend.metadata.managment.ui.wizard.CheckLastVersionRepositoryWizard;
 import org.talend.repository.generic.i18n.Messages;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.persistence.GenericRepository;
 import org.talend.repository.generic.ui.common.GenericWizardDialog;
@@ -82,7 +84,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
 
     private GenericWizardPage wizPage;
 
-    private GenericConnection connection;
+    private Connection connection;
 
     private Property connectionProperty;
 
@@ -156,7 +158,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
         case REPOSITORY_ELEMENT:
             RepositoryObject object = new RepositoryObject(node.getObject().getProperty());
             setRepositoryObject(object);
-            connection = (GenericConnection) ((ConnectionItem) object.getProperty().getItem()).getConnection();
+            connection = ((ConnectionItem) object.getProperty().getItem()).getConnection();
             // Set context name to null so as to open context select dialog once if there are more than one context
             // group when opening a connection.
             connection.setContextName(null);
@@ -200,7 +202,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
         setWindowTitle(wizardDefinition.getDisplayName());
         Image wiardImage = wizardService.getWiardImage(repObjType.getType());
         setDefaultPageImageDescriptor(ImageDescriptor.createFromImage(wiardImage));
-        ((GenericConnectionItem) connectionItem).setTypeName(repObjType.getType());
+        connectionItem.setTypeName(repObjType.getType());
 
         List<Form> forms = wizard.getForms();
         for (int i = 0; i < forms.size(); i++) {
@@ -208,6 +210,9 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
             boolean addContextSupport = false;
             if (i == 0) {// Add context support in the first form.
                 addContextSupport = true;
+            }
+            if(isRetrieve()){
+                addContextSupport = false;
             }
             wizPage = new GenericConnWizardPage(connectionItem, isRepositoryObjectEditable(), existingNames, creation, form,
                     compService, addContextSupport);
@@ -327,6 +332,28 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
     @Override
     public ConnectionItem getConnectionItem() {
         return this.connectionItem;
+    }
+    
+    private boolean isRetrieve(){
+        ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
+        if (wizardDefinition == null) {
+            return false;
+        }
+        List<ERepositoryObjectType> extraTypes = new ArrayList<ERepositoryObjectType>();
+        IGenericDBService dbService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                    IGenericDBService.class);
+        }
+        if(dbService != null){
+            extraTypes.addAll(dbService.getExtraTypes());
+        }
+        for(ERepositoryObjectType type : extraTypes){
+            if(wizardDefinition.getName().equals(type.getLabel()+".retrieveschema")){
+                return true;
+            }
+        }
+        return true;
     }
 
 }

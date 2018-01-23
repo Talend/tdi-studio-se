@@ -36,7 +36,7 @@ public class GenericRepositoryContextHandler extends AbstractRepositoryContextHa
 
     @Override
     public boolean isRepositoryConType(Connection connection) {
-        return connection instanceof GenericConnection;
+        return ((connection instanceof GenericConnection) || connection.getCompProperties() != null);
     }
 
     @Override

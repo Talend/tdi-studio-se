@@ -36,6 +36,7 @@ import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.QueryUtil;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
@@ -493,7 +494,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(43);
-        param.setRepositoryValue("URL"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
         String dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -523,8 +524,8 @@ public class JobSettingsManager {
         String[] moduleNameArray = moduleNameList.toArray(new String[0]);
         String[] moduleValueArray = moduleValueList.toArray(new String[0]);
         ElementParameter childParam = new ElementParameter(process);
-        childParam.setName("JAR_NAME");
-        childParam.setDisplayName("JAR_NAME");
+        childParam.setName("drivers");
+        childParam.setDisplayName("drivers");
         childParam.setFieldType(EParameterFieldType.MODULE_LIST);
         childParam.setListItemsDisplayName(moduleNameArray);
         childParam.setListItemsValue(moduleValueArray);
@@ -533,13 +534,13 @@ public class JobSettingsManager {
         param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
         param.setDisplayName(EParameterName.DRIVER_JAR.getDisplayName());
         param.setFieldType(EParameterFieldType.TABLE);
-        param.setListItemsDisplayCodeName(new String[] { "JAR_NAME" });
-        param.setListItemsDisplayName(new String[] { "Jar Name" });
+        param.setListItemsDisplayCodeName(new String[] { "drivers" });
+        param.setListItemsDisplayName(new String[] { "drivers" });
         param.setListItemsValue(new ElementParameter[] { childParam });
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(44);
-        param.setRepositoryValue("DRIVER_JAR"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);
@@ -554,7 +555,7 @@ public class JobSettingsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.EXTRA);
         param.setNumRow(45);
-        param.setRepositoryValue("DRIVER_CLASS"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
         dbCon = dbTypeName + " == 'JDBC'";
         param.setShowIf(JobSettingsConstants.addBrackets(dbCon) + " and " + dbCondition); //$NON-NLS-1$
         param.setGroup(IMPLICIT_GROUP);

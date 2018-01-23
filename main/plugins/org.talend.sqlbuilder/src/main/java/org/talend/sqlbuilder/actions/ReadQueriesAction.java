@@ -35,6 +35,7 @@ import org.talend.core.sqlbuilder.util.TextUtil;
 import org.talend.metadata.managment.ui.wizard.metadata.ContextSetsSelectionDialog;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.ui.actions.AContextualAction;
 import org.talend.sqlbuilder.Messages;
 import org.talend.sqlbuilder.ui.SQLBuilderDialog;
@@ -66,7 +67,8 @@ public class ReadQueriesAction extends AContextualAction {
 
         DatabaseConnectionItem dbConnectionItem = null;
         ConnectionParameters connParameters = new ConnectionParameters();
-        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
+        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS || 
+                repositoryNode.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.METADATA_CONNECTIONS) {
             dbConnectionItem = (DatabaseConnectionItem) repositoryNode.getObject().getProperty().getItem();
             connParameters.setRepositoryName(repositoryNode.getObject().getLabel());
             connParameters.setRepositoryId(repositoryNode.getObject().getId());
@@ -121,13 +123,14 @@ public class ReadQueriesAction extends AContextualAction {
             Object o = selection.getFirstElement();
             repositoryNode = (RepositoryNode) o;
 
+            ERepositoryObjectType repObjType = (ERepositoryObjectType) repositoryNode.getProperties(EProperties.CONTENT_TYPE);
             switch (repositoryNode.getType()) {
             case REPOSITORY_ELEMENT:
                 if (repositoryNode.getObject().getRepositoryStatus() == ERepositoryStatus.DELETED) {
                     canWork = false;
                 }
-                if (repositoryNode.getObjectType() != ERepositoryObjectType.METADATA_CONNECTIONS
-                        && repositoryNode.getObjectType() != ERepositoryObjectType.METADATA_CON_QUERY) {
+                if (repObjType != ERepositoryObjectType.METADATA_CONNECTIONS
+                        && repObjType != ERepositoryObjectType.METADATA_CON_QUERY) {
                     canWork = false;
                 }
                 // Studio does not support this action for hive, TDI-25365.

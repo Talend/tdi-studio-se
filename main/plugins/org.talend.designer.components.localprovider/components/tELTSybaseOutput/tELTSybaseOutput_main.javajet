@@ -96,7 +96,22 @@ imports="
 <%
 	log4jCodeGenerateUtil.useExistConnection(node);
 	} else {
-            if("SYBSEIQ_16".equals(dbVersion)){%>
+            if("SYBSEIQ_16_SA".equals(dbVersion)){
+%>
+    String driverClass_<%=cid%> = "sap.jdbc4.sqlanywhere.IDriver";
+<%
+		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %>; 
+<%
+		}
+		else{
+%>
+    String url_<%=cid%> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+<%
+		}
+            }
+            else if("SYBSEIQ_16".equals(dbVersion)){%>
     String driverClass_<%=cid%> = "com.sybase.jdbc4.jdbc.SybDriver";
 	        <%}else{%>
 	String driverClass_<%=cid%> = "com.sybase.jdbc3.jdbc.SybDriver";

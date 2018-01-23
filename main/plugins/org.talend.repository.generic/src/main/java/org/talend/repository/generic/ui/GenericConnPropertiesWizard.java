@@ -15,11 +15,11 @@ package org.talend.repository.generic.ui;
 import org.eclipse.core.runtime.IPath;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.metadata.managment.ui.wizard.PropertiesWizard;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 
 /**
@@ -37,7 +37,7 @@ public class GenericConnPropertiesWizard extends PropertiesWizard {
         boolean done = super.performFinish();
         if (done) {
             Property property = object.getProperty();
-            GenericConnectionItem gcItem = (GenericConnectionItem) property.getItem();
+            ConnectionItem gcItem = (ConnectionItem) property.getItem();
             boolean itemChanged = GenericConnectionUtil.synNamePropertyWithItem(gcItem);
             if (itemChanged) {
                 try {

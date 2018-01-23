@@ -32,6 +32,7 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -154,6 +155,10 @@ public class MissingSettingsMultiThreadDynamicComposite extends TopMessagesMulti
         super.dispose();
         CorePlugin.getDefault().getLibrariesService().removeChangeLibrariesListener(this);
 
+    }
+    
+    public ConnectionItem getConnectionItem() {
+        return null;
     }
 
 }

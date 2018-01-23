@@ -14,6 +14,7 @@ package org.talend.repository.generic.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.core.language.ECodeLanguage;
+import org.talend.core.language.LanguageManager;
 import org.talend.core.model.context.ContextUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.types.JavaType;
@@ -40,7 +42,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.metadata.managment.ui.model.IConnParamName;
 import org.talend.metadata.managment.ui.utils.ConnectionContextHelper;
 import org.talend.metadata.managment.ui.utils.GenericConnParamName;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 
 /**
  * created by ycbai on 2015年11月27日 Detailled comment
@@ -51,21 +52,20 @@ public class GenericContextUtil {
     public static List<IContextParameter> createContextParameters(String prefixName, Connection connection,
             Set<IConnParamName> paramSet) {
         List<IContextParameter> varList = new ArrayList<>();
-        if (connection instanceof GenericConnection) {
-            GenericConnection conn = (GenericConnection) connection;
-            if (conn == null || prefixName == null || paramSet == null || paramSet.isEmpty()) {
-                return Collections.emptyList();
-            }
-            String paramPrefix = prefixName + ConnectionContextHelper.LINE;
-            String paramName = null;
-            for (IConnParamName param : paramSet) {
-                if (param instanceof GenericConnParamName) {
-                    GenericConnParamName connParamName = (GenericConnParamName) param;
-                    String name = connParamName.getName();
-                    ComponentProperties componentProperties = getComponentProperties((GenericConnection) connection);
-                    Property<?> property = componentProperties.getValuedProperty(name);
-                    paramName = paramPrefix + connParamName.getContextVar();
 
+        if (connection == null || prefixName == null || paramSet == null || paramSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+        String paramPrefix = prefixName + ConnectionContextHelper.LINE;
+        String paramName = null;
+        for (IConnParamName param : paramSet) {
+            if (param instanceof GenericConnParamName) {
+                GenericConnParamName connParamName = (GenericConnParamName) param;
+                String name = connParamName.getName();
+                ComponentProperties componentProperties = getComponentProperties(connection);
+                Property<?> property = componentProperties.getValuedProperty(name);
+                paramName = paramPrefix + connParamName.getContextVar();
+                if(property != null){
                     JavaType type = JavaTypesManager.STRING;
                     if (property.isFlag(Property.Flags.ENCRYPT)) {
                         type = JavaTypesManager.PASSWORD;
@@ -82,39 +82,80 @@ public class GenericContextUtil {
                     String value = property == null || property.getValue() == null ? null
                             : StringEscapeUtils.escapeJava(String.valueOf(property.getValue()));
                     ConnectionContextHelper.createParameters(varList, paramName, value, type);
+                }else{
+                    Properties properties = componentProperties.getProperties(name);
+                    if(properties != null){
+                        List<Map<String, Object>> valueMap = getPropertiesValue(connection, properties, name);
+                        for(Map<String, Object> map : valueMap){
+                            for(String key : map.keySet()){
+                                Object propertyValue = map.get(key);
+                                String keyWithPrefix = prefixName + ConnectionContextHelper.LINE + ContextParameterUtils.getValidParameterName(key);
+                                if(propertyValue instanceof List){
+//                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, propertyValue, JavaTypesManager.VALUE_LIST);
+                                    
+                                    String value = null;
+                                    for(Object obj : (List)propertyValue){
+                                        if(value == null){
+                                            value = obj.toString();
+                                        }else{
+                                            value = value + ";" + obj.toString(); //$NON-NLS-1$
+                                        }
+                                    }
+                                    ConnectionContextHelper.createParameters(varList, keyWithPrefix, value, JavaTypesManager.STRING);
+                                }
+                            }
+                        }
+                    }
                 }
+                
             }
         }
+    
         return varList;
     }
 
-    private static ComponentProperties getComponentProperties(GenericConnection connection) {
+    private static ComponentProperties getComponentProperties(Connection connection) {
         String compPropertiesStr = connection.getCompProperties();
         if (compPropertiesStr != null) {
             return ComponentsUtils.getComponentPropertiesFromSerialized(compPropertiesStr, connection);
         }
         return null;
     }
+    
+    private static List<Map<String, Object>> getPropertiesValue(Connection connection, Properties properties,String value){
+        List<Map<String, Object>> lines = new ArrayList<Map<String, Object>>();
+        for(NamedThing nameThing : properties.getProperties()){
+            if(nameThing != null && nameThing instanceof Property){
+                Property property = (Property) nameThing;
+                Object paramValue = property.getStoredValue();
+                if(GenericTypeUtils.isListStringType(property) && paramValue != null){
+                    List<String> listString = (List<String>) paramValue;
+                    Map<String, Object> line = new LinkedHashMap<String, Object>();
+                    line.put(property.getName(),listString);
+                    lines.add(line);
+                }
+            }
+        }
+        return lines;
+    }
 
     public static void setPropertiesForContextMode(String prefixName, Connection connection, Set<IConnParamName> paramSet) {
         if (connection == null) {
             return;
         }
-        if (connection instanceof GenericConnection) {
-            GenericConnection genericConn = (GenericConnection) connection;
-            ComponentProperties componentProperties = getComponentProperties(genericConn);
-            String originalVariableName = prefixName + ConnectionContextHelper.LINE;
-            String genericVariableName = null;
-            for (IConnParamName param : paramSet) {
-                if (param instanceof GenericConnParamName) {
-                    GenericConnParamName genericParam = (GenericConnParamName) param;
-                    String paramVarName = genericParam.getContextVar();
-                    genericVariableName = originalVariableName + paramVarName;
-                    matchContextForAttribues(componentProperties, genericParam, genericVariableName);
-                }
+        ComponentProperties componentProperties = getComponentProperties(connection);
+        String originalVariableName = prefixName + ConnectionContextHelper.LINE;
+        String genericVariableName = null;
+        for (IConnParamName param : paramSet) {
+            if (param instanceof GenericConnParamName) {
+                GenericConnParamName genericParam = (GenericConnParamName) param;
+                String paramVarName = genericParam.getContextVar();
+                genericVariableName = originalVariableName + paramVarName;
+                matchContextForAttribues(componentProperties, genericParam, genericVariableName, prefixName);
             }
-            updateComponentProperties(genericConn, componentProperties);
         }
+        updateComponentProperties(connection, componentProperties);
+    
     }
 
     public static void setPropertiesForExistContextMode(Connection connection, Set<IConnParamName> paramSet,
@@ -122,35 +163,33 @@ public class GenericContextUtil {
         if (connection == null) {
             return;
         }
-        if (connection instanceof GenericConnection) {
-            GenericConnection genericConn = (GenericConnection) connection;
-            ComponentProperties componentProperties = getComponentProperties(genericConn);
-            ContextItem currentContext = null;
-            for (IConnParamName param : paramSet) {
-                if (param instanceof GenericConnParamName) {
-                    String genericVariableName = null;
-                    GenericConnParamName genericParam = (GenericConnParamName) param;
-                    if (adaptMap != null && adaptMap.size() > 0) {
-                        for (Map.Entry<ContextItem, List<ConectionAdaptContextVariableModel>> entry : adaptMap.entrySet()) {
-                            currentContext = entry.getKey();
-                            List<ConectionAdaptContextVariableModel> modelList = entry.getValue();
-                            for (ConectionAdaptContextVariableModel model : modelList) {
-                                if (model.getValue().equals(genericParam.getName())) {
-                                    genericVariableName = model.getName();
-                                    break;
-                                }
+        ComponentProperties componentProperties = getComponentProperties(connection);
+        ContextItem currentContext = null;
+        for (IConnParamName param : paramSet) {
+            if (param instanceof GenericConnParamName) {
+                String genericVariableName = null;
+                GenericConnParamName genericParam = (GenericConnParamName) param;
+                if (adaptMap != null && adaptMap.size() > 0) {
+                    for (Map.Entry<ContextItem, List<ConectionAdaptContextVariableModel>> entry : adaptMap.entrySet()) {
+                        currentContext = entry.getKey();
+                        List<ConectionAdaptContextVariableModel> modelList = entry.getValue();
+                        for (ConectionAdaptContextVariableModel model : modelList) {
+                            if (model.getValue().equals(genericParam.getName())) {
+                                genericVariableName = model.getName();
+                                break;
                             }
                         }
                     }
-                    if (genericVariableName != null) {
-                        genericVariableName = getCorrectVariableName(currentContext, genericVariableName, genericParam);
-                        matchContextForAttribues(componentProperties, genericParam, genericVariableName);
-                    }
                 }
-
+                if (genericVariableName != null) {
+                    genericVariableName = getCorrectVariableName(currentContext, genericVariableName, genericParam);
+                    matchContextForAttribues(componentProperties, genericParam, genericVariableName, currentContext.getProperty().getLabel());
+                }
             }
-            updateComponentProperties(genericConn, componentProperties);
+
         }
+        updateComponentProperties(connection, componentProperties);
+    
     }
 
     private static String getCorrectVariableName(ContextItem contextItem, String originalVariableName,
@@ -167,25 +206,45 @@ public class GenericContextUtil {
     }
 
     private static void matchContextForAttribues(ComponentProperties componentProperties, IConnParamName param,
-            String genericVariableName) {
+            String genericVariableName, String prefixName) {
         GenericConnParamName genericParam = (GenericConnParamName) param;
         String paramName = genericParam.getName();
-        String paramValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);
-        setPropertyValue(componentProperties, paramName, paramValue, true);
+        Properties properties = componentProperties.getProperties(paramName);
+        if(properties == null){
+            String paramValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);
+            setPropertyValue(componentProperties, paramName, paramValue, true);
+        }else{
+            matchContextForPrperties(properties, param, genericVariableName, prefixName);
+        }
+    }
+    
+    private static void matchContextForPrperties(Properties properties,IConnParamName param,
+            String genericVariableName, String prefixName){
+        for(NamedThing nameThing : properties.getProperties()){
+            if(nameThing != null && nameThing instanceof Property){
+                Property property = (Property) nameThing;
+                Object paramValue = property.getStoredValue();
+                if(GenericTypeUtils.isListStringType(property) && paramValue != null){
+                    String propertyValue = ContextParameterUtils.getNewScriptCode(prefixName + ConnectionContextHelper.LINE
+                            + ContextParameterUtils.getValidParameterName(property.getName()), LanguageManager.getCurrentLanguage());
+                    property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, true);
+                    List<String> driverList = new ArrayList<String>();
+                    driverList.add(propertyValue);
+                    property.setValue(driverList);
+                }
+            }
+        }
     }
 
-    private static void updateComponentProperties(GenericConnection conn, ComponentProperties componentProperties) {
+    private static void updateComponentProperties(Connection conn, ComponentProperties componentProperties) {
         String serializedProperties = componentProperties.toSerialized();
         conn.setCompProperties(serializedProperties);
     }
 
     public static void revertPropertiesForContextMode(Connection connection, ContextType contextType) {
-        if (connection instanceof GenericConnection) {
-            GenericConnection conn = (GenericConnection) connection;
-            ComponentProperties componentProperties = getComponentProperties(conn);
-            revertPropertiesValues(componentProperties, contextType);
-            updateComponentProperties(conn, componentProperties);
-        }
+        ComponentProperties componentProperties = getComponentProperties(connection);
+        revertPropertiesValues(componentProperties, contextType);
+        updateComponentProperties(connection, componentProperties);
     }
 
     public static void revertPropertiesValues(Properties componentProperties, ContextType contextType) {
@@ -197,30 +256,37 @@ public class GenericContextUtil {
                 Property property = (Property) namedThing;
                 if (ComponentsUtils.isSupportContext(property)) {
                     String value = String.valueOf(property.getStoredValue());
+                    Object storedValue =  property.getStoredValue();
                     if (value != null && ContextParameterUtils.isContainContextParam(value)) {
-                        String valueFromContext = ContextParameterUtils.getOriginalValue(contextType, value);
-                        property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, false);
-                        if (GenericTypeUtils.isBooleanType(property)) {
-                            property.setValue(new Boolean(valueFromContext));
-                        } else if (GenericTypeUtils.isIntegerType(property) && !valueFromContext.isEmpty()) {
-                            property.setValue(Integer.valueOf(valueFromContext));
-                        } else if (GenericTypeUtils.isLongType(property) && !valueFromContext.isEmpty()) {
-                            property.setValue(Long.valueOf(valueFromContext));
-                        } else if (GenericTypeUtils.isFloatType(property) && !valueFromContext.isEmpty()) {
-                            property.setValue(Float.valueOf(valueFromContext));
-                        } else if (GenericTypeUtils.isDoubleType(property) && !valueFromContext.isEmpty()) {
-                            property.setValue(Double.valueOf(valueFromContext));
-                        } else if (GenericTypeUtils.isEnumType(property)) {
-                            List<?> propertyPossibleValues = ((Property<?>) property).getPossibleValues();
-                            if (propertyPossibleValues != null) {
-                                for (Object possibleValue : propertyPossibleValues) {
-                                    if (possibleValue.toString().equals(valueFromContext)) {
-                                        property.setValue(possibleValue);
+                        if(storedValue instanceof List){
+                            List<String> valueList = ContextParameterUtils.getOriginalList(contextType, value);
+                            property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, false);
+                            property.setValue(valueList);
+                        }else{
+                            String valueFromContext = ContextParameterUtils.getOriginalValue(contextType, value);
+                            property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, false);
+                            if (GenericTypeUtils.isBooleanType(property)) {
+                                property.setValue(new Boolean(valueFromContext));
+                            } else if (GenericTypeUtils.isIntegerType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Integer.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isLongType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Long.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isFloatType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Float.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isDoubleType(property) && !valueFromContext.isEmpty()) {
+                                property.setValue(Double.valueOf(valueFromContext));
+                            } else if (GenericTypeUtils.isEnumType(property)) {
+                                List<?> propertyPossibleValues = ((Property<?>) property).getPossibleValues();
+                                if (propertyPossibleValues != null) {
+                                    for (Object possibleValue : propertyPossibleValues) {
+                                        if (possibleValue.toString().equals(valueFromContext)) {
+                                            property.setValue(possibleValue);
+                                        }
                                     }
-                                }
+                                } 
+                            }else {
+                                property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                             }
-                        } else {
-                            property.setValue(TalendQuoteUtils.removeQuotes(valueFromContext));
                         }
                     }
                 }

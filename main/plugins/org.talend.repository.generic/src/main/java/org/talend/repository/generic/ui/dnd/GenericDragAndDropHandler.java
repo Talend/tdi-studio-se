@@ -30,7 +30,9 @@ import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -40,10 +42,12 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryViewObject;
 import org.talend.core.model.utils.AbstractDragAndDropServiceHandler;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.repository.model.repositoryObject.MetadataColumnRepositoryObject;
 import org.talend.core.repository.model.repositoryObject.MetadataTableRepositoryObject;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.utils.TalendQuoteUtils;
@@ -57,8 +61,6 @@ import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.model.RepositoryNode;
 
 import orgomg.cwm.objectmodel.core.ModelElement;
@@ -78,7 +80,10 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     @Override
     public boolean canHandle(Connection connection) {
-        return connection instanceof GenericConnection;
+        if(connection == null){
+            return false;
+        }
+        return connection.getCompProperties() != null;
     }
 
     @Override
@@ -88,7 +93,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 IGenericWizardService wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
                         IGenericWizardService.class);
                 if (wizardService != null && wizardService.isGenericConnection(connection)) {
-                    return getGenericRepositoryValue((GenericConnection) connection,
+                    return getGenericRepositoryValue(connection,
                             wizardService.getAllComponentProperties(connection, getSeletetedMetadataTableName(table)), value,
                             table);
                 }
@@ -97,9 +102,15 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
         return null;
     }
 
-    private Object getGenericRepositoryValue(GenericConnection connection, List<ComponentProperties> componentProperties,
+    private Object getGenericRepositoryValue(Connection connection, List<ComponentProperties> componentProperties,
             String value, IMetadataTable table) {
         if (componentProperties != null && value != null) {
+            if(EConnectionParameterName.USERNAME.getName().equals(value)){
+                value = EConnectionParameterName.GENERIC_USERNAME.getDisplayName();
+            }
+            if(EConnectionParameterName.PASSWORD.getName().equals(value)){
+                value = EConnectionParameterName.GENERIC_PASSWORD.getDisplayName();
+            }
             for (ComponentProperties compPro : componentProperties) {
                 if(isGenericPropertiesValue(value)){
                     Properties properties = compPro.getProperties(value);
@@ -112,6 +123,9 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                         Object paramValue = property.getStoredValue();
                         if (GenericTypeUtils.isStringType(property) || GenericTypeUtils.isObjectType(property)) {
                             if (paramValue != null) {
+                                if(property.getName().equals("password")){
+                                    return getPassword(connection, paramValue.toString());
+                                }
                                 return getRepositoryValueOfStringType(connection, paramValue.toString());
                             } else {
                                 return TalendQuoteUtils.addQuotes(""); //$NON-NLS-1$
@@ -128,10 +142,21 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                         value.substring(value.indexOf(IGenericConstants.EXP_SEPARATOR) + 1), table);
             }
         }
+        if((connection instanceof DatabaseConnection) && value.equals("TYPE")){
+            return ((DatabaseConnection)connection).getDatabaseType();
+        }
         return null;
     }
     
-    private Object getPropertiesValue(GenericConnection connection, Properties properties,String value){
+    private String getPassword(Connection connection, String value){
+        String pass = connection.getValue(value, false);
+        if (ContextParameterUtils.isContextMode(connection, value)) {
+            return pass;
+        }
+        return TalendQuoteUtils.addQuotesIfNotExist(pass);
+    }
+    
+    private Object getPropertiesValue(Connection connection, Properties properties,String value){
         List<Map> lines = new ArrayList<Map>();
         for(NamedThing nameThing : properties.getProperties()){
             if(nameThing != null && nameThing instanceof Property){
@@ -141,7 +166,11 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                     List<String> listString = (List<String>) paramValue;
                     for(String pv : listString){
                         Map<String, Object> line = new LinkedHashMap<String, Object>();
-                        line.put(property.getName(),TalendQuoteUtils.addQuotesIfNotExist(pv));
+                        if (pv != null) {
+                            line.put(property.getName(), getRepositoryValueOfStringType(connection, pv));
+                        } else {
+                            line.put(property.getName(), TalendQuoteUtils.addQuotes(""));
+                        }
                         lines.add(line);
                     }
                 }else if (GenericTypeUtils.isStringType(property) || GenericTypeUtils.isObjectType(property)) {
@@ -212,7 +241,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     
     @Override
     public boolean isGenericPropertiesValue(String paramName){
-        if(IGenericConstants.driverTable.equals(paramName)){
+        if(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName().equals(paramName)){
             return true;
         }
         return false;
@@ -222,19 +251,46 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     public List<IComponent> filterNeededComponents(Item item, RepositoryNode seletetedNode, ERepositoryObjectType type) {
         // TUP-4151
         List<IComponent> neededComponents = new ArrayList<>();
-        if (!(item instanceof GenericConnectionItem)) {
+        if (!(item instanceof ConnectionItem)) {
+            return neededComponents;
+        }
+        if(((ConnectionItem)item).getConnection().getCompProperties() == null){
             return neededComponents;
         }
         IComponentsService service = (IComponentsService) GlobalServiceRegister.getDefault().getService(IComponentsService.class);
         Collection<IComponent> components = service.getComponentsFactory().readComponents();
         for (IComponent component : components) {
             if (EComponentType.GENERIC.equals(component.getComponentType())) {
+                if(isExtraTypeMetadata(seletetedNode, type)){
+                    seletetedNode = seletetedNode.getParent().getParent();
+                }
                 if (!neededComponents.contains(component) && isValid(seletetedNode, component)) {
                     neededComponents.add(component);
                 }
             }
         }
         return neededComponents;
+    }
+    
+    private boolean isExtraTypeMetadata(RepositoryNode seletetedNode, ERepositoryObjectType type){
+        if(type == ERepositoryObjectType.METADATA_CON_TABLE || type == ERepositoryObjectType.METADATA_CON_VIEW){
+            if(seletetedNode.getParent().getParent() == null){
+                return false;
+            }
+            RepositoryNode parent = seletetedNode.getParent().getParent();
+            if(parent.getObjectType() == null){
+                return false;
+            }
+            IGenericDBService dbService = null;
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                        IGenericDBService.class);
+            }
+            if(dbService != null && dbService.getExtraTypes().contains(parent.getObjectType())){
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isValid(RepositoryNode seletetedNode, IComponent component) {
@@ -248,9 +304,8 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
             RepositoryViewObject repositoryViewObj = (RepositoryViewObject) object;
             Connection connection = ((ConnectionItem) repositoryViewObj.getProperty().getItem()).getConnection();
             if (canHandle(connection)) {
-                GenericConnection genericConnection = (GenericConnection) connection;
                 currentComponentProperties = ComponentsUtils.getComponentPropertiesFromSerialized(
-                        genericConnection.getCompProperties(), connection);
+                        connection.getCompProperties(), connection);
             }
         } else if (object instanceof MetadataTableRepositoryObject) {
             MetadataTableRepositoryObject metaTableRepObj = (MetadataTableRepositoryObject) object;
@@ -283,26 +338,28 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     public IComponentName getCorrespondingComponentName(Item item, ERepositoryObjectType type) {
         RepositoryComponentSetting setting = null;
         List<Class<Item>> list = new ArrayList<Class<Item>>();
-        if (item instanceof GenericConnectionItem) {
-            GenericConnection connection = (GenericConnection) ((GenericConnectionItem) item).getConnection();
-            setting = new RepositoryComponentSetting();
-            setting.setWithSchema(true);
-            String componentMainName = getComponentMainName(connection);
-            setting.setInputComponent(getInputComponentName(componentMainName));
-            setting.setOutputComponent(getOutputComponentName(componentMainName));
-            Class clazz = null;
-            try {
-                clazz = Class.forName(GenericConnectionItem.class.getName());
-            } catch (ClassNotFoundException e) {
-                ExceptionHandler.process(e);
+        if (item instanceof ConnectionItem) {
+            Connection connection = ((ConnectionItem) item).getConnection();
+            if(canHandle(connection)){
+                setting = new RepositoryComponentSetting();
+                setting.setWithSchema(true);
+                String componentMainName = getComponentMainName(connection);
+                setting.setInputComponent(getInputComponentName(componentMainName));
+                setting.setOutputComponent(getOutputComponentName(componentMainName));
+                Class clazz = null;
+                try {
+                    clazz = Class.forName(ConnectionItem.class.getName());
+                } catch (ClassNotFoundException e) {
+                    ExceptionHandler.process(e);
+                }
+                list.add(clazz);
+                setting.setClasses(list.toArray(new Class[0]));
             }
-            list.add(clazz);
-            setting.setClasses(list.toArray(new Class[0]));
         }
         return setting;
     }
 
-    private String getComponentMainName(GenericConnection connection) {
+    private String getComponentMainName(Connection connection) {
         IGenericWizardInternalService internalService = new GenericWizardInternalService();
         ComponentWizard componentWizard = null;
         String compPropertiesStr = connection.getCompProperties();
@@ -333,9 +390,9 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
         return COMPONENT_PREFIX.concat(componentMainName).concat(OUTPUT);
     }
 
-    private void setGenericRepositoryValue(GenericConnection connection, INode node, IElementParameter param) {
+    private void setGenericRepositoryValue(Connection connection, INode node, IElementParameter param) {
         if (connection != null && param != null && param instanceof GenericElementParameter) {
-            if (connection.getCompProperties() == null) {
+            if ((connection.getCompProperties() == null) || connection.getCompProperties().length() <= 0) {
                 GenericElementParameter genericParam = (GenericElementParameter) param;
                 connection.setCompProperties(genericParam.getRootProperties().toSerialized());
             }
@@ -350,7 +407,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     @Override
     public void setComponentValue(Connection connection, INode node, IElementParameter param) {
         if (node != null && canHandle(connection)) {
-            setGenericRepositoryValue((GenericConnection) connection, node, param);
+            setGenericRepositoryValue(connection, node, param);
         }
     }
 

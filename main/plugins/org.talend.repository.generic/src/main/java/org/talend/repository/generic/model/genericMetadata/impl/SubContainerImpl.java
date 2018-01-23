@@ -19,10 +19,10 @@ import orgomg.cwm.objectmodel.core.impl.PackageImpl;
  * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
+ * </p>
  * <ul>
  *   <li>{@link org.talend.repository.generic.model.genericMetadata.impl.SubContainerImpl#getCompProperties <em>Comp Properties</em>}</li>
  * </ul>
- * </p>
  *
  * @generated
  */

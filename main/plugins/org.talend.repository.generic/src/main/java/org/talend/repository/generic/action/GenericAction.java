@@ -19,11 +19,15 @@ import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.ui.runtime.image.ECoreImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.actions.metadata.AbstractCreateAction;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.generic.ui.GenericConnWizard;
 import org.talend.repository.generic.ui.common.GenericWizardDialog;
@@ -83,11 +87,16 @@ public class GenericAction extends AbstractCreateAction {
         if(repObjType == null || repositoryNode.getType() != ENodeType.REPOSITORY_ELEMENT){
             repObjType = (ERepositoryObjectType) repositoryNode.getProperties(EProperties.CONTENT_TYPE);
         }
+        if(repObjType == null){
+            setEnabled(false);
+            return;
+        }
         if (compWizard == null) {
             compWizard = GenericWizardServiceFactory.getGenericWizardInternalService().getComponentWizard(repObjType.getType(),
                     null);
         }
         if (compWizard == null) {
+            setEnabled(false);
             return;
         }
         ComponentWizardDefinition wizardDefinition = compWizard.getDefinition();
@@ -129,6 +138,19 @@ public class GenericAction extends AbstractCreateAction {
 
     protected int getWizardHeight() {
         return DEFAULT_WIZARD_HEIGHT;
+    }
+
+    @Override
+    public ImageDescriptor getImageDescriptor() {
+        IGenericDBService dbService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                    IGenericDBService.class);
+        }
+        if(dbService != null && dbService.getExtraTypes().contains(repObjType)){
+            return ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_ICON);
+        }
+        return super.getImageDescriptor();
     }
 
 }

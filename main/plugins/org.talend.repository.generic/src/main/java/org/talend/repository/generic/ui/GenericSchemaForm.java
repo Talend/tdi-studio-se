@@ -26,6 +26,7 @@ import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.utils.data.list.IListenableListListener;
 import org.talend.commons.utils.data.list.ListenableListEvent;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.MetadataTable;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.ui.check.Checker;
@@ -34,8 +35,6 @@ import org.talend.core.ui.metadata.editor.MetadataEmfTableEditor;
 import org.talend.core.ui.metadata.editor.MetadataEmfTableEditorView;
 import org.talend.metadata.managment.ui.wizard.AbstractForm;
 import org.talend.repository.generic.i18n.Messages;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-
 /**
  * 
  * created by ycbai on 2015年10月28日 Detailled comment
@@ -83,8 +82,8 @@ public class GenericSchemaForm extends AbstractForm {
         }
     }
 
-    private GenericConnection getConnection() {
-        return (GenericConnection) connectionItem.getConnection();
+    private Connection getConnection() {
+        return connectionItem.getConnection();
     }
 
     @Override

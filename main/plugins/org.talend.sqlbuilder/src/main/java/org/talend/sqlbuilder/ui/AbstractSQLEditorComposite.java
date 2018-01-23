@@ -89,6 +89,9 @@ public abstract class AbstractSQLEditorComposite extends Composite implements IS
 
     protected void setEditorTitle(RepositoryNode node, ConnectionParameters connParam, CTabItem tabItem) {
         String dbName = SQLBuilderRepositoryNodeManager.getDatabaseNameByRepositoryNode(node);
+        if(dbName == null){
+            dbName = ""; //$NON-NLS-1$
+        }
         String title = ""; //$NON-NLS-1$
         if (connParam.isFromDBNode()) {
             String selectedComponentName = connParam.getSelectedComponentName();

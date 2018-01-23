@@ -21,6 +21,8 @@
 		<!-- for jobInfo.properties -->
 		<talend.project.name>@ProjectName@</talend.project.name>
 		<talend.project.name.lowercase>@ProjectName@</talend.project.name.lowercase>
+		<talend.routine.groupid>@RoutineGroupId@</talend.routine.groupid>
+		<talend.pigudf.groupid>@PigudfGroupId@</talend.pigudf.groupid>
 		<talend.project.id>@ProjectId@</talend.project.id>
 		<talend.project.branch>@ProjectBranch@</talend.project.branch>
 		<talend.job.name>@JobName@</talend.job.name>
@@ -237,7 +239,7 @@
 			</activation>
 			<properties>
 				<jobs.binaries.includes.set>${project.groupId}:*</jobs.binaries.includes.set>
-				<routines.binaries.includes.set>org.talend.code.${talend.project.name.lowercase}:*</routines.binaries.includes.set>
+				<routines.binaries.includes.set>${talend.routine.groupid}:*</routines.binaries.includes.set>
 			</properties>
 		</profile>
 		<profile>
@@ -313,7 +315,7 @@
 		<profile>
 			<id>include-pigudfs-binaries</id>
 			<properties>
-				<pigudfs.binaries.includes.set>org.talend.pigudf.${talend.project.name.lowercase}:*</pigudfs.binaries.includes.set>
+				<pigudfs.binaries.includes.set>${talend.pigudf.groupid}:*</pigudfs.binaries.includes.set>
 			</properties>
 		</profile>
 		

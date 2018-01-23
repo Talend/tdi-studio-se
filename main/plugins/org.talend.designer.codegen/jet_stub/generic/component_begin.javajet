@@ -113,6 +113,9 @@ for (Component.CodegenPropInfo propInfo : propsToProcess) {
             }
             boolean referenced = false;
             for(String r: referenceableProperties){
+            		if(r == null || r.isEmpty()) {
+            			continue;
+            		}
                 referenced = referenced || propInfo.fieldName.startsWith(r);
             }
             if (referenced){
@@ -137,6 +140,14 @@ for (final String fieldString : referenceProperties) {
 %>
 globalMap.put("<%=cid %>_COMPONENT_RUNTIME_PROPERTIES", props_<%=cid %>);
 
+<%
+boolean isParallelize ="true".equalsIgnoreCase(ElementParameterParser.getValue(node, "__PARALLELIZE__"));
+if (isParallelize) {
+%>
+final String buffersSizeKey_<%=cid%> = "buffersSizeKey_<%=cid%>_" + Thread.currentThread().getId(); 
+<%
+}
+%>
 java.net.URL mappings_url_<%=cid %>= this.getClass().getResource("/xmlMappings");
 globalMap.put("<%=cid %>_MAPPINGS_URL", mappings_url_<%=cid %>);
 
@@ -164,7 +175,6 @@ org.talend.components.api.component.ConnectorTopology topology_<%=cid%> = null;
 <%
 boolean hasOutput = !NodeUtil.getOutgoingConnections(node, IConnectionCategory.DATA).isEmpty();
 boolean hasOutputOnly = hasOutput && !hasInput;
-boolean isTopologyNone = !hasOutput && !hasInput;
 
 if (hasInput && hasOutput) {
 %>
@@ -216,12 +226,16 @@ if (metadata == null) {
     return stringBuffer.toString();
 }
 
+Set<ConnectorTopology> connectorTopologies = def.getSupportedConnectorTopologies();
+boolean asInputComponent = connectorTopologies!=null && (connectorTopologies.size() < 3) && connectorTopologies.contains(ConnectorTopology.OUTGOING);
+
+List< ? extends IConnection> iterateLine = node.getOutgoingConnections(EConnectionType.ITERATE);
+boolean hasIterateLine = iterateLine!=null && !iterateLine.isEmpty();
+boolean isTopologyNone = !hasOutput && !hasInput && !hasIterateLine;
+
 if(isTopologyNone) {
     return stringBuffer.toString();
 }
-
-Set<ConnectorTopology> connectorTopologies = def.getSupportedConnectorTopologies();
-boolean asInputComponent = connectorTopologies!=null && (connectorTopologies.size() < 3) && connectorTopologies.contains(ConnectorTopology.OUTGOING);
 
 if (hasOutputOnly || asInputComponent) {
     %>
