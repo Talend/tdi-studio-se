@@ -443,13 +443,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 %>
 				}
 
+                String tableName_<%=cid%> = <%=dbtable%>;
 				String actualLogFilePath_<%=cid%> = <%if(isLogFilePathSpecified){%>
 					<%=parametersList.get(parametersList.indexOf("\"-lf\"") + 1)%>;
 				<%} else {%>
-					"\"" + <%=dbtable%>.toUpperCase()
+					tableName_<%=cid%>.toUpperCase()
 					+ "." + <%=dbuser%>.toUpperCase()
 					+ "." + <%=dbname%>.toUpperCase()
-					+ ".nzlog\"";
+					+ ".nzlog";
 				<%}%>
 
 				nb_line_<%=cid%>.set(getProcessedRowsCount(actualLogFilePath_<%=cid%>));
