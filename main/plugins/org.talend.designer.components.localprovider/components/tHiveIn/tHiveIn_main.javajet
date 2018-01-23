@@ -192,7 +192,7 @@ imports="
 %>
         // First we dump the select query of the user into google storage
         // In order to do that we modify the query to add as a prefix:
-        // INSERT OVERWRITE DIRECTORY '$GOOGLE_JARS_BUCKET/hivetmp/' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+        // INSERT OVERWRITE DIRECTORY '$GOOGLE_JARS_BUCKET/hivetmp/' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
 
         <%
         String gsTempDir = "";
@@ -208,7 +208,7 @@ imports="
             gsTempDir = ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__") + " + \"hivetemp\" ";
         }
         %>
-        instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' "
+        instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' "
                 + <%=dbquery%>.replace("';'", "'\\;'") + ";");
         if (libjars_<%=cid%>.length() > 0) {
             instance_<%=cid%>.addLibJars(libjars_<%=cid%>.toString().substring(0, libjars_<%=cid%>.length()-1));
