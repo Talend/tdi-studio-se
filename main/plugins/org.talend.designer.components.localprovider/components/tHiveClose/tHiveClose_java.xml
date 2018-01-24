@@ -15,7 +15,8 @@
   </HEADER>
 
   <FAMILIES>
-	<FAMILY>Big Data/Hive</FAMILY>
+      <FAMILY>Databases/DB Specifics/Hive</FAMILY>
+	  <FAMILY>Big Data/Hive</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>
