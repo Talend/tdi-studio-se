@@ -304,7 +304,34 @@
 		<PARAMETER NAME="CUSTOMIZE_APPLICATION_TABLE" FIELD="TABLE" NUM_ROW="13" NB_LINES="5" GROUP="CUSTOMIZE_APPLICATION_GROUP"
 			SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION =='true')">
 			<ITEMS>
-				<ITEM NAME="NAME" />
+				<ITEM NAME="NAME" FIELD="OPENED_LIST">
+					<ITEMS DEFAULT="HADOOP">
+                  <ITEM NAME="HADOOP" VALUE="HADOOP" />
+                  <ITEM NAME="ZEPPELIN" VALUE="ZEPPELIN" />
+                  <ITEM NAME="LIVY" VALUE="LIVY" />
+                  <ITEM NAME="TEZ" VALUE="TEZ" />
+                  <ITEM NAME="FLINK" VALUE="FLINK" />
+                  <ITEM NAME="GANGLIA" VALUE="GANGLIA" />
+                  <ITEM NAME="HBASE" VALUE="HBASE" />
+                  <ITEM NAME="PIG" VALUE="PIG" />
+                  <ITEM NAME="HIVE" VALUE="HIVE" />
+                  <ITEM NAME="PRESTO" VALUE="PRESTO" />
+                  <ITEM NAME="ZOOKEEPER" VALUE="ZOOKEEPER" />
+                  <ITEM NAME="MXNET" VALUE="MXNET" />
+                  <ITEM NAME="SQOOP" VALUE="SQOOP" />
+                  <ITEM NAME="MAHOUT" VALUE="MAHOUT" />
+                  <ITEM NAME="HUE" VALUE="HUE" />
+                  <ITEM NAME="PHOENIX" VALUE="PHOENIX" />
+                  <ITEM NAME="OOZIE" VALUE="OOZIE" />
+                  <ITEM NAME="SPARK" VALUE="SPARK" />
+                  <ITEM NAME="HCATALOG" VALUE="HCATALOG" />
+                  <ITEM NAME="PRESTO-SANDBOX" VALUE="PRESTO-SANDBOX" />
+                  <ITEM NAME="SQOOP-SANDBOX" VALUE="SQOOP-SANDBOX" />
+                  <ITEM NAME="ZEPPELIN-SANDBOX" VALUE="ZEPPELIN-SANDBOX" />
+                  <ITEM NAME="ZOOKEEPER-SANDBOX" VALUE="ZOOKEEPER-SANDBOX" />
+                  <ITEM NAME="OOZIE-SANDBOX" VALUE="OOZIE-SANDBOX" />                  
+					</ITEMS>
+			   </ITEM>
 			</ITEMS>
 		</PARAMETER>
 		
