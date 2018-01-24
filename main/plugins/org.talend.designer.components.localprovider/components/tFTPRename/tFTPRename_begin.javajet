@@ -290,7 +290,12 @@ if (sftp) {  // *** sftp *** //
 <%
 		}
 %>
-	ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+
+	if (!cwdSuccess_<%=cid %>) {
+		throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+	}
+
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) { <% /* start main loop */ %>
 <%
 } else {// *** ftp *** //

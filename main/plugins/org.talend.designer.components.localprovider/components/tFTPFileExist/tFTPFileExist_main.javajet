@@ -74,7 +74,11 @@ if (sftp) { // *** sftp *** //
 	//change working dir and save root
 	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 	String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
-	ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+
+	if (!cwdSuccess_<%=cid %>) {
+		throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+	}
 <%
 	if (isFileType) {
 %>

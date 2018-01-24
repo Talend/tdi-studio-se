@@ -762,7 +762,11 @@ if (sftp) { // *** sftp *** //
 		getter_<%=cid%> = new FTPSGetter_<%=cid%>();
 		getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
 		remotedir_<%=cid%> = <%=remotedir%>;
-		ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+		boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+
+		if (!cwdSuccess_<%=cid %>) {
+			throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+		}
 <%
 }
 // *** share code *** //

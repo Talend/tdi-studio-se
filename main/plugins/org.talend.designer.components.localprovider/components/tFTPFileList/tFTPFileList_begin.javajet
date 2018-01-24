@@ -321,7 +321,12 @@ if (sftp) {// *** sftp *** //
 
 	<%/*read files*/ %>
 	String remotedir_<%=cid %> = <%=remotedir%>;
-	ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+
+	if (!cwdSuccess_<%=cid %>) {
+		throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+	}
+
 	ftpFiles_<%=cid %> = ftp_<%=cid %>.listFiles();
 <%
 	if ("true".equals(useExistingConn) && !moveToCurrentDir) {

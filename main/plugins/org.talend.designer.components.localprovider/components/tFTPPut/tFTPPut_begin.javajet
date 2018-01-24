@@ -379,7 +379,12 @@ int nb_file_<%=cid%> = 0;
 %>
 		String remotedir_<%=cid%> = null;
 		remotedir_<%=cid%> = <%=remotedir%>; 
-		ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>); 
+		boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+
+		if (!cwdSuccess_<%=cid %>) {
+			throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+		}
+
 		java.util.List<java.util.Map<String,String>> list<%=cid %> = new java.util.ArrayList<java.util.Map<String,String>>();
 
 <%

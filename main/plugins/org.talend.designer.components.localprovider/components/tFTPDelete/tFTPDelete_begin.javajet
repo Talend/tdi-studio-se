@@ -268,7 +268,11 @@ int nb_file_<%=cid%> = 0;
 <%
 			if (moveToCurrentDir) {
 %>
-				ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+				boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(<%=remotedir %>);
+
+				if (!cwdSuccess_<%=cid %>) {
+					throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+				}
 <%
 			}
 		}
