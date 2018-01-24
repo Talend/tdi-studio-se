@@ -2,13 +2,25 @@
     "component_delegate":"tDBInput",
     "component":"tJDBCInput",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
 },
 {
     "component_delegate":"tDBOutput",
     "component" : "tJDBCOutput",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
 },
 {
     "component_delegate":"tDBClose",
@@ -26,7 +38,13 @@
     "component_delegate":"tDBConnection",
     "component":"tJDBCConnection",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
 },
 {
     "component_delegate":"tDBRollback",
@@ -38,7 +56,13 @@
     "component_delegate":"tDBRow",
     "component":"tJDBCRow",
     "category":"DI",
-    "family":""
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+        }
+     }
 },
 {
     "component_delegate":"tDBSP",
