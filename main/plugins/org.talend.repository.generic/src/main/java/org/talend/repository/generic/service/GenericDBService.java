@@ -235,6 +235,10 @@ public class GenericDBService implements IGenericDBService{
                     }
                     Connection connection = connItem.getConnection();
                     convertPropertiesToDBElements(form.getProperties(), connection);
+                    // set the name and label to Connection model.
+                    String label = connItem.getProperty().getLabel();
+                    connection.setName(label);
+                    connection.setLabel(label);
                     IMetadataConnection metadataConnection = null;
                     if (contextName == null) {
                         metadataConnection = ConvertionHelper.convert(connection, true);
@@ -276,9 +280,6 @@ public class GenericDBService implements IGenericDBService{
         }
         if (tdqRepService != null) {
             // MOD qiongli 2012-11-19 TDQ-6287
-            String label = connectionItem.getProperty().getLabel();
-            connectionItem.getConnection().setName(label);
-            connectionItem.getConnection().setLabel(label);
             if (creation) {
                 tdqRepService.notifySQLExplorer(connectionItem);
                 tdqRepService.openConnectionEditor(connectionItem);
