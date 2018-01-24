@@ -278,6 +278,9 @@ public class ErDiagramComposite extends SashForm {
         if (connection.isContextMode() && !isCalculationView) {
             schema = DatabaseConnectionParameterUtil.getContextTrueValue(connection, schema);
         }
+        if (schema == null) {
+            schema = "";
+        }
         return schema;
 
     }

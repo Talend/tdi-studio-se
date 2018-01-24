@@ -58,6 +58,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.check.IChecker;
@@ -367,9 +368,17 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public String getMVNPath(String value) {
-        ModuleNeeded module = new ModuleNeeded("", TalendQuoteUtils.removeQuotes(value), "", true);//$NON-NLS-1$ //$NON-NLS-2$
+        String valueNoQuote = TalendQuoteUtils.removeQuotes(value);
+        boolean isMvnUri = MavenUrlHelper.isMvnUrl(valueNoQuote);
+        ModuleNeeded module = null;
+        if (isMvnUri) {
+            module = new ModuleNeeded("", "", true, valueNoQuote);//$NON-NLS-1$ //$NON-NLS-2$
+        } else {
+            module = new ModuleNeeded("", valueNoQuote, "", true);//$NON-NLS-1$ //$NON-NLS-2$
+        }
+        // get maven uri again incase it is customized
         String mvnPath = module.getMavenUri();
-        if(mvnPath != null){//$NON-NLS-1$
+        if (mvnPath != null) {
             return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
         }
         return value;
