@@ -374,7 +374,7 @@ if (sftp) {// *** sftp *** //
 %> 
 		<%/*set to globalMap*/ %>
 		globalMap.put("<%=cid %>_CURRENT_FILE", currentFileName_<%=cid%>);
-		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%>);
+		globalMap.put("<%=cid %>_CURRENT_FILEPATH", currentFilePath_<%=cid%> + currentFileName_<%=cid%>);
 		nb_file_<%=cid %>++;
 <%
 } else { // *** ftp *** //
