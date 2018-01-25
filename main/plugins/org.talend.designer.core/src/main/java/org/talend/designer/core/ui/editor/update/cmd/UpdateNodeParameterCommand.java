@@ -465,7 +465,7 @@ public class UpdateNodeParameterCommand extends Command {
                                         } else
                                         // fix 18011 :after change the jars in wizard, the update manager can't detect
                                         // it in jobs
-                                        if (param.getName().equals("DRIVER_JAR") && objectValue instanceof List) {
+                                        if ((param.getName().equals("DRIVER_JAR")  && objectValue instanceof List)) {
                                             List valueList = (List) objectValue;
                                             List newValue = new ArrayList<>();
                                             for (Object value : valueList) {
@@ -484,7 +484,8 @@ public class UpdateNodeParameterCommand extends Command {
                                             if (!newValue.isEmpty()) {
                                                 objectValue = newValue;
                                             }
-
+                                            param.setValue(objectValue);
+                                        }else {
                                             param.setValue(objectValue);
                                         }
                                     } else {
@@ -602,7 +603,7 @@ public class UpdateNodeParameterCommand extends Command {
             String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
             if ("JDBC".equals(databaseType)) {
                 IComponent component = node.getComponent();
-                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
                         && component.getName().startsWith("tJDBC")) {
                     if (EParameterName.URL.getName().equals(repositoryValue)) {
                         repositoryValue = "connection.jdbcUrl";

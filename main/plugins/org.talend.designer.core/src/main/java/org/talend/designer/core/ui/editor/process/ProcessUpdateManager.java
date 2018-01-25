@@ -1975,7 +1975,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                             // fix 18011 :after change the jars in wizard, the update manager can't
                                             // detect
                                             // it in jobs
-                                            if (param.getName().equals("DRIVER_JAR") && oldList != null) {
+                                            if ((param.getName().equals("DRIVER_JAR")||param.getName().equals("connection.driverTable")) && oldList != null) {
                                                 sameValues = sameDriverForJDBC(node, repositoryConnection, oldList, objectValue);
                                                 if (!sameValues) {
                                                     break;
@@ -2249,34 +2249,27 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             sameValues = false;
         } else {
             // for JDBC component of mr process
+            String nodeParamDriverKey =null;
             if (isOldJDBC(node, repositoryConnection)) {
-                for (int i = 0; i < oldList.size(); i++) {
-                    Map<String, Object> oldMap = oldList.get(i);
-                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                    String driver = String.valueOf(objectMap.get("drivers"));
-                    if (driver != null) {
-                        MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
-                        if (artifact != null) {
-                            driver = artifact.getFileName();
-                        }
-                    }
-                    if (oldMap.get("JAR_NAME").equals(driver)) { //$NON-NLS-1$
-                        sameValues = true;
-                    } else {
-                        sameValues = false;
-                        break;
+                nodeParamDriverKey = "JAR_NAME";
+            } else {
+                nodeParamDriverKey =  "drivers";
+            }
+            for (int i = 0; i < oldList.size(); i++) {
+                Map<String, Object> oldMap = oldList.get(i);
+                Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
+                String driver = String.valueOf(objectMap.get("drivers"));
+                if (driver != null) {
+                    MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(TalendTextUtils.removeQuotes(driver));
+                    if (artifact != null) {
+                        driver = artifact.getFileName();
                     }
                 }
-            } else {
-                for (int i = 0; i < oldList.size(); i++) {
-                    Map<String, Object> oldMap = oldList.get(i);
-                    Map<String, Object> objectMap = (Map<String, Object>) objectList.get(i);
-                    if (oldMap.get("JAR_NAME").equals(objectMap.get("JAR_NAME"))) { //$NON-NLS-1$
-                        sameValues = true;
-                    } else {
-                        sameValues = false;
-                        break;
-                    }
+                if (oldMap.get(nodeParamDriverKey).equals(driver)) { //$NON-NLS-1$
+                    sameValues = true;
+                } else {
+                    sameValues = false;
+                    break;
                 }
             }
 
@@ -2290,7 +2283,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
             String databaseType = ((DatabaseConnection) repositoryConnection).getDatabaseType();
             if ("JDBC".equals(databaseType)) {
                 IComponent component = node.getComponent();
-                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
                         && component.getName().startsWith("tJDBC")) {
                     isOldJDBC = true;
                 }

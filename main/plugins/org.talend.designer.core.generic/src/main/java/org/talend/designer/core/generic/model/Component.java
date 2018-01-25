@@ -194,7 +194,8 @@ public class Component extends AbstractBasicComponent {
         }
         List<ElementParameter> listParam = new ArrayList<>();
         addMainParameters(listParam, node);
-        node.setElementParameters(listParam); // initialize the parameters to setup the querystore, since it's needed for the jdbc components
+        node.setElementParameters(listParam); // initialize the parameters to setup the querystore, since it's needed
+                                              // for the jdbc components
         addPropertyParameters(listParam, node, Form.MAIN, EComponentCategory.BASIC);
         addPropertyParameters(listParam, node, Form.ADVANCED, EComponentCategory.ADVANCED);
         initializeParametersForSchema(listParam, node);
@@ -626,9 +627,9 @@ public class Component extends AbstractBasicComponent {
         param.setDisplayName(EParameterName.PROPERTY_TYPE.getDisplayName());
         param.setFieldType(EParameterFieldType.PROPERTY_TYPE);
         if (wizardDefinition != null) {
-            if(isExtraType(wizardDefinition.getName())){
-                param.setRepositoryValue("DATABASE:"+wizardDefinition.getName());
-            }else{
+            if (isExtraType(wizardDefinition.getName())) {
+                param.setRepositoryValue("DATABASE:" + wizardDefinition.getName());
+            } else {
                 param.setRepositoryValue(wizardDefinition.getName());
             }
         }
@@ -673,7 +674,7 @@ public class Component extends AbstractBasicComponent {
         newParam.setSerialized(true);
         newParam.setParentParameter(param);
         listParam.add(param);
-        
+
         ElementParameter sibling_param = new ElementParameter(node);
         sibling_param.setName("QUERYSTORE");
         sibling_param.setCategory(EComponentCategory.BASIC);
@@ -772,16 +773,15 @@ public class Component extends AbstractBasicComponent {
             listParam.add(param);
         }
     }
-    
-    private boolean isExtraType(String definame){
+
+    private boolean isExtraType(String definame) {
         IGenericDBService dbService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-                    IGenericDBService.class);
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
         }
-        if(dbService != null){
-            for(ERepositoryObjectType type:dbService.getExtraTypes()){
-                if(type.getLabel().equals(definame)){
+        if (dbService != null) {
+            for (ERepositoryObjectType type : dbService.getExtraTypes()) {
+                if (type.getLabel().equals(definame)) {
                     return true;
                 }
             }
@@ -1179,7 +1179,7 @@ public class Component extends AbstractBasicComponent {
     public boolean isDataAutoPropagated() {
         return componentDefinition.isDataAutoPropagate();
     }
-    
+
     @Override
     public boolean canParallelize() {
         return componentDefinition.isParallelize();
@@ -1583,6 +1583,22 @@ public class Component extends AbstractBasicComponent {
                             param.setRepositoryValue(param.getName());
                             param.setRepositoryValueUsed(true);
                         }
+                    } else {
+                        Properties currentProperties = ((GenericElementParameter) param).getProperties();
+                        if (currentProperties != null) {
+                            boolean isRepostory = false;
+                            for (NamedThing thing : currentProperties.getProperties()) {
+                                if (thing instanceof Property) {
+                                    if (((Property) thing).getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null) {
+                                        isRepostory = true;
+                                    }
+                                }
+                            }
+                            if (isRepostory) {
+                                param.setRepositoryValue(param.getName());
+                                param.setRepositoryValueUsed(true);
+                            }
+                        }
                     }
                     Object value = ComponentsUtils.getGenericPropertyValue(iNodeComponentProperties, param.getName());
                     if (value == null && EParameterFieldType.TABLE.equals(param.getFieldType())) {
@@ -1603,15 +1619,24 @@ public class Component extends AbstractBasicComponent {
         if (param instanceof GenericElementParameter) {
             ComponentProperties componentProperties = ((Node) ((GenericElementParameter) param).getElement())
                     .getComponentProperties();
-            Properties currentProperties = ComponentsUtils.getCurrentProperties(componentProperties, param.getName());
-            if (currentProperties == null) {
-                return false;
-            }
             Property<?> property = componentProperties.getValuedProperty(param.getName());
             if (property != null) {
                 property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, param.getName());
                 return true;
             }
+
+            Properties currentProperties = ((GenericElementParameter) param).getProperties();
+            if (currentProperties != null) {
+                boolean isRepostory = false;
+                for (NamedThing thing : currentProperties.getProperties()) {
+                    if (thing instanceof Property) {
+                        ((Property) thing).setTaggedValue(IGenericConstants.REPOSITORY_VALUE, param.getName());
+                        isRepostory = true;
+                    }
+                }
+                return isRepostory;
+            }
+
         }
         return false;
     }

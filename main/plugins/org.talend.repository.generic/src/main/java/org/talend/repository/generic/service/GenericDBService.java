@@ -57,6 +57,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
@@ -84,6 +85,7 @@ import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
+
 import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
@@ -342,26 +344,22 @@ public class GenericDBService implements IGenericDBService{
                 // copy the value
                 String proName = ((org.talend.daikon.properties.property.Property) otherProp).getName();
                 Object value = ((org.talend.daikon.properties.property.Property) otherProp).getStoredValue();
-                if(value == null){
-                    continue;
-                }
-                if(proName.equals("jdbcUrl")){//$NON-NLS-1$
-                    dbConnection.setURL((String)value);
-                }else if(proName.equals("driverClass")){//$NON-NLS-1$
-                    dbConnection.setDriverClass((String)value);
-                }else if(proName.equals("userId")){//$NON-NLS-1$
-                    dbConnection.setUsername((String)value);
-                }else if(proName.equals("password")){//$NON-NLS-1$
-                    dbConnection.setPassword((String)value);
-                }else if(proName.equals("mappingFile")){//$NON-NLS-1$
-                    dbConnection.setDbmsId((String)value);
-                }else if(proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property)otherProp)){//$NON-NLS-1$
+                if (proName.equals("jdbcUrl")) {//$NON-NLS-1$
+                    dbConnection.setURL((String) value);
+                } else if (proName.equals("driverClass")) {//$NON-NLS-1$
+                    dbConnection.setDriverClass((String) value);
+                } else if (proName.equals("userId")) {//$NON-NLS-1$
+                    dbConnection.setUsername((String) value);
+                } else if (proName.equals("password")) {//$NON-NLS-1$
+                    dbConnection.setPassword((String) value);
+                } else if (proName.equals("mappingFile")) {//$NON-NLS-1$
+                    dbConnection.setDbmsId((String) value);
+                } else if (proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property) otherProp)) {//$NON-NLS-1$
                     List<String> listString = (List<String>) value;
                     String jars = GenericTableUtils.getDriverJarPaths(listString);
-                    if(jars != null){
+                    if (jars != null) {
                         dbConnection.setDriverJarPath(jars);
                     }
-                    
                 }
             }
         }
@@ -369,18 +367,21 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public String getMVNPath(String value) {
-        String valueNoQuote = TalendQuoteUtils.removeQuotes(value);
-        boolean isMvnUri = MavenUrlHelper.isMvnUrl(valueNoQuote);
-        ModuleNeeded module = null;
-        if (isMvnUri) {
-            module = new ModuleNeeded("", "", true, valueNoQuote);//$NON-NLS-1$ //$NON-NLS-2$
-        } else {
-            module = new ModuleNeeded("", valueNoQuote, "", true);//$NON-NLS-1$ //$NON-NLS-2$
-        }
-        // get maven uri again incase it is customized
-        String mvnPath = module.getMavenUri();
-        if (mvnPath != null) {
-            return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
+        boolean containContextParam = ContextParameterUtils.isContainContextParam(value);
+        if (!containContextParam) {
+            String valueNoQuote = TalendQuoteUtils.removeQuotes(value);
+            boolean isMvnUri = MavenUrlHelper.isMvnUrl(valueNoQuote);
+            ModuleNeeded module = null;
+            if (isMvnUri) {
+                module = new ModuleNeeded("", "", true, valueNoQuote);//$NON-NLS-1$ //$NON-NLS-2$
+            } else {
+                module = new ModuleNeeded("", valueNoQuote, "", true);//$NON-NLS-1$ //$NON-NLS-2$
+            }
+            // get maven uri again incase it is customized
+            String mvnPath = module.getMavenUri();
+            if (mvnPath != null) {
+                return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
+            }
         }
         return value;
     }
