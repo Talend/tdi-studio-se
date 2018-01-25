@@ -58,7 +58,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                 DatabaseConnection dbConnection = connection;
                 String dbType = dbConnection.getDatabaseType();
                 if(dbType == null || !dbType.equals("General JDBC")){
-                    return null;
+                    return  ExecutionResult.NOTHING_TO_DO;
                 }
                 String jdbcType = "JDBC";
                 dbConnection.setDatabaseType(jdbcType);
@@ -69,7 +69,7 @@ public class NewJDBCConnectionMigrationTask extends AbstractJobMigrationTask{
                             IGenericDBService.class);
                 }
                 if(dbService == null){
-                    return null; 
+                    return  ExecutionResult.NOTHING_TO_DO; 
                 }
                 boolean isContextMode = connection.isContextMode();
                 Properties properties = dbService.getComponentProperties(jdbcType, dbConnection.getId());
