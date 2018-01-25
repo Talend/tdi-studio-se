@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.core.model.components.AbstractLayerComponent;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -23,7 +24,7 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 /**
  * ggu class global comment. Detailled comment
  */
-public abstract class AbstractComponent implements IComponent {
+public abstract class AbstractComponent extends AbstractLayerComponent {
 
     private String paletteType;
 

@@ -116,6 +116,7 @@ import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.DEFAULTType;
 import org.talend.designer.core.model.utils.emf.component.DocumentRoot;
 import org.talend.designer.core.model.utils.emf.component.FORMATType;
+import org.talend.designer.core.model.utils.emf.component.HEADERType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTSType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.component.INSTALLType;
@@ -4251,6 +4252,17 @@ public class EmfComponent extends AbstractBasicComponent {
     @Override
     public String getTemplateFolder() {
         return getPathSource() + "/" + getName();
+    }
+
+    @Override
+    public boolean isActiveDbColumns() {
+        if (compType != null) {
+            HEADERType header = compType.getHEADER();
+            if (header != null) {
+                return header.isACTIVE_DB_COLUMNS();
+            }
+        }
+        return super.isActiveDbColumns();
     }
 
 }
