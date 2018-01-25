@@ -584,7 +584,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         formData = new FormData();
         formData.top = new FormAttachment(killBtn, 0, SWT.TOP);
         formData.left = new FormAttachment(killBtn, 0, SWT.RIGHT);
-        formData.right = new FormAttachment(killBtn, 10 + 70, SWT.RIGHT);
+        formData.right = new FormAttachment(killBtn, 30 + 70, SWT.RIGHT);
         formData.height = 30;
         clearTracePerfBtn.setLayoutData(formData);
 
