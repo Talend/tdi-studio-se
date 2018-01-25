@@ -249,6 +249,7 @@ public class GenericDBService implements IGenericDBService{
                     }
                     MetadataConnectionUtils.fillConnectionInformation(connItem, metadataConnection);
                     factory.save(connItem);
+                    updateConnectionOnDQSide(creation, connItem);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     throw new CoreException(new Status(IStatus.ERROR, IGenericConstants.REPOSITORY_PLUGIN_ID,
@@ -264,7 +265,7 @@ public class GenericDBService implements IGenericDBService{
         if (!creation) {
             GenericUpdateManager.updateGenericConnection(item, oldMetadataTable);
         }
-        updateConnectionOnDQSide(creation, item);
+      
     }
 
     /**
