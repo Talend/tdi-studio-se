@@ -84,10 +84,12 @@ if (sftp) { // *** sftp *** //
 %>
 		String fileName_<%=cid %> = (<%=filename %>).replaceAll("\\\\","/");
 		String dirName_<%=cid %> = null;
-		Boolean dirExist_<%=cid %> = null;
+		boolean dirExist_<%=cid %> = false;
+		boolean needDirChange_<%=cid %> = false;
 		String[] allFileNames_<%=cid %> = null;
 
 		if (fileName_<%=cid %>.contains("/")) {
+			needDirChange_<%=cid %> = true;
 			//change directory if exist
 			dirName_<%=cid %> = fileName_<%=cid %>.substring(0, fileName_<%=cid %>.lastIndexOf("/"));
 			fileName_<%=cid %> = fileName_<%=cid %>.substring(fileName_<%=cid %>.lastIndexOf('/') + 1, fileName_<%=cid %>.length());
@@ -100,7 +102,7 @@ if (sftp) { // *** sftp *** //
 			}
 		}
 
-		if (dirExist_<%=cid %> == null || dirExist_<%=cid %>) {
+		if (!needDirChange_<%=cid %> || dirExist_<%=cid %>) {
 			allFileNames_<%=cid %> = java.util.Arrays.stream(ftp_<%=cid %>.listFiles()).filter(org.apache.commons.net.ftp.FTPFile::isFile).map(org.apache.commons.net.ftp.FTPFile::getName)
 				.filter(fileName_<%=cid %>::equals).toArray(String[]::new);
 		}
