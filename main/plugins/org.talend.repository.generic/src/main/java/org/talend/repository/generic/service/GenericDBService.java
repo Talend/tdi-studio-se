@@ -106,8 +106,8 @@ public class GenericDBService implements IGenericDBService{
             return map;
         }
         ConnectionItem gitem = (ConnectionItem) item;
-        Connection connection = (Connection) gitem.getConnection();
-        ComponentWizard componentWizard = internalService.getComponentWizard(typeName, property.getId());;
+        Connection connection = gitem.getConnection();
+        ComponentWizard componentWizard = internalService.getComponentWizard(typeName, property.getId());
         if(!isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
             ComponentProperties componentProperties = ComponentsUtils
                     .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
@@ -128,8 +128,15 @@ public class GenericDBService implements IGenericDBService{
         
         List<Form> forms = componentWizard.getForms();
         Element baseElement = new FakeElement("");//$NON-NLS-1$
+        Form form = forms.get(0);
+
+        // Set a default mappingFile for JDBC when creating
+        if (isCreation && "JDBC".equalsIgnoreCase(typeName)) { //$NON-NLS-1$
+            form.setValue("mappingFile", "mysql_id"); //$NON-NLS-1$//$NON-NLS-2$
+        }
+
         DBDynamicComposite dynamicComposite = new DBDynamicComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
-                baseElement,(ConnectionItem)property.getItem(), true, composite.getBackground(), forms.get(0), false);
+                baseElement, (ConnectionItem) property.getItem(), true, composite.getBackground(), form, false);
         dynamicComposite.setLayoutData(createMainFormData(true));
         map.put("DynamicComposite", dynamicComposite);
         
