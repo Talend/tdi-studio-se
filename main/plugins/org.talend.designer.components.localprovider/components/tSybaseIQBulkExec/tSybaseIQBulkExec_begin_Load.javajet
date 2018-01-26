@@ -10,12 +10,6 @@ String onFileError = ElementParameterParser.getValue(node,"__ON_FILE_ERROR__");
 String messageLog = ElementParameterParser.getValue(node,"__MESSAGE_LOG_LOAD__").trim();
 String rowLog = ElementParameterParser.getValue(node,"__ROW_LOG_LOAD__").trim();
 
-String fromClause = "from";
-if(isLocal){
-	fromClause = "using client file";
-}
-
-
 List<IMetadataColumn> columnList = getColumnList(node);
 
 if(useExistingConn) {
@@ -179,9 +173,9 @@ if(columnList != null && columnList.size() > 0) {
 
     String strSQL_<%=cid%> = "LOAD TABLE " + tableName_<%=cid %> + loadingCols_<%=cid%>.toString() ;
 <%
-	if ("SYBSEIQ_12_15".equals(dbVersion)||"SYBSEIQ_16".equals(dbVersion)) {
+	if (("SYBSEIQ_12_15".equals(dbVersion) || "SYBSEIQ_16".equals(dbVersion) || "SYBSEIQ_16_SA".equals(dbVersion)) && !isLocal) {
 %>
-		strSQL_<%=cid%> +=" <%=fromClause%> '" + <%=fileName %> + "' ";
+		strSQL_<%=cid%> +=" from '" + <%=fileName %> + "' ";
 <%
     } else {
 %>
