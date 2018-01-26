@@ -15,6 +15,7 @@ package org.talend.designer.dbmap.utils.problems;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -137,8 +138,8 @@ public class ProblemsAnalyser {
             return null;
         }
         List<IConnection> inputConnections = (List<IConnection>) component.getIncomingConnections();
-        String handledTableName = "";
-        for (IConnection iconn : inputConnections) {
+        IConnection iconn = getConnectonByName(inputConnections, tableName);
+        if (iconn != null) {
             boolean inputIsELTDBMap = false;
             INode source = iconn.getSource();
             String schemaValue = "";
@@ -167,18 +168,30 @@ public class ProblemsAnalyser {
                 sourceTable = schemaNoQuote + ".";
             }
             sourceTable = sourceTable + tableNoQuote;
-            if (sourceTable.equals(tableName)) {
-                boolean needAlias = needAlias(schemaValue);
-                if (!needAlias) {
-                    needAlias = needAlias(tableValue);
-                }
-                if (needAlias) {
-                    String errorMessage = Messages.getString("ProblemsAnalyser.needAlias.error", tableName);
-                    return new Problem(null, errorMessage, ProblemStatus.WARNING);
-                }
+
+            boolean needAlias = needAlias(schemaValue);
+            if (!needAlias) {
+                needAlias = needAlias(tableValue);
+            }
+            if (needAlias) {
+                String errorMessage = Messages.getString("ProblemsAnalyser.needAlias.error1", tableName, sourceTable);
+                return new Problem(null, errorMessage, ProblemStatus.WARNING);
             }
         }
         return null;
+    }
+
+    private IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {
+        IConnection retConnection = null;
+        for (IConnection iconn : inputConnections) {
+            IMetadataTable metadataTable = iconn.getMetadataTable();
+            String tName = iconn.getName();
+            if (tName.equals(metaTableName) && metadataTable != null) {
+                retConnection = iconn;
+                break;
+            }
+        }
+        return retConnection;
     }
 
     public boolean needAlias(String value) {
