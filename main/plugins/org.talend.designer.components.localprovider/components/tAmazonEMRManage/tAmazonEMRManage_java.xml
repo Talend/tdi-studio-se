@@ -306,30 +306,30 @@
 			<ITEMS>
 				<ITEM NAME="NAME" FIELD="OPENED_LIST">
 					<ITEMS DEFAULT="HADOOP">
-                  <ITEM NAME="HADOOP" VALUE="HADOOP" />
-                  <ITEM NAME="ZEPPELIN" VALUE="ZEPPELIN" />
-                  <ITEM NAME="LIVY" VALUE="LIVY" />
-                  <ITEM NAME="TEZ" VALUE="TEZ" />
-                  <ITEM NAME="FLINK" VALUE="FLINK" />
-                  <ITEM NAME="GANGLIA" VALUE="GANGLIA" />
-                  <ITEM NAME="HBASE" VALUE="HBASE" />
-                  <ITEM NAME="PIG" VALUE="PIG" />
-                  <ITEM NAME="HIVE" VALUE="HIVE" />
-                  <ITEM NAME="PRESTO" VALUE="PRESTO" />
-                  <ITEM NAME="ZOOKEEPER" VALUE="ZOOKEEPER" />
-                  <ITEM NAME="MXNET" VALUE="MXNET" />
-                  <ITEM NAME="SQOOP" VALUE="SQOOP" />
-                  <ITEM NAME="MAHOUT" VALUE="MAHOUT" />
-                  <ITEM NAME="HUE" VALUE="HUE" />
-                  <ITEM NAME="PHOENIX" VALUE="PHOENIX" />
-                  <ITEM NAME="OOZIE" VALUE="OOZIE" />
-                  <ITEM NAME="SPARK" VALUE="SPARK" />
-                  <ITEM NAME="HCATALOG" VALUE="HCATALOG" />
-                  <ITEM NAME="PRESTO-SANDBOX" VALUE="PRESTO-SANDBOX" />
-                  <ITEM NAME="SQOOP-SANDBOX" VALUE="SQOOP-SANDBOX" />
-                  <ITEM NAME="ZEPPELIN-SANDBOX" VALUE="ZEPPELIN-SANDBOX" />
-                  <ITEM NAME="ZOOKEEPER-SANDBOX" VALUE="ZOOKEEPER-SANDBOX" />
-                  <ITEM NAME="OOZIE-SANDBOX" VALUE="OOZIE-SANDBOX" />                  
+                  <ITEM NAME="HADOOP" VALUE="&quot;HADOOP&quot;" />
+                  <ITEM NAME="ZEPPELIN" VALUE="&quot;ZEPPELIN&quot;" />
+                  <ITEM NAME="LIVY" VALUE="&quot;LIVY&quot;" />
+                  <ITEM NAME="TEZ" VALUE="&quot;TEZ&quot;" />
+                  <ITEM NAME="FLINK" VALUE="&quot;FLINK&quot;" />
+                  <ITEM NAME="GANGLIA" VALUE="&quot;GANGLIA&quot;" />
+                  <ITEM NAME="HBASE" VALUE="&quot;HBASE&quot;" />
+                  <ITEM NAME="PIG" VALUE="&quot;PIG&quot;" />
+                  <ITEM NAME="HIVE" VALUE="&quot;HIVE&quot;" />
+                  <ITEM NAME="PRESTO" VALUE="&quot;PRESTO&quot;" />
+                  <ITEM NAME="ZOOKEEPER" VALUE="&quot;ZOOKEEPER&quot;" />
+                  <ITEM NAME="MXNET" VALUE="&quot;MXNET&quot;" />
+                  <ITEM NAME="SQOOP" VALUE="&quot;SQOOP&quot;" />
+                  <ITEM NAME="MAHOUT" VALUE="&quot;MAHOUT&quot;" />
+                  <ITEM NAME="HUE" VALUE="&quot;HUE&quot;" />
+                  <ITEM NAME="PHOENIX" VALUE="&quot;PHOENIX&quot;" />
+                  <ITEM NAME="OOZIE" VALUE="&quot;OOZIE&quot;" />
+                  <ITEM NAME="SPARK" VALUE="&quot;SPARK&quot;" />
+                  <ITEM NAME="HCATALOG" VALUE="&quot;HCATALOG&quot;" />
+                  <ITEM NAME="PRESTO-SANDBOX" VALUE="&quot;PRESTO-SANDBOX&quot;" />
+                  <ITEM NAME="SQOOP-SANDBOX" VALUE="&quot;SQOOP-SANDBOX&quot;" />
+                  <ITEM NAME="ZEPPELIN-SANDBOX" VALUE="&quot;ZEPPELIN-SANDBOX&quot;" />
+                  <ITEM NAME="ZOOKEEPER-SANDBOX" VALUE="&quot;ZOOKEEPER-SANDBOX&quot;" />
+                  <ITEM NAME="OOZIE-SANDBOX" VALUE="&quot;OOZIE-SANDBOX&quot;" />                  
 					</ITEMS>
 			   </ITEM>
 			</ITEMS>

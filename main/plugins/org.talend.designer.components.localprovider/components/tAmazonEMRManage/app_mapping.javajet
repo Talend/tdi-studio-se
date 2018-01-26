@@ -147,7 +147,7 @@ if(!use_customize_version){
 				%>
                 apps_<%=cid%>.add(new com.amazonaws.services.elasticmapreduce.model.Application()
                 <%if(parameterUtil.isValid(application.get("NAME"))){%>
-    			.withName("<%=application.get("NAME")%>")
+    			.withName(<%=application.get("NAME")%>)
     			<%}%>
     			);
 
