@@ -23,6 +23,7 @@ exmamples :
     "component_delegate":"tDBInput",
     "component":"tSnowflakeInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "mapping":{
             "connection.account":"HOST",        

@@ -188,7 +188,6 @@ if(hasInput){
             nb_line_<%=cid %>++;
             <%if(hasMainOutput){
                 %>
-            	java.lang.Iterable<?> outgoingMainRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
             	if(!(writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback)) {
               		// For no feedback writer,just pass the input record to the output
               		if (data_<%=cid%>!=null) {

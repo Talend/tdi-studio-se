@@ -89,7 +89,7 @@ if(hasInput){
             }
             if(mainIrToRow != null) {
             %>
-            	java.util.Iterator outgoingMainRecordsIt_<%=cid%> = outgoingMainRecordsList_<%=cid%>.iterator();
+            	outgoingMainRecordsIt_<%=cid%> = outgoingMainRecordsList_<%=cid%>.iterator();
             <%
             }
             if(rejectIrToRow != null) {

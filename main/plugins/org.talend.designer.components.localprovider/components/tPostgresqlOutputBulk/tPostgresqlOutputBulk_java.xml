@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/PostgreSQL</FAMILY>
+    <FAMILY>Databases/DB Specifics/PostgreSQL</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

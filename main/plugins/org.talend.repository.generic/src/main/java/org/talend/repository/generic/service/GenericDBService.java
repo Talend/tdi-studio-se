@@ -57,7 +57,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.core.ui.check.IChecker;
@@ -83,6 +85,7 @@ import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 import org.talend.repository.generic.update.GenericUpdateManager;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
+
 import orgomg.cwm.objectmodel.core.CoreFactory;
 import orgomg.cwm.objectmodel.core.TaggedValue;
 
@@ -103,8 +106,8 @@ public class GenericDBService implements IGenericDBService{
             return map;
         }
         ConnectionItem gitem = (ConnectionItem) item;
-        Connection connection = (Connection) gitem.getConnection();
-        ComponentWizard componentWizard = internalService.getComponentWizard(typeName, property.getId());;
+        Connection connection = gitem.getConnection();
+        ComponentWizard componentWizard = internalService.getComponentWizard(typeName, property.getId());
         if(!isCreation && ((ConnectionItem)item).getConnection().getCompProperties() != null){
             ComponentProperties componentProperties = ComponentsUtils
                     .getComponentPropertiesFromSerialized(connection.getCompProperties(), connection);
@@ -125,8 +128,15 @@ public class GenericDBService implements IGenericDBService{
         
         List<Form> forms = componentWizard.getForms();
         Element baseElement = new FakeElement("");//$NON-NLS-1$
+        Form form = forms.get(0);
+
+        // Set a default mappingFile for JDBC when creating
+        if (isCreation && "JDBC".equalsIgnoreCase(typeName)) { //$NON-NLS-1$
+            form.setValue("mappingFile", "mysql_id"); //$NON-NLS-1$//$NON-NLS-2$
+        }
+
         DBDynamicComposite dynamicComposite = new DBDynamicComposite(composite, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
-                baseElement,(ConnectionItem)property.getItem(), true, composite.getBackground(), forms.get(0), false);
+                baseElement, (ConnectionItem) property.getItem(), true, composite.getBackground(), form, false);
         dynamicComposite.setLayoutData(createMainFormData(true));
         map.put("DynamicComposite", dynamicComposite);
         
@@ -234,6 +244,10 @@ public class GenericDBService implements IGenericDBService{
                     }
                     Connection connection = connItem.getConnection();
                     convertPropertiesToDBElements(form.getProperties(), connection);
+                    // set the name and label to Connection model.
+                    String label = connItem.getProperty().getLabel();
+                    connection.setName(label);
+                    connection.setLabel(label);
                     IMetadataConnection metadataConnection = null;
                     if (contextName == null) {
                         metadataConnection = ConvertionHelper.convert(connection, true);
@@ -242,6 +256,7 @@ public class GenericDBService implements IGenericDBService{
                     }
                     MetadataConnectionUtils.fillConnectionInformation(connItem, metadataConnection);
                     factory.save(connItem);
+                    updateConnectionOnDQSide(creation, connItem);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     throw new CoreException(new Status(IStatus.ERROR, IGenericConstants.REPOSITORY_PLUGIN_ID,
@@ -257,7 +272,7 @@ public class GenericDBService implements IGenericDBService{
         if (!creation) {
             GenericUpdateManager.updateGenericConnection(item, oldMetadataTable);
         }
-        updateConnectionOnDQSide(creation, item);
+      
     }
 
     /**
@@ -275,9 +290,6 @@ public class GenericDBService implements IGenericDBService{
         }
         if (tdqRepService != null) {
             // MOD qiongli 2012-11-19 TDQ-6287
-            String label = connectionItem.getProperty().getLabel();
-            connectionItem.getConnection().setName(label);
-            connectionItem.getConnection().setLabel(label);
             if (creation) {
                 tdqRepService.notifySQLExplorer(connectionItem);
                 tdqRepService.openConnectionEditor(connectionItem);
@@ -340,26 +352,22 @@ public class GenericDBService implements IGenericDBService{
                 // copy the value
                 String proName = ((org.talend.daikon.properties.property.Property) otherProp).getName();
                 Object value = ((org.talend.daikon.properties.property.Property) otherProp).getStoredValue();
-                if(value == null){
-                    continue;
-                }
-                if(proName.equals("jdbcUrl")){//$NON-NLS-1$
-                    dbConnection.setURL((String)value);
-                }else if(proName.equals("driverClass")){//$NON-NLS-1$
-                    dbConnection.setDriverClass((String)value);
-                }else if(proName.equals("userId")){//$NON-NLS-1$
-                    dbConnection.setUsername((String)value);
-                }else if(proName.equals("password")){//$NON-NLS-1$
-                    dbConnection.setPassword((String)value);
-                }else if(proName.equals("mappingFile")){//$NON-NLS-1$
-                    dbConnection.setDbmsId((String)value);
-                }else if(proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property)otherProp)){//$NON-NLS-1$
+                if (proName.equals("jdbcUrl")) {//$NON-NLS-1$
+                    dbConnection.setURL((String) value);
+                } else if (proName.equals("driverClass")) {//$NON-NLS-1$
+                    dbConnection.setDriverClass((String) value);
+                } else if (proName.equals("userId")) {//$NON-NLS-1$
+                    dbConnection.setUsername((String) value);
+                } else if (proName.equals("password")) {//$NON-NLS-1$
+                    dbConnection.setPassword((String) value);
+                } else if (proName.equals("mappingFile")) {//$NON-NLS-1$
+                    dbConnection.setDbmsId((String) value);
+                } else if (proName.equals("drivers") && GenericTypeUtils.isListStringType((org.talend.daikon.properties.property.Property) otherProp)) {//$NON-NLS-1$
                     List<String> listString = (List<String>) value;
                     String jars = GenericTableUtils.getDriverJarPaths(listString);
-                    if(jars != null){
+                    if (jars != null) {
                         dbConnection.setDriverJarPath(jars);
                     }
-                    
                 }
             }
         }
@@ -367,11 +375,21 @@ public class GenericDBService implements IGenericDBService{
 
     @Override
     public String getMVNPath(String value) {
-        ModuleNeeded module = new ModuleNeeded("", value, "", true);//$NON-NLS-1$ //$NON-NLS-2$
-        String mvnPath = module.getMavenUri();
-        if(mvnPath != null && mvnPath.endsWith("/jar")){//$NON-NLS-1$
-            mvnPath = mvnPath.substring(0, mvnPath.lastIndexOf("/"));//$NON-NLS-1$
-            return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
+        boolean containContextParam = ContextParameterUtils.isContainContextParam(value);
+        if (!containContextParam) {
+            String valueNoQuote = TalendQuoteUtils.removeQuotes(value);
+            boolean isMvnUri = MavenUrlHelper.isMvnUrl(valueNoQuote);
+            ModuleNeeded module = null;
+            if (isMvnUri) {
+                module = new ModuleNeeded("", "", true, valueNoQuote);//$NON-NLS-1$ //$NON-NLS-2$
+            } else {
+                module = new ModuleNeeded("", valueNoQuote, "", true);//$NON-NLS-1$ //$NON-NLS-2$
+            }
+            // get maven uri again incase it is customized
+            String mvnPath = module.getMavenUri();
+            if (mvnPath != null) {
+                return TalendQuoteUtils.addQuotesIfNotExist(mvnPath);
+            }
         }
         return value;
     }

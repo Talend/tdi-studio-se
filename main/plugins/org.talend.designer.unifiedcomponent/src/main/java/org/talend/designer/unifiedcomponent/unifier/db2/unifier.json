@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tDB2Input",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tDB2Output",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tDB2Close",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tDB2Commit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tDB2Connection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tDB2Rollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tDB2Row",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -45,6 +52,7 @@
     "component_delegate":"tDBSCDELT",
     "component":"tDB2SCDELT",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -52,6 +60,7 @@
     "component_delegate":"tDBCDC",
     "component":"tDB2CDC",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -59,6 +68,7 @@
     "component_delegate":"tDBBulkExec",
     "component":"tDB2BulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -66,6 +76,7 @@
     "component_delegate":"tDBSCD",
     "component":"tDB2SCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -73,6 +84,7 @@
     "component_delegate":"tDBSP",
     "component":"tDB2SP",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 }

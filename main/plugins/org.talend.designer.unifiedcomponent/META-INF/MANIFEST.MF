@@ -29,8 +29,8 @@ Service-Component: OSGI-INF/delegates/tDBInput.xml,OSGI-INF/delegates/tDBOutput.
  OSGI-INF/postgresql.xml,OSGI-INF/teradata.xml,OSGI-INF/vertica.xml,
  OSGI-INF/mssql.xml,OSGI-INF/informix.xml,OSGI-INF/greenplum.xml,
  OSGI-INF/firebird.xml,OSGI-INF/netezza.xml,OSGI-INF/postgresplus.xml,
- OSGI-INF/paraccel.xml,OSGI-INF/sybase.xml,OSGI-INF/access.xml,
+ OSGI-INF/paraccel.xml,OSGI-INF/sybase.xml,OSGI-INF/access.xml,OSGI-INF/ingres.xml,OSGI-INF/interbase.xml,
+ OSGI-INF/sqlite.xml,OSGI-INF/vector_wise.xml,OSGI-INF/saphana.xml,
+ OSGI-INF/snowflake.xml,OSGI-INF/sybaseIQ.xml,OSGI-INF/exasol.xml,OSGI-INF/memSQL.xml,
  OSGI-INF/amazon_aurora.xml,OSGI-INF/amazon_mysql.xml,OSGI-INF/amazon_oracle.xml,
- OSGI-INF/amazon_redshift.xml,OSGI-INF/ingres.xml,OSGI-INF/interbase.xml,
- OSGI-INF/sqlite.xml,OSGI-INF/vector_wise.xml,OSGI-INF/sas.xml,OSGI-INF/saphana.xml,
- OSGI-INF/snowflake.xml
+ OSGI-INF/amazon_redshift.xml,OSGI-INF/jdbc.xml

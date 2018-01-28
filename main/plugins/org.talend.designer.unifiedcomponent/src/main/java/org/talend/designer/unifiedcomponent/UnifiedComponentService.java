@@ -360,21 +360,23 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             IComponent delegateComp = service.getDelegateComponent(next);
             if (delegateComp instanceof DelegateComponent) {
                 UnifiedObject unifiedObject = ((DelegateComponent) delegateComp).getUnifiedObjectByName(next.getName());
-                hideAll = true;
-                for (int i = 0; i < originFamilies.length; i++) {
-                    String oFamily = originFamilies[i];
-                    // if no hide family is not set in json , will hide all
-                    if (!unifiedObject.getHideFamilies().isEmpty() && !unifiedObject.getHideFamilies().contains(oFamily)) {
-                        hideAll = false;
-                    } else {
-                        familyChanged = true;
-                        originFamilies[i] = null;
-                        translatedFamilies[i] = null;
+                if (unifiedObject != null) {
+                    hideAll = true;
+                    for (int i = 0; i < originFamilies.length; i++) {
+                        String oFamily = originFamilies[i];
+                        // if no hide family is not set in json , will hide all
+                        if (!unifiedObject.getHideFamilies().isEmpty() && !unifiedObject.getHideFamilies().contains(oFamily)) {
+                            hideAll = false;
+                        } else {
+                            familyChanged = true;
+                            originFamilies[i] = null;
+                            translatedFamilies[i] = null;
+                        }
                     }
-                }
-                if (hideAll) {
-                    familyChanged = false;
-                    iterator.remove();
+                    if (hideAll) {
+                        familyChanged = false;
+                        iterator.remove();
+                    }
                 }
             }
             if (familyChanged) {

@@ -15,7 +15,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/SQLite</FAMILY>
+    <FAMILY>Databases/DB Specifics/SQLite</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

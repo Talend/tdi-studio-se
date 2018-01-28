@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tPostgresPlusInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tPostgresPlusOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tPostgresPlusClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tPostgresPlusCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tPostgresPlusConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tPostgresPlusRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tPostgresPlusRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -45,6 +52,7 @@
     "component_delegate":"tDBSCDELT",
     "component":"tPostgresPlusSCDELT",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -52,18 +60,21 @@
     "component_delegate":"tDBBulkExec",
     "component":"tPostgresPlusBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBOutputBulk",
     "component":"tPostgresPlusOutputBulk",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulkExec",
     "component":"tPostgresPlusOutputBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -71,6 +82,7 @@
     "component_delegate":"tDBSCD",
     "component":"tPostgresPlusSCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 }

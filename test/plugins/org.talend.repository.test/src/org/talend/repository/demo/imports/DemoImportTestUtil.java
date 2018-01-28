@@ -36,75 +36,76 @@ import org.talend.repository.ui.actions.importproject.DemoProjectBean;
  */
 public class DemoImportTestUtil {
 
-    public static List<ResourcesManager> getResourceManagers(List<DemoProjectBean> checkedProjectBean) {
-        List<ResourcesManager> resManagers = new ArrayList<ResourcesManager>();
-        try {
-            for (DemoProjectBean pro : checkedProjectBean) {
-                ResourcesManager resManager = null;
+	public static List<ResourcesManager> getResourceManagers(List<DemoProjectBean> checkedProjectBean) {
+		List<ResourcesManager> resManagers = new ArrayList<ResourcesManager>();
+		try {
+			for (DemoProjectBean pro : checkedProjectBean) {
+				ResourcesManager resManager = null;
 
-                Bundle bundle = Platform.getBundle(pro.getPluginId());
-                URL demoURL = FileLocator.find(bundle, new Path(pro.getDemoProjectFilePath()), null);
-                demoURL = FileLocator.toFileURL(demoURL);
-                String filePath = new Path(demoURL.getFile()).toOSString();
-                File srcFile = new File(filePath);
-                FileResourcesUnityManager fileUnityManager = ResourcesManagerFactory.getInstance()
-                        .createFileUnityManager(srcFile);
-                resManager = fileUnityManager.doUnify();
-                if (resManager != null) {
-                    resManagers.add(resManager);
-                }
-            }
-        } catch (ZipException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TarException e) {
-            e.printStackTrace();
-        }
-        return resManagers;
-    }
+				Bundle bundle = Platform.getBundle(pro.getPluginId());
+				URL demoURL = FileLocator.find(bundle, new Path(pro.getDemoProjectFilePath()), null);
+				demoURL = FileLocator.toFileURL(demoURL);
+				String filePath = new Path(demoURL.getFile()).toOSString();
+				File srcFile = new File(filePath);
+				FileResourcesUnityManager fileUnityManager = ResourcesManagerFactory.getInstance()
+						.createFileUnityManager(srcFile);
+				resManager = fileUnityManager.doUnify();
+				if (resManager != null) {
+					resManagers.add(resManager);
+				}
+			}
+		} catch (ZipException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TarException e) {
+			e.printStackTrace();
+		}
+		return resManagers;
+	}
 
-    public static ResourcesManager getResourceManager(DemoProjectBean checkedProjectBean) {
-        ResourcesManager resManager = null;
-        try {
-            Bundle bundle = Platform.getBundle(checkedProjectBean.getPluginId());
-            URL demoURL = FileLocator.find(bundle, new Path(checkedProjectBean.getDemoProjectFilePath()), null);
-            demoURL = FileLocator.toFileURL(demoURL);
-            String filePath = new Path(demoURL.getFile()).toOSString();
-            File srcFile = new File(filePath);
-            FileResourcesUnityManager fileUnityManager = ResourcesManagerFactory.getInstance().createFileUnityManager(srcFile);
-            resManager = fileUnityManager.doUnify();
-        } catch (ZipException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TarException e) {
-            e.printStackTrace();
-        }
-        return resManager;
-    }
+	public static ResourcesManager getResourceManager(DemoProjectBean checkedProjectBean) {
+		ResourcesManager resManager = null;
+		try {
+			Bundle bundle = Platform.getBundle(checkedProjectBean.getPluginId());
+			URL demoURL = FileLocator.find(bundle, new Path(checkedProjectBean.getDemoProjectFilePath()), null);
+			demoURL = FileLocator.toFileURL(demoURL);
+			String filePath = new Path(demoURL.getFile()).toOSString();
+			File srcFile = new File(filePath);
+			FileResourcesUnityManager fileUnityManager = ResourcesManagerFactory.getInstance()
+					.createFileUnityManager(srcFile);
+			resManager = fileUnityManager.doUnify();
+		} catch (ZipException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TarException e) {
+			e.printStackTrace();
+		}
+		return resManager;
+	}
 
-    public static List<File> collectProjectFilesFromDirectory(File file, String filesExtension, boolean nested) {
-        List<File> results = new ArrayList<File>();
-        if (file.isFile()) {
-            boolean canAdd = true;
-            if ((filesExtension != null && !file.getName().endsWith(filesExtension))) {
-                canAdd = false;
-            }
-            if (canAdd) {
-                results.add(file);
-            }
-        } else if (file.isDirectory() && nested) {
-            File[] files = file.listFiles();
-            for (File file2 : files) {
-                results.addAll(collectProjectFilesFromDirectory(file2, filesExtension, nested));
-            }
-        }
+	public static List<File> collectProjectFilesFromDirectory(File file, String filesExtension, boolean nested) {
+		List<File> results = new ArrayList<File>();
+		if (file.isFile()) {
+			boolean canAdd = true;
+			if ((filesExtension != null && !file.getName().endsWith(filesExtension))) {
+				canAdd = false;
+			}
+			if (canAdd) {
+				results.add(file);
+			}
+		} else if (file.isDirectory() && nested) {
+			File[] files = file.listFiles();
+			for (File file2 : files) {
+				results.addAll(collectProjectFilesFromDirectory(file2, filesExtension, nested));
+			}
+		}
 
-        return results;
-    }
+		return results;
+	}
 }

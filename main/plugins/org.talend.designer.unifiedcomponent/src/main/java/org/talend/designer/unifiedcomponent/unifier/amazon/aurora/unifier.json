@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tAmazonAuroraInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -9,29 +10,34 @@
     "component_delegate":"tDBOutput",
     "component" : "tAmazonAuroraOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tAmazonAuroraClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tAmazonAuroraCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tAmazonAuroraConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tAmazonAuroraRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 }
 ]

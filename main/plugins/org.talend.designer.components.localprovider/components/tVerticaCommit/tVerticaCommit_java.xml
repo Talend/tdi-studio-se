@@ -16,7 +16,7 @@
   </HEADER>
   
   <FAMILIES>
-    <FAMILY>Databases/Vertica</FAMILY>
+    <FAMILY>Databases/DB Specifics/Vertica</FAMILY>
   </FAMILIES>
   
   <DOCUMENTATION>

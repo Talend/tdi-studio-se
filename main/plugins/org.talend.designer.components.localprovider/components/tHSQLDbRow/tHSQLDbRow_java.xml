@@ -18,7 +18,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/HSQLDb</FAMILY>
+    <FAMILY>Databases/DB Specifics/HSQLDb</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

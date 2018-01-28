@@ -1,36 +1,61 @@
 [{
     "component_delegate":"tDBInput",
     "component":"tAccessInput",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutput",
     "component" : "tAccessOutput",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBClose",
     "component":"tAccessClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tAccessCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tAccessConnection",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tAccessRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tAccessRow",
-    "category":"DI"
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tAccessOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tAccessOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tAccessOutputBulk",
+    "category":"DI",
+    "family":""
 }
 ]

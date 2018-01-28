@@ -13,11 +13,10 @@
 package org.talend.repository.demo.imports;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,120 +34,122 @@ import org.talend.repository.items.importexport.ui.managers.FileResourcesUnityMa
  */
 public class DqDemoImportTest extends DemosImportTest {
 
-    private static final String DQ_DEMO_PLUGIN_ID = "org.talend.dqdemo"; //$NON-NLS-1$
+	private static final String DQ_DEMO_PLUGIN_ID = "org.talend.dqdemo"; //$NON-NLS-1$
 
-    private ResourcesManager dqResManager;
+	private ResourcesManager dqResManager;
+	private String rootPath = null;
 
-    @Before
-    public void importDqDemo() throws Exception {
-        initDemo(DQ_DEMO_PLUGIN_ID);
-        Assert.assertNotNull(currentDemo);
-        initTestPaths();
-        initTempPro();
-        // For DQ,has special structure to create for temp project before test
-        initDQStructure();
-        dqResManager = DemoImportTestUtil.getResourceManager(currentDemo);
-        Assert.assertNotNull(dqResManager);
-        ImportExportHandlersManager importManager = new ImportExportHandlersManager();
-        List<ImportItem> projectRecords = importManager.populateImportingItems(dqResManager, true, new NullProgressMonitor());
-        Assert.assertTrue(projectRecords.size() > 0);
-        importManager.importItemRecords(new NullProgressMonitor(), dqResManager, projectRecords, true,
-                projectRecords.toArray(new ImportItem[0]), null);
-    }
+	@Before
+	public void importDqDemo() throws Exception {
+		initDemo(DQ_DEMO_PLUGIN_ID);
+		Assert.assertNotNull(currentDemo);
+		initTestPaths();
+		initTempPro();
+		// For DQ,has special structure to create for temp project before test
+		initDQStructure();
+		dqResManager = DemoImportTestUtil.getResourceManager(currentDemo);
+		Assert.assertNotNull(dqResManager);
+		rootPath = getRootPath(dqResManager);
+		collectDemoData(rootPath);
+		ImportExportHandlersManager importManager = new ImportExportHandlersManager();
+		List<ImportItem> projectRecords = importManager.populateImportingItems(dqResManager, true,
+				new NullProgressMonitor());
+		Assert.assertTrue(projectRecords.size() > 0);
+		importManager.importItemRecords(new NullProgressMonitor(), dqResManager, projectRecords, true,
+				projectRecords.toArray(new ImportItem[0]), null);
+	}
 
-    @Test
-    public void testDqDemoComplete() throws Exception {
-        // test the job items under DQ_Demo.zip
-        Assert.assertTrue(dqResManager instanceof FileResourcesUnityManager);
-        Iterator path = dqResManager.getPaths().iterator();
-        String firstFilePath = ((Path) path.next()).toPortableString();
-        String tempFolderPath = firstFilePath.substring(0,
-                firstFilePath.indexOf(TEMP_FOLDER_SUFFIEX) + TEMP_FOLDER_SUFFIEX.length());
-        Assert.assertTrue(new File(tempFolderPath).exists());
-        String rootPath = tempFolderPath + File.separator + demoName;
-        Assert.assertTrue(new File(rootPath).exists());
+	@Test
+	public void testDqDemoComplete() throws Exception {
+		// test the job items under DQ_Demo.zip
+		Assert.assertTrue(dqResManager instanceof FileResourcesUnityManager);
 
-        File tempJobsFolder = new File(rootPath + File.separator + processItemPath);
-        List<File> demoJobItemFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempJobsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoJobItemFiles.size() > 0);
-        int currentJobItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.PROCESS).size();
-        Assert.assertTrue(currentJobItemsSize > 0);
-        Assert.assertEquals(demoJobItemFiles.size(), currentJobItemsSize);
+		List<File> demoJobItemFiles = getDemoItemFileList(rootPath + File.separator + processItemPath);
+		Assert.assertTrue(demoJobItemFiles.size() > 0);
+		int currentJobItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.PROCESS).size();
+		Assert.assertTrue(currentJobItemsSize > 0);
+		Assert.assertEquals(demoJobItemFiles.size(), currentJobItemsSize);
 
-        // test the context items under DQ_Demo.zip
-        int currentContextItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.CONTEXT).size();
-        Assert.assertTrue(currentContextItemsSize > 0);
-        File tempContextItemsFolder = new File(rootPath + File.separator + contextItemPath);
-        List<File> demoContextItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempContextItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoContextItemsFiles.size() > 0);
-        Assert.assertEquals(demoContextItemsFiles.size(), currentContextItemsSize);
+		// test the context items under DQ_Demo.zip
+		int currentContextItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.CONTEXT).size();
+		Assert.assertTrue(currentContextItemsSize > 0);
 
-        // test the metadata items under DQ_Demo.zip
-        int currentConnectionItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.METADATA).size();
-        Assert.assertTrue(currentConnectionItemsSize > 0);
-        File tempConnItemsFolder = new File(rootPath + File.separator + connectionItemPath);
-        List<File> demoConItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempConnItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoConItemsFiles.size() > 0);
-        Assert.assertEquals(demoConItemsFiles.size(), currentConnectionItemsSize);
+		List<File> demoContextItemsFiles = getDemoItemFileList(rootPath + File.separator + contextItemPath);
+		Assert.assertTrue(demoContextItemsFiles.size() > 0);
+		Assert.assertEquals(demoContextItemsFiles.size(), currentContextItemsSize);
 
-        // test the routine items under DQ_Demo.zip
-        doRoutinesItemsTest(rootPath);
+		// test the metadata items under DQ_Demo.zip
+		int currentConnectionItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.METADATA)
+				.size();
+		Assert.assertTrue(currentConnectionItemsSize > 0);
+		List<File> demoConItemsFiles = getDemoItemFileList(rootPath + File.separator + connectionItemPath);
+		Assert.assertTrue(demoConItemsFiles.size() > 0);
+		Assert.assertEquals(demoConItemsFiles.size(), currentConnectionItemsSize);
 
-        // test the business process items under DQ_Demo.zip
-        int currentBusinessItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.BUSINESS_PROCESS).size();
-        Assert.assertTrue(currentBusinessItemsSize > 0);
-        File tempBusinessItemsFolder = new File(rootPath + File.separator + bussniessProcessPath);
-        List<File> demoBusinessItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempBusinessItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoBusinessItemsFiles.size() > 0);
-        Assert.assertEquals(demoBusinessItemsFiles.size(), currentBusinessItemsSize);
+		// test the routine items under DQ_Demo.zip
+		doRoutinesItemsTest(rootPath);
 
-        // test the documention items under DQ_Demo.zip
-        int currentDocItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.DOCUMENTATION).size();
-        Assert.assertTrue(currentDocItemsSize > 0);
-        File tempDocItemsFolder = new File(rootPath + File.separator + documentionPath);
-        List<File> demoDocItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempDocItemsFolder,
-                FileConstants.ITEM_EXTENSION, true);
-        Assert.assertTrue(demoDocItemsFiles.size() > 0);
-        Assert.assertEquals(demoDocItemsFiles.size(), currentDocItemsSize);
+		// test the business process items under DQ_Demo.zip
+		int currentBusinessItemsSize = ProxyRepositoryFactory.getInstance()
+				.getAll(ERepositoryObjectType.BUSINESS_PROCESS).size();
+		Assert.assertTrue(currentBusinessItemsSize > 0);
+		List<File> demoBusinessItemsFiles = getDemoItemFileList(rootPath + File.separator + bussniessProcessPath);
+		Assert.assertTrue(demoBusinessItemsFiles.size() > 0);
+		Assert.assertEquals(demoBusinessItemsFiles.size(), currentBusinessItemsSize);
 
-        // test the analyes items under DQ_Demo.zip
-        int currentAnaItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_ANALYSIS_ELEMENT).size();
-        Assert.assertTrue(currentAnaItemsSize > 0);
-        File tempAnaItemsFolder = new File(rootPath + File.separator + tdqProfilingAnaPath);
-        List<File> demoAnaItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempAnaItemsFolder,
-                FileConstants.ANA_EXTENSION, true);
-        Assert.assertTrue(demoAnaItemsFiles.size() > 0);
-        Assert.assertEquals(demoAnaItemsFiles.size(), currentAnaItemsSize);
+		// test the documention items under DQ_Demo.zip
+		int currentDocItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.DOCUMENTATION)
+				.size();
+		Assert.assertTrue(currentDocItemsSize > 0);
+		List<File> demoDocItemsFiles = getDemoItemFileList(rootPath + File.separator + documentionPath);
+		Assert.assertTrue(demoDocItemsFiles.size() > 0);
+		Assert.assertEquals(demoDocItemsFiles.size(), currentDocItemsSize);
 
-        // test the reports items under DQ_Demo.zip
-        int currentRepItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_REPORT_ELEMENT).size();
-        Assert.assertTrue(currentRepItemsSize > 0);
-        File tempRepItemsFolder = new File(rootPath + File.separator + tdqProfilingRepPath);
-        List<File> demoRepItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempRepItemsFolder,
-                FileConstants.REP_EXTENSION, true);
-        Assert.assertTrue(demoRepItemsFiles.size() > 0);
-        Assert.assertEquals(demoRepItemsFiles.size(), currentRepItemsSize);
+		// test the analyes items under DQ_Demo.zip
+		int currentAnaItemsSize = ProxyRepositoryFactory.getInstance()
+				.getAll(ERepositoryObjectType.TDQ_ANALYSIS_ELEMENT).size();
+		Assert.assertTrue(currentAnaItemsSize > 0);
+		List<File> demoAnaItemsFiles = getDemoItemFileList(rootPath + File.separator + tdqProfilingAnaPath);
+		Assert.assertTrue(demoAnaItemsFiles.size() > 0);
+		Assert.assertEquals(demoAnaItemsFiles.size(), currentAnaItemsSize);
 
-        // test the rules sql items under DQ_Demo.zip(DQ_EE_DEMOS\TDQ_Libraries\Rules\SQL)
-        int currentRuleSqlItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_RULES_SQL).size();
-        Assert.assertTrue(currentRuleSqlItemsSize > 0);
-        File tempRuleSqlItemsFolder = new File(rootPath + File.separator + tdqLibrariesRuleSqlPath);
-        List<File> demoRuleSqlItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempRuleSqlItemsFolder,
-                FileConstants.RULE_EXTENSION, true);
-        Assert.assertTrue(demoRuleSqlItemsFiles.size() > 0);
-        Assert.assertEquals(demoRuleSqlItemsFiles.size(), currentRuleSqlItemsSize);
+		// test the reports items under DQ_Demo.zip
+		int currentRepItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_REPORT_ELEMENT)
+				.size();
+		Assert.assertTrue(currentRepItemsSize > 0);
+		List<File> demoRepItemsFiles = getDemoItemFileList(rootPath + File.separator + tdqProfilingRepPath);
+		Assert.assertTrue(demoRepItemsFiles.size() > 0);
+		Assert.assertEquals(demoRepItemsFiles.size(), currentRepItemsSize);
 
-        // test the pattern items under DQ_Demo.zip(DQ_EE_DEMOS\TDQ_Libraries\Patterns)
-        int currentPatItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_PATTERN_ELEMENT).size();
-        Assert.assertTrue(currentPatItemsSize > 0);
-        File tempPatItemsFolder = new File(rootPath + File.separator + tdqLibrariesPatternPath);
-        List<File> demoPatItemsFiles = DemoImportTestUtil.collectProjectFilesFromDirectory(tempPatItemsFolder,
-                FileConstants.PAT_EXTENSION, true);
-        Assert.assertTrue(demoPatItemsFiles.size() > 0);
-        Assert.assertEquals(demoPatItemsFiles.size(), currentPatItemsSize);
-    }
+		// test the rules sql items under
+		// DQ_Demo.zip(DQ_EE_DEMOS\TDQ_Libraries\Rules\SQL)
+		int currentRuleSqlItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_RULES_SQL)
+				.size();
+		Assert.assertTrue(currentRuleSqlItemsSize > 0);
+		List<File> demoRuleSqlItemsFiles = getDemoItemFileList(rootPath + File.separator + tdqLibrariesRuleSqlPath);
+		Assert.assertTrue(demoRuleSqlItemsFiles.size() > 0);
+		Assert.assertEquals(demoRuleSqlItemsFiles.size(), currentRuleSqlItemsSize);
+
+		// test the pattern items under DQ_Demo.zip(DQ_EE_DEMOS\TDQ_Libraries\Patterns)
+		int currentPatItemsSize = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.TDQ_PATTERN_ELEMENT)
+				.size();
+		Assert.assertTrue(currentPatItemsSize > 0);
+		List<File> demoPatItemsFiles = getDemoItemFileList(rootPath + File.separator + tdqLibrariesPatternPath);
+		Assert.assertTrue(demoPatItemsFiles.size() > 0);
+		Assert.assertEquals(demoPatItemsFiles.size(), currentPatItemsSize);
+	}
+
+	protected Map<String, String> getCollectFolderMap(String rootPath) {
+		Map<String, String> map = super.getCollectFolderMap(rootPath);
+		map.put(rootPath + File.separator + processItemPath, FileConstants.ITEM_EXTENSION);
+		map.put(rootPath + File.separator + contextItemPath, FileConstants.ITEM_EXTENSION);
+		map.put(rootPath + File.separator + connectionItemPath, FileConstants.ITEM_EXTENSION);
+		map.put(rootPath + File.separator + bussniessProcessPath, FileConstants.ITEM_EXTENSION);
+		map.put(rootPath + File.separator + documentionPath, FileConstants.ITEM_EXTENSION);
+		map.put(rootPath + File.separator + tdqProfilingAnaPath, FileConstants.ANA_EXTENSION);
+		map.put(rootPath + File.separator + tdqProfilingRepPath, FileConstants.REP_EXTENSION);
+		map.put(rootPath + File.separator + tdqLibrariesRuleSqlPath, FileConstants.RULE_EXTENSION);
+		map.put(rootPath + File.separator + tdqLibrariesPatternPath, FileConstants.PAT_EXTENSION);
+		return map;
+	}
 }

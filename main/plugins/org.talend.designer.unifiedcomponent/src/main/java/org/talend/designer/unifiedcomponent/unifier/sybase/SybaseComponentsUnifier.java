@@ -21,13 +21,18 @@ import org.talend.designer.unifiedcomponent.unifier.AbstractComponentsUnifier;
  */
 public class SybaseComponentsUnifier extends AbstractComponentsUnifier {
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#getDatabase()
-     */
-    @Override
-    public String getDisplayName() {
-        return EDatabaseTypeName.SYBASEASE.getDisplayName();
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#
+	 * getDatabase()
+	 */
+	@Override
+	public String getDisplayName() {
+		if ("tSybaseOutputBulk".equals(this.getComponentName()) || "tSybaseOutputBulkExec".equals(this.getComponentName())) {
+			return EDatabaseTypeName.SYBASEASE.getXmlName();
+		} else {
+			return EDatabaseTypeName.SYBASEASE.getDisplayName();
+		}
+	}
 }

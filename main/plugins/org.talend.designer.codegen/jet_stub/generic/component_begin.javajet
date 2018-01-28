@@ -442,3 +442,6 @@ if (hasOutputOnly || asInputComponent) {
     }
 }
 %>
+                java.lang.Iterable<?> outgoingMainRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
+                java.util.Iterator outgoingMainRecordsIt_<%=cid%> = null;
+

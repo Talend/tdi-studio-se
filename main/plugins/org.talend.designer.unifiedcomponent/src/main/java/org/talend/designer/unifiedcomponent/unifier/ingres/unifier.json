@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tIngresInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tIngresOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tIngresClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tIngresCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tIngresConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tIngresRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tIngresRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -45,6 +52,7 @@
     "component_delegate":"tDBBulkExec",
     "component":"tIngresBulkExec",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
@@ -52,23 +60,27 @@
     "component_delegate":"tDBCDC",
     "component":"tIngresCDC",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 },
 {
     "component_delegate":"tDBOutputBulk",
     "component":"tIngresOutputBulk",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBOutputBulkExec",
     "component":"tIngresOutputBulkExec",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBSCD",
     "component":"tIngresSCD",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT"}
 }

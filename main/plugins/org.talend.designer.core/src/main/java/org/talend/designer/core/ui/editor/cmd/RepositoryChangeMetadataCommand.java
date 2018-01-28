@@ -336,7 +336,7 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
             String databaseType = ((DatabaseConnection) connection).getDatabaseType();
             if ("JDBC".equals(databaseType)) {
                 IComponent component = node.getComponent();
-                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getComponentType())
+                if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
                         && component.getName().startsWith("tJDBC")) {
                     if (EParameterName.DRIVER_JAR.getName().equals(paramName)) {
                         List valueList = (List) objectValue;

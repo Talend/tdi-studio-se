@@ -99,10 +99,3 @@ if(resultMap_<%=cid%>!=null) {
 		}
 	}
 }
-<%
-if(hasInput && hasOutput) {
-%>
-    java.lang.Iterable<?> outgoingMainRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
-<%
-}
-%>

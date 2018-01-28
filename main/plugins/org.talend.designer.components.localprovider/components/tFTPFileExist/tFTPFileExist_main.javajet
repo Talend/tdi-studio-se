@@ -74,12 +74,39 @@ if (sftp) { // *** sftp *** //
 	//change working dir and save root
 	String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");
 	String rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
-	ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+
+	if (!cwdSuccess_<%=cid %>) {
+		throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+	}
 <%
 	if (isFileType) {
 %>
-		//get listFiles, find something
-		String[] allFileNames_<%=cid %> = ftp_<%=cid %>.listNames(<%=filename %>);
+		String fileName_<%=cid %> = (<%=filename %>).replaceAll("\\\\","/");
+		String dirName_<%=cid %> = null;
+		boolean dirExist_<%=cid %> = false;
+		boolean needDirChange_<%=cid %> = false;
+		String[] allFileNames_<%=cid %> = null;
+
+		if (fileName_<%=cid %>.contains("/")) {
+			needDirChange_<%=cid %> = true;
+			//change directory if exist
+			dirName_<%=cid %> = fileName_<%=cid %>.substring(0, fileName_<%=cid %>.lastIndexOf("/"));
+			fileName_<%=cid %> = fileName_<%=cid %>.substring(fileName_<%=cid %>.lastIndexOf('/') + 1, fileName_<%=cid %>.length());
+
+			dirExist_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(dirName_<%=cid %>);
+			if (!dirExist_<%=cid %>) {
+				<%if (isLog4jEnabled) { %>
+					log.warn("Directory " + dirName_<%=cid %> + " doesn't exist. Can't seek for file " + fileName_<%=cid %>);
+				<%}%>
+			}
+		}
+
+		if (!needDirChange_<%=cid %> || dirExist_<%=cid %>) {
+			allFileNames_<%=cid %> = java.util.Arrays.stream(ftp_<%=cid %>.listFiles()).filter(org.apache.commons.net.ftp.FTPFile::isFile).map(org.apache.commons.net.ftp.FTPFile::getName)
+				.filter(fileName_<%=cid %>::equals).toArray(String[]::new);
+		}
+
 		boolean fileExist_<%=cid %> = (null != allFileNames_<%=cid %>) && (allFileNames_<%=cid %>.length > 0);
 
 		if (fileExist_<%=cid %>) {

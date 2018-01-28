@@ -17,6 +17,7 @@
 			<artifactId>adal4j</artifactId>
 
 			<version>1.1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>oauth2-oidc-sdk</artifactId>

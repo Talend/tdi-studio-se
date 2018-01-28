@@ -63,11 +63,19 @@ try{
 		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet();
 		for (String key<%=cid %> : keySet<%=cid %>) {
 			try{
-				ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
-				<%if(isLog4jEnabled){%>
-					log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
-				<%}%>
-				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+				boolean renameSuccess_<%=cid %> = ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
+				if (renameSuccess_<%=cid %>) {
+					nb_file_<%=cid%>++;
+					<%if(isLog4jEnabled){%>
+						log.debug("<%=cid%> - '" + key<%=cid %>  + "' rename ok.");
+					<%}%>
+					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
+				} else {
+					<%if(isLog4jEnabled){%>
+						log.warn("<%=cid%> - '" + key<%=cid %>  + "' rename failed. " + ftp_<%=cid %>.getReplyString());
+					<%}%>
+					globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
+				}
 			}catch(IOException e){
 				globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
 <%
@@ -84,7 +92,6 @@ try{
 				}
 %>
 			}
-			nb_file_<%=cid%>++;
 		}
 <%
 	} else {%>//normal ftp

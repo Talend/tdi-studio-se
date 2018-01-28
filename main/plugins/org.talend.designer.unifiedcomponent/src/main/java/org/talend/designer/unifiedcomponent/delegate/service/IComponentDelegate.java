@@ -20,7 +20,7 @@ import org.talend.designer.unifiedcomponent.resources.ComponentImage;
  */
 public interface IComponentDelegate {
 
-    public static String FAMILY = "Databases/DB Unified";
+    public static String FAMILY = "Databases/DB Common";
 
     public String getComponentName();
 

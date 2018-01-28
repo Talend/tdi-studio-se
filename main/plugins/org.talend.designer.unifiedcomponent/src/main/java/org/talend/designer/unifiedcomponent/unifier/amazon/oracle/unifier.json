@@ -2,6 +2,7 @@
     "component_delegate":"tDBInput",
     "component":"tAmazonOracleInput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
@@ -9,35 +10,41 @@
     "component_delegate":"tDBOutput",
     "component" : "tAmazonOracleOutput",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBClose",
     "component":"tAmazonOracleClose",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBCommit",
     "component":"tAmazonOracleCommit",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBConnection",
     "component":"tAmazonOracleConnection",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 },
 {
     "component_delegate":"tDBRollback",
     "component":"tAmazonOracleRollback",
-    "category":"DI"
+    "category":"DI",
+    "family":""
 },
 {
     "component_delegate":"tDBRow",
     "component":"tAmazonOracleRow",
     "category":"DI",
+    "family":"",
     "parameter":{
         "exclude":"PORT,DB_VERSION"}
 }
