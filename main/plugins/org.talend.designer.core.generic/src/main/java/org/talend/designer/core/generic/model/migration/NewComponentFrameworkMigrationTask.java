@@ -87,16 +87,26 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                 String newComponentName = props.getProperty(currComponentName);
                 nodeType.setComponentName(newComponentName);
                 String label = ParameterUtilTool.getParameterValue(nodeType, "LABEL"); //$NON-NLS-1$
-                if(label != null){
+                if (label != null) {
                     ElementParameterType paraType = ParameterUtilTool.findParameterType(nodeType, label.replaceAll("_", "")); //$NON-NLS-1$ //$NON-NLS-2$
-                    if(paraType != null){
-                        ParameterUtilTool.findParameterType(nodeType,"LABEL").setValue(paraType.getValue()); //$NON-NLS-1$
+                    if (paraType != null) {
+                        ParameterUtilTool.findParameterType(nodeType, "LABEL").setValue(paraType.getValue()); //$NON-NLS-1$
                         modified = true;
                     }
                 }
                 IComponent component = ComponentsFactoryProvider.getInstance().get(newComponentName, category.getName());
                 ComponentProperties compProperties = ComponentsUtils.getComponentProperties(newComponentName);
                 FakeNode fNode = new FakeNode(component);
+                ElementParameterType propertyParamType = getParameterType(nodeType, "PROPERTY:PROPERTY_TYPE");
+                boolean isRepository = false;
+                if (propertyParamType != null && "REPOSITORY".equals(propertyParamType.getValue())) {
+                    isRepository = true;
+                }
+                ElementParameterType sqlParamType = getParameterType(nodeType, "QUERYSTORE:QUERYSTORE_TYPE");
+                boolean isSQLRepository = false;
+                if (sqlParamType != null && "REPOSITORY".equals(propertyParamType.getValue())) {
+                    isSQLRepository = true;
+                }
                 for (IElementParameter param : fNode.getElementParameters()) {
                     if (param instanceof GenericElementParameter) {
                         String paramName = param.getName();
@@ -105,7 +115,8 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         if (oldParamName != null && !(oldParamName = oldParamName.trim()).isEmpty()) {
                             if (currNamedThing instanceof Property
                                     && (GenericTypeUtils.isSchemaType((Property<?>) currNamedThing))) {
-                                schemaParamMap.put(paramName,
+                                schemaParamMap.put(
+                                        paramName,
                                         props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName
                                                 + IGenericConstants.EXP_SEPARATOR + "connector"));
                             }
@@ -115,8 +126,8 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                                     ComponentReferenceProperties refProps = (ComponentReferenceProperties) currNamedThing;
                                     refProps.referenceType
                                             .setValue(ComponentReferenceProperties.ReferenceType.COMPONENT_INSTANCE);
-                                    refProps.componentInstanceId
-                                            .setStoredValue(ParameterUtilTool.convertParameterValue(paramType));
+                                    refProps.componentInstanceId.setStoredValue(ParameterUtilTool
+                                            .convertParameterValue(paramType));
                                     refProps.componentInstanceId.setTaggedValue(IGenericConstants.ADD_QUOTES, true);
                                 } else {
                                     processMappedElementParameter(props, nodeType, (GenericElementParameter) param, paramType,
@@ -140,14 +151,19 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         } else {
                             processUnmappedElementParameter(props, nodeType, (GenericElementParameter) param, currNamedThing);
                         }
+                        if (isRepository && isRepositoryParam(paramName) || isSQLRepository && "sql".equals(paramName)) {
+                            ComponentsUtils.setPropertiesPepositoryValue(compProperties, paramName);
+                        }
                     } else {
                         if (EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType())) {
                             String paramName = param.getName();
-                            schemaParamMap.put(paramName, props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR
-                                    + paramName + IGenericConstants.EXP_SEPARATOR + "connector"));
+                            schemaParamMap.put(
+                                    paramName,
+                                    props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName
+                                            + IGenericConstants.EXP_SEPARATOR + "connector"));
 
-                            String oldParamName = props
-                                    .getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR + paramName);
+                            String oldParamName = props.getProperty(currComponentName + IGenericConstants.EXP_SEPARATOR
+                                    + paramName);
                             String schemaTypeName = ":" + EParameterName.SCHEMA_TYPE.getName();//$NON-NLS-1$
                             String repSchemaTypeName = ":" + EParameterName.REPOSITORY_SCHEMA_TYPE.getName();//$NON-NLS-1$
                             ElementParameterType paramType = getParameterType(nodeType, oldParamName + schemaTypeName);
@@ -183,8 +199,8 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                         MetadataEmfFactory factory = new MetadataEmfFactory();
                         factory.setMetadataType(metadataType);
                         IMetadataTable metadataTable = factory.getMetadataTable();
-                        Schema schema = SchemaUtils
-                                .convertTalendSchemaIntoComponentSchema(ConvertionHelper.convert(metadataTable));
+                        Schema schema = SchemaUtils.convertTalendSchemaIntoComponentSchema(ConvertionHelper
+                                .convert(metadataTable));
                         compProperties.setValue(newParamName, schema);
                     }
                     if (!oldConnector.equals(newConnector)) {
@@ -231,7 +247,8 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                     }
                     IComponentFilter filter = new NameComponentFilter(componentName);
                     modified = ModifyComponentsAction.searchAndModify((NodeType) obj, filter,
-                            Arrays.<IComponentConversion> asList(conversion)) || modified;
+                            Arrays.<IComponentConversion> asList(conversion))
+                            || modified;
                 }
             }
             if (modified) {
@@ -245,6 +262,10 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
             }
         }
         return ExecutionResult.NOTHING_TO_DO;
+    }
+
+    protected boolean isRepositoryParam(String paramName) {
+        return false;
     }
 
     protected void migrateComponent(String componentName) {
@@ -331,8 +352,8 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
     }
 
     protected static String getTableMapping(Properties props, String componentName, String paramName) {
-        return props.getProperty(
-                componentName + IGenericConstants.EXP_SEPARATOR + paramName + IGenericConstants.EXP_SEPARATOR + "mapping");
+        return props.getProperty(componentName + IGenericConstants.EXP_SEPARATOR + paramName + IGenericConstants.EXP_SEPARATOR
+                + "mapping");
     }
 
     public static class FakeNode extends AbstractNode {

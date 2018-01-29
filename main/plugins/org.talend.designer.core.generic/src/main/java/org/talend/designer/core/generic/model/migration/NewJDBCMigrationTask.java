@@ -42,17 +42,18 @@ public class NewJDBCMigrationTask extends NewComponentFrameworkMigrationTask {
 
         return props;
     }
-    
+
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
         ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
-        if(node != null && paramType != null){
+        if (node != null && paramType != null) {
             Object value = ParameterUtilTool.convertParameterValue(paramType);
-            if("CONNECTION".equals(paramName) && value!=null && !"".equals(value)){
+            if ("CONNECTION".equals(paramName) && value != null && !"".equals(value)) {
                 ElementParameterType useConnection = ParameterUtilTool.findParameterType(node, "USE_EXISTING_CONNECTION");
-                if(useConnection!=null && !Boolean.valueOf(String.valueOf(ParameterUtilTool.convertParameterValue(useConnection)))){
+                if (useConnection != null
+                        && !Boolean.valueOf(String.valueOf(ParameterUtilTool.convertParameterValue(useConnection)))) {
                     return null;
-                }else{
+                } else {
                     return paramType;
                 }
             }
@@ -60,4 +61,22 @@ public class NewJDBCMigrationTask extends NewComponentFrameworkMigrationTask {
         return paramType;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.talend.designer.core.generic.model.migration.NewComponentFrameworkMigrationTask#isRepositoryParam(java.lang
+     * .String)
+     */
+    @Override
+    protected boolean isRepositoryParam(String paramName) {
+        if (paramName.equals("connection.jdbcUrl") || paramName.equals("connection.driverTable")
+                || paramName.equals("connection.driverClass") || paramName.equals("connection.userPassword.userId")
+                || paramName.equals("connection.userPassword.password") || paramName.equals("mappingFile")) {
+
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

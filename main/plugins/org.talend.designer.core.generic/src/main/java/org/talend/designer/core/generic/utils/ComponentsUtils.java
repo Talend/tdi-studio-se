@@ -880,4 +880,21 @@ public class ComponentsUtils {
             }
         }
     }
+
+    public static void setPropertiesPepositoryValue(ComponentProperties componentProperties, String paramName) {
+        Property<?> property = componentProperties.getValuedProperty(paramName);
+        if (property != null) {
+            property.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, paramName);
+        } else {
+            Properties currentProperties = componentProperties.getProperties(paramName);
+            if (currentProperties != null) {
+                for (NamedThing thing : currentProperties.getProperties()) {
+                    if (thing instanceof Property) {
+                        ((Property) thing).setTaggedValue(IGenericConstants.REPOSITORY_VALUE, paramName);
+                    }
+                }
+            }
+        }
+
+    }
 }
