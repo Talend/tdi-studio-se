@@ -832,7 +832,7 @@ public abstract class DbGenerationManager {
         }
     }
 
-    private IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {
+    protected IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {
         IConnection retConnection = null;
         for (IConnection iconn : inputConnections) {
             IMetadataTable metadataTable = iconn.getMetadataTable();
@@ -1119,35 +1119,38 @@ public abstract class DbGenerationManager {
         } else {
             List<IConnection> inputConnections = (List<IConnection>) component.getIncomingConnections();
             IConnection iconn = this.getConnectonByName(inputConnections, tableName);
-            String handledTableName = "";
-            boolean inputIsELTDBMap = false;
-            INode source = iconn.getSource();
-            String schemaValue = "";
-            String tableValue = "";
-            if (source != null) {
-                inputIsELTDBMap = isELTDBMap(source);
-                if (inputIsELTDBMap) {
-                    tableValue = iconn.getName();
-                } else {
-                    IElementParameter schemaParam = source.getElementParameter("ELT_SCHEMA_NAME");
-                    IElementParameter tableParam = source.getElementParameter("ELT_TABLE_NAME");
-                    if (schemaParam != null && schemaParam.getValue() != null) {
-                        schemaValue = schemaParam.getValue().toString();
-                    }
-                    if (tableParam != null && tableParam.getValue() != null) {
-                        tableValue = tableParam.getValue().toString();
+            if (iconn != null) {
+                String handledTableName = "";
+                boolean inputIsELTDBMap = false;
+                INode source = iconn.getSource();
+                String schemaValue = "";
+                String tableValue = "";
+                if (source != null) {
+                    inputIsELTDBMap = isELTDBMap(source);
+                    if (inputIsELTDBMap) {
+                        tableValue = iconn.getName();
+                    } else {
+                        IElementParameter schemaParam = source.getElementParameter("ELT_SCHEMA_NAME");
+                        IElementParameter tableParam = source.getElementParameter("ELT_TABLE_NAME");
+                        if (schemaParam != null && schemaParam.getValue() != null) {
+                            schemaValue = schemaParam.getValue().toString();
+                        }
+                        if (tableParam != null && tableParam.getValue() != null) {
+                            tableValue = tableParam.getValue().toString();
+                        }
                     }
                 }
-            }
 
-            String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
-            boolean hasSchema = !"".equals(schemaNoQuote);
-            if (hasSchema) {
-                handledTableName = schemaValue + "+\".\"+";
+                String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
+                boolean hasSchema = !"".equals(schemaNoQuote);
+                if (hasSchema) {
+                    handledTableName = schemaValue + "+\".\"+";
+                }
+                handledTableName = handledTableName + tableValue;
+                return "\" +" + handledTableName + "+ \"";
             }
-            handledTableName = handledTableName + tableValue;
-            return "\" +" + handledTableName + "+ \"";
         }
+        return tableName;
 
     }
 
