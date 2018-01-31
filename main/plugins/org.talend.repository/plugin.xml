@@ -2995,15 +2995,6 @@
               version="7.0.1">
         </projecttask>
         <projecttask
-              beforeLogon="false"
-              breaks="7.0.0"
-              class="org.talend.repository.model.migration.ItemSaveTriggerMigrationTask"
-              description="Trigger to save the item again"
-              id="org.talend.repository.model.migration.ItemSaveTriggerMigrationTask"
-              name="Trigger to save the item"
-              version="7.0.0">
-        </projecttask>
-        <projecttask
               beforeLogon="true"
               breaks="7.0.0"
               class="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
