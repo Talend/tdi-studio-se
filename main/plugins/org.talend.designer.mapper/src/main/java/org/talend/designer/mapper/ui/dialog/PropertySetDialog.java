@@ -21,8 +21,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -74,7 +72,7 @@ public class PropertySetDialog extends Dialog {
 
     private Label jaccardWeightLabel;
 
-    public static final String QUOTATION_MARK = "\""; //$NON-NLS-1$
+    public static final String QUOTATION_MARK = "\"";
 
     private Group autoMapGroup;
 
@@ -109,13 +107,13 @@ public class PropertySetDialog extends Dialog {
         container.setLayout(gridLayout);
 
         dieOnErrorButton = new Button(container, SWT.CHECK);
-        dieOnErrorButton.setText("Die on error");//$NON-NLS-1$
+        dieOnErrorButton.setText("Die on error");
 
         lookupInParallelButton = new Button(container, SWT.CHECK);
-        lookupInParallelButton.setText("Lookup in parallel");//$NON-NLS-1$
+        lookupInParallelButton.setText("Lookup in parallel");
         lookupInParallelButton.setEnabled(true);
         IComponent tempNode = ComponentsFactoryProvider.getInstance().get(
-                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
+                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());
         if (tempNode == null) {
             lookupInParallelButton.setVisible(false);
         }
@@ -137,65 +135,96 @@ public class PropertySetDialog extends Dialog {
 
         autoMapGroup = new Group(container, SWT.NONE);
         autoMapGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));//$NON-NLS-1$
+        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));
 
-        GridLayout AutogridLayout = new GridLayout(3, false);
+        GridLayout AutogridLayout = new GridLayout(5, true);
         AutogridLayout.horizontalSpacing = 10;
-        AutogridLayout.marginRight = 100;
+        AutogridLayout.marginRight = 5;
         
         autoMapGroup.setLayout(AutogridLayout);
-        scale = new Scale(autoMapGroup, SWT.HORIZONTAL);
+        scale = new Scale(autoMapGroup, SWT.CENTER);
         scale.setMaximum(4);
         scale.setMinimum(0);
         scale.setPageIncrement(1);
-        GridData grid = new GridData();
-        grid.horizontalSpan = 3;
-        grid.widthHint = 490;
-        grid.heightHint = 30;
-        scale.setLayoutData(grid);
-        Composite comp = new Composite(autoMapGroup, SWT.NONE);
-        GridLayout compLayout = new GridLayout(5, false);
-        compLayout.horizontalSpacing = 34;
-        comp.setLayout(compLayout);
-        GridData grid1 = new GridData();
-        grid1.horizontalSpan = 3;
-        grid1.widthHint = 500;
-        grid1.heightHint = 19;
-        comp.setLayoutData(grid1);
-        Label label1 = new Label(comp, SWT.NONE);
-        label1.setText("Exact Match");
-        Label label2 = new Label(comp, SWT.NONE);
-        label2.setText("Simple Match");
-        Label label3 = new Label(comp, SWT.NONE);
-        label3.setText("Full Levenshtein");
-        Label label4 = new Label(comp, SWT.NONE);
-        label4.setText("Full Jaccard");
-        Label label5 = new Label(comp, SWT.NONE);
-        label5.setText("Super Fuzzy");
 
-        Label levenshteinLabel = new Label(autoMapGroup, SWT.NONE);
+        GridData grid = new GridData(GridData.CENTER);
+        grid.horizontalSpan = 5;
+        grid.widthHint = this.getInitialSize().x * 38 / 100;
+        grid.heightHint = 40;
+        grid.horizontalAlignment = GridData.CENTER;
+        scale.setLayoutData(grid);
+
+        /**
+         * Composite comp = new Composite(autoMapGroup, SWT.NONE); GridLayout compLayout = new GridLayout(5, true);
+         * compLayout.horizontalSpacing = 34; comp.setLayout(compLayout); GridData grid1 = new
+         * GridData(GridData.CENTER); grid1.horizontalSpan = 5;// grid1.widthHint = 642;
+         * System.out.println(this.getInitialSize()); grid1.heightHint = 40; comp.setLayoutData(grid1);
+         **/
+        Label label1 = new Label(autoMapGroup, SWT.NONE);
+        label1.setText("Exact Match");
+        GridData lgd1 = new GridData();
+        lgd1.horizontalSpan = 1;
+        label1.setLayoutData(lgd1);
+        lgd1.horizontalAlignment = SWT.CENTER;
+
+        Label label2 = new Label(autoMapGroup, SWT.NONE);
+        label2.setText("Simple Match");
+        GridData lgd2 = new GridData();
+        lgd2.horizontalSpan = 1;
+        label2.setLayoutData(lgd2);
+        lgd2.horizontalAlignment = SWT.CENTER;
+
+        Label label3 = new Label(autoMapGroup, SWT.NONE);
+        label3.setText("Full Levenshtein");
+        GridData lgd3 = new GridData();
+        lgd3.horizontalSpan = 1;
+        label3.setLayoutData(lgd3);
+        lgd3.horizontalAlignment = SWT.CENTER;
+
+        Label label4 = new Label(autoMapGroup, SWT.NONE);
+        label4.setText("Full Jaccard");
+        GridData lgd4 = new GridData();
+        lgd4.horizontalSpan = 1;
+        label4.setLayoutData(lgd4);
+        lgd4.horizontalAlignment = SWT.CENTER;
+
+        Label label5 = new Label(autoMapGroup, SWT.NONE);
+        label5.setText("Super Fuzzy");
+        GridData lgd5 = new GridData();
+        lgd5.horizontalSpan = 1;
+        label5.setLayoutData(lgd5);
+        lgd5.horizontalAlignment = SWT.CENTER;
+
+        Composite comp = new Composite(autoMapGroup, SWT.NONE);
+        GridLayout compLayout = new GridLayout(3, false);
+        GridData gds1 = new GridData();
+        gds1.horizontalSpan = 5;
+        comp.setLayout(compLayout);
+        comp.setLayoutData(gds1);
+
+        Label levenshteinLabel = new Label(comp, SWT.NONE);
         levenshteinLabel.setText("Levenshtein");
-        levenshteinSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
+        levenshteinSlider = new Slider(comp, SWT.HORIZONTAL);
         levenshteinSlider.setSize(200, 25);
         levenshteinSlider.setMaximum(101);
         levenshteinSlider.setMinimum(0);
         levenshteinSlider.setThumb(1);
-        levenshteinWeightLabel = new Label(autoMapGroup, SWT.NONE);
+        levenshteinWeightLabel = new Label(comp, SWT.NONE);
 
-        Label jaccardLabel = new Label(autoMapGroup, SWT.NONE);
+
+        Label jaccardLabel = new Label(comp, SWT.NONE);
         jaccardLabel.setText("Jaccard");
-        jaccardSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
+        jaccardSlider = new Slider(comp, SWT.HORIZONTAL);
         jaccardSlider.setSize(200, 25);
         jaccardSlider.setMaximum(101);
         jaccardSlider.setMinimum(0);
         jaccardSlider.setThumb(1);
-        jaccardWeightLabel = new Label(autoMapGroup, SWT.NONE);
+        jaccardWeightLabel = new Label(comp, SWT.NONE);
 
         init();
         addListener();
         updateStatus();
         updateScale();
-        //
         return container;
     }
 
@@ -371,12 +400,12 @@ public class PropertySetDialog extends Dialog {
 
     /**
      * Return the initial size of the dialog
-     */
+
     @Override
     protected Point getInitialSize() {
         return new Point(600, 380);
     }
-
+     */
     @Override
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
