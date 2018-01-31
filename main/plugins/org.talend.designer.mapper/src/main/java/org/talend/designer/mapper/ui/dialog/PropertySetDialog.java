@@ -21,6 +21,8 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -72,7 +74,7 @@ public class PropertySetDialog extends Dialog {
 
     private Label jaccardWeightLabel;
 
-    public static final String QUOTATION_MARK = "\"";
+    public static final String QUOTATION_MARK = "\""; //$NON-NLS-1$
 
     private Group autoMapGroup;
 
@@ -107,13 +109,13 @@ public class PropertySetDialog extends Dialog {
         container.setLayout(gridLayout);
 
         dieOnErrorButton = new Button(container, SWT.CHECK);
-        dieOnErrorButton.setText("Die on error");
+        dieOnErrorButton.setText("Die on error");//$NON-NLS-1$
 
         lookupInParallelButton = new Button(container, SWT.CHECK);
-        lookupInParallelButton.setText("Lookup in parallel");
+        lookupInParallelButton.setText("Lookup in parallel");//$NON-NLS-1$
         lookupInParallelButton.setEnabled(true);
         IComponent tempNode = ComponentsFactoryProvider.getInstance().get(
-                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());
+                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
         if (tempNode == null) {
             lookupInParallelButton.setVisible(false);
         }
@@ -135,7 +137,7 @@ public class PropertySetDialog extends Dialog {
 
         autoMapGroup = new Group(container, SWT.NONE);
         autoMapGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));
+        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));//$NON-NLS-1$
 
         GridLayout AutogridLayout = new GridLayout(5, true);
         AutogridLayout.horizontalSpacing = 10;
@@ -225,6 +227,7 @@ public class PropertySetDialog extends Dialog {
         addListener();
         updateStatus();
         updateScale();
+        //
         return container;
     }
 
