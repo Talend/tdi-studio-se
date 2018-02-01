@@ -267,6 +267,17 @@ if(("false").equals(useExistingConn)){
 <%
 	}
 %>
+
+<%
+	if(hasBinaryColumn){
+%>
+		if(binaryColumns_<%=cid%>.length()>0){
+			ctx_<%=cid%>.addToEnvironment("java.naming.ldap.attributes.binary", binaryColumns_<%=cid%>);
+		}
+<%
+	}
+%>
+
 <%if(paging){%>
     // Set the page size and initialize the cookie that we pass back in subsequent pages
     int pageSize_<%=cid%> = <%=pageSize %>;
@@ -277,17 +288,6 @@ if(("false").equals(useExistingConn)){
     
 do {
 <%}%>
-<%
-	if(hasBinaryColumn){
-%>
-		if(binaryColumns_<%=cid%>.length()>0){
-			java.util.Hashtable orignal_env_<%=cid%>= ctx_<%=cid%>.getEnvironment();
-			orignal_env_<%=cid%>.put("java.naming.ldap.attributes.binary",binaryColumns_<%=cid%>);
-			ctx_<%=cid%> = new javax.naming.ldap.InitialLdapContext(orignal_env_<%=cid%>, null);
-		}
-<%
-	}
-%>
 
     javax.naming.NamingEnumeration answer_<%=cid%> = ctx_<%=cid%>.search(<%if(("false").equals(useExistingConn)){%>baseDN_<%=cid%><%}else{%>""<%}%>, <%=filter%>, searchCtls_<%=cid%>);
 	<%if(isLog4jEnabled){%>
