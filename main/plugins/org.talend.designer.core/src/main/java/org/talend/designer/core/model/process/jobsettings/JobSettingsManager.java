@@ -947,7 +947,11 @@ public class JobSettingsManager {
                     .getValue();
             String fileSparator = (String) process.getElementParameter(EParameterName.FIELDSEPARATOR.getName()).getValue();
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
-            String regex = FileSeparator.getSeparatorsRegexp(TalendQuoteUtils.removeQuotes(fileSparator));
+            if (fileSparator.startsWith(TalendQuoteUtils.getQuoteChar())
+                    && fileSparator.endsWith(TalendQuoteUtils.getQuoteChar())) {
+                fileSparator = TalendQuoteUtils.removeQuotes(fileSparator);
+            }
+            String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
         } else {
             // is db
@@ -1208,24 +1212,36 @@ public class JobSettingsManager {
         return realDbTypeForJDBC;
     }
 
-    private static List<String> getMetadataChars() {
-        String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
-        return Arrays.asList(metaChars);
-    }
-
     public static class FileSeparator {
+
+        private static List<String> ONE_CHAR_METADATA = getOneMetadataChars();
+
+        private static List<String> TWO_CHAR_METADATA = getTwoMetadataChars();
 
         static String doRegexpQuote(String separators) {
             if (StringUtils.isEmpty(separators)) {
                 return separators;
             } else if (separators.length() == 1) {
-                if (separators.equals("\\")) { // special \ //$NON-NLS-1$ 
-                    return "\\\\\\" + separators;//$NON-NLS-1$ 
-                } else if (getMetadataChars().contains(separators)) {
-                    return "\\\\" + separators;//$NON-NLS-1$ 
+                if (separators.equals("\\")) { // special \ //$NON-NLS-1$
+                    return "\\\\\\" + separators;//$NON-NLS-1$
+                } else if (ONE_CHAR_METADATA.contains(separators)) {
+                    return "\\\\" + separators;//$NON-NLS-1$
                 }
+            } else if (TWO_CHAR_METADATA.contains(separators.toLowerCase())) {
+                return "\\" + separators;//$NON-NLS-1$
             } else {
-                return doRegexpQuote(separators.substring(0, 1)) + doRegexpQuote(separators.substring(1));
+                boolean isNeedProcessTwoChar = false;
+                for (String twoCharMeta : TWO_CHAR_METADATA) {
+                    if (separators.startsWith(twoCharMeta)) {
+                        isNeedProcessTwoChar = true;
+                        break;
+                    }
+                }
+                if (isNeedProcessTwoChar) {
+                    return doRegexpQuote(separators.substring(0, 2)) + doRegexpQuote(separators.substring(2));
+                } else {
+                    return doRegexpQuote(separators.substring(0, 1)) + doRegexpQuote(separators.substring(1));
+                }
             }
             return separators;
         }
@@ -1233,6 +1249,16 @@ public class JobSettingsManager {
         static String getSeparatorsRegexp(String fileSeparator) {
             fileSeparator = TalendQuoteUtils.addQuotes(doRegexpQuote(fileSeparator));
             return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        }
+
+        private static List<String> getOneMetadataChars() {
+            String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
+            return Arrays.asList(metaChars);
+        }
+
+        private static List<String> getTwoMetadataChars() {
+            String[] metaChars = new String[] { "\\x", "\\t", "\\a", "\\\'", "\\\"", "\\?" };
+            return Arrays.asList(metaChars);
         }
     }
 }
