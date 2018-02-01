@@ -537,143 +537,143 @@ public class RunProcessContext {
                         final IProgressMonitor progressMonitor = new EventLoopProgressMonitor(monitor);
 
                         progressMonitor.beginTask(Messages.getString("ProcessComposite.buildTask"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-                        
-                            testPort();
-                            // findNewStatsPort();
-                            if (monitorPerf || monitorTrace) {
-                                if (traceConnectionsManager != null) {
-                                    traceConnectionsManager.clear();
-                                }
-                                traceConnectionsManager = getTraceConnectionsManager(process);
-                                traceConnectionsManager.init();
-                            }
-                            final IContext context = getSelectedContext();
-                            if (monitorPerf) {
-                                clearThreads();
-                                perfMonitor = getPerformanceMonitor();
-                                new Thread(perfMonitor, "PerfMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
-                                perMonitorList.add(perfMonitor);
-                            }
-                            // findNewTracesPort();
-                            if (monitorTrace) {
-                                traceMonitor = new TraceMonitor();
-                                new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
-                            }
 
-                            final String watchParam = RunProcessContext.this.isWatchAllowed() ? TalendProcessArgumentConstant.CMD_ARG_WATCH
-                                    : null;
-                            final String log4jRuntimeLevel = getLog4jRuntimeLevel();
-                            processor.setContext(context);
-                            ((IEclipseProcessor) processor).setTargetExecutionConfig(getSelectedTargetExecutionConfig());
-
-                            final boolean oldMeasureActived = TimeMeasure.measureActive;
-                            if (!oldMeasureActived) { // not active before.
-                                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin
-                                        .isDebugMode();
+                        testPort();
+                        // findNewStatsPort();
+                        if (monitorPerf || monitorTrace) {
+                            if (traceConnectionsManager != null) {
+                                traceConnectionsManager.clear();
                             }
-                            final String generateCodeId = "Generate job source codes and compile before run"; //$NON-NLS-1$
-                            TimeMeasure.begin(generateCodeId);
-                            try {
-                                ProcessorUtilities.generateCode(processor, process, context,
+                            traceConnectionsManager = getTraceConnectionsManager(process);
+                            traceConnectionsManager.init();
+                        }
+                        final IContext context = getSelectedContext();
+                        if (monitorPerf) {
+                            clearThreads();
+                            perfMonitor = getPerformanceMonitor();
+                            new Thread(perfMonitor, "PerfMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
+                            perMonitorList.add(perfMonitor);
+                        }
+                        // findNewTracesPort();
+                        if (monitorTrace) {
+                            traceMonitor = new TraceMonitor();
+                            new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
+                        }
+
+                        final String watchParam = RunProcessContext.this.isWatchAllowed() ? TalendProcessArgumentConstant.CMD_ARG_WATCH
+                                : null;
+                        final String log4jRuntimeLevel = getLog4jRuntimeLevel();
+                        processor.setContext(context);
+                        ((IEclipseProcessor) processor).setTargetExecutionConfig(getSelectedTargetExecutionConfig());
+
+                        final boolean oldMeasureActived = TimeMeasure.measureActive;
+                        if (!oldMeasureActived) { // not active before.
+                            TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin
+                                    .isDebugMode();
+                        }
+                        final String generateCodeId = "Generate job source codes and compile before run"; //$NON-NLS-1$
+                        TimeMeasure.begin(generateCodeId);
+                        try {
+                            ProcessorUtilities.resetExportConfig();
+                            ProcessorUtilities.generateCode(processor, process, context,
                                     getStatisticsPort() != IProcessor.NO_STATISTICS, getTracesPort() != IProcessor.NO_TRACES
                                             && hasConnectionTrace(), true, progressMonitor);
-                            } catch (Throwable e) {
-                                // catch any Exception or Error to kill the process,
-                                // see bug 0003567
-                                running = true;
-                                MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
-                                kill();
-                                return;
-                            } finally {
-                                progressMonitor.done();
-                                // System.out.println("exitValue:" +
-                                // ps.exitValue());
-                            }
-                            TimeMeasure.end(generateCodeId);
-                            // if active before, not disable and active still.
-                            if (!oldMeasureActived) {
-                                TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
-                            }
-                            final boolean[] refreshUiAndWait = new boolean[1];
-                            refreshUiAndWait[0] = true;
-                            final Display display = shell.getDisplay();
-                            new Thread(new Runnable() {
+                        } catch (Throwable e) {
+                            // catch any Exception or Error to kill the process,
+                            // see bug 0003567
+                            running = true;
+                            MessageBoxExceptionHandler.process(e, Display.getDefault().getActiveShell());
+                            kill();
+                            return;
+                        } finally {
+                            progressMonitor.done();
+                            // System.out.println("exitValue:" +
+                            // ps.exitValue());
+                        }
+                        TimeMeasure.end(generateCodeId);
+                        // if active before, not disable and active still.
+                        if (!oldMeasureActived) {
+                            TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
+                        }
+                        final boolean[] refreshUiAndWait = new boolean[1];
+                        refreshUiAndWait[0] = true;
+                        final Display display = shell.getDisplay();
+                        new Thread(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                    display.syncExec(new Runnable() {
+                            @Override
+                            public void run() {
+                                display.syncExec(new Runnable() {
 
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                startingMessageWritten = false;
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            startingMessageWritten = false;
 
-                                                // see feature 0004820: The run
-                                                // job doesn't verify if code is
-                                                // correct
-                                                // before launching
-                                                if (!JobErrorsChecker.hasErrors(shell)) {
-                                                    ps = processor.run(getStatisticsPort(), getTracesPort(), watchParam,
-                                                            log4jRuntimeLevel, progressMonitor, processMessageManager);
-                                                }
-
-                                                if (ps != null && !progressMonitor.isCanceled()) {
-                                                    setRunning(true);
-                                                    psMonitor = createProcessMonitor(ps);
-
-                                                    startingMessageWritten = true;
-
-                                                    final String startingPattern = Messages
-                                                            .getString("ProcessComposite.startPattern"); //$NON-NLS-1$
-                                                    MessageFormat mf = new MessageFormat(startingPattern);
-                                                    String welcomeMsg = mf.format(new Object[] { process.getLabel(), new Date() });
-                                                    processMessageManager.addMessage(new ProcessMessage(MsgType.CORE_OUT,
-                                                            welcomeMsg + "\r\n")); //$NON-NLS-1$
-                                                    processMonitorThread = new Thread(psMonitor);
-                                                    processMonitorThread.start();
-                                                } else {
-                                                    kill();
-                                                    running = true;
-                                                    setRunning(false);
-                                                }
-                                            } catch (Throwable e) {
-                                                // catch any Exception or Error
-                                                // to kill the process, see bug
-                                                // 0003567
-                                                running = true;
-                                                Throwable cause = e.getCause();
-                                                if (cause != null && cause.getClass().equals(InterruptedException.class)) {
-                                                    setRunning(false);
-                                                    addErrorMessage(e);
-                                                } else {
-                                                    ExceptionHandler.process(e);
-                                                    addErrorMessage(e);
-                                                    kill();
-                                                }
-                                            } finally {
-                                                // progressMonitor.done();
-                                                refreshUiAndWait[0] = false;
+                                            // see feature 0004820: The run
+                                            // job doesn't verify if code is
+                                            // correct
+                                            // before launching
+                                            if (!JobErrorsChecker.hasErrors(shell)) {
+                                                ps = processor.run(getStatisticsPort(), getTracesPort(), watchParam,
+                                                        log4jRuntimeLevel, progressMonitor, processMessageManager);
                                             }
-                                        }
-                                    });
-                                }
-                            }, "RunProcess_" + process.getLabel()).start(); //$NON-NLS-1$
-                            while (refreshUiAndWait[0] && !progressMonitor.isCanceled()) {
-                                if (!display.readAndDispatch()) {
-                                    display.sleep();
-                                }
-                                synchronized (this) {
-                                    try {
-                                        final long waitTime = 50;
-                                        wait(waitTime);
-                                    } catch (InterruptedException e) {
-                                        // Do nothing
-                                    }
-                                }
 
+                                            if (ps != null && !progressMonitor.isCanceled()) {
+                                                setRunning(true);
+                                                psMonitor = createProcessMonitor(ps);
+
+                                                startingMessageWritten = true;
+
+                                                final String startingPattern = Messages
+                                                        .getString("ProcessComposite.startPattern"); //$NON-NLS-1$
+                                                MessageFormat mf = new MessageFormat(startingPattern);
+                                                String welcomeMsg = mf.format(new Object[] { process.getLabel(), new Date() });
+                                                processMessageManager.addMessage(new ProcessMessage(MsgType.CORE_OUT, welcomeMsg
+                                                        + "\r\n")); //$NON-NLS-1$
+                                                processMonitorThread = new Thread(psMonitor);
+                                                processMonitorThread.start();
+                                            } else {
+                                                kill();
+                                                running = true;
+                                                setRunning(false);
+                                            }
+                                        } catch (Throwable e) {
+                                            // catch any Exception or Error
+                                            // to kill the process, see bug
+                                            // 0003567
+                                            running = true;
+                                            Throwable cause = e.getCause();
+                                            if (cause != null && cause.getClass().equals(InterruptedException.class)) {
+                                                setRunning(false);
+                                                addErrorMessage(e);
+                                            } else {
+                                                ExceptionHandler.process(e);
+                                                addErrorMessage(e);
+                                                kill();
+                                            }
+                                        } finally {
+                                            // progressMonitor.done();
+                                            refreshUiAndWait[0] = false;
+                                        }
+                                    }
+                                });
+                            }
+                        }, "RunProcess_" + process.getLabel()).start(); //$NON-NLS-1$
+                        while (refreshUiAndWait[0] && !progressMonitor.isCanceled()) {
+                            if (!display.readAndDispatch()) {
+                                display.sleep();
+                            }
+                            synchronized (this) {
+                                try {
+                                    final long waitTime = 50;
+                                    wait(waitTime);
+                                } catch (InterruptedException e) {
+                                    // Do nothing
+                                }
                             }
 
-                        
+                        }
+
                     }
                 });
             } catch (InvocationTargetException e1) {
@@ -1239,7 +1239,9 @@ public class RunProcessContext {
             jmxPerformanceChangeListener = new JMXPerformanceChangeListener() {
 
                 long startTime = System.currentTimeMillis();
+
                 String name = process.getLabel();
+
                 @Override
                 public String getProcessName() {
                     return name;
