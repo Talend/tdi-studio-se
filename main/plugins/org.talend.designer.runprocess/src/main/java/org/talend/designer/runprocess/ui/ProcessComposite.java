@@ -1184,40 +1184,21 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private ConcurrentLinkedQueue<IProcessMessage> newMessages = new ConcurrentLinkedQueue<IProcessMessage>();
 
-    private ConcurrentLinkedQueue<IProcessMessage> messagesToDisplay = new ConcurrentLinkedQueue<IProcessMessage>();
-
     private long startTime;
 
-    private List<IProcessMessage> newMsgs = new ArrayList<IProcessMessage>();
+    private List<IProcessMessage> messagesToDisplay = new ArrayList<IProcessMessage>();
 
     private static long REFRESH_INTERVAL = 500;
 
     protected void processNextMessage() {
-        // one list for display, one list for the waiting pool.
-        // don't try to display once the list to display is not finished to handle.
-        if (messagesToDisplay.isEmpty() && !newMessages.isEmpty()) {
+        if (!newMessages.isEmpty()) {
+            List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
             IProcessMessage message = newMessages.poll();
             if (message == null) {
                 return;
             }
-            messagesToDisplay.add(message);
-            getDisplay().asyncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
-                    // only do a peek here, to get the first message, but without remove it (to make sure nothing else
-                    // call the appendConsole)
-                    IProcessMessage msg = messagesToDisplay.peek();
-                    if (msg != null) {
-                        messages.add(msg);
-                        doAppendToConsole(messages);
-                    }
-
-                    // do a poll here to remove the first element that we just displayed.
-                    messagesToDisplay.poll();
-                }
-            });
+            messages.add(message);
+            doAppendToConsole(messages);
         }
     }
 
@@ -1289,35 +1270,38 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         return newStyle;
     }
 
-    private void doAppendToConsole(Collection<IProcessMessage> messages) {
+    private void doAppendToConsole(Collection<IProcessMessage> messages_xxx) {
         try {
-            if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
+            if (consoleText == null || consoleText.isDisposed() || messages_xxx.isEmpty()) {
                 return;
             }
-            System.out.println("messages " + messages.size());
-            if (messages.size() > 1) {
+            System.out.println("messages " + messages_xxx.size());
+            if (messages_xxx.size() > 1) {
                 System.out.println();
             }
-            int maxlines = 1000;
-            for (IProcessMessage message : messages) {
+            for (IProcessMessage message : messages_xxx) {
                 if (message.getType() == MsgType.STD_OUT) {
                     String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
                     for (String lineContent : splitLines) {
                         IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
-                        newMsgs.add(lineMsg);
+                        messagesToDisplay.add(lineMsg);
                     }
                 } else {
-                    newMsgs.add(message);
+                    messagesToDisplay.add(message);
                 }
                 if (writer != null) {
                     writer.write(message.getContent());
                 }
             }
+            messages_xxx.clear();
+
+            System.out.println("messagesToDisplay " + messagesToDisplay.size());
+
             long currentTime = new Date().getTime();
-            if (!newMsgs.isEmpty() && (currentTime - startTime > REFRESH_INTERVAL)) {
+            if (!messagesToDisplay.isEmpty() && (currentTime - startTime > REFRESH_INTERVAL)) {
                 startTime = currentTime;
-                printToConsole(newMsgs);
-                newMsgs = new ArrayList<IProcessMessage>();
+                printToConsole(messagesToDisplay);
+                messagesToDisplay = new ArrayList<IProcessMessage>();
             }
         } catch (IOException e) {
             ExceptionHandler.process(e);
@@ -1423,7 +1407,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
         consoleText.setText(""); //$NON-NLS-1$
         startTime = 0;
-        newMsgs = new ArrayList<IProcessMessage>();
+        messagesToDisplay = new ArrayList<IProcessMessage>();
         doAppendToConsole(messages);
     }
 
@@ -1791,7 +1775,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             appendToConsole(psMess);
         } else if (ProcessMessageManager.PROP_MESSAGE_CLEAR.equals(propName)) {
             newMessages.clear();
-            messagesToDisplay.clear();
             getDisplay().asyncExec(new Runnable() {
 
                 @Override
@@ -1807,11 +1790,11 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             // traceBtn.setSelection(((Boolean) evt.getNewValue()).booleanValue());
         } else if (RunProcessContext.PROP_RUNNING.equals(propName)) {
             boolean running = ((Boolean) evt.getNewValue()).booleanValue();
+            List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
             while (!newMessages.isEmpty()) {
-                messagesToDisplay.add(newMessages.poll());
+                messages.add(newMessages.poll());
             }
-            doAppendToConsole(messagesToDisplay);
-            messagesToDisplay.clear();
+            doAppendToConsole(messages);
             if (!running && writer != null) {
                 try {
                     writer.flush();
@@ -1834,7 +1817,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     }
                 });
                 if (!running) {
-                    printToConsole(newMsgs);
+                    printToConsole(messagesToDisplay);
                 }
             }
             oldRunning = running;
