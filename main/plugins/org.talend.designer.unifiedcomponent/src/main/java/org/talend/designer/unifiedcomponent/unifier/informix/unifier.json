@@ -1,0 +1,95 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tInformixInput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tInformixOutput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tInformixClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tInformixCommit",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tInformixConnection",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tInformixRollback",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tInformixRow",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tInformixBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tInformixCDC",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tInformixOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tInformixOutputBulkExec",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tInformixSCD",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBSP",
+    "component":"tInformixSP",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

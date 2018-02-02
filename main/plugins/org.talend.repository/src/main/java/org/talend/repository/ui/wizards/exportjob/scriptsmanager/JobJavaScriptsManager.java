@@ -103,6 +103,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -385,7 +386,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         // set the maven properties
         final Map<String, String> mavenPropertiesMap = new HashMap<String, String>();
         mavenPropertiesMap.put(EMavenBuildScriptProperties.ItemGroupName.getVarScript(),
-                JavaResourcesHelper.getGroupItemName(projectName, jobName));
+                PomIdsHelper.getJobGroupId(item.getProperty()));
         mavenPropertiesMap.put(EMavenBuildScriptProperties.ItemProjectName.getVarScript(), projectName);
         mavenPropertiesMap.put(EMavenBuildScriptProperties.ItemName.getVarScript(), jobName);
         mavenPropertiesMap.put(EMavenBuildScriptProperties.ItemVersion.getVarScript(), jobVersion);

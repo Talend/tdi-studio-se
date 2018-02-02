@@ -20,6 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.talend.core.repository,
  org.talend.repository.view,
  org.talend.repository.view.di,
+ org.talend.metadata.managment,
  org.talend.metadata.managment.ui,
  org.talend.repository,
  org.talend.designer.core,
@@ -36,6 +37,7 @@ Export-Package: org.talend.repository.generic.model.genericMetadata,
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.talend.components.api.component,
  org.talend.components.api.properties,
  org.talend.components.api.service,

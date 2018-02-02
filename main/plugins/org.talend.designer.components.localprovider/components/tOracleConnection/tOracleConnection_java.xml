@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Oracle</FAMILY>
+    <FAMILY>Databases/DB Specifics/Oracle</FAMILY>
     <FAMILY>ELT/Connections</FAMILY>
   </FAMILIES>
 

@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Azure/SQL Data Warehouse</FAMILY>
+     <FAMILY>Databases/DB Specifics/Azure/SQL Data Warehouse</FAMILY>
     <FAMILY>Cloud/Azure/SQL Data Warehouse</FAMILY>
   </FAMILIES>
 

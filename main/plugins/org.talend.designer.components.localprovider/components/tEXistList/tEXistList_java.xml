@@ -15,7 +15,7 @@ COMPATIBILITY="ALL"
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/eXist</FAMILY>
+    <FAMILY>Databases/DB Specifics/eXist</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>

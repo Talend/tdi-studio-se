@@ -2970,6 +2970,23 @@
               name="MigrationTaskFortOleDbCoseConnection"
               version="7.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.ItemSaveTriggerMigrationTask"
+              description="Trigger to save the item again"
+              id="org.talend.repository.model.migration.ItemSaveTriggerMigrationTask"
+              name="Trigger to save the item"
+              version="7.0.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
+              id="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
+              name="RepositoryProjectDate"
+              version="7.0.0">
+        </projecttask>
    </extension>
 
    <extension
@@ -3154,6 +3171,12 @@
          <tester
                class="org.talend.repository.preference.ProjectRefSettingPageTester">
          </tester>
+      </page>
+      <page
+            category="projectsetting.Maven"
+            class="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
+            id="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
+            title="%ProjectSetting.groupId">
       </page>
    </extension>
    <extension

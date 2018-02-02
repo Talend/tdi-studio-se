@@ -101,11 +101,34 @@ public abstract class NewGenericWizardMigrationTask extends AbstractItemMigratio
                                         value = Boolean.FALSE;
                                     }
                                 }
-                            }
-                            if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
+                            } else if (GenericTypeUtils.isIntegerType(property) && !oldConnection.isContextMode()) {
                                 if (value != null && value instanceof String) {
                                     try {
                                         value = new Integer((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isLongType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Long((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isFloatType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Float((String) value);
+                                    } catch (Exception e) {
+                                        value = 0;
+                                    }
+                                }
+                            } else if (GenericTypeUtils.isDoubleType(property) && !oldConnection.isContextMode()) {
+                                if (value != null && value instanceof String) {
+                                    try {
+                                        value = new Double((String) value);
                                     } catch (Exception e) {
                                         value = 0;
                                     }

@@ -442,22 +442,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 					}
 %>
 				}
-<%
-				String actualLogFilePath;
-				if (isLogFilePathSpecified) {
-					actualLogFilePath = parametersList.get(parametersList.indexOf("\"-lf\"") + 1);
-				} else {
-					actualLogFilePath = new StringBuilder("\"")
-										.append(dbtable.toUpperCase().replaceAll("\"", ""))
-										.append(".")
-										.append(dbuser.toUpperCase().replaceAll("\"", ""))
-										.append(".")
-										.append(dbname.toUpperCase().replaceAll("\"", ""))
-										.append(".nzlog\"").toString();
-				}
-%>
-				nb_line_<%=cid%>.set(getProcessedRowsCount(<%=actualLogFilePath%>));
 
+                String tableName_<%=cid%> = <%=dbtable%>;
+                String dbUser_<%=cid%> = <%=dbuser%>;
+                String dbName_<%=cid%> = <%=dbname%>;
+				String actualLogFilePath_<%=cid%> = <%if(isLogFilePathSpecified){%>
+					<%=parametersList.get(parametersList.indexOf("\"-lf\"") + 1)%>;
+				<%} else {%>
+					tableName_<%=cid%>.toUpperCase()
+					+ "." + dbUser_<%=cid%>.toUpperCase()
+					+ "." + dbName_<%=cid%>.toUpperCase()
+					+ ".nzlog";
+				<%}%>
+
+				nb_line_<%=cid%>.set(getProcessedRowsCount(actualLogFilePath_<%=cid%>));
 			}
 			catch (java.lang.Exception e) {
 				globalMap.put("<%=cid%>_NZLOAD_ERROR",e.getMessage());

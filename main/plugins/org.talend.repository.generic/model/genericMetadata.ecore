@@ -2,13 +2,8 @@
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="genericMetadata" nsURI="http://www.talend.org/genericmetadata"
     nsPrefix="TalendGenericMetadata">
-  <eClassifiers xsi:type="ecore:EClass" name="GenericConnection" eSuperTypes="../../org.talend.model/model/metadata.ecore#//Connection">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="compProperties" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="GenericConnectionItem" eSuperTypes="../../org.talend.model/model/properties.ecore#//ConnectionItem">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="typeName" lowerBound="1"
-        eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
-  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="GenericConnection" eSuperTypes="../../org.talend.model/model/metadata.ecore#//Connection"/>
+  <eClassifiers xsi:type="ecore:EClass" name="GenericConnectionItem" eSuperTypes="../../org.talend.model/model/properties.ecore#//ConnectionItem"/>
   <eClassifiers xsi:type="ecore:EClass" name="SubContainer" eSuperTypes="../../org.talend.cwm.mip/model/CWM.ecore#//cwm/objectmodel/core/Package">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="compProperties" eType="ecore:EDataType ../../org.eclipse.emf.ecore/model/Ecore.ecore#//EString"/>
   </eClassifiers>

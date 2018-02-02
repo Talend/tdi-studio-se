@@ -20,6 +20,7 @@ Require-Bundle: org.eclipse.ui,
  org.talend.repository,
  jackson-core-asl,
  org.apache.servicemix.bundles.avro,
+ org.talend.metadata.managment,
  org.talend.metadata.managment.ui,
  org.slf4j.api,
  org.eclipse.swt

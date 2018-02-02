@@ -1,0 +1,113 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tPostgresqlInput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tPostgresqlOutput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tPostgresqlClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tPostgresqlCommit",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tPostgresqlConnection",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tPostgresqlRollback",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tPostgresqlRow",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSCDELT",
+    "component":"tPostgresqlSCDELT",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tPostgresqlBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBCDC",
+    "component":"tPostgresqlCDC",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBInvalidRows",
+    "component":"tPostgresqlInvalidRows",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tPostgresqlOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tPostgresqlOutputBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tPostgresqlSCD",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+},
+{
+    "component_delegate":"tDBValidRows",
+    "component":"tPostgresqlValidRows",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT,DB_VERSION"}
+}
+]

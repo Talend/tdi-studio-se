@@ -13,6 +13,8 @@
 package org.talend.repository.ui.wizards.newproject;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -30,10 +32,12 @@ import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.commons.ui.swt.dialogs.ProgressDialog;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
 import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.ui.actions.importproject.ImportProjectsUtilities;
+import org.talend.repository.ui.exception.ImportInvalidObjectException;
 import org.talend.repository.ui.wizards.newproject.copyfromeclipse.TalendWizardProjectsImportPage;
 
 /**
@@ -114,6 +118,7 @@ public class ImportProjectAsWizard extends Wizard {
             // copy external jar files into tos
             updateExternalLibPath();
             final Shell shell = getShell();
+            final List<IRepositoryViewObject> invalidViewObjectList = new ArrayList<IRepositoryViewObject>();
             ProgressDialog progressDialog = new ProgressDialog(shell) {
 
                 private IProgressMonitor monitorWrap;
@@ -125,15 +130,26 @@ public class ImportProjectAsWizard extends Wizard {
                     try {
                         ImportProjectsUtilities.importProjectAs(shell, name, technicalName, sourcePath, isArchive, monitor);
                     } catch (Exception e) {
-                        throw new InvocationTargetException(e);
+                        if (e instanceof ImportInvalidObjectException) {
+                            ImportInvalidObjectException importInvalidObjectException = (ImportInvalidObjectException)e;
+                            invalidViewObjectList.addAll(importInvalidObjectException.getInvalidViewObjectList());
+                        } else {
+                            throw new InvocationTargetException(e);
+                        }
                     }
                     monitorWrap.done();
                     try {
                         IProject project = ResourceUtils.getProject(technicalName);
                         if (project.exists()) {
-                            MessageDialog.openInformation(shell,
-                                    Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
-                                    Messages.getString("ImportProjectAction.messageDialogContent.projectImportedSuccessfully")); //$NON-NLS-1$
+                            if (invalidViewObjectList.size() == 0) {
+                                MessageDialog.openInformation(shell,
+                                        Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
+                                        Messages.getString("ImportProjectAction.messageDialogContent.projectImportedSuccessfully")); //$NON-NLS-1$
+                            } else {
+                                MessageDialog.openWarning(shell,
+                                        Messages.getString("ImportProjectAction.messageDialogTitle.project"), //$NON-NLS-1$
+                                        Messages.getString("ImportProjectAction.messageDialogContent.projectImportedFinish"));//$NON-NLS-1$
+                            }
                         }
                     } catch (PersistenceException e) {
                         //

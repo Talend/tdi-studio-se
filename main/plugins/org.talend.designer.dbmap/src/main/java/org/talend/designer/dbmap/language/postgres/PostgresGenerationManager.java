@@ -192,66 +192,60 @@ public class PostgresGenerationManager extends DbGenerationManager {
         if (inputConnections == null) {
             return tableName;
         }
-        for (IConnection iconn : inputConnections) {
-            boolean inputIsELTDBMap = false;
-            INode source = iconn.getSource();
-            String schemaValue = "";
-            String tableValue = "";
-            if (source != null) {
-                inputIsELTDBMap = isELTDBMap(source);
-                if (inputIsELTDBMap) {
-                    tableValue = iconn.getName();
-                } else {
-                    IElementParameter schemaParam = source.getElementParameter("ELT_SCHEMA_NAME");
-                    IElementParameter tableParam = source.getElementParameter("ELT_TABLE_NAME");
-                    if (schemaParam != null && schemaParam.getValue() != null) {
-                        schemaValue = schemaParam.getValue().toString();
-                    }
-                    if (tableParam != null && tableParam.getValue() != null) {
-                        tableValue = tableParam.getValue().toString();
-                    }
+        IConnection iconn = this.getConnectonByName(inputConnections, tableName);
+        if (iconn == null) {
+            return tableName;
+        }
+        boolean inputIsELTDBMap = false;
+        INode source = iconn.getSource();
+        String schemaValue = "";
+        String tableValue = "";
+        if (source != null) {
+            inputIsELTDBMap = isELTDBMap(source);
+            if (inputIsELTDBMap) {
+                tableValue = iconn.getName();
+            } else {
+                IElementParameter schemaParam = source.getElementParameter("ELT_SCHEMA_NAME");
+                IElementParameter tableParam = source.getElementParameter("ELT_TABLE_NAME");
+                if (schemaParam != null && schemaParam.getValue() != null) {
+                    schemaValue = schemaParam.getValue().toString();
                 }
-            }
-
-            String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
-            String tableNoQuote = TalendTextUtils.removeQuotes(tableValue);
-            String sourceTable = "";
-            boolean hasSchema = !"".equals(schemaNoQuote);
-            if (hasSchema) {
-                sourceTable = schemaNoQuote + ".";
-            }
-            sourceTable = sourceTable + tableNoQuote;
-            if (sourceTable.equals(tableName)) {
-                StringBuffer sb = new StringBuffer();
-                if (inputIsELTDBMap && generateSubSql) {
-                    generateSubQuery(component, sb, source, iconn, tableNoQuote, aliasName);
-                } else {
-                    if (aliasName == null) {
-                        String tableAndSchema = "";
-                        if (hasSchema) {
-                            tableAndSchema = getHandledField(schemaNoQuote);
-                            tableAndSchema = tableAndSchema + ".";
-                        }
-                        tableAndSchema = tableAndSchema + getHandledField(tableNoQuote);
-
-                        if (isVariable(schemaNoQuote) || isVariable(tableNoQuote)) {
-                            tableAndSchema = replaceVariablesForExpression(component, tableAndSchema);
-                        }
-                        sb.append(tableAndSchema);
-                    } else {
-                        sb.append("\\\"\"+");
-                        if (hasSchema) {
-                            sb.append(schemaValue);
-                            sb.append("+\"\\\".\\\"\"+");
-                        }
-                        sb.append(tableValue);
-                        sb.append("+\"\\\"");
-                    }
+                if (tableParam != null && tableParam.getValue() != null) {
+                    tableValue = tableParam.getValue().toString();
                 }
-                return sb.toString();
             }
         }
-        return tableName;
+
+        String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
+        String tableNoQuote = TalendTextUtils.removeQuotes(tableValue);
+        boolean hasSchema = !"".equals(schemaNoQuote);
+        StringBuffer sb = new StringBuffer();
+        if (inputIsELTDBMap && generateSubSql) {
+            generateSubQuery(component, sb, source, iconn, tableNoQuote, aliasName);
+        } else {
+            if (aliasName == null) {
+                String tableAndSchema = "";
+                if (hasSchema) {
+                    tableAndSchema = getHandledField(schemaNoQuote);
+                    tableAndSchema = tableAndSchema + ".";
+                }
+                tableAndSchema = tableAndSchema + getHandledField(tableNoQuote);
+
+                if (isVariable(schemaNoQuote) || isVariable(tableNoQuote)) {
+                    tableAndSchema = replaceVariablesForExpression(component, tableAndSchema);
+                }
+                sb.append(tableAndSchema);
+            } else {
+                sb.append("\\\"\"+");
+                if (hasSchema) {
+                    sb.append(schemaValue);
+                    sb.append("+\"\\\".\\\"\"+");
+                }
+                sb.append(tableValue);
+                sb.append("+\"\\\"");
+            }
+        }
+        return sb.toString();
     }
 
     private boolean isVariable(String expression) {

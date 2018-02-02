@@ -71,6 +71,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeValuesFromRepository;
 import org.talend.designer.core.ui.editor.cmd.LoadProjectSettingsCommand;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.views.properties.WidgetFactory;
+import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.metadata.managment.ui.wizard.metadata.ShowAddedContextdialog;
 import org.talend.repository.UpdateRepositoryUtils;
@@ -162,6 +163,9 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                             Object repValue = RepositoryToComponentProperty.getValue(connection, repositoryValue, null);
                             if (repValue == null) {
                                 continue;
+                            }
+                            if(repositoryValue.equals("connection.driverTable")){//PASSWORD
+                                ConnectionUtil.resetDriverValue(repValue);
                             }
                             if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
                                 boolean found = false;

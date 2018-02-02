@@ -43,7 +43,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.service.IRemoteService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.utils.ProjectUtils;
 import org.talend.repository.RepositoryPlugin;
@@ -413,22 +412,6 @@ public class ImportProjectAsWizardPage extends WizardPage {
             String string = Messages.getString("ImportProjectAsWizardPage.error.notATalendProject", //$NON-NLS-1$
                     brandingService.getShortProductName());
             fileContentStatus = new Status(IStatus.ERROR, RepositoryPlugin.PLUGIN_ID, IStatus.OK, string, null);
-        } else {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRemoteService.class)) {
-                IRemoteService remoteService = (IRemoteService) GlobalServiceRegister.getDefault().getService(
-                        IRemoteService.class);
-                if (!remoteService.isAuthorized(project.getProductVersion())) {
-                    String compatibleMessage = Messages.getString("ImportProjectAsWizardPage.compatible.message"); //$NON-NLS-1$
-                    String confirmMessage = Messages.getString("ImportProjectAsWizardPage.confirm.message", project.getLabel()); //$NON-NLS-1$
-                    boolean confirm = MessageDialog.openConfirm(this.getShell(), brandingService.getProductName(),
-                            compatibleMessage + "\n\n" + confirmMessage); //$NON-NLS-1$
-                    if (!confirm) {
-                        valid = false;
-                        fileContentStatus = new Status(IStatus.ERROR, RepositoryPlugin.PLUGIN_ID, IStatus.OK, compatibleMessage,
-                                null);
-                    }
-                }
-            }
         }
 
         if (valid) {

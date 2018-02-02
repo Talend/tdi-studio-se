@@ -2,9 +2,11 @@
     String domain = ElementParameterParser.getValue(node, "__DOMAIN__");
     String host = ElementParameterParser.getValue(node, "__HOST__");
 	String authType = ElementParameterParser.getValue(node, "__AUTH_TYPE__");
+	String onlineRegisterApp = ElementParameterParser.getValue(node, "__ONLINE_REGISTERED_APP__");
 	String userName = ElementParameterParser.getValue(node, "__USERNAME__");
 	String serviceURL = ElementParameterParser.getValue(node, "__SERVICE_ROOT_URL__");
 	String applicationId = ElementParameterParser.getValue(node, "__APPLICATION_ID__");
+	String clientSecret = ElementParameterParser.getValue(node, "__CLIENT_SECRET__");
 	String authority = ElementParameterParser.getValue(node, "__AUTHORITY__");
 	
 	String timeout = ElementParameterParser.getValue(node, "__TIMEOUT__");
@@ -61,10 +63,20 @@
             .buildNtlmClientConfiguration(<%=userName%>, decryptedPassword_<%=cid%>, <%=host%>, <%=domain%>);
     <%
     } else {
-    %>
-    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
-            .buildOAuthClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
-    <%
+    	if("NATIVE".equals(onlineRegisterApp)){
+		%>
+		    org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                    .buildOAuthNativeClientConfiguration(<%=applicationId%>, <%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>);
+		<%
+		}
+		else {
+			String permission = "org.talend.ms.crm.odata.ClientConfiguration.WebAppPermission.";
+			permission += ("WEB_DELEGATED".equals(onlineRegisterApp)) ?  "DELEGATED" : "APPLICATION";
+		%>
+    		org.talend.ms.crm.odata.ClientConfiguration clientConfig_<%=cid%> = org.talend.ms.crm.odata.ClientConfigurationFactory
+                    .buildOAuthWebClientConfiguration(<%=applicationId%>, <%=clientSecret%>,<%=userName%>, decryptedPassword_<%=cid%>, <%=authority%>, <%=permission%>);
+		<%
+		}
     }
     %>
 

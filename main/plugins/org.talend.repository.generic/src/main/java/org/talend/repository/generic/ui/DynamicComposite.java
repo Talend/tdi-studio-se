@@ -42,13 +42,16 @@ import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.ui.check.Checker;
 import org.talend.core.ui.check.IChecker;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.ValidationResult;
 import org.talend.daikon.properties.ValidationResult.Result;
 import org.talend.daikon.properties.presentation.Form;
+import org.talend.daikon.properties.property.Property;
 import org.talend.daikon.properties.property.PropertyValueEvaluator;
 import org.talend.designer.core.generic.constants.IContextEventProperties;
 import org.talend.designer.core.generic.constants.IElementParameterEventProperties;
@@ -67,7 +70,6 @@ import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyVa
 import org.talend.repository.generic.i18n.Messages;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 
@@ -111,13 +113,25 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         resetParameters();
     }
 
+    public DynamicComposite(Composite parentComposite, int styles, EComponentCategory section, Element element,
+            ConnectionItem connectionItem, boolean isCompactView, Color backgroundColor, Form form, boolean drivedByForm) {
+        super(parentComposite, styles, section, element, isCompactView, backgroundColor);
+        this.element = element;
+        this.form = form;
+        this.drivedByForm = drivedByForm;
+        this.connectionItem = connectionItem;
+        checker = new Checker();
+        internalService = new GenericWizardInternalService();
+        if (drivedByForm) {
+            internalService.getComponentService().makeFormCancelable(form.getProperties(), form.getName());
+        }
+        resetParameters();
+    }
+
     private void resetComponentProperties() {
         if (connectionItem != null) {
             Connection connection = connectionItem.getConnection();
-            if (connection instanceof GenericConnection) {
-                GenericConnection genericConnection = (GenericConnection) connection;
-                genericConnection.setCompProperties(form.getProperties().toSerialized());
-            }
+            connection.setCompProperties(form.getProperties().toSerialized());
         }
     }
 
@@ -166,9 +180,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
             properties.setValueEvaluator(evaluator);
         }
 
-        for (
-
-        ElementParameter parameter : parameters) {
+        for (ElementParameter parameter : parameters) {
             if (parameter instanceof GenericElementParameter) {
                 GenericElementParameter genericElementParameter = (GenericElementParameter) parameter;
                 genericElementParameter.setComponentService(componentService);
@@ -188,7 +200,13 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                 } else if (EParameterFieldType.NAME_SELECTION_AREA.equals(genericElementParameter.getFieldType())
                         && theConnection != null) {
                     List<NamedThing> values = new ArrayList<>();
-                    List<MetadataTable> metadataTables = SchemaUtils.getMetadataTables(theConnection, SubContainer.class);
+                    List<MetadataTable> metadataTables = null;
+                    if (connectionItem.getTypeName() != null
+                            && SchemaUtils.isExtraDBType(ERepositoryObjectType.valueOf(connectionItem.getTypeName()))) {
+                        metadataTables = ConnectionHelper.getTablesWithOrders(theConnection);
+                    } else {
+                        metadataTables = SchemaUtils.getMetadataTables(theConnection, SubContainer.class);
+                    }
                     List<String> tableLabels = new ArrayList<>();
                     for (MetadataTable metaTable : metadataTables) {
                         tableLabels.add(metaTable.getLabel());
@@ -212,15 +230,28 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
                             genericElementParameter.setRepositoryValueUsed(true);
                             genericElementParameter.setReadOnly(true);
                         }
+                        Properties pros = properties.getProperties(genericElementParameter.getName());
+                        if (pros != null) {
+                            boolean isRepValueUsed = true;
+                            for (NamedThing thing : pros.getProperties()) {
+                                if (thing instanceof Property) {
+                                    boolean result = ((Property) thing)
+                                            .getTaggedValue(IGenericConstants.REPOSITORY_VALUE) != null;
+                                    if (!result) {
+                                        isRepValueUsed = false;
+                                    }
+                                }
+                            }
+                            genericElementParameter.setRepositoryValueUsed(isRepValueUsed);
+                            genericElementParameter.setReadOnly(isRepValueUsed);
+                        }
                     }
                 }
             }
         }
 
         boolean added = false;
-        for (
-
-        ElementParameter currentParameter : currentParameters) {
+        for (ElementParameter currentParameter : currentParameters) {
             if (EParameterName.UPDATE_COMPONENTS.getName().equals(currentParameter.getName())) {
                 currentParameter.setValue(true);
             }
@@ -346,7 +377,7 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
 
                 @Override
                 public void run() {
-                    MessageDialog.openInformation(getShell(), elem.getElementName(), message);
+                    MessageDialog.openInformation(getShell(), "", message); //$NON-NLS-1$
                 }
             });
             break;
@@ -465,7 +496,14 @@ public class DynamicComposite extends MissingSettingsMultiThreadDynamicComposite
         this.wizardPropertyChangeListener = wizardPropertyChangeListener;
     }
 
-    public Form getForm(){
+    public Form getForm() {
         return this.form;
     }
+
+    @Override
+    protected synchronized void operationInThread() {
+        super.operationInThread();
+    }
+    
+    
 }

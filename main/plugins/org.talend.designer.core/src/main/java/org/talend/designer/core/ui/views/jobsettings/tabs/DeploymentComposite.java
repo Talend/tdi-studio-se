@@ -12,11 +12,7 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings.tabs;
 
-import static org.talend.repository.utils.MavenVersionUtils.containsKey;
-import static org.talend.repository.utils.MavenVersionUtils.get;
-import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
-import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
-import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
+import static org.talend.repository.utils.MavenVersionUtils.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +53,7 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -67,6 +64,7 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.maven.utils.PomIdsHelper;
 
 public class DeploymentComposite extends AbstractTabComposite {
 
@@ -236,8 +234,10 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private void initialize() {
         if (!isAdditionalPropertiesNull(getObject())) {
-            // TODO get from PublishPlugin.getDefault().getPreferenceStore();
-            defaultGroupId = isDataServiceJob ? "" : "org.example"; //$NON-NLS-1$ //$NON-NLS-2$
+            Property property = isService ? serviceItem.getProperty() : process.getProperty();
+            PomIdsHelper.getJobGroupId(property);
+            String defaultProjectGroupId = PomIdsHelper.getJobGroupId(property);
+            defaultGroupId = isDataServiceJob ? "" : defaultProjectGroupId; //$NON-NLS-1$
             groupId = (String) get(getObject(), MavenConstants.NAME_GROUP_ID);
             boolean isCustomGroupId = groupId != null;
             if (!isCustomGroupId) {
@@ -324,7 +324,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             @Override
             public void modifyText(ModifyEvent e) {
                 String currentGroupId = groupIdText.getText();
-                if (!StringUtils.isBlank(currentGroupId)) {
+                if (PomIdsHelper.isValidGroupId(currentGroupId)) {
                     groupIdText.setBackground(getBackground());
                     groupIdText.setToolTipText(""); //$NON-NLS-1$
                     if (!defaultGroupId.equals(currentGroupId)) {

@@ -579,8 +579,8 @@ public class ProjectSettingManager extends Utils {
         Arrays.sort(moduleNameArray, comprarator);
         Arrays.sort(moduleValueArray, comprarator);
         ElementParameter childParam = new ElementParameter(elem);
-        childParam.setName("JAR_NAME"); //$NON-NLS-1$
-        childParam.setDisplayName("JAR_NAME"); //$NON-NLS-1$
+        childParam.setName("drivers"); //$NON-NLS-1$
+        childParam.setDisplayName("drivers"); //$NON-NLS-1$
         childParam.setFieldType(EParameterFieldType.MODULE_LIST);
         childParam.setListItemsDisplayName(moduleNameArray);
         childParam.setListItemsValue(moduleValueArray);
@@ -589,8 +589,8 @@ public class ProjectSettingManager extends Utils {
         param.setName(JobSettingsConstants.getExtraParameterName(EParameterName.DRIVER_JAR.getName()));
         param.setDisplayName(EParameterName.DRIVER_JAR.getDisplayName());
         param.setFieldType(EParameterFieldType.TABLE);
-        param.setListItemsDisplayCodeName(new String[] { "JAR_NAME" }); //$NON-NLS-1$
-        param.setListItemsDisplayName(new String[] { "Jar Name" }); //$NON-NLS-1$
+        param.setListItemsDisplayCodeName(new String[] { "drivers" }); //$NON-NLS-1$
+        param.setListItemsDisplayName(new String[] { "drivers" }); //$NON-NLS-1$
         param.setListItemsValue(new ElementParameter[] { childParam });
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.EXTRA);

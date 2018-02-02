@@ -3594,7 +3594,7 @@ public abstract class DataMapTableView extends Composite implements IDataMapTabl
      * @return
      */
     protected String getSchemaDisplayName(String id) {
-        if (id == null) {
+        if (StringUtils.isEmpty(id)) {
             return null;
         }
         String[] values = id.split(" - ");

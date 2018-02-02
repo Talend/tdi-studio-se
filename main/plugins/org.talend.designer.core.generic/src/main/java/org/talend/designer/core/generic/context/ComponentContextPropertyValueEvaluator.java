@@ -21,6 +21,7 @@ import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.runtime.evaluator.AbstractPropertyValueEvaluator;
+import org.talend.core.runtime.util.GenericTypeUtils;
 import org.talend.daikon.properties.property.Property;
 
 /**
@@ -38,10 +39,12 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
     @Override
     public Object evaluate(Property property, Object storedValue) {
         if (storedValue == null) {
+            if (GenericTypeUtils.isBooleanType(property)) {
+                return false;
+            }
             return storedValue;
         }
-        if (storedValue instanceof Schema || storedValue instanceof List || storedValue instanceof Enum
-                || storedValue instanceof Boolean) {
+        if (storedValue instanceof Schema || storedValue instanceof Enum || storedValue instanceof Boolean) {
             return storedValue;
         }
         IContext context = null;
@@ -56,7 +59,26 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
         }
         String stringStoredValue = String.valueOf(storedValue);
         if (context != null && ContextParameterUtils.isContainContextParam(stringStoredValue)) {
-            stringStoredValue = ContextParameterUtils.parseScriptContextCode(stringStoredValue, context);
+            if (storedValue instanceof List) {
+                boolean isDrivers = property.getName() != null && property.getName().equals("drivers");
+                storedValue = ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers);
+                return getTypedValue(property, storedValue);
+            } else {
+                // the simple convert which only can process the simple case like : context.var or
+                // context.getProperty(context.getProperty("a")) or the link case : context.var1 = context.var2, context.var2 =
+                // "value", then get context.var1 = "value"
+                String simpleConvertResult = ContextParameterUtils.parseScriptContextCode(stringStoredValue, context);
+                // if the simple convert can't process the var which is more complex like : "str1" + context.var1 + "str2"+
+                // context.var2 + "str3", we will use the converter below
+                // will not consider the old usage context.getProperty("") and the link case
+                if (ContextParameterUtils.isContainContextParam(simpleConvertResult)) {
+                    stringStoredValue = ContextParameterUtils.convertContext2Literal4AnyVar(stringStoredValue, context);
+                } else {
+                    stringStoredValue = simpleConvertResult;
+                }
+            }
+        } else if (storedValue instanceof List) {
+            return storedValue;
         }
         return getTypedValue(property, stringStoredValue);
     }

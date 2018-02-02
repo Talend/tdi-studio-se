@@ -1,0 +1,71 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tRedshiftInput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tRedshiftOutput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tRedshiftClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tRedshiftCommit",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tRedshiftConnection",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tRedshiftRollback",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tRedshiftRow",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tRedshiftBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tRedshiftOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tRedshiftOutputBulkExec",
+    "category":"DI",
+    "family":""
+}
+]

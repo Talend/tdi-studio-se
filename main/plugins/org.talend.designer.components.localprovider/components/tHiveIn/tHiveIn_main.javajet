@@ -192,7 +192,7 @@ imports="
 %>
         // First we dump the select query of the user into google storage
         // In order to do that we modify the query to add as a prefix:
-        // INSERT OVERWRITE DIRECTORY '$GOOGLE_JARS_BUCKET/hivetmp/' ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+        // INSERT OVERWRITE DIRECTORY '$GOOGLE_JARS_BUCKET/hivetmp/' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
 
         <%
         String gsTempDir = "";
@@ -208,7 +208,7 @@ imports="
             gsTempDir = ElementParameterParser.getValue(node, "__GOOGLE_JARS_BUCKET__") + " + \"hivetemp\" ";
         }
         %>
-        instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' "
+        instance_<%=cid%>.addQuery("INSERT OVERWRITE DIRECTORY '" + <%=gsTempDir%> + "' ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' "
                 + <%=dbquery%>.replace("';'", "'\\;'") + ";");
         if (libjars_<%=cid%>.length() > 0) {
             instance_<%=cid%>.addLibJars(libjars_<%=cid%>.toString().substring(0, libjars_<%=cid%>.length()-1));
@@ -240,6 +240,7 @@ imports="
         <%
         String accessKey = ElementParameterParser.getValue(node,"__ACCESS_KEY__");
         String passwordFieldName = "__SECRET_KEY__";
+        final String GoogleTracker = org.talend.core.utils.TrackerUtil.getGoogleTracker();
         %>
         org.jets3t.service.impl.rest.httpclient.GoogleStorageService service_<%=cid%> = null;
         java.util.List<java.io.InputStream> inputStreamList_<%=cid%> = new java.util.ArrayList<>();
@@ -248,7 +249,7 @@ imports="
 
             org.jets3t.service.security.GSCredentials credentials_<%=cid%> = new org.jets3t.service.security.GSCredentials(<%=accessKey%>,decryptedPassword_<%=cid%>);
 
-            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," (GPN:Talend)",null);
+            service_<%=cid%> = new org.jets3t.service.impl.rest.httpclient.GoogleStorageService(credentials_<%=cid%>," <%=GoogleTracker%>",null);
             service_<%=cid%>.getAccountOwner();
 
             java.util.regex.Matcher m = org.talend.bigdata.launcher.google.dataproc.DataprocJobUtil.GS_URI_PATTERN.matcher(<%=gsTempDir%>);

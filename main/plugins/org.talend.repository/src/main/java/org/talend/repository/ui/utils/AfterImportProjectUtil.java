@@ -59,7 +59,7 @@ public class AfterImportProjectUtil {
         return new ArrayList<IAfterImportProjectAction>();
     }
 
-    public static void runAfterImportProjectActions(ImportProjectBean projectBean) {
+    public static void runAfterImportProjectActions(ImportProjectBean projectBean) throws Exception{
         for (IAfterImportProjectAction action : getAfterImportProjectActions()) {
             if (action instanceof AbsAfterImportProjectAction) {
                 ((AbsAfterImportProjectAction) action).projectBean = projectBean;

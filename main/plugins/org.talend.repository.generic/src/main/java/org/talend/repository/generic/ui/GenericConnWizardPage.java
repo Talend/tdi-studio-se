@@ -48,7 +48,6 @@ import org.talend.designer.core.generic.constants.IElementParameterEventProperti
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.model.FakeElement;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.ui.common.GenericWizardPage;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -200,7 +199,7 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
      */
     private List<IRepositoryViewObject> loadRepViewObjectWithSameType() throws PersistenceException {
         List<IRepositoryViewObject> list = new ArrayList<IRepositoryViewObject>();
-        ERepositoryObjectType type = ERepositoryObjectType.getType(((GenericConnectionItem) connectionItem).getTypeName());
+        ERepositoryObjectType type = ERepositoryObjectType.getType(connectionItem.getTypeName());
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IProxyRepositoryService.class)) {
             IProxyRepositoryService service = (IProxyRepositoryService) GlobalServiceRegister.getDefault().getService(
                     IProxyRepositoryService.class);

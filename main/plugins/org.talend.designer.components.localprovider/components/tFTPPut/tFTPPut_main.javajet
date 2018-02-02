@@ -283,7 +283,7 @@ try{
         globalMap.put("<%=cid %>_CURRENT_STATUS", currentStatus_<%=cid %>);
 
 <%
-    }else{// *** ftps *** //
+    } else {// *** ftps *** //
 %>
         String currentStatus_<%=cid %> = "No file transfered.";
         globalMap.put("<%=cid %>_CURRENT_STATUS", "No file transfered.");
@@ -348,12 +348,13 @@ try{
                 for (int m<%=cid %> = 0; m<%=cid %> < listings<%=cid %>.length; m<%=cid %>++){
                     if (listings<%=cid %>[m<%=cid %>].getName().matches(mask<%=cid %>)){
                         java.io.File file_in_localDir_<%=cid%> = listings<%=cid %>[m<%=cid %>];
+                        java.io.FileInputStream file_stream_<%=cid %> = new java.io.FileInputStream(file_in_localDir_<%=cid%>);
                         globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", remoteExistsFiles_<%=cid%>.contains(file_in_localDir_<%=cid%>.getName()));
                         String newName_<%=cid%> = ("".equals(map<%=cid %>.get(key<%=cid %>)))?file_in_localDir_<%=cid%>.getName():map<%=cid %>.get(key<%=cid %>);
                         <%if("never".equals(ftpsoverwrite)){%>
                             if (!(remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
                                 needRename_<%=cid%> = true;
-                                ftp_<%=cid %>.upload(file_in_localDir_<%=cid%>);
+                                ftp_<%=cid %>.storeFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
                                 <%if(isLog4jEnabled){%>
                                     log.debug("<%=cid%> - Uploaded file '" + newName_<%=cid%> + "' successfully.");
                                 <%}%>
@@ -364,7 +365,7 @@ try{
                             if ((remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>))){
                                 ftp_<%=cid %>.deleteFile(newName_<%=cid%>);
                             }
-                            ftp_<%=cid %>.upload(file_in_localDir_<%=cid%>);
+                            ftp_<%=cid %>.storeFile(file_in_localDir_<%=cid%>.getName(), file_stream_<%=cid %>);
 
                             <%if(isLog4jEnabled){%>
                                 log.debug("<%=cid%> - Overwrote file '" + newName_<%=cid%> + "' successfully.");
@@ -372,6 +373,7 @@ try{
                             globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS", remoteExistsFiles_<%=cid%>.contains(newName_<%=cid%>));
 
                         <%}%>
+                        file_stream_<%=cid %>.close();
                         nb_file_<%=cid%>++;
                     }
                 }
@@ -389,7 +391,7 @@ try{
                         ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));
                     }
                     globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename OK.");
-                }catch(it.sauronsoftware.ftp4j.FTPException e_<%=cid%>){
+                }catch(IOException e_<%=cid%>){
                     globalMap.put("<%=cid %>_CURRENT_STATUS", "File rename fail.");
                     throw e_<%=cid%>;
                 }

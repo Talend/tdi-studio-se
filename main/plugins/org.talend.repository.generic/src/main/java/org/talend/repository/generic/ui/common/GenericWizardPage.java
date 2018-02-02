@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.service.ComponentService;
+import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.ConnectionItem;
@@ -36,8 +37,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.metadata.managment.ui.wizard.AbstractNamedWizardPage;
 import org.talend.metadata.managment.ui.wizard.context.MetadataContextPropertyValueEvaluator;
 import org.talend.repository.generic.handler.IContextHandler;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.ui.context.ContextComposite;
 import org.talend.repository.generic.ui.context.handler.GenericContextHandler;
 
@@ -194,8 +193,8 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
         return contextParameters;
     }
 
-    public GenericConnection getConnection() {
-        return (GenericConnection) connectionItem.getConnection();
+    public Connection getConnection() {
+        return connectionItem.getConnection();
     }
 
     /* (non-Javadoc)
@@ -212,7 +211,7 @@ public abstract class GenericWizardPage extends AbstractNamedWizardPage {
      */
     @Override
     public ERepositoryObjectType getRepositoryObjectType() {
-        return ERepositoryObjectType.getType(((GenericConnectionItem) connectionItem).getTypeName());
+        return ERepositoryObjectType.getType(connectionItem.getTypeName());
     }
 
     /* (non-Javadoc)

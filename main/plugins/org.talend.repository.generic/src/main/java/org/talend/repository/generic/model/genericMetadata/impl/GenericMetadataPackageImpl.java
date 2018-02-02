@@ -127,26 +127,8 @@ public class GenericMetadataPackageImpl extends EPackageImpl implements GenericM
      * <!-- end-user-doc -->
      * @generated
      */
-    public EAttribute getGenericConnection_CompProperties() {
-        return (EAttribute)genericConnectionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
     public EClass getGenericConnectionItem() {
         return genericConnectionItemEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public EAttribute getGenericConnectionItem_TypeName() {
-        return (EAttribute)genericConnectionItemEClass.getEStructuralFeatures().get(0);
     }
 
     /**
@@ -196,10 +178,8 @@ public class GenericMetadataPackageImpl extends EPackageImpl implements GenericM
 
         // Create classes and their features
         genericConnectionEClass = createEClass(GENERIC_CONNECTION);
-        createEAttribute(genericConnectionEClass, GENERIC_CONNECTION__COMP_PROPERTIES);
 
         genericConnectionItemEClass = createEClass(GENERIC_CONNECTION_ITEM);
-        createEAttribute(genericConnectionItemEClass, GENERIC_CONNECTION_ITEM__TYPE_NAME);
 
         subContainerEClass = createEClass(SUB_CONTAINER);
         createEAttribute(subContainerEClass, SUB_CONTAINER__COMP_PROPERTIES);
@@ -230,9 +210,9 @@ public class GenericMetadataPackageImpl extends EPackageImpl implements GenericM
 
         // Obtain other dependent packages
         ConnectionPackage theConnectionPackage = (ConnectionPackage)EPackage.Registry.INSTANCE.getEPackage(ConnectionPackage.eNS_URI);
-        EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
         PropertiesPackage thePropertiesPackage = (PropertiesPackage)EPackage.Registry.INSTANCE.getEPackage(PropertiesPackage.eNS_URI);
         CorePackage theCorePackage = (CorePackage)EPackage.Registry.INSTANCE.getEPackage(CorePackage.eNS_URI);
+        EcorePackage theEcorePackage = (EcorePackage)EPackage.Registry.INSTANCE.getEPackage(EcorePackage.eNS_URI);
 
         // Create type parameters
 
@@ -245,10 +225,8 @@ public class GenericMetadataPackageImpl extends EPackageImpl implements GenericM
 
         // Initialize classes and features; add operations and parameters
         initEClass(genericConnectionEClass, GenericConnection.class, "GenericConnection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getGenericConnection_CompProperties(), theEcorePackage.getEString(), "compProperties", null, 0, 1, GenericConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(genericConnectionItemEClass, GenericConnectionItem.class, "GenericConnectionItem", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEAttribute(getGenericConnectionItem_TypeName(), theEcorePackage.getEString(), "typeName", null, 1, 1, GenericConnectionItem.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(subContainerEClass, SubContainer.class, "SubContainer", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEAttribute(getSubContainer_CompProperties(), theEcorePackage.getEString(), "compProperties", null, 0, 1, SubContainer.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

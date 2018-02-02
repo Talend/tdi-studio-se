@@ -2,12 +2,12 @@
 
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/CredentialsProvider.javajet"%>
 <%
-final String studioVersion = org.talend.commons.utils.VersionUtils.getDisplayVersion();
+final String AWSTracker = org.talend.core.utils.TrackerUtil.getAWSTracker();
 %>
 	
 	com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient emr_<%=cid%> = new com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient(
 		credentialsProvider_<%=cid%>,
-		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent(routines.system.Constant.getUserAgent("<%=studioVersion%>"))
+		com.amazonaws.PredefinedClientConfigurations.defaultConfig().withUserAgent("<%=AWSTracker%>")
 	);
 	
 	<%

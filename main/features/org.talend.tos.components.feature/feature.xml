@@ -343,6 +343,13 @@
          unpack="false"/>
 
    <plugin
+           id="org.talend.components.googledrive"
+           download-size="0"
+           install-size="0"
+           version="0.0.0"
+           unpack="false"/>
+
+   <plugin
          id="joda-time"
          download-size="0"
          install-size="0"
@@ -419,5 +426,20 @@
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
+         
+   <plugin
+         id="org.talend.designer.unifiedcomponent"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
+           
+   <plugin
+         id="org.talend.components.jdbc.definition"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+         
 </feature>

@@ -1,0 +1,67 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tSnowflakeInput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",        
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tSnowflakeOutput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",        
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }    
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tSnowflakeClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tSnowflakeConnection",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "account":"SERVER_NAME",        
+            "userPassword.userId":"USERNAME",
+            "userPassword.password":"PASSWORD",
+            "schemaName":"SCHEMA",
+            "db":"SID"
+        }
+     }    
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tSnowflakeRow",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",        
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
+}
+]

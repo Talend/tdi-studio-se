@@ -74,21 +74,38 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
         dbschema_<%=cid%>= (String)globalMap.get("<%=schema%>");
         <%
     } else {
-            if("SYBSEIQ_16".equals(dbVersion)){%>
-		java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
-	        <%}else{%>
-	    java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
-	        <%}%>
-<%
-		if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+            if("SYBSEIQ_16_SA".equals(dbVersion)){
 %>
-		String connectionString_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+			java.lang.Class.forName("sap.jdbc4.sqlanywhere.IDriver");
 <%
-		} else {
+			if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
 %>
-		String connectionString_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+				String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName=" + <%=dbname %>; 
 <%
-		}
+			}
+			else{
+%>
+				String connectionString_<%=cid %> = "jdbc:sqlanywhere:Host=" + <%=dbhost %> + ":" + <%=dbport %> + ";DatabaseName" + <%=dbname %> + ";" + <%=dbproperties%>;
+<%
+			}
+            }
+            else{           
+		    if("SYBSEIQ_16".equals(dbVersion)){%>
+			java.lang.Class.forName("com.sybase.jdbc4.jdbc.SybDriver");
+		    <%}else{%>
+			java.lang.Class.forName("com.sybase.jdbc3.jdbc.SybDriver");
+		    <%}%>
+<%
+		    if(dbproperties == null || ("\"\"").equals(dbproperties) || ("").equals(dbproperties)) {
+%>
+			String connectionString_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+<%
+		    } else {
+%>
+			String connectionString_<%=cid %> = "jdbc:sybase:Tds:" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%> + "?" + <%=dbproperties%>;
+<%
+		    }
+            }
 %>
 	        
 		<%

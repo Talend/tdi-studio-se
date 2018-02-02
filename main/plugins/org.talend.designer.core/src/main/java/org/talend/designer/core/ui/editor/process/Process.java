@@ -176,10 +176,12 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.projectsetting.ProjectSettingManager;
 import org.talend.designer.core.ui.views.contexts.ContextsView;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.DesignerUtilities;
 import org.talend.designer.core.utils.DetectContextVarsUtils;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.JobSettingVersionUtil;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.core.utils.UpdateParameterUtils;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -1090,6 +1092,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)
                 || param.getFieldType().equals(EParameterFieldType.PROPERTY_TYPE)
                 || param.getFieldType().equals(EParameterFieldType.VALIDATION_RULE_TYPE)
+                || param.getFieldType().equals(EParameterFieldType.UNIFIED_COMPONENTS)
                 || param.getName().equals(EParameterName.UPDATE_COMPONENTS.getName())) {
             return;
         }
@@ -1368,13 +1371,13 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         }
 
     }
-    
-    protected boolean noNeedSetValue(IElementParameter param, String paraValue){
-        if(paraValue == null){
+
+    protected boolean noNeedSetValue(IElementParameter param, String paraValue) {
+        if (paraValue == null) {
             return true;
         }
-        for(IElementParameterDefaultValue defaultValue : param.getDefaultValues()){
-            if(defaultValue.getDefaultValue() != null &&  defaultValue.getDefaultValue().equals(paraValue)){
+        for (IElementParameterDefaultValue defaultValue : param.getDefaultValues()) {
+            if (defaultValue.getDefaultValue() != null && defaultValue.getDefaultValue().equals(paraValue)) {
                 return true;
             }
         }
@@ -2219,6 +2222,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             listParamType = nType.getElementParameter();
             String componentName = nType.getComponentName();
             IComponent component = ComponentsFactoryProvider.getInstance().get(componentName, componentsType);
+            if (component == null) {
+                component = UnifiedComponentUtil.getDelegateComponent(componentName, componentsType);
+            }
             if (component != null) {
                 if (component.getComponentType() == EComponentType.JOBLET) {
                     if (!isCurrentProject && !componentName.contains(":")) { //$NON-NLS-1$
@@ -3561,10 +3567,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // }
             setPropertyValue(updataComponentParamName, Boolean.TRUE);
         }
-
+        if(id.equals(EParameterName.DRIVER_JAR.getName()) || id.equals("DRIVER_JAR_IMPLICIT_CONTEXT")){
+            ConnectionUtil.getDriverJar(value);
+        }
         super.setPropertyValue(id, value);
     }
-
+    
     @Override
     public Property getProperty() {
         return property;

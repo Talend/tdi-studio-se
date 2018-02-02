@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/MS_SQL_Server</FAMILY>
+    <FAMILY>Databases/DB Specifics/MS_SQL_Server</FAMILY>
   </FAMILIES>
 
   <DOCUMENTATION>
@@ -327,6 +327,15 @@
         <ITEM NAME="widenative" VALUE="widenative" SHOW_IF="(ACTION=='INSERT') or (ACTION=='UPDATE')"/>
       </ITEMS>
     </PARAMETER>
+	
+    <PARAMETER
+	  NAME="FIRE_TRIGGERS"
+	  FIELD="CHECK"
+	  NUM_ROW="12"
+	  SHOW_IF="ACTION=='INSERT'"
+	>
+		<DEFAULT>false</DEFAULT>
+	</PARAMETER> 
 
     <PARAMETER
     	NAME="OUTPUT"

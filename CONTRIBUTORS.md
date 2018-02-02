@@ -4,3 +4,4 @@ Huge thanks to these people who contributed in making Talend product better:
  - [jlolling](https://github.com/jlolling) (Jan -and Miss- Lolling)
  - [kirkalicious](https://github.com/kirkalicious) (Kirk Tarou)
  - [mrizzato](https://github.com/mrizzato) (Massimiliano Rizzato)
+ - [brazabr](https://github.com/brazabr) (Thiago Benvenuto)

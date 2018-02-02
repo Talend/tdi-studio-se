@@ -14,15 +14,14 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.process.IConnection;
+import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
 import org.talend.designer.dbmap.external.data.ExternalDbMapEntry;
 import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
 
-public class DbGenerationManagerTest {
-
-    private DbMapComponent dbMapComponent;
+public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
 
     private DbGenerationManager dbManager;
 
@@ -96,4 +95,71 @@ public class DbGenerationManagerTest {
 
         return connection;
     }
+
+    @Test
+    public void testGetHandledTableName() {
+        dbManager = new GenericDbGenerationManager();
+        String schema = "";
+        String main_table = "\"mainTable\"";
+        String main_alias = null;
+        init(schema, main_table, main_alias, "", "");
+        String tableName = "";
+        if (!"".equals(schema)) {
+            tableName = TalendTextUtils.removeQuotes(schema) + ".";
+        }
+        tableName = TalendTextUtils.removeQuotes(main_table);
+        String expectedValue = "mainTable";
+        String handledTableName = dbManager.getHandledTableName(dbMapComponent, tableName, main_alias);
+        Assert.assertEquals(expectedValue, handledTableName);
+
+        main_table = "((String)globalMap.get(\"#main_table%\"))";
+        main_alias = null;
+        init(schema, main_table, main_alias, "", "");
+        tableName = "";
+        if (!"".equals(schema)) {
+            tableName = TalendTextUtils.removeQuotes(schema) + ".";
+        }
+        tableName = TalendTextUtils.removeQuotes(main_table);
+        expectedValue = "\" +((String)globalMap.get(\"#main_table%\"))+ \"";
+        handledTableName = dbManager.getHandledTableName(dbMapComponent, tableName, main_alias);
+        Assert.assertEquals(expectedValue, handledTableName);
+
+        main_table = "((String)globalMap.get(\"#main_table%\"))";
+        main_alias = "main_table";
+        init(schema, main_table, main_alias, "", "");
+        tableName = "";
+        if (!"".equals(schema)) {
+            tableName = TalendTextUtils.removeQuotes(schema) + ".";
+        }
+        tableName = TalendTextUtils.removeQuotes(main_table);
+        expectedValue = "\" +((String)globalMap.get(\"#main_table%\"))+ \"";
+        handledTableName = dbManager.getHandledTableName(dbMapComponent, tableName, main_alias);
+        Assert.assertEquals(expectedValue, handledTableName);
+
+        main_table = "context.main_table";
+        main_alias = "main_table";
+        init(schema, main_table, main_alias, "", "");
+        tableName = "";
+        if (!"".equals(schema)) {
+            tableName = TalendTextUtils.removeQuotes(schema) + ".";
+        }
+        tableName = TalendTextUtils.removeQuotes(main_table);
+        expectedValue = "\" +context.main_table+ \"";
+        handledTableName = dbManager.getHandledTableName(dbMapComponent, tableName, main_alias);
+        Assert.assertEquals(expectedValue, handledTableName);
+
+        main_table = "\"abc\"+context.main_table";
+        main_alias = "main_table";
+        init(schema, main_table, main_alias, "", "");
+        tableName = "";
+        if (!"".equals(schema)) {
+            tableName = TalendTextUtils.removeQuotes(schema) + ".";
+        }
+        tableName = TalendTextUtils.removeQuotes(main_table);
+        expectedValue = "\" +\"abc\"+context.main_table+ \"";
+        handledTableName = dbManager.getHandledTableName(dbMapComponent, tableName, main_alias);
+        Assert.assertEquals(expectedValue, handledTableName);
+
+    }
+
 }

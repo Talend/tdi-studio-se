@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.core.model.components.AbstractLayerComponent;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -23,9 +24,13 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 /**
  * ggu class global comment. Detailled comment
  */
-public abstract class AbstractComponent implements IComponent {
+public abstract class AbstractComponent extends AbstractLayerComponent {
 
     private String paletteType;
+
+    protected String familyName;
+
+    protected String newTranslatedFamilyName;
 
     @Override
     public int hashCode() {
@@ -108,7 +113,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getInputType()
      */
     @Override
@@ -118,7 +123,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getOutputType()
      */
     @Override
@@ -128,7 +133,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getPartitioning()
      */
     @Override
@@ -153,7 +158,7 @@ public abstract class AbstractComponent implements IComponent {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see org.talend.core.model.components.IComponent#getCONNECTORList()
      */
     @Override
@@ -166,17 +171,39 @@ public abstract class AbstractComponent implements IComponent {
     public boolean isAllowedPropagated() {
         return true;
     }
-    
+
     @Override
-    public String getOriginalName(){
+    public String getOriginalName() {
         return getName();
     }
 
+    @Override
     public String getTemplateFolder() {
         return getPathSource() == null ? null : (getPathSource() + "/" + getName());
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return getName();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setOriginalFamilyName()
+     */
+    @Override
+    public void setOriginalFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    /**
+     * Sets the translatedFamilyName.
+     * 
+     * @param translatedFamilyName the translatedFamilyName to set
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        this.newTranslatedFamilyName = translatedFamilyName;
     }
 }

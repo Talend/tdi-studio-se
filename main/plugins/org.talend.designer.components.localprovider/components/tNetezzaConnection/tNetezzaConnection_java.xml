@@ -16,7 +16,7 @@
   </HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/Netezza</FAMILY>
+    <FAMILY>Databases/DB Specifics/Netezza</FAMILY>
     <FAMILY>ELT/Connections</FAMILY>
   </FAMILIES>
 

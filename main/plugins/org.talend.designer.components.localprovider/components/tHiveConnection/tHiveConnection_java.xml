@@ -8,7 +8,7 @@
 	</HEADER>
 
 	<FAMILIES>
-		<FAMILY>Databases/Hive</FAMILY>
+	    <FAMILY>Databases/DB Specifics/Hive</FAMILY>
 		<FAMILY>ELT/Connections</FAMILY>
 		<FAMILY>Big Data/Hive</FAMILY>
 	</FAMILIES>

@@ -32,6 +32,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.properties.VirtualComponentProperties;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
@@ -45,7 +46,9 @@ import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.components.IMultipleComponentParameter;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
+import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConditionType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.RuleType;
@@ -80,6 +83,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
@@ -96,9 +100,13 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
+
+import orgomg.cwm.objectmodel.core.CoreFactory;
+import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
  * This class will create the list of nodes that will be used to generate the code.
@@ -1799,10 +1807,45 @@ public class DataProcess implements IGeneratingProcess {
             }
 
             List<DataNode> statsAndLogsNodeList = JobSettingsManager.createStatsAndLogsNodes(duplicatedProcess);
+            DataNode connNode = null;
+            for (DataNode node : statsAndLogsNodeList) {
+                if(node.getUniqueName().equals(StatsAndLogsManager.CONNECTION_UID)){
+                    connNode = node;
+                    IElementParameter parameter = connNode.getElementParameter("connection.driverTable");
+                    if(parameter != null){
+                        Object repValue = parameter.getValue();
+                        ConnectionUtil.resetDriverValue(repValue);
+                    }
+                    break;
+                }
+            }
+            
             for (DataNode node : statsAndLogsNodeList) {
                 buildCheckMap.put(node, node);
+            }
+            
+            for (DataNode node : statsAndLogsNodeList) {
                 addDataNode(node);
                 replaceMultipleComponents(node);
+                if(connNode == null){
+                    continue;
+                }
+                for(INode dataNode : dataNodeList){
+                    if(dataNode.getUniqueName().equals(node.getUniqueName()+"_DB")){
+                        IElementParameter refPara = dataNode.getElementParameter("referencedComponent");
+                        if(refPara != null){
+                            refPara.setValue(connNode.getUniqueName());
+                            IGenericDBService dbService = null;
+                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+                                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                                        IGenericDBService.class);
+                            }
+                            if(dbService != null){
+                                dbService.initReferencedComponent(refPara, connNode.getUniqueName());
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -1846,6 +1889,23 @@ public class DataProcess implements IGeneratingProcess {
                 tagSubProcessAfterParallelIterator(node);
             }
         }
+        
+//        IGenericDBService dbService = null;
+//        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+//            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+//                    IGenericDBService.class);
+//        }
+//        if(dbService != null){
+//            for (INode node : dataNodeList) {
+//                if(node.getComponent().getComponentType() == EComponentType.GENERIC){
+//                    
+//                    for(IMetadataTable iTable : node.getMetadataList()){
+//                       iTable = dbService.converTable(node, iTable);
+//                    }
+//                }
+//            }
+//        }
+        
 
         checkRefList = null;
         checkMultipleMap = null;
@@ -3153,6 +3213,9 @@ public class DataProcess implements IGeneratingProcess {
         NodeContainer nc = ((Process) process).loadNodeContainer(newGraphicalNode, false);
 
         ((Process) process).addNodeContainer(nc);
+        if(buildGraphicalMap == null){
+            initialize();
+        }
         buildGraphicalMap.put(graphicalNode, newGraphicalNode);
 
         IConnection dataConnec;

@@ -31,6 +31,7 @@ import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.database.ExtractMetaDataUtils;
 import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElement;
@@ -52,7 +53,6 @@ import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.utils.sql.metadata.constants.GetTable;
-
 import orgomg.cwm.objectmodel.core.ModelElement;
 import orgomg.cwm.resource.relational.Catalog;
 import orgomg.cwm.resource.relational.Schema;
@@ -284,11 +284,29 @@ public class QueryGuessCommand extends Command {
             }
         }
         // hywang add for bug 7575
-        if (dbType != null && dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName())) {
+        if (dbType != null && dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getProduct())) {
             isJdbc = true;
-            String driverClassName = node.getElementParameter("DRIVER_CLASS").getValue().toString();
-            if (connectionNode != null) {
-                driverClassName = connectionNode.getElementParameter("DRIVER_CLASS").getValue().toString();
+            boolean isGeneralJDBC = dbType.equals(EDatabaseTypeName.GENERAL_JDBC.getDisplayName());
+
+            String driverClassName = null;
+            if (isGeneralJDBC) {
+                driverClassName = node.getElementParameter("DRIVER_CLASS").getValue().toString();
+                if (connectionNode != null) {
+                    driverClassName = connectionNode.getElementParameter("DRIVER_CLASS").getValue().toString();
+                }
+            } else {
+                IElementParameter elementParameter = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS
+                        .getDisplayName());
+                if (elementParameter == null) {
+                    // for mr process , it still use old JDBC component but can use new connection from repository
+                    elementParameter = node.getElementParameter("DRIVER_CLASS");
+                }
+                driverClassName = elementParameter.getValue().toString();
+                if (connectionNode != null) {
+                    driverClassName = connectionNode
+                            .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()).getValue()
+                            .toString();
+                }
             }
 
             driverClassName = TalendTextUtils.removeQuotes(driverClassName);
@@ -307,9 +325,26 @@ public class QueryGuessCommand extends Command {
             }
 
             // DRIVER_JAR:
-            String driverJarName = node.getElementParameter("DRIVER_JAR").getValue().toString();
-            if (connectionNode != null) {
-                driverJarName = connectionNode.getElementParameter("DRIVER_JAR").getValue().toString();
+            String driverJarName = null;
+            if (isGeneralJDBC) {
+                driverJarName = node.getElementParameter("DRIVER_JAR").getValue().toString();
+                if (connectionNode != null) {
+                    driverJarName = connectionNode.getElementParameter("DRIVER_JAR").getValue().toString();
+                }
+            } else {
+                IElementParameter elementParameter = node.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR
+                        .getDisplayName());
+                if (elementParameter == null) {
+                    // for mr process , it still use old JDBC component but can use new connection from repository
+                    elementParameter = node.getElementParameter("DRIVER_JAR");
+                }
+                driverJarName = elementParameter.getValue().toString();
+
+                if (connectionNode != null) {
+                    driverJarName = connectionNode
+                            .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()).getValue()
+                            .toString();
+                }
             }
             if (driverJarName != null && driverJarName.startsWith("[") && driverJarName.endsWith("]")) {
                 driverJarName = driverJarName.substring(1, driverJarName.length() - 1);

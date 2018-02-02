@@ -97,7 +97,14 @@ public class QueryTypeController extends AbstractRepositoryController {
         if (queryStoreTypeParameter != null) {
             String queryStoreType = (String) queryStoreTypeParameter.getValue();
             if (queryStoreType != null && queryStoreType.equals(EmfComponent.BUILTIN)) {
-                lastControlUsed = addGuessQueryButton(subComposite, param, lastControlUsed, numInRow, top);
+                boolean newFramework = false;
+                if (param.getElement() instanceof INode) {
+                    INode node = (INode) param.getElement();
+                    newFramework = node.getComponentProperties() != null;
+                }
+                if (!newFramework) {
+                    lastControlUsed = addGuessQueryButton(subComposite, param, lastControlUsed, numInRow, top);
+                }
             }
         }
 
@@ -180,177 +187,6 @@ public class QueryTypeController extends AbstractRepositoryController {
             }
         }
         return null;
-    }
-
-    /**
-     * DOC nrousseau Comment method "getGuessQueryCommand".
-     * 
-     * @return
-     */
-    private QueryGuessCommand getGuessQueryCommand() {
-        // Map<String, IMetadataTable> repositoryTableMap = null;
-        IMetadataTable newRepositoryMetadata = null;
-        String realTableName = null;
-        String realTableId = null;
-        String schemaName = "";
-
-        // Only for getting the real table name.
-        if (elem.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
-
-            IElementParameter repositorySchemaTypeParameter = elem.getElementParameter(EParameterName.REPOSITORY_SCHEMA_TYPE
-                    .getName());
-
-            if (repositorySchemaTypeParameter != null) {
-                final Object value = repositorySchemaTypeParameter.getValue();
-                if (elem instanceof Node) {
-                    /* value can be devided means the value like "connectionid - label" */
-                    String[] keySplitValues = value.toString().split(" - ");
-                    if (keySplitValues.length > 1) {
-
-                        String connectionId = value.toString().split(" - ")[0];
-                        String tableLabel = value.toString().split(" - ")[1];
-                        IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-                        Item item = null;
-                        try {
-                            IRepositoryViewObject repobj = factory.getLastVersion(connectionId);
-                            if (repobj != null) {
-                                Property property = repobj.getProperty();
-                                if (property != null) {
-                                    item = property.getItem();
-                                }
-                            }
-                        } catch (PersistenceException e) {
-                            ExceptionHandler.process(e);
-                        }
-                        if (item != null && item instanceof ConnectionItem) {
-                            Connection connection = ((ConnectionItem) item).getConnection();
-                            for (org.talend.core.model.metadata.builder.connection.MetadataTable table : ConnectionHelper
-                                    .getTables(connection)) {
-                                // bug 20365
-                                if (table.getLabel().equals(tableLabel)) {
-                                    IMetadataTable repositoryMetadata = ConvertionHelper.convert(table);
-                                    realTableName = repositoryMetadata.getTableName();
-                                    realTableId = repositoryMetadata.getId();
-                                    // if (table.eContainer() != null && table.eContainer() instanceof SchemaImpl) {
-                                    // SchemaImpl schemaImpl = (SchemaImpl) table.eContainer();
-                                    // schemaName = schemaImpl.getName();
-                                    // dynamicProperty.getTableIdAndDbSchemaMap().put(realTableId, schemaName);
-                                    // }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    // if (repositoryTableMap.containsKey(value)) {
-                    // IMetadataTable repositoryMetadata = repositoryTableMap.get(value);
-                    // realTableName = repositoryMetadata.getTableName();
-                    // realTableId = repositoryMetadata.getId();
-                    // }
-                }
-            }
-            // }
-            // }
-        } // Ends
-
-        Connection repositoryConnection = null;
-        boolean useExisting = false;
-        IElementParameter elementParameter = elem.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.name());
-        if (elem instanceof Node) {
-            IProcess process = ((Node) elem).getProcess();
-            if (elementParameter != null && Boolean.valueOf(String.valueOf(elementParameter.getValue()))) {
-                String connName = (String) elem.getPropertyValue("CONNECTION");
-                for (INode node : process.getGraphicalNodes()) {
-                    if (node.getElementName().equals(connName)) {
-                        useExisting = true;
-                        final Object propertyValue = node.getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-                        if (propertyValue != null) {
-                            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-                            Item item = null;
-                            try {
-                                IRepositoryViewObject repobj = factory.getLastVersion(propertyValue.toString());
-                                if (repobj != null) {
-                                    Property property = repobj.getProperty();
-                                    if (property != null) {
-                                        item = property.getItem();
-                                    }
-                                }
-                            } catch (PersistenceException e) {
-                                ExceptionHandler.process(e);
-                            }
-                            if (item != null && item instanceof ConnectionItem) {
-                                repositoryConnection = ((ConnectionItem) item).getConnection();
-                            } else {
-                                initConnectionParameters();
-                                repositoryConnection = TracesConnectionUtils.createConnection(connParameters);
-
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        if (!useExisting && elem.getPropertyValue(EParameterName.PROPERTY_TYPE.getName()).equals(EmfComponent.REPOSITORY)) {
-            final Object propertyValue = elem.getPropertyValue(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
-            if (propertyValue != null) {
-                IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-                Item item = null;
-                try {
-                    IRepositoryViewObject repobj = factory.getLastVersion(propertyValue.toString());
-                    if (repobj != null) {
-                        Property property = repobj.getProperty();
-                        if (property != null) {
-                            item = property.getItem();
-                        }
-                    }
-                } catch (PersistenceException e) {
-                    ExceptionHandler.process(e);
-                }
-                if (item != null && item instanceof ConnectionItem) {
-                    repositoryConnection = ((ConnectionItem) item).getConnection();
-                }
-            }
-        } else {
-            initConnectionParameters();
-            repositoryConnection = TracesConnectionUtils.createConnection(connParameters);
-        }
-
-        QueryGuessCommand cmd = null;
-        INode node = null;
-        if (elem instanceof INode) {
-            node = (INode) elem;
-        } else { // else instanceof Connection
-            node = ((IConnection) elem).getSource();
-        }
-
-        List<IMetadataTable> metadataList = node.getMetadataList();
-        newRepositoryMetadata = metadataList.get(0);
-        // for tInformixRow
-        if (newRepositoryMetadata.getListColumns().size() == 0 && metadataList.size() > 1) {
-            newRepositoryMetadata = metadataList.get(1);
-        }
-
-        if (newRepositoryMetadata == null) {
-            String schemaSelected = (String) node.getPropertyValue(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
-            if (schemaSelected != null) {
-                // repositoryMetadata = repositoryTableMap.get(schemaSelected);
-            } else if (newRepositoryMetadata == null) {
-                MessageDialog
-                        .openWarning(
-                                new Shell(),
-                                Messages.getString("QueryTypeController.alert"), Messages.getString("QueryTypeController.nothingToGuess")); //$NON-NLS-1$ //$NON-NLS-2$
-                return cmd;
-            }
-        }
-        cmd = new QueryGuessCommand(node, newRepositoryMetadata, repositoryConnection);
-
-        cmd.setMaps(dynamicProperty.getTableIdAndDbTypeMap(), dynamicProperty.getTableIdAndDbSchemaMap(), null);
-        String type = getValueFromRepositoryName("TYPE"); //$NON-NLS-1$
-        if ("Oracle".equalsIgnoreCase(type)) {
-            type = EDatabaseTypeName.ORACLEFORSID.getDisplayName();
-        }
-        cmd.setParameters(realTableId, realTableName, type);
-        return cmd;
     }
 
     /*

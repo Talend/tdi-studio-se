@@ -20,5 +20,5 @@ import org.talend.core.model.general.Project;
  * Do additional actions after importing one project
  */
 public interface IAfterImportProjectAction {
-    void run(Project project);
+    void run(Project project) throws Exception;
 }

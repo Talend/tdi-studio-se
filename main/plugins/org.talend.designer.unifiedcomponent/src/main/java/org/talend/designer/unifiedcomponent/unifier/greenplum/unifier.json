@@ -1,0 +1,79 @@
+[{
+    "component_delegate":"tDBInput",
+    "component":"tGreenplumInput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutput",
+    "component" : "tGreenplumOutput",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBClose",
+    "component":"tGreenplumClose",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBCommit",
+    "component":"tGreenplumCommit",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBConnection",
+    "component":"tGreenplumConnection",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBRollback",
+    "component":"tGreenplumRollback",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBRow",
+    "component":"tGreenplumRow",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tGreenplumBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component":"tGreenplumOutputBulk",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tGreenplumOutputBulkExec",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBSCD",
+    "component":"tGreenplumSCD",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "exclude":"PORT"}
+}
+]

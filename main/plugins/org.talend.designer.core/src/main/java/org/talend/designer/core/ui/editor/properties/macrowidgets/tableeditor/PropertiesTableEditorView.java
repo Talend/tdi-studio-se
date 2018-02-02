@@ -72,6 +72,7 @@ import org.talend.core.ui.metadata.celleditor.SchemaCellEditor;
 import org.talend.core.ui.metadata.celleditor.SchemaXPathQuerysCellEditor;
 import org.talend.core.ui.metadata.editor.AbstractMetadataTableEditorView;
 import org.talend.core.ui.proposal.TalendProposalProvider;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.ui.celleditor.PatternCellEditor;
@@ -315,7 +316,7 @@ public class PropertiesTableEditorView<B> extends AbstractDataTableEditorView<B>
                     column.setCellEditor(editCellEditor);
                     break;
                 case MODULE_LIST:
-                    column.setModifiable((!param.isRepositoryValueUsed()) && (!param.isReadOnly())
+                    column.setModifiable((param.getElement() instanceof FakeElement || !param.isRepositoryValueUsed()) && (!param.isReadOnly())
                             && (!currentParam.isReadOnly()));
                     ModuleListCellEditor moduleEditor = new ModuleListCellEditor(table, currentParam, param);
                     moduleEditor.setTableEditorView(this);

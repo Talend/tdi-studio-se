@@ -58,6 +58,27 @@ if ((metadatas!=null)&&(metadatas.size()>0)&&(metadatas.get(0) != null)) {
 	}finally{
 <%
 if(("false").equals(useExistingConn)){
+    String protocol=ElementParameterParser.getValue(node, "__PROTOCOL__");
+    
+    if("TLS".equals(protocol)){
+        if(isLog4jEnabled){
+%>
+	         log.info("<%=cid%> - Closing the TLS connection.");
+<%
+        }
+%>
+        javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)globalMap.get("tls_<%=cid%>");
+        if(tls_<%=cid%>!=null){
+            tls_<%=cid%>.close();
+        }
+
+<%
+        if(isLog4jEnabled){
+%>
+	         log.info("<%=cid%> - TLS connection closed.");
+<%
+        }
+    }
 %>  
 		if(ctx_<%=cid%>!=null){
 			<%if(isLog4jEnabled){%>

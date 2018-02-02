@@ -17,6 +17,8 @@ import java.util.List;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.components.api.properties.ComponentProperties;
+import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -26,8 +28,6 @@ import org.talend.daikon.properties.service.Repository;
 import org.talend.designer.core.generic.constants.IGenericConstants;
 import org.talend.designer.core.generic.utils.ComponentsUtils;
 import org.talend.designer.core.generic.utils.SchemaUtils;
-import org.talend.repository.generic.model.genericMetadata.GenericConnection;
-import org.talend.repository.generic.model.genericMetadata.GenericConnectionItem;
 import org.talend.repository.generic.model.genericMetadata.GenericMetadataFactory;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import orgomg.cwm.objectmodel.core.ModelElement;
@@ -53,12 +53,12 @@ public class GenericRepository implements Repository<ComponentProperties> {
 
         String serializedProperties = properties.toSerialized();
         if (repositoryLocation.contains(IGenericConstants.REPOSITORY_LOCATION_SEPARATOR)) {// nested properties to be
-            GenericConnectionItem item = getGenericConnectionItem(repositoryLocation.substring(0,
+            ConnectionItem item = getGenericConnectionItem(repositoryLocation.substring(0,
                     repositoryLocation.indexOf(IGenericConstants.REPOSITORY_LOCATION_SEPARATOR)));
             if (item == null) {
                 throw new RuntimeException("Failed to find the GenericConnectionItem for location:" + repositoryLocation); //$NON-NLS-1$
             }
-            GenericConnection connection = (GenericConnection) item.getConnection();
+            Connection connection = (Connection) item.getConnection();
             orgomg.cwm.objectmodel.core.Package parentContainer = null;
             if (repositoryLocation.endsWith(IGenericConstants.REPOSITORY_LOCATION_SEPARATOR)) {// first nested property
                 parentContainer = connection;
@@ -75,14 +75,15 @@ public class GenericRepository implements Repository<ComponentProperties> {
                 if (schemaProperty != null) {
                     schemaProperty.setTaggedValue(IGenericConstants.REPOSITORY_VALUE, null);
                 }
+//                SchemaUtils.createCatalog(name, properties, connection, schemaPropertyName);
                 childElement = SchemaUtils.createSchema(name, properties, schemaPropertyName);
             }
             parentContainer.getOwnedElement().add(childElement);
             return repositoryLocation + IGenericConstants.REPOSITORY_LOCATION_SEPARATOR + name;
         } else {// simple properties to be set
-            GenericConnectionItem item = getGenericConnectionItem(repositoryLocation);
+            ConnectionItem item = getGenericConnectionItem(repositoryLocation);
             if (item != null) {
-                GenericConnection connection = (GenericConnection) item.getConnection();
+                Connection connection = (Connection) item.getConnection();
                 connection.setCompProperties(serializedProperties);
                 connection.getOwnedElement().clear();
                 return repositoryLocation + IGenericConstants.REPOSITORY_LOCATION_SEPARATOR;
@@ -99,7 +100,7 @@ public class GenericRepository implements Repository<ComponentProperties> {
         return subContainer;
     }
 
-    private SubContainer getContainer(GenericConnection connection, String repositoryLocation) {
+    private SubContainer getContainer(Connection connection, String repositoryLocation) {
         SubContainer theContainer = null;
         String containers = repositoryLocation;
         if (containers.indexOf(IGenericConstants.REPOSITORY_LOCATION_SEPARATOR) != -1) {
@@ -135,16 +136,16 @@ public class GenericRepository implements Repository<ComponentProperties> {
      * @param repositoryLocation
      * @return
      */
-    private GenericConnectionItem getGenericConnectionItem(String repositoryLocation) {
-        GenericConnectionItem genItem = null;
+    private ConnectionItem getGenericConnectionItem(String repositoryLocation) {
+        ConnectionItem genItem = null;
         try {
             IRepositoryViewObject repViewObj = ProxyRepositoryFactory.getInstance().getLastVersion(repositoryLocation);
             if (repViewObj != null) {
                 Property property = repViewObj.getProperty();
                 if (property != null) {
                     Item item = property.getItem();
-                    if (item instanceof GenericConnectionItem) {
-                        genItem = (GenericConnectionItem) item;
+                    if (item instanceof ConnectionItem) {
+                        genItem = (ConnectionItem) item;
                     }
                 }
             }

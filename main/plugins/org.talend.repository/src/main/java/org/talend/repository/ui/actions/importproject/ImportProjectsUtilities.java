@@ -36,6 +36,7 @@ import org.osgi.framework.Bundle;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
 import org.talend.repository.ProjectManager;
+import org.talend.repository.ui.exception.ImportInvalidObjectException;
 
 /**
  * DOC smallet class global comment. Detailled comment <br/>
@@ -54,7 +55,11 @@ public class ImportProjectsUtilities {
     public static void importProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
             IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         try {
-            new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, false, monitor);
+            try {
+                new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, false, monitor); 
+            } catch (ImportInvalidObjectException ex) {
+                // Ignore here
+            }
         } catch (InvocationTargetException | InterruptedException e) {
             throw e;
         } catch (Exception e) {
@@ -88,7 +93,12 @@ public class ImportProjectsUtilities {
     public static void importArchiveProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
             IProgressMonitor monitor) throws InvocationTargetException, InterruptedException, TarException, IOException {
         try {
-            new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, true, monitor);
+            try {
+                new ImportProjectHelper().importProjectAs(shell, newName, technicalName, sourcePath, true, monitor);
+            } catch (ImportInvalidObjectException ex) {
+                // Ignore here
+            }
+
         } catch (InvocationTargetException | InterruptedException | TarException | IOException e) {
             throw e;
         } catch (Exception e) {
@@ -157,13 +167,12 @@ public class ImportProjectsUtilities {
 
         ResourceOption demoImportOption = ResourceOption.DEMO_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(demoImportOption.getName(),
-                    demoImportOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(demoImportOption, false);
 
             boolean isFolder = EDemoProjectFileType.FOLDER.equals(demoProjectBean.getDemoProjectFileType());
             helper.importProjectAs(shell, newProjectName, newTechName, filePath, !isFolder, monitor);
         } finally {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(demoImportOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(demoImportOption, false);
         }
     }
 
@@ -171,12 +180,12 @@ public class ImportProjectsUtilities {
             IProgressMonitor monitor) throws Exception {
         final ResourceOption importOption = ResourceOption.ITEM_IMPORTATION;
         try {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().put(importOption.getName(), importOption.getProvider());
+            EmfResourcesFactoryReader.INSTANCE.addOption(importOption, false);
 
             ImportProjectHelper helper = new ImportProjectHelper();
             helper.importProjectAs(shell, newName, technicalName, sourcePath, isArchive, monitor);
         } finally {
-            EmfResourcesFactoryReader.INSTANCE.getSaveOptionsProviders().remove(importOption.getName());
+            EmfResourcesFactoryReader.INSTANCE.removOption(importOption, false);
         }
     }
 }

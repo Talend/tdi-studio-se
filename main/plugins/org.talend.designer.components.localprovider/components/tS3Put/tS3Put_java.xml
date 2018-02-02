@@ -268,6 +268,26 @@
     	<DEFAULT>false</DEFAULT>
     </PARAMETER>
     
+        <PARAMETER 
+			NAME="ENABLE-KMS"
+			FIELD="CHECK"
+			NUM_ROW="85"
+			SHOW_IF="(ENABLE-SERVER-SIDE-ENCRYPTION == 'true')"
+			REQUIRED="false"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>		
+		
+		<PARAMETER 
+			NAME="KMSID"
+			FIELD="TEXT"
+			NUM_ROW="85"
+			SHOW_IF="(ENABLE-SERVER-SIDE-ENCRYPTION == 'true' AND ENABLE-KMS == 'true')"
+			REQUIRED="false"
+		>
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
+    
     <PARAMETER
         NAME="DIE_ON_ERROR"
         FIELD="CHECK"
@@ -350,20 +370,17 @@
 
    <CODEGENERATION>
     <IMPORTS>
-       <IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
-			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.223"
+       <IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
+			MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"
-			MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
-			UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
+		<IMPORT NAME="jackson-core-2.5.4.jar" MODULE="jackson-core-2.5.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-databind-2.5.3.jar" MODULE="jackson-databind-2.5.3.jar"
-			MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
-			UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
+		<IMPORT NAME="jackson-databind-2.5.4.redhat-2.jar" MODULE="jackson-databind-2.5.4.redhat-2.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="jackson-annotations-2.5.3.jar" MODULE="jackson-annotations-2.5.3.jar"
-			MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
-			UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
+		<IMPORT NAME="jackson-annotations-2.5.4.jar" MODULE="jackson-annotations-2.5.4.jar"
+			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
 			MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"

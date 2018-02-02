@@ -113,7 +113,9 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -131,9 +133,9 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
     public String getName() {
         return this.getClass().getName();
     }
-    
+
     @Override
-    public String getOriginalName(){
+    public String getOriginalName() {
         return getName();
     }
 
@@ -460,6 +462,10 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
                 multipleComponentManager.addParam("self.CONNECTION_TYPE", "DB.CONNECTION_TYPE"); //$NON-NLS-1$ //$NON-NLS-2$
                 multipleComponentManager.addParam("self.USE_TRANSACTION", "DB.USE_TRANSACTION"); //$NON-NLS-1$ //$NON-NLS-2$
                 multipleComponentManager.addParam("self.LOCAL_SERVICE_NAME", "DB.LOCAL_SERVICE_NAME"); //$NON-NLS-1$ //$NON-NLS-2$
+
+                // only for new framework (JDBC)
+                multipleComponentManager.addParam("self.CONNECTION", "DB.referencedComponent"); //$NON-NLS-1$ //$NON-NLS-2$ //componentInstanceId
+                multipleComponentManager.addParam("self.DATA_ACTION", "DB.dataAction"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
@@ -662,12 +668,36 @@ public abstract class AbstractStatsLogsComponent implements IComponent {
         return true;
     }
 
+    @Override
     public String getTemplateFolder() {
         return getPathSource() == null ? null : (getPathSource() + "/" + getName());
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return getName();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
+     */
+    @Override
+    public void setOriginalFamilyName(String familyName) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setTranslatedFamilyName(java.lang.String)
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        // TODO Auto-generated method stub
+
     }
 
 }

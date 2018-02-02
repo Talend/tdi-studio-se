@@ -209,7 +209,7 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
      */
 
     // modified by hyWang
-    private Command createButtonCommand(Button btn, IContextManager manager) {
+    public Command createButtonCommand(Button btn, IContextManager manager) {
         this.btn = btn;
         IElementParameter elementParameterFromField = elem.getElementParameterFromField(EParameterFieldType.MEMO_SQL);
 
@@ -1072,6 +1072,10 @@ public class GuessSchemaController extends AbstractElementPropertySectionControl
         } else {
             return false;
         }
+    }
+    
+    public void setCurParameter(IElementParameter parameter){
+        this.curParameter = parameter;
     }
 
 }

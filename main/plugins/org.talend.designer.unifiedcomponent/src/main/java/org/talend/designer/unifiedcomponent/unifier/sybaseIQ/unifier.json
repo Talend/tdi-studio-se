@@ -1,0 +1,14 @@
+[
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component":"tSybaseIQOutputBulkExec",
+    "category":"DI",
+    "family":""
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component":"tSybaseIQBulkExec",
+    "category":"DI",
+    "family":""
+}
+]

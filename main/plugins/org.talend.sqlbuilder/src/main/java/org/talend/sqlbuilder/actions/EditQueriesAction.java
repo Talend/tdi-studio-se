@@ -109,7 +109,7 @@ public class EditQueriesAction extends AContextualAction {
         boolean readOnly = false;
 
         ConnectionParameters connParameters = new ConnectionParameters();
-        if (repositoryNode.getObjectType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
+        if (repositoryNode.getContentType() == ERepositoryObjectType.METADATA_CONNECTIONS) {
             dbConnectionItem = (DatabaseConnectionItem) repositoryNode.getObject().getProperty().getItem();
             connParameters.setRepositoryName(repositoryNode.getObject().getLabel());
             connParameters.setRepositoryId(repositoryNode.getObject().getId());
@@ -197,7 +197,7 @@ public class EditQueriesAction extends AContextualAction {
                 if (!isUnderDBConnection(repositoryNode)) {
                     canWork = false;
                 }
-                if (repositoryNode.getObjectType() != ERepositoryObjectType.METADATA_CONNECTIONS
+                if (repositoryNode.getContentType() != ERepositoryObjectType.METADATA_CONNECTIONS
                         && repositoryNode.getObjectType() != ERepositoryObjectType.METADATA_CON_QUERY
                         && repositoryNode.getObjectType() != ERepositoryObjectType.METADATA_CON_TABLE) {
                     canWork = false;

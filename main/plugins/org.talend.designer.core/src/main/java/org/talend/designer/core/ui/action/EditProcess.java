@@ -61,6 +61,7 @@ import org.talend.repository.ui.views.IRepositoryView;
 public class EditProcess extends AbstractProcessAction implements IIntroAction {
 
     private static final String EDIT_LABEL = Messages.getString("EditProcess.editJob"); //$NON-NLS-1$
+
     private static final String OPEN_LABEL = Messages.getString("EditProcess.openJob"); //$NON-NLS-1$
 
     private Properties params;
@@ -88,10 +89,9 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
             if (RepositoryManager.isOpenedItemInEditor(node.getObject())) {
                 canWork = false;
             } else {
-                if (IRepositoryNode.ENodeType.REPOSITORY_ELEMENT == node.getType()
-                    && node.getObjectType() == getProcessType()) {
-                    final IProxyRepositoryFactory repFactory =
-                        DesignerPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
+                if (IRepositoryNode.ENodeType.REPOSITORY_ELEMENT == node.getType() && node.getObjectType() == getProcessType()) {
+                    final IProxyRepositoryFactory repFactory = DesignerPlugin.getDefault().getRepositoryService()
+                            .getProxyRepositoryFactory();
                     this.setText(getLabel(repFactory.isPotentiallyEditable(node.getObject())));
                 } else {
                     canWork = false;
@@ -162,6 +162,7 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
     }
 
     protected JobEditorInput getEditorInput(final ProcessItem processItem) throws PersistenceException {
+        // return new ProcessEditorInput(processItem, true, true,null); //same
         return new ProcessEditorInput(processItem, true, true);
     }
 
@@ -199,7 +200,7 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
         if (params == null) {
             ISelection selection = getSelection();
             if (selection != null) {
-                return (IRepositoryNode)((IStructuredSelection) selection).getFirstElement();
+                return (IRepositoryNode) ((IStructuredSelection) selection).getFirstElement();
             }
         } else {
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -224,7 +225,7 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
             }
 
             IRepositoryNode repositoryNode = RepositorySeekerManager.getInstance().searchRepoViewNode(
-                params.getProperty("nodeId"), false);
+                    params.getProperty("nodeId"), false);
             IRepositoryView viewPart = getViewPart();
             if (repositoryNode != null && viewPart != null) {
                 RepositoryNodeUtilities.expandParentNode(viewPart, repositoryNode);

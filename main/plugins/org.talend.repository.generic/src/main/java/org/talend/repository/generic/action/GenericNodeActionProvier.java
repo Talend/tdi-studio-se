@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.repository.generic.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +25,10 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.talend.commons.ui.swt.actions.ITreeContextualAction;
 import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.components.api.wizard.ComponentWizardDefinition;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
@@ -37,8 +40,6 @@ import org.talend.repository.view.di.metadata.action.MetedataNodeActionProvier;
  */
 public class GenericNodeActionProvier extends MetedataNodeActionProvier {
     
-    public static final String JDBC_COMPONENT_WIZARD_NAME = "JDBC.edit";
-
     private Map<String, ITreeContextualAction> actionsMap = null;
 
     public GenericNodeActionProvier() {
@@ -55,7 +56,8 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
             boolean isConnectionNode = true;
             ERepositoryObjectType nodeType = (ERepositoryObjectType) repNode.getProperties(EProperties.CONTENT_TYPE);
             if (ERepositoryObjectType.METADATA_CON_TABLE.equals(nodeType)
-                    || ERepositoryObjectType.METADATA_CON_COLUMN.equals(nodeType)) {
+                    || ERepositoryObjectType.METADATA_CON_COLUMN.equals(nodeType)
+                    || ERepositoryObjectType.METADATA_CON_QUERY.equals(nodeType)) {
                 isConnectionNode = false;
             }
             if (isConnectionNode) {
@@ -80,14 +82,14 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
 
     private void createAndAddAction(IMenuManager manager, ComponentWizard wizard, IStructuredSelection sel) {
         ITreeContextualAction action = null;
+        if(!allowedCreateAndAdd(sel)){
+            return;
+        }
         if (wizard == null) {
             action = createAction(wizard, sel);
         } else {
             ComponentWizardDefinition definition = wizard.getDefinition();
             String wizardName = definition.getName();
-            if(JDBC_COMPONENT_WIZARD_NAME.equals(wizardName)){
-                return;
-            }
             action = actionsMap.get(wizardName);
             if (action == null) {
                 action = createAction(wizard, sel);
@@ -96,7 +98,30 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
                 ((GenericAction)action).setGenericData(wizard, sel);
             }
         }
-        manager.add(action);
+        if(action.isVisible()){
+            manager.add(action);
+        }
+    }
+    
+    private boolean allowedCreateAndAdd(IStructuredSelection sel){
+        Object o = sel.getFirstElement();
+        if (sel.isEmpty() || sel.size() != 1 || !(o instanceof RepositoryNode)) {
+            return false;
+        }
+        RepositoryNode repNode = (RepositoryNode) o;
+        ERepositoryObjectType repObjType = repNode.getObjectType();
+        if(repObjType == null){
+            repObjType = (ERepositoryObjectType) repNode.getProperties(EProperties.CONTENT_TYPE);
+        }
+        IGenericDBService dbService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+                    IGenericDBService.class);
+        }
+        if(dbService != null && dbService.getExtraTypes().contains(repObjType)){
+            return false;
+        }
+        return true;
     }
 
     private ITreeContextualAction createAction(ComponentWizard wizard, IStructuredSelection sel) {

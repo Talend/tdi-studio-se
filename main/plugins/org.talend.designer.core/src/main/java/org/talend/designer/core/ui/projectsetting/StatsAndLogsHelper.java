@@ -29,6 +29,7 @@ import org.talend.core.language.LanguageManager;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.model.param.EConnectionParameterName;
 import org.talend.core.model.param.ERepositoryCategoryType;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
@@ -419,7 +420,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
-        param.setRepositoryValue("URL"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
@@ -440,8 +441,8 @@ public class StatsAndLogsHelper extends Utils {
         Arrays.sort(moduleNameArray, comprarator);
         Arrays.sort(moduleValueArray, comprarator);
         ElementParameter childParam = new ElementParameter(elem);
-        childParam.setName("JAR_NAME");
-        childParam.setDisplayName("JAR_NAME");
+        childParam.setName("drivers");
+        childParam.setDisplayName("drivers");
         childParam.setFieldType(EParameterFieldType.MODULE_LIST);
         childParam.setListItemsDisplayName(moduleNameArray);
         childParam.setListItemsValue(moduleValueArray);
@@ -450,13 +451,13 @@ public class StatsAndLogsHelper extends Utils {
         param.setName(EParameterName.DRIVER_JAR.getName());
         param.setDisplayName(EParameterName.DRIVER_JAR.getDisplayName());
         param.setFieldType(EParameterFieldType.TABLE);
-        param.setListItemsDisplayCodeName(new String[] { "JAR_NAME" });
-        param.setListItemsDisplayName(new String[] { "Jar Name" });
+        param.setListItemsDisplayCodeName(new String[] { "drivers" });
+        param.setListItemsDisplayName(new String[] { "drivers" });
         param.setListItemsValue(new ElementParameter[] { childParam });
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
-        param.setRepositoryValue("DRIVER_JAR"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
@@ -468,7 +469,7 @@ public class StatsAndLogsHelper extends Utils {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(57);
-        param.setRepositoryValue("DRIVER_CLASS"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
         param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 

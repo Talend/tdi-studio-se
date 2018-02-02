@@ -20,9 +20,24 @@ public final class ClientConfiguration {
     public static enum AuthStrategyEnum {NTLM, OAUTH};
 
     /*
+     * Kind of registered app on azure
+     */
+    public static enum AppRegisteredType {NATIVE_APP, WEB_APP};
+
+    /*
+     * If Web app, permission type
+     */
+    public static enum WebAppPermission {DELEGATED}; // MS CRM only accept DELEGATED PERMISSION, not APPLICATION PERMISSION
+
+    /*
      * This would be obtained after you register the Dynamic CRM in Active Directory on the Microsoft Azure portal
      */
     private String clientId;
+
+    /*
+     * The client secret for Web app
+     */
+    private String clientSecret;
 
     /*
      * Identifier of the target resource that is the recipient of the requested token.
@@ -69,10 +84,28 @@ public final class ClientConfiguration {
     private boolean reuseHttpClient;
     
     private AuthStrategyEnum authStrategy = AuthStrategyEnum.OAUTH;
+    private AppRegisteredType appRegisteredType = AppRegisteredType.NATIVE_APP;
+    private WebAppPermission webAppPermission = WebAppPermission.DELEGATED;
 
     
     ClientConfiguration(AuthStrategyEnum authStrategy) {
         this.authStrategy = authStrategy;
+    }
+
+    public AppRegisteredType getAppRegisteredType() {
+        return appRegisteredType;
+    }
+
+    public void setAppRegisteredType(AppRegisteredType appRegisteredType) {
+        this.appRegisteredType = appRegisteredType;
+    }
+
+    public WebAppPermission getWebAppPermission() {
+        return webAppPermission;
+    }
+
+    public void setWebAppPermission(WebAppPermission webAppPermission) {
+        this.webAppPermission = webAppPermission;
     }
 
     public String getClientId() {
@@ -81,6 +114,14 @@ public final class ClientConfiguration {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
     }
 
     public String getResource() {

@@ -832,7 +832,7 @@ public abstract class DbGenerationManager {
         }
     }
 
-    private IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {
+    protected IConnection getConnectonByName(List<IConnection> inputConnections, String metaTableName) {
         IConnection retConnection = null;
         for (IConnection iconn : inputConnections) {
             IMetadataTable metadataTable = iconn.getMetadataTable();
@@ -1118,8 +1118,9 @@ public abstract class DbGenerationManager {
             return replaceVariablesForExpression(component, tableName);
         } else {
             List<IConnection> inputConnections = (List<IConnection>) component.getIncomingConnections();
-            String handledTableName = "";
-            for (IConnection iconn : inputConnections) {
+            IConnection iconn = this.getConnectonByName(inputConnections, tableName);
+            if (iconn != null) {
+                String handledTableName = "";
                 boolean inputIsELTDBMap = false;
                 INode source = iconn.getSource();
                 String schemaValue = "";
@@ -1141,23 +1142,15 @@ public abstract class DbGenerationManager {
                 }
 
                 String schemaNoQuote = TalendTextUtils.removeQuotes(schemaValue);
-                String tableNoQuote = TalendTextUtils.removeQuotes(tableValue);
-                String sourceTable = "";
                 boolean hasSchema = !"".equals(schemaNoQuote);
                 if (hasSchema) {
-                    sourceTable = schemaNoQuote + ".";
+                    handledTableName = schemaValue + "+\".\"+";
                 }
-                sourceTable = sourceTable + tableNoQuote;
-                if (sourceTable.equals(tableName)) {
-                    if (hasSchema) {
-                        handledTableName = schemaValue + "+\".\"+";
-                    }
-                    handledTableName = handledTableName + tableValue;
-                    break;
-                }
+                handledTableName = handledTableName + tableValue;
+                return "\" +" + handledTableName + "+ \"";
             }
-            return "\" +" + handledTableName + "+ \"";
         }
+        return tableName;
 
     }
 

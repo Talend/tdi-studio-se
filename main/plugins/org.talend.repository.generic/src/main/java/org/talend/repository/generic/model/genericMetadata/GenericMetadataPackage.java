@@ -455,7 +455,7 @@ public interface GenericMetadataPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GENERIC_CONNECTION__COMP_PROPERTIES = ConnectionPackage.CONNECTION_FEATURE_COUNT + 0;
+    int GENERIC_CONNECTION__COMP_PROPERTIES = ConnectionPackage.CONNECTION__COMP_PROPERTIES;
 
     /**
      * The number of structural features of the '<em>Generic Connection</em>' class.
@@ -464,7 +464,7 @@ public interface GenericMetadataPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GENERIC_CONNECTION_FEATURE_COUNT = ConnectionPackage.CONNECTION_FEATURE_COUNT + 1;
+    int GENERIC_CONNECTION_FEATURE_COUNT = ConnectionPackage.CONNECTION_FEATURE_COUNT + 0;
 
     /**
      * The meta object id for the '{@link org.talend.repository.generic.model.genericMetadata.impl.GenericConnectionItemImpl <em>Generic Connection Item</em>}' class.
@@ -546,7 +546,7 @@ public interface GenericMetadataPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GENERIC_CONNECTION_ITEM__TYPE_NAME = PropertiesPackage.CONNECTION_ITEM_FEATURE_COUNT + 0;
+    int GENERIC_CONNECTION_ITEM__TYPE_NAME = PropertiesPackage.CONNECTION_ITEM__TYPE_NAME;
 
     /**
      * The number of structural features of the '<em>Generic Connection Item</em>' class.
@@ -555,7 +555,7 @@ public interface GenericMetadataPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int GENERIC_CONNECTION_ITEM_FEATURE_COUNT = PropertiesPackage.CONNECTION_ITEM_FEATURE_COUNT + 1;
+    int GENERIC_CONNECTION_ITEM_FEATURE_COUNT = PropertiesPackage.CONNECTION_ITEM_FEATURE_COUNT + 0;
 
     /**
      * The meta object id for the '{@link org.talend.repository.generic.model.genericMetadata.impl.SubContainerImpl <em>Sub Container</em>}' class.
@@ -795,17 +795,6 @@ public interface GenericMetadataPackage extends EPackage {
     EClass getGenericConnection();
 
     /**
-     * Returns the meta object for the attribute '{@link org.talend.repository.generic.model.genericMetadata.GenericConnection#getCompProperties <em>Comp Properties</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Comp Properties</em>'.
-     * @see org.talend.repository.generic.model.genericMetadata.GenericConnection#getCompProperties()
-     * @see #getGenericConnection()
-     * @generated
-     */
-    EAttribute getGenericConnection_CompProperties();
-
-    /**
      * Returns the meta object for class '{@link org.talend.repository.generic.model.genericMetadata.GenericConnectionItem <em>Generic Connection Item</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -814,17 +803,6 @@ public interface GenericMetadataPackage extends EPackage {
      * @generated
      */
     EClass getGenericConnectionItem();
-
-    /**
-     * Returns the meta object for the attribute '{@link org.talend.repository.generic.model.genericMetadata.GenericConnectionItem#getTypeName <em>Type Name</em>}'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return the meta object for the attribute '<em>Type Name</em>'.
-     * @see org.talend.repository.generic.model.genericMetadata.GenericConnectionItem#getTypeName()
-     * @see #getGenericConnectionItem()
-     * @generated
-     */
-    EAttribute getGenericConnectionItem_TypeName();
 
     /**
      * Returns the meta object for class '{@link org.talend.repository.generic.model.genericMetadata.SubContainer <em>Sub Container</em>}'.
@@ -880,14 +858,6 @@ public interface GenericMetadataPackage extends EPackage {
         EClass GENERIC_CONNECTION = eINSTANCE.getGenericConnection();
 
         /**
-         * The meta object literal for the '<em><b>Comp Properties</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute GENERIC_CONNECTION__COMP_PROPERTIES = eINSTANCE.getGenericConnection_CompProperties();
-
-        /**
          * The meta object literal for the '{@link org.talend.repository.generic.model.genericMetadata.impl.GenericConnectionItemImpl <em>Generic Connection Item</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
@@ -896,14 +866,6 @@ public interface GenericMetadataPackage extends EPackage {
          * @generated
          */
         EClass GENERIC_CONNECTION_ITEM = eINSTANCE.getGenericConnectionItem();
-
-        /**
-         * The meta object literal for the '<em><b>Type Name</b></em>' attribute feature.
-         * <!-- begin-user-doc -->
-         * <!-- end-user-doc -->
-         * @generated
-         */
-        EAttribute GENERIC_CONNECTION_ITEM__TYPE_NAME = eINSTANCE.getGenericConnectionItem_TypeName();
 
         /**
          * The meta object literal for the '{@link org.talend.repository.generic.model.genericMetadata.impl.SubContainerImpl <em>Sub Container</em>}' class.

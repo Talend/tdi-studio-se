@@ -96,8 +96,10 @@
 		</PARAMETER>
 
 		<PARAMETER NAME="CLUSTER_VERSION" FIELD="OPENED_LIST"
-			NUM_ROW="32" SHOW_IF="ACTION=='START'" GROUP="CONFIGURATION">
-			<ITEMS DEFAULT="EMR4_1_0">
+			NUM_ROW="32" SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION == 'false')" GROUP="CONFIGURATION">
+			<ITEMS DEFAULT="EMR5_11_0">
+			    <ITEM NAME="EMR5_11_0" VALUE="&quot;emr-5.11.0&quot;" />
+			    <ITEM NAME="EMR4_9_2" VALUE="&quot;emr-4.9.2&quot;" />
 				<ITEM NAME="EMR4_6_0" VALUE="&quot;emr-4.6.0&quot;" />
 				<ITEM NAME="EMR4_5_0" VALUE="&quot;emr-4.5.0&quot;" />			
 				<ITEM NAME="EMR4_2_0" VALUE="&quot;emr-4.2.0&quot;" />
@@ -112,12 +114,14 @@
 		</PARAMETER>
 		
 		<PARAMETER NAME="APPLICATION" FIELD="CLOSED_LIST" NUM_ROW="32"
-			SHOW_IF="(ACTION=='START') AND ((CLUSTER_VERSION=='EMR4_6_0') OR (CLUSTER_VERSION=='EMR4_5_0') OR (CLUSTER_VERSION=='EMR4_2_0') OR (CLUSTER_VERSION=='EMR4_1_0') OR (CLUSTER_VERSION=='EMR4_0_0'))" GROUP="CONFIGURATION">
+			SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION == 'false') AND ((CLUSTER_VERSION=='EMR5_11_0') OR (CLUSTER_VERSION=='EMR4_9_2') OR (CLUSTER_VERSION=='EMR4_6_0') OR (CLUSTER_VERSION=='EMR4_5_0') OR (CLUSTER_VERSION=='EMR4_2_0') OR (CLUSTER_VERSION=='EMR4_1_0') OR (CLUSTER_VERSION=='EMR4_0_0'))" GROUP="CONFIGURATION">
+
 			<ITEMS DEFAULT="CORE_HADOOP">
-				<ITEM NAME="ALL_APPLICATIONS" VALUE="ALL_APPLICATIONS" NOT_SHOW_IF="CLUSTER_VERSION=='EMR4_6_0'"/>
+				<ITEM NAME="ALL_APPLICATIONS" VALUE="ALL_APPLICATIONS" NOT_SHOW_IF="(CLUSTER_VERSION=='EMR4_6_0') OR (CLUSTER_VERSION=='EMR4_9_2') OR (CLUSTER_VERSION=='EMR5_11_0')"/>
 				<ITEM NAME="CORE_HADOOP" VALUE="CORE_HADOOP" />
-				<ITEM NAME="HBASE" VALUE="HBASE" SHOW_IF="CLUSTER_VERSION=='EMR4_6_0'"/>
-				<ITEM NAME="PRESTO_SANDBOX" VALUE="PRESTO_SANDBOX" NOT_SHOW_IF="CLUSTER_VERSION=='EMR4_0_0'"/>
+				<ITEM NAME="HBASE" VALUE="HBASE" SHOW_IF="(CLUSTER_VERSION=='EMR5_11_0') OR (CLUSTER_VERSION=='EMR4_9_2') OR (CLUSTER_VERSION=='EMR4_6_0')"/>
+				<ITEM NAME="PRESTO_SANDBOX" VALUE="PRESTO_SANDBOX" NOT_SHOW_IF="(CLUSTER_VERSION=='EMR5_11_0') OR (CLUSTER_VERSION=='EMR4_0_0')"/>
+				<ITEM NAME="PRESTO" VALUE="PRESTO" SHOW_IF="(CLUSTER_VERSION=='EMR5_11_0')"/>
 				<ITEM NAME="SPARK" VALUE="SPARK" />
 			</ITEMS>
 		</PARAMETER>
@@ -287,24 +291,68 @@
 			<DEFAULT>true</DEFAULT>
 		</PARAMETER>
 		
+		<PARAMETER NAME="USE_CUSTOMIZE_VERSION" FIELD="CHECK"
+			NUM_ROW="10" SHOW_IF="ACTION=='START'" GROUP="ADVANCED_CONFIGURATION">
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER NAME="CUSTOMIZE_VERSION" FIELD="TEXT"
+			NUM_ROW="12" SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION =='true')" GROUP="CUSTOMIZE_APPLICATION_GROUP">
+			<DEFAULT>"emr-5.11.0"</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER NAME="CUSTOMIZE_APPLICATION_TABLE" FIELD="TABLE" NUM_ROW="13" NB_LINES="5" GROUP="CUSTOMIZE_APPLICATION_GROUP"
+			SHOW_IF="(ACTION=='START') AND (USE_CUSTOMIZE_VERSION =='true')">
+			<ITEMS>
+				<ITEM NAME="NAME" FIELD="OPENED_LIST">
+					<ITEMS DEFAULT="HADOOP">
+                  <ITEM NAME="HADOOP" VALUE="&quot;HADOOP&quot;" />
+                  <ITEM NAME="ZEPPELIN" VALUE="&quot;ZEPPELIN&quot;" />
+                  <ITEM NAME="LIVY" VALUE="&quot;LIVY&quot;" />
+                  <ITEM NAME="TEZ" VALUE="&quot;TEZ&quot;" />
+                  <ITEM NAME="FLINK" VALUE="&quot;FLINK&quot;" />
+                  <ITEM NAME="GANGLIA" VALUE="&quot;GANGLIA&quot;" />
+                  <ITEM NAME="HBASE" VALUE="&quot;HBASE&quot;" />
+                  <ITEM NAME="PIG" VALUE="&quot;PIG&quot;" />
+                  <ITEM NAME="HIVE" VALUE="&quot;HIVE&quot;" />
+                  <ITEM NAME="PRESTO" VALUE="&quot;PRESTO&quot;" />
+                  <ITEM NAME="ZOOKEEPER" VALUE="&quot;ZOOKEEPER&quot;" />
+                  <ITEM NAME="MXNET" VALUE="&quot;MXNET&quot;" />
+                  <ITEM NAME="SQOOP" VALUE="&quot;SQOOP&quot;" />
+                  <ITEM NAME="MAHOUT" VALUE="&quot;MAHOUT&quot;" />
+                  <ITEM NAME="HUE" VALUE="&quot;HUE&quot;" />
+                  <ITEM NAME="PHOENIX" VALUE="&quot;PHOENIX&quot;" />
+                  <ITEM NAME="OOZIE" VALUE="&quot;OOZIE&quot;" />
+                  <ITEM NAME="SPARK" VALUE="&quot;SPARK&quot;" />
+                  <ITEM NAME="HCATALOG" VALUE="&quot;HCATALOG&quot;" />
+                  <ITEM NAME="PRESTO-SANDBOX" VALUE="&quot;PRESTO-SANDBOX&quot;" />
+                  <ITEM NAME="SQOOP-SANDBOX" VALUE="&quot;SQOOP-SANDBOX&quot;" />
+                  <ITEM NAME="ZEPPELIN-SANDBOX" VALUE="&quot;ZEPPELIN-SANDBOX&quot;" />
+                  <ITEM NAME="ZOOKEEPER-SANDBOX" VALUE="&quot;ZOOKEEPER-SANDBOX&quot;" />
+                  <ITEM NAME="OOZIE-SANDBOX" VALUE="&quot;OOZIE-SANDBOX&quot;" />                  
+					</ITEMS>
+			   </ITEM>
+			</ITEMS>
+		</PARAMETER>
+		
 		<PARAMETER NAME="SUBNET_ID" FIELD="TEXT"
-			NUM_ROW="8" SHOW_IF="ACTION=='START'" GROUP="ADVANCED_INSTANCE_CONFIGURATION">
+			NUM_ROW="17" SHOW_IF="ACTION=='START'" GROUP="ADVANCED_INSTANCE_CONFIGURATION">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="AVAILABILITY_ZONE" FIELD="TEXT"
-			NUM_ROW="9" SHOW_IF="(ACTION=='START')" GROUP="ADVANCED_INSTANCE_CONFIGURATION">
+			NUM_ROW="18" SHOW_IF="(ACTION=='START')" GROUP="ADVANCED_INSTANCE_CONFIGURATION">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 		
 		<PARAMETER NAME="MASTER_SECURITY_GROUP" FIELD="TEXT"
-			REQUIRED="true" NUM_ROW="10" SHOW_IF="ACTION=='START'"
+			REQUIRED="true" NUM_ROW="19" SHOW_IF="ACTION=='START'"
 			GROUP="ADVANCED_INSTANCE_CONFIGURATION">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER NAME="ADDITIONAL_MASTER_SECURITY_GROUPS" FIELD="TEXT"
-			REQUIRED="true" NUM_ROW="10" SHOW_IF="ACTION=='START'"
+			REQUIRED="true" NUM_ROW="19" SHOW_IF="ACTION=='START'"
 			GROUP="ADVANCED_INSTANCE_CONFIGURATION">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
@@ -324,6 +372,12 @@
 		<PARAMETER NAME="NOTE" FIELD="LABEL" REQUIRED="true"
 			NUM_ROW="30" SHOW_IF="ACTION=='START'" GROUP="ADVANCED_INSTANCE_CONFIGURATION">
 			<DEFAULT>Additional groups should be set like this : "gname1,gname2,gname3"</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER NAME="SERVICE_ACCESS_SECURITY_GROUP" FIELD="TEXT"
+			REQUIRED="true" NUM_ROW="31" SHOW_IF="ACTION=='START'"
+			GROUP="ADVANCED_INSTANCE_CONFIGURATION">
+			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 		
 		<PARAMETER NAME="BOOTSTRAP_ACTIONS" FIELD="TABLE" SHOW_IF="ACTION=='START'" NUM_ROW="32" NB_LINES="5" GROUP="BOOTSTRAP_GROUP">
@@ -370,20 +424,17 @@
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="aws-java-sdk-1.11.223.jar" MODULE="aws-java-sdk-1.11.223.jar"
-				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.223"
+			<IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
+				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar"
+			<IMPORT NAME="jackson-core-2.5.4.jar" MODULE="jackson-core-2.5.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-databind-2.5.3.jar" MODULE="jackson-databind-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-databind-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-databind-2.5.3.jar"
+			<IMPORT NAME="jackson-databind-2.5.4.redhat-2.jar" MODULE="jackson-databind-2.5.4.redhat-2.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-annotations-2.5.3.jar" MODULE="jackson-annotations-2.5.3.jar"
-				MVN="mvn:org.talend.libraries/jackson-annotations-2.5.3/6.0.0"
-				UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-annotations-2.5.3.jar"
+			<IMPORT NAME="jackson-annotations-2.5.4.jar" MODULE="jackson-annotations-2.5.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
 				REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
 				MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"

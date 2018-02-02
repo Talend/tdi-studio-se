@@ -215,9 +215,9 @@ public class JobContextLoadComponent implements IComponent {
     public String getName() {
         return this.getClass().getName();
     }
-    
+
     @Override
-    public String getOriginalName(){
+    public String getOriginalName() {
         return getName();
     }
 
@@ -252,10 +252,9 @@ public class JobContextLoadComponent implements IComponent {
 
                 source = self + JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX;
                 multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".REGEX"); //$NON-NLS-1$ 
-                
+
                 source = self + "IGNORE_ERROR_MESSAGE"; //$NON-NLS-1$
                 multipleComponentManager.addParam(source, FILE_INPUT_REGEX + ".IGNORE_ERROR_MESSAGE"); //$NON-NLS-1$ 
-                
 
             } else {
                 String source = self + JobSettingsConstants.getExtraParameterName(EParameterName.URL.getName());
@@ -743,7 +742,9 @@ public class JobContextLoadComponent implements IComponent {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.core.model.components.IComponent#getModulesNeeded()
      */
     @Override
@@ -757,12 +758,36 @@ public class JobContextLoadComponent implements IComponent {
         return null;
     }
 
+    @Override
     public String getTemplateFolder() {
         return getPathSource() == null ? null : (getPathSource() + "/" + getName());
     }
 
+    @Override
     public String getTemplateNamePrefix() {
         return getName();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#setOriginalFamilyName(java.lang.String)
+     */
+    @Override
+    public void setOriginalFamilyName(String familyName) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.model.components.IComponent#getTranslatedFamilyName(java.lang.String)
+     */
+    @Override
+    public void setTranslatedFamilyName(String translatedFamilyName) {
+        // TODO Auto-generated method stub
+
     }
 
 }

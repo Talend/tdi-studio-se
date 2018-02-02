@@ -116,6 +116,7 @@ import org.talend.designer.core.model.utils.emf.component.ComponentFactory;
 import org.talend.designer.core.model.utils.emf.component.DEFAULTType;
 import org.talend.designer.core.model.utils.emf.component.DocumentRoot;
 import org.talend.designer.core.model.utils.emf.component.FORMATType;
+import org.talend.designer.core.model.utils.emf.component.HEADERType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTSType;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.component.INSTALLType;
@@ -2622,6 +2623,9 @@ public class EmfComponent extends AbstractBasicComponent {
 
     @Override
     public String getOriginalFamilyName() {
+        if (familyName != null) {
+            return familyName;
+        }
         String originalFamilyName = ""; //$NON-NLS-1$
         if (!isAlreadyLoad) {
             int nbTotal = compType.getFAMILIES().getFAMILY().size();
@@ -2652,6 +2656,9 @@ public class EmfComponent extends AbstractBasicComponent {
      */
     @Override
     public String getTranslatedFamilyName() {
+        if (newTranslatedFamilyName != null) {
+            return newTranslatedFamilyName;
+        }
 
         if (!isAlreadyLoad) {
             if (translatedFamilyName != null) {
@@ -4242,8 +4249,20 @@ public class EmfComponent extends AbstractBasicComponent {
         return getName() + ":" + getLongName(); //$NON-NLS-1$
     }
 
+    @Override
     public String getTemplateFolder() {
         return getPathSource() + "/" + getName();
+    }
+
+    @Override
+    public boolean isActiveDbColumns() {
+        if (compType != null) {
+            HEADERType header = compType.getHEADER();
+            if (header != null) {
+                return header.isACTIVE_DB_COLUMNS();
+            }
+        }
+        return super.isActiveDbColumns();
     }
 
 }

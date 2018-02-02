@@ -13,30 +13,33 @@
 	String cid = node.getUniqueName();
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 	String remotedir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
+	boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 	String targetType = ElementParameterParser.getValue(node, "__TARGET_TYPE__");
 	String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
 	String useExistingConn = ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__");
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	boolean sftp = false;
+	boolean ftps = false;
 	boolean usePerl5 = ("true").equals(ElementParameterParser.getValue(node, "__PERL5_REGEX__"));
 	if(("true").equals(useExistingConn)){
 		List<? extends INode> nodeList = node.getProcess().getGeneratingNodes();
 		for(INode n : nodeList){
 			if(n.getUniqueName().equals(connection)){
 				sftp = ("true").equals(ElementParameterParser.getValue(n, "__SFTP__"));
+				ftps = ("true").equals(ElementParameterParser.getValue(n, "__FTPS__"));
 			}
 		}
 	}else{
 		sftp = ("true").equals(ElementParameterParser.getValue(node, "__SFTP__"));
+		ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 	}
 %>
 	try{
+		globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
+		java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
 <%
 		if(sftp){// *** sftp *** //
 %>
-
-			globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
-			java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
 			for (String key<%=cid %> : keySet<%=cid %>) {     
 				String filemask<%=cid %> = key<%=cid %>; 
 		    	String dir<%=cid %> = null;
@@ -92,11 +95,155 @@
    
     
 <%
-		}else{// *** ftp *** //
+		}else if (ftps) { // *** ftps *** //
 %>
+			for (String key<%=cid %> : keySet<%=cid %>) {
+				<% /*prepare filemask*/ %>
+				String filemask<%=cid %> = key<%=cid %>;
+<%
+					if ("false".equals(useExistingConn) || !moveToCurrentDir) {
+						String remoteDirReplaced = remotedir.replaceAll("\\\\", "/");
+%>
+						filemask<%=cid %> = <%=remoteDirReplaced %> + "/" + filemask<%=cid %>;
+<%
+					}
+%>
+				String dir<%=cid %> = null;
+				String mask<%=cid %> = null;
+<%
+				if(!usePerl5) { //perl5 mode not support windows(\) path separator at the mask string
+%>
+					mask<%=cid %> = filemask<%=cid %>.replaceAll("\\\\", "/") ;
+<%
+				} else {
+%>
+					mask<%=cid %> = filemask<%=cid %>;
+<%
+				}
+%>
+				int i<%=cid %> = mask<%=cid %>.lastIndexOf('/');
 
-			globalMap.put("<%=cid %>_CURRENT_STATUS", "No file deleted.");
-		    java.util.Set<String> keySet<%=cid %> = map<%=cid %>.keySet(); 
+				if (i<%=cid %>!=-1) {
+					dir<%=cid %> = mask<%=cid %>.substring(0, i<%=cid %>);
+					mask<%=cid %> = mask<%=cid %>.substring(i<%=cid %>+1);
+				}
+
+				if (dir<%=cid %> != null && !"".equals(dir<%=cid %>)) {
+					boolean doesDirExist_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(dir<%=cid %>);
+					if (!doesDirExist_<%=cid %>) {
+<%
+						if (isLog4jEnabled) {
+%>
+							log.warn("Directory " + dir<%=cid %> + " does not exist. Filemask " + filemask<%=cid %> + " ignored");
+<%
+						}
+%>
+						break; //skip filemask with not existing dir
+					}
+				}
+<%
+				if(!usePerl5) {
+%>
+					mask<%=cid %> = org.apache.oro.text.GlobCompiler.globToPerl5(mask<%=cid %>.toCharArray(), org.apache.oro.text.GlobCompiler.DEFAULT_MASK);
+<%
+				}
+%>
+				org.apache.commons.net.ftp.FTPFile[] filesInDirectory_<%=cid%> = null;
+				boolean getFileNamesFailed_<%=cid%> = false;
+				try {
+					filesInDirectory_<%=cid%> = ftp_<%=cid %>.listFiles();
+				} catch(java.io.IOException e_<%=cid%>) {
+					getFileNamesFailed_<%=cid%> = true;
+<%
+					if(isLog4jEnabled) {
+%>
+						log.warn("<%=cid%> - " + e_<%=cid%>.getMessage());
+<%
+					}
+%>
+				}
+
+				if (getFileNamesFailed_<%=cid %>) {
+<%
+					if (isLog4jEnabled) {
+%>
+						log.warn("Can't get file names from " + dir<%=cid %> + ". Filemask " + filemask<%=cid %> + " ignored");
+<%
+					} else {
+%>
+						System.err.println("Can't get file names from " + dir<%=cid %> + ". Filemask " + filemask<%=cid %> + " ignored");
+<%
+					}
+%>
+				} else {
+					<% /*search files matches to filemask and delete them*/ %>
+					for (org.apache.commons.net.ftp.FTPFile file_<%=cid %> : filesInDirectory_<%=cid%>) {
+						String fileName_<%=cid%> = file_<%=cid %>.getName();
+						if (fileName_<%=cid%>.matches(mask<%=cid %>)) {
+							boolean successDeleted_<%=cid %> = false;
+<%
+								if("FILE".equals(targetType)){
+%>
+									if (file_<%=cid %>.isFile()) {
+										successDeleted_<%=cid %> = ftp_<%=cid %>.deleteFile(fileName_<%=cid%>);
+										if (successDeleted_<%=cid %>) {
+											globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
+											nb_file_<%=cid%>++;
+											<%if(isLog4jEnabled){%>
+												log.debug("<%=cid%> - File '" + fileName_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %>);
+											<%}%>
+										} else {
+											String responceFTPMessage = ftp_<%=cid %>.getReplyString();
+											String errorMessageDeleteFail = "<%=cid%> - File '" + fileName_<%=cid%>  + "' was not deleted. Error message: " + responceFTPMessage;
+											<%if(isLog4jEnabled){%>
+												log.error(errorMessageDeleteFail);
+											<%} else { %>
+												System.err.println(errorMessageDeleteFail);
+											<%}%>
+
+											<%if (("true").equals(dieOnError)) { %>
+												throw new RuntimeException(errorMessageDeleteFail);
+											<% } %>
+										}
+									}
+<%
+								}else{
+%>
+									if (file_<%=cid %>.isDirectory()) {
+										successDeleted_<%=cid %> = ftp_<%=cid %>.removeDirectory(fileName_<%=cid%>);
+										if (successDeleted_<%=cid %>) {
+											globalMap.put("<%=cid %>_CURRENT_STATUS", "File deleted.");
+											nb_file_<%=cid%>++;
+											<%if(isLog4jEnabled){%>
+												log.debug("<%=cid%> - Directory '" + fileName_<%=cid%>  + "' was deleted from the remote directory " + <%=remotedir %>);
+											<%}%>
+										} else {
+											String responceFTPMessage = ftp_<%=cid %>.getReplyString();
+											String errorMessageDeleteFail = "<%=cid%> - Directory '" + fileName_<%=cid%>  + "' was not deleted. Error message: " + responceFTPMessage;
+											<%if(isLog4jEnabled){%>
+												log.error(errorMessageDeleteFail);
+											<%} else { %>
+												System.err.println(errorMessageDeleteFail);
+											<%}%>
+
+											<%if (("true").equals(dieOnError)) { %>
+												throw new RuntimeException(errorMessageDeleteFail);
+											<% } %>
+										}
+									}
+<%
+								}
+%>
+							}
+					}
+				}
+			}
+
+			<% /*return to root dir for next filemask*/ %>
+			ftp_<%=cid %>.changeWorkingDirectory(rootWorkDir_<%=cid %>);
+<%
+		}else {// *** ftp *** //
+%>
 		    try {
 				for (String key<%=cid %> : keySet<%=cid %>) {     
 					String filemask<%=cid %> = key<%=cid %>; 
