@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -133,11 +134,20 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         IFile bundleFile = null;
         try {
             targetFolder.refreshLocal(IResource.DEPTH_ONE, null);
+
+            String esbExportType = exportChoice.get(ExportChoice.esbExportType).toString();
+
+            String fileExtension = "jar";
+
             // we only build one zip at a time, so just get the zip file to be able to manage some pom customizations.
             for (IResource resource : targetFolder.members()) {
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
-                    if ("jar".equals(file.getFileExtension())) {
+                    if (StringUtils.isNotBlank(esbExportType)) {
+                        fileExtension = esbExportType;
+                    }
+
+                    if (fileExtension.equals(file.getFileExtension())) {
                         bundleFile = file;
                         break;
                     }
