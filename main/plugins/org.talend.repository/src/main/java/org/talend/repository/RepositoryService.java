@@ -998,6 +998,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     @Override
     public boolean isSVN() {
+        if (svnProviderService == null && PluginChecker.isSVNProviderPluginLoaded()) {
+            svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
+        }
         if (svnProviderService != null) {
             return svnProviderService.isProjectInSvnMode();
         }
@@ -1006,6 +1009,9 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
 
     @Override
     public boolean isGIT() {
+        if (gitProviderService == null && PluginChecker.isGITProviderPluginLoaded()) {
+            gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
+        }
         if (gitProviderService != null) {
             return gitProviderService.isProjectInGitMode();
         }
