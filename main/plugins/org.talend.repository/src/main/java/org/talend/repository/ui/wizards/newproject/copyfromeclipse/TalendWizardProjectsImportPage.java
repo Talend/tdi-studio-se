@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
@@ -272,6 +274,13 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        ViewerComparator comparator = new ViewerComparator(new Comparator<Object>() {
+
+            public int compare(Object s1, Object s2) {
+                return ((String) s1).compareTo((String) s2);
+            }
+        });
+        getProjectsList().setComparator(comparator);
     }
 
     /*
