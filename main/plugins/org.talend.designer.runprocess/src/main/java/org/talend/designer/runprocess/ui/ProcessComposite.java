@@ -86,10 +86,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IProgressService;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
@@ -216,8 +213,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     private Text lineLimitText;
 
     private Button wrapButton;
-
-    private Button fullLogButton;
 
     // private SashForm sash;
     private Button run;
@@ -774,32 +769,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         });
 
-        formData = new FormData();
-        formData.left = new FormAttachment(wrapButton, 15, SWT.RIGHT);
-        formData.top = new FormAttachment(wrapButton, 0, SWT.TOP);
-        formData.height = 25;
-        fullLogButton = new Button(composite, SWT.PUSH);
-        fullLogButton.setLayoutData(formData);
-        fullLogButton.setText("Open full log"); //$NON-NLS-1$
-        fullLogButton.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                try {
-                    IFile fullLogFile = getFullLogFile();
-                    if (fullLogFile.exists()) {
-                        fullLogFile.getParent().refreshLocal(IResource.DEPTH_ONE, null);
-                        FileEditorInput fileEditorInput = new FileEditorInput(fullLogFile);
-                        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                        page.openEditor(fileEditorInput, "org.eclipse.ui.DefaultTextEditor");
-                    }
-                } catch (PartInitException e1) {
-                    ExceptionHandler.process(e1);
-                } catch (CoreException e1) {
-                    ExceptionHandler.process(e1);
-                }
-            }
-        });
     }
 
     private int getConsoleRowLimit() {
@@ -2282,7 +2251,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         try {
             physProject = ResourceModelUtils.getProject(project);
             String label = processContext.getProcess().getLabel();
-            file = physProject.getFolder("temp").getFile(label + ".console_log"); //$NON-NLS-1$
+            String version = processContext.getProcess().getVersion();
+            file = physProject.getFolder("temp").getFile(label + "_" + version + ".console_log"); //$NON-NLS-1$
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
