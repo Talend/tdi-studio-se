@@ -2987,6 +2987,14 @@
               name="RepositoryProjectDate"
               version="7.0.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.SnowflakeConvertToUpperCaseMigrationTask"
+              id="org.talend.repository.model.migration.SnowflakeConvertToUpperCaseMigrationTask"
+              name="SnowflakeConvertToUpperCaseMigrationTask"
+              version="7.0.0">
+        </projecttask>
    </extension>
 
    <extension
