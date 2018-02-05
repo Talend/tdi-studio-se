@@ -236,6 +236,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private FileWriter writer;
 
+    boolean isPrintRunning = false;
+
     /**
      * DOC chuger ProcessComposite2 constructor comment.
      * 
@@ -1270,16 +1272,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         return newStyle;
     }
 
-    private void doAppendToConsole(Collection<IProcessMessage> messages_xxx) {
+    private void doAppendToConsole(Collection<IProcessMessage> messages) {
         try {
-            if (consoleText == null || consoleText.isDisposed() || messages_xxx.isEmpty()) {
+            if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
                 return;
             }
-            System.out.println("messages " + messages_xxx.size());
-            if (messages_xxx.size() > 1) {
-                System.out.println();
-            }
-            for (IProcessMessage message : messages_xxx) {
+            for (IProcessMessage message : messages) {
                 if (message.getType() == MsgType.STD_OUT) {
                     String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
                     for (String lineContent : splitLines) {
@@ -1293,14 +1291,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     writer.write(message.getContent());
                 }
             }
-            messages_xxx.clear();
-
-            System.out.println("messagesToDisplay " + messagesToDisplay.size());
+            messages.clear();
 
             long currentTime = new Date().getTime();
             if (!messagesToDisplay.isEmpty() && (currentTime - startTime > REFRESH_INTERVAL)) {
                 startTime = currentTime;
-                printToConsole(messagesToDisplay);
+                appendToConsoleQueue(messagesToDisplay);
                 messagesToDisplay = new ArrayList<IProcessMessage>();
             }
         } catch (IOException e) {
@@ -1309,7 +1305,39 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     }
 
+    private ConcurrentLinkedQueue<List<IProcessMessage>> displayQueue = new ConcurrentLinkedQueue<List<IProcessMessage>>();
+
+    private long printStartTime;
+
+    private void appendToConsoleQueue(List<IProcessMessage> newMsgs) {
+        displayQueue.add(newMsgs);
+        // only keep the last message list to print
+        if (displayQueue.size() > 1) {
+            List<IProcessMessage> lastMessages = displayQueue.poll();
+            lastMessages.clear();
+            lastMessages = null;
+        }
+        getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                boolean checking = true;
+                while (checking) {
+                    while (!isPrintRunning && displayQueue.size() > 0
+                            || (new Date().getTime() - printStartTime > REFRESH_INTERVAL * 4)) {
+                        printStartTime = new Date().getTime();
+                        printToConsole(displayQueue.poll());
+                    }
+                    if (displayQueue.size() == 0) {
+                        checking = false;
+                    }
+                }
+            }
+        });
+    }
+
     private void printToConsole(List<IProcessMessage> newMsgs) {
+        isPrintRunning = true;
         getDisplay().asyncExec(new Runnable() {
 
             @Override
@@ -1374,6 +1402,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     consoleText.setStyleRanges(stylesArray);
                 }
                 scrollToEnd();
+                isPrintRunning = false;
             }
         });
     }
@@ -1817,7 +1846,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     }
                 });
                 if (!running) {
-                    printToConsole(messagesToDisplay);
+                    appendToConsoleQueue(messagesToDisplay);
                 }
             }
             oldRunning = running;
