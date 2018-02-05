@@ -1584,7 +1584,7 @@ public class Component extends AbstractBasicComponent {
                             param.setRepositoryValueUsed(true);
                         }
                     } else {
-                        Properties currentProperties = ((GenericElementParameter) param).getProperties();
+                        Properties currentProperties = iNodeComponentProperties.getProperties(param.getName());
                         if (currentProperties != null) {
                             boolean isRepostory = false;
                             for (NamedThing thing : currentProperties.getProperties()) {
@@ -1625,7 +1625,7 @@ public class Component extends AbstractBasicComponent {
                 return true;
             }
 
-            Properties currentProperties = ((GenericElementParameter) param).getProperties();
+            Properties currentProperties = componentProperties.getProperties(param.getName());
             if (currentProperties != null) {
                 boolean isRepostory = false;
                 for (NamedThing thing : currentProperties.getProperties()) {

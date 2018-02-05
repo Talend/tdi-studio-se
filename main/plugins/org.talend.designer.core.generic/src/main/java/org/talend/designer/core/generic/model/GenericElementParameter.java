@@ -188,7 +188,10 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
                 fireShowDialogEvent(getSubProperties().getForm(formtoShow.getName()));
             }
         } else if (widgetProperty instanceof ComponentProperties && Widget.TABLE_WIDGET_TYPE.equals(widget.getWidgetType())) {
-            GenericTableUtils.setTableValues((ComponentProperties) widgetProperty, (List<Map<String, Object>>) newValue, this);
+            ComponentProperties tableProperties = (ComponentProperties) widgetProperty;
+            GenericTableUtils.setTableValues(tableProperties, (List<Map<String, Object>>) newValue, this);
+            Properties properties = getSubProperties().getProperties(tableProperties.getName());
+            GenericTableUtils.setTableValues(properties, (List<Map<String, Object>>) newValue, this);
         }
     }
 
