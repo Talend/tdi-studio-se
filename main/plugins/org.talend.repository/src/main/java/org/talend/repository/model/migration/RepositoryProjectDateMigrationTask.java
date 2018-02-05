@@ -35,7 +35,7 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
 
     @Override
     public ExecutionResult execute(Project project) {
-        ProjectPreferenceManager projectPrefManager = new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID);
+        ProjectPreferenceManager projectPrefManager = new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID, false);
         final String key = "repository.project.id"; //$NON-NLS-1$
         final String value = projectPrefManager.getValue(key);
         if (StringUtils.isBlank(value)) {

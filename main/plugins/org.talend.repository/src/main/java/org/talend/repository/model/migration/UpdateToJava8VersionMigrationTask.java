@@ -24,15 +24,14 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 
 /**
- * created by nrousseau on Sep 12, 2017
- * Detailled comment
+ * created by nrousseau on Sep 12, 2017 Detailled comment
  *
  */
 public class UpdateToJava8VersionMigrationTask extends AbstractProjectMigrationTask {
 
     @Override
     public ExecutionResult execute(Project project) {
-        ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID);
+        ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
         String javaVersion = manager.getValue(JavaUtils.PROJECT_JAVA_VERSION_KEY);
         if (StringUtils.isBlank(javaVersion) || !JavaCore.VERSION_1_8.equals(javaVersion)) {
             manager.setValue(JavaUtils.PROJECT_JAVA_VERSION_KEY, JavaCore.VERSION_1_8);
