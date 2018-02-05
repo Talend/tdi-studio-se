@@ -162,9 +162,15 @@ class LogUtil extends BasicLogUtil{
                 <%
                 }else{
                     String value = org.talend.core.model.utils.NodeUtil.getNormalizeParameterValue(node, ep);
+                    if(value.length()>10000){
+                    value = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(value);
+                    %>
+                    <%=var("log4jParamters")%>.append("<%=name%>" + " = " + <%=value%>);
+                    <%}else{
                     %>
                     <%=var("log4jParamters")%>.append("<%=name%>" + " = " + <%=value%>);
                 <%
+                   }
                 }   
                 %>
                 <%=var("log4jParamters")%>.append(" | ");
