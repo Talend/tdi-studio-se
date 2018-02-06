@@ -14,6 +14,10 @@ package org.talend.designer.runprocess.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -30,7 +34,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -86,6 +94,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.LanguageManager;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
 import org.talend.core.model.process.IContext;
@@ -94,6 +103,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.ITestContainerProviderService;
@@ -129,6 +139,7 @@ import org.talend.designer.runprocess.ui.actions.ClearTraceAction;
 import org.talend.designer.runprocess.ui.actions.SaveJobBeforeRunAction;
 import org.talend.designer.runprocess.ui.views.IProcessViewHelper;
 import org.talend.designer.runprocess.ui.views.ProcessView;
+import org.talend.repository.ProjectManager;
 
 /**
  * DOC chuger class global comment. Detailled comment <br/>
@@ -200,8 +211,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private boolean hideConsoleLine = false;
 
-    private Button enableLineLimitButton;
-
     private Text lineLimitText;
 
     private Button wrapButton;
@@ -220,6 +229,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     public HashMap<String, IProcessMessage> errorMessMap = new HashMap<String, IProcessMessage>();
 
     private final ProcessManager processManager;
+
+    private FileWriter writer;
+
+    boolean isPrintRunning = false;
 
     /**
      * DOC chuger ProcessComposite2 constructor comment.
@@ -599,7 +612,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         layouData.left = new FormAttachment(0, 10);
         layouData.right = new FormAttachment(100, 0);
         layouData.top = new FormAttachment(0, 50);
-        layouData.bottom = new FormAttachment(100, -30);
+        layouData.bottom = new FormAttachment(100, -35);
 
         consoleText.setLayoutData(layouData);
         // feature 6875, add searching capability, nma
@@ -685,7 +698,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         FormData layouData = new FormData();
         layouData.left = new FormAttachment(0, 10);
         layouData.right = new FormAttachment(100, 0);
-        layouData.top = new FormAttachment(100, -30);
+        layouData.top = new FormAttachment(100, -35);
         layouData.bottom = new FormAttachment(100, -3);
         composite.setLayoutData(layouData);
 
@@ -695,27 +708,17 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         formLayout.spacing = 7;
         composite.setLayout(formLayout);
 
-        enableLineLimitButton = new Button(composite, SWT.CHECK);
-        enableLineLimitButton.setText(Messages.getString("ProcessComposite.lineLimited")); //$NON-NLS-1$
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(Messages.getString("ProcessComposite.lineLimited")); //$NON-NLS-1$
         FormData formData = new FormData();
-        enableLineLimitButton.setLayoutData(formData);
-        enableLineLimitButton.setEnabled(false);
-        enableLineLimitButton.addSelectionListener(new SelectionAdapter() {
-
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                lineLimitText.setEditable(enableLineLimitButton.getSelection());
-                RunProcessPlugin.getDefault().getPluginPreferences()
-                        .setValue(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT, enableLineLimitButton.getSelection());
-            }
-        });
+        label.setLayoutData(formData);
 
         lineLimitText = new Text(composite, SWT.BORDER);
+        lineLimitText.setToolTipText("Range from 100 to 5000");
         formData = new FormData();
         formData.width = 120;
-        formData.left = new FormAttachment(enableLineLimitButton, 0, SWT.RIGHT);
+        formData.left = new FormAttachment(label, 0, SWT.RIGHT);
         lineLimitText.setLayoutData(formData);
-        lineLimitText.setEnabled(false);
         lineLimitText.addListener(SWT.Verify, new Listener() {
 
             // this text only receive number here.
@@ -742,10 +745,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         });
 
-        boolean enable = RunProcessPlugin.getDefault().getPluginPreferences()
-                .getBoolean(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT);
-        enableLineLimitButton.setSelection(enable);
-        lineLimitText.setEditable(enable);
         String count = RunProcessPlugin.getDefault().getPluginPreferences()
                 .getString(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT);
         if (count.equals("")) { //$NON-NLS-1$
@@ -770,16 +769,13 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                 }
             }
         });
+
     }
 
     private int getConsoleRowLimit() {
-        if (!enableLineLimitButton.isDisposed()) {
-            if (enableLineLimitButton.getSelection()) {
-                try {
-                    return Integer.parseInt(lineLimitText.getText());
-                } catch (Exception e) {
-                }
-            }
+        try {
+            return Integer.parseInt(lineLimitText.getText());
+        } catch (Exception e) {
         }
         return SWT.DEFAULT;
     }
@@ -1048,7 +1044,26 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(processContext != null);
         // clearBeforeExec.setSelection(processContext != null && processContext.isClearBeforeExec());
         // contextComposite.setProcess(((processContext != null) && !disableAll ? processContext.getProcess() : null));
-        fillConsole(processContext != null ? processContext.getMessages() : new ArrayList<IProcessMessage>());
+        Collection<IProcessMessage> messages = new ArrayList<IProcessMessage>();
+        if (processContext != null) {
+            messages = processContext.getMessages();
+            messages.clear();
+        }
+        if (processContext != null) {
+            try {
+                IFile fullLogFile = getFullLogFile();
+                if (fullLogFile.exists()) {
+                    fullLogFile.setContents(new ByteArrayInputStream(new byte[0]), IResource.FORCE, null);
+                } else {
+                    fullLogFile.create(new ByteArrayInputStream(new byte[0]), IResource.FORCE, null);
+                }
+                writer = new FileWriter(new File(fullLogFile.getLocation().toPortableString()));
+            } catch (IOException | CoreException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+
+        fillConsole(messages);
 
         // remove trace if basic run tab active
         if (processContext != null) {
@@ -1093,9 +1108,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setEnabled(runnable);
         // saveJobBeforeRunButton.setEnabled(runnable);
         // watchBtn.setEnabled(runnable);
-        if (enableLineLimitButton != null && !enableLineLimitButton.isDisposed()) {
-            enableLineLimitButton.setEnabled(runnable);
-        }
         if (lineLimitText != null && !lineLimitText.isDisposed()) {
             lineLimitText.setEnabled(runnable);
         }
@@ -1144,35 +1156,21 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
     private ConcurrentLinkedQueue<IProcessMessage> newMessages = new ConcurrentLinkedQueue<IProcessMessage>();
 
-    private ConcurrentLinkedQueue<IProcessMessage> messagesToDisplay = new ConcurrentLinkedQueue<IProcessMessage>();
+    private long startTime;
+
+    private List<IProcessMessage> messagesToDisplay = new ArrayList<IProcessMessage>();
+
+    private static long REFRESH_INTERVAL = 500;
 
     protected void processNextMessage() {
-        // one list for display, one list for the waiting pool.
-        // don't try to display once the list to display is not finished to handle.
-        if (messagesToDisplay.isEmpty() && !newMessages.isEmpty()) {
+        if (!newMessages.isEmpty()) {
+            List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
             IProcessMessage message = newMessages.poll();
             if (message == null) {
                 return;
             }
-            messagesToDisplay.add(message);
-            getDisplay().asyncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
-                    // only do a peek here, to get the first message, but without remove it (to make sure nothing else
-                    // call the appendConsole)
-                    IProcessMessage msg = messagesToDisplay.peek();
-                    if (msg != null) {
-                        messages.add(msg);
-                        doAppendToConsole(messages);
-                        scrollToEnd();
-                    }
-
-                    // do a poll here to remove the first element that we just displayed.
-                    messagesToDisplay.poll();
-                }
-            });
+            messages.add(message);
+            doAppendToConsole(messages);
         }
     }
 
@@ -1245,52 +1243,138 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     private void doAppendToConsole(Collection<IProcessMessage> messages) {
-        if (consoleText == null || consoleText.isDisposed()) {
-            return;
-        }
-        int linesLimit = getConsoleRowLimit();
-        int currentLines = consoleText.getLineCount();
-        if (linesLimit > 0 && currentLines > linesLimit) {
-            return;
-        }
-
-        List<StyleRange> styles = new ArrayList<StyleRange>();
-        StringBuffer consoleMsgText = new StringBuffer();
-        int startLength = consoleText.getText().length();
-        for (StyleRange curStyle : consoleText.getStyleRanges()) {
-            styles.add(curStyle);
-        }
-
-        boolean newStyle = false;
-        for (IProcessMessage message : messages) {
-            if (message.getType() == MsgType.STD_OUT) {
-                String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
-                for (String lineContent : splitLines) {
-                    if (linesLimit > 0 && currentLines > linesLimit) {
-                        return;
-                    }
-                    currentLines++;
-                    IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
-                    newStyle = newStyle | processMessage(consoleMsgText, lineMsg, startLength, styles);
-                }
-            } else {
-                if (linesLimit > 0 && currentLines > linesLimit) {
-                    return;
-                }
-                currentLines++;
-                // count as only one line for the error, to avoid the error to be cut from original
-                newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
+        try {
+            if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
+                return;
             }
+            for (IProcessMessage message : messages) {
+                if (message.getType() == MsgType.STD_OUT) {
+                    String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
+                    for (String lineContent : splitLines) {
+                        IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
+                        messagesToDisplay.add(lineMsg);
+                    }
+                } else {
+                    messagesToDisplay.add(message);
+                }
+                if (writer != null) {
+                    writer.write(message.getContent());
+                }
+            }
+            messages.clear();
+
+            long currentTime = new Date().getTime();
+            if (!messagesToDisplay.isEmpty() && (currentTime - startTime > REFRESH_INTERVAL)) {
+                startTime = currentTime;
+                appendToConsoleQueue(messagesToDisplay);
+                messagesToDisplay = new ArrayList<IProcessMessage>();
+            }
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
         }
 
-        if (messages.size() > 1) {
-            consoleText.setText(consoleText.getText() + consoleMsgText);
-        } else {
-            consoleText.append(consoleMsgText.toString());
+    }
+
+    private ConcurrentLinkedQueue<List<IProcessMessage>> displayQueue = new ConcurrentLinkedQueue<List<IProcessMessage>>();
+
+    private long printStartTime;
+
+    private void appendToConsoleQueue(List<IProcessMessage> newMsgs) {
+        displayQueue.add(newMsgs);
+        // only keep the last message list to print
+        if (displayQueue.size() > 1) {
+            List<IProcessMessage> lastMessages = displayQueue.poll();
+            lastMessages.clear();
+            lastMessages = null;
         }
-        if (newStyle) {
-            consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
-        }
+        getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                boolean checking = true;
+                while (checking) {
+                    while (!isPrintRunning && displayQueue.size() > 0
+                            || (new Date().getTime() - printStartTime > REFRESH_INTERVAL * 4)) {
+                        printStartTime = new Date().getTime();
+                        printToConsole(displayQueue.poll());
+                    }
+                    if (displayQueue.size() == 0) {
+                        checking = false;
+                    }
+                }
+            }
+        });
+    }
+
+    private void printToConsole(List<IProcessMessage> newMsgs) {
+        isPrintRunning = true;
+        getDisplay().asyncExec(new Runnable() {
+
+            @Override
+            public void run() {
+                int linesLimit = getConsoleRowLimit();
+                int currentLines = consoleText.getLineCount();
+                List<StyleRange> styles = new ArrayList<StyleRange>();
+                StringBuffer consoleMsgText = new StringBuffer();
+                int startLength = consoleText.getText().length();
+                for (StyleRange curStyle : consoleText.getStyleRanges()) {
+                    styles.add(curStyle);
+                }
+
+                boolean append = false;
+                int newStart = 0;
+                int totalLines = currentLines + newMsgs.size();
+                int diff = totalLines - linesLimit;
+                if (diff > 0) {
+                    newStart = currentLines - diff;
+                    if (newStart == 0) {
+                        append = true;
+                    } else {
+                        startLength = 0;
+                        if (newStart > 0) {
+                            newStart = diff;
+                            int offsetAtLine = consoleText.getOffsetAtLine(newStart - 1);
+                            Iterator<StyleRange> iterator = styles.iterator();
+                            while (iterator.hasNext()) {
+                                StyleRange curStyle = iterator.next();
+                                if (offsetAtLine >= (curStyle.start + curStyle.length)) {
+                                    iterator.remove();
+                                }
+                            }
+                            String text = consoleText.getText(offsetAtLine, consoleText.getCharCount() - 1);
+                            consoleMsgText.append(text);
+                            newStart = 0;
+                        } else {
+                            newStart = Math.abs(newStart);
+                            styles.clear();
+                        }
+                    }
+                } else {
+                    append = true;
+                }
+
+                boolean newStyle = false;
+                for (int i = newStart; i < newMsgs.size(); i++) {
+                    IProcessMessage message = newMsgs.get(i);
+                    newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
+                }
+
+                newMsgs.clear();
+
+                if (append) {
+                    consoleText.append(consoleMsgText.toString());
+                } else {
+                    consoleText.setText(consoleMsgText.toString());
+                }
+
+                if (newStyle) {
+                    StyleRange[] stylesArray = styles.toArray(new StyleRange[0]);
+                    consoleText.setStyleRanges(stylesArray);
+                }
+                scrollToEnd();
+                isPrintRunning = false;
+            }
+        });
     }
 
     /**
@@ -1321,8 +1405,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             return;
         }
         consoleText.setText(""); //$NON-NLS-1$
+        startTime = 0;
+        messagesToDisplay = new ArrayList<IProcessMessage>();
         doAppendToConsole(messages);
-        scrollToEnd();
     }
 
     private void scrollToEnd() {
@@ -1472,6 +1557,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     boolean debugMode = false;
 
     private MenuItem debugMenuItem;
+
+    private boolean oldRunning;
 
     public void debug() {
 
@@ -1692,7 +1779,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             appendToConsole(psMess);
         } else if (ProcessMessageManager.PROP_MESSAGE_CLEAR.equals(propName)) {
             newMessages.clear();
-            messagesToDisplay.clear();
             getDisplay().asyncExec(new Runnable() {
 
                 @Override
@@ -1707,24 +1793,38 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         } else if (RunProcessContext.TRACE_MONITOR.equals(propName)) {
             // traceBtn.setSelection(((Boolean) evt.getNewValue()).booleanValue());
         } else if (RunProcessContext.PROP_RUNNING.equals(propName)) {
-            getDisplay().asyncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (isDisposed()) {
-                        return;
-                    }
-                    boolean running = ((Boolean) evt.getNewValue()).booleanValue();
-                    setRunnable(!running);
-                    killBtn.setEnabled(running);
-                    while (!newMessages.isEmpty()) {
-                        messagesToDisplay.add(newMessages.poll());
-                    }
-                    doAppendToConsole(messagesToDisplay);
-                    scrollToEnd();
-                    messagesToDisplay.clear();
+            boolean running = ((Boolean) evt.getNewValue()).booleanValue();
+            List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
+            while (!newMessages.isEmpty()) {
+                messages.add(newMessages.poll());
+            }
+            doAppendToConsole(messages);
+            if (!running && writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                    writer = null;
+                } catch (IOException e) {
+                    ExceptionHandler.process(e);
                 }
-            });
+            }
+            if (running != oldRunning) {
+                getDisplay().asyncExec(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (isDisposed()) {
+                            return;
+                        }
+                        setRunnable(!running);
+                        killBtn.setEnabled(running);
+                    }
+                });
+                if (!running) {
+                    appendToConsoleQueue(messagesToDisplay);
+                }
+            }
+            oldRunning = running;
         }
     }
 
@@ -2149,4 +2249,20 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // TODO Auto-generated method stub
         this.processViewHelper = processViewHelper;
     }
+
+    private IFile getFullLogFile() {
+        Project project = ProjectManager.getInstance().getCurrentProject();
+        IProject physProject;
+        IFile file = null;
+        try {
+            physProject = ResourceModelUtils.getProject(project);
+            String label = processContext.getProcess().getLabel();
+            String version = processContext.getProcess().getVersion();
+            file = physProject.getFolder("temp").getFile(label + "_" + version + ".console_log"); //$NON-NLS-1$
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return file;
+    }
+
 }

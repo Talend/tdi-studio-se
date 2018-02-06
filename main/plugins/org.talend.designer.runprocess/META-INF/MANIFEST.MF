@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.talend.model,
  org.eclipse.debug.ui,
  org.eclipse.emf.codegen,
+ org.eclipse.ui.ide,
  org.apache.commons.collections,
  org.apache.commons.lang,
  org.talend.core,

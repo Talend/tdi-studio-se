@@ -137,7 +137,8 @@
 	boolean keep_alive = "true".equals(ElementParameterParser.getValue(node, "__KEEP_ALIVE__"));
 	
 	boolean use_customize_version = "true".equals(ElementParameterParser.getValue(node, "__USE_CUSTOMIZE_VERSION__"));
-	String cluster_version = use_customize_version?ElementParameterParser.getValue(node, "__CUSTOMIZE_VERSION__").replace(' ', '-'):ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
+	String cluster_version = use_customize_version?ElementParameterParser.getValue(node, "__CUSTOMIZE_VERSION__").trim().replace(' ', '-'):ElementParameterParser.getValue(node, "__CLUSTER_VERSION__");
+	cluster_version = cluster_version.toLowerCase();
 %>
 	        
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Amazon/EMRClient.javajet"%>
@@ -227,12 +228,13 @@
 	<%
 	}
 
-    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"\\b[ea]m[ri][- ]\\d+\\.\\d+\\.\\d+\"");
+    java.util.regex.Pattern pattern_EMR = java.util.regex.Pattern.compile("\"\\bemr-\\d+\\.\\d+\\.\\d+\"");
+    java.util.regex.Pattern pattern_AMI = java.util.regex.Pattern.compile("\"\\d+\\.\\d+\\.\\d+\"");
 
-	if(!pattern.matcher(cluster_version).find()){
+	if(!pattern_EMR.matcher(cluster_version).find()&&!pattern_AMI.matcher(cluster_version).find()){
 	%>
 		if(true) {
-		throw new java.lang.RuntimeException("Cluster version should follow the pattern emr/ami-x.x.x");
+		throw new java.lang.RuntimeException("Cluster version should follow the pattern emr-x.x.x or x.x.x(AMI)");
 	}
 	<%
 	}

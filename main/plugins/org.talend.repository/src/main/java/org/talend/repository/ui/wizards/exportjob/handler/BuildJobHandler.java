@@ -158,8 +158,6 @@ public class BuildJobHandler extends AbstractBuildJobHandler {
         } catch (Exception e) {
             BuildCacheManager.getInstance().performBuildFailure();
             throw e;
-        } finally {
-            ProcessorUtilities.resetExportConfig();
         }
     }
 

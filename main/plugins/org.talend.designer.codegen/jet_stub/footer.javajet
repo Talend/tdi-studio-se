@@ -1,6 +1,7 @@
 <%@ jet
     package="org.talend.designer.codegen.translators"
     imports="
+        org.talend.core.model.general.ModuleNeeded
         org.talend.core.model.process.IProcess
         org.talend.core.model.process.INode
         org.talend.designer.codegen.config.CodeGeneratorArgument
@@ -260,11 +261,14 @@
     
     <%
     boolean containGenericComponents = false;
+    nodeloop:
 	for(INode node : process.getGeneratingNodes()) {
 		IComponent component = node.getComponent();
-		if(EComponentType.GENERIC.equals(component.getComponentType())) {
-			containGenericComponents = true;
-			break;
+		for (ModuleNeeded module : component.getModulesNeeded(node)) {
+		    if (module.getModuleName() != null && module.getModuleName().startsWith("components-common")) {
+		        containGenericComponents = true;
+		        break nodeloop;
+		    }
 		}
 	}
 	if(containGenericComponents) {

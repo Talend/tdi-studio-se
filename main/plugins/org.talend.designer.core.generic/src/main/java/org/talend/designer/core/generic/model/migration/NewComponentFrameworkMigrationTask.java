@@ -104,7 +104,7 @@ public abstract class NewComponentFrameworkMigrationTask extends AbstractJobMigr
                 }
                 ElementParameterType sqlParamType = getParameterType(nodeType, "QUERYSTORE:QUERYSTORE_TYPE");
                 boolean isSQLRepository = false;
-                if (sqlParamType != null && "REPOSITORY".equals(propertyParamType.getValue())) {
+                if (sqlParamType != null && "REPOSITORY".equals(sqlParamType.getValue())) {
                     isSQLRepository = true;
                 }
                 for (IElementParameter param : fNode.getElementParameters()) {
