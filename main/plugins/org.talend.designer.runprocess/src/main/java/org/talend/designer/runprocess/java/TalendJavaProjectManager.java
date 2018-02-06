@@ -38,6 +38,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -442,6 +443,11 @@ public class TalendJavaProjectManager {
             public void run(IProgressMonitor monitor) throws CoreException {
                 IProject[] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
                 for (IProject project : projects) {
+                    if (project.getLocation() == null || !project.getLocation().toFile().exists()
+                            || !project.getFile(IProjectDescription.DESCRIPTION_FILE_NAME).getLocation().toFile().exists()) {
+                        project.delete(false, true, monitor);
+                        continue;
+                    }
                     if (!project.isOpen()) {
                         project.open(monitor);
                     }
