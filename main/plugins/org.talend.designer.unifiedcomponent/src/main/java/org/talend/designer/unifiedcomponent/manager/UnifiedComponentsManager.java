@@ -26,8 +26,10 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
+import org.talend.core.model.components.IComponentsService;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
@@ -117,7 +119,8 @@ public class UnifiedComponentsManager {
     }
 
     private void initDelegateComponent(IComponentsUnifier unifier) {
-        if (unifier.getComponentName() != null) {
+        String componentName = unifier.getComponentName();
+        if (componentName != null) {
             IComponentDelegate delegateComp = unifier.getDelegateComponent();
             String key = delegateComp.getComponentName();
             DelegateComponent component = delegateComponents.get(key);
@@ -125,16 +128,29 @@ public class UnifiedComponentsManager {
                 // create a new component
                 component = createDelegateComponent(delegateComp.getFamily(), delegateComp.getComponentName(),
                         delegateComp.getImage());
+            }
+
+            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
+                    IComponentsService.class);
+            Set<String> exsitCategories = new HashSet<String>();
+            for (String paletteType : unifier.getCategories()) {
+                IComponent emfComponent = compService.getComponentsFactory().get(componentName, paletteType);
+                if (emfComponent != null) {
+                    exsitCategories.add(paletteType);
+                }
+            }
+            if (!exsitCategories.isEmpty()) {
+                UnifiedObject object = new UnifiedObject();
+                object.setDatabase(unifier.getDisplayName());
+                object.setComponentName(componentName);
+                object.getSupportedCategories().addAll(unifier.getCategories());
+                object.getParameterMapping().putAll(unifier.getParameterMapping());
+                object.getParamMappingExclude().addAll(unifier.getMappingExclude());
+                object.getHideFamilies().addAll(unifier.getFamilies());
+                component.getUnifiedObjects().add(object);
+
                 delegateComponents.put(key, component);
             }
-            UnifiedObject object = new UnifiedObject();
-            object.setDatabase(unifier.getDisplayName());
-            object.setComponentName(unifier.getComponentName());
-            object.getSupportedCategories().addAll(unifier.getCategories());
-            object.getParameterMapping().putAll(unifier.getParameterMapping());
-            object.getParamMappingExclude().addAll(unifier.getMappingExclude());
-            object.getHideFamilies().addAll(unifier.getFamilies());
-            component.getUnifiedObjects().add(object);
 
         }
     }
