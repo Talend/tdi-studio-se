@@ -16,6 +16,7 @@ import org.eclipse.gef.requests.CreationFactory;
 import org.talend.core.model.components.IComponent;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.notes.Note;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 
 /**
  * Factory used to create a new Node. <br/>
@@ -27,8 +28,15 @@ public class PaletteComponentFactory implements CreationFactory {
 
     protected IComponent component;
 
+    protected String filter;
+
     public PaletteComponentFactory(IComponent c) {
         component = c;
+    }
+
+    public PaletteComponentFactory(IComponent c, String filter) {
+        component = c;
+        this.filter = filter;
     }
 
     /*
@@ -45,6 +53,10 @@ public class PaletteComponentFactory implements CreationFactory {
         if (componentName != null && componentName.toLowerCase().equals("note")) { //$NON-NLS-1$
             return new Note();
         } else {
+            IComponent emfComponent = UnifiedComponentUtil.getUnifiedComponentByFilter(component, filter);
+            if (emfComponent != null) {
+                return new Node(component, emfComponent);
+            }
             return new Node(component);
         }
     }

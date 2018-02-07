@@ -290,7 +290,7 @@ public final class TalendEditorPaletteFactory {
             }
 
             if (xmlComponent.isLoaded()) {
-                name = xmlComponent.getName();
+                name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
                 longName = xmlComponent.getLongName();
 
                 ImageDescriptor imageSmall = xmlComponent.getIcon16();
@@ -305,7 +305,7 @@ public final class TalendEditorPaletteFactory {
                     componentsDrawer = ht.get(FAVORITES);
                     if (componentsDrawer != null) {
                         component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                                imageLarge);
+                                imageLarge, filter);
 
                         component.setDescription(longName);
                         component.setParent(componentsDrawer);
@@ -313,8 +313,8 @@ public final class TalendEditorPaletteFactory {
                     }
                 }
 
-                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(name)) {
-                    recentlyUsedMap.put(name, xmlComponent);
+                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
+                    recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
                 }
 
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
@@ -325,7 +325,7 @@ public final class TalendEditorPaletteFactory {
                     }
 
                     component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                            imageLarge);
+                            imageLarge, filter);
 
                     component.setDescription(longName);
 
@@ -690,7 +690,7 @@ public final class TalendEditorPaletteFactory {
             ++i;
             PaletteDrawer componentsDrawer = ht.get(RECENTLY_USED);
             if (componentsDrawer != null) {
-                name = recentlyUsedComponent.getName();
+                name = UnifiedComponentUtil.getComponentDisplayNameForPalette(recentlyUsedComponent, filter);
                 longName = recentlyUsedComponent.getLongName();
 
                 ImageDescriptor imageSmall = recentlyUsedComponent.getIcon16();
@@ -703,7 +703,7 @@ public final class TalendEditorPaletteFactory {
                     imageLarge = recentlyUsedComponent.getIcon32();
                 }
                 component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, recentlyUsedComponent, imageSmall,
-                        imageLarge);
+                        imageLarge, filter);
 
                 component.setDescription(longName);
                 component.setParent(componentsDrawer);
@@ -728,18 +728,25 @@ public final class TalendEditorPaletteFactory {
         if (component == null) {
             return null;
         }
+        IComponent delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         String name = component.getName();
-        ImageDescriptor imageSmall = component.getIcon16();
+        String filter = null;
+        if (delegateComponent != component) {
+            // emf component name
+            filter = component.getName();
+            name = UnifiedComponentUtil.getComponentDisplayNameForPalette(delegateComponent, filter);
+        }
+        ImageDescriptor imageSmall = delegateComponent.getIcon16();
         IPreferenceStore store = DesignerPlugin.getDefault().getPreferenceStore();
         ImageDescriptor imageLarge;
         final String string = store.getString(TalendDesignerPrefConstants.LARGE_ICONS_SIZE);
         if (string.equals("24")) { //$NON-NLS-1$
-            imageLarge = component.getIcon24();
+            imageLarge = delegateComponent.getIcon24();
         } else {
-            imageLarge = component.getIcon32();
+            imageLarge = delegateComponent.getIcon32();
         }
-        TalendCombinedTemplateCreationEntry newEntry = new TalendCombinedTemplateCreationEntry(name, name, Node.class, component,
-                imageSmall, imageLarge);
+        TalendCombinedTemplateCreationEntry newEntry = new TalendCombinedTemplateCreationEntry(name, name, Node.class,
+                delegateComponent, imageSmall, imageLarge, filter);
 
         newEntry.setDescription(component.getLongName());
         return newEntry;
@@ -931,7 +938,7 @@ public final class TalendEditorPaletteFactory {
             // }
 
             if (xmlComponent.isLoaded()) {
-                name = xmlComponent.getName();
+                name = UnifiedComponentUtil.getComponentDisplayNameForPalette(xmlComponent, filter);
                 longName = xmlComponent.getLongName();
 
                 ImageDescriptor imageSmall = xmlComponent.getIcon16();
@@ -946,7 +953,7 @@ public final class TalendEditorPaletteFactory {
                     componentsDrawer = ht.get(FAVORITES);
                     if (componentsDrawer != null) {
                         component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                                imageLarge);
+                                imageLarge, filter);
 
                         component.setDescription(longName);
                         component.setParent(componentsDrawer);
@@ -954,8 +961,8 @@ public final class TalendEditorPaletteFactory {
                     }
                 }
 
-                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(name)) {
-                    recentlyUsedMap.put(name, xmlComponent);
+                if (recentlyUsedComponentNames != null && recentlyUsedComponentNames.contains(xmlComponent.getName())) {
+                    recentlyUsedMap.put(xmlComponent.getName(), xmlComponent);
                 }
 
                 if (isFavorite && !(favoriteComponentNames != null && favoriteComponentNames.contains(xmlComponent.getName()))) {
@@ -972,7 +979,7 @@ public final class TalendEditorPaletteFactory {
                     // key = xmlComponent.getName() + "#" + oraStrings[j];//$NON-NLS-1$
 
                     component = new TalendCombinedTemplateCreationEntry(name, name, Node.class, xmlComponent, imageSmall,
-                            imageLarge);
+                            imageLarge, filter);
 
                     component.setDescription(longName);
                     if (a == 0) {
@@ -1524,6 +1531,8 @@ public final class TalendEditorPaletteFactory {
 
     public static class RecentlyUsedComponent {
 
+        protected String displayName;
+
         protected String name;
 
         protected Date timestamp;
@@ -1544,6 +1553,24 @@ public final class TalendEditorPaletteFactory {
          */
         public void setName(String name) {
             this.name = name;
+        }
+
+        /**
+         * Sets the displayName.
+         * 
+         * @param displayName the displayName to set
+         */
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
+        }
+
+        /**
+         * Getter for displayName.
+         * 
+         * @return the displayName
+         */
+        public String getDisplayName() {
+            return this.displayName;
         }
 
         /**

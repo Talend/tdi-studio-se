@@ -556,7 +556,7 @@ public class ComponentSettingsView extends ViewPart implements IComponentSetting
                 label = label + "(" + uniqueName + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (node.getComponent() != node.getDelegateComponent()) {
-                String dispalyName = UnifiedComponentUtil.getUnifiedCompDisplayName(node.getDelegateComponent(), node
+                String dispalyName = UnifiedComponentUtil.getUnifiedComponentDisplayName(node.getDelegateComponent(), node
                         .getComponent().getName());
                 if (dispalyName != null) {
                     label = label + "(" + dispalyName + ")";

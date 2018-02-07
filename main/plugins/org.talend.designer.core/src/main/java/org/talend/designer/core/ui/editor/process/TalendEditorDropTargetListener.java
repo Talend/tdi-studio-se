@@ -1946,9 +1946,14 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
 
         neededComponents = UnifiedComponentUtil.filterUnifiedComponent(settingCopy, neededComponents);
 
+        String typeName = null;
+        if (item instanceof ConnectionItem) {
+            typeName = ((ConnectionItem) item).getTypeName();
+        }
+
         // Check if the components in the list neededComponents have the same category that is required by Process.
         IComponent component = chooseOneComponent(extractComponents(neededComponents), settingCopy, quickCreateInput,
-                quickCreateOutput);
+                quickCreateOutput, typeName);
         store.component = UnifiedComponentUtil.getEmfComponent(rcSetting, component);
         store.componentName = rcSetting;
     }
@@ -1982,7 +1987,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
      * @param quickCreateOutput
      */
     private IComponent chooseOneComponent(List<IComponent> neededComponents, IComponentName name, boolean quickCreateInput,
-            boolean quickCreateOutput) {
+            boolean quickCreateOutput, String typeName) {
         if (neededComponents.isEmpty()) {
             return null;
         }
@@ -1999,7 +2004,7 @@ public class TalendEditorDropTargetListener extends TemplateTransferDropTargetLi
             return outputComponent;
         }
 
-        ComponentChooseDialog dialog = new ComponentChooseDialog(editor.getSite().getShell(), neededComponents);
+        ComponentChooseDialog dialog = new ComponentChooseDialog(editor.getSite().getShell(), neededComponents, typeName);
         IComponent defaultComponent = getComponentByName(name.getDefaultComponentName(), true, neededComponents);
         if (defaultComponent != null) {
             dialog.setInitialSelections(new Object[] { defaultComponent });
@@ -2251,7 +2256,7 @@ class ComponentChooseDialog extends ListDialog {
      *
      * @param parentShell
      */
-    public ComponentChooseDialog(Shell parentShell, List<IComponent> input) {
+    public ComponentChooseDialog(Shell parentShell, List<IComponent> input, String typeName) {
         super(parentShell);
         setTitle(Messages.getString("TalendEditorDropTargetListener.title")); //$NON-NLS-1$
         setMessage(Messages.getString("TalendEditorDropTargetListener.chooseComponent")); //$NON-NLS-1$
@@ -2268,6 +2273,9 @@ class ComponentChooseDialog extends ListDialog {
             @Override
             public String getText(Object element) {
                 IComponent component = (IComponent) element;
+                if (UnifiedComponentUtil.isDelegateComponent(component) && typeName != null) {
+                    return component.getName() + "(" + typeName + ")";
+                }
                 return component.getName();
             }
 

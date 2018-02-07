@@ -159,13 +159,13 @@ public class UnifiedComponentUtil {
         return selectedComponent;
     }
 
-    public static String getUnifiedCompDisplayName(IComponent delegateComponent, String emfComponent) {
+    public static String getUnifiedComponentDisplayName(IComponent delegateComponent, String emfComponent) {
         if (isDelegateComponent(delegateComponent)) {
             IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
             return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
         }
-        return null;
+        return delegateComponent.getName();
     }
 
     public static void refreshComponentViewTitle() {
@@ -175,4 +175,23 @@ public class UnifiedComponentUtil {
             viewer.updatePropertiesViewerTitle();
         }
     }
+
+    public static String getComponentDisplayNameForPalette(IComponent delegateComponent, String keyWord) {
+        if (isDelegateComponent(delegateComponent)) {
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
+                    IUnifiedComponentService.class);
+            return service.getComponentDisplayNameForPalette(delegateComponent, keyWord);
+        }
+        return delegateComponent.getName();
+    }
+
+    public static IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
+                    IUnifiedComponentService.class);
+            return service.getUnifiedComponentByFilter(delegateComponent, filter);
+        }
+        return null;
+    }
+
 }

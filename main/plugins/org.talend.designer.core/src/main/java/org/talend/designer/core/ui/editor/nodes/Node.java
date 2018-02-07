@@ -437,6 +437,23 @@ public class Node extends Element implements IGraphicalNode {
         updateComponentStatusIfNeeded(true);
     }
 
+    public Node(IComponent delegateComponent, IComponent emfComponent) {
+        this.oldcomponent = emfComponent;
+        this.delegateComponent = delegateComponent;
+        this.component = emfComponent;
+        this.process = ActiveProcessTracker.getCurrentProcess();
+        currentStatus = 0;
+
+        init(component);
+        initDefaultElementParameters();
+        IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
+        if (param != null) {
+            param.setValue(Boolean.TRUE);
+        }
+
+        updateComponentStatusIfNeeded(true);
+    }
+
     public Node(IComponent component, IProcess2 process, boolean insertSet, boolean template) {
         this.oldcomponent = component;
         this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
