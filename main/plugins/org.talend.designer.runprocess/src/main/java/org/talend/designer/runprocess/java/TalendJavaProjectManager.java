@@ -484,9 +484,6 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
-        // init project if not exist mostly for svn commit.
-        getTalendJobJavaProject(processItem.getProperty());
-        // create processor to generate pom.
         IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
         IProcess process = service.getProcessFromProcessItem(processItem);
         IContext context = process.getContextManager().getDefaultContext();
