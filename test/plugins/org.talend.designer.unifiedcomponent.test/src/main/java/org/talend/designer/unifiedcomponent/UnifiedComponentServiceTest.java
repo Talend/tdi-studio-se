@@ -232,4 +232,37 @@ public class UnifiedComponentServiceTest {
         Assert.assertNull(displayName);
     }
 
+    @Test
+    public void testGetComponentDisplayNameForPalette() {
+        IComponent tDBConnection = unifiedCompservice.getDelegateComponent("tDBConnection",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        String displayName = unifiedCompservice.getComponentDisplayNameForPalette(tDBConnection, "mysql");
+        String expected = "tDBConnection(MySQL)";
+        Assert.assertEquals(expected, displayName);
+
+        displayName = unifiedCompservice.getComponentDisplayNameForPalette(tDBConnection, "oracle");
+        expected = "tDBConnection(Oracle)";
+        Assert.assertEquals(expected, displayName);
+
+        IComponent tDBInput = unifiedCompservice.getDelegateComponent("tDBInput", ComponentCategory.CATEGORY_4_DI.getName());
+        displayName = unifiedCompservice.getComponentDisplayNameForPalette(tDBInput, "tmysqlinput");
+        expected = "tDBInput(MySQL)";
+        Assert.assertEquals(expected, displayName);
+
+        displayName = unifiedCompservice.getComponentDisplayNameForPalette(tDBInput, "mysqlinput");
+        expected = "tDBInput(MySQL)";
+        Assert.assertEquals(expected, displayName);
+    }
+
+    @Test
+    public void getUnifiedComponentByFilter() {
+        IComponent tDBConnection = unifiedCompservice
+                .getDelegateComponent("tDBOutput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent emfComponent = unifiedCompservice.getUnifiedComponentByFilter(tDBConnection, "mysql");
+        Assert.assertEquals("tMysqlOutput", emfComponent.getName());
+
+        IComponent tDBCDC = unifiedCompservice.getDelegateComponent("tDBCDC", ComponentCategory.CATEGORY_4_DI.getName());
+        emfComponent = unifiedCompservice.getUnifiedComponentByFilter(tDBCDC, "Oracle");
+        Assert.assertEquals("tOracleCDC", emfComponent.getName());
+    }
 }
