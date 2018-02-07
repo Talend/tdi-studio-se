@@ -42,6 +42,15 @@
 				<include>**</include>
 			</includes>
 		</fileSet>
+
+		<fileSet><!-- add context resources -->
+			<directory>${current.resources.dir}</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>${talend.job.path}/**</include>
+			</includes>
+		</fileSet>
+
 	</fileSets>
 	
 <!-- 	<dependencySets>
