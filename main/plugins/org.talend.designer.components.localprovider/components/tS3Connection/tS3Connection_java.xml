@@ -114,6 +114,7 @@
 	    
      	<ITEMS DEFAULT="DEFAULT">
         	<ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+        	<ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
          	<ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
 	        <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
 	        <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
