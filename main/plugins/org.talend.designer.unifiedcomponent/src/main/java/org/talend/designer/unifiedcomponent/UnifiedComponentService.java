@@ -437,7 +437,8 @@ public class UnifiedComponentService implements IUnifiedComponentService {
     }
 
     private boolean matchFilter(UnifiedObject obj, String filter) {
-        boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equals(filter);
+        boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
+                || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
         return match;
     }
 

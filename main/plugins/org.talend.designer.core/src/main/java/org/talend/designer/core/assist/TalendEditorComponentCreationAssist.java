@@ -36,7 +36,6 @@ import org.talend.designer.core.ui.editor.cmd.CreateNodeContainerCommand;
 import org.talend.designer.core.ui.editor.connections.ConnLabelEditPart;
 import org.talend.designer.core.ui.editor.connections.ConnectionFigure;
 import org.talend.designer.core.ui.editor.connections.ConnectionPart;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.nodes.NodePart;
@@ -64,6 +63,8 @@ public class TalendEditorComponentCreationAssist {
     protected static ConnectionFigure overedConnection = null;
 
     protected List<IContentProposal> proposalList;
+
+    private String filterText;
 
     public TalendEditorComponentCreationAssist(String categoryName, GraphicalViewer viewer, CommandStack commandStack,
             IProcess2 process) {
@@ -152,11 +153,12 @@ public class TalendEditorComponentCreationAssist {
         // TODO the trigger way may need improved, currently, any visible character will trigger it
         // TalendEditorComponentProposalProvider proposalProvider = new
         // TalendEditorComponentProposalProvider(components);
-        TalendEditorComponentProposalProvider proposalProvider = new TalendEditorComponentProposalProvider(this, proposalList, process);
+        TalendEditorComponentProposalProvider proposalProvider = new TalendEditorComponentProposalProvider(this, proposalList,
+                process);
         contentProposalAdapter = new ContentProposalAdapter(assistText, new TextContentAdapter(), proposalProvider, null, null);
         contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-        contentProposalAdapter.setLabelProvider(new TalendEditorComponentLabelProvider());
-    } 
+        contentProposalAdapter.setLabelProvider(new TalendEditorComponentLabelProvider(assistText));
+    }
 
     private void highlightOveredConnection(org.eclipse.swt.graphics.Point cursorRelativePosition) {
         if (overedConnection != null) {
@@ -215,6 +217,7 @@ public class TalendEditorComponentCreationAssist {
 
             @Override
             public void proposalPopupClosed(ContentProposalAdapter adapter) {
+                filterText = assistText.getText();
                 if (assistText != null && !assistText.isFocusControl()) {
                     disposeAssistText();
                 }
@@ -283,7 +286,8 @@ public class TalendEditorComponentCreationAssist {
         e.widget = graphicControl;
         MouseEvent mouseEvent = new MouseEvent(e);
 
-        TalendAssistantCreationTool creationTool = new TalendAssistantCreationTool(new PaletteComponentFactory(component));
+        TalendAssistantCreationTool creationTool = new TalendAssistantCreationTool(new PaletteComponentFactory(component,
+                filterText));
 
         newNode = creationTool.getCreateRequest().getNewObject();
         if (!canCreateAt(newNode, new Point(e.x, e.y))) {
@@ -306,7 +310,7 @@ public class TalendEditorComponentCreationAssist {
             return false;
         }
         if (process instanceof Process && node instanceof Node) {
-            NodeContainer nc = ((Process)process).loadNodeContainer((Node)node, false);
+            NodeContainer nc = ((Process) process).loadNodeContainer((Node) node, false);
             boolean canExecute = new CreateNodeContainerCommand((Process) process, nc, location).canExecute();
             if (!canExecute) {
                 MessageDialog.openWarning(graphicControl.getShell(), "Failed", "Component can't be created here");
