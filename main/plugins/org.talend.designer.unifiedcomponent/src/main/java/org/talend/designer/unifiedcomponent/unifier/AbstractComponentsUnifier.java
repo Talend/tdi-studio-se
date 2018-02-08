@@ -16,7 +16,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,7 +48,7 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
         try {
             BufferedReader br = null;
             JSONArray jsonArray = new JSONArray();
-            File file = new File(FileLocator.toFileURL(this.getClass().getResource("unifier.json")).toURI());
+            File file = new File(FileLocator.toFileURL(this.getClass().getResource("unifier.json")).getFile());
             if (file.exists()) {
                 br = new BufferedReader(new FileReader(file));
                 StringBuffer buffer = new StringBuffer();
@@ -64,8 +63,6 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
                     unifiedMap.put(unifiedKey, object);
                 }
             }
-        } catch (URISyntaxException e) {
-            ExceptionHandler.process(e);
         } catch (IOException e) {
             ExceptionHandler.process(e);
         }
