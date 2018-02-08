@@ -90,7 +90,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
             }
         }
         IFile backupPomFile = talendProcessJavaProject.getProject().getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-        if(backupPomFile.exists()) {
+        if (backupPomFile.exists()) {
             backupPomFile.delete(true, monitor);
         }
         return super.generateJobFiles(monitor);
@@ -120,7 +120,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         } else if (path.startsWith(MavenSystemFolders.JAVA.getPath())) {
             String sub = path.replaceAll(MavenSystemFolders.JAVA.getPath(), "");
             folder = talendProcessJavaProject.getSrcSubFolder(monitor, sub);
-        } else if(path.startsWith("META-INF")) {
+        } else if (path.startsWith("META-INF")) {
             folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getBundleResourcesFolder(), path);
         }
         return folder == null ? null : folder.getFile(fileName);
@@ -141,7 +141,8 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         try {
             targetFolder.refreshLocal(IResource.DEPTH_ONE, null);
 
-            String esbExportType = exportChoice.get(ExportChoice.esbExportType).toString();
+            String esbExportType = exportChoice.get(ExportChoice.esbExportType) == null ? ""
+                    : exportChoice.get(ExportChoice.esbExportType).toString();
 
             String fileExtension = "jar";
 
