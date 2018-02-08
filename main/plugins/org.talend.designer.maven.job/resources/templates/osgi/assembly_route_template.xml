@@ -50,7 +50,14 @@
 				<include>${talend.job.path}/**</include>
 			</includes>
 		</fileSet>
-
+        
+        <fileSet> <!-- add provided-lib -->
+            <directory>${current.bundle.resources.dir}/provided-lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+        </fileSet>
 	</fileSets>
 	
 <!-- 	<dependencySets>

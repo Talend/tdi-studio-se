@@ -59,8 +59,8 @@ public class BuildJobFactory {
             switch (jobExportType) {
             case POJO:
                 break; // continue
-            case OSGI: // TODO, later, when osgi pom is finished, will try to enable it.
-                return new BuildOSGiBundleHandler(processItem, version, contextName, exportChoiceMap);// return null; // don't support others
+            case OSGI:
+                break; // continue
             default:
                 jobExportType = null; // try the first one by default
                 break;
@@ -93,7 +93,7 @@ public class BuildJobFactory {
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             if (type != null) {
                 buildType = type.toString();
-            }// else{ // if didn't set, should use default provider to create it.
+            } // else{ // if didn't set, should use default provider to create it.
         }
 
         Map<String, Object> parameters = new HashMap<String, Object>();

@@ -89,7 +89,11 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                 }
             }
         }
-        return null;
+        IFile backupPomFile = talendProcessJavaProject.getProject().getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
+        if(backupPomFile.exists()) {
+            backupPomFile.delete(true, monitor);
+        }
+        return super.generateJobFiles(monitor);
     }
 
     @Override
@@ -112,12 +116,14 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
         IFolder folder = null;
         if (path.startsWith(MavenSystemFolders.RESOURCES.getPath())) {
             String sub = path.replaceAll(MavenSystemFolders.RESOURCES.getPath(), "");
-            folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getResourcesFolder(), sub);
+            folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getBundleResourcesFolder(), sub);
         } else if (path.startsWith(MavenSystemFolders.JAVA.getPath())) {
             String sub = path.replaceAll(MavenSystemFolders.JAVA.getPath(), "");
             folder = talendProcessJavaProject.getSrcSubFolder(monitor, sub);
+        } else if(path.startsWith("META-INF")) {
+            folder = talendProcessJavaProject.createSubFolder(monitor, talendProcessJavaProject.getBundleResourcesFolder(), path);
         }
-        return folder == null ? talendProcessJavaProject.getProject().getFile(fileName) : folder.getFile(fileName);
+        return folder == null ? null : folder.getFile(fileName);
     }
 
     /*

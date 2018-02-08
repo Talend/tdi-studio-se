@@ -93,7 +93,7 @@ public abstract class JobScriptsManager {
 
     protected static final String JOBINFO_FILE = "jobInfo.properties";//$NON-NLS-1$
 
-    public static final String ALL_ENVIRONMENTS = Messages.getString("JobPerlScriptsManager.allInterpreter").trim(); //$NON-NLS-1$ ; 
+    public static final String ALL_ENVIRONMENTS = Messages.getString("JobPerlScriptsManager.allInterpreter").trim(); //$NON-NLS-1$ ;
 
     public static final String UNIX_ENVIRONMENT = "Unix"; //$NON-NLS-1$
 
@@ -309,8 +309,8 @@ public abstract class JobScriptsManager {
         String windowsCmd;
         String unixCmd;
         if (process == null) {
-            windowsCmd = getCommandByTalendJob(Platform.OS_WIN32, processItem, contextName, needContext, statisticPort,
-                    tracePort, codeOptions);
+            windowsCmd = getCommandByTalendJob(Platform.OS_WIN32, processItem, contextName, needContext, statisticPort, tracePort,
+                    codeOptions);
             unixCmd = getCommandByTalendJob(Platform.OS_LINUX, processItem, contextName, needContext, statisticPort, tracePort,
                     codeOptions);
         } else {
@@ -353,14 +353,14 @@ public abstract class JobScriptsManager {
             // name = TalendTextUtils.removeQuotes(name);
             // value = TalendTextUtils.removeQuotes(value);
             if (value == null) {
-                contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "=" + null;//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$ 
+                contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "=" + null;//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
             } else if (value != null && !"".equals(value)) {//$NON-NLS-1$
                 if (value.contains(" ") && !value.startsWith("\"")) { //$NON-NLS-1$ //$NON-NLS-2$
                     // Changed by Marvin Wang on Nov.13, 2012 for bug TDI-23253 to add double quotation marks for value.
-                    contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "="//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$ 
+                    contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "="//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
                             + TalendQuoteUtils.addQuotes(value);
                 } else {
-                    contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "="//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$ 
+                    contextParameterValues += " " + TalendProcessArgumentConstant.CMD_ARG_CONTEXT_PARAMETER + " " + name + "="//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
                             + value;
                 }
             }
@@ -598,8 +598,13 @@ public abstract class JobScriptsManager {
     protected IProcess generateJobFiles(ProcessItem process, String contextName, String version, boolean statistics,
             boolean trace, boolean applyContextToChildren, IProgressMonitor monitor) throws ProcessorException {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
-        IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace,
-                applyContextToChildren, isOptionChoosed(ExportChoice.needContext), monitor);
+        // IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace,
+        // applyContextToChildren, isOptionChoosed(ExportChoice.needContext), monitor);
+
+        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
+        IProcess currentProcess = service.getProcessFromProcessItem(process);
+
+        IProcessor processor = ProcessorUtilities.getProcessor(currentProcess, process.getProperty());
         return processor.getProcess();
     }
 
@@ -728,8 +733,8 @@ public abstract class JobScriptsManager {
     }
 
     protected IPath getEmfFileRootPath(Item item) throws Exception {
-        IPath root = getCorrespondingProjectRootPath(item).append(
-                ERepositoryObjectType.getFolderName(ERepositoryObjectType.getItemType(item)));
+        IPath root = getCorrespondingProjectRootPath(item)
+                .append(ERepositoryObjectType.getFolderName(ERepositoryObjectType.getItemType(item)));
         return root;
     }
 
@@ -782,8 +787,8 @@ public abstract class JobScriptsManager {
             exportCaculatedItems.add(processItem);
         }
 
-        Collection<IRepositoryViewObject> allDependencies = ProcessUtils.getAllProcessDependencies(
-                Arrays.asList(new Item[] { processItem }), false);
+        Collection<IRepositoryViewObject> allDependencies = ProcessUtils
+                .getAllProcessDependencies(Arrays.asList(new Item[] { processItem }), false);
 
         ITransformService tdmService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
@@ -834,18 +839,15 @@ public abstract class JobScriptsManager {
                     itemPath = itemPath.substring(typeFolderPath.toString().length());
                 }
                 if (item.getFileExtension() == null || "".equals(item.getFileExtension())) { //$NON-NLS-1$
-                    itemFilePath = projectRootPath
-                            .append(typeFolderPath)
-                            .append(itemPath)
-                            .append(itemName
-                                    + (item.isNeedVersion() ? itemVersionString : "") + "." + FileConstants.ITEM_EXTENSION); //$NON-NLS-1$ 
+                    itemFilePath = projectRootPath.append(typeFolderPath).append(itemPath).append(
+                            itemName + (item.isNeedVersion() ? itemVersionString : "") + "." + FileConstants.ITEM_EXTENSION); //$NON-NLS-1$
                 } else {
                     itemFilePath = projectRootPath.append(typeFolderPath).append(itemPath)
-                            .append(itemName + (item.isNeedVersion() ? itemVersionString : "") + "." + item.getFileExtension()); //$NON-NLS-1$ 
+                            .append(itemName + (item.isNeedVersion() ? itemVersionString : "") + "." + item.getFileExtension()); //$NON-NLS-1$
                 }
 
                 IPath propertiesFilePath = projectRootPath.append(typeFolderPath).append(itemPath)
-                        .append(itemName + itemVersionString + "." //$NON-NLS-1$ 
+                        .append(itemName + itemVersionString + "." //$NON-NLS-1$
                                 + FileConstants.PROPERTIES_EXTENSION);
 
                 List<URL> metadataNameFileUrls = new ArrayList<URL>();
@@ -878,8 +880,8 @@ public abstract class JobScriptsManager {
             }
 
             if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQItemService.class)) {
-                ITDQItemService tdqItemService = (ITDQItemService) GlobalServiceRegister.getDefault().getService(
-                        ITDQItemService.class);
+                ITDQItemService tdqItemService = (ITDQItemService) GlobalServiceRegister.getDefault()
+                        .getService(ITDQItemService.class);
                 if (tdqItemService != null
                         && tdqItemService.hasProcessItemDependencies(Arrays.asList(new Item[] { processItem }))) {
                     // add .Talend.definition file
@@ -902,7 +904,7 @@ public abstract class JobScriptsManager {
                     if (imageFolder.exists()) {
                         reportResourceUrls.add(imageFolder.toURI().toURL());
                     }
-                    File templateFolder = new File(reportingBundlePath + PATH_SEPARATOR + "reports"); //$NON-NLS-1$ 
+                    File templateFolder = new File(reportingBundlePath + PATH_SEPARATOR + "reports"); //$NON-NLS-1$
                     if (templateFolder.exists() && templateFolder.isDirectory()) {
                         reportResourceUrls.add(templateFolder.toURI().toURL());
                     }

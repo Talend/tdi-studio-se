@@ -84,7 +84,7 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
             } else if (PROVIDED_LIB_FOLDER.equals(resource.getDirectoryName())) {
                 resource.setDirectoryName(IMavenProperties.MAIN_RESOURCES_PROVIDED_LIB_PATH);
             } else if (FileConstants.META_INF_FOLDER_NAME.equals(resource.getDirectoryName())) {
-                it.remove();
+                // it.remove();
                 if (!resource.getAllResources().isEmpty()) {
                     Set<URL> urls = resource.getAllResources().iterator().next();
                     if (!urls.isEmpty()) {
@@ -95,9 +95,9 @@ public abstract class JavaScriptForESBWithMavenManager extends JobJavaScriptOSGI
             }
         }
 
-        addSourceCodeToExport(list, processes, codeOptions);
-
-        addMavenScriptToExport(list, processes, mavenPropertiesMap);
+        // addSourceCodeToExport(list, processes, codeOptions);
+        //
+        // addMavenScriptToExport(list, processes, mavenPropertiesMap);
 
         return list;
     }

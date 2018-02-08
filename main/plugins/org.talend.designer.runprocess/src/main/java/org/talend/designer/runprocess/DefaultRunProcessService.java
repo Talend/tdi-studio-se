@@ -253,6 +253,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
+            // If OSGI contains new processor, need to add built type in args map
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         }
     }
