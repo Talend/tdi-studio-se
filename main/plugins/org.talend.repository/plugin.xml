@@ -2938,7 +2938,16 @@
               id="org.talend.repository.model.migration.ChangeTMatchGroupOutputConnectorTask"
               name="ChangeTMatchGroupOutputConnectorTask"
               version="6.4.1">
-        </projecttask>        
+        </projecttask>
+        <projecttask
+	          beforeLogon="false"
+	          breaks="6.4.2"
+	          class="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
+	          description="Change output Date pattern to 'yyyy-MM-dd'"
+	          id="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
+	          name="AddSchemaDatePatternUseForImpalaTask"
+	          version="6.4.2">
+	    </projecttask>
    </extension>
 
    <extension
