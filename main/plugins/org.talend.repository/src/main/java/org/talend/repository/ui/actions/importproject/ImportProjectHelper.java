@@ -36,10 +36,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -174,10 +178,15 @@ public class ImportProjectHelper {
             if (reader != null)
                 reader.close();
         }
-
-        OutputStream os = new FileOutputStream(fileName);
+        StringBuffer sb = new StringBuffer();
+        String temFilename = sb.append(fileName).insert(fileName.lastIndexOf("."), "temp").toString();
+        File oldfile = new File(fileName);
+        oldfile.delete();
+        OutputStream os = new FileOutputStream(temFilename);
         os.write(buffer.toString().getBytes());
         os.close();
+        File newfile = new File(temFilename);
+        newfile.renameTo(new File(fileName));
     }
 
     protected void importArchiveProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
@@ -244,6 +253,17 @@ public class ImportProjectHelper {
 
         ArrayList fileSystemObjects = new ArrayList();
         getFilesForProject(fileSystemObjects, provider, source);
+        
+        boolean exists = Platform.getLocation().append(path).toFile().exists();
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(path.toOSString());
+        if(project.exists() && !exists) {
+        	try {
+        		project.delete(true, true, new NullProgressMonitor());
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			};
+        }
 
         ImportOperation operation = new ImportOperation(path, source, provider, new MyOverwriteQuery(), fileSystemObjects);
         operation.setContext(shell);
