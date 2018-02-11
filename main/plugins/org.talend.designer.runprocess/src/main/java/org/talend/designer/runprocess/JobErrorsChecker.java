@@ -68,7 +68,9 @@ public class JobErrorsChecker {
             ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
 
             Set<String> jobIds = new HashSet<String>();
-            for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
+            HashSet<JobInfo> jobInfos = new HashSet<>();
+            jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            for (JobInfo jobInfo : jobInfos) {
                 // TDI-28198:get right process item no matter the job open or close
                 List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
                 for (IRepositoryViewObject repositoryObject2 : allVersions) {

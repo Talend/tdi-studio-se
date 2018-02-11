@@ -344,7 +344,8 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     /**
      * DOC ggu Comment method "buildWholeCodeProject".
      */
-    private void buildWholeCodeProject() {
+    @Override
+    public void buildWholeCodeProject() {
         try {
             NullProgressMonitor monitor = new NullProgressMonitor();
             IProject project = getProject();

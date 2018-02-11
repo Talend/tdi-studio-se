@@ -336,7 +336,6 @@ public class MavenJavaProcessor extends JavaProcessor {
                 // for already installed sub jobs, can restore pom here directly
                 PomUtil.restorePomFile(getTalendJavaProject());
             }
-            // TODO copy resources to main job project.
             return;
         }
         if (isMainJob) {
@@ -359,28 +358,9 @@ public class MavenJavaProcessor extends JavaProcessor {
                     MavenProjectUtils.updateMavenProject(monitor, talendJavaProject.getProject());
                 }
             }
-            JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
-            Set<JobInfo> allJobs = LastGenerationInfo.getInstance().getLastGeneratedjobs();
-            for (JobInfo jobInfo : allJobs) {
-                if (mainJobInfo != jobInfo) {
-                    ITalendProcessJavaProject subJobProject = TalendJavaProjectManager
-                            .getExistingTalendJobProject(jobInfo.getProcessor().getProperty());
-                    if (subJobProject != null) {
-                        IProject subProject = subJobProject.getProject();
-                        if (MavenProjectUtils.hasMavenNature(subProject) && subProject.isOpen()) {
-                            try {
-                                if (!subProject.isSynchronized(IResource.DEPTH_INFINITE)) {
-                                    subProject.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-                                }
-                                subProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-                                subProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, monitor);
-                            } catch (CoreException e) {
-                                ExceptionHandler.process(e);
-                            }
-                        }
-                    }
-                }
-            }
+
+            buildCacheManager.buildAllSubjobMavenProjects();
+
         }
         IFile jobJarFile = null;
         if (!TalendMavenConstants.GOAL_COMPILE.equals(goal)) {
