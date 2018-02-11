@@ -52,9 +52,6 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        if (helper == null) {
-            helper = new AggregatorPomsHelper();
-        }
         String propertyName = event.getPropertyName();
         Object oldValue = event.getOldValue();
         Object newValue = event.getNewValue();
@@ -131,7 +128,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 // TalendJavaProjectManager.deleteAllVersionTalendJobProject(obj.getId(), null, false);
                 IPath sourcePath = ((IPath[]) newValue)[0];
                 IPath targetPath = ((IPath[]) newValue)[1];
-                IFolder processTypeFolder = helper.getProcessFolder(obj.getRepositoryObjectType());
+                IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(obj.getRepositoryObjectType());
                 IFolder targetFolder = processTypeFolder.getFolder(targetPath);
                 try {
                     if (!targetFolder.exists()) {
@@ -184,7 +181,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
             ERepositoryObjectType processType = (ERepositoryObjectType) objects[1];
             if (allProcessTypes.contains(processType)) {
                 // TalendJavaProjectManager.deleteTalendJobProjectsUnderFolder(processType, folderPath, false);
-                IFolder sourceFolder = helper.getProcessFolder(processType).getFolder(folderPath);
+                IFolder sourceFolder = getAggregatorPomsHelper().getProcessFolder(processType).getFolder(folderPath);
                 NullProgressMonitor monitor = new NullProgressMonitor();
                 try {
                     sourceFolder.refreshLocal(IResource.DEPTH_INFINITE, monitor);
@@ -205,7 +202,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
             IPath targetPath = ((IPath[]) oldValue)[1];
             ERepositoryObjectType processType = (ERepositoryObjectType) newValue;
             // TalendJavaProjectManager.deleteTalendJobProjectsUnderFolder(processType, sourcePath, false);
-            IFolder processTypeFolder = helper.getProcessFolder(processType);
+            IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
             IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
             IFolder targetFolder = processTypeFolder.getFolder(targetPath);
             MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
@@ -264,6 +261,13 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     .getService(ITestContainerProviderService.class);
         }
         return null;
+    }
+
+    private AggregatorPomsHelper getAggregatorPomsHelper() {
+        if (helper == null) {
+            helper = new AggregatorPomsHelper();
+        }
+        return helper;
     }
 
 }
