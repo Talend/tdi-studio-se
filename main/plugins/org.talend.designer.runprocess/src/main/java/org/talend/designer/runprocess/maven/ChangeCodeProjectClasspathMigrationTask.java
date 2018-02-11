@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -19,7 +19,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.talend.designer.maven.model.TalendMavenConstants;
-import org.talend.designer.maven.tools.creator.CreateMavenCodeProject;
+import org.talend.designer.maven.utils.MavenProjectUtils;
 import org.talend.migration.AbstractMigrationTask;
 import org.talend.migration.IWorkspaceMigrationTask;
 
@@ -42,7 +42,7 @@ public class ChangeCodeProjectClasspathMigrationTask extends AbstractMigrationTa
             // it have done for TalendCodeProjectUtil.initCodeProject, so no need here.
 
             // 2. check the .classpath (specially after RC1, for test-classes with 'excluding="**"' to remove)
-            CreateMavenCodeProject.changeClasspath(new NullProgressMonitor(), javaProject);
+            MavenProjectUtils.changeClasspath(new NullProgressMonitor(), javaProject);
             return true;
         }
         return false;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.talend.commons.utils.workbench.extensions.ExtensionImplementationProvider;
@@ -19,8 +21,10 @@ import org.talend.commons.utils.workbench.extensions.ExtensionPointLimiterImpl;
 import org.talend.commons.utils.workbench.extensions.IExtensionPointLimiter;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.IService;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.codegen.ICodeGeneratorService;
+import org.talend.designer.runprocess.maven.listener.ProcessChangeListener;
 import org.talend.repository.model.IRepositoryService;
 
 /**
@@ -38,6 +42,8 @@ public class RunProcessPlugin extends AbstractUIPlugin {
     private RunProcessContextManager runProcessContextManager;
 
     private ProjectPreferenceManager projectPreferenceManager;
+    
+    private PropertyChangeListener processChangeListener;
 
     /**
      * Constructs a new Activator.
@@ -61,6 +67,8 @@ public class RunProcessPlugin extends AbstractUIPlugin {
         if (runProcessContextManager == null) {
             runProcessContextManager = new RunProcessContextManager();
         }
+        processChangeListener = new ProcessChangeListener();
+        ProxyRepositoryFactory.getInstance().addPropertyChangeListener(processChangeListener);
     }
 
     /*
@@ -70,6 +78,7 @@ public class RunProcessPlugin extends AbstractUIPlugin {
      */
     public void stop(BundleContext context) throws Exception {
         plugin = null;
+        ProxyRepositoryFactory.getInstance().removePropertyChangeListener(processChangeListener);
         super.stop(context);
     }
 

@@ -15,8 +15,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.migration.AbstractProjectMigrationTask;
@@ -35,10 +33,6 @@ public class ChangeMappingFileMigrationTask extends AbstractProjectMigrationTask
             if (projectMappingFolder.exists()) {
                 URL p = MetadataTalendType.getProjectForderURLOfMappingsFile();
                 changeSAPHanaMappingFile(p);
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                    ICoreService service = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                    service.synchronizeMapptingXML();
-                }
             }
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {

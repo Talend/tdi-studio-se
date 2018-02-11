@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -290,8 +290,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     }
 
     private boolean isShowBuildType() {
-        // TODO need to add support for ESB Service.
-        if (!PluginChecker.isTIS() || isService) {
+        // add support for ESB Service.
+        if (!PluginChecker.isTIS()) {
             return false;
         }
         Map<String, Object> parameters = new HashMap<String, Object>();

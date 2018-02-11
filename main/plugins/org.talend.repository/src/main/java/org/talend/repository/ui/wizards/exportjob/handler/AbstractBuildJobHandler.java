@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,8 +12,11 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.handler;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.BooleanUtils;
@@ -21,21 +24,27 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.ITDQSurvivorshipService;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.repository.build.BuildExportManager;
+import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.core.runtime.repository.build.IBuildResourceParametes;
+import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
+import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
@@ -47,7 +56,7 @@ import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManag
  * created by ycbai on 2015年5月13日 Detailled comment
  *
  */
-public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
+public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuildResourceParametes, IBuildParametes {
 
     protected static final String PATH_SEPARATOR = "/"; //$NON-NLS-1$
 
@@ -86,7 +95,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
             this.exportChoice = new HashMap<ExportChoice, Object>();
         }
         IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
-        this.talendProcessJavaProject = runProcessService.getTalendProcessJavaProject();
+        this.talendProcessJavaProject = runProcessService.getTalendJobJavaProject(processItem.getProperty());
         IFolder targetFolder = talendProcessJavaProject.getTargetFolder();
         try {
             ResourceUtils.emptyFolder(targetFolder);
@@ -232,13 +241,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
         // xmlMappings folders
         addArg(profileBuffer, needXmlMappings(), TalendMavenConstants.PROFILE_INCLUDE_XMLMAPPINGS);
         addArg(profileBuffer, needXmlMappings() && isBinaries, TalendMavenConstants.PROFILE_INCLUDE_RUNNING_XMLMAPPINGS);
-        if (needXmlMappings()) {
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                ICoreService coreService = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                coreService.synchronizeMapptingXML();
-                coreService.syncLog4jSettings();
-            }
-        }
+
         // If the map doesn't contain the assembly key, then take the default value activation from the POM.
         boolean isAssemblyNeeded = exportChoice.get(ExportChoice.needAssembly) == null
                 || isOptionChoosed(ExportChoice.needAssembly);
@@ -253,6 +256,9 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
             addArg(profileBuffer, isBinaries, TalendMavenConstants.PROFILE_INCLUDE_PIGUDFS_BINARIES);
             addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_PIGUDFS_JAVA_SOURCES);
         }
+        // always disable ci-builder from studio/commandline
+        addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
+
         return profileBuffer;
     }
 
@@ -319,6 +325,41 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler {
             ExceptionHandler.process(e);
         }
         return jobFile;
+    }
+
+    @Override
+    public void prepare(IProgressMonitor monitor, Map<String, Object> parameters) throws Exception {
+        if (parameters == null) {
+            parameters = new HashMap<String, Object>();
+        }
+        parameters.put(OBJ_PROCESS_ITEM, processItem);
+        parameters.put(VERSION, version);
+        parameters.put(OBJ_PROCESS_JAVA_PROJECT, talendProcessJavaProject);
+
+        //
+        List<Item> dependenciesItems = new ArrayList<Item>();
+        Collection<IRepositoryViewObject> allProcessDependencies = ProcessUtils.getAllProcessDependencies(Arrays
+                .asList(processItem));
+        if (!allProcessDependencies.isEmpty()) {
+            for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
+                dependenciesItems.add(repositoryObject.getProperty().getItem());
+            }
+            parameters.put(OBJ_ITEM_DEPENDENCIES, dependenciesItems);
+        }
+
+        // generate sources
+        generateJobFiles(monitor);
+
+        // export items
+        if (ParametersUtil.hasBoolFlag(parameters, OPTION_ITEMS)) {
+            final boolean withDependencies = ParametersUtil.hasBoolFlag(parameters, OPTION_ITEMS_DEPENDENCIES);
+            generateItemFiles(withDependencies, monitor);
+        }
+
+        final IBuildResourcesProvider[] resourcesProviders = BuildExportManager.getInstance().getResourcesProviders();
+        for (IBuildResourcesProvider provider : resourcesProviders) {
+            provider.prepare(monitor, parameters);
+        }
     }
 
 }

@@ -2939,12 +2939,21 @@
               name="Configure the new INCLUDTRASHFILES property to 'true' in order to keep the same behavior as before"
               version="6.5.1">
         </projecttask>
-        <projecttask
+		<projecttask
               beforeLogon="true"
               class="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
               id="org.talend.repository.model.migration.UpdateToJava8VersionMigrationTask"
               name="UpdateToJava8VersionMigrationTask"
               version="6.5.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="true"
+              breaks="6.5.0"
+              class="org.talend.repository.model.migration.ResetMavenTemplateMigrationTask"
+              description="Reset to new maven template"
+              id="org.talend.repository.model.migration.ResetMavenTemplateMigrationTask"
+              name="ResetMavenTemplateMigrationTask"
+              version="6.5.0">
         </projecttask>
         <projecttask
               beforeLogon="false"
@@ -2954,7 +2963,7 @@
               name="Fill the default db version of mssql for Jobsetting"
               version="6.3.1">
         </projecttask>
-        <projecttask
+		<projecttask
               beforeLogon="false"
               breaks="6.4.0"
               class="org.talend.repository.model.migration.ChangeTMatchGroupOutputConnectorTask"
@@ -2963,11 +2972,26 @@
               version="6.4.1">
         </projecttask>
         <projecttask
+              beforeLogon="true"
+              class="org.talend.repository.model.migration.UpdateGitIgnoreMigrationTask"
+              id="org.talend.repository.model.migration.UpdateGitIgnoreMigrationTask"
+              name="UpdateGitIgnoreMigrationTask"
+              version="7.0.1">
+        </projecttask>
+        <projecttask
               beforeLogon="false"
               breaks="7.0.1"
               class="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
               id="org.talend.repository.model.migration.MigrationTaskFortOleDbCoseConnection"
               name="MigrationTaskFortOleDbCoseConnection"
+              version="7.0.1">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.GenerateJobPomMigrationTask"
+              id="org.talend.repository.model.migration.GenerateJobPomMigrationTask"
+              name="GenerateJobPomMigrationTask"
               version="7.0.1">
         </projecttask>
         <projecttask
@@ -2985,6 +3009,14 @@
               class="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
               id="org.talend.repository.model.migration.RepositoryProjectDateMigrationTask"
               name="RepositoryProjectDate"
+              version="7.0.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.0"
+              class="org.talend.repository.model.migration.SnowflakeConvertToUpperCaseMigrationTask"
+              id="org.talend.repository.model.migration.SnowflakeConvertToUpperCaseMigrationTask"
+              name="SnowflakeConvertToUpperCaseMigrationTask"
               version="7.0.0">
         </projecttask>
    </extension>
@@ -3164,7 +3196,7 @@
             id="projectsetting.JavaVersion"
             title="%ProjectSetting_JavaVersion">
       </page>
-      <page
+	  <page
             class="org.talend.repository.preference.ProjectRefSettingPage"
             id="org.talend.repository.preference.ProjectRefSettingPage"
             title="%projectSetting.projectRefSettingPage">
@@ -3172,11 +3204,20 @@
                class="org.talend.repository.preference.ProjectRefSettingPageTester">
          </tester>
       </page>
-      <page
+	  <page
             category="projectsetting.Maven"
             class="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             id="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             title="%ProjectSetting.groupId">
+      </page>
+      <page
+            category="projectsetting.Maven"
+            class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPage"
+            id="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPage"
+            title="%projectSetting.deploymentConfiguration">
+         <tester
+               class="org.talend.repository.preference.MavenDeploymentConfigurationProjectSettingPageTester">
+         </tester>
       </page>
    </extension>
    <extension

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -15,12 +15,9 @@ package org.talend.repository.ui.wizards.ConfigExternalLib;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardPage;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
-import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
 
@@ -74,14 +71,14 @@ public abstract class ConfigExternalLibPage extends WizardPage {
     public boolean finish() {
 
         // maybe need process the pig udf and bean also. not only for routine.
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
-                    IRunProcessService.class);
-            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
-            if (talendProcessJavaProject != null) {
-                talendProcessJavaProject.updateRoutinesPom(true, true);
-            }
-        }
+//        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+//            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
+//                    IRunProcessService.class);
+//            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+//            if (talendProcessJavaProject != null) {
+//                talendProcessJavaProject.updateRoutinesPom(true, true);
+//            }
+//        }
         return true;
     }
 

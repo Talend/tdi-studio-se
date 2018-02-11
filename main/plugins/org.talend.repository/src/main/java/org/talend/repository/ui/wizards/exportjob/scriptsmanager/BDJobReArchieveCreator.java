@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -260,7 +260,7 @@ public class BDJobReArchieveCreator {
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
                     IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                             IRunProcessService.class);
-                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(property);
 
                     File targetFolder = new File(talendProcessJavaProject.getTargetFolder().getLocationURI());
                     // In a local mode, the routines/beans/udfs jars are not in the lib folder. We then copy them.

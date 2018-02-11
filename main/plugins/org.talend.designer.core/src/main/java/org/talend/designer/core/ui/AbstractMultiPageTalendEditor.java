@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.core.runtime.RegistryFactory;
 import org.eclipse.core.runtime.Status;
@@ -179,6 +180,7 @@ import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.views.contexts.ContextsView;
 import org.talend.designer.core.ui.views.jobsettings.JobSettingsView;
 import org.talend.designer.core.ui.views.problems.Problems;
+import org.talend.designer.maven.utils.MavenProjectUtils;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -956,6 +958,9 @@ public abstract class AbstractMultiPageTalendEditor extends MultiPageEditorPart 
         codeEditor = CodeEditorFactory.getInstance().getCodeEditor(getCurrentLang(), process);
         processor = ProcessorUtilities.getProcessor(process, process.getProperty(), process.getContextManager()
                 .getDefaultContext());
+        if (!process.isReadOnly()) {
+            MavenProjectUtils.enableMavenNature(new NullProgressMonitor(), processor.getCodeProject());
+        }
         if (processor instanceof IJavaBreakpointListener) {
             JDIDebugModel.addJavaBreakpointListener((IJavaBreakpointListener) processor);
         }

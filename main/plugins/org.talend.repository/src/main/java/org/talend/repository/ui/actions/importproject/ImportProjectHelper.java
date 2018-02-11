@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -102,7 +102,7 @@ public class ImportProjectHelper {
     }
 
     protected void importProjectAs(Shell shell, String newName, String technicalName, String sourcePath, IProgressMonitor monitor)
-            throws InvocationTargetException, InterruptedException {
+            throws Exception {
         IImportStructureProvider provider = FilterFileSystemStructureProvider.INSTANCE;
 
         importProject(shell, provider, new File(sourcePath), new Path(technicalName), true, false, monitor);
@@ -181,7 +181,7 @@ public class ImportProjectHelper {
     }
 
     protected void importArchiveProjectAs(Shell shell, String newName, String technicalName, String sourcePath,
-            IProgressMonitor monitor) throws InvocationTargetException, InterruptedException, TarException, IOException {
+            IProgressMonitor monitor) throws Exception {
         importArchiveProject(shell, technicalName, sourcePath, monitor);
 
         ImportProjectBean projectBean = afterImportAs(newName, technicalName);

@@ -9,6 +9,7 @@ Bundle-Localization: plugin
 Require-Bundle: org.talend.model,
  org.eclipse.debug.ui,
  org.eclipse.emf.codegen,
+ org.eclipse.ui.ide,
  org.apache.commons.collections,
  org.apache.commons.lang,
  org.talend.core,
@@ -38,7 +39,8 @@ Require-Bundle: org.talend.model,
  org.talend.designer.codegen,
  org.talend.repository,
  org.talend.designer.maven,
- org.talend.components.api
+ org.talend.components.api,
+ org.eclipse.ltk.core.refactoring
 Eclipse-LazyStart: true
 Export-Package: org.talend.designer.runprocess,
  org.talend.designer.runprocess.i18n,

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,6 +32,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.CorePlugin;
+import org.talend.core.model.general.TalendJobNature;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -127,7 +129,7 @@ public class JavaCompilationParticipant extends CompilationParticipant {
 
         IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
         try {
-            ITalendProcessJavaProject talendProcessJavaProject = runProcessService.getTalendProcessJavaProject();
+            ITalendProcessJavaProject talendProcessJavaProject = runProcessService.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
             if (talendProcessJavaProject == null) {
                 return;
             }
@@ -173,9 +175,10 @@ public class JavaCompilationParticipant extends CompilationParticipant {
                 || CodeGeneratorEmittersPoolFactory.isInitializeStart()) {
             return false;
         }
-        ITalendProcessJavaProject talendJavaProject = JavaProcessorUtilities.getTalendJavaProject();
-        if (talendJavaProject != null) {
-            return talendJavaProject.getJavaProject().equals(project);
+        try {
+            return project.getProject().exists() && project.getProject().hasNature(TalendJobNature.ID);
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
         }
         return false;
     }

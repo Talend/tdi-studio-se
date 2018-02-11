@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -759,7 +759,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             String jobPackagePath = projectName + PATH_SEPARATOR + folderName + PATH_SEPARATOR
                     + JavaUtils.JAVA_CONTEXTS_DIRECTORY;
             ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                    .getTalendProcessJavaProject();
+                    .getTalendJobJavaProject(processItem.getProperty());
             if (talendProcessJavaProject == null) {
                 return;
             }
@@ -919,7 +919,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
             String jobFolderName = JavaResourcesHelper.getJobFolderName(jobName, jobVersion);
 
-            IPath path = getSrcRootLocation();
+            IPath path = getSrcRootLocation(processItem);
             path = path.append(projectName).append(jobFolderName);
 
             FilenameFilter filter = new FilenameFilter() {
@@ -953,7 +953,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             // get different routines.
 
             IRunProcessService service = CorePlugin.getDefault().getRunProcessService();
-            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
             if (talendProcessJavaProject == null) {
                 return;
             }
@@ -992,6 +992,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                         .getService(ICamelDesignerCoreService.class);
                 if (camelService.isInstanceofCamel(process[0].getItem())) {
                     useBeans = true;
+                    talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
                 }
             }
             addRoutinesSourceCodes(process, resource, talendProcessJavaProject, useBeans);
@@ -1058,17 +1059,21 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 needMappingInSystemRoutine = true;
                 if (needSource) {
                     IRunProcessService service = CorePlugin.getDefault().getRunProcessService();
-                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(resource.getItem().getProperty());
                     if (talendProcessJavaProject == null) {
                         return;
                     }
                     // for db mapping xml
-                    IFolder xmlMappingFolder = talendProcessJavaProject.getResourcesFolder()
+                    IFolder xmlMappingFolder = talendProcessJavaProject.getExternalResourcesFolder()
                             .getFolder(JavaUtils.JAVA_XML_MAPPING);
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                        ICoreService coreService = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                        coreService.synchronizeMapptingXML();
-                        coreService.syncLog4jSettings();
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                        IRunProcessService runService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                        ITalendProcessJavaProject talendJavaProject = runService.getTalendJobJavaProject(resource.getItem().getProperty());
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
+                            ICoreService coreService = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
+                            coreService.synchronizeMapptingXML(talendJavaProject);
+                            coreService.syncLog4jSettings(talendJavaProject);
+                        }
                     }
                     List<URL> xmlMappingFileUrls = new ArrayList<URL>();
                     if (xmlMappingFolder.exists()) {
@@ -1094,9 +1099,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     && GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
                 IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                         IRunProcessService.class);
-                ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
+                ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(resource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
-                    IFolder resourcesFolder = talendProcessJavaProject.getResourcesFolder();
+                    IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
                     IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
                     if (log4jFile.exists()) {
                         List<URL> log4jFileUrls = new ArrayList<URL>();
@@ -1149,7 +1154,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         if (project != null) {
             childProjectName = project.getTechnicalLabel().toLowerCase(); // hywang modify for 7932
         }
-        allJobScripts.addAll(getJobScripts(childProjectName, process.getProperty().getLabel(),
+        allJobScripts.addAll(getJobScripts(process, childProjectName, process.getProperty().getLabel(),
                 process.getProperty().getVersion(), isOptionChoosed(ExportChoice.needJobScript)));
         addContextScripts(process, process.getProperty().getLabel(), process.getProperty().getVersion(), resource,
                 isOptionChoosed(ExportChoice.needContext));
@@ -1199,10 +1204,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                     IRunProcessService.class);
-            ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
-            if (talendProcessJavaProject != null) {
-                libFolder = talendProcessJavaProject.getLibFolder();
-            }
+            libFolder = processService.getJavaProjectLibFolder();
         }
         if (libFolder == null) {
             return list;
@@ -1310,9 +1312,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                     IRunProcessService.class);
             try {
-                ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
+                ITalendProcessJavaProject talendProcessJavaProject = processService.getTempJavaProject();
                 if (talendProcessJavaProject != null) {
-                    IFolder resourcesFolder = talendProcessJavaProject.getResourcesFolder();
+                    IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
                     IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
                     if (log4jFile.exists()) {
                         list.add(FileLocator.toFileURL(log4jFile.getLocationURI().toURL()));
@@ -1334,9 +1336,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                     IRunProcessService.class);
             try {
-                ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
+                ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendJobJavaProject(libResource.getItem().getProperty());
                 if (talendProcessJavaProject != null) {
-                    IFolder resourcesFolder = talendProcessJavaProject.getResourcesFolder();
+                    IFolder resourcesFolder = talendProcessJavaProject.getExternalResourcesFolder();
                     IFile log4jFile = resourcesFolder.getFile(Log4jPrefsConstants.LOG4J_FILE_NAME);
                     if (log4jFile.exists()) {
                         list.add(log4jFile.getLocationURI().toURL());
@@ -1378,7 +1380,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     protected List<URL> getJobScripts(ProcessItem process, boolean needJob) {
 
         String projectName = getCorrespondingProjectName(process);
-        return this.getJobScripts(projectName, escapeFileNameSpace(process), process.getProperty().getVersion(), needJob);
+        return this.getJobScripts(process, projectName, escapeFileNameSpace(process), process.getProperty().getVersion(), needJob);
     }
 
     /**
@@ -1419,7 +1421,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
      */
     protected List<URL> getJobScripts(ProcessItem process, String version, boolean needJob) {
         String projectName = getCorrespondingProjectName(process);
-        return this.getJobScripts(projectName, escapeFileNameSpace(process), version, needJob);
+        return this.getJobScripts(process, projectName, escapeFileNameSpace(process), version, needJob);
     }
 
     protected Object getProcessParameterValue(ProcessItem process, String parameterName) {
@@ -1443,7 +1445,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
      * 
      * @return
      */
-    protected List<URL> getJobScripts(String projectName, String jobName, String jobVersion, boolean needJob) {
+    protected List<URL> getJobScripts(ProcessItem process, String projectName, String jobName, String jobVersion, boolean needJob) {
         List<URL> list = new ArrayList<URL>(1);
         if (!needJob) {
             return list;
@@ -1453,7 +1455,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         try {
             File jarFile = new File(getTmpFolder() + File.separatorChar + jobFolderName + FileConstants.JAR_FILE_SUFFIX);
             // Exports the jar file
-            File classRootFileLocation = getClassRootFileLocation();
+            File classRootFileLocation = getJobClassRootFileLocation(process.getProperty());
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }
@@ -1507,21 +1509,48 @@ public class JobJavaScriptsManager extends JobScriptsManager {
      * 
      * @return
      */
-    protected String getClassRootLocation() throws Exception {
-        File classRootFileLocation = getClassRootFileLocation();
+    protected String getJobClassRootLocation(Property property) throws Exception {
+        File classRootFileLocation = getJobClassRootFileLocation(property);
         if (classRootFileLocation == null) {
             return ""; //$NON-NLS-1$
         }
         return classRootFileLocation.toURI().toURL().getPath();
     }
 
-    protected File getClassRootFileLocation() {
+    protected String getCodeClassRootLocation(ERepositoryObjectType type) throws Exception {
+        File classRootFileLocation = getCodeClassRootFileLocation(type);
+        if (classRootFileLocation == null) {
+            return ""; //$NON-NLS-1$
+        }
+        return classRootFileLocation.toURI().toURL().getPath();
+    }
+    
+    protected File getCodeClassRootFileLocation(ERepositoryObjectType type) {
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTalendCodeJavaProject(type);
         if (talendProcessJavaProject == null) {
             return null;
         }
-
+        IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
+        return outputFolder.getLocation().toFile();
+    }
+    
+    protected File getJobClassRootFileLocation(Property property) {
+        ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
+                .getTalendJobJavaProject(property);
+        if (talendProcessJavaProject == null) {
+            return null;
+        }
+        IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
+        return outputFolder.getLocation().toFile();
+    }
+    
+    @Deprecated
+    protected File getClassRootFileLocation() {
+        ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService().getTempJavaProject();
+        if (talendProcessJavaProject == null) {
+            return null;
+        }
         IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
         return outputFolder.getLocation().toFile();
     }
@@ -1531,9 +1560,9 @@ public class JobJavaScriptsManager extends JobScriptsManager {
      * 
      * @throws Exception
      */
-    protected IPath getSrcRootLocation() throws Exception {
+    protected IPath getSrcRootLocation(ProcessItem processItem) throws Exception {
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTalendJobJavaProject(processItem.getProperty());
         if (talendProcessJavaProject == null) {
             return new Path(""); //$NON-NLS-1$
         }
@@ -1565,17 +1594,12 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             include.add(SYSTEM_ROUTINES_PATH);
             if (needMappingInSystemRoutine) {
                 include.add(JavaUtils.JAVA_XML_MAPPING);
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-                    ICoreService coreService = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
-                    coreService.synchronizeMapptingXML();
-                    coreService.syncLog4jSettings();
-                }
             }
 
             File jarFile = new File(getTmpFolder() + File.separatorChar + SYSTEMROUTINE_JAR);
 
             // make a jar file of system routine classes
-            File classRootFileLocation = getClassRootFileLocation();
+            File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }
@@ -1609,10 +1633,13 @@ public class JobJavaScriptsManager extends JobScriptsManager {
             }
             String includePath;
             String jar;
+            File classRootFileLocation;
             if (useBeans) {
+                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
                 includePath = USER_BEANS_PATH;
                 jar = USERBEANS_JAR;
             } else {
+                classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
                 includePath = USER_ROUTINES_PATH;
                 jar = USERROUTINE_JAR;
             }
@@ -1620,8 +1647,6 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
             File jarFile = new File(getTmpFolder() + File.separatorChar + jar);
 
-            // make a jar file of user routine or bean classes
-            File classRootFileLocation = getClassRootFileLocation();
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }
@@ -1650,7 +1675,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
 
                     File jarFile = new File(getSystemTempFolder().getAbsolutePath() + File.separatorChar + USERPIGUDF_JAR);
 
-                    File classRootFileLocation = getClassRootFileLocation();
+                    File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.PIG_UDF);
                     if (classRootFileLocation == null) {
                         return Collections.emptyList();
                     }
@@ -1674,7 +1699,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
     protected Collection<File> getRoutineDependince(ExportFileResource[] process, boolean system, String type) {
         Collection<File> userRoutines = null;
         try {
-            File classRootFileLocation = getClassRootFileLocation();
+            File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }
@@ -1907,21 +1932,24 @@ public class JobJavaScriptsManager extends JobScriptsManager {
         IFile file;
         Item item = null;
         ProcessItem pi = null;
+        ITalendProcessJavaProject talendJavaProject = null;
         if (PluginChecker.isRulesPluginLoaded()) {
             IProxyRepositoryFactory factory = CorePlugin.getDefault().getProxyRepositoryFactory();
             IRulesProviderService rulesService = (IRulesProviderService) GlobalServiceRegister.getDefault().getService(
                     IRulesProviderService.class);
+            IRunProcessService runService = CorePlugin.getDefault().getRunProcessService();
 
             for (ExportFileResource proces : process) { // loop every exported job
                 if (!urlList.isEmpty()) {
                     urlList = new ArrayList<URL>();
                 }
                 item = (proces).getItem();
-
+                
                 if (item instanceof ProcessItem) {
                     pi = (ProcessItem) item;
                     processLabelAndVersion = JavaResourcesHelper.getJobFolderName(pi.getProperty().getLabel(), pi.getProperty()
                             .getVersion());
+                    talendJavaProject = runService.getTalendJobJavaProject(pi.getProperty());
                 }
                 for (int j = 0; j < pi.getProcess().getNode().size(); j++) { // loop every node in every exported job
                     if (pi.getProcess().getNode().get(j) instanceof NodeType) {
@@ -1936,7 +1964,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                                             if (factory.getLastVersion(id).getProperty().getItem() instanceof RulesItem) {
                                                 RulesItem rulesItem = (RulesItem) factory.getLastVersion(id).getProperty()
                                                         .getItem();
-                                                file = rulesService.getFinalRuleFile(rulesItem, processLabelAndVersion);
+                                                file = rulesService.getFinalRuleFile(rulesItem, processLabelAndVersion, talendJavaProject);
                                                 if (file != null) {
                                                     URL url = file.getLocationURI().toURL();
                                                     urlList.add(url);

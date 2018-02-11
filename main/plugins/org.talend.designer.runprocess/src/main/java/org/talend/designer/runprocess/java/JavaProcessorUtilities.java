@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,11 +27,8 @@ import java.util.TreeSet;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -42,7 +39,9 @@ import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.ILibraryManagerService;
@@ -69,57 +68,29 @@ import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.JavaProcessUtil;
-import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.utils.PomUtil;
-import org.talend.designer.maven.utils.TalendCodeProjectUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
+import org.talend.repository.ProjectManager;
+import org.talend.repository.model.RepositoryConstants;
 
 /**
  * DOC nrousseau class global comment. Detailled comment
  */
 public class JavaProcessorUtilities {
 
-    /** The java project within the project. */
-    private static ITalendProcessJavaProject talendJavaProject;
-
+    
     /**
-     * A java project under folder .Java will be created if there is no existed.
-     * 
-     * DOC ggu Comment method "getTalendJavaProject".
-     * 
-     * @return
-     * @throws CoreException
+     * @deprecated use {@link org.talend.designer.runprocess.java.TalendJavaProjectManager#getTalendJobJavaProject(Property)} instead
      */
     public static ITalendProcessJavaProject getTalendJavaProject() {
-        if (talendJavaProject == null) {
-            synchronized (JavaProcessorUtilities.class) {
-                if (talendJavaProject == null) {
-                    try {
-                        IProject project = TalendCodeProjectUtil.initCodeProject(new NullProgressMonitor());
-                        if (project != null) {
-                            IJavaProject javaProject = JavaCore.create(project);
-                            talendJavaProject = new TalendProcessJavaProject(javaProject);
-
-                            // synchronize templates
-                            if (talendJavaProject != null) {
-                                MavenPomSynchronizer pomSynchronizer = new MavenPomSynchronizer(talendJavaProject);
-                                pomSynchronizer.syncTemplates(false);
-                            }
-                        }
-                    } catch (Exception e) {
-                        // create failure, only log it?
-                        ExceptionHandler.process(e);
-                    }
-                }
-            }
-        }
-        return talendJavaProject;
+        return null;
     }
 
     /**
@@ -330,9 +301,18 @@ public class JavaProcessorUtilities {
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         }
-        if (alreadyRetrievedModules.isEmpty()) {
+        if (/*alreadyRetrievedModules.isEmpty()*/ true) { // FIXME check TDI-35139
             // to update this only one time in one build of full job/subjobs
-            checkAndUpdateLog4jFile();
+            if (process instanceof Process) {
+                IRunProcessService service = null;
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                    service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+                }
+                if (service != null) {
+                    ITalendProcessJavaProject talendProject = service.getTalendJobJavaProject(((Process) process).getProperty());
+                    service.updateLogFiles(talendProject, true);
+                }
+            }
         }
     }
 
@@ -341,10 +321,6 @@ public class JavaProcessorUtilities {
     // // line in run mode
     private static void sortClasspath(Set<ModuleNeeded> jobModuleList, IProcess process, Set<ModuleNeeded> alreadyRetrievedModules)
             throws CoreException, ProcessorException {
-        ITalendProcessJavaProject jProject = getTalendJavaProject();
-        if (jProject == null) {
-            return;
-        }
         Set<ModuleNeeded> listModulesReallyNeeded = new HashSet<ModuleNeeded>();
         listModulesReallyNeeded.addAll(jobModuleList);
 
@@ -544,44 +520,32 @@ public class JavaProcessorUtilities {
         return -1;
     }
 
-    public static void checkAndUpdateLog4jFile() {
-        try {
-            ITalendProcessJavaProject jProject = JavaProcessorUtilities.getTalendJavaProject();
-            if (jProject != null) {
-                IRunProcessService service = null;
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                    service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
-                }
-                if (service != null) {
-                    service.updateLogFiles(jProject.getProject(), true);
-                }
-
-            }
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-    }
-
     /**
      * DOC ycbai Comment method "getJavaProjectLibPath".
      * 
      * @return
      */
     public static File getJavaProjectLibFolder() {
+        IFolder libFolder = getJavaProjectLibFolder2();
+        if (libFolder != null) {
+            return libFolder.getLocation().toFile();
+        }
+        return null;
+    }
+    
+    public static IFolder getJavaProjectLibFolder2() {
         try {
-            ITalendProcessJavaProject jProject = getTalendJavaProject();
-            if (jProject != null) {
-                IFolder libFolder = jProject.getLibFolder();
-                if (libFolder != null) {
-                    File libDir = libFolder.getLocation().toFile();
-                    return libDir;
-                }
+            IProject fsProject = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
+            IFolder libFolder = ResourceUtils.getFolder(fsProject,
+                    RepositoryConstants.TEMP_DIRECTORY + "/" + JavaUtils.JAVA_LIB_DIRECTORY, false); //$NON-NLS-1$
+            if (!libFolder.exists()) {
+                ResourceUtils.createFolder(libFolder);
             }
+            return libFolder;
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
         return null;
-
     }
 
     public static boolean hasBatchOrStreamingSubProcess(Item item) throws PersistenceException {

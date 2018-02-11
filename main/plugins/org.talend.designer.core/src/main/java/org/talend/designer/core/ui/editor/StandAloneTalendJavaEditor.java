@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -29,6 +29,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.emf.common.notify.Notification;
@@ -64,13 +65,14 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
-import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.utils.VersionUtils;
+import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
@@ -395,17 +397,11 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
             bgColorForEditabeItem.dispose();
         }
 
-        ITalendProcessJavaProject talendProcessJavaProject = CorePlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
-        if (talendProcessJavaProject != null) {
-            talendProcessJavaProject.updateRoutinesPom(true, true);
-        }
-
         // only for sql template
         if (item instanceof SQLPatternItem) {
-            IProject jProject = talendProcessJavaProject.getProject();
             ResourceChangeEvent event = new ResourceChangeEvent(item, IResourceChangeEvent.PRE_CLOSE, 1, null);
             try {
+                IProject jProject = ResourceUtils.getProject(ProjectManager.getInstance().getCurrentProject());
                 Field resourceField = event.getClass().getDeclaredField("resource"); //$NON-NLS-1$
                 resourceField.setAccessible(true);
                 resourceField.set(event, jProject);
@@ -482,7 +478,8 @@ public class StandAloneTalendJavaEditor extends CompilationUnitEditor implements
             ByteArray byteArray = item.getContent();
             byteArray.setInnerContentFromFile(((FileEditorInput) getEditorInput()).getFile());
             final IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
-            runProcessService.buildJavaProject();
+            ITalendProcessJavaProject routineProject = runProcessService.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
+            routineProject.buildModules(new NullProgressMonitor(), null, null);
             // check syntax error
             addProblems();
             String name = "Save Routine"; //$NON-NLS-1$

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,6 +42,10 @@ public class MavenJobScriptsProjectSettingInitializer extends AbstractProjectPre
             setDefault(preferenceStore, IProjectSettingPreferenceConstants.TEMPLATE_STANDALONE_JOB_ASSEMBLY,
                     IProjectSettingTemplateConstants.PATH_STANDALONE + '/'
                             + IProjectSettingTemplateConstants.ASSEMBLY_JOB_TEMPLATE_FILE_NAME);
+
+            setDefault(preferenceStore, IProjectSettingPreferenceConstants.TEMPLATE_ROUTE_ASSEMBLY,
+                    IProjectSettingTemplateConstants.PATH_OSGI_BUNDLE + '/'
+                            + IProjectSettingTemplateConstants.ASSEMBLY_ROUTE_TEMPLATE_FILE_NAME);
 
         } catch (Exception e) {
             ExceptionHandler.process(e);

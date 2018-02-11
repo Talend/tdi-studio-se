@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -41,6 +41,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PigudfItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.ITestContainerProviderService;
@@ -123,7 +124,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     private IFile getTestContainerFile(ProcessItem item, String projectFolderName, String folderName, String jobName) {
         IRunProcessService service = CodeGeneratorActivator.getDefault().getRunProcessService();
-        ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+        ITalendProcessJavaProject talendProcessJavaProject = service.getTalendJobJavaProject(item.getProperty());
         if (talendProcessJavaProject == null) {
             return null;
         }
@@ -140,12 +141,12 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
      */
     private static void syncModule(File[] modules) throws SystemException {
         IRunProcessService service = CodeGeneratorActivator.getDefault().getRunProcessService();
-        ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
-        if (talendProcessJavaProject == null) {
+        ITalendProcessJavaProject talenCodeJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
+        if (talenCodeJavaProject == null) {
             return;
         }
-        final IFolder systemFolder = talendProcessJavaProject.getSrcSubFolder(null, JavaUtils.JAVA_ROUTINES_DIRECTORY + '/'
-                + JavaUtils.JAVA_SYSTEM_DIRECTORY);
+        final IFolder systemFolder = talenCodeJavaProject.getSrcSubFolder(null,
+                JavaUtils.JAVA_ROUTINES_DIRECTORY + '/' + JavaUtils.JAVA_SYSTEM_DIRECTORY);
         syncModules(modules, systemFolder);
     }
 

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -103,10 +103,7 @@ public class JavaCommandController extends AbstractElementPropertySectionControl
                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
                         IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                                 IRunProcessService.class);
-                        ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
-                        if (talendProcessJavaProject != null) {
-                            javaLibFolder = talendProcessJavaProject.getLibFolder();
-                        }
+                        javaLibFolder = processService.getJavaProjectLibFolder();
                     }
                     if (javaLibFolder == null) {
                         return;

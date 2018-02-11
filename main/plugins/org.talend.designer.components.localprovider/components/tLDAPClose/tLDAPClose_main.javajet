@@ -3,6 +3,7 @@ imports="
     org.talend.core.model.process.INode 
     org.talend.core.model.process.ElementParameterParser 
     org.talend.designer.codegen.config.CodeGeneratorArgument
+    org.talend.core.model.utils.NodeUtil
 " 
 %>
 	<%@ include file="../templates/Log4j/Log4jFileUtil.javajet"%> 
@@ -12,8 +13,31 @@ imports="
     String cid = node.getUniqueName();
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     String conn = "conn_" + connection;
-	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	 INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(),connection);
+    String protocol=ElementParameterParser.getValue(connectionNode, "__PROTOCOL__");
+    
+    if("TLS".equals(protocol)){
+        if(isLog4jEnabled){
 %>
+	         log.info("<%=cid%> - Closing the TLS connection.");
+<%
+        }
+%>
+        javax.naming.ldap.StartTlsResponse tls_<%=cid%> =(javax.naming.ldap.StartTlsResponse)globalMap.get("tls_<%=connection%>");
+        if(tls_<%=cid%>!=null){
+            tls_<%=cid%>.close();
+        }
+
+<%
+        if(isLog4jEnabled){
+%>
+	         log.info("<%=cid%> - TLS connection closed.");
+<%
+        }
+    }
+%>
+
 	javax.naming.ldap.InitialLdapContext ctx_<%=cid%> = (javax.naming.ldap.InitialLdapContext)globalMap.get("<%=conn%>");
 	if(ctx_<%=cid%> != null)
 	{

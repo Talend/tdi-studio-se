@@ -170,8 +170,7 @@ imports="
 			beforeComponentProcess(node);
 			//for input
 	 		String dbquery= ElementParameterParser.getValue(node, "__QUERY__");
-			dbquery = dbquery.replaceAll("\n"," ");
-			dbquery = dbquery.replaceAll("\r"," ");
+			dbquery = org.talend.core.model.utils.NodeUtil.replaceCRLFInMEMO_SQL(dbquery);
 			logInfo(node,"debug",cid+" - Executing the query: '\" + "+dbquery +" + \"'.");
 		}
 

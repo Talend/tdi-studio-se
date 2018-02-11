@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,6 +35,7 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
@@ -160,7 +161,12 @@ public class ExportProcessorHelper {
     public void exportPigudf(IProcessor processor, Property property, int statisticsPort, int tracePort)
             throws ProcessorException {
         // build java project
-        CorePlugin.getDefault().getRunProcessService().buildJavaProject();
+        ITalendProcessJavaProject pigudfProject = CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
+        try {
+            pigudfProject.buildModules(new NullProgressMonitor(), null, null);
+        } catch (Exception e) {
+            throw new ProcessorException(e.getMessage());
+        }
 
         Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.needPigudf, true);

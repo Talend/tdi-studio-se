@@ -140,7 +140,7 @@ String inputConnName = null;
 	}else{
 		try {
 			if(useIndependentProcess){
-		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32",true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineWindows = ProcessorUtilities.getCommandLine("win32", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
 		    	// remove the 2 fist lines
 		    	if (commandLineWindows.length > 0 && ProcessorUtilities.isExportConfig()){
 		    		int tmpSize = commandLineWindows.length - 2;
@@ -148,7 +148,7 @@ String inputConnName = null;
 		    		System.arraycopy(commandLineWindows, 2, tmp, 0, tmpSize);
 		    		commandLineWindows = tmp;
 	    		}
-		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux",true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
+		    	commandLineUnix = ProcessorUtilities.getCommandLine("linux", false, true, process, context,org.talend.designer.runprocess.IProcessor.NO_STATISTICS,org.talend.designer.runprocess.IProcessor.NO_TRACES, codeOptions);
 	    		// remove the 2 first lines
 				if (commandLineUnix.length > 0 && ProcessorUtilities.isExportConfig()){
 					int tmpSize = commandLineUnix.length - 2;

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -109,6 +109,7 @@ import org.talend.core.repository.model.RepositoryFactoryProvider;
 import org.talend.core.repository.model.repositoryObject.SalesforceModuleRepositoryObject;
 import org.talend.core.repository.utils.ProjectHelper;
 import org.talend.core.repository.utils.RepositoryPathProvider;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -827,7 +828,12 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
     @Override
     public String exportPigudf(IProcessor processor, Property property, boolean isExport) throws ProcessorException {
         // build java project
-        CorePlugin.getDefault().getRunProcessService().buildJavaProject();
+        ITalendProcessJavaProject pigudfProject = CorePlugin.getDefault().getRunProcessService().getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
+        try {
+            pigudfProject.buildModules(new NullProgressMonitor(), null, null);
+        } catch (Exception e) {
+            throw new ProcessorException(e.getMessage());
+        }
 
         Map<ExportChoice, Object> exportChoiceMap = new EnumMap<ExportChoice, Object>(ExportChoice.class);
         exportChoiceMap.put(ExportChoice.needPigudf, true);
@@ -988,5 +994,27 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         int result = dialog.open();
         donnotRetryAgainBeforeRestart = dialog.donnotRetryAgainBeforeRestart();
         return NetworkErrorRetryDialog.BUTTON_RETRY_INDEX == result;
+    }
+
+    @Override
+    public boolean isSVN() {
+        if (svnProviderService == null && PluginChecker.isSVNProviderPluginLoaded()) {
+            svnProviderService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
+        }
+        if (svnProviderService != null) {
+            return svnProviderService.isProjectInSvnMode();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isGIT() {
+        if (gitProviderService == null && PluginChecker.isGITProviderPluginLoaded()) {
+            gitProviderService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
+        }
+        if (gitProviderService != null) {
+            return gitProviderService.isProjectInGitMode();
+        }
+        return false;
     }
 }

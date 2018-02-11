@@ -140,6 +140,10 @@
     <loginTask
           class="org.talend.designer.runprocess.maven.CleanMavenFilesLoginTask">
     </loginTask>
+    <loginTask
+          class="org.talend.designer.runprocess.maven.MavenPomInstallLoginTask"
+          priority="lowest">
+    </loginTask>
  </extension>
  <extension
        point="org.talend.repository.projectsetting_page">

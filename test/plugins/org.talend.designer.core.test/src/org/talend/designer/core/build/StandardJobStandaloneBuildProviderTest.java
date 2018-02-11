@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -25,7 +25,10 @@ import org.junit.Test;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.PropertiesFactory;
+import org.talend.core.model.properties.Property;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
@@ -56,7 +59,7 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
         // parameters.put(IBuildPomCreatorParameters.FILE_ASSEMBLY, null);
@@ -70,7 +73,7 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
         parameters.put(IBuildPomCreatorParameters.FILE_ASSEMBLY, new Object());
@@ -84,7 +87,7 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
         parameters.put(IBuildPomCreatorParameters.FILE_ASSEMBLY, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
@@ -98,7 +101,7 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
         parameters.put(IBuildPomCreatorParameters.FILE_ASSEMBLY, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
@@ -236,7 +239,13 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
     @Test
     public void test_createBuildExportHandler_nullChoiceMap() {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setLabel("testBuildExport_NullMap");
+        property.setVersion("1.0");
+        property.setId(ProxyRepositoryFactory.getInstance().getNextId());
+        ProcessItem item = PropertiesFactory.eINSTANCE.createProcessItem();
+        item.setProperty(property);
+        parameters.put(IBuildParametes.ITEM, item);
         parameters.put(IBuildParametes.VERSION, "0.1");
         parameters.put(IBuildJobParameters.CONTEXT_GROUP, "Dev");
         // parameters.put(IBuildJobParameters.CHOICE_OPTION, null);
@@ -250,7 +259,13 @@ public class StandardJobStandaloneBuildProviderTest extends AbstractStandardJobB
     @Test
     public void test_createBuildExportHandler() {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
+        Property property = PropertiesFactory.eINSTANCE.createProperty();
+        property.setLabel("testBuildExport");
+        property.setVersion("1.0");
+        property.setId(ProxyRepositoryFactory.getInstance().getNextId());
+        ProcessItem item = PropertiesFactory.eINSTANCE.createProcessItem();
+        item.setProperty(property);
+        parameters.put(IBuildParametes.ITEM, item);
         parameters.put(IBuildParametes.VERSION, "0.1");
         parameters.put(IBuildJobParameters.CONTEXT_GROUP, "Dev");
         parameters.put(IBuildJobParameters.CHOICE_OPTION, JobScriptsManagerFactory.getDefaultExportChoiceMap());

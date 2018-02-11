@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -36,6 +36,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -249,10 +250,11 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         File jarFile = new File(getTmpFolder() + File.separatorChar + JavaUtils.ROUTINES_JAR);
 
         // make a jar file of system routine classes
-        File classRootFileLocation = getClassRootFileLocation();
+        File classRootFileLocation = getCodeClassRootFileLocation(ERepositoryObjectType.ROUTINES);
         if (classRootFileLocation == null) {
             return;
         }
+        FileCopyUtils.copyFolder(getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")), classRootFileLocation);
         try {
             JarBuilder jarbuilder = new JarBuilder(classRootFileLocation, jarFile);
             jarbuilder.setIncludeDir(getRoutinesPaths());
@@ -357,7 +359,7 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
                 String[] jf = jobFolderName.split(":"); //$NON-NLS-1$
                 String projectName = jf[0];
                 String folderName = jf[1];
-                String classRootLocation = getClassRootLocation() + projectName + File.separator;
+                String classRootLocation = getJobClassRootLocation(process.getProperty()) + projectName + File.separator;
                 String classRoot = FilesUtils.getFileRealPath(classRootLocation + folderName);
                 String targetPath = FilesUtils.getFileRealPath(classesLocation + File.separator + projectName + File.separator
                         + folderName);
@@ -824,19 +826,16 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                     IRunProcessService.class);
-            ITalendProcessJavaProject talendProcessJavaProject = processService.getTalendProcessJavaProject();
-            if (talendProcessJavaProject != null) {
-                IFolder libFolder = talendProcessJavaProject.getLibFolder();
-                File file = libFolder.getLocation().toFile();
-                File[] files = file.listFiles(FilesUtils.getAcceptModuleFilesFilter());
-                for (File tempFile : files) {
-                    try {
-                        if (neededModules.contains(tempFile.getName())) {
-                            list.add(tempFile.toURI().toURL());
-                        }
-                    } catch (MalformedURLException e) {
-                        ExceptionHandler.process(e);
+            IFolder libFolder = processService.getJavaProjectLibFolder();
+            File file = libFolder.getLocation().toFile();
+            File[] files = file.listFiles(FilesUtils.getAcceptModuleFilesFilter());
+            for (File tempFile : files) {
+                try {
+                    if (neededModules.contains(tempFile.getName())) {
+                        list.add(tempFile.toURI().toURL());
                     }
+                } catch (MalformedURLException e) {
+                    ExceptionHandler.process(e);
                 }
             }
         }

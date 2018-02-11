@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -157,27 +157,7 @@ public class JobLaunchShortcut implements ILaunchShortcut {
         if (item instanceof ProcessItem) {
             ILaunchConfiguration config = findLaunchConfiguration((ProcessItem) item, mode);
             if (config != null) {
-                IPreferenceStore debugUiStore = DebugUITools.getPreferenceStore();
-                // boolean oldBuildBeforeLaunch = debugUiStore.getBoolean(IDebugUIConstants.PREF_BUILD_BEFORE_LAUNCH);
-                try {
-                    if (!Problems.buildWholeProject) {
-                        // don't build auto, because will be in one Job, so can't set back the old value
-                        debugUiStore.setValue(IDebugUIConstants.PREF_BUILD_BEFORE_LAUNCH, false);
-
-                        // FIXME, only for standard job, same as Problems.computeCompilationUnit
-                        ERepositoryObjectType itemType = ERepositoryObjectType.getItemType(item);
-                        if (itemType == null || !ERepositoryObjectType.PROCESS.equals(itemType)) {
-                            try {
-                                config.getFile().getProject().build(IncrementalProjectBuilder.INCREMENTAL_BUILD, null);
-                            } catch (CoreException e) {
-                                ExceptionHandler.process(e);
-                            }
-                        }
-                    }
-                    DebugUITools.launch(config, mode);
-                } finally {
-                    // debugUiStore.setValue(IDebugUIConstants.PREF_BUILD_BEFORE_LAUNCH, oldBuildBeforeLaunch);
-                }
+                DebugUITools.launch(config, mode);
             }
         }
     }
@@ -238,14 +218,14 @@ public class JobLaunchShortcut implements ILaunchShortcut {
         String jobId = file.getProperty().getId();
         String jobName = file.getProperty().getLabel();
         String jobVersion = file.getProperty().getVersion();
-        ILaunchConfigurationType type = getLaunchManager().getLaunchConfigurationType(
-                TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE);
+        ILaunchConfigurationType type = getLaunchManager()
+                .getLaunchConfigurationType(TalendDebugUIConstants.JOB_DEBUG_LAUNCH_CONFIGURATION_TYPE);
         String displayName = jobName + " " + jobVersion; //$NON-NLS-1$
 
         try {
             if (type != null) {
-                ILaunchConfigurationWorkingCopy wc = type.newInstance(null, getLaunchManager()
-                        .generateUniqueLaunchConfigurationNameFrom(displayName));
+                ILaunchConfigurationWorkingCopy wc = type.newInstance(null,
+                        getLaunchManager().generateUniqueLaunchConfigurationNameFrom(displayName));
                 wc.setAttribute(TalendDebugUIConstants.JOB_NAME, jobName);
                 wc.setAttribute(TalendDebugUIConstants.JOB_ID, jobId);
                 wc.setAttribute(TalendDebugUIConstants.JOB_VERSION, jobVersion);

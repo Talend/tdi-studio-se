@@ -42,6 +42,24 @@ if ((metadatas!=null)&&(metadatas.size()>0)&&(metadatas.get(0) != null)) {
 rootSchema_<%=cid%>.close();
 <%
 if(("false").equals(useExistingConn)){
+    String protocol=ElementParameterParser.getValue(node, "__PROTOCOL__");
+    
+    if("TLS".equals(protocol)){
+        if(isLog4jEnabled){
+%>
+	         log.info("<%=cid%> - Closing the TLS connection.");
+<%
+        }
+%>
+        tls_<%=cid%>.close();
+
+<%
+        if(isLog4jEnabled){
+%>
+	         log.info("<%=cid%> - TLS connection closed.");
+<%
+        }
+    }
 %>
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Closing the connection to the server.");

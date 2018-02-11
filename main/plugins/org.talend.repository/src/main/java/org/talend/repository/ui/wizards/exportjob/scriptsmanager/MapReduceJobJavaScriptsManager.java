@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,7 +63,7 @@ public class MapReduceJobJavaScriptsManager extends JobJavaScriptsManager {
      * @return
      */
     @Override
-    protected List<URL> getJobScripts(String projectName, String jobName, String jobVersion, boolean needJob) {
+    protected List<URL> getJobScripts(ProcessItem process, String projectName, String jobName, String jobVersion, boolean needJob) {
         List<URL> list = new ArrayList<URL>(1);
         if (!needJob) {
             return list;
@@ -74,7 +74,7 @@ public class MapReduceJobJavaScriptsManager extends JobJavaScriptsManager {
 
             File jarFile = new File(getTmpFolder() + File.separatorChar + jobFolderName + FileConstants.JAR_FILE_SUFFIX);
             // Exports the jar file
-            File classRootFileLocation = getClassRootFileLocation();
+            File classRootFileLocation = getJobClassRootFileLocation(process.getProperty());
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }

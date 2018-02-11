@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -46,7 +46,7 @@ public class JavaSQLPatternSynchronizer extends AbstractSQLPatternSynchronizer {
     @Override
     public IFile getSQLPatternFile(SQLPatternItem item) throws SystemException {
         IRunProcessService service = CodeGeneratorActivator.getDefault().getRunProcessService();
-        ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+        ITalendProcessJavaProject talendProcessJavaProject = service.getTempJavaProject();
         if (talendProcessJavaProject == null) {
             return null;
         }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.core.model.general.Project;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ResourceModelUtils;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
@@ -56,7 +57,7 @@ public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
      * @return
      */
     @Override
-    protected List<URL> getJobScripts(String projectName, String jobName, String jobVersion, boolean needJob) {
+    protected List<URL> getJobScripts(ProcessItem process, String projectName, String jobName, String jobVersion, boolean needJob) {
         List<URL> list = new ArrayList<URL>(1);
         if (!needJob) {
             return list;
@@ -67,7 +68,7 @@ public class StormJobJavaScriptsManager extends JobJavaScriptsManager {
 
             File jarFile = new File(getTmpFolder() + File.separatorChar + jobFolderName + FileConstants.JAR_FILE_SUFFIX);
             // Exports the jar file
-            File classRootFileLocation = getClassRootFileLocation();
+            File classRootFileLocation = getJobClassRootFileLocation(process.getProperty());
             if (classRootFileLocation == null) {
                 return Collections.emptyList();
             }

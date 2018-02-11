@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -31,6 +31,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -387,7 +388,12 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                     IRunProcessService.class);
-            processService.buildJavaProject();
+            ITalendProcessJavaProject routineProject = processService.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
+            try {
+                routineProject.buildModules(new NullProgressMonitor(), null, null);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
         }
     }
 
@@ -502,7 +508,7 @@ public class WSDL2JAVAController extends AbstractElementPropertySectionControlle
         FileOutputStream fos = null;
         try {
             IRunProcessService service = DesignerPlugin.getDefault().getRunProcessService();
-            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+            ITalendProcessJavaProject talendProcessJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
             if (talendProcessJavaProject == null) {
                 return null;
             }

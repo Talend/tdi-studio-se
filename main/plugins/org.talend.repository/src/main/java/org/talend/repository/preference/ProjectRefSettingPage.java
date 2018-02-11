@@ -2,7 +2,7 @@ package org.talend.repository.preference;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -77,6 +77,7 @@ import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.services.IGITProviderService;
 import org.talend.core.services.ISVNProviderService;
+import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ReferenceProjectProblemManager;
 import org.talend.repository.ReferenceProjectProvider;
@@ -702,7 +703,9 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
 
             public void run() throws PersistenceException {
                 try {
-                    ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(convertToProjectReference(viewerInput));           
+                    List<ProjectReference> refrences = convertToProjectReference(viewerInput);
+                    ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(refrences);
+                    AggregatorPomsHelper.updateRefProjectModules(refrences);
                     getRepositoryContext().getProject().setReferenceProjectProvider(null);
                     ReferenceProjectProvider.removeAllTempReferenceList();
                 } catch (Exception e) {

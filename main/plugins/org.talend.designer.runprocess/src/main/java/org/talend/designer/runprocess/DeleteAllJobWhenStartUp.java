@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -48,7 +48,9 @@ public class DeleteAllJobWhenStartUp implements IStartup {
     public static boolean executed;
 
     public void startup() {
-        earlyStartup();
+        // won't do clean projects when startup
+        // will do when every individual project created.
+        // earlyStartup();
     }
     
     @Deprecated
@@ -78,7 +80,7 @@ public class DeleteAllJobWhenStartUp implements IStartup {
             public void run(IProgressMonitor monitor) throws CoreException {
                 IRunProcessService processService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
                         IRunProcessService.class);
-                ITalendProcessJavaProject talendJavaProject = processService.getTalendProcessJavaProject();
+                ITalendProcessJavaProject talendJavaProject = processService.getTempJavaProject();
                 if (talendJavaProject != null) {
                     IJavaProject jProject = talendJavaProject.getJavaProject();
                     if (!jProject.isOpen()) {
@@ -88,7 +90,7 @@ public class DeleteAllJobWhenStartUp implements IStartup {
                     IFolder srcFolder = talendJavaProject.getSrcFolder();
                     talendJavaProject.cleanFolder(monitor, srcFolder);
                     // contexts
-                    IFolder resourcesFolder = talendJavaProject.getResourcesFolder();
+                    IFolder resourcesFolder = talendJavaProject.getExternalResourcesFolder();
                     emptyContexts(monitor, resourcesFolder, talendJavaProject);
 
                     // empty the outputs, target

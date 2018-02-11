@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.runprocess.prefs;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -22,12 +21,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
-import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.RunProcessPlugin;
 import org.talend.designer.runprocess.i18n.Messages;
-import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -110,21 +105,8 @@ public class Log4jPreferencePage extends FieldEditorPreferencePage implements IW
                 getPreferenceStore().setValue(RunProcessPrefsConstants.LOG4J_PROPERTIES_TEMPLATE, templateTxt.getText());
             }
             reset = false;
-            updateLogFiles();
         }
         return ok;
-    }
-
-    private void updateLogFiles() {
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
-                    IRunProcessService.class);
-            ITalendProcessJavaProject talendJavaProject = JavaProcessorUtilities.getTalendJavaProject();
-            if (service != null && talendJavaProject != null) {
-                IProject project = talendJavaProject.getProject();
-                service.updateLogFiles(project, false);
-            }
-        }
     }
 
 }

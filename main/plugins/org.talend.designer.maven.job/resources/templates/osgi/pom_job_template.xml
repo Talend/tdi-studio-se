@@ -3,10 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>@ItemGroupName@</groupId>
-	<artifactId>@ItemName@-bundle</artifactId>
-	<version>@ItemVersion@</version>
+    <parent>
+        <groupId>@ProjectGroupId@</groupId>
+        <artifactId>@ProjectArtifactId@</artifactId>
+        <version>@ProjectVersion@</version>
+        <relativePath>@ProjectRelativePath@</relativePath>
+    </parent>
+	<groupId>@JobGroupId@</groupId>
+	<artifactId>@JobArtifactId@-bundle</artifactId>
+	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
 
 	<properties>
@@ -21,6 +26,13 @@
 		<resources.path>${basedir}/src/main/resources</resources.path>
 		<lib.path>${resources.path}/lib</lib.path>
 		<provided.lib.path>${resources.path}/provided-lib</provided.lib.path>
+        
+        <!-- for global properties -->
+        <current.int-resources.dir>${basedir}/src/main/resources</current.int-resources.dir>
+        <output.resources.dir>${talend.job.name}/src/main/resources</output.resources.dir>
+        <current.resources.dir>${basedir}/src/main/ext-resources</current.resources.dir>
+        <current.bundle.resources.dir>${basedir}/src/main/bundle-resources</current.bundle.resources.dir>
+        <current.test.resources.dir>${basedir}/src/test/resources</current.test.resources.dir>
 	</properties>
 
 	<dependencies>
@@ -37,7 +49,7 @@
 				</excludes>
 			</resource>
 		</resources>
-		<pluginManagement>
+		<!-- pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -56,13 +68,13 @@
 					</configuration>
 				</plugin>
 			</plugins>
-		</pluginManagement>
+		</pluginManagement -->
 
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.3.7</version>
+				<version>2.5.3</version>
 				<extensions>true</extensions>
 				<configuration>
 					<archive>
@@ -89,4 +101,195 @@
 			</plugin>
 		</plugins>
 	</build>
+    <profiles>
+        <profile>
+            <id>packaging-and-assembly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
+                                    </descriptors>
+                                    <tarLongFileMode>gnu</tarLongFileMode>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <finalName>${talend.job.finalName}</finalName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>default-settings</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- by default, all excluded, fixing that when "include-libs" profile 
+                    is not active, export the libraries always. -->
+                <talend.libraries.excludes.set>*:*</talend.libraries.excludes.set>
+                <talend.jobs.excludes.set>*:*</talend.jobs.excludes.set>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-java-sources</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <sourcecodes.dir>${project.build.sourceDirectory}</sourcecodes.dir>
+                <resources.dir>${current.resources.dir}/</resources.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-maven-resources</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <templates.dir>${basedir}/src/main/templates/</templates.dir>
+                <assemblies.dir>${basedir}/src/main/assemblies/</assemblies.dir>
+                <poms.dir>${basedir}</poms.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-items</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <items.dir>${basedir}/src/main/items/${project.build.finalName}</items.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-libs</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <talend.libraries.excludes.set>${talend.libraries.includes.set}</talend.libraries.excludes.set>
+                <talend.jobs.excludes.set>${project.groupId}:*</talend.jobs.excludes.set>
+                <talend.code.excludes.set>org.talend.code.${talend.project.name.lowercase}:*</talend.code.excludes.set>
+                <talend.pigudf.excludes.set>org.talend.pigudf.${talend.project.name.lowercase}:*</talend.pigudf.excludes.set>
+                <talend.libraries.includes.set>org.talend.libraries:*</talend.libraries.includes.set>
+                <current.job.binaries.include>${project.groupId}:${project.artifactId}:${project.version}</current.job.binaries.include>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-binaries</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <jobs.binaries.includes.set>${project.groupId}:*</jobs.binaries.includes.set>
+                <routines.binaries.includes.set>${talend.routine.groupid}:*</routines.binaries.includes.set>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-xmlMappings</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <xmlMappings.resources.dir>${current.resources.dir}/xmlMappings/</xmlMappings.resources.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-running-xmlMappings</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <xmlMappings.running.dir>
+                    ${current.resources.dir}/xmlMappings/
+                </xmlMappings.running.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-rules</id>
+            <properties>
+                <rules.resources.dir>${current.resources.dir}/rules/</rules.resources.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-log4j</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <log4j.resources.dir>${current.resources.dir}/</log4j.resources.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-running-log4j</id>
+            <properties>
+                <log4j.running.dir>${current.resources.dir}/</log4j.running.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-contexts</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <contexts.running.dir>${current.resources.dir}/</contexts.running.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-test-sources</id>
+            <properties>
+                <test.sourcecodes.dir>${project.build.testSourceDirectory}</test.sourcecodes.dir>
+                <test.resources.dir>${basedir}/src/test/resources/</test.resources.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-test-reports</id>
+            <properties>
+                <test.reports.dir>${project.build.directory}/surefire-reports</test.reports.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-pigudfs-binaries</id>
+            <properties>
+                <pigudfs.binaries.includes.set>${talend.pigudf.groupid}:*</pigudfs.binaries.includes.set>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>include-microservice-configs</id>
+            <properties>
+                <microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>include-microservice-running-configs</id>
+            <properties>
+                <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
+            </properties>
+        </profile>
+        <profile>
+            <id>include-survivorship-rules</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <survivorship.rules.dir>${current.resources.dir}/metadata/survivorship/</survivorship.rules.dir>
+            </properties>
+        </profile>
+
+    </profiles>
 </project>

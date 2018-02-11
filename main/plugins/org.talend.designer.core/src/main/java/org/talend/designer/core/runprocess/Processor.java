@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -34,7 +34,6 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
-import org.talend.core.CorePlugin;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.ITargetExecutionConfig;
@@ -44,6 +43,7 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
@@ -105,6 +105,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     private boolean oldBuildJob = false;
 
     private Map<String, Object> argumentsMap;
+
+    private boolean skipClasspathJar;
 
     // least once
 
@@ -183,7 +185,11 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
             // this will be used for example for the shadow process.
             if (!codeGenerated) {
                 generateCode(statisticsPort != NO_STATISTICS, tracePort != NO_TRACES, true);
-                CorePlugin.getDefault().getRunProcessService().buildJavaProject();
+                try {
+                    getTalendJavaProject().buildModules(new NullProgressMonitor(), null, null);
+                } catch (Exception e) {
+                    throw new ProcessorException(e.getMessage());
+                }
             }
         }
         if (optionsParam == null) {
@@ -340,7 +346,8 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
      * @throws ProcessorException
      */
     protected Process exec(Level level, int statOption, int traceOption, String... codeOptions) throws ProcessorException {
-        return execFrom(null, level, statOption, traceOption, codeOptions);
+        String execPath = getTalendJavaProject().getTargetFolder().getLocation().toPortableString();
+        return execFrom(execPath, level, statOption, traceOption, codeOptions);
     }
 
     protected Process execFrom(String path, Level level, int statOption, int traceOption, String... codeOptions)
@@ -773,4 +780,15 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
     public boolean shouldRunAsExport() {
         return false; // by default, for standard job, run in .Java project
     }
+
+    @Override
+    public void setSkipClasspathJar(boolean skipClasspathJar) {
+        this.skipClasspathJar = skipClasspathJar;
+    }
+
+    @Override
+    public boolean isSkipClasspathJar() {
+        return skipClasspathJar;
+    }
+
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -68,7 +68,9 @@ public class JobErrorsChecker {
             ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
 
             Set<String> jobIds = new HashSet<String>();
-            for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
+            HashSet<JobInfo> jobInfos = new HashSet<>();
+            jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            for (JobInfo jobInfo : jobInfos) {
                 // TDI-28198:get right process item no matter the job open or close
                 List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
                 for (IRepositoryViewObject repositoryObject2 : allVersions) {
@@ -264,7 +266,9 @@ public class JobErrorsChecker {
         Integer line = null;
         String errorMessage = null;
         try {
-            for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
+            HashSet<JobInfo> jobInfos = new HashSet<>();
+            jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            for (JobInfo jobInfo : jobInfos) {
                 if (jobInfo.isTestContainer()) {
                     continue;
                 }

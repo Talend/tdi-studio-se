@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -99,7 +99,7 @@ public abstract class AbstractStandardJobBuildProviderTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
 
         RepositoryObjectTypeBuildProvider provider = createTestBuildProvider();
@@ -111,7 +111,7 @@ public abstract class AbstractStandardJobBuildProviderTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, new Object());
 
@@ -124,7 +124,7 @@ public abstract class AbstractStandardJobBuildProviderTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(IBuildPomCreatorParameters.PROCESSOR, new TestProcessor());
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTalendProcessJavaProject();
+                .getTempJavaProject();
         parameters.put(IBuildPomCreatorParameters.FILE_POM, talendProcessJavaProject.getProject().getFile("pom_abc.xml"));
         parameters.put(IBuildParametes.ITEM, PropertiesFactory.eINSTANCE.createProcessItem());
         parameters.put(IBuildPomCreatorParameters.ARGUMENTS_MAP, new Object());

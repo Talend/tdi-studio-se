@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -476,7 +476,17 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     @Override
     public void refreshComponentView() {
-        IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        if (!PlatformUI.isWorkbenchRunning()) {
+            return;
+        }
+        final IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (activeWorkbenchWindow == null) {
+            return;
+        }
+        IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
+        if (page == null) {
+            return;
+        }
         IViewPart view = page.findView(ComponentSettingsView.ID);
         if (view == null) {
             return; // don't do anything. before it made the view appear for nothing even in other product like DQ.

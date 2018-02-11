@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -63,6 +63,7 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.migration.ChangeProjectTechinicalNameMigrationTask;
 import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
+import org.talend.repository.ui.exception.ImportInvalidObjectException;
 import org.talend.repository.ui.utils.AfterImportProjectUtil;
 
 /**
@@ -532,8 +533,16 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                     }
                     importHelper.checkProjectItems(new org.talend.core.model.general.Project(loadProject));
 
-                    AfterImportProjectUtil.runAfterImportProjectActions(new ImportProjectBean(
-                            new org.talend.core.model.general.Project(loadProject), null));
+                    try {
+                        AfterImportProjectUtil.runAfterImportProjectActions(
+                                new ImportProjectBean(new org.talend.core.model.general.Project(loadProject), null));
+                    } catch (Exception ex) {
+                        if (ex instanceof ImportInvalidObjectException) {
+                            // Ignore here
+                        } else {
+                            ExceptionHandler.process(ex);
+                        }
+                    }
                 } catch (PersistenceException e) {
                     ExceptionHandler.process(e);
                 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,13 +12,14 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
-import java.io.File;
 import java.util.Set;
 
 import org.apache.log4j.Level;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -26,11 +27,14 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.designer.core.ui.action.SaveJobBeforeRunAction;
@@ -335,8 +339,8 @@ public class RunProcessService implements IRunProcessService {
      * @see org.talend.designer.runprocess.IRunProcessService#updateLogFiles(org.eclipse.core.resources.IProject)
      */
     @Override
-    public void updateLogFiles(IProject project, boolean isLogForJob) {
-        delegateService.updateLogFiles(project, isLogForJob);
+    public void updateLogFiles(ITalendProcessJavaProject talendJavaProject, boolean isLogForJob) {
+        delegateService.updateLogFiles(talendJavaProject, isLogForJob);
     }
 
     @Override
@@ -386,7 +390,7 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public File getJavaProjectLibFolder() {
+    public IFolder getJavaProjectLibFolder() {
         return delegateService.getJavaProjectLibFolder();
     }
 
@@ -398,6 +402,46 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public void storeProjectPreferences(IPreferenceStore preferenceStore) {
         delegateService.storeProjectPreferences(preferenceStore);
+    }
+
+    @Override
+    public void initMavenJavaProject(IProgressMonitor monitor, Project project) {
+        delegateService.initMavenJavaProject(monitor, project);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type) {
+        return delegateService.getTalendCodeJavaProject(type);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
+        return delegateService.getTalendJobJavaProject(property);
+    }
+
+    @Override
+    public ITalendProcessJavaProject getTempJavaProject() {
+        return delegateService.getTempJavaProject();
+    }
+
+    @Override
+    public void deleteEclipseProjects() {
+        delegateService.deleteEclipseProjects();
+    }
+
+    @Override
+    public boolean isExportConfig() {
+        return delegateService.isExportConfig();
+    }
+
+    @Override
+    public void buildCodesJavaProject(IProgressMonitor monitor) {
+        delegateService.buildCodesJavaProject(monitor);
+    }
+
+    @Override
+    public void generateJobPom(ProcessItem processItem) {
+        delegateService.generateJobPom(processItem);
     }
 
 }

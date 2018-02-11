@@ -7,18 +7,19 @@
 		<groupId>@ProjectGroupId@</groupId>
 		<artifactId>@ProjectArtifactId@</artifactId>
 		<version>@ProjectVersion@</version>
-		<relativePath>./pom.xml</relativePath>
+		<relativePath>@ProjectRelativePath@</relativePath>
 	</parent>
 	<groupId>@JobGroupId@</groupId>
 	<artifactId>@JobArtifactId@</artifactId>
 	<version>@JobVersion@</version>
-	<name>@ProjectName@ @JobName@ (@JobType@)</name>
+	<name>@ProjectName@ @JobName@-@JobVersion@ (@TalendJobVersion@,@JobType@)</name>
 
 	<properties>
 		<talend.job.path>@JobPath@</talend.job.path>
 		<talend.job.package>@JobPackage@</talend.job.package>
 
 		<!-- for jobInfo.properties -->
+		<maven.build.timestamp.format>@JobDateFormat@</maven.build.timestamp.format>
 		<talend.project.name>@ProjectName@</talend.project.name>
 		<talend.project.name.lowercase>@ProjectName@</talend.project.name.lowercase>
 		<talend.routine.groupid>@RoutineGroupId@</talend.routine.groupid>
@@ -27,7 +28,7 @@
 		<talend.project.branch>@ProjectBranch@</talend.project.branch>
 		<talend.job.name>@JobName@</talend.job.name>
 		<talend.job.version>@TalendJobVersion@</talend.job.version>
-		<talend.job.date>@JobDate@</talend.job.date>
+		<talend.job.date>${maven.build.timestamp}</talend.job.date>
 		<talend.job.context>@JobContext@</talend.job.context>
 		<talend.job.id>@JobId@</talend.job.id>
 		<talend.job.type>@JobType@</talend.job.type>
@@ -47,8 +48,11 @@
 		<talend.job.finalName>@JobFinalName@</talend.job.finalName>
 
 		<!-- for global properties -->
-		<current.resources.dir>${basedir}/src/main/resources</current.resources.dir>
+		<current.int-resources.dir>${basedir}/src/main/resources</current.int-resources.dir>
 		<output.resources.dir>${talend.job.name}/src/main/resources</output.resources.dir>
+		<current.resources.dir>${basedir}/src/main/ext-resources</current.resources.dir>
+		<current.bundle.resources.dir>${basedir}/src/main/bundle-resources</current.bundle.resources.dir>
+		<current.test.resources.dir>${basedir}/src/test/resources</current.test.resources.dir>
 	</properties>
 
 	<dependencies>
@@ -57,127 +61,38 @@
 
 	<build>
 		<finalName>${talend.job.finalName}</finalName>
-		<resources>
-            <resource>
-                <directory>${project.build.sourceDirectory}</directory>
-                <includes>                      
-                    <include>**/*.wsdl</include>
-                </includes>
-            </resource>
-        </resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<includes>
-						<!-- only compile the job source -->
-						<include>${talend.job.path}/**.java</include>
-					</includes>
-					<testExcludes>
-						<!-- exclude every test -->
-						<exclude>**</exclude>
-					</testExcludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-running-resources</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration> <!-- copy the contexts for running job -->
-							<outputDirectory>${project.build.outputDirectory}/${talend.job.path}</outputDirectory>
-							<resources>
-								<resource>
-									<directory>${current.resources.dir}/${talend.job.path}</directory>
-									<includes>
-										<include>contexts/*.properties</include>
-									</includes>
-								</resource>
-								<resource>
-									<directory>${current.resources.dir}/metadata/survivorship/</directory>
-									<includes>
-										<include>**/*.*</include>
-									</includes>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-jar</id>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                    <includes>
-                      <!-- only package the job classes -->
-                      <include>${talend.job.path}/*.class</include>
-                      <include>${talend.job.path}/**/*.wsdl</include>
-                      <include>/metadata/survivorship/**/*.*</include>
-                    </includes>
-                  </configuration>
-                </execution>
-             </executions>
-           </plugin>			
-		 </plugins>
 	</build>
 	<profiles>
-	    <profile>
-	       <id>packaging-and-assembly</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>	       
-	       <build>
-	         <plugins>
-               <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-assembly-plugin</artifactId>
-                 <executions>
-                   <execution>
-                     <phase>package</phase>
-                     <goals>
-                       <goal>single</goal>
-                     </goals>
-                     <configuration>
-                       <descriptors>
-                         <descriptor>${basedir}/src/main/assemblies/assembly_${talend.job.name}_${talend.job.version}.xml</descriptor>
-                       </descriptors>
-                       <tarLongFileMode>gnu</tarLongFileMode>
-                       <appendAssemblyId>false</appendAssemblyId>
-                       <finalName>${talend.job.finalName}</finalName>
-                     </configuration>
-                   </execution>
-                </executions>
-              </plugin>
-            </plugins>  
-	      </build>
-	    </profile>
+		<profile>
+			<id>packaging-and-assembly</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>single</goal>
+								</goals>
+								<configuration>
+									<descriptors>
+										<descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
+									</descriptors>
+									<tarLongFileMode>gnu</tarLongFileMode>
+									<appendAssemblyId>false</appendAssemblyId>
+									<finalName>${talend.job.finalName}</finalName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 		<profile>
 			<id>default-settings</id>
 			<activation>
@@ -226,9 +141,11 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<properties>
-				<talend.libraries.includes.set>org.talend.libraries:*</talend.libraries.includes.set>
 				<talend.libraries.excludes.set>${talend.libraries.includes.set}</talend.libraries.excludes.set>
 				<talend.jobs.excludes.set>${project.groupId}:*</talend.jobs.excludes.set>
+				<talend.code.excludes.set>org.talend.code.${talend.project.name.lowercase}:*</talend.code.excludes.set>
+				<talend.pigudf.excludes.set>org.talend.pigudf.${talend.project.name.lowercase}:*</talend.pigudf.excludes.set>
+				<talend.libraries.includes.set>org.talend.libraries:*</talend.libraries.includes.set>
 				<current.job.binaries.include>${project.groupId}:${project.artifactId}:${project.version}</current.job.binaries.include>
 			</properties>
 		</profile>
@@ -244,18 +161,18 @@
 		</profile>
 		<profile>
 			<id>include-xmlMappings</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<xmlMappings.resources.dir>${current.resources.dir}/xmlMappings/</xmlMappings.resources.dir>
 			</properties>
 		</profile>
 		<profile>
 			<id>include-running-xmlMappings</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<xmlMappings.running.dir>
 					${current.resources.dir}/xmlMappings/
@@ -270,9 +187,9 @@
 		</profile>
 		<profile>
 			<id>include-log4j</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<properties>
 				<log4j.resources.dir>${current.resources.dir}/</log4j.resources.dir>
 			</properties>
@@ -306,33 +223,26 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>include-pigudfs-java-sources</id>
-			<properties>
-				<pigudfs.sourcecodes.dir>${project.build.sourceDirectory}</pigudfs.sourcecodes.dir>
-				<pigudfs.poms.dir>${basedir}</pigudfs.poms.dir>
-			</properties>
-		</profile>
-		<profile>
 			<id>include-pigudfs-binaries</id>
 			<properties>
 				<pigudfs.binaries.includes.set>${talend.pigudf.groupid}:*</pigudfs.binaries.includes.set>
 			</properties>
 		</profile>
-		
+
 		<profile>
-            <id>include-microservice-configs</id>
-            <properties>
-                <microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
-            </properties>
-        </profile>
-        
-        <profile>
-            <id>include-microservice-running-configs</id>
-            <properties>
-                <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
-            </properties>
-        </profile>
-	    <profile>
+			<id>include-microservice-configs</id>
+			<properties>
+				<microservice.configs.dir>${current.resources.dir}/</microservice.configs.dir>
+			</properties>
+		</profile>
+
+		<profile>
+			<id>include-microservice-running-configs</id>
+			<properties>
+				<microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
+			</properties>
+		</profile>
+		<profile>
 			<id>include-survivorship-rules</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -340,7 +250,7 @@
 			<properties>
 				<survivorship.rules.dir>${current.resources.dir}/metadata/survivorship/</survivorship.rules.dir>
 			</properties>
-	    </profile>
+		</profile>
 
 	</profiles>
 </project>

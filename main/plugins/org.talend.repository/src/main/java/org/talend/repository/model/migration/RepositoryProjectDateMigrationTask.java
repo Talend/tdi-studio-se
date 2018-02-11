@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -35,7 +35,7 @@ public class RepositoryProjectDateMigrationTask extends AbstractProjectMigration
 
     @Override
     public ExecutionResult execute(Project project) {
-        ProjectPreferenceManager projectPrefManager = new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID);
+        ProjectPreferenceManager projectPrefManager = new ProjectPreferenceManager(project, RepositoryPlugin.PLUGIN_ID, false);
         final String key = "repository.project.id"; //$NON-NLS-1$
         final String value = projectPrefManager.getValue(key);
         if (StringUtils.isBlank(value)) {

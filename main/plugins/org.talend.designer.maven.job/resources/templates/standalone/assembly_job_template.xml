@@ -84,7 +84,7 @@
 			<outputDirectory>${talend.job.name}/src/main/assemblies/
 			</outputDirectory>
 			<includes>
-				<include>assembly_${talend.job.name}_${talend.job.version}.xml</include>
+				<include>assembly.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet><!-- pom_*.xml -->
@@ -92,16 +92,6 @@
 			<outputDirectory>${talend.job.name}</outputDirectory>
 			<includes>
 				<include>pom.xml</include>
-				<include>pom_routines.xml</include>
-				<include>pom_beans.xml</include>
-				<include>pom_${talend.job.name}_${talend.job.version}.xml</include>
-			</includes>
-		</fileSet>
-		<fileSet><!-- pom_pigudfs.xml -->
-			<directory>${pigudfs.poms.dir}</directory>
-			<outputDirectory>${talend.job.name}</outputDirectory>
-			<includes>
-				<include>pom_pigudfs.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet> <!-- add items -->
@@ -115,16 +105,7 @@
 			<directory>${sourcecodes.dir}</directory>
 			<outputDirectory>${talend.job.name}/src/main/java/</outputDirectory>
 			<includes>
-				<include>routines/**</include>
-				<include>beans/**</include>
 				<include>${talend.job.path}/**</include>
-			</includes>
-		</fileSet>
-		<fileSet> <!-- add PigUDFs source codes -->
-			<directory>${pigudfs.sourcecodes.dir}</directory>
-			<outputDirectory>${talend.job.name}/src/main/java/</outputDirectory>
-			<includes>
-				<include>pigudf/**</include>
 			</includes>
 		</fileSet>
 		<fileSet><!-- add context resources -->
@@ -157,29 +138,29 @@
 				<include>**/*.*</include>
 			</includes>
 		</fileSet>
-		<fileSet><!-- add context resources for running -->
+		<fileSet><!-- add all resources for running -->
 			<directory>${contexts.running.dir}</directory>
 			<outputDirectory>${talend.job.name}</outputDirectory>
 			<includes>
-				<include>${talend.job.path}/**</include>
+				<include>**/*.*</include>
 			</includes>
 		</fileSet>
 		<!-- If have children jobs, will add here -->
-		 <fileSet><!-- microservice config files -->
-            <directory>${microservice.configs.dir}</directory>
-            <outputDirectory>${output.resources.dir}/</outputDirectory>
-            <includes>
-                <include>config/**</include>
-            </includes>
-        </fileSet>
-        <fileSet><!-- microservice running config files -->
-            <directory>${microservice.running.configs.dir}</directory>
-            <outputDirectory>${talend.job.name}</outputDirectory>
-            <includes>
-                <include>config/**</include>
-            </includes>
-        </fileSet>
-       <fileSet><!-- survivorship rules -->
+		<fileSet><!-- microservice config files -->
+			<directory>${microservice.configs.dir}</directory>
+			<outputDirectory>/</outputDirectory>
+			<includes>
+				<include>config/**</include>
+			</includes>
+		</fileSet>
+		<fileSet><!-- microservice running config files -->
+			<directory>${microservice.running.configs.dir}</directory>
+			<outputDirectory>${talend.job.path}</outputDirectory>
+			<includes>
+				<include>config/**</include>
+			</includes>
+		</fileSet>
+		<fileSet><!-- survivorship rules -->
 			<directory>${survivorship.rules.dir}</directory>
 			<outputDirectory>${talend.job.name}/items/${talend.project.name.lowercase}/metadata/survivorship/</outputDirectory>
 			<includes>
@@ -190,7 +171,7 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>${talend.libraries.includes.set}</include>
+				<!--@TalendLibIncludes@-->
 			</includes>
 			<!-- without version for talend libraries -->
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
@@ -199,52 +180,19 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
-			<excludes>
-				<exclude>${talend.libraries.excludes.set}</exclude>
-				<exclude>${talend.jobs.excludes.set}</exclude>
-			</excludes>
+			<includes>
+				<!--@3rdPartyLibIncludes@-->
+			</includes>
 			<useProjectArtifact>false</useProjectArtifact>
 		</dependencySet>
-		<!-- for children jobs -->
+		<!-- for all jobs -->
 		<dependencySet>
 			<outputDirectory>${talend.job.name}</outputDirectory>
 			<includes>
-				<include>${jobs.binaries.includes.set}</include>
+				<!--@JobIncludes@-->
 			</includes>
 			<outputFileNameMapping>${artifact.build.finalName}.${artifact.extension}</outputFileNameMapping>
 			<useProjectArtifact>true</useProjectArtifact>
 		</dependencySet>
 	</dependencySets>
-	<moduleSets>
-		<moduleSet>
-			<!-- for routines or talend libs -->
-			<includeSubModules>false</includeSubModules>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>${routines.binaries.includes.set}</include>
-			</includes>
-			<binaries>
-				<outputDirectory>lib</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-				<outputFileNameMapping>${module.artifactId}.${module.extension}
-				</outputFileNameMapping>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
-			<!-- for pigudfs or talend libs -->
-			<includeSubModules>false</includeSubModules>
-			<useAllReactorProjects>true</useAllReactorProjects>
-			<includes>
-				<include>${pigudfs.binaries.includes.set}</include>
-			</includes>
-			<binaries>
-				<outputDirectory>lib</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-				<outputFileNameMapping>${module.artifactId}.${module.extension}
-				</outputFileNameMapping>
-			</binaries>
-		</moduleSet>
-	</moduleSets>
 </assembly>

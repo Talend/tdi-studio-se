@@ -46,6 +46,7 @@ if("TLS".equals(protocol)){
   ctx_<%=cid%>.addToEnvironment(javax.naming.Context.SECURITY_PRINCIPAL, <%=user%>);
   ctx_<%=cid%>.addToEnvironment(javax.naming.Context.SECURITY_CREDENTIALS, decryptedPassword_<%=cid%>);
   <%}%>
+  globalMap.put("tls_<%=cid%>",tls_<%=cid%>);
 <%
 }
 %>

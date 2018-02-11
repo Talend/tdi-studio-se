@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -147,7 +147,7 @@ public class SpagicJavaDeployManager extends org.talend.repository.ui.wizards.ex
             // SpagoBiServer spagoBiServer = iterator.next();
             // }
             // }
-            IPath path = getSrcRootLocation();
+            IPath path = getSrcRootLocation(processItem);
             File file = new File(getTmpFolder() + PATH_SEPARATOR + "spagic.properties"); //$NON-NLS-1$
             path = path.append(projectName).append(jobFolderName).append(jobName + ".java"); //$NON-NLS-1$
             BufferedReader buff = new BufferedReader(new FileReader(path.toPortableString()));

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -331,5 +331,49 @@ public class JobSettingsManagerTest {
         Assert.assertEquals("\\\\]", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
         separator = "]]";
         Assert.assertEquals("\\\\]\\\\]", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+    
+    @Test
+    public void testDoRegexpQuoteHex() {
+        String separator = "\\x1f";
+        Assert.assertEquals("\\\\x1f", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+        separator = "\\x05";
+        Assert.assertEquals("\\\\x05", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteQuestionMark() {
+        String separator = "\\?";
+        Assert.assertEquals("\\\\?", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteTab() {
+        String separator = "\\t";
+        Assert.assertEquals("\\\\t", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteRing() {
+        String separator = "\\a";
+        Assert.assertEquals("\\\\a", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteSingle() {
+        String separator = "\\'";
+        Assert.assertEquals("\\\\'", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteDouble() {
+        String separator = "\\\"";
+        Assert.assertEquals("\\\\\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteQuestion() {
+        String separator = "\\?";
+        Assert.assertEquals("\\\\?", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
     }
 }

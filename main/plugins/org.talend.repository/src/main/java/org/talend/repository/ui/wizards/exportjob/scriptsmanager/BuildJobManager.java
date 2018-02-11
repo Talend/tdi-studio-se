@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -14,6 +14,7 @@ package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
@@ -44,8 +46,11 @@ import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.process.IBuildJobHandler;
+import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -66,8 +71,6 @@ import org.talend.utils.io.FilesUtils;
 public class BuildJobManager {
 
     private static BuildJobManager instance = null;
-    
-    public final static String MAVEN_ERROR_MSG = Messages.getString("BuildJobManager.mavenErrorMessage"); //$NON-NLS-1$
 
     private BuildJobManager() {
     }
@@ -134,8 +137,12 @@ public class BuildJobManager {
 
                 IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, processItem
                         .getProperty().getVersion(), exportChoiceMap, jobExportType);
-                buildJobHandler.generateItemFiles(true, new SubProgressMonitor(pMonitor, scale));
-                buildJobHandler.generateJobFiles(new SubProgressMonitor(pMonitor, scale));
+
+                Map<String, Object> prepareParams = new HashMap<String, Object>();
+                prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
+                prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
+                buildJobHandler.prepare(new SubProgressMonitor(pMonitor, scale), prepareParams);
+
                 buildJobHandler.build(new SubProgressMonitor(pMonitor, scale));
                 IFile jobTargetFile = buildJobHandler.getJobTargetFile();
                 if (jobTargetFile != null && jobTargetFile.exists()) {
@@ -200,18 +207,15 @@ public class BuildJobManager {
                     try {
                         wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
                                 scale * 3);
+
+                        Map<String, Object> prepareParams = new HashMap<String, Object>();
+                        prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
+                        prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
+
+                        buildJobHandler.prepare(new SubProgressMonitor(wrMonitor, scale), prepareParams);
+
+                        wrMonitor.worked(scale);
                         TimeMeasure.step(timeMeasureId, "prepare to build job");
-
-                        buildJobHandler.generateItemFiles(true, new SubProgressMonitor(wrMonitor, scale));
-                        wrMonitor.worked(scale);
-                        TimeMeasure.step(timeMeasureId, "generateItemFiles");
-                        if (wrMonitor.isCanceled()) {
-                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
-                        }
-
-                        buildJobHandler.generateJobFiles(new SubProgressMonitor(wrMonitor, scale));
-                        wrMonitor.worked(scale);
-                        TimeMeasure.step(timeMeasureId, "generateJobFiles");
                         if (wrMonitor.isCanceled()) {
                             throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
                         }
@@ -284,7 +288,11 @@ public class BuildJobManager {
                 FilesUtils.copyFile(jobZipFile, jobFileTarget);
                 TimeMeasure.step(timeMeasureId, "Copy packaged file to target");
             } else {
-                throw new Exception(MAVEN_ERROR_MSG);
+                ITalendProcessJavaProject talendJavaProject = getRunProcessService().getTalendJobJavaProject(
+                        processItem.getProperty());
+                String mvnLogFilePath = talendJavaProject.getProject()
+                        .getFile("lastGenerated.log").getLocation().toPortableString(); //$NON-NLS-1$
+                throw new Exception(Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath)); //$NON-NLS-1$
             }
             if (checkCompilationError) {
                 CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);
@@ -312,6 +320,14 @@ public class BuildJobManager {
             addClasspathJar = designerCoreUIService.getPreferenceStore().getBoolean(IRepositoryPrefConstants.ADD_CLASSPATH_JAR);
         }
         return addClasspathJar;
+    }
+
+    private IRunProcessService getRunProcessService() {
+        IRunProcessService service = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+            service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
+        }
+        return service;
     }
 
 }

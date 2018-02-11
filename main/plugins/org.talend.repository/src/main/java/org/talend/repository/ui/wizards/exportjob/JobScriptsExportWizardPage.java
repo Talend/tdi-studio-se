@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -1402,6 +1402,24 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             } catch (InterruptedException e) {
                 return false;
             }
+        }else if (JobExportType.OSGI.equals(jobExportType)) {
+            IRunnableWithProgress worker = new IRunnableWithProgress() {
+
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    buildJobWithMaven(JobExportType.OSGI, monitor);
+                }
+            };
+
+            try {
+                getContainer().run(false, true, worker);
+            } catch (InvocationTargetException e) {
+                MessageBoxExceptionHandler.process(e.getCause(), getShell());
+                return false;
+            } catch (InterruptedException e) {
+                return false;
+            }
+
         } else {
             List<ContextParameterType> contextEditableResultValuesList = null;
             if (manager != null) {

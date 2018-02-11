@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -304,7 +304,7 @@ public class JobJavaScriptsWSManager extends JobJavaScriptsManager {
 
             String jobFolderName = JavaResourcesHelper.getJobFolderName(escapeFileNameSpace(processItem), selectedProcessVersion);
 
-            String classRoot = FilesUtils.getFileRealPath(getClassRootLocation());
+            String classRoot = FilesUtils.getFileRealPath(getJobClassRootLocation(processItem.getProperty()));
 
             String wsdlFilePath = getTmpFolder() + PATH_SEPARATOR + jobName + ".wsdl"; //$NON-NLS-1$
             String classFileName = classRoot + PATH_SEPARATOR + projectName + PATH_SEPARATOR + jobFolderName + PATH_SEPARATOR

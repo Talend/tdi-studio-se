@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +38,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -114,9 +114,12 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.runtime.maven.MavenArtifact;
+import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
@@ -131,6 +134,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
+import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
@@ -215,7 +219,12 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public JavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         super(process);
         this.property = property;
-        this.talendJavaProject = JavaProcessorUtilities.getTalendJavaProject();
+        if (isStandardJob() && !isGuessSchemaJob(property)) {
+            this.talendJavaProject = TalendJavaProjectManager.getTalendJobJavaProject(property);
+        } else {
+            // for shadow process/data preview
+            this.talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
+        }
         Assert.isNotNull(this.talendJavaProject, Messages.getString("JavaProcessor.notFoundedProjectException"));
         this.project = this.talendJavaProject.getProject();
         if (ProcessUtils.isTestContainer(process)) {
@@ -237,6 +246,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (checkableEditor == null && process instanceof IProcess2 && ((IProcess2) process).getEditor() != null) {
             checkableEditor = CodeEditorFactory.getInstance().getCodeEditor((IProcess2) process);
         }
+    }
+
+    private boolean isGuessSchemaJob(Property property) {
+        return "ID".equals(property.getId()) && "Mock_job_for_Guess_schema".equals(property.getLabel()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @Override
@@ -311,7 +324,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             outputFolder = tProcessJavaProject.getTestOutputFolder();
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
-            resourcesFolder = tProcessJavaProject.getResourcesFolder();
+            resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
             outputFolder = tProcessJavaProject.getOutputFolder();
         }
 
@@ -560,7 +573,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                             }
                         }
                         if (useGenerateRuleFiles && rulesService != null && currentJavaProject != null) {
-                            rulesService.generateFinalRuleFiles(currentJavaProject, this.process);
+                            rulesService.generateFinalRuleFiles(currentJavaProject, this.process, getTalendJavaProject());
                             LastGenerationInfo.getInstance().setUseRules(this.process.getId(), this.process.getVersion(), true);
                         }
                     }
@@ -1204,6 +1217,19 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         if (libsStr.lastIndexOf(classPathSeparator) != libsStr.length() - 1) {
             libsStr += classPathSeparator;
         }
+
+        // may have blank in classpath since use absolute path.
+        libsStr = StringUtils.replace(libsStr, " ", "%20"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        // create classpath.jar
+        if (!isExportConfig() && !isSkipClasspathJar()) {
+            try {
+                libsStr = ClasspathsJarGenerator.createJar(getProperty(), libsStr, classPathSeparator);
+            } catch (Exception e) {
+                throw new ProcessorException(e);
+            }
+        }
+
         return libsStr;
     }
 
@@ -1263,11 +1289,53 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 basePath.append(codeLocation);
             }
         } else {
+            // add main job classes folder
             ITalendProcessJavaProject tProcessJvaProject = this.getTalendJavaProject();
             IFolder classesFolder = tProcessJvaProject.getOutputFolder();
             String outputPath = classesFolder.getLocation().toPortableString();
-            outputPath += classPathSeparator + '.'; // add current path
+            outputPath += classPathSeparator;
             basePath.append(outputPath);
+            
+            // add main job src/main/resource folder as ext-resources
+            String externalResourcePath = tProcessJvaProject.getExternalResourcesFolder().getLocation().toPortableString();
+            externalResourcePath += classPathSeparator;
+            basePath.append(externalResourcePath);
+            // add subjobs
+            Set<JobInfo> subjobs = this.getBuildChildrenJobs();
+            for (JobInfo info : subjobs) {
+                // add sub job classes folder
+                ITalendProcessJavaProject subjobPrject = TalendJavaProjectManager.getTalendJobJavaProject(info.getProcessItem().getProperty());
+                IFolder subjobClassesFolder = subjobPrject.getOutputFolder();
+                String subjobOutputPath = subjobClassesFolder.getLocation().toPortableString();
+                subjobOutputPath += classPathSeparator;
+                basePath.append(subjobOutputPath);
+
+                // add sub job src/main/resource folder as ext-resources
+                String subjobExternalResourcePath = subjobPrject.getExternalResourcesFolder().getLocation().toPortableString();
+                subjobExternalResourcePath += classPathSeparator;
+                basePath.append(subjobExternalResourcePath);
+            }
+            
+            ITalendProcessJavaProject routineProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
+            String routineOutputPath = routineProject.getOutputFolder().getLocation().toPortableString();
+            routineOutputPath += classPathSeparator;
+            basePath.append(routineOutputPath);
+            
+            if (ProcessUtils.isRequiredPigUDFs(process)) {
+                ITalendProcessJavaProject pigudfsProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
+                String pigudfsOutputPath = pigudfsProject.getOutputFolder().getLocation().toPortableString();
+                pigudfsOutputPath += classPathSeparator;
+                basePath.append(pigudfsOutputPath);
+            }
+            
+            if (ProcessUtils.isRequiredBeans(process)) {
+                ITalendProcessJavaProject beansProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
+                String beansOutputPath = beansProject.getOutputFolder().getLocation().toPortableString();
+                beansOutputPath += classPathSeparator;
+                basePath.append(beansOutputPath);
+            }
+            
+            basePath.append('.'); // add current path
         }
 
         return basePath.toString();
@@ -1305,29 +1373,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                 libPath.append(classPathSeparator);
             }
         } else {
-            Set<String> neededLibraries = new LinkedHashSet<String>();
             for (ModuleNeeded neededModule : neededModules) {
-                neededLibraries.add(neededModule.getModuleName());
-            }
-
-            final File libDir = JavaProcessorUtilities.getJavaProjectLibFolder();
-            if (libDir == null) {
-                return ""; //$NON-NLS-1$
-            }
-            File[] jarFiles = libDir.listFiles(FilesUtils.getAcceptJARFilesFilter());
-            
-            Map<String, File> jarFileMap = new HashMap<>();
-            for (File file : jarFiles) {
-                jarFileMap.put(file.getName(), file);
-            }
-            for (String neededLibrary : neededLibraries) {
-                if (jarFileMap.containsKey(neededLibrary)) {
-                    File jarFile = jarFileMap.get(neededLibrary);
-                    if (jarFile.isFile()) {
-                        String singleLibPath = new Path(jarFile.getAbsolutePath()).toPortableString();
-                        libPath.append(singleLibPath).append(classPathSeparator);
-                    }
-                }
+                MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
+                libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
             }
         }
 
@@ -1720,7 +1768,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             if (tProcessJvaProject == null) {
                 return;
             }
-            IFolder esbConfigsTargetFolder = tProcessJvaProject.getResourcesFolder();
+            IFolder esbConfigsTargetFolder = tProcessJvaProject.getExternalResourcesFolder();
 
             // add SAM config file to classpath
             if (samEnabled) {

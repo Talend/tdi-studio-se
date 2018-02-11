@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ICoreService;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.constants.Log4jPrefsConstants;
@@ -114,14 +113,6 @@ public class Log4jSettingPage extends ProjectSettingPage {
 
             }
             reset = false;
-        }
-        // updat the log4j file for code project
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICoreService.class)) {
-            ICoreService service = (ICoreService) GlobalServiceRegister.getDefault().getService(ICoreService.class);
-            if (service != null) {
-                service.syncLog4jSettings();
-            }
-
         }
         return ok;
     }

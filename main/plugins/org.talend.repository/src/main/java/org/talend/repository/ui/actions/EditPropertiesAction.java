@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -150,14 +150,14 @@ public class EditPropertiesAction extends AContextualAction {
             if (node.getObjectType() == ERepositoryObjectType.ROUTINES) {
                 RepositoryManager.syncRoutineAndJoblet(ERepositoryObjectType.ROUTINES);
 
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
-                            IRunProcessService.class);
-                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
-                    if (talendProcessJavaProject != null) {
-                        talendProcessJavaProject.updateRoutinesPom(true, true);
-                    }
-                }
+//                if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+//                    IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
+//                            IRunProcessService.class);
+//                    ITalendProcessJavaProject talendProcessJavaProject = service.getTalendProcessJavaProject();
+//                    if (talendProcessJavaProject != null) {
+//                        talendProcessJavaProject.updateRoutinesPom(true, true);
+//                    }
+//                }
             }
             if (node.getObjectType().getType().equals("SERVICES")) { //$NON-NLS-1$
                 ConnectionItem connectionItem = (ConnectionItem) node.getObject().getProperty().getItem();
@@ -218,7 +218,7 @@ public class EditPropertiesAction extends AContextualAction {
     protected void processRename(IRepositoryNode node, String originalName) {
         try {
             IRunProcessService runProcessService = CorePlugin.getDefault().getRunProcessService();
-            ITalendProcessJavaProject talendProcessJavaProject = runProcessService.getTalendProcessJavaProject();
+            ITalendProcessJavaProject talendProcessJavaProject = runProcessService.getTalendCodeJavaProject(node.getObjectType());
             if (talendProcessJavaProject == null) {
                 return;
             }

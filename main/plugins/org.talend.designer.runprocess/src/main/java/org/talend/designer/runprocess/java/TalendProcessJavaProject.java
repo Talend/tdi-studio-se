@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -13,14 +13,17 @@
 package org.talend.designer.runprocess.java;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -28,15 +31,20 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
+import org.talend.designer.maven.utils.MavenProjectUtils;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -46,14 +54,28 @@ import org.talend.utils.io.FilesUtils;
 public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
     private IJavaProject javaProject;
+    
+    private Property property;
 
     private final MavenPomSynchronizer synchronizer;
+
+    private boolean useTempPom;
 
     public TalendProcessJavaProject(IJavaProject javaProject) {
         super();
         this.javaProject = javaProject;
         this.synchronizer = new MavenPomSynchronizer(this);
 
+    }
+    
+    public TalendProcessJavaProject(IJavaProject javaProject, Property property) {
+        this(javaProject);
+        this.property = property;
+    }
+
+    @Override
+    public Property getPropery() {
+        return property;
     }
 
     @Override
@@ -98,6 +120,16 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     @Override
     public IFolder getTestSrcFolder() {
         return createFolder(MavenSystemFolders.JAVA_TEST.getPath());
+    }
+
+    @Override
+    public IFolder getExternalResourcesFolder() {
+        return createFolder(MavenSystemFolders.EXT_RESOURCES.getPath());
+    }
+
+    @Override
+    public IFolder getBundleResourcesFolder() {
+        return createFolder(MavenSystemFolders.BUNDLE_RESOURCES.getPath());
     }
 
     @Override
@@ -162,7 +194,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
     @Override
     public IFolder getResourceSubFolder(IProgressMonitor monitor, String path) {
-        return createSubFolder(monitor, getResourcesFolder(), path);
+        return createSubFolder(monitor, getExternalResourcesFolder(), path);
     }
 
     /**
@@ -249,10 +281,10 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     @Override
     public void buildModules(IProgressMonitor monitor, String[] childrenModules, Map<String, Object> argumentsMap)
             throws Exception {
-        String goals = null;
-        if (argumentsMap != null) {
-            goals = (String) argumentsMap.get(TalendProcessArgumentConstant.ARG_GOAL);
+        if (argumentsMap == null) {
+            argumentsMap = new HashMap<>();
         }
+        String goals = (String) argumentsMap.get(TalendProcessArgumentConstant.ARG_GOAL);
         if (childrenModules == null) {
             if (goals != null && goals.trim().length() > 0) {
                 mavenBuildCodeProjectPom(goals, TalendMavenConstants.CURRENT_PATH, argumentsMap, monitor);
@@ -291,17 +323,18 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         }
         if (childModulePomFile.getLocation().toFile().exists()) { // existed
             MavenPomCommandLauncher mavenLauncher = null;
-            // by default is compile
-            if (goals == null || goals.trim().length() == 0 || goals.equals(TalendMavenConstants.GOAL_COMPILE) 
-                    || goals.equals(TalendMavenConstants.GOAL_TEST_COMPILE)) {
-//                mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, TalendMavenConstants.GOAL_REFRESH);
-//                mavenLauncher.setArgumentsMap(argumentsMap);
-//                mavenLauncher.execute(monitor);
-                buildWholeCodeProject();
-            } else {
-                mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, goals);
-                mavenLauncher.setArgumentsMap(argumentsMap);
-                mavenLauncher.execute(monitor);
+            try {
+                // by default is compile
+                if (goals == null || goals.trim().length() == 0 || goals.equals(TalendMavenConstants.GOAL_COMPILE)
+                        || goals.equals(TalendMavenConstants.GOAL_TEST_COMPILE)) {
+                    buildWholeCodeProject();
+                } else {
+                    mavenLauncher = new MavenPomCommandLauncher(childModulePomFile, goals);
+                    mavenLauncher.setArgumentsMap(argumentsMap);
+                    mavenLauncher.execute(monitor);
+                }
+            } finally {
+                PomUtil.restorePomFile(this);
             }
         } else {
             throw new RuntimeException("The pom.xml is not existed. Can't build the job: " + module); //$NON-NLS-1$
@@ -311,8 +344,8 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     /**
      * DOC ggu Comment method "buildWholeCodeProject".
      */
-    private void buildWholeCodeProject() {
-        // build whole project
+    @Override
+    public void buildWholeCodeProject() {
         try {
             NullProgressMonitor monitor = new NullProgressMonitor();
             IProject project = getProject();
@@ -363,12 +396,17 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
     @Override
     public void regenerateMainProjectPom(IProgressMonitor monitor) throws Exception {
-        this.synchronizer.regenerateMainProjectPom(monitor, null);
+        // this.synchronizer.regenerateMainProjectPom(monitor, null);
     }
 
     @Override
-    public void setSynchronizerArgumentMap(Map<String, Object> argumentsMap) {
-        synchronizer.setArgumentsMap(argumentsMap);
+    public boolean isUseTempPom() {
+        return useTempPom;
+    }
+
+    @Override
+    public void setUseTempPom(boolean useTempPom) {
+        this.useTempPom = useTempPom;
     }
 
 }

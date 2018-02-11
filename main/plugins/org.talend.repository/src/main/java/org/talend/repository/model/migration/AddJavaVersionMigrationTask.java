@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -27,7 +27,7 @@ public class AddJavaVersionMigrationTask extends AbstractProjectMigrationTask {
 
     @Override
     public ExecutionResult execute(Project project) {
-        ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID);
+        ProjectPreferenceManager manager = new ProjectPreferenceManager(project, CoreRuntimePlugin.PLUGIN_ID, false);
         String javaVersion = manager.getValue(JavaUtils.PROJECT_JAVA_VERSION_KEY);
         if (StringUtils.isBlank(javaVersion) || !JavaUtils.AVAILABLE_VERSIONS.contains(javaVersion)) {
             manager.setValue(JavaUtils.PROJECT_JAVA_VERSION_KEY, JavaCore.VERSION_1_7);

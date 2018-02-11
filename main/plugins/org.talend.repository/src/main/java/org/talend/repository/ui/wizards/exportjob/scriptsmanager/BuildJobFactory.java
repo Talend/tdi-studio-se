@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -26,6 +26,7 @@ import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
+import org.talend.repository.ui.wizards.exportjob.handler.BuildOSGiBundleHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
 /**
@@ -58,8 +59,8 @@ public class BuildJobFactory {
             switch (jobExportType) {
             case POJO:
                 break; // continue
-            case OSGI: // TODO, later, when osgi pom is finished, will try to enable it.
-                return null; // don't support others
+            case OSGI:
+                break; // continue
             default:
                 jobExportType = null; // try the first one by default
                 break;
@@ -92,7 +93,7 @@ public class BuildJobFactory {
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             if (type != null) {
                 buildType = type.toString();
-            }// else{ // if didn't set, should use default provider to create it.
+            } // else{ // if didn't set, should use default provider to create it.
         }
 
         Map<String, Object> parameters = new HashMap<String, Object>();
