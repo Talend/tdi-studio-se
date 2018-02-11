@@ -25,7 +25,7 @@
 
 		<resources.path>${basedir}/src/main/resources</resources.path>
 		<lib.path>${resources.path}/lib</lib.path>
-		<provided.lib.path>${resources.path}/provided-lib</provided.lib.path>
+		<provided.lib.path>${current.bundle.resources.dir}/provided-lib</provided.lib.path>
         
         <!-- for global properties -->
         <current.int-resources.dir>${basedir}/src/main/resources</current.int-resources.dir>
@@ -33,6 +33,7 @@
         <current.resources.dir>${basedir}/src/main/ext-resources</current.resources.dir>
         <current.bundle.resources.dir>${basedir}/src/main/bundle-resources</current.bundle.resources.dir>
         <current.test.resources.dir>${basedir}/src/test/resources</current.test.resources.dir>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -40,62 +41,24 @@
 	</dependencies>
 
 	<build>
-		<resources>
-			<resource>
-				<directory>${resources.path}</directory>
-				<excludes>
-					<!-- Exclude the "provided" libs -->
-					<exclude>provided-lib/**</exclude>
-				</excludes>
-			</resource>
-		</resources>
-		<!-- pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<encoding>UTF-8</encoding>
-						<source>1.8</source>
-						<target>1.8</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<configuration>
-						<encoding>UTF-8</encoding>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement -->
-
 		<plugins>
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<version>2.5.3</version>
+				<version>3.3.0</version>
 				<extensions>true</extensions>
 				<configuration>
 					<archive>
 						<addMavenDescriptor>false</addMavenDescriptor>
 					</archive>
 					<instructions>
-						<Bundle-SymbolicName>${project.groupId}</Bundle-SymbolicName>
-						<Bundle-Name>${item.name}</Bundle-Name>
+						<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-Name>${talend.job.name}</Bundle-Name>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>${bundle.config.export.package}</Export-Package>
 						<Export-Service>${bundle.config.export.service}</Export-Service>
-						<Import-Package>
-							${bundle.config.import.package},
-							*;resolution:=optional
-						</Import-Package>
-						<Include-Resource>
-							{maven-resources}, {maven-dependencies},
-						</Include-Resource>
-						<Bundle-ClassPath>
-							${bundle.config.bundle.classpath}
-						</Bundle-ClassPath>
+						<Import-Package>${bundle.config.import.package}, *;resolution:=optional</Import-Package>
+						<Bundle-ClassPath>., {maven-dependencies}</Bundle-ClassPath>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -105,7 +68,7 @@
         <profile>
             <id>packaging-and-assembly</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <build>
                 <plugins>
@@ -123,8 +86,8 @@
                                         <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
                                     </descriptors>
                                     <tarLongFileMode>gnu</tarLongFileMode>
-                                    <appendAssemblyId>false</appendAssemblyId>
-                                    <finalName>${talend.job.finalName}</finalName>
+                                    <!-- appendAssemblyId>false</appendAssemblyId -->
+                                    <finalName>${talend.job.name}</finalName>
                                 </configuration>
                             </execution>
                         </executions>

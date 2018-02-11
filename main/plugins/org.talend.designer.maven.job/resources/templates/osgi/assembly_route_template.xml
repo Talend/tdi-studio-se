@@ -13,7 +13,7 @@
 
 		<fileSet> <!-- add java classes -->
 			<directory>${project.build.outputDirectory}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>${talend.job.path}/**</include>
 			</includes>
@@ -21,7 +21,7 @@
 		
 		<fileSet> <!-- add osgi resources -->
 			<directory>${current.bundle.resources.dir}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>OSGI-INF/**</include>
 			</includes>
@@ -29,7 +29,7 @@
 
 		<fileSet> <!-- add route resources -->
 			<directory>${current.bundle.resources.dir}/resources</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>
@@ -45,7 +45,7 @@
 
 		<fileSet><!-- add context resources -->
 			<directory>${current.resources.dir}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>${talend.job.path}/**</include>
 			</includes>

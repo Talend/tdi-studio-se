@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,6 +38,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
@@ -89,27 +91,19 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                 }
             }
         }
-        IFile backupPomFile = talendProcessJavaProject.getProject().getFile(TalendMavenConstants.POM_BACKUP_FILE_NAME);
-        if (backupPomFile.exists()) {
-            backupPomFile.delete(true, monitor);
-        }
+
         return super.generateJobFiles(monitor);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler#build(org.eclipse.core.runtime.
+     * IProgressMonitor)
+     */
     @Override
-    protected StringBuffer getProfileArgs() {
-        StringBuffer profileBuffer = new StringBuffer();
-
-        boolean needMavenScript = exportChoice.get(ExportChoice.needMavenScript) == null
-                || isOptionChoosed(ExportChoice.needMavenScript);
-
-        profileBuffer.append(TalendMavenConstants.PREFIX_PROFILE);
-        profileBuffer.append(SPACE);
-
-        addArg(profileBuffer, false, TalendMavenConstants.PROFILE_INCLUDE_BINARIES);
-        // always disable ci-builder from studio/commandline
-        addArg(profileBuffer, false, TalendMavenConstants.PROFILE_CI_BUILDER);
-        return profileBuffer;
+    public void build(IProgressMonitor monitor) throws Exception {
+        super.build(monitor);
     }
 
     private IFile getTargetFile(String path, String fileName, IProgressMonitor monitor) {
@@ -154,7 +148,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                         fileExtension = esbExportType;
                     }
 
-                    if (fileExtension.equals(file.getFileExtension())) {
+                    if (fileExtension.equals(file.getFileExtension()) && file.getName().contains("jar-with-dependencies")) {
                         bundleFile = file;
                         break;
                     }
