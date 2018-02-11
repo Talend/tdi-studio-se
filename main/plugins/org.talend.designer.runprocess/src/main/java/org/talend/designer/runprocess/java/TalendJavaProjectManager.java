@@ -55,6 +55,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IContext;
@@ -197,13 +198,18 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendJobJavaProject(Property property, boolean enbleMavenNature) {
-        if (property == null) {
+        if (property == null || property.getItem() == null) {
             return getTempJavaProject();
         }
         if (property.getItem() instanceof JobletProcessItem) {
             return getTempJavaProject();
         }
-        if (!(property.getItem() instanceof ProcessItem) && !property.getItem().getClass().getName().equals("org.talend.repository.services.model.services.impl.ServiceItemImpl")) {
+        boolean isService = false;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            isService = service.isServiceItem(property.getItem().eClass().getClassifierID());
+        }
+        if (!(property.getItem() instanceof ProcessItem) && !isService) {
             return null;
         }
         ITalendProcessJavaProject talendJobJavaProject = null;
