@@ -148,7 +148,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
                         fileExtension = esbExportType;
                     }
 
-                    if (fileExtension.equals(file.getFileExtension()) && file.getName().contains("jar-with-dependencies")) {
+                    if (fileExtension.equals(file.getFileExtension()) && file.getName().contains("bundle")) {
                         bundleFile = file;
                         break;
                     }

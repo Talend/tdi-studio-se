@@ -86,8 +86,8 @@
                                         <descriptor>${basedir}/src/main/assemblies/assembly.xml</descriptor>
                                     </descriptors>
                                     <tarLongFileMode>gnu</tarLongFileMode>
-                                    <!-- appendAssemblyId>false</appendAssemblyId -->
-                                    <finalName>${talend.job.name}</finalName>
+                                    <appendAssemblyId>false</appendAssemblyId>
+                                    <finalName>${talend.job.name}-bundle-${project.version}</finalName>
                                 </configuration>
                             </execution>
                         </executions>
