@@ -40,6 +40,7 @@ public class BuildJobFactory {
         // from the extension point
         oldBuildTypeMap.put(JobExportType.POJO, "STANDALONE");
         oldBuildTypeMap.put(JobExportType.OSGI, "OSGI");
+        oldBuildTypeMap.put(JobExportType.MSESB, "REST_MS");
     }
 
     /**
