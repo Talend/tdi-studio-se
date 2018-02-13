@@ -20,6 +20,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -147,7 +148,7 @@ public class PropertySetDialog extends Dialog {
 
         FormData formdata = new FormData();
         formdata.height = 35;
-        formdata.width = 600;
+        formdata.width = 650;
 
         scale = new Scale(autoMapGroup, SWT.HORIZONTAL);
         scale.setMaximum(4);
@@ -162,6 +163,7 @@ public class PropertySetDialog extends Dialog {
         label1.setLayoutData(formdata);
         formdata.top = new FormAttachment(scale, 5);
 
+
         Label label2 = new Label(autoMapGroup, SWT.NONE);
         label2.setText("Simple Match");
         formdata = new FormData();
@@ -169,7 +171,7 @@ public class PropertySetDialog extends Dialog {
         formdata.top = new FormAttachment(scale, 5);
 
         formdata.left = new FormAttachment(label1,
-                150 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label2.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+                162 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label2.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
 
         Label label3 = new Label(autoMapGroup, SWT.NONE);
         label3.setText("Full Levenshtein");
@@ -177,7 +179,7 @@ public class PropertySetDialog extends Dialog {
         label3.setLayoutData(formdata);
         formdata.top = new FormAttachment(scale, 5);
         formdata.left = new FormAttachment(label1,
-                300 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label3.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+                324 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label3.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
 
         Label label4 = new Label(autoMapGroup, SWT.NONE);
         label4.setText("Full Jaccard");
@@ -185,7 +187,7 @@ public class PropertySetDialog extends Dialog {
         label4.setLayoutData(formdata);
         formdata.top = new FormAttachment(scale, 5);
         formdata.left = new FormAttachment(label1,
-                450 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label4.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+                482 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label4.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
 
         Label label5 = new Label(autoMapGroup, SWT.NONE);
         label5.setText("Super Fuzzy");
@@ -193,7 +195,7 @@ public class PropertySetDialog extends Dialog {
         label5.setLayoutData(formdata);
         formdata.top = new FormAttachment(scale, 5);
         formdata.left = new FormAttachment(label1,
-                600 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label5.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
+                650 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label5.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
 
         Label levenshteinLabel = new Label(autoMapGroup, SWT.NONE);
         levenshteinLabel.setText("Levenshtein");
@@ -239,6 +241,14 @@ public class PropertySetDialog extends Dialog {
         formdata.top = new FormAttachment(levenshteinWeightLabel, 5);
         formdata.left = new FormAttachment(jaccardSlider, 10);
 
+        scale.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                scale.setSelection(scale.getSelection());
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
         init();
         addListener();
         updateStatus();
