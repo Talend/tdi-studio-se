@@ -176,7 +176,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         GridData viewerData = new GridData(GridData.FILL_BOTH);
         viewerData.horizontalSpan = 2;
         viewer.getControl().setLayoutData(viewerData);
-        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() { 
 
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
@@ -275,7 +275,8 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         } else {
             this.setTitle(Messages.getString("ReferenceProjectSetupPage.Title")); //$NON-NLS-1$
         }
-
+        
+        this.checkInvalidProject();
         return null;
     }
 
@@ -299,9 +300,19 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         List<ProjectReference> list = project.getProjectReferenceList();
         for (ProjectReference pr : list) {
             ProjectReferenceBean prb = new ProjectReferenceBean();
-            prb.setReferenceProject(pr.getReferencedProject());
+            prb.setReferenceProjectLabel(pr.getReferencedProject().getTechnicalLabel());
             prb.setReferenceBranch(pr.getReferencedBranch());
             result.add(prb);
+        }
+        
+        if (ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet().size() > 0) {
+            for (String invalidLabel : ReferenceProjectProblemManager.getInstance().getInvalidProjectReferenceSet()) {
+                ProjectReferenceBean prb = new ProjectReferenceBean();
+                prb.setReferenceProjectLabel(invalidLabel);
+                prb.setReferenceBranch("");
+                prb.setValid(false);
+                result.add(prb);
+            }
         }
         return result;
     }
@@ -381,7 +392,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         Project p = getCurrentSelectedProject();
         if (p != null) {
             for (ProjectReferenceBean bean : viewerInput) {
-                if (bean.getReferenceProject().getTechnicalLabel().equals(p.getTechnicalLabel())) {
+                if (bean.getReferenceProjectLabel().equals(p.getTechnicalLabel())) {
                     isEnable = false;
                     break;
                 }
@@ -476,14 +487,14 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                 }
             }
             for (ProjectReferenceBean bean : viewerInput) {
-                if (bean.getReferenceProject().getTechnicalLabel().equals(p.getTechnicalLabel())) {
+                if (bean.getReferenceProjectLabel().equals(p.getTechnicalLabel())) {
                     this.setErrorMessage(Messages.getString("ReferenceProjectSetupPage.ErrorContainedProject"));//$NON-NLS-1$
                     return;
                 }
             }
 
             ProjectReferenceBean referenceBean = new ProjectReferenceBean();
-            referenceBean.setReferenceProject(p.getEmfProject());
+            referenceBean.setReferenceProjectLabel(p.getEmfProject().getTechnicalLabel());
             referenceBean.setReferenceBranch(branch);
             viewerInput.add(referenceBean);
             viewer.refresh();
@@ -516,10 +527,10 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         return ReferenceProjectProblemManager.checkCycleReference(projectRefMap);
     }
 
-    private ProjectReference getProjectReferenceInstance(ProjectReferenceBean bean) {
+    private ProjectReference getProjectReferenceInstance(ProjectReferenceBean bean) throws PersistenceException {
         ProjectReference pr = PropertiesFactory.eINSTANCE.createProjectReference();
         pr.setReferencedBranch(bean.getReferenceBranch());
-        pr.setReferencedProject(bean.getReferenceProject());
+        pr.setReferencedProject(ProxyRepositoryFactory.getInstance().getEmfProjectContent(bean.getReferenceProjectLabel()));
         return pr;
     }
 
@@ -543,6 +554,9 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
 
     @Override
     public boolean performOk() {
+        if (!checkInvalidProject()) {
+            return false;
+        }
         if (isModified()) {
             if (!validate()) {
                 return false;
@@ -630,6 +644,18 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         }
         return false;
     }
+    
+    private boolean checkInvalidProject() {
+        this.setErrorMessage(null);
+        for (ProjectReferenceBean bean : viewerInput) {
+            if (!bean.isValid()) {
+                setErrorMessage(
+                        Messages.getString("ReferenceProjectSetupPage.ErrorAccessProject", bean.getReferenceProjectLabel()));
+                return false;
+            }
+        }
+        return true;
+    }
 
     private boolean validate() {
         this.setErrorMessage(null);
@@ -672,7 +698,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         for (ProjectReferenceBean originValue : originInput) {
             boolean isFind = false;
             for (ProjectReferenceBean value : viewerInput) {
-                if (originValue.getReferenceProject().getTechnicalLabel().equals(value.getReferenceProject().getTechnicalLabel())
+                if (originValue.getReferenceProjectLabel().equals(value.getReferenceProjectLabel())
                         && originValue.getReferenceBranch().equals(value.getReferenceBranch())) {
                     isFind = true;
                     break;
@@ -685,12 +711,12 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         return false;
     }
 
-    private List<ProjectReference> convertToProjectReference(List<ProjectReferenceBean> input) {
+    private List<ProjectReference> convertToProjectReference(List<ProjectReferenceBean> input) throws PersistenceException {
         List<ProjectReference> output = new ArrayList<ProjectReference>();
         for (ProjectReferenceBean bean : input) {
             ProjectReference pr = PropertiesFactory.eINSTANCE.createProjectReference();
             pr.setReferencedBranch(bean.getReferenceBranch());
-            pr.setReferencedProject(bean.getReferenceProject());
+            pr.setReferencedProject(ProxyRepositoryFactory.getInstance().getEmfProjectContent(bean.getReferenceProjectLabel()));
             output.add(pr);
         }
         return output;
@@ -831,7 +857,7 @@ class ReferenceProjectLabelProvider implements ILabelProvider {
         if (element instanceof ProjectReferenceBean) {
             ProjectReferenceBean pr = (ProjectReferenceBean) element;
             StringBuffer sb = new StringBuffer();
-            sb.append(ProjectRefSettingPage.getProjectDecription(pr.getReferenceProject().getTechnicalLabel(),
+            sb.append(ProjectRefSettingPage.getProjectDecription(pr.getReferenceProjectLabel(),
                     pr.getReferenceBranch()));
             return sb.toString();
         }
@@ -841,9 +867,10 @@ class ReferenceProjectLabelProvider implements ILabelProvider {
 
 class ProjectReferenceBean {
 
+    private boolean isValid = true;
     private String referenceBranch;
 
-    private org.talend.core.model.properties.Project referenceProject;
+    private String referenceProjectLabel;
 
     public String getReferenceBranch() {
         return referenceBranch;
@@ -852,12 +879,20 @@ class ProjectReferenceBean {
     public void setReferenceBranch(String referenceBranch) {
         this.referenceBranch = referenceBranch;
     }
-
-    public org.talend.core.model.properties.Project getReferenceProject() {
-        return referenceProject;
+    
+    public boolean isValid() {
+        return isValid;
     }
-
-    public void setReferenceProject(org.talend.core.model.properties.Project referenceProject) {
-        this.referenceProject = referenceProject;
+   
+    public void setValid(boolean isValid) {
+        this.isValid = isValid;
     }
+    
+    public String getReferenceProjectLabel() {
+        return referenceProjectLabel;
+    }
+ 
+    public void setReferenceProjectLabel(String referenceProjectLabel) {
+        this.referenceProjectLabel = referenceProjectLabel;
+    } 
 }
