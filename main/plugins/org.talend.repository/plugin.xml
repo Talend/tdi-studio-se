@@ -3019,6 +3019,15 @@
               name="SnowflakeConvertToUpperCaseMigrationTask"
               version="7.0.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="6.4.2"
+              class="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
+              description="Change output Date pattern to 'yyyy-MM-dd'"
+              id="org.talend.repository.model.migration.AddSchemaDatePatternUseForImpalaTask"
+              name="AddSchemaDatePatternUseForImpalaTask"
+              version="6.4.2">
+        </projecttask>
    </extension>
 
    <extension
