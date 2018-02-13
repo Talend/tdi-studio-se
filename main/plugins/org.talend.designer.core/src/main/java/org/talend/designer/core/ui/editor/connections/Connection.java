@@ -117,7 +117,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     public ArrayList<Integer> traceColumn = new ArrayList<Integer>();
 
-    private Map<String, Object> additinalInfoMap = new HashMap<>();
+    private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     // used only for copy / paste (will generate the name) && connection
     // creation
@@ -151,6 +151,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         param.setNumRow(1);
         param.setDefaultValue(param.getValue());
         addElementParameter(param);
+        updateInputConnection();
     }
 
     @Override
@@ -1931,16 +1932,27 @@ public class Connection extends Element implements IConnection, IPerformance, IA
 
     @Override
     public Object getInfo(String key) {
-        return additinalInfoMap.get(key);
+        return additionalInfoMap.get(key);
     }
 
     @Override
-    public void setInfo(String key, Object value) {
-        additinalInfoMap.put(key, value);
+    public void putInfo(String key, Object value) {
+        additionalInfoMap.put(key, value);
     }
 
     @Override
     public void onEvent(String event, Object... parameters) {
         // nothing to do
     }
+
+    @Override
+    public void cloneAddionalInfoTo(IAdditionalInfo targetAdditionalInfo) {
+        if (targetAdditionalInfo == null) {
+            return;
+        }
+        for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
+            targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
+        }
+    }
+
 }
