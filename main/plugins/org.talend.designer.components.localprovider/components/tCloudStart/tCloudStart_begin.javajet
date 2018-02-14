@@ -12,7 +12,8 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-	
+	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
 	String accesskey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 	String provider = ElementParameterParser.getValue(node, "__PROVIDER__");
 	String imageId = ElementParameterParser.getValue(node, "__IMAGE_ID__");
@@ -83,7 +84,11 @@
         });
         String instanceId = null;
         for (org.jclouds.compute.domain.NodeMetadata d : nodes_<%=cid%>) {
-            System.out.println(<%=instanceName%> + " (" + d.getId() + ") is " + d.getStatus() + ".");
+            <%if(isLog4jEnabled){%>
+                 log.warn(<%=instanceName%> + " (" + d.getId() + ") is " + d.getStatus() + ".");
+            <%} else { %>
+                System.out.println(<%=instanceName%> + " (" + d.getId() + ") is " + d.getStatus() + ".");
+            <%}%>
             if (org.jclouds.compute.domain.NodeMetadata.Status.SUSPENDED.equals(d.getStatus())) {
                 instanceId = d.getId();
             }
@@ -92,7 +97,11 @@
             }
         }
         if (instanceId != null) {
-            System.out.println("Starting " + <%=instanceName%> + " (" + instanceId + ")...");
+             <%if(isLog4jEnabled){%>
+                log.warn("Starting " + <%=instanceName%> + " (" + instanceId + ")...");
+             <%} else { %>
+                System.out.println("Starting " + <%=instanceName%> + " (" + instanceId + ")...");
+             <%}%>
             try {
                 client_<%=cid%>.resumeNode(instanceId);
                 hasToCreateNode_<%=cid%> = false;
@@ -101,7 +110,11 @@
            		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
            			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
            				ignoreException_<%=cid%> = true;
-           				System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+           			    <%if(isLog4jEnabled){%>
+                            log.error("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                        <%} else { %>
+                            System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                        <%}%>
            			}
            		}
            		if(!ignoreException_<%=cid%>) {
@@ -173,7 +186,11 @@
 		    if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
 			    if("name".equals(e_<%=cid%>.getCause().getMessage())) {
 				    ignoreException_<%=cid%> = true;
-				    System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+				    <%if(isLog4jEnabled){%>
+                        log.error("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                    <%} else { %>
+                        System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                    <%}%>
 			    }
 		    }
 		
