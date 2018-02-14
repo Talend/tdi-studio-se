@@ -113,7 +113,7 @@ public class TalendJavaProjectManagerTest {
         ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager
                 .getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
 
-        validateProject(talendJavaProject);
+        validateProject(talendJavaProject, false);
 
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel() + "_"
                 + ERepositoryObjectType.ROUTINES.name();
@@ -122,9 +122,11 @@ public class TalendJavaProjectManagerTest {
 
     @Test
     public void testGetTalendJobJavaProject() throws Exception {
-        ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager.getTalendJobJavaProject(property);
+        boolean enbleMavenNature = false;
+        ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager
+                .getTalendJobJavaProject(property, enbleMavenNature);
 
-        validateProject(talendJavaProject);
+        validateProject(talendJavaProject, enbleMavenNature);
 
         String projectTechName = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel() + "_"
                 + property.getLabel().toUpperCase() + "_" + property.getVersion();
@@ -135,7 +137,7 @@ public class TalendJavaProjectManagerTest {
     public void testGetTempJavaProject() throws Exception {
         ITalendProcessJavaProject talendJavaProject = TalendJavaProjectManager.getTempJavaProject();
 
-        validateProject(talendJavaProject);
+        validateProject(talendJavaProject, true);
 
         assertEquals(TalendMavenConstants.PROJECT_NAME, talendJavaProject.getProject().getName());
     }
@@ -154,21 +156,24 @@ public class TalendJavaProjectManagerTest {
         assertFalse(TalendJavaProjectManager.getExistingTalendProject(tempProject.getProject()).getProject().exists());
     }
 
-    private void validateProject(ITalendProcessJavaProject talendJavaProject) throws Exception {
+    private void validateProject(ITalendProcessJavaProject talendJavaProject, boolean enbleMavenNature) throws Exception {
         assertNotNull(talendJavaProject);
         IProject project = talendJavaProject.getProject();
         assertNotNull(project);
         assertTrue(project.exists());
         assertTrue(project.isOpen());
-        assertTrue(project.hasNature(JavaCore.NATURE_ID));
-        assertTrue(project.hasNature("org.eclipse.m2e.core.maven2Nature"));
         assertTrue(project.hasNature(TalendJobNature.ID));
 
-        IJavaProject javaProject = talendJavaProject.getJavaProject();
-        assertNotNull(javaProject);
-        assertTrue(javaProject.exists());
-        assertTrue(javaProject.isOpen());
-        assertTrue(javaProject.getRawClasspath() != null && javaProject.getRawClasspath().length > 0);
+        if (enbleMavenNature) {
+            assertTrue(project.hasNature(JavaCore.NATURE_ID));
+            assertTrue(project.hasNature("org.eclipse.m2e.core.maven2Nature"));
+
+            IJavaProject javaProject = talendJavaProject.getJavaProject();
+            assertNotNull(javaProject);
+            assertTrue(javaProject.exists());
+            assertTrue(javaProject.isOpen());
+            assertTrue(javaProject.getRawClasspath() != null && javaProject.getRawClasspath().length > 0);
+        }
 
         assertTrue(talendJavaProject.getProjectPom().exists());
     }

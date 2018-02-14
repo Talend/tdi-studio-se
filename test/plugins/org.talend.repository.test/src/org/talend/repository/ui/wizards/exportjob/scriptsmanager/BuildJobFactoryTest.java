@@ -23,6 +23,8 @@ import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.designer.core.model.utils.emf.talendfile.TalendFileFactory;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 
@@ -31,15 +33,7 @@ import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
  */
 public class BuildJobFactoryTest {
 
-    @Test
-    public void test_createBuildJobHandler_JobExportType_OSGi() {
-        IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(PropertiesFactory.eINSTANCE.createProcessItem(),
-                "Default", "0.1", JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.OSGI);
-        Assert.assertNull("Have supportted OSGi, not support before", handler);
-    }
-
-    @Test
-    public void test_createBuildJobHandler_JobExportType_POJO() {
+    private ProcessItem createTestProcessItem() {
         Property property = PropertiesFactory.eINSTANCE.createProperty();
         property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
         property.setLabel("ABC");
@@ -47,6 +41,26 @@ public class BuildJobFactoryTest {
         property.setStatusCode(""); //$NON-NLS-1$
         ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
         processItem.setProperty(property);
+        ProcessType processType = TalendFileFactory.eINSTANCE.createProcessType();
+        processItem.setProcess(processType);
+        return processItem;
+    }
+
+    @Test
+    public void test_createBuildJobHandler_JobExportType_OSGi() {
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
+
+        IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
+                JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.OSGI);
+        Assert.assertNotNull("Can't build job for OSGi", handler);
+        Assert.assertEquals("use another BuildJobHandler for OSGi", BuildJobHandler.class.getName(), handler.getClass().getName());
+    }
+
+    @Test
+    public void test_createBuildJobHandler_JobExportType_POJO() {
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
                 JobScriptsManagerFactory.getDefaultExportChoiceMap(), JobExportType.POJO);
@@ -56,13 +70,8 @@ public class BuildJobFactoryTest {
 
     @Test
     public void test_createBuildJobHandler_JobExportType_null() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setLabel("ABC");
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
-        property.setStatusCode(""); //$NON-NLS-1$
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
-        processItem.setProperty(property);
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
                 JobScriptsManagerFactory.getDefaultExportChoiceMap(), (JobExportType) null);
@@ -72,13 +81,8 @@ public class BuildJobFactoryTest {
 
     @Test
     public void test_createBuildJobHandler_String_standalone() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setLabel("ABC");
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
-        property.setStatusCode(""); //$NON-NLS-1$
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
-        processItem.setProperty(property);
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
                 JobScriptsManagerFactory.getDefaultExportChoiceMap(), "STANDALONE");
@@ -88,13 +92,8 @@ public class BuildJobFactoryTest {
 
     @Test
     public void test_createBuildJobHandler_String_default_withoutSetting() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setLabel("ABC");
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
-        property.setStatusCode(""); //$NON-NLS-1$
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
-        processItem.setProperty(property);
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
                 JobScriptsManagerFactory.getDefaultExportChoiceMap(), (String) null);
@@ -104,13 +103,9 @@ public class BuildJobFactoryTest {
 
     @Test
     public void test_createBuildJobHandler_String_default_withStandaloneSetting() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setLabel("ABC");
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
-        property.setStatusCode(""); //$NON-NLS-1$
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
-        processItem.setProperty(property);
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
+
         property.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "STANDALONE");
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
@@ -121,13 +116,9 @@ public class BuildJobFactoryTest {
 
     @Test
     public void test_createBuildJobHandler_String_default_withOSGiSetting() {
-        Property property = PropertiesFactory.eINSTANCE.createProperty();
-        property.setAuthor(((RepositoryContext) CorePlugin.getContext().getProperty(Context.REPOSITORY_CONTEXT_KEY)).getUser());
-        property.setLabel("ABC");
-        property.setVersion(VersionUtils.DEFAULT_VERSION);
-        property.setStatusCode(""); //$NON-NLS-1$
-        ProcessItem processItem = PropertiesFactory.eINSTANCE.createProcessItem();
-        processItem.setProperty(property);
+        ProcessItem processItem = createTestProcessItem();
+        Property property = processItem.getProperty();
+
         property.getAdditionalProperties().put(TalendProcessArgumentConstant.ARG_BUILD_TYPE, "OSGI");
 
         IBuildJobHandler handler = BuildJobFactory.createBuildJobHandler(processItem, "Default", property.getVersion(),
