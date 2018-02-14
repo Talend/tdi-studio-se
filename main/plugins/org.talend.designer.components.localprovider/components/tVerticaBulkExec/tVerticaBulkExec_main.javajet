@@ -152,11 +152,11 @@ if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0)
 }
 %>
 }finally{
-	
+
 <%
     if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0) {
 %>
-		java.sql.Statement stmtTmpDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+        java.sql.Statement stmtTmpDrop_<%=cid%> = conn_<%=cid%>.createStatement();
 <%
         if(isLog4jEnabled){
 %>
