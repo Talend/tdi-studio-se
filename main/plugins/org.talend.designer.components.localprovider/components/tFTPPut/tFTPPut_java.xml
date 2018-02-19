@@ -75,9 +75,20 @@ COMPATIBILITY="ALL"
     	REQUIRED="true"
     	REPOSITORY_VALUE="PORT"
     	NUM_ROW="3"
-    	SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    	SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (FTPS == 'false')"
     	>
       <DEFAULT>21</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+    	NAME="FTPS_PORT"
+    	FIELD="TEXT"
+    	REQUIRED="true"
+    	REPOSITORY_VALUE="PORT"
+    	NUM_ROW="3"
+    	SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (FTPS == 'true')"
+    	>
+      <DEFAULT>990</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
