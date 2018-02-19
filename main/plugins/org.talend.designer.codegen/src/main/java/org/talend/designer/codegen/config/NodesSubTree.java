@@ -512,7 +512,7 @@ public class NodesSubTree {
             });
         }
 
-        return mergeBranchStarts;
+        return new ArrayList<>(mergeBranchStarts);
     }
 
     public boolean isMergeSubTree() {
