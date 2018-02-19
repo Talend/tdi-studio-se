@@ -3023,9 +3023,9 @@
         <projecttask
               beforeLogon="false"
               breaks="7.0.1"
-              class="org.talend.repository.model.migration.AddDefaultFTPSPort"
-              id="org.talend.repository.model.migration.AddDefaultFTPSPort"
-              name="AddDefaultFTPSPort"
+              class="org.talend.repository.model.migration.AddDefaultFTPSPortMigrationTask"
+              id="org.talend.repository.model.migration.AddDefaultFTPSPortMigrationTask"
+              name="AddDefaultFTPSPortMigrationTask"
               version="7.0.1">
         </projecttask>
    </extension>

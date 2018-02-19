@@ -67,7 +67,7 @@
       FIELD="TEXT"
       REQUIRED="true"
       NUM_ROW="2"
-	  SHOW_IF="(FTPS == 'true')"
+      SHOW_IF="(FTPS == 'true')"
       REPOSITORY_VALUE="PORT"
     >
       <DEFAULT>990</DEFAULT>

@@ -16,8 +16,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
+import org.talend.migration.IMigrationTask.ExecutionResult;
 
-public class AddDefaultFTPSPort extends AbstractJobMigrationTask {
+public class AddDefaultFTPSPortMigrationTask extends AbstractJobMigrationTask {
 
     @Override
     public Date getOrder() {
@@ -44,28 +45,27 @@ public class AddDefaultFTPSPort extends AbstractJobMigrationTask {
 
                 private static final String DEFAULT_FTPS_PORT = "990"; //$NON-NLS-1$
 
+                private static final String PROPERTY_TYPE = "TEXT"; //$NON-NLS-1$
+
+                private static final String FTPS_PORT_PROPERTY_NAME = "FTPS_PORT"; //$NON-NLS-1$
+
+                private static final String FTPS_PROPERTY_NAME = "FTPS"; //$NON-NLS-1$
+
+                private static final String OLD_PORT_PROPERTY_NAME = "PORT"; //$NON-NLS-1$
+
                 @Override
                 public void transform(NodeType node) {
-
-                    String propertyType = "TEXT"; //$NON-NLS-1$
-                    String ftpsPortPropertyName = "FTPS_PORT"; //$NON-NLS-1$
-                    String ftpsPropertyName = "FTPS"; //$NON-NLS-1$
-                    String oldPortPropertyName = "PORT"; //$NON-NLS-1$
-
-                    if (ComponentUtilities.getNodeProperty(node, ftpsPortPropertyName) == null) {
-                        ComponentUtilities.addNodeProperty(node, ftpsPortPropertyName, propertyType);
+                    if (ComponentUtilities.getNodeProperty(node, FTPS_PORT_PROPERTY_NAME) == null) {
+                        ComponentUtilities.addNodeProperty(node, FTPS_PORT_PROPERTY_NAME, PROPERTY_TYPE);
                     }
-                    ElementParameterType ftpsProperty = ComponentUtilities.getNodeProperty(node, ftpsPropertyName);
-                    if ((ftpsProperty != null) && ("true".equals(ftpsProperty.getValue()))) { //$NON-NLS-1$
-                        ElementParameterType oldPortProperty = ComponentUtilities.getNodeProperty(node, oldPortPropertyName);
-                        if (oldPortProperty != null) {
-                            String oldPortValue = oldPortProperty.getValue();
-                            ComponentUtilities.setNodeValue(node, ftpsPortPropertyName, oldPortValue); // $NON-NLS-1$
-                        }
-                        return;
+                    ElementParameterType ftpsProperty = ComponentUtilities.getNodeProperty(node, FTPS_PROPERTY_NAME);
+                    ElementParameterType oldPortProperty = ComponentUtilities.getNodeProperty(node, OLD_PORT_PROPERTY_NAME);
+                    if ((ftpsProperty != null) && (oldPortProperty != null) && ("true".equals(ftpsProperty.getValue()))) { //$NON-NLS-1$
+                        String oldPortValue = oldPortProperty.getValue();
+                        ComponentUtilities.setNodeValue(node, FTPS_PORT_PROPERTY_NAME, oldPortValue);
+                    } else {
+                        ComponentUtilities.setNodeValue(node, FTPS_PORT_PROPERTY_NAME, DEFAULT_FTPS_PORT);
                     }
-
-                    ComponentUtilities.setNodeValue(node, ftpsPortPropertyName, DEFAULT_FTPS_PORT); // $NON-NLS-1$
 
                 }
 
@@ -80,7 +80,7 @@ public class AddDefaultFTPSPort extends AbstractJobMigrationTask {
             return ExecutionResult.SUCCESS_NO_ALERT;
         } catch (Exception e) {
             ExceptionHandler.process(e);
-            return null;
+            return ExecutionResult.FAILURE;
         }
     }
 
