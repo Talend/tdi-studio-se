@@ -53,7 +53,9 @@ import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -62,6 +64,7 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.BuildType;
 import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.ui.editor.ProcessEditorInput;
 import org.talend.designer.core.ui.editor.cmd.MavenDeploymentValueChangeCommand;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.utils.PomIdsHelper;
@@ -102,16 +105,28 @@ public class DeploymentComposite extends AbstractTabComposite {
 
     private boolean isService;
 
+    private boolean isProcessItem;
+    
     private boolean isDataServiceJob; // Is ESB SOAP Service Job
 
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
         super(parent, style, widgetFactory, repositoryViewObject);
+        if (repositoryViewObject instanceof Process) {
+        	process = (Process) repositoryViewObject;
+        } else if (repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS) ||
+        		repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) || 
+    			repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE)) {
+        	isProcessItem = true;
+        	ProcessItem i = (ProcessItem) repositoryViewObject.getProperty().getItem();
+        	try {
+        		process = (Process)(new ProcessEditorInput(i, true, null, false).getLoadedProcess());
+			} catch (PersistenceException e) {}
+        }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
             esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
         }
-        if (repositoryViewObject instanceof Process) {
-            process = (Process) repositoryViewObject;
+        if (repositoryViewObject instanceof Process || isProcessItem) {
             commandStack = process.getCommandStack();
             defaultVersion = getDefaultVersion(process.getVersion());
 
@@ -149,7 +164,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
 
-            if (!currentVersion.equals(latestVersion) || isDataServiceJob) {
+            if (!currentVersion.equals(latestVersion) || isDataServiceJob || isProcessItem) {
                 groupIdCheckbox.setEnabled(false);
                 groupIdText.setEnabled(false);
                 versionCheckbox.setEnabled(false);
@@ -157,6 +172,9 @@ public class DeploymentComposite extends AbstractTabComposite {
                 snapshotCheckbox.setEnabled(false);
                 if (buildTypeCombo != null) {
                     buildTypeCombo.getCCombo().setEnabled(false);
+                }
+                if (buildTypeLabel != null) {
+                	buildTypeLabel.setEnabled(false);
                 }
             }
         } catch (PersistenceException e) {
