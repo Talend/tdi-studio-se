@@ -636,7 +636,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         return additionalHeightSize;
     }
 
-    private void resizeScrolledComposite() {
+    protected void resizeScrolledComposite() {
 
         lastCompositeSize = getParent().getClientArea().height;
 
