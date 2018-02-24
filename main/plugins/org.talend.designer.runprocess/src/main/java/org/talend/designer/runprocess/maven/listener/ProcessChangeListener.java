@@ -98,8 +98,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 } else {
                     String[] oldFields = (String[]) oldValue;
                     if (oldFields.length == 0) {
-                        //case import project.
-                        TalendJavaProjectManager.generatePom((ProcessItem) property.getItem());
+                        // Do nothing case import project
                         return;
                     }
                     String oldName = oldFields[0];
