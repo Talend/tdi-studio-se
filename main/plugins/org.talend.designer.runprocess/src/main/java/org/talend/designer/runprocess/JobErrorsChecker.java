@@ -61,6 +61,10 @@ public class JobErrorsChecker {
 
     public static List<IContainerEntry> getErrors() {
         List<IContainerEntry> input = new ArrayList<IContainerEntry>();
+        if(LastGenerationInfo.getInstance() == null  || 
+        		LastGenerationInfo.getInstance().getLastMainJob() == null) {
+        	return input;
+        }
         try {
             Item item = null;
             IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
