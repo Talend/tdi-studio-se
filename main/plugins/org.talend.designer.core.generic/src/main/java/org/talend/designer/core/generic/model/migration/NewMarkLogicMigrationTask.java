@@ -85,11 +85,16 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
                     }
                 }
             }
+
+            if ("useExternalMLCP".equals(namedThingName)) {
+                Property<Boolean> useExternalMLCP = (Property<Boolean>) currNamedThing;
+                useExternalMLCP.setValue(true);
+            }
         }
     }
 
     private boolean schmemaIsEmpty(NamedThing schemaProperty) {
-        return ((Property<Schema>)schemaProperty).getValue().getFields().size() == 0;
+        return ((Property<Schema>) schemaProperty).getValue().getFields().size() == 0;
     }
 
     private List<ConnectionType> getAllInputMainConnectors(NodeType nodeType) {
@@ -108,8 +113,8 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
     private NodeType getSourceNode(List<ConnectionType> mainConnectors, NodeType target) {
         String sourceNodeUniqueName = null;
         if (!mainConnectors.isEmpty()) {
-          //could be only 1 input main connector
-          sourceNodeUniqueName = mainConnectors.get(0).getSource(); 
+            // could be only 1 input main connector
+            sourceNodeUniqueName = mainConnectors.get(0).getSource();
         }
 
         List<NodeType> allNodes = getProcessType(item).getNode();
@@ -139,7 +144,8 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
         return SchemaUtils.convertTalendSchemaIntoComponentSchema(ConvertionHelper.convert(metadataTable));
     }
 
-    private MetadataType getAppropriateMetadata(List<MetadataType> allSourceNodeMetadatas, List<ConnectionType> allInputMainConnectors) {
+    private MetadataType getAppropriateMetadata(List<MetadataType> allSourceNodeMetadatas,
+            List<ConnectionType> allInputMainConnectors) {
         MetadataType sourceMetadata = null;
         if (allSourceNodeMetadatas.size() == 1) {
             sourceMetadata = allSourceNodeMetadatas.get(0);
@@ -154,7 +160,7 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
         }
         return sourceMetadata;
     }
-    
+
     @Override
     protected ElementParameterType getParameterType(NodeType node, String paramName) {
         ElementParameterType paramType = ParameterUtilTool.findParameterType(node, paramName);
