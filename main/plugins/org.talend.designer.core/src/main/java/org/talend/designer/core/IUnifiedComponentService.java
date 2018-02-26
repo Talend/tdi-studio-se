@@ -82,4 +82,9 @@ public interface IUnifiedComponentService extends IService {
 
     public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword);
+
+    public String getComponentDisplayNameForPalette(IComponent delegateComponent, String keyWord);
+
+    public IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter);
+
 }

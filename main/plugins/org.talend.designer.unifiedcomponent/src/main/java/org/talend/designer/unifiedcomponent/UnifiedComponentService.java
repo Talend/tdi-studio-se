@@ -23,6 +23,7 @@ import java.util.Set;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -398,4 +399,47 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         }
 
     }
+
+    @Override
+    public String getComponentDisplayNameForPalette(IComponent delegateComponent, String filter) {
+        if (delegateComponent instanceof DelegateComponent) {
+            DelegateComponent dcomp = (DelegateComponent) delegateComponent;
+            if (filter != null) {
+                for (UnifiedObject obj : dcomp.getUnifiedObjects()) {
+                    if (matchFilter(obj, filter)) {
+                        return dcomp.getName() + "(" + obj.getDatabase() + ")";
+                    }
+                }
+
+            }
+        }
+        return delegateComponent.getName();
+    }
+
+    @Override
+    public IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter) {
+        if (delegateComponent instanceof DelegateComponent) {
+            DelegateComponent dcomp = (DelegateComponent) delegateComponent;
+            if (filter != null) {
+                for (UnifiedObject obj : dcomp.getUnifiedObjects()) {
+                    if (matchFilter(obj, filter)) {
+                        IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
+                                IComponentsService.class);
+                        IComponent emfComponent = compService.getComponentsFactory().get(obj.getComponentName(),
+                                dcomp.getPaletteType());
+                        return emfComponent;
+                    }
+                }
+
+            }
+        }
+        return null;
+    }
+
+    private boolean matchFilter(UnifiedObject obj, String filter) {
+        boolean match = obj.getDatabase().equalsIgnoreCase(filter) || obj.getComponentName().equalsIgnoreCase(filter)
+                || obj.getComponentName().substring(1).equalsIgnoreCase(filter);
+        return match;
+    }
+
 }

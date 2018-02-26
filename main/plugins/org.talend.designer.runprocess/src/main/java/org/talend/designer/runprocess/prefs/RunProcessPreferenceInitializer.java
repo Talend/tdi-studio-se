@@ -106,6 +106,14 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
                     if (batContent != null) {
                         projectSettingStore.setDefault(IProjectSettingPreferenceConstants.TEMPLATE_BAT, batContent);
                     }
+                    
+                    InputStream psStream = templateManager
+                            .readBundleStream(IProjectSettingTemplateConstants.PATH_RESOURCES_TEMPLATES + '/'
+                                    + IProjectSettingTemplateConstants.JOB_RUN_PS_TEMPLATE_FILE_NAME);
+                    String psContent = MavenTemplateManager.getContentFromInputStream(psStream);
+                    if (psContent != null) {
+                        projectSettingStore.setDefault(IProjectSettingPreferenceConstants.TEMPLATE_PS, psContent);
+                    }
 
                     InputStream jobInfoStream = templateManager
                             .readBundleStream(IProjectSettingTemplateConstants.PATH_RESOURCES_TEMPLATES + '/'

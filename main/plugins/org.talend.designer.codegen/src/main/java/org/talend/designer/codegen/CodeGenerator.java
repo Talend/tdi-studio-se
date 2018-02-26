@@ -548,6 +548,7 @@ public class CodeGenerator implements ICodeGenerator {
                 }
                 break;
             case END:
+                codeComponent.append(generateSeperateEndCode(subProcess, node, incomingName, typeGen));
                 if (isOnRowsEnd) {
 
                     codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.BEGIN, typeGen));
@@ -611,6 +612,34 @@ public class CodeGenerator implements ICodeGenerator {
             subProcess.markNode(node, part);
         }
 
+        return codeComponent;
+    }
+
+    private StringBuffer generateSeperateEndCode(NodesSubTree subProcess, INode node, String incomingName, ETypeGen typeGen)
+            throws CodeGeneratorException {
+        StringBuffer codeComponent = new StringBuffer();
+        boolean needSeperateEnd = false;
+        IComponent component = node.getComponent();
+        if (component != null) {
+            List<ECodePart> availableCodeParts = component.getAvailableCodeParts();
+            if (availableCodeParts != null) {
+                boolean hasEndHead = availableCodeParts.contains(ECodePart.END_HEAD);
+                boolean hasEndBody = availableCodeParts.contains(ECodePart.END_BODY);
+                boolean hasEndTail = availableCodeParts.contains(ECodePart.END_TAIL);
+                needSeperateEnd = (hasEndHead || hasEndBody || hasEndTail);
+            }
+        }
+        if (needSeperateEnd) {
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END_HEAD, incomingName, typeGen));
+
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.MAIN, incomingName, typeGen));
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_BEGIN, incomingName, typeGen));
+            codeComponent.append(generatesTreeCode(subProcess, node, ECodePart.MAIN, typeGen));
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.PROCESS_DATA_END, incomingName, typeGen));
+
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END_BODY, incomingName, typeGen));
+            codeComponent.append(generateComponentCode(subProcess, node, ECodePart.END_TAIL, incomingName, typeGen));
+        }
         return codeComponent;
     }
 

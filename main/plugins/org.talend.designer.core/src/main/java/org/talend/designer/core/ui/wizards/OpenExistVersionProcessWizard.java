@@ -14,6 +14,12 @@ package org.talend.designer.core.ui.wizards;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -44,6 +50,7 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
+import org.talend.commons.utils.VersionUtils;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
@@ -63,6 +70,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.ui.editor.RepositoryEditorInput;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.services.IOpenJobScriptActionService;
 import org.talend.designer.codegen.ICodeGeneratorService;
 import org.talend.designer.codegen.ISQLPatternSynchronizer;
@@ -248,9 +256,37 @@ public class OpenExistVersionProcessWizard extends Wizard {
         if(lastVersion){
             getProperty().setVersion(mainPage.getNewVersion());
         }
+        
+        List<ProcessItem> testcaseList = new ArrayList<ProcessItem>();
+        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+        	ITestContainerProviderService testContainer = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
+        	List<ProcessItem> allTestCase = testContainer.getAllTestContainers((ProcessItem) processObject.getProperty().getItem());
+        	Map<String,List<ProcessItem>> testcaseMap = new HashMap<String, List<ProcessItem>>();
+    		for (ProcessItem testCaseItem : allTestCase) {
+    			String testId = testCaseItem.getProperty().getId();
+    			if(testcaseMap.get(testId)==null) {
+    				testcaseMap.put(testId, new ArrayList<ProcessItem>());
+    			}
+    			testcaseMap.get(testId).add(testCaseItem);
+    		}
+    		for (String id : testcaseMap.keySet()) {
+    			ProcessItem maxVersionTest = Collections.max(testcaseMap.get(id), new Comparator<ProcessItem>() {
+    				
+    				public int compare(ProcessItem o1, ProcessItem o2) {
+    					return VersionUtils.compareTo(o1.getProperty().getVersion(), o2.getProperty().getVersion());
+    				}
+    			});
+    			testcaseList.add(maxVersionTest);
+    		}
+        }
+        
         IProxyRepositoryFactory repositoryFactory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
         try {
             repositoryFactory.save(getProperty(), this.originaleObjectLabel, this.originalVersion);
+            for (ProcessItem item : testcaseList) {
+            	item.getProperty().setVersion(mainPage.getNewVersion());
+            	repositoryFactory.save(ProjectManager.getInstance().getCurrentProject(), item.getProperty());
+			}
             ExpressionPersistance.getInstance().jobNameChanged(originaleObjectLabel, processObject.getLabel());
             ProxyRepositoryFactory.getInstance().saveProject(ProjectManager.getInstance().getCurrentProject());
             return true;

@@ -613,6 +613,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                                     .contains(((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
                 category.add(EComponentCategory.GITHISTORY);
             }
+            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) ||
+            		((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)) {
+                category.add(EComponentCategory.DEPLOYMENT);
+            }
         } else if (obj instanceof IEditorPart) {
             if (CorePlugin.getDefault().getDiagramModelService().isBusinessDiagramEditor((IEditorPart) obj)) {
                 category.add(EComponentCategory.MAIN);

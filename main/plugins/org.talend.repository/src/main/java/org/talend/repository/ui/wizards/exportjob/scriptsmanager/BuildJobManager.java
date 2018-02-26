@@ -301,6 +301,7 @@ public class BuildJobManager {
             pMonitor.done();
         } finally {
             TimeMeasure.end(timeMeasureId);
+            ProcessorUtilities.resetExportConfig();
             // if active before, not disable and active still.
             if (!oldMeasureActived) {
                 TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;

@@ -46,9 +46,7 @@ import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.components.IMultipleComponentParameter;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataTable;
-import org.talend.core.model.metadata.MetadataToolAvroHelper;
 import org.talend.core.model.metadata.MetadataToolHelper;
-import org.talend.core.model.metadata.builder.ConvertionHelper;
 import org.talend.core.model.metadata.builder.connection.ConditionType;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.metadata.builder.connection.RuleType;
@@ -83,6 +81,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
@@ -104,9 +103,6 @@ import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
 import org.talend.repository.model.IProxyRepositoryFactory;
-
-import orgomg.cwm.objectmodel.core.CoreFactory;
-import orgomg.cwm.objectmodel.core.TaggedValue;
 
 /**
  * This class will create the list of nodes that will be used to generate the code.
@@ -174,6 +170,9 @@ public class DataProcess implements IGeneratingProcess {
     }
 
     private void copyElementParametersValue(IElement sourceElement, IElement targetElement) {
+        if (IAdditionalInfo.class.isInstance(sourceElement) && IAdditionalInfo.class.isInstance(targetElement)) {
+            IAdditionalInfo.class.cast(sourceElement).cloneAddionalInfoTo((IAdditionalInfo) targetElement);
+        }
         for (IElementParameter sourceParam : sourceElement.getElementParameters()) {
             IElementParameter targetParam = targetElement.getElementParameter(sourceParam.getName());
             if (targetParam != null) {
@@ -3231,6 +3230,9 @@ public class DataProcess implements IGeneratingProcess {
 
             dataConnec = new Connection(newGraphicalNode, target, connection.getLineStyle(), connection.getConnectorName(),
                     connection.getMetaName(), connection.getName(), connection.getUniqueName(), connection.isMonitorConnection());
+            if (IAdditionalInfo.class.isInstance(connection) && IAdditionalInfo.class.isInstance(dataConnec)) {
+                IAdditionalInfo.class.cast(connection).cloneAddionalInfoTo((IAdditionalInfo) dataConnec);
+            }
             // incomingConnections = (List<Connection>) target.getIncomingConnections();
             // if (incomingConnections == null) {
             // incomingConnections = new ArrayList<Connection>();

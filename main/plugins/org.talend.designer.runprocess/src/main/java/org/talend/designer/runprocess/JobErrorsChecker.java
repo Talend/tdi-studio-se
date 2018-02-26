@@ -61,6 +61,10 @@ public class JobErrorsChecker {
 
     public static List<IContainerEntry> getErrors() {
         List<IContainerEntry> input = new ArrayList<IContainerEntry>();
+        if(LastGenerationInfo.getInstance() == null  || 
+        		LastGenerationInfo.getInstance().getLastMainJob() == null) {
+        	return input;
+        }
         try {
             Item item = null;
             IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
@@ -350,6 +354,9 @@ public class JobErrorsChecker {
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {
+    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastMainJob() == null) {
+    		return;
+    	}
         Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
                 LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                 LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
@@ -420,6 +427,9 @@ public class JobErrorsChecker {
     }
     
     protected static void checkSubJobMultipleVersionsError() throws ProcessorException {
+    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastGeneratedjobs() == null) {
+    		return;
+    	}
         Set<JobInfo> jobInfos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
         Map<String, Set<String>> jobInfoMap = new HashMap<>();
         for (JobInfo jobInfo : jobInfos) {

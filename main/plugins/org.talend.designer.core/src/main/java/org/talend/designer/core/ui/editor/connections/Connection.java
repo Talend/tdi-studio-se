@@ -41,6 +41,7 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.TraceData;
 import org.talend.core.repository.model.ILocalRepositoryFactory;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.DesignerPlugin;
 import org.talend.designer.core.i18n.Messages;
@@ -60,7 +61,7 @@ import org.talend.designer.runprocess.IRunProcessService;
  * $Id$
  * 
  */
-public class Connection extends Element implements IConnection, IPerformance {
+public class Connection extends Element implements IConnection, IPerformance, IAdditionalInfo {
 
     public static final String NAME = "name"; //$NON-NLS-1$
 
@@ -116,6 +117,8 @@ public class Connection extends Element implements IConnection, IPerformance {
 
     public ArrayList<Integer> traceColumn = new ArrayList<Integer>();
 
+    private Map<String, Object> additionalInfoMap = new HashMap<>();
+
     // used only for copy / paste (will generate the name) && connection
     // creation
     public Connection(INode source, INode target, EConnectionType lineStyle, String connectorName, String metaName,
@@ -148,6 +151,7 @@ public class Connection extends Element implements IConnection, IPerformance {
         param.setNumRow(1);
         param.setDefaultValue(param.getValue());
         addElementParameter(param);
+        updateInputConnection();
     }
 
     @Override
@@ -517,6 +521,17 @@ public class Connection extends Element implements IConnection, IPerformance {
                     addElementParameter(tmpParam);
                 }
             }
+        }
+        updateInputConnection();
+    }
+
+    private void updateInputConnection() {
+        IComponent component = null;
+        if (this.target != null) {
+            component = this.target.getComponent();
+        }
+        if (component instanceof IAdditionalInfo) {
+            IAdditionalInfo.class.cast(component).onEvent(EVENT_UPDATE_INPUT_CONNECTION, target, this);
         }
     }
 
@@ -931,17 +946,27 @@ public class Connection extends Element implements IConnection, IPerformance {
         else if (getLineStyle().equals(EConnectionType.FLOW_MAIN) || getLineStyle().equals(EConnectionType.FLOW_REF)) {
             if (sourceNodeConnector.getDefaultConnectionType().equals(getLineStyle())) { // if it's the standard
                 // link
+                String linkName = sourceNodeConnector.getLinkName();
+                String inputName = (String) getInfo("INPUT_NAME"); //$NON-NLS-1$
+                if (inputName != null && !inputName.trim().isEmpty()) {
+                    linkName = inputName;
+                }
                 if (outputId >= 0) {
-                    labelText += " (" + sourceNodeConnector.getLinkName() + " order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    labelText += " (" + linkName + " order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 } else {
-                    labelText += " (" + sourceNodeConnector.getLinkName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                    labelText += " (" + linkName + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
             } else if (sourceNodeConnector.getBaseSchema().equals(EConnectionType.FLOW_MAIN.getName())) {
                 // link
+                String linkName = getLineStyle().getDefaultLinkName();
+                String inputName = (String) getInfo("INPUT_NAME"); //$NON-NLS-1$
+                if (inputName != null && !inputName.trim().isEmpty()) {
+                    linkName = inputName;
+                }
                 if (outputId >= 0) {
-                    labelText += " (" + getLineStyle().getDefaultLinkName() + " order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    labelText += " (" + linkName + " order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 } else {
-                    labelText += " (" + getLineStyle().getDefaultLinkName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+                    labelText += " (" + linkName + ")"; //$NON-NLS-1$ //$NON-NLS-2$
                 }
             } else {
                 if (outputId >= 0) {
@@ -1193,7 +1218,7 @@ public class Connection extends Element implements IConnection, IPerformance {
                 }
             }
         }
-
+        updateInputConnection();
     }
 
     int order = -1;
@@ -1904,4 +1929,30 @@ public class Connection extends Element implements IConnection, IPerformance {
     public ConnectionResuming getResuming() {
         return this.resuming;
     }
+
+    @Override
+    public Object getInfo(String key) {
+        return additionalInfoMap.get(key);
+    }
+
+    @Override
+    public void putInfo(String key, Object value) {
+        additionalInfoMap.put(key, value);
+    }
+
+    @Override
+    public void onEvent(String event, Object... parameters) {
+        // nothing to do
+    }
+
+    @Override
+    public void cloneAddionalInfoTo(IAdditionalInfo targetAdditionalInfo) {
+        if (targetAdditionalInfo == null) {
+            return;
+        }
+        for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
+            targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
+        }
+    }
+
 }

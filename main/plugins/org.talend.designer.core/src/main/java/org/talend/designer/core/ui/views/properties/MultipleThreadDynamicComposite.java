@@ -76,6 +76,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.editor.properties.controllers.GroupController;
 import org.talend.designer.core.ui.editor.subjobcontainer.SubjobContainer;
+import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -338,7 +339,17 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
      * Initialize all components for the defined section for this node.
      */
     public synchronized void addComponents(boolean forceRedraw, boolean reInitialize, int height) {
-        // achen modifed to fix feature 0005991 if composite.isDisposed return
+        placeComponents(forceRedraw, reInitialize, height);
+    }
+    
+    /**
+     * Initialize all SWT Controls for the defined section for this node.
+     * This method allows to override Composite layout logic, but without loosing code, which is added in
+     * MissingSettingsMultiThreadDynamicComposite.addComponents() and TopMessagesMultiThreadDynamicComposite.addComponents() child classes.
+     * Before MissingSettingsMultiThreadDynamicComposite child class should override addComponents() method, which leads to loosing features. 
+     */
+    protected synchronized void placeComponents(boolean forceRedraw, boolean reInitialize, int height) {
+     // achen modifed to fix feature 0005991 if composite.isDisposed return
         if (elem == null || composite.isDisposed()) {
             return;
         }
@@ -636,7 +647,7 @@ public class MultipleThreadDynamicComposite extends ScrolledComposite implements
         return additionalHeightSize;
     }
 
-    private void resizeScrolledComposite() {
+    protected void resizeScrolledComposite() {
 
         lastCompositeSize = getParent().getClientArea().height;
 

@@ -20,8 +20,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -45,6 +49,7 @@ import org.talend.designer.mapper.managers.MapperManager;
 import org.talend.designer.mapper.managers.MapperSettingsManager;
 import org.talend.designer.mapper.model.MapperSettingModel;
 import org.talend.designer.mapper.ui.listener.CommonListener;
+
 
 /**
  * DOC ycbai class global comment. Detailled comment
@@ -108,19 +113,19 @@ public class PropertySetDialog extends Dialog {
         container.setLayout(gridLayout);
 
         dieOnErrorButton = new Button(container, SWT.CHECK);
-        dieOnErrorButton.setText("Die on error");//$NON-NLS-1$
+        dieOnErrorButton.setText("Die on error");
 
         lookupInParallelButton = new Button(container, SWT.CHECK);
-        lookupInParallelButton.setText("Lookup in parallel");//$NON-NLS-1$
+        lookupInParallelButton.setText("Lookup in parallel");
         lookupInParallelButton.setEnabled(true);
         IComponent tempNode = ComponentsFactoryProvider.getInstance().get(
-                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
+                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());
         if (tempNode == null) {
             lookupInParallelButton.setVisible(false);
         }
 
         enableAutoConvertTypeBtn = new Button(container, SWT.CHECK);
-        enableAutoConvertTypeBtn.setText(Messages.getString("PropertySetDialog.Button.enable"));//$NON-NLS-1$
+        enableAutoConvertTypeBtn.setText(Messages.getString("PropertySetDialog.Button.enable"));
 
         final Group storeOnDiskGroup = new Group(container, SWT.NONE);
         storeOnDiskGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
@@ -136,65 +141,118 @@ public class PropertySetDialog extends Dialog {
 
         autoMapGroup = new Group(container, SWT.NONE);
         autoMapGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));//$NON-NLS-1$
+        autoMapGroup.setText(Messages.getString("PropertySetDialog.AutoMap.GroupName"));
 
-        GridLayout AutogridLayout = new GridLayout(3, false);
-        AutogridLayout.horizontalSpacing = 10;
-        AutogridLayout.marginRight = 100;
-        
-        autoMapGroup.setLayout(AutogridLayout);
+        FormLayout formLayout = new FormLayout();
+        autoMapGroup.setLayout(formLayout);
+
+        FormData formdata = new FormData();
+        formdata.height = 35;
+        formdata.width = 650;
+
         scale = new Scale(autoMapGroup, SWT.HORIZONTAL);
         scale.setMaximum(4);
         scale.setMinimum(0);
         scale.setPageIncrement(1);
-        GridData grid = new GridData();
-        grid.horizontalSpan = 3;
-        grid.widthHint = 490;
-        grid.heightHint = 30;
-        scale.setLayoutData(grid);
-        Composite comp = new Composite(autoMapGroup, SWT.NONE);
-        GridLayout compLayout = new GridLayout(5, false);
-        compLayout.horizontalSpacing = 34;
-        comp.setLayout(compLayout);
-        GridData grid1 = new GridData();
-        grid1.horizontalSpan = 3;
-        grid1.widthHint = 500;
-        grid1.heightHint = 19;
-        comp.setLayoutData(grid1);
-        Label label1 = new Label(comp, SWT.NONE);
+        scale.setLayoutData(formdata);
+        scale.getDisplay();
+
+        Label label1 = new Label(autoMapGroup, SWT.NONE);
         label1.setText("Exact Match");
-        Label label2 = new Label(comp, SWT.NONE);
+        formdata = new FormData();
+        label1.setLayoutData(formdata);
+        formdata.top = new FormAttachment(scale, 5);
+
+
+        Label label2 = new Label(autoMapGroup, SWT.NONE);
         label2.setText("Simple Match");
-        Label label3 = new Label(comp, SWT.NONE);
+        formdata = new FormData();
+        label2.setLayoutData(formdata);
+        formdata.top = new FormAttachment(scale, 5);
+
+        formdata.left = new FormAttachment(label1,
+                162 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label2.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+
+        Label label3 = new Label(autoMapGroup, SWT.NONE);
         label3.setText("Full Levenshtein");
-        Label label4 = new Label(comp, SWT.NONE);
+        formdata = new FormData();
+        label3.setLayoutData(formdata);
+        formdata.top = new FormAttachment(scale, 5);
+        formdata.left = new FormAttachment(label1,
+                324 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label3.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+
+        Label label4 = new Label(autoMapGroup, SWT.NONE);
         label4.setText("Full Jaccard");
-        Label label5 = new Label(comp, SWT.NONE);
+        formdata = new FormData();
+        label4.setLayoutData(formdata);
+        formdata.top = new FormAttachment(scale, 5);
+        formdata.left = new FormAttachment(label1,
+                482 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label4.computeSize(SWT.DEFAULT, SWT.DEFAULT).x / 2);
+
+        Label label5 = new Label(autoMapGroup, SWT.NONE);
         label5.setText("Super Fuzzy");
+        formdata = new FormData();
+        label5.setLayoutData(formdata);
+        formdata.top = new FormAttachment(scale, 5);
+        formdata.left = new FormAttachment(label1,
+                650 - label1.computeSize(SWT.DEFAULT, SWT.DEFAULT).x - label5.computeSize(SWT.DEFAULT, SWT.DEFAULT).x);
 
         Label levenshteinLabel = new Label(autoMapGroup, SWT.NONE);
         levenshteinLabel.setText("Levenshtein");
+        formdata = new FormData();
+        levenshteinLabel.setLayoutData(formdata);
+        formdata.top = new FormAttachment(label1, 5);
+
         levenshteinSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
         levenshteinSlider.setSize(200, 25);
         levenshteinSlider.setMaximum(101);
         levenshteinSlider.setMinimum(0);
         levenshteinSlider.setThumb(1);
+        formdata = new FormData();
+        levenshteinSlider.setLayoutData(formdata);
+        formdata.top = new FormAttachment(label1, 5);
+        formdata.left = new FormAttachment(levenshteinLabel, 10);
+
         levenshteinWeightLabel = new Label(autoMapGroup, SWT.NONE);
+        formdata = new FormData();
+        levenshteinWeightLabel.setLayoutData(formdata);
+        formdata.top = new FormAttachment(label1, 5);
+        formdata.left = new FormAttachment(levenshteinSlider, 10);
 
         Label jaccardLabel = new Label(autoMapGroup, SWT.NONE);
         jaccardLabel.setText("Jaccard");
+        formdata = new FormData();
+        jaccardLabel.setLayoutData(formdata);
+        formdata.top = new FormAttachment(levenshteinWeightLabel, 5);
+
         jaccardSlider = new Slider(autoMapGroup, SWT.HORIZONTAL);
         jaccardSlider.setSize(200, 25);
         jaccardSlider.setMaximum(101);
         jaccardSlider.setMinimum(0);
         jaccardSlider.setThumb(1);
-        jaccardWeightLabel = new Label(autoMapGroup, SWT.NONE);
+        formdata = new FormData();
+        jaccardSlider.setLayoutData(formdata);
+        formdata.top = new FormAttachment(levenshteinWeightLabel, 5);
+        formdata.left = new FormAttachment(levenshteinLabel, 10);
 
+        jaccardWeightLabel = new Label(autoMapGroup, SWT.NONE);
+        formdata = new FormData();
+        jaccardWeightLabel.setLayoutData(formdata);
+        formdata.top = new FormAttachment(levenshteinWeightLabel, 5);
+        formdata.left = new FormAttachment(jaccardSlider, 10);
+
+        scale.addSelectionListener(new SelectionListener() {
+            public void widgetSelected(SelectionEvent e) {
+                scale.setSelection(scale.getSelection());
+            }
+
+            public void widgetDefaultSelected(SelectionEvent e) {
+            }
+        });
         init();
         addListener();
         updateStatus();
         updateScale();
-        //
         return container;
     }
 
@@ -373,7 +431,7 @@ public class PropertySetDialog extends Dialog {
      */
     @Override
     protected Point getInitialSize() {
-        return new Point(600, 380);
+        return new Point(700, 420);// 480
     }
 
     @Override

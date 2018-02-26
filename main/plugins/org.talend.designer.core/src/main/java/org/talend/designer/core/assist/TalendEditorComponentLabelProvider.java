@@ -2,10 +2,21 @@ package org.talend.designer.core.assist;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Text;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.ui.images.CoreImageProvider;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 
 class TalendEditorComponentLabelProvider extends LabelProvider {
+
+    private Text assistText;
+
+    /**
+     * DOC wchen TalendEditorComponentLabelProvider constructor comment.
+     */
+    public TalendEditorComponentLabelProvider(Text assistText) {
+        this.assistText = assistText;
+    }
 
     /*
      * return the icon of each proposal(non-Javadoc)
@@ -36,6 +47,9 @@ class TalendEditorComponentLabelProvider extends LabelProvider {
             String label = proposal.getLabel();
             IComponent iComponent = proposal.getComponent();
             if (iComponent != null) {
+                if (!assistText.isDisposed()) {
+                    label = UnifiedComponentUtil.getComponentDisplayNameForPalette(iComponent, assistText.getText());
+                }
                 return label + " - " + iComponent.getOriginalFamilyName(); //$NON-NLS-1$
             } else {
                 return label;

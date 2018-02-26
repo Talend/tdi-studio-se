@@ -3243,7 +3243,11 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     public String generateUniqueNodeName(INode node) {
-        String baseName = node.getComponent().getOriginalName();
+        IComponent component = node.getComponent();
+        if (node instanceof Node) {
+            component = ((Node) node).getDelegateComponent();
+        }
+        String baseName = component.getOriginalName();
         return UniqueNodeNameGenerator.generateUniqueNodeName(baseName, uniqueNodeNameList);
     }
 
@@ -3569,12 +3573,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
             // }
             setPropertyValue(updataComponentParamName, Boolean.TRUE);
         }
-        if(id.equals(EParameterName.DRIVER_JAR.getName()) || id.equals("DRIVER_JAR_IMPLICIT_CONTEXT")){
+        if (id.equals(EParameterName.DRIVER_JAR.getName()) || id.equals("DRIVER_JAR_IMPLICIT_CONTEXT")) {
             ConnectionUtil.getDriverJar(value);
         }
         super.setPropertyValue(id, value);
     }
-    
+
     @Override
     public Property getProperty() {
         return property;

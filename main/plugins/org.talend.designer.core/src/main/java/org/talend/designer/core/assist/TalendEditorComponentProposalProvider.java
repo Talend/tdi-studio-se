@@ -30,6 +30,7 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
     protected TalendEditorComponentCreationAssist componentAssistant;
 
     protected IProcess2 process;
+
     /**
      * Construct a TalendEditorComponentProposalProvider whose content proposals are always the specified set of
      * Component.
@@ -74,6 +75,7 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
                 }
             }
         }
+
         if (relatedComponent != null && !relatedComponent.isEmpty()) {
             Iterator<IComponent> iter = relatedComponent.iterator();
             while (iter.hasNext()) {
@@ -95,14 +97,14 @@ class TalendEditorComponentProposalProvider implements IContentProposalProvider 
         return proposalList.toArray(new IContentProposal[0]);
 
     }
-    
-	private boolean isJobletItem() {
-		if (process != null && process.getProperty() != null
-				&& GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-			IJobletProviderService jobletservice = (IJobletProviderService) GlobalServiceRegister.getDefault()
-					.getService(IJobletProviderService.class);
-			return jobletservice.isJobletItem(process.getProperty().getItem());
-		}
-		return false;
-	}
+
+    private boolean isJobletItem() {
+        if (process != null && process.getProperty() != null
+                && GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+            IJobletProviderService jobletservice = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                    IJobletProviderService.class);
+            return jobletservice.isJobletItem(process.getProperty().getItem());
+        }
+        return false;
+    }
 }

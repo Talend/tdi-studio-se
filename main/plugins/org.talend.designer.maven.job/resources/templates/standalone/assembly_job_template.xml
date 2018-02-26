@@ -29,6 +29,12 @@
 			<destName>${talend.job.name}_run.bat</destName>
 			<filtered>true</filtered>
 		</file>
+		<file> <!-- ps1 -->
+			<source>${basedir}/src/main/templates/Job_run_template.ps1</source>
+			<outputDirectory>${talend.job.name}</outputDirectory>
+			<destName>${talend.job.name}_run.ps1</destName>
+			<filtered>true</filtered>
+		</file>
 	</files>
 
 	<fileSets>

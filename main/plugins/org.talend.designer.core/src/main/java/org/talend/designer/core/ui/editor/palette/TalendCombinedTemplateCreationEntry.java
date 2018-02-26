@@ -28,7 +28,7 @@ import org.talend.designer.core.ui.editor.jobletcontainer.JobletUtil;
 public class TalendCombinedTemplateCreationEntry extends CombinedTemplateCreationEntry {
 
     protected Date timestemp;
-    
+
     protected IComponent component;
 
     /**
@@ -45,7 +45,7 @@ public class TalendCombinedTemplateCreationEntry extends CombinedTemplateCreatio
             ImageDescriptor iconSmall, ImageDescriptor iconLarge) {
         super(label, shortDesc, template, factory, iconSmall, iconLarge);
     }
-    
+
     /**
      * DOC cmeng TalendCombinedTemplateCreationEntry constructor comment.
      * 
@@ -63,6 +63,13 @@ public class TalendCombinedTemplateCreationEntry extends CombinedTemplateCreatio
         reSetLabel();
     }
 
+    public TalendCombinedTemplateCreationEntry(String label, String shortDesc, Object template, IComponent component,
+            ImageDescriptor iconSmall, ImageDescriptor iconLarge, String filter) {
+        super(label, shortDesc, template, new PaletteComponentFactory(component, filter), iconSmall, iconLarge);
+        this.component = component;
+        reSetLabel();
+    }
+
     public Date getTimestemp() {
         return this.timestemp;
     }
@@ -72,21 +79,22 @@ public class TalendCombinedTemplateCreationEntry extends CombinedTemplateCreatio
     }
 
     public void reSetLabel() {
-        if(this.component == null){
+        if (this.component == null) {
             return;
         }
         String s = this.getLabel();
-        if(!new JobletUtil().matchExpression(s)){
+        if (!new JobletUtil().matchExpression(s)) {
             return;
         }
-        if(component.getComponentType() != EComponentType.JOBLET){
+        if (component.getComponentType() != EComponentType.JOBLET) {
             return;
         }
         String[] names = s.split(":"); //$NON-NLS-1$
-        s = names[1]+"("+names[0]+")"; //$NON-NLS-1$ //$NON-NLS-2$
+        s = names[1] + "(" + names[0] + ")"; //$NON-NLS-1$ //$NON-NLS-2$
         this.setLabel(s);
     }
-    
-    
 
+    public String getComponentName() {
+        return component.getName();
+    }
 }

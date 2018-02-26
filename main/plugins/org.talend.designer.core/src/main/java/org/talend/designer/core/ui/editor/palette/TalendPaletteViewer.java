@@ -15,9 +15,6 @@ package org.talend.designer.core.ui.editor.palette;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -62,6 +59,7 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.ui.editor.TalendEditorPaletteFactory;
 import org.talend.designer.core.ui.editor.TalendEditorPaletteFactory.RecentlyUsedComponent;
 import org.talend.designer.core.ui.preferences.PaletteSettingsPreferencePage;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.themes.core.elements.stylesettings.TalendPaletteCSSStyleSetting;
 
 /**
@@ -501,6 +499,7 @@ public class TalendPaletteViewer extends PaletteViewer {
     }
 
     public void addRecentlyUsedComponent(IComponent component) {
+        IComponent delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         EComponentType componentType = component.getComponentType();
         if (componentType == EComponentType.JOBLET_INPUT_OUTPUT || componentType == EComponentType.JOBLET_TRIGGER) {
             return;
@@ -512,8 +511,9 @@ public class TalendPaletteViewer extends PaletteViewer {
             if (children != null) {
                 for (; insertIndex < children.size(); insertIndex++) {
                     TalendEntryEditPart entryEditPart = (TalendEntryEditPart) children.get(insertIndex);
-                    CombinedTemplateCreationEntry entryModule = (CombinedTemplateCreationEntry) entryEditPart.getModel();
-                    int compareResult = entryModule.getLabel().compareTo(component.getName());
+                    TalendCombinedTemplateCreationEntry entryModule = (TalendCombinedTemplateCreationEntry) entryEditPart
+                            .getModel();
+                    int compareResult = entryModule.getComponentName().compareTo(delegateComponent.getName());
                     if (0 == compareResult) {
                         alreadyExist = true;
                         break;
@@ -585,7 +585,7 @@ public class TalendPaletteViewer extends PaletteViewer {
                 for (Object obj : children) {
                     TalendCombinedTemplateCreationEntry entryModule = (TalendCombinedTemplateCreationEntry) obj;
                     RecentlyUsedComponent recentlyUsedComponent = new RecentlyUsedComponent();
-                    recentlyUsedComponent.setName(entryModule.getLabel());
+                    recentlyUsedComponent.setName(entryModule.getComponentName());
                     recentlyUsedComponent.setTimestamp(entryModule.getTimestemp());
                     recentlyUsedList.add(recentlyUsedComponent);
                 }
@@ -603,7 +603,11 @@ public class TalendPaletteViewer extends PaletteViewer {
                 for (Object obj : children) {
                     TalendEntryEditPart entryEditPart = (TalendEntryEditPart) obj;
                     CombinedTemplateCreationEntry entryModule = (CombinedTemplateCreationEntry) entryEditPart.getModel();
-                    if (entryModule.getLabel().equals(component.getLabel())) {
+                    String entryLabel = component.getLabel();
+                    if (component instanceof TalendCombinedTemplateCreationEntry) {
+                        // entryLabel = ((TalendCombinedTemplateCreationEntry) component).getComponentName();
+                    }
+                    if (entryModule.getLabel().equals(entryLabel)) {
                         PaletteDrawer paletteDrawer = recentlyUsedEditPart.getDrawer();
                         if (paletteDrawer != null) {
                             paletteDrawer.remove(entryModule);

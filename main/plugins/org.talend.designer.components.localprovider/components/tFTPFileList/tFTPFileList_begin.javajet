@@ -15,6 +15,7 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();  
 String host = ElementParameterParser.getValue(node, "__HOST__");
 String port = ElementParameterParser.getValue(node, "__PORT__");
+String ftpsPort = ElementParameterParser.getValue(node, "__FTPS_PORT__");
 String user = ElementParameterParser.getValue(node, "__USERNAME__");
 
 boolean use_encoding = "true".equals(ElementParameterParser.getValue(node, "__USE_ENCODING__"));
@@ -268,7 +269,7 @@ if (sftp) {// *** sftp *** //
 				log.info("<%=cid%> -FTPS security Mode is <%=securityMode%>.");
 				log.info("<%=cid%> - Attempt to connect to '" + <%=host %> + "' with username '" + <%=user %>+ "'.");
 			<%}%>
-			ftp_<%=cid %>.connect(<%=host %>,<%=port %>);
+			ftp_<%=cid %>.connect(<%=host %>,<%=ftpsPort %>);
 <%
 			if(isLog4jEnabled){
 %>
