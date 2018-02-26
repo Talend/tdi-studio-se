@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -61,6 +61,10 @@ public class JobErrorsChecker {
 
     public static List<IContainerEntry> getErrors() {
         List<IContainerEntry> input = new ArrayList<IContainerEntry>();
+        if(LastGenerationInfo.getInstance() == null  || 
+        		LastGenerationInfo.getInstance().getLastMainJob() == null) {
+        	return input;
+        }
         try {
             Item item = null;
             IProxyRepositoryFactory proxyRepositoryFactory = CorePlugin.getDefault().getRepositoryService()
@@ -68,7 +72,9 @@ public class JobErrorsChecker {
             ITalendSynchronizer synchronizer = CorePlugin.getDefault().getCodeGeneratorService().createRoutineSynchronizer();
 
             Set<String> jobIds = new HashSet<String>();
-            for (JobInfo jobInfo : LastGenerationInfo.getInstance().getLastGeneratedjobs()) {
+            HashSet<JobInfo> jobInfos = new HashSet<>();
+            jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            for (JobInfo jobInfo : jobInfos) {
                 // TDI-28198:get right process item no matter the job open or close
                 List<IRepositoryViewObject> allVersions = proxyRepositoryFactory.getAllVersion(jobInfo.getJobId());
                 for (IRepositoryViewObject repositoryObject2 : allVersions) {
@@ -348,6 +354,9 @@ public class JobErrorsChecker {
     }
 
     private static void checkRoutinesCompilationError() throws ProcessorException {
+    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastMainJob() == null) {
+    		return;
+    	}
         Set<String> dependentRoutines = LastGenerationInfo.getInstance().getRoutinesNeededWithSubjobPerJob(
                 LastGenerationInfo.getInstance().getLastMainJob().getJobId(),
                 LastGenerationInfo.getInstance().getLastMainJob().getJobVersion());
@@ -418,6 +427,9 @@ public class JobErrorsChecker {
     }
     
     protected static void checkSubJobMultipleVersionsError() throws ProcessorException {
+    	if(LastGenerationInfo.getInstance() == null  || LastGenerationInfo.getInstance().getLastGeneratedjobs() == null) {
+    		return;
+    	}
         Set<JobInfo> jobInfos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
         Map<String, Set<String>> jobInfoMap = new HashMap<>();
         for (JobInfo jobInfo : jobInfos) {

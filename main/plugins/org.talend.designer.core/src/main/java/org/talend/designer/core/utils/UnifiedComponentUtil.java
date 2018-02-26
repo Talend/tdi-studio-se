@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
@@ -159,20 +161,49 @@ public class UnifiedComponentUtil {
         return selectedComponent;
     }
 
-    public static String getUnifiedCompDisplayName(IComponent delegateComponent, String emfComponent) {
+    public static String getUnifiedComponentDisplayName(IComponent delegateComponent, String emfComponent) {
         if (isDelegateComponent(delegateComponent)) {
             IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
             return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
         }
-        return null;
+        return delegateComponent.getName();
     }
 
     public static void refreshComponentViewTitle() {
-        ComponentSettingsView viewer = (ComponentSettingsView) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                .getActivePage().findView(ComponentSettingsView.ID);
+        if (!PlatformUI.isWorkbenchRunning()) {
+            return;
+        }
+        final IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        if (activeWorkbenchWindow == null) {
+            return;
+        }
+        final IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
+        if (activePage == null) {
+            return;
+        }
+        ComponentSettingsView viewer = (ComponentSettingsView) activePage.findView(ComponentSettingsView.ID);
         if (viewer != null) {
             viewer.updatePropertiesViewerTitle();
         }
     }
+
+    public static String getComponentDisplayNameForPalette(IComponent delegateComponent, String keyWord) {
+        if (isDelegateComponent(delegateComponent)) {
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
+                    IUnifiedComponentService.class);
+            return service.getComponentDisplayNameForPalette(delegateComponent, keyWord);
+        }
+        return delegateComponent.getName();
+    }
+
+    public static IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter) {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
+                    IUnifiedComponentService.class);
+            return service.getUnifiedComponentByFilter(delegateComponent, filter);
+        }
+        return null;
+    }
+
 }

@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -105,6 +105,14 @@ public class RunProcessPreferenceInitializer extends AbstractPreferenceInitializ
                     String batContent = MavenTemplateManager.getContentFromInputStream(batStream);
                     if (batContent != null) {
                         projectSettingStore.setDefault(IProjectSettingPreferenceConstants.TEMPLATE_BAT, batContent);
+                    }
+                    
+                    InputStream psStream = templateManager
+                            .readBundleStream(IProjectSettingTemplateConstants.PATH_RESOURCES_TEMPLATES + '/'
+                                    + IProjectSettingTemplateConstants.JOB_RUN_PS_TEMPLATE_FILE_NAME);
+                    String psContent = MavenTemplateManager.getContentFromInputStream(psStream);
+                    if (psContent != null) {
+                        projectSettingStore.setDefault(IProjectSettingPreferenceConstants.TEMPLATE_PS, psContent);
                     }
 
                     InputStream jobInfoStream = templateManager

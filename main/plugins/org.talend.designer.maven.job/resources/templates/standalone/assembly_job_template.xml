@@ -29,6 +29,12 @@
 			<destName>${talend.job.name}_run.bat</destName>
 			<filtered>true</filtered>
 		</file>
+		<file> <!-- ps1 -->
+			<source>${basedir}/src/main/templates/Job_run_template.ps1</source>
+			<outputDirectory>${talend.job.name}</outputDirectory>
+			<destName>${talend.job.name}_run.ps1</destName>
+			<filtered>true</filtered>
+		</file>
 	</files>
 
 	<fileSets>
@@ -148,14 +154,14 @@
 		<!-- If have children jobs, will add here -->
 		<fileSet><!-- microservice config files -->
 			<directory>${microservice.configs.dir}</directory>
-			<outputDirectory>${output.resources.dir}/</outputDirectory>
+			<outputDirectory>/</outputDirectory>
 			<includes>
 				<include>config/**</include>
 			</includes>
 		</fileSet>
 		<fileSet><!-- microservice running config files -->
 			<directory>${microservice.running.configs.dir}</directory>
-			<outputDirectory>${talend.job.name}</outputDirectory>
+			<outputDirectory>${talend.job.path}</outputDirectory>
 			<includes>
 				<include>config/**</include>
 			</includes>

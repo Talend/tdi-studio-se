@@ -74,9 +74,20 @@
     	REQUIRED="true"
     	NUM_ROW="11"
     	REPOSITORY_VALUE="PORT"
-    	SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    	SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (FTPS == 'false')"
     	>
       <DEFAULT>21</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="FTPS_PORT"
+      FIELD="TEXT"
+      REQUIRED="true"
+      NUM_ROW="11"
+      SHOW_IF="(USE_EXISTING_CONNECTION == 'false') AND (FTPS == 'true')"
+      REPOSITORY_VALUE="PORT"
+    >
+      <DEFAULT>990</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -157,7 +168,7 @@
       FIELD="PASSWORD"
       NUM_ROW="26"
       SHOW_IF="(FTPS=='true') AND (USE_EXISTING_CONNECTION == 'false')"
-      REPOSITORY_VALUE="KEYSTROE_PASS"
+      REPOSITORY_VALUE="KEYSTORE_PASS"
     >
       <DEFAULT>"123456"</DEFAULT>
     </PARAMETER>

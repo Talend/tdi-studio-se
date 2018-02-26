@@ -1,19 +1,19 @@
-<%@ jet 
+<%@ jet
 imports="
-    org.talend.core.model.process.INode 
-    org.talend.core.model.process.ElementParameterParser 
+    org.talend.core.model.process.INode
+    org.talend.core.model.process.ElementParameterParser
     org.talend.designer.codegen.config.CodeGeneratorArgument
-    org.talend.core.model.metadata.IMetadataTable 
-    org.talend.core.model.metadata.MetadataTalendType    
+    org.talend.core.model.metadata.IMetadataTable
+    org.talend.core.model.metadata.MetadataTalendType
     org.talend.core.model.metadata.MappingTypeRetriever
     org.talend.core.model.process.IConnection
-    org.talend.core.model.process.EConnectionType   
+    org.talend.core.model.process.EConnectionType
     org.talend.core.model.utils.NodeUtil
     java.util.List
     java.util.ArrayList
     java.util.Map
-    java.util.HashMap    
-" 
+    java.util.HashMap
+"
 skeleton="../templates/db_output_bulk.skeleton"
 %>
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
@@ -26,22 +26,22 @@ skeleton="../templates/db_output_bulk.skeleton"
     if(globalCid == null || "".equals(globalCid) || "\"\"".equals(globalCid)) {
         globalCid = cid;
     }
-    
+
     boolean is_stream = false;
     String connName = null;
     if (node.getIncomingConnections().size() == 1) {
       IConnection conn = node.getIncomingConnections().get(0);
       connName = conn.getName();
-      
+
       EConnectionType type = conn.getLineStyle();
-      is_stream = (type == EConnectionType.FLOW_MAIN); 
+      is_stream = (type == EConnectionType.FLOW_MAIN);
     }
-    
+
     String tableAction = ElementParameterParser.getValue(node,"__TABLE_ACTION__");
     String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     Manager manager = getManager(dbmsId, cid);
-    
-    List<IMetadataColumn> columnList = getColumnList(node);    
+
+    List<IMetadataColumn> columnList = getColumnList(node);
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
     String db_version = ElementParameterParser.getValue(node, "__DB_VERSION__");
     String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
@@ -134,41 +134,46 @@ if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0)
     java.sql.Statement stmtUpdateBulk_<%=cid%>= conn_<%=cid%>.createStatement();
 <%
     if(isLog4jEnabled){
-%>   
+%>
     log.info("<%=cid%>- Updating<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>from<%=manager.getLProtectedChar()%>"+tmpTableName_<%=cid%>+"<%=manager.getRProtectedChar()%>.");
-    
+
 <%
     }
 %>
     stmtUpdateBulk_<%=cid%>.executeUpdate("<%=manager.getUpdateBulkSQL(columnList)%>");
-    
+
 <%
     log4jCodeGenerateUtil.logInfo(node,"info",cid+" - Update has finished.");
 %>
-    
-    
+
     stmtUpdateBulk_<%=cid%>.close();
     tableName_<%=cid%>= tmpTableName_<%=cid%>;
-    java.sql.Statement stmtTmpDrop_<%=cid%>= conn_<%=cid%>.createStatement();
-    
 <%
-    if(isLog4jEnabled){
-%>
-    log.info("<%=cid%>- Droping temp table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>.");
-<%
-    }
-%>
-    stmtTmpDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
-    stmtTmpDrop_<%=cid%>.close();  
-<%
-    if(isLog4jEnabled){
-%>
-    log.info("<%=cid%>- Drop temp table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>has succeeded.");  
-<%
-    }
 }
 %>
 }finally{
+
+<%
+    if(("UPDATE").equals(dataAction) && columnList != null && columnList.size() > 0) {
+%>
+        java.sql.Statement stmtTmpDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+<%
+        if(isLog4jEnabled){
+%>
+        log.info("<%=cid%>- Dropping temp table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>.");
+<%
+        }
+%>
+        stmtTmpDrop_<%=cid%>.execute("<%=manager.getDropTableSQL()%>");
+        stmtTmpDrop_<%=cid%>.close();
+<%
+        if(isLog4jEnabled){
+%>
+        log.info("<%=cid%>- Drop temp table<%=manager.getLProtectedChar()%>" + tableName_<%=cid%>+ "<%=manager.getRProtectedChar()%>has succeeded.");
+<%
+        }
+    }
+%>
     if(fis_<%=cid %>!=null)
         fis_<%=cid%>.close();
 }

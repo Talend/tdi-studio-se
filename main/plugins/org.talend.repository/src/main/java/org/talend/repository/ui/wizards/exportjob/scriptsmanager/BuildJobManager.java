@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -301,6 +301,7 @@ public class BuildJobManager {
             pMonitor.done();
         } finally {
             TimeMeasure.end(timeMeasureId);
+            ProcessorUtilities.resetExportConfig();
             // if active before, not disable and active still.
             if (!oldMeasureActived) {
                 TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;

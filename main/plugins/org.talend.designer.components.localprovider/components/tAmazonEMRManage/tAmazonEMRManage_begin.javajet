@@ -214,7 +214,7 @@
 	
 	if(enable_debug) {
 %>
-	com.amazonaws.services.elasticmapreduce.util.StepFactory stepFactory_<%=cid%> = new com.amazonaws.services.elasticmapreduce.util.StepFactory();
+	com.amazonaws.services.elasticmapreduce.util.StepFactory stepFactory_<%=cid%> = new com.amazonaws.services.elasticmapreduce.util.StepFactory(<%=region%>+".elasticmapreduce");
 
 	com.amazonaws.services.elasticmapreduce.model.StepConfig enabledebugging_<%=cid%> = new com.amazonaws.services.elasticmapreduce.model.StepConfig()
     	.withName("Enable debugging")

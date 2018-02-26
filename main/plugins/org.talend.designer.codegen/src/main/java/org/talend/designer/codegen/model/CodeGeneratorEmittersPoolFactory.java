@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -209,6 +209,9 @@ public final class CodeGeneratorEmittersPoolFactory {
                 for (IComponent genericComponent : genericComponents) {
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.BEGIN, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.END, genericComponent, genericTemplates);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.END_HEAD, genericComponent, genericTemplates);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.END_BODY, genericComponent, genericTemplates);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.END_TAIL, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.MAIN, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_BEGIN, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_END, genericComponent, genericTemplates);

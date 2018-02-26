@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -424,6 +424,23 @@ public class Node extends Element implements IGraphicalNode {
     public Node(IComponent component) {
         this.oldcomponent = component;
         this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
+        this.process = ActiveProcessTracker.getCurrentProcess();
+        currentStatus = 0;
+
+        init(component);
+        initDefaultElementParameters();
+        IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
+        if (param != null) {
+            param.setValue(Boolean.TRUE);
+        }
+
+        updateComponentStatusIfNeeded(true);
+    }
+
+    public Node(IComponent delegateComponent, IComponent emfComponent) {
+        this.oldcomponent = emfComponent;
+        this.delegateComponent = delegateComponent;
+        this.component = emfComponent;
         this.process = ActiveProcessTracker.getCurrentProcess();
         currentStatus = 0;
 

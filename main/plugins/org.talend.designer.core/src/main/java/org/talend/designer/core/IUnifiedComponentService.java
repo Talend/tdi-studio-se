@@ -12,7 +12,7 @@ import org.talend.core.model.utils.IComponentName;
 
 // ============================================================================
 //
-// Copyright (C) 2006-2014 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -82,4 +82,9 @@ public interface IUnifiedComponentService extends IService {
 
     public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword);
+
+    public String getComponentDisplayNameForPalette(IComponent delegateComponent, String keyWord);
+
+    public IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter);
+
 }

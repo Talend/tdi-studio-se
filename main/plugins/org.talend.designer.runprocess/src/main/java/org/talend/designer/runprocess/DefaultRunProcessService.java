@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -58,6 +58,7 @@ import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.runprocess.data.PerformanceData;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -246,7 +247,8 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             } else {
-                if (routeService != null) {
+            	boolean isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(), false) == null;
+                if (routeService != null && !isImportedRoute ) {
                     return routeService.createJavaProcessor(process, property, filenameFromLabel, false);
                 }
             }

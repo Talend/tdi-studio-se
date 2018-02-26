@@ -11,34 +11,27 @@
     <fileSets>
         <fileSet> <!-- add java classes -->
             <directory>${project.build.outputDirectory}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>${talend.job.path}/**</include>
             </includes>
         </fileSet>
         <fileSet>
             <directory>${current.bundle.resources.dir}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>OSGI-INF/**</include>
             </includes>
         </fileSet>
         <fileSet> <!-- add resources -->
             <directory>${current.bundle.resources.dir}/resources</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>**</include>
             </includes>
         </fileSet>
         <fileSet> <!-- add lib -->
             <directory>${current.bundle.resources.dir}/lib</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>**</include>
-            </includes>
-        </fileSet>
-        <fileSet> <!-- add provided-lib -->
-            <directory>${current.bundle.resources.dir}/provided-lib</directory>
             <outputDirectory>lib</outputDirectory>
             <includes>
                 <include>**</include>

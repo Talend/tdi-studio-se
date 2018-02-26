@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.repository.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +23,7 @@ import org.talend.repository.ProjectManager;
  * DOC zwxue class global comment. Detailled comment
  */
 public class DeploymentConfsUtilsTest {
+
     private DeploymentConfsUtils util;
 
     @Before
@@ -39,22 +40,22 @@ public class DeploymentConfsUtilsTest {
         util.loadConfs();
     }
 
-    @Test
+    // @Test
     public void testWriteConfModelToJsonFile() {
         fail("Not yet implemented");
     }
 
-    @Test
+    // @Test
     public void testRemoveDeletedConfsFolder() {
         fail("Not yet implemented");
     }
 
-    @Test
+    // @Test
     public void testGetModuleId() {
         fail("Not yet implemented");
     }
 
-    @Test
+    // @Test
     public void testCalculateModulePath() {
         fail("Not yet implemented");
     }

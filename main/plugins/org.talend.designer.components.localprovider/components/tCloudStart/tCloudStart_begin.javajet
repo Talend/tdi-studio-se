@@ -12,7 +12,8 @@
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-	
+	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+
 	String accesskey = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
 	String provider = ElementParameterParser.getValue(node, "__PROVIDER__");
 	String imageId = ElementParameterParser.getValue(node, "__IMAGE_ID__");
@@ -65,76 +66,138 @@
 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
    	org.jclouds.compute.ComputeServiceContext context_<%=cid%> = org.jclouds.ContextBuilder.newBuilder("<%=providerId%>").credentials(<%=accesskey%>, decryptedPassword_<%=cid%>).buildView(org.jclouds.compute.ComputeServiceContext.class);
 	org.jclouds.compute.ComputeService client_<%=cid%> = context_<%=cid%>.getComputeService();
-	
-<%
-	if(proceedWithKeyPair && "CREATE_KEYPAIR".equals(keypairOption)) {
-%>
-		org.jclouds.aws.ec2.features.AWSKeyPairApi keyPairClient_<%=cid%> = context_<%=cid%>.unwrapApi(org.jclouds.aws.ec2.AWSEC2Api.class).getKeyPairApi().get();
-		org.jclouds.ec2.domain.KeyPair result_<%=cid%> = keyPairClient_<%=cid%>.createKeyPairInRegion(<%=region%>, <%=keypair%>);
-		java.io.FileWriter fstream_<%=cid%> = new java.io.FileWriter(<%=keypairFolder%> + "/" + <%=keypair%> +".pem");
-		java.io.BufferedWriter out_<%=cid%> = new java.io.BufferedWriter(fstream_<%=cid%>);
-		out_<%=cid%>.write(result_<%=cid%>.getKeyMaterial());
-		out_<%=cid%>.close();
-<%
-	}
 
-	if("AWS_EC2".equals(provider)) {
-%>
-		org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions options_<%=cid%> = new org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions();
+	boolean hasToCreateNode_<%=cid%> = true;
+	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = null;
+
 <%
-	}
-	if(proceedWithKeyPair && "CREATE_KEYPAIR".equals(keypairOption)) {
+    if(instanceCount == 1) {
 %>
-		options_<%=cid%>.overrideLoginPrivateKey(result_<%=cid%>.getKeyMaterial());
+        nodes_<%=cid%> = client_<%=cid%>.listNodesDetailsMatching(new com.google.common.base.Predicate<org.jclouds.compute.domain.NodeMetadata>() {
+             @Override
+             public boolean apply(org.jclouds.compute.domain.NodeMetadata nodeMetadata) {
+                 if (<%=instanceName%>.equals(nodeMetadata.getName())) {
+                     return true;
+                 }
+                 return false;
+             }
+        });
+        String instanceId = null;
+        for (org.jclouds.compute.domain.NodeMetadata d : nodes_<%=cid%>) {
+            <%if(isLog4jEnabled){%>
+                 log.warn(<%=instanceName%> + " (" + d.getId() + ") is " + d.getStatus() + ".");
+            <%} else { %>
+                System.out.println(<%=instanceName%> + " (" + d.getId() + ") is " + d.getStatus() + ".");
+            <%}%>
+            if (org.jclouds.compute.domain.NodeMetadata.Status.SUSPENDED.equals(d.getStatus())) {
+                instanceId = d.getId();
+            }
+            if (org.jclouds.compute.domain.NodeMetadata.Status.RUNNING.equals(d.getStatus())) {
+                hasToCreateNode_<%=cid%> = false;
+            }
+        }
+        if (instanceId != null) {
+             <%if(isLog4jEnabled){%>
+                log.warn("Starting " + <%=instanceName%> + " (" + instanceId + ")...");
+             <%} else { %>
+                System.out.println("Starting " + <%=instanceName%> + " (" + instanceId + ")...");
+             <%}%>
+            try {
+                client_<%=cid%>.resumeNode(instanceId);
+                hasToCreateNode_<%=cid%> = false;
+           	} catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
+           		boolean ignoreException_<%=cid%> = false;
+           		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
+           			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
+           				ignoreException_<%=cid%> = true;
+           			    <%if(isLog4jEnabled){%>
+                            log.error("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                        <%} else { %>
+                            System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                        <%}%>
+           			}
+           		}
+           		if(!ignoreException_<%=cid%>) {
+           			throw e_<%=cid%>;
+           		}
+           	}
+        }
 <%
-	}
+    }
 %>
-	options_<%=cid%>.as(<%="AWS_EC2".equals(provider)?"org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions":""%>.class)
-	.<%=(proceedWithKeyPair?("USE_EXISTING".equals(keypairOption)?"keyPair("+keypair+")":"keyPair(result_"+cid+".getKeyName())"):"noKeyPair()")%>
-	<%=securityGroupsString!=null?".securityGroups("+securityGroupsString+")":""%>
+    if(hasToCreateNode_<%=cid%>){
 <%
-	for(Map<String, String> volume : volumes) { //1
+	    if(proceedWithKeyPair && "CREATE_KEYPAIR".equals(keypairOption)) {
+%>
+    		org.jclouds.aws.ec2.features.AWSKeyPairApi keyPairClient_<%=cid%> = context_<%=cid%>.unwrapApi(org.jclouds.aws.ec2.AWSEC2Api.class).getKeyPairApi().get();
+    		org.jclouds.ec2.domain.KeyPair result_<%=cid%> = keyPairClient_<%=cid%>.createKeyPairInRegion(<%=region%>, <%=keypair%>);
+    		java.io.FileWriter fstream_<%=cid%> = new java.io.FileWriter(<%=keypairFolder%> + "/" + <%=keypair%> +".pem");
+    		java.io.BufferedWriter out_<%=cid%> = new java.io.BufferedWriter(fstream_<%=cid%>);
+    		out_<%=cid%>.write(result_<%=cid%>.getKeyMaterial());
+    		out_<%=cid%>.close();
+<%
+	    }
+
+    	if("AWS_EC2".equals(provider)) {
+%>
+    		org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions options_<%=cid%> = new org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions();
+<%
+	    }
+	    if(proceedWithKeyPair && "CREATE_KEYPAIR".equals(keypairOption)) {
+%>
+		    options_<%=cid%>.overrideLoginPrivateKey(result_<%=cid%>.getKeyMaterial());
+<%
+	    }
+%>
+	    options_<%=cid%>.as(<%="AWS_EC2".equals(provider)?"org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions":""%>.class)
+	    .<%=(proceedWithKeyPair?("USE_EXISTING".equals(keypairOption)?"keyPair("+keypair+")":"keyPair(result_"+cid+".getKeyName())"):"noKeyPair()")%>
+	    <%=securityGroupsString!=null?".securityGroups("+securityGroupsString+")":""%>
+<%
+	    for(Map<String, String> volume : volumes) { //1
 			String volume_type = volume.get("VOLUME_TYPE");
-			if("ROOT".equals(volume_type)) {
+		    	if("ROOT".equals(volume_type)) {
 %>
-				.mapNewVolumeToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("SIZE")%>, <%="true".equals(volume.get("DELETE_ON_TERMINATION"))%>)
+			    	.mapNewVolumeToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("SIZE")%>, <%="true".equals(volume.get("DELETE_ON_TERMINATION"))%>)
 <%
-			} else if("EBS".equals(volume_type)) {
+			    } else if("EBS".equals(volume_type)) {
 %>
-				.mapEBSSnapshotToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("SNAPSHOT_ID")%>, <%=volume.get("SIZE")%>, <%="true".equals(volume.get("DELETE_ON_TERMINATION"))%>)
+				    .mapEBSSnapshotToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("SNAPSHOT_ID")%>, <%=volume.get("SIZE")%>, <%="true".equals(volume.get("DELETE_ON_TERMINATION"))%>)
 <%
-			} else if("EPHEMERAL".equals(volume_type)) {
+			    } else if("EPHEMERAL".equals(volume_type)) {
 %>
-				.mapEphemeralDeviceToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("VIRTUAL_NAME")%>)
+				    .mapEphemeralDeviceToDeviceName(<%=volume.get("DEVICE")%>, <%=volume.get("VIRTUAL_NAME")%>)
 <%
-			}
-	}
+			    }
+	    }
 %>
 	;
 	
-	org.jclouds.compute.domain.Template template_<%=cid%> = context_<%=cid%>.getComputeService().templateBuilder()
-		.imageId(<%=region%> +"/" + <%=imageId%>)
-		.hardwareId(org.jclouds.ec2.domain.InstanceType.<%=type%>)
-		.locationId(<%=zone%>)
-		.options(options_<%=cid%>).build();
+    	org.jclouds.compute.domain.Template template_<%=cid%> = context_<%=cid%>.getComputeService().templateBuilder()
+	    	.imageId(<%=region%> +"/" + <%=imageId%>)
+		    .hardwareId(org.jclouds.ec2.domain.InstanceType.<%=type%>)
+		    .locationId(<%=zone%>)
+		    .options(options_<%=cid%>).build();
 	
-	java.util.Set<? extends org.jclouds.compute.domain.NodeMetadata> nodes_<%=cid%> = null;
-	
-	try {
-		nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
-	} catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
-		boolean ignoreException_<%=cid%> = false;
-		if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
-			if("name".equals(e_<%=cid%>.getCause().getMessage())) {
-				ignoreException_<%=cid%> = true;
-				System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
-			}
-		}
+
+    	try {
+	    	nodes_<%=cid%> = context_<%=cid%>.getComputeService().createNodesInGroup(<%=instanceName%>.toLowerCase(), <%=instanceCount%>, template_<%=cid%>);
+	    } catch(com.google.common.util.concurrent.UncheckedExecutionException e_<%=cid%>) {
+		    boolean ignoreException_<%=cid%> = false;
+		    if(e_<%=cid%>.getCause()!=null && (e_<%=cid%>.getCause() instanceof java.lang.NullPointerException)) {
+			    if("name".equals(e_<%=cid%>.getCause().getMessage())) {
+				    ignoreException_<%=cid%> = true;
+				    <%if(isLog4jEnabled){%>
+                        log.error("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                    <%} else { %>
+                        System.err.println("Some exception happen when get the running instance information object, you can avoid it by setting the key pair");
+                    <%}%>
+			    }
+		    }
 		
-		if(!ignoreException_<%=cid%>) {
-			throw e_<%=cid%>;
-		}
+		    if(!ignoreException_<%=cid%>) {
+			    throw e_<%=cid%>;
+		    }
+	    }
 	}
-	
 	globalMap.put("<%=cid %>_NODE_GROUP", <%=instanceName%>.toLowerCase());
 	globalMap.put("<%=cid %>_NODES", nodes_<%=cid%>);

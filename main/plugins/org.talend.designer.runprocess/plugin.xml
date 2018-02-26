@@ -169,6 +169,13 @@
           id="projectsetting.ShellBatSetting"
           title="Bat">
     </page>
+    <page
+          category="projectsetting.ShellSetting"
+          class="org.talend.designer.runprocess.prefs.ShellPs1SettingPreferencePage"
+          description="%ProjectSettingPage_ShellPs1SettingDesc"
+          id="projectsetting.ShellPs1Setting"
+          title="Ps1">
+    </page>
  </extension>
  <extension
        point="org.talend.designer.maven.mavenSetting">

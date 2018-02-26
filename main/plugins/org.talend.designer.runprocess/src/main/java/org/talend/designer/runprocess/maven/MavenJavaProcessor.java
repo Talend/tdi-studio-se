@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -21,7 +21,9 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -56,6 +58,7 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
+import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -333,7 +336,6 @@ public class MavenJavaProcessor extends JavaProcessor {
                 // for already installed sub jobs, can restore pom here directly
                 PomUtil.restorePomFile(getTalendJavaProject());
             }
-            // TODO copy resources to main job project.
             return;
         }
         if (isMainJob) {
@@ -356,6 +358,9 @@ public class MavenJavaProcessor extends JavaProcessor {
                     MavenProjectUtils.updateMavenProject(monitor, talendJavaProject.getProject());
                 }
             }
+
+            buildCacheManager.buildAllSubjobMavenProjects();
+
         }
         IFile jobJarFile = null;
         if (!TalendMavenConstants.GOAL_COMPILE.equals(goal)) {

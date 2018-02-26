@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -42,6 +42,7 @@ import org.eclipse.debug.core.IStreamListener;
 import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.ui.DebugUITools;
+import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -1073,10 +1074,8 @@ public class DebugProcessTosComposite extends TraceDebugProcessComposite {
                         if (!JobErrorsChecker.hasErrors(DebugProcessTosComposite.this.getShell())) {
 
                             if (config != null) {
-                                // PlatformUI.getWorkbench().
-                                // getActiveWorkbenchWindow
-                                // ().addPerspectiveListener(new
-                                // DebugInNewWindowListener());
+                                IPreferenceStore debugUiStore = DebugUITools.getPreferenceStore();
+                                debugUiStore.setValue(IDebugUIConstants.PREF_BUILD_BEFORE_LAUNCH, Boolean.FALSE);
                                 DebugUITools.launch(config, ILaunchManager.DEBUG_MODE);
 
                             } else {

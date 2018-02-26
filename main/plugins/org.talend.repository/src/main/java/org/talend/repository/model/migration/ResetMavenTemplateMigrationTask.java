@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2016 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -146,11 +146,13 @@ public class ResetMavenTemplateMigrationTask extends AbstractProjectMigrationTas
     }
 
     private void getAllCustomTemplates(File[] files, List<File> allTemplates, FileFilter filter) {
-        for (File file : files) {
-            if (file.isDirectory()) {
-                getAllCustomTemplates(file.listFiles(filter), allTemplates, filter);
-            } else {
-                allTemplates.add(file);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getAllCustomTemplates(file.listFiles(filter), allTemplates, filter);
+                } else {
+                    allTemplates.add(file);
+                }
             }
         }
     }

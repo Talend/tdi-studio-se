@@ -1,6 +1,6 @@
 // ============================================================================
 //
-// Copyright (C) 2006-2017 Talend Inc. - www.talend.com
+// Copyright (C) 2006-2018 Talend Inc. - www.talend.com
 //
 // This source code is available under agreement available at
 // %InstallDIR%\features\org.talend.rcp.branding.%PRODUCTNAME%\%PRODUCTNAME%license.txt
@@ -612,6 +612,10 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                             || ERepositoryObjectType.getAllTypesOfProcess()
                                     .contains(((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
                 category.add(EComponentCategory.GITHISTORY);
+            }
+            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) ||
+            		((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)) {
+                category.add(EComponentCategory.DEPLOYMENT);
             }
         } else if (obj instanceof IEditorPart) {
             if (CorePlugin.getDefault().getDiagramModelService().isBusinessDiagramEditor((IEditorPart) obj)) {
