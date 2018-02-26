@@ -37,6 +37,7 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -360,6 +361,16 @@ public class MavenJavaProcessor extends JavaProcessor {
             }
 
             buildCacheManager.buildAllSubjobMavenProjects();
+
+            if (CommonUIPlugin.isFullyHeadless()) {
+                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES, false);
+                if (ProcessUtils.isRequiredPigUDFs(null)) {
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF, false);
+                }
+                if (ProcessUtils.isRequiredBeans(null)) {
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS"), false); //$NON-NLS-1$
+                }
+            }
 
         }
         IFile jobJarFile = null;
