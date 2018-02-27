@@ -952,6 +952,8 @@ public class JobSettingsManager {
                 fileSparator = TalendQuoteUtils.removeQuotes(fileSparator);
                 if (fileSparator.equals("\\")) { //$NON-NLS-1$
                     fileSparator = TalendQuoteUtils.addQuotes("\\\\\\" + fileSparator); //$NON-NLS-1$
+                } else if (fileSparator.equals("||")) {// TUP-17232
+                    fileSparator = TalendQuoteUtils.addQuotes("\\\\" + "|" + "\\\\" + "|"); //$NON-NLS-1$
                 } else {
                     fileSparator = TalendQuoteUtils.addQuotes("\\\\" + fileSparator); //$NON-NLS-1$
                 }
@@ -1218,7 +1220,7 @@ public class JobSettingsManager {
     }
 
     private static List<String> getMetadataChars() {
-        String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
+        String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]", "||" };
         return Arrays.asList(metaChars);
     }
 }
