@@ -27,6 +27,7 @@ String cid = node.getUniqueName();
 String jsonField = ElementParameterParser.getValue(node, "__JSONFIELD__");
 String destination4JSON = ElementParameterParser.getValue(node, "__DESTINATION__");
 boolean istWriteJSONField = destination4JSON == null ? false : destination4JSON.contains("tWriteJSONField_");
+boolean isQuoteAllValues = ("true").equals(ElementParameterParser.getValue(node, "__QUOTE_ALL_VALUES__"));
 boolean isCompactFormat = ("true").equals(ElementParameterParser.getValue(node, "__COMPACT_FORMAT__"));
 final String whiteSpace;
 final String rowSeparator;
@@ -128,6 +129,8 @@ class GenerateToolByDom4j{
 	String cid = null;
 	boolean allowEmpty = false;
 	boolean outputAsXSD = false;
+    boolean istWriteJSONField = false;
+    boolean isQuoteAllValues = false;
 	XMLTool tool = null;
 	public void generateCode(XMLNode node, String currEleName, String parentName){
 		if(("ELEMENT").equals(node.type)){
@@ -222,6 +225,19 @@ class GenerateToolByDom4j{
 %>
 		if(<%tool.getValue(node);%>!=null){
 			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
+<%
+                if (istWriteJSONField && !isQuoteAllValues) {
+                    if (javaType == JavaTypesManager.BOOLEAN) {
+%>
+            <%=currEleName%>_<%=cid%>.addAttribute("type", "boolean");
+<%
+                    } else if (JavaTypesManager.isNumberType(javaType)) {
+%>
+            <%=currEleName%>_<%=cid%>.addAttribute("type", "number");
+<%
+                    }
+                }
+%>
 		}
 <%
 				if(outputAsXSD){
@@ -720,6 +736,8 @@ if(("Dom4j").equals(mode)){
     if(("true").equals(allowEmpty)){
     	generateToolByDom4j.allowEmpty = true;
     }
+    generateToolByDom4j.istWriteJSONField = istWriteJSONField;
+    generateToolByDom4j.isQuoteAllValues = isQuoteAllValues;
     generateToolByDom4j.cid = cid;
     generateToolByDom4j.tool = tool;
     

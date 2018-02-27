@@ -154,6 +154,9 @@
             <DEFAULT>tWriteXMLFieldOut_1</DEFAULT>
         </PARAMETER>
 
+        <PARAMETER NAME="QUOTE_ALL_VALUES" FIELD="CHECK" REQUIRED="true" NUM_ROW="20" SHOW="false">
+            <DEFAULT>false</DEFAULT>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>
