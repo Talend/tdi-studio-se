@@ -947,7 +947,16 @@ public class JobSettingsManager {
                     .getValue();
             String fileSparator = (String) process.getElementParameter(EParameterName.FIELDSEPARATOR.getName()).getValue();
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
-            String regex = FileSeparator.getSeparatorsRegexp(TalendQuoteUtils.removeQuotes(fileSparator));
+            if (getMetadataChars().contains(TalendQuoteUtils.removeQuotes(fileSparator))) {
+                // TDI-31730: in case the fileSeparator is one of the metacharacters,need to set the backslash
+                fileSparator = TalendQuoteUtils.removeQuotes(fileSparator);
+                if (fileSparator.equals("\\")) { //$NON-NLS-1$
+                    fileSparator = TalendQuoteUtils.addQuotes("\\\\\\" + fileSparator); //$NON-NLS-1$
+                } else {
+                    fileSparator = TalendQuoteUtils.addQuotes("\\\\" + fileSparator); //$NON-NLS-1$
+                }
+            }
+            String regex = "\"^([^\"+" + fileSparator + "+\"]*)\"+" + fileSparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
         } else {
             // is db
@@ -1211,28 +1220,5 @@ public class JobSettingsManager {
     private static List<String> getMetadataChars() {
         String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
         return Arrays.asList(metaChars);
-    }
-
-    public static class FileSeparator {
-
-        static String doRegexpQuote(String separators) {
-            if (StringUtils.isEmpty(separators)) {
-                return separators;
-            } else if (separators.length() == 1) {
-                if (separators.equals("\\")) { // special \ //$NON-NLS-1$ 
-                    return "\\\\\\" + separators;//$NON-NLS-1$ 
-                } else if (getMetadataChars().contains(separators)) {
-                    return "\\\\" + separators;//$NON-NLS-1$ 
-                }
-            } else {
-                return doRegexpQuote(separators.substring(0, 1)) + doRegexpQuote(separators.substring(1));
-            }
-            return separators;
-        }
-
-        static String getSeparatorsRegexp(String fileSeparator) {
-            fileSeparator = TalendQuoteUtils.addQuotes(doRegexpQuote(fileSeparator));
-            return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        }
     }
 }
