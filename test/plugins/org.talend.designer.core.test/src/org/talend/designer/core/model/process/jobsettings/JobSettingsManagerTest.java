@@ -28,6 +28,8 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.process.DataNode;
 import org.talend.designer.core.ui.editor.process.Process;
 
+import junit.framework.Assert;
+
 /**
  * created by wchen on 2016年1月21日 Detailled comment
  *
@@ -55,5 +57,271 @@ public class JobSettingsManagerTest {
             assertNotNull(column.getDefault());
             assertNotNull(JavaTypesManager.getDefaultValueFromJavaType(column.getTalendType(), column.getDefault()));
         }
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp4Null() {
+        Assert.assertEquals("\"^([^\"+\"\"+\"]*)\"+\"\"+\"(.*)$\"", JobSettingsManager.FileSeparator.getSeparatorsRegexp(null));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp4EmptyCharacter() {
+        String separator = "";
+        Assert.assertEquals("\"^([^\"+\"\"+\"]*)\"+\"\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp1() {
+        String separator = "\\";
+        Assert.assertEquals("\"^([^\"+\"\\\\\\\\\"+\"]*)\"+\"\\\\\\\\\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp2() {
+        String separator = "^";
+        Assert.assertEquals("\"^([^\"+\"\\\\^\"+\"]*)\"+\"\\\\^\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp3() {
+        String separator = "$";
+        Assert.assertEquals("\"^([^\"+\"\\\\$\"+\"]*)\"+\"\\\\$\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp4() {
+        String separator = ".";
+        Assert.assertEquals("\"^([^\"+\"\\\\.\"+\"]*)\"+\"\\\\.\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp5() {
+        String separator = "?";
+        Assert.assertEquals("\"^([^\"+\"\\\\?\"+\"]*)\"+\"\\\\?\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp6() {
+        String separator = "|";
+        Assert.assertEquals("\"^([^\"+\"\\\\|\"+\"]*)\"+\"\\\\|\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp7() {
+        String separator = "[";
+        Assert.assertEquals("\"^([^\"+\"\\\\[\"+\"]*)\"+\"\\\\[\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp8() {
+        String separator = "+";
+        Assert.assertEquals("\"^([^\"+\"\\\\+\"+\"]*)\"+\"\\\\+\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp9() {
+        String separator = "*";
+        Assert.assertEquals("\"^([^\"+\"\\\\*\"+\"]*)\"+\"\\\\*\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp10() {
+        String separator = "{";
+        Assert.assertEquals("\"^([^\"+\"\\\\{\"+\"]*)\"+\"\\\\{\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp11() {
+        String separator = "(";
+        Assert.assertEquals("\"^([^\"+\"\\\\(\"+\"]*)\"+\"\\\\(\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));       
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp12() {
+        String separator = ")";
+        Assert.assertEquals("\"^([^\"+\"\\\\)\"+\"]*)\"+\"\\\\)\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp13() {
+        String separator = "}";
+        Assert.assertEquals("\"^([^\"+\"\\\\}\"+\"]*)\"+\"\\\\}\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexp14() {
+        String separator = "]";
+        Assert.assertEquals("\"^([^\"+\"\\\\]\"+\"]*)\"+\"\\\\]\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote4Null() {
+        Assert.assertEquals("\"\"", JobSettingsManager.FileSeparator.doRegexpQuote(null));
+    }
+
+    @Test
+    public void testDoRegexpQuote4EmptyCharacter() {
+        String separator = "";
+        Assert.assertEquals("\"\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote1() {
+        String separator = "\\";
+        Assert.assertEquals("\"\\\\\\\\\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote2() {
+        String separator = "^";
+        Assert.assertEquals("\"\\\\^\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote3() {
+        String separator = "$";
+        Assert.assertEquals("\"\\\\$\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote4() {
+        String separator = ".";
+        Assert.assertEquals("\"\\\\.\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote5() {
+        String separator = "?";
+        Assert.assertEquals("\"\\\\?\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote6() {
+        String separator = "|";
+        Assert.assertEquals("\"\\\\|\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+        separator = "||";
+        Assert.assertEquals("\"\\\\|\\\\|\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote7() {
+        String separator = "[";
+        Assert.assertEquals("\"\\\\[\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote8() {
+        String separator = "+";
+        Assert.assertEquals("\"\\\\+\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote9() {
+        String separator = "*";
+        Assert.assertEquals("\"\\\\*\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote10() {
+        String separator = "{";
+        Assert.assertEquals("\"\\\\{\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote11() {
+        String separator = "(";
+        Assert.assertEquals("\"\\\\(\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote12() {
+        String separator = ")";
+        Assert.assertEquals("\"\\\\)\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote13() {
+        String separator = "}";
+        Assert.assertEquals("\"\\\\}\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuote14() {
+        String separator = "]";
+        Assert.assertEquals("\"\\\\]\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteQuestion() {
+        String separator = "?";
+        Assert.assertEquals("\"\\\\?\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+    
+    @Test
+    public void testDoRegexpQuoteQuotation() {
+        String separator = "\"";
+        Assert.assertEquals("\"\\\\\\\"\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+    
+
+    @Test
+    public void testDoRegexpQuoteDoublePipe() {
+        String separator = "||";
+        Assert.assertEquals("\"\\\\|\\\\|\"", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteExpress1() {
+        String separator = "context.delimiter";
+        Assert.assertEquals("context.delimiter", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testDoRegexpQuoteExpress2() {
+        String separator = "String.valueOf((char) 31)";
+        Assert.assertEquals("String.valueOf((char) 31)", JobSettingsManager.FileSeparator.doRegexpQuote(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexpExpress1() {
+        String separator = "context.delimiter";
+        Assert.assertEquals("\"^([^\"+context.delimiter+\"]*)\"+context.delimiter+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+
+    @Test
+    public void testGetSeparatorsRegexpExpress2() {
+        String separator = "String.valueOf((char) 31)";
+        Assert.assertEquals("\"^([^\"+String.valueOf((char) 31)+\"]*)\"+String.valueOf((char) 31)+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+    
+    @Test
+    public void testGetSeparatorsRegexpDoublePipe() {
+        String separator = "||";
+        Assert.assertEquals("\"^([^\"+\"\\\\|\\\\|\"+\"]*)\"+\"\\\\|\\\\|\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
+    }
+    
+    @Test
+    public void testGetSeparatorsRegexpQuotation() {
+        String separator = "\"";
+        Assert.assertEquals("\"^([^\"+\"\\\\\\\"\"+\"]*)\"+\"\\\\\\\"\"+\"(.*)$\"",
+                JobSettingsManager.FileSeparator.getSeparatorsRegexp(separator));
     }
 }
