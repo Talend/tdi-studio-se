@@ -55,6 +55,8 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
     /*
      * tMarkLogicInput (in tcomp) has 2 new properties: checkbox 'criteriaSearch' (should be true in criteria mode, when
      * component doesn't have input connection) and input schema, which is output schema of source component (if exists)
+     * 
+     * tMarkLogicBulkLoad has 1 new property: useExternalMLCP (when true - call commandline process as before).
      */
     @Override
     protected void processUnmappedElementParameter(Properties props, NodeType nodeType, GenericElementParameter param,
