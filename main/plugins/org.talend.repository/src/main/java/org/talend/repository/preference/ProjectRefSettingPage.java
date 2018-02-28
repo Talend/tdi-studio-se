@@ -647,12 +647,18 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     
     private boolean checkInvalidProject() {
         this.setErrorMessage(null);
+        StringBuffer sb = new StringBuffer();
         for (ProjectReferenceBean bean : viewerInput) {
             if (!bean.isValid()) {
-                setErrorMessage(
-                        Messages.getString("ReferenceProjectSetupPage.ErrorAccessProject", bean.getReferenceProjectLabel()));
-                return false;
+                if (sb.length() > 0) {
+                    sb.append(",");
+                }
+                sb.append(bean.getReferenceProjectLabel());
             }
+        }
+        if (sb.length() > 0) {
+            setErrorMessage(Messages.getString("ReferenceProjectSetupPage.ErrorMissingReferencedProject", sb.toString()));
+            return false;
         }
         return true;
     }
