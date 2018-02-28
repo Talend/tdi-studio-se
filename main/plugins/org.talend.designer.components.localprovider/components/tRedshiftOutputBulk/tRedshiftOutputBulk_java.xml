@@ -158,14 +158,14 @@
 			<IMPORT NAME="aws-java-sdk-1.11.269.jar" MODULE="aws-java-sdk-1.11.269.jar"
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-core-2.5.4.jar" MODULE="jackson-core-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
+			<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-databind-2.5.4.redhat-2.jar" MODULE="jackson-databind-2.5.4.redhat-2.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
+			<IMPORT NAME="jackson-databind-2.9.4.jar" MODULE="jackson-databind-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.4"
 				REQUIRED="true" />
-			<IMPORT NAME="jackson-annotations-2.5.4.jar" MODULE="jackson-annotations-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
+			<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 				REQUIRED="true" />
 			<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
 				MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"

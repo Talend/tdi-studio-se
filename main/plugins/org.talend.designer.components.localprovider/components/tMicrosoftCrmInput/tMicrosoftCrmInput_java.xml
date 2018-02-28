@@ -19732,19 +19732,19 @@
 				MVN="mvn:org.talend.libraries/httpclient-4.5.2/6.3.0"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
-				NAME="jackson-core-2.5.4.jar"
-				MODULE="jackson-core-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
+				NAME="jackson-core-2.9.4.jar"
+				MODULE="jackson-core-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
-				NAME="jackson-databind-2.5.4.redhat-2.jar"
-				MODULE="jackson-databind-2.5.4.redhat-2.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
+				NAME="jackson-databind-2.9.4.jar"
+				MODULE="jackson-databind-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.4"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
-				NAME="jackson-annotations-2.5.4.jar"
-				MODULE="jackson-annotations-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
+				NAME="jackson-annotations-2.9.4.jar"
+				MODULE="jackson-annotations-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 				REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
             <IMPORT
 				NAME="json-smart-2.2.1.jar"

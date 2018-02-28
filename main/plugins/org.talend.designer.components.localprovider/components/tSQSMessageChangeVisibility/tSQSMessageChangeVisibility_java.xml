@@ -254,19 +254,19 @@
 				MVN="mvn:com.amazonaws/aws-java-sdk/1.11.269"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
-				NAME="jackson-core-2.5.4.jar"
-				MODULE="jackson-core-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.5.4"
+				NAME="jackson-core-2.9.4.jar"
+				MODULE="jackson-core-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
-				NAME="jackson-databind-2.5.4.redhat-2.jar"
-				MODULE="jackson-databind-2.5.4.redhat-2.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.5.4.redhat-2"
+				NAME="jackson-databind-2.9.4.jar"
+				MODULE="jackson-databind-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-databind/2.9.4"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
-				NAME="jackson-annotations-2.5.4.jar"
-				MODULE="jackson-annotations-2.5.4.jar"
-				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.5.4"
+				NAME="jackson-annotations-2.9.4.jar"
+				MODULE="jackson-annotations-2.9.4.jar"
+				MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT
 				NAME="httpcore-4.4.3.jar"
