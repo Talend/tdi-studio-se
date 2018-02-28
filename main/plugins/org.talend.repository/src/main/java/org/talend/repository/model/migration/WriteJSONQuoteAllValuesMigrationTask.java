@@ -64,7 +64,7 @@ public class WriteJSONQuoteAllValuesMigrationTask extends AbstractJobMigrationTa
 
                             if (quoteAllValues == null) {
                                 ComponentUtilities.addNodeProperty(node, QUOTE_ALL_VALUES_PARAMETER_NAME, QUOTE_ALL_VALUES_PARAMETER_TYPE);
-                                ComponentUtilities.getNodeProperty(node, QUOTE_ALL_VALUES_PARAMETER_NAME).setValue("true");
+                                ComponentUtilities.setNodeValue(node, QUOTE_ALL_VALUES_PARAMETER_NAME, "true");
                             }
                         }
                     }));
