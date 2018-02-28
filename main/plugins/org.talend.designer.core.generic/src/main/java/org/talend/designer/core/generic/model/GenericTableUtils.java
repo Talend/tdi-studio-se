@@ -27,6 +27,7 @@ import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.core.utils.TalendQuoteUtils;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.property.Property;
+import org.talend.librariesmanager.model.service.CustomUriManager;
 
 /**
  * created by nrousseau on Apr 28, 2016 Detailled comment
@@ -159,6 +160,13 @@ public class GenericTableUtils {
     public static String getDriverJarPath(String mvnPath){
         String mvnUrl = TalendQuoteUtils.removeQuotesIfExist(mvnPath);
         if (MavenUrlHelper.isMvnUrl(mvnUrl)) {
+            for(String key : CustomUriManager.getInstance().keySet()){
+                String value = CustomUriManager.getInstance().get(key);
+                if(mvnUrl.equals(value)){
+                    mvnUrl = key; 
+                    break;
+                }
+            }
             return MavenUrlHelper.generateModuleNameByMavenURI(mvnUrl);
         }
         return mvnPath;

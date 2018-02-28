@@ -114,4 +114,30 @@ public class JobVersionUtils {
         return versionList.toArray(new String[versionList.size()]);
     }
 
+    /**
+     * DOC xlwang Comment method "getAllVersions".
+     * @return
+     */
+    public static IRepositoryViewObject getAllVersions(IRepositoryNode repositoryNode, String version) {
+        String nodeID = "";
+        IRepositoryViewObject object = null;
+        if (repositoryNode.getObject() != null
+                && !repositoryNode.getObject().getRepositoryObjectType().equals(ERepositoryObjectType.FOLDER)) {
+            nodeID = repositoryNode.getId();
+        } else {
+            nodeID = getCurrentID(repositoryNode);
+        }
+        try {
+            List<IRepositoryViewObject> allVersion = ProxyRepositoryFactory.getInstance()
+                    .getAllVersion(repositoryNode.getRoot().getProject(), nodeID, false);
+            for (IRepositoryViewObject repositoryObject : allVersion) {
+                if (version.equals(repositoryObject.getVersion())) {
+                    object = repositoryObject;
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+        return object;
+    }
 }

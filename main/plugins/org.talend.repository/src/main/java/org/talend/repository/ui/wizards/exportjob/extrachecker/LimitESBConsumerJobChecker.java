@@ -26,7 +26,7 @@ public class LimitESBConsumerJobChecker extends AbstractJobNodeChecker {
 
 	@Override
 	String checkNode(JobExportType exportType, NodeType nodeType) {
-		if (exportType == JobExportType.OSGI) {
+		if (exportType == JobExportType.OSGI || exportType == JobExportType.MSESB) {
 			return null;
 		}
 		String componentName = nodeType.getComponentName();

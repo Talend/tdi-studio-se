@@ -30,15 +30,12 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.designer.maven.model.MavenSystemFolders;
-import org.talend.designer.maven.model.TalendMavenConstants;
-import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.documentation.ExportFileResource;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
@@ -74,13 +71,12 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
      */
     @Override
     public IProcessor generateJobFiles(IProgressMonitor monitor) throws Exception {
+        IProcessor processor = super.generateJobFiles(monitor);
         List<ExportFileResource> resources = osgiMavenManager
                 .getExportResources(new ExportFileResource[] { new ExportFileResource(processItem, "") });
         for (ExportFileResource resource : resources) {
-
             for (String relativePath : resource.getRelativePathList()) {
                 String path = resource.getDirectoryName().isEmpty() ? relativePath : resource.getDirectoryName();
-
                 for (URL url : resource.getResourcesByRelativePath(relativePath)) {
                     String resourceUrl = url.toString();
                     String fileName = resourceUrl.substring(resourceUrl.lastIndexOf('/') + 1, resourceUrl.length());
@@ -92,7 +88,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
             }
         }
 
-        return super.generateJobFiles(monitor);
+        return processor;
     }
 
     /*

@@ -18,15 +18,18 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.IBuildJobHandler;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvider;
+import org.talend.core.service.IESBRouteService;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
@@ -90,7 +93,26 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
             return null;
         }
 
-        CreateMavenJobPom creator = new CreateMavenJobPom((IProcessor) processor, (IFile) pomFile);
+        final Property itemProperty = ((Item) item).getProperty();
+        
+        CreateMavenJobPom creator = null;
+        if ("ROUTE".equals(itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))){
+
+            IESBRouteService routeService = null;
+
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
+                routeService = (IESBRouteService) GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
+            }
+
+            if (routeService != null) {
+                creator = (CreateMavenJobPom) routeService.createMavenJobPom((IProcessor) processor, (IFile) pomFile);
+            } else {
+                creator = new CreateMavenJobPom((IProcessor) processor, (IFile) pomFile);
+            }
+
+        }else {
+            creator = new CreateMavenJobPom((IProcessor) processor, (IFile) pomFile);
+        }
 
         creator.setUnixClasspath(linuxClassPath.toString());
         creator.setWindowsClasspath(winClassPath.toString());
@@ -99,7 +121,6 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         creator.setArgumentsMap((Map<String, Object>) argumentsMap);
         creator.setOverwrite(Boolean.parseBoolean(overwrite.toString()));
 
-        final Property itemProperty = ((Item) item).getProperty();
         IPath itemLocationPath = ItemResourceUtil.getItemLocationPath(itemProperty);
         IFolder objectTypeFolder = ItemResourceUtil.getObjectTypeFolder(itemProperty);
         if (itemLocationPath != null && objectTypeFolder != null) {
