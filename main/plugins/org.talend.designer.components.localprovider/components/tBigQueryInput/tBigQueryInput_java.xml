@@ -132,7 +132,7 @@
 		<IMPORT NAME="google-oauth-client-1.19.0.jar" MODULE="google-oauth-client-1.19.0.jar" MVN="mvn:org.talend.libraries/google-oauth-client-1.19.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/google-oauth-client-1.19.0.jar" REQUIRED="true" />
 		<IMPORT NAME="google-http-client-jackson2-1.19.0.jar" MODULE="google-http-client-jackson2-1.19.0.jar" MVN="mvn:org.talend.libraries/google-http-client-jackson2-1.19.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/google-http-client-jackson2-1.19.0.jar" REQUIRED="true" />
 		<IMPORT NAME="guava-jdk5-13.0.jar" MODULE="guava-jdk5-13.0.jar" MVN="mvn:org.talend.libraries/guava-jdk5-13.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-jdk5-13.0.jar" REQUIRED="true" />
-		<IMPORT NAME="jackson-core-2.5.3.jar" MODULE="jackson-core-2.5.3.jar" MVN="mvn:org.talend.libraries/jackson-core-2.5.3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.5.3.jar" REQUIRED="true" />
+		<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.9.4.jar" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    <RETURNS>
