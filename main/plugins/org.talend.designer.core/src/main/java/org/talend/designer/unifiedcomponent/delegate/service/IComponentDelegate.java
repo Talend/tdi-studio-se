@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.designer.unifiedcomponent.delegate.service;
 
-import org.talend.designer.unifiedcomponent.resources.ComponentImage;
+import org.talend.commons.ui.runtime.image.IImage;
 
 /**
  * created by wchen on Dec 1, 2017 Detailled comment
@@ -26,6 +26,6 @@ public interface IComponentDelegate {
 
     public String getFamily();
 
-    public ComponentImage getImage();
+    public IImage getImage();
 
 }
