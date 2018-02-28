@@ -18,6 +18,7 @@ import java.util.GregorianCalendar;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
+import org.talend.core.language.ECodeLanguage;
 import org.talend.core.model.components.ComponentUtilities;
 import org.talend.core.model.components.ModifyComponentsAction;
 import org.talend.core.model.components.conversions.IComponentConversion;
@@ -47,6 +48,10 @@ public class WriteJSONQuoteAllValuesMigrationTask extends AbstractJobMigrationTa
     @Override
     public ExecutionResult execute(Item item) {
         ProcessType processType = getProcessType(item);
+
+        if (getProject().getLanguage() != ECodeLanguage.JAVA || processType == null) {
+            return ExecutionResult.NOTHING_TO_DO;
+        }
 
         IComponentFilter componentFilter = new NameComponentFilter(COMPONENT_NAME);
 
