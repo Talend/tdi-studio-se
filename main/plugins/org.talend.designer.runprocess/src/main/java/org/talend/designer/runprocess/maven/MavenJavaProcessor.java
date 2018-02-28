@@ -363,12 +363,12 @@ public class MavenJavaProcessor extends JavaProcessor {
             buildCacheManager.buildAllSubjobMavenProjects();
 
             if (CommonUIPlugin.isFullyHeadless()) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES, false);
+                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES, false, true);
                 if (ProcessUtils.isRequiredPigUDFs(null)) {
-                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF, false);
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF, false, true);
                 }
                 if (ProcessUtils.isRequiredBeans(null)) {
-                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS"), false); //$NON-NLS-1$
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS"), false, true); //$NON-NLS-1$
                 }
             }
 
