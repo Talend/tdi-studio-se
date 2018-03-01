@@ -13,8 +13,10 @@
 package org.talend.repository.ui.wizards.newproject.copyfromeclipse;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,6 +57,7 @@ import org.eclipse.ui.statushandlers.StatusManager;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.emf.provider.EmfResourcesFactoryReader;
 import org.talend.commons.runtime.model.emf.provider.ResourceOption;
+import org.talend.commons.runtime.xml.XMLFileUtil;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.model.properties.Project;
 import org.talend.core.prefs.IDEWorkbenchPlugin;
@@ -67,6 +70,12 @@ import org.talend.repository.ui.actions.importproject.ImportProjectBean;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
 import org.talend.repository.ui.exception.ImportInvalidObjectException;
 import org.talend.repository.ui.utils.AfterImportProjectUtil;
+import org.talend.repository.utils.ZipFileUtils;
+import org.talend.utils.files.FileUtils;
+import org.talend.utils.io.FilesUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * DOC zhangchao.wang class global comment. Detailled comment
@@ -295,9 +304,11 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         }
         // String destinationJavaPath = null;
         // String destinationPerlPath = null;
-        this.sourcePath = sourcePath;
         try {
             if (!("".equals(sourcePath))) { //$NON-NLS-1$
+
+                sourcePath = items2Projects(sourcePath);
+                this.sourcePath = sourcePath;
                 // destinationJavaPath = CorePlugin.getDefault().getLibrariesService().getJavaLibrariesPath();
                 // destinationPerlPath = CorePlugin.getDefault().getLibrariesService().getPerlLibrariesPath();
                 //
@@ -313,7 +324,71 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
             ExceptionHandler.process(e);
         }
     }
-
+    /**
+     * 
+     * DOC xlwang Comment method "items2Projects".
+     */
+    public String items2Projects(String sourcePath) throws Exception {
+        Collection files = new ArrayList();
+        // find the talend.project file
+        collectProjectFilesFromDirectory(files, new File(sourcePath), null);
+        File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+        boolean flag = false;
+        if (ArchiveFileManipulations.isZipFile(sourcePath)) {
+            String tmpPathStr = tmpPath.getPath();
+            FilesUtils.unzip(sourcePath, tmpPath.getPath());
+            flag = true;
+        }
+        System.out.println(tmpPath.getPath());
+        Iterator filesIterator = files.iterator();
+        while (filesIterator.hasNext()) {
+            File file = (File) filesIterator.next();
+            String talendFilePath = file.getPath();
+            String projectPath = talendFilePath.substring(0, talendFilePath.lastIndexOf(File.separator));
+            FilesUtils.copyDirectory(new File(projectPath), tmpPath);
+        }
+        // loop the tmp file
+        files = new ArrayList();
+        collectProjectFilesFromDirectory(files, tmpPath, null);
+        Iterator tmpFilesIterator = files.iterator();
+        while (tmpFilesIterator.hasNext()) {
+            File file = (File) tmpFilesIterator.next();
+            String tmpTalendFilePath = file.getPath();
+            String tmpProjectPath = tmpTalendFilePath.substring(0, tmpTalendFilePath.lastIndexOf(File.separator));
+            String tmpProjectFileStr = tmpProjectPath + File.separator + ".project";
+            File tmpProjectFile = new File(tmpProjectFileStr);
+            String projectName = "";
+            if (!tmpProjectFile.exists()) {
+                Document document = XMLFileUtil.loadDoc(new File(tmpTalendFilePath));
+                Node node = document.getChildNodes().item(0).getChildNodes().item(1);
+                NamedNodeMap map = node.getAttributes();
+                for (int i = 0; i < map.getLength(); i++) {
+                    if ("label".equals(map.item(i).getNodeName())) {
+                        projectName = map.item(i).getNodeValue();
+                    }
+                }
+                tmpProjectFile.createNewFile();
+                PrintStream ps = new PrintStream(new FileOutputStream(tmpProjectFile));
+                ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                ps.println("<projectDescription>");
+                ps.println("\t<name>" + projectName + "</name>");
+                ps.println("\t<comment></comment>");
+                ps.println("\t<projects></projects>");
+                ps.println("\t<buildSpec></buildSpec>");
+                ps.println("\t<natures>");
+                ps.println("\t\t<nature>org.talend.core.talendnature</nature>");
+                ps.println("\t</natures>");
+                ps.println("</projectDescription>");
+                ps.flush();
+                ps.close();
+            }
+        }
+        if (flag) {
+            ZipFileUtils.zip(tmpPath.getPath(), tmpPath.getPath() + ".zip", false);
+            return tmpPath.getPath() + ".zip";
+        }
+        return tmpPath.getPath();
+    }
     @Override
     public ProjectRecord[] getProjectRecords() {
         if (sourcePath == null || sourcePath.length() == 0) {
@@ -452,7 +527,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         return new Status(severity, IDEWorkbenchPlugin.IDE_WORKBENCH, severity, statusMessage, exception);
     }
 
-    private boolean collectProjectFilesFromDirectory(Collection files, File directory, Set directoriesVisited) {
+    public boolean collectProjectFilesFromDirectory(Collection files, File directory, Set directoriesVisited) {
 
         File[] contents = directory.listFiles();
         if (contents == null) {
