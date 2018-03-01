@@ -724,6 +724,8 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                             return "connection.driverTable";
                         } else if (EParameterName.DRIVER_CLASS.getName().equals(paramName)) {
                             return "connection.driverClass";
+                        }else if (EParameterName.MAPPING.getName().equals(paramName)) {
+                        	return "connection.mappingFile";
                         }
 
                     }
