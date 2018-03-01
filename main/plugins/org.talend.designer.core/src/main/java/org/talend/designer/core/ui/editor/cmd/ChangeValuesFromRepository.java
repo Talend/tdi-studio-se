@@ -717,8 +717,7 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                 String databaseType = ((DatabaseConnection) connection).getDatabaseType();
                 if ("JDBC".equals(databaseType)) {
                     IComponent component = node.getComponent();
-                    if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
-                            && component.getName().startsWith("tJDBC")) {
+                    if (component.getName().startsWith("tJDBC") || component.getName().startsWith("tELTJDBC")) {
                         if (EParameterName.URL.getName().equals(paramName)) {
                             return "connection.jdbcUrl";
                         } else if (EParameterName.DRIVER_JAR.getName().equals(paramName)) {
