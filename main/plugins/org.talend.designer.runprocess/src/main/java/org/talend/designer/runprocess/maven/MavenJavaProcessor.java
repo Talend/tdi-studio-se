@@ -253,6 +253,9 @@ public class MavenJavaProcessor extends JavaProcessor {
     }
 
     public void generatePom(int option) {
+        if (buildChildrenJobs != null) {
+            buildChildrenJobs.clear();
+        }
         initJobClasspath();
         try {
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
