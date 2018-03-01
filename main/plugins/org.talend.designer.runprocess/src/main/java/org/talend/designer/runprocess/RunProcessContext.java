@@ -72,6 +72,7 @@ import org.talend.designer.core.ui.editor.subjobcontainer.sparkstreaming.SparkSt
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.ParallelExecutionUtils;
 import org.talend.designer.maven.tools.BuildCacheManager;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessMessage.MsgType;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.jmx.JMXPerformanceChangeListener;
@@ -656,6 +657,7 @@ public class RunProcessContext {
                                                 kill();
                                             }
                                         } finally {
+                                            PomUtil.restorePomFile(processor.getTalendJavaProject());
                                             // progressMonitor.done();
                                             refreshUiAndWait[0] = false;
                                         }
