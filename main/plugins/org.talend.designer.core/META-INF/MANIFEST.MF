@@ -42,6 +42,7 @@ Require-Bundle: org.talend.model,
  org.talend.repository,
  org.talend.libraries.apache,
  org.talend.libraries.dom4j-jaxen,
+ org.talend.libraries.jackson,
  org.talend.libraries.uniserv;resolution:=optional,
  org.eclipse.ui.workbench.texteditor,
  org.eclipse.e4.ui.services,
@@ -241,7 +242,9 @@ Export-Package: org.talend.designer.core;
  org.talend.designer.core.ui.views.properties.composites,
  org.talend.designer.core.ui.views.statsandlogs,
  org.talend.designer.core.ui.wizards,
- org.talend.designer.core.utils
+ org.talend.designer.core.utils,
+ org.talend.designer.unifiedcomponent.delegate.service,
+ org.talend.designer.unifiedcomponent.unifier
 Bundle-Vendor: .Talend SA.
 Import-Package: org.talend.hadoop.distribution,
  org.talend.hadoop.distribution.component

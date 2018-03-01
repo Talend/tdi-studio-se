@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<component name="EXAComponentsUnifier">
-  <implementation class="org.talend.designer.unifiedcomponent.unifier.memSQL.MemSQLComponentsUnifier"/>
-  <service>
-    <provide interface="org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier"/>
-  </service>
-</component>

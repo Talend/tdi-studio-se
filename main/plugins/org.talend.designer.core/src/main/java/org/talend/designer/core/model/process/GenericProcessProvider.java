@@ -73,7 +73,11 @@ public class GenericProcessProvider {
 
     public void loadComponentsFromProviders() {
         for (IGenericProvider processProvider : findAllProcessProviders()) {
-            processProvider.loadComponentsFromExtensionPoint();
+            try {
+                processProvider.loadComponentsFromExtensionPoint();
+            } catch (Throwable e) {
+                ExceptionHandler.process(e);
+            }
         }
     }
 }
