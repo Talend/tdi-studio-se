@@ -163,6 +163,10 @@
 			REQUIRED="true" SHOW_IF="READ_BY=='XPATH'">
 			<DEFAULT>"UTF-8"</DEFAULT>
 		</PARAMETER>
+		<!-- For migration only -->
+		<PARAMETER NAME="SPLIT_LIST" FIELD="CHECK" NUM_ROW="100" SHOW="false">
+            <DEFAULT>true</DEFAULT>
+        </PARAMETER>
 	</ADVANCED_PARAMETERS>
 
     <CODEGENERATION>
