@@ -339,7 +339,13 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
             }
             projectCombo.setItems(itemList.toArray(new String[0]));
         }
-        projectCombo.setEnabled(true);
+        if (projectCombo.getItemCount() == 0) {
+            projectCombo.setItems(new String[] { Messages.getString("ReferenceProjectSetupPage.lblNoAvailableProject") });
+            projectCombo.select(0);
+            projectCombo.setEnabled(false);
+        } else {
+            projectCombo.setEnabled(true);
+        }
         this.setErrorMessage(errorMessage);
     }
 
