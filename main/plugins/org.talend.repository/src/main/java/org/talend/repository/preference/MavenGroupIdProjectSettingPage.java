@@ -29,6 +29,7 @@ import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.designer.maven.DesignerMavenPlugin;
 import org.talend.designer.maven.utils.PomIdsHelper;
+import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -61,7 +62,8 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
         groupIdText = new Text(compsite, SWT.BORDER);
         groupIdText.setText(getPreferenceStore().getString(MavenConstants.PROJECT_GROUPID));
         GC gc = new GC(groupIdText);
-        Point labelSize = gc.stringExtent(getPreferenceStore().getDefaultString(MavenConstants.PROJECT_GROUPID));
+        String defaultGroupId = "org.example." + ProjectManager.getInstance().getCurrentProject().getTechnicalLabel(); //$NON-NLS-1$
+        Point labelSize = gc.stringExtent(defaultGroupId);
         gc.dispose();
         int hint = labelSize.x + (ITabbedPropertyConstants.HSPACE * 15);
         GridData textData = new GridData();
