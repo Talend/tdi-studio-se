@@ -570,7 +570,12 @@ public class ComponentsUtils {
                 if (value == null) {
                     value = StringUtils.EMPTY;
                 }
-                paramValue = TalendQuoteUtils.addPairQuotesIfNotExist(unescapeForJava(value));
+                if(fieldType == EParameterFieldType.MEMO_SQL){
+                	value = StringUtils.trimToEmpty(value);
+                }else{
+                	value = unescapeForJava(value);
+                }
+                paramValue = TalendQuoteUtils.addPairQuotesIfNotExist(value);
                 property.setValue(paramValue);
             }
         } else if (GenericTypeUtils.isBooleanType(property)) {
