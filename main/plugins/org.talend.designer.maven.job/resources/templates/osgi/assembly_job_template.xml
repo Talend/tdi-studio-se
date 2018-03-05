@@ -37,6 +37,13 @@
                 <include>**</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${current.resources.dir}</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <includes>
+                <include>${talend.job.path}/**</include>
+            </includes>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <!-- for all jobs -->
