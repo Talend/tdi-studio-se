@@ -4784,6 +4784,9 @@ public class Node extends Element implements IGraphicalNode {
         oldStatus = 0;
         Object obj = parameters.get(INode.RELOAD_PARAMETER_ELEMENT_PARAMETERS);
         Map<String, Object> storeValueMap = storeValue(obj);
+        if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
+            setComponentProperties(null);
+        }
         init(component);
         IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
         if (param != null) {
