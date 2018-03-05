@@ -598,13 +598,8 @@ public abstract class JobScriptsManager {
     protected IProcess generateJobFiles(ProcessItem process, String contextName, String version, boolean statistics,
             boolean trace, boolean applyContextToChildren, IProgressMonitor monitor) throws ProcessorException {
         LastGenerationInfo.getInstance().getUseDynamicMap().clear();
-        // IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace,
-        // applyContextToChildren, isOptionChoosed(ExportChoice.needContext), monitor);
-
-        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
-        IProcess currentProcess = service.getProcessFromProcessItem(process);
-
-        IProcessor processor = ProcessorUtilities.getProcessor(currentProcess, process.getProperty());
+        IProcessor processor = ProcessorUtilities.generateCode(process, contextName, version, statistics, trace,
+                applyContextToChildren, isOptionChoosed(ExportChoice.needContext), monitor);
         return processor.getProcess();
     }
 
@@ -755,7 +750,7 @@ public abstract class JobScriptsManager {
         }
         // maybe, not used
         ITalendProcessJavaProject talendProcessJavaProject = RepositoryPlugin.getDefault().getRunProcessService()
-                .getTempJavaProject();
+                .getTalendJobJavaProject(item.getProperty());
         if (talendProcessJavaProject == null) {
             return new Path(""); //$NON-NLS-1$
         }

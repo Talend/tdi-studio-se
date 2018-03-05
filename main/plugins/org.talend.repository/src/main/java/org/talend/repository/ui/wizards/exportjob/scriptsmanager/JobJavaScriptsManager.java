@@ -764,7 +764,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                 return;
             }
 
-            IFolder outputFolder = talendProcessJavaProject.getOutputFolder();
+            IFolder outputFolder = talendProcessJavaProject.getExternalResourcesFolder();
             IFolder contextsFolder = outputFolder.getFolder(jobPackagePath);
             File contextDir = contextsFolder.getLocation().toFile();
             if (contextDir.isDirectory()) {
