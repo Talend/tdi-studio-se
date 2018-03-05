@@ -12,6 +12,8 @@
 // ============================================================================
 package org.talend.designer.unifiedcomponent.controller;
 
+import static org.junit.Assert.*;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.talend.core.GlobalServiceRegister;
@@ -188,6 +190,46 @@ public class ChangeComponentCommandTest {
 
         mainTable = node.getMetadataFromConnector("MAIN");
         Assert.assertNull(mainTable);
+
+    }
+
+    @Test
+    public void testChangeComponentBetweentcomp() {
+        IComponent tJDBCInout = compService.getComponentsFactory().get("tJDBCInput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tSnowflake = compService.getComponentsFactory().get("tSnowflakeInput",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        if (tJDBCInout == null || tSnowflake == null) {
+            fail("Can not load test components");
+        }
+        Property property1 = PropertiesFactory.eINSTANCE.createProperty();
+        property1.setId("property1"); //$NON-NLS-1$
+        property1.setVersion("0.1"); //$NON-NLS-1$
+        property1.setLabel("test1");//$NON-NLS-1$
+        Process process1 = new Process(property1);
+        Node node = new Node(tJDBCInout, process1);
+
+        IElementParameter jdbcParam = node.getElementParameter("connection.driverTable");
+        IElementParameter snowflakeParam = node.getElementParameter("connection.account");
+        Assert.assertNotNull(jdbcParam);
+        Assert.assertNull(snowflakeParam);
+
+        IElementParameter unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        ChangeComponentCommand command = new ChangeComponentCommand(node, unifiedParam, "Snowflake");
+        command.execute();
+
+        jdbcParam = node.getElementParameter("connection.driverTable");
+        snowflakeParam = node.getElementParameter("connection.account");
+        Assert.assertNull(jdbcParam);
+        Assert.assertNotNull(snowflakeParam);
+
+        unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        command = new ChangeComponentCommand(node, unifiedParam, "JDBC");
+        command.execute();
+
+        jdbcParam = node.getElementParameter("connection.driverTable");
+        snowflakeParam = node.getElementParameter("connection.account");
+        Assert.assertNotNull(jdbcParam);
+        Assert.assertNull(snowflakeParam);
 
     }
 
