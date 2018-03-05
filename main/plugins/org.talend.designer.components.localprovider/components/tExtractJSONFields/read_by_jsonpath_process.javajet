@@ -82,7 +82,7 @@ if(outConns!=null){
 	nb_line_<%=cid%>++;
 	try {
 <%
-boolean splitList = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__SPLIT_LIST__"));
+boolean splitList = "true".equals(ElementParameterParser.getValue(node, "__SPLIT_LIST__"));
 for (int i=0;i<mapping.size();i++) {
 	for(IMetadataColumn column : outConn.getMetadataTable().getListColumns()) {
 		String schemaColumn = mapping.get(i).get("SCHEMA_COLUMN");
