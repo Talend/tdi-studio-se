@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.BusinessException;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.exception.ExceptionHandler;
@@ -924,7 +925,14 @@ public class RepositoryService implements IRepositoryService, IRepositoryContext
         isInitedProviderService = true;
     }
     
+    @Override
     public boolean askRetryForNetworkIssue(Throwable ex) {
+        /**
+         * Don't popup dialog for junit since it will block the junit
+         */
+        if (CommonsPlugin.isJUnitTest()) {
+            return false;
+        }
         if (donnotRetryAgainBeforeRestart) {
             return false;
         }
