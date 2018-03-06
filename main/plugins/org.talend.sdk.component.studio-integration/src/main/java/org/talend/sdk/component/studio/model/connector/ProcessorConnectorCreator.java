@@ -60,12 +60,10 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
             }
         });
         final String mainConnectorName = MAIN_CONNECTOR_NAME;
-        final INodeConnector main = TaCoKitNodeConnector.newFlow(node, mainConnectorName);
+        final TaCoKitNodeConnector main = TaCoKitNodeConnector.newFlow(node, mainConnectorName);
         main.setMaxLinkInput(rowCount.get());
         main.setMaxLinkOutput(0);
-        if (main instanceof TaCoKitNodeConnector) {
-            ((TaCoKitNodeConnector) main).setInput(isDefaultConnectionPresent.get());
-        }
+        main.setInput(isDefaultConnectionPresent.get());
         main.addConnectionProperty(FLOW_MAIN, FLOW_MAIN.getRGB(), FLOW_MAIN.getDefaultLineStyle());
         main.addConnectionProperty(FLOW_REF, FLOW_MAIN.getRGB(), FLOW_MAIN.getDefaultLineStyle());
         main.addConnectionProperty(FLOW_MERGE, FLOW_MAIN.getRGB(), FLOW_MAIN.getDefaultLineStyle());
@@ -88,12 +86,10 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                             return true;
                         }) //
                         .map(input -> { //
-                            final INodeConnector inputConnector = TaCoKitNodeConnector.newFlow(node, input);
+                            final TaCoKitNodeConnector inputConnector = TaCoKitNodeConnector.newFlow(node, input);
                             inputConnector.setMaxLinkInput(1);
                             inputConnector.setMaxLinkOutput(0);
-                            if (inputConnector instanceof TaCoKitNodeConnector) {
-                                ((TaCoKitNodeConnector) inputConnector).setInput(true);
-                            }
+                            inputConnector.setInput(true);
                             inputConnector.addConnectionProperty(FLOW_MAIN, FLOW_MAIN.getRGB(),
                                     FLOW_MAIN.getDefaultLineStyle());
                             inputConnector.addConnectionProperty(FLOW_REF, FLOW_MAIN.getRGB(),
@@ -107,9 +103,10 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                                 .stream() //
                                 .filter(output -> FLOW_MAIN.equals(getType(output))) //
                                 .map(output -> { //
-                                    final INodeConnector outputConnector = TaCoKitNodeConnector.newFlow(node, output);
+                                    final TaCoKitNodeConnector outputConnector = TaCoKitNodeConnector.newFlow(node, output);
                                     outputConnector.setMaxLinkInput(0);
                                     outputConnector.setMaxLinkOutput(1);
+                                    outputConnector.setInput(false);
                                     outputConnector.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(),
                                             FLOW_REF.getDefaultLineStyle());
                                     outputConnector.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(),
@@ -135,9 +132,10 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                 .filter(output -> REJECT.equals(getType(output))) //
                 .findFirst() //
                 .map(output -> { //
-                    final INodeConnector reject = TaCoKitNodeConnector.newReject(node);
+                    final TaCoKitNodeConnector reject = TaCoKitNodeConnector.newReject(node);
                     reject.setMaxLinkInput(0);
                     reject.setMaxLinkOutput(1);
+                    reject.setInput(false);
                     reject.addConnectionProperty(EConnectionType.FLOW_MAIN, new RGB(255, 0, 0), 2);
                     reject.getConnectionProperty(EConnectionType.FLOW_MAIN).setRGB(new RGB(255, 0, 0));
                     existingTypes.add(getType(output));
