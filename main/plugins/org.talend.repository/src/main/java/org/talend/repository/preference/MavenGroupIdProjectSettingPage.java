@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.repository.preference;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -25,9 +24,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.runtime.maven.MavenConstants;
 import org.talend.core.runtime.projectsetting.AbstractProjectSettingPage;
 import org.talend.designer.maven.DesignerMavenPlugin;
+import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
@@ -38,6 +39,12 @@ import org.talend.repository.i18n.Messages;
 public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
 
     private Text groupIdText;
+
+    BooleanFieldEditor appendFolderButton;
+
+    private String oldGroupId;
+
+    private boolean oldAppendFolder;
 
     public MavenGroupIdProjectSettingPage() {
         noDefaultAndApplyButton();
@@ -55,12 +62,15 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
 
         Composite compsite = new Composite(parent, SWT.NONE);
         compsite.setLayout(new GridLayout(2, false));
+
         Label label = new Label(compsite, SWT.NONE);
         label.setText(Messages.getString("MavenGroupIdProjectSettingPage.groupIdLabel")); //$NON-NLS-1$
         GridData labelData = new GridData();
         label.setLayoutData(labelData);
+
         groupIdText = new Text(compsite, SWT.BORDER);
-        groupIdText.setText(getPreferenceStore().getString(MavenConstants.PROJECT_GROUPID));
+        oldGroupId = getPreferenceStore().getString(MavenConstants.PROJECT_GROUPID);
+        groupIdText.setText(oldGroupId);
         GC gc = new GC(groupIdText);
         String defaultGroupId = "org.example." + ProjectManager.getInstance().getCurrentProject().getTechnicalLabel(); //$NON-NLS-1$
         Point labelSize = gc.stringExtent(defaultGroupId);
@@ -69,7 +79,6 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
         GridData textData = new GridData();
         textData.widthHint = hint;
         groupIdText.setLayoutData(textData);
-
         groupIdText.addModifyListener(new ModifyListener() {
 
             @Override
@@ -86,17 +95,24 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
             }
         });
 
-        BooleanFieldEditor appendFolderText = new BooleanFieldEditor(MavenConstants.APPEND_FOLDER_TO_GROUPID,
+        oldAppendFolder = getPreferenceStore().getBoolean(MavenConstants.APPEND_FOLDER_TO_GROUPID);
+        BooleanFieldEditor appendFolderButton = new BooleanFieldEditor(MavenConstants.APPEND_FOLDER_TO_GROUPID,
                 Messages.getString("MavenGroupIdProjectSettingPage.appendFolderLabel"), parent); //$NON-NLS-1$
-        addField(appendFolderText);
+        addField(appendFolderButton);
+
     }
 
     @Override
     public boolean performOk() {
-        if (groupIdText != null && !groupIdText.isDisposed()) {
+        if (groupIdText != null && !groupIdText.isDisposed() && appendFolderButton != null) {
             getPreferenceStore().setValue(MavenConstants.PROJECT_GROUPID, groupIdText.getText());
-            MessageDialog.openInformation(getShell(), "Information", //$NON-NLS-1$
-                    Messages.getString("MavenGroupIdProjectSettingPage.pressOKMsg")); //$NON-NLS-1$
+            if (!oldGroupId.equals(groupIdText.getText()) || oldAppendFolder != appendFolderButton.getBooleanValue()) {
+                try {
+                    new AggregatorPomsHelper().syncAllPoms();
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
         }
         return super.performOk();
     }

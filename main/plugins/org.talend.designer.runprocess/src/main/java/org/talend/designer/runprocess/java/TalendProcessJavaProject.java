@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.generation.JavaUtils;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -43,6 +44,7 @@ import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.repository.ProjectManager;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -56,6 +58,8 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
     private final MavenPomSynchronizer synchronizer;
 
     private boolean useTempPom;
+    
+    private String projectTechName;
     
     private String id;
     
@@ -72,6 +76,7 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         this(javaProject);
         this.id = property.getId();
         this.version = property.getVersion();
+        projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
     }
 
     @Override
@@ -79,9 +84,13 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
         ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
         IRepositoryViewObject object;
         try {
-            object = factory.getSpecificVersion(id, version, true);
+            Project project = ProjectManager.getInstance().getProjectFromProjectTechLabel(projectTechName);
+            object = factory.getSpecificVersion(project, id, version, true);
         } catch (PersistenceException e) {
             ExceptionHandler.process(e);
+            return null;
+        }
+        if (object == null) {
             return null;
         }
         return object.getProperty();
