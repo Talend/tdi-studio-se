@@ -134,13 +134,15 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         if (!isFirstCall
                 || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
             updateProperty(o);
-            boolean calledValidate = callValidate();
-            if (calledValidate) {
-                fireValidateStatusEvent();
-            }
-            boolean calledAfter = callAfter();
-            if (calledAfter) {
-                fireValueChangedEvent();
+            if (!"table.tableName".equals(getName()) && !"module.moduleName".equals(getName())) {
+	            boolean calledValidate = callValidate();
+	            if (calledValidate) {
+	                fireValidateStatusEvent();
+	            }
+	            boolean calledAfter = callAfter();
+	            if (calledAfter) {
+	                fireValueChangedEvent();
+	            }
             }
         }
         isFirstCall = false;

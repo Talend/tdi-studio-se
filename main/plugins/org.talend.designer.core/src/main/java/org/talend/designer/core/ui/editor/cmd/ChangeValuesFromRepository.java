@@ -370,6 +370,9 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
                         objectValue = RepositoryToComponentProperty.getXmlAndXSDFileValue((XmlFileConnection) connection,
                                 repositoryValue);
+                    } else if ("module.moduleName".equals(repositoryValue)) {
+                        objectValue = null;
+                        param.setRepositoryValueUsed(false);
                     } else if (connection instanceof SalesforceSchemaConnection && "MODULENAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
                             objectValue = moduleUnit.getModuleName();
@@ -381,10 +384,13 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                       // module which was the last one be retrived
                     else if (connection instanceof SalesforceSchemaConnection && "CUSTOM_MODULE_NAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
-                            objectValue = moduleUnit.getModuleName();
-                        } else {
-                            objectValue = null;
-                        }
+                             objectValue = moduleUnit.getModuleName();
+                         } else {
+                             objectValue = null;
+                         }
+                    } else if ("table.tableName".equals(repositoryValue)) {
+                        objectValue = null;
+                        param.setRepositoryValueUsed(false);
                     } else if (connection instanceof MDMConnection) {
                         if (table == null) {
                             IMetadataTable metaTable = null;

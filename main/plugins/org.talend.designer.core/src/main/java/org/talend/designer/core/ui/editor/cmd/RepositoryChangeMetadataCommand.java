@@ -321,9 +321,18 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                     }
                                 }
                             }
+                        } else if ("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) {
+                            param.setValue(newOutputMetadata.getTableName());
                         }
                     }
                 }
+            } else if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
+                for (IElementParameter param : node.getElementParameters()) {
+                    if (("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) 
+                            && newOutputMetadata.getTableName() != null) {
+                        param.setValue(newOutputMetadata.getTableName());
+                    }
+            	}
             }
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);
