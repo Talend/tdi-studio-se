@@ -33,12 +33,14 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.collections.map.MultiKeyMap;
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.generation.JavaUtils;
 import org.talend.commons.utils.io.FilesUtils;
+import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.general.ModuleNeeded;
@@ -53,10 +55,10 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.ui.branding.IBrandingService;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
@@ -881,6 +883,15 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
             providedModulesSet.add(module.getModuleName());
         }
         return providedModulesSet;
+    }
+    
+    @Override
+    protected IProcess generateJobFiles(ProcessItem process, String contextName, String version, boolean statistics,
+            boolean trace, boolean applyContextToChildren, IProgressMonitor monitor) throws ProcessorException {
+        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
+        IProcess currentProcess = service.getProcessFromProcessItem(process);
+        IProcessor processor = ProcessorUtilities.getProcessor(currentProcess, process.getProperty());
+        return processor.getProcess();
     }
 
 }
