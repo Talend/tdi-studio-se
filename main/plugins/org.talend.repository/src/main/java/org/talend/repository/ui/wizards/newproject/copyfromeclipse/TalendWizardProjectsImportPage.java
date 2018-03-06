@@ -13,10 +13,8 @@
 package org.talend.repository.ui.wizards.newproject.copyfromeclipse;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -285,6 +283,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         }
         ViewerComparator comparator = new ViewerComparator(new Comparator<Object>() {
 
+            @Override
             public int compare(Object s1, Object s2) {
                 return ((String) s1).compareTo((String) s2);
             }
@@ -367,20 +366,7 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                         projectName = map.item(i).getNodeValue();
                     }
                 }
-                tmpProjectFile.createNewFile();
-                PrintStream ps = new PrintStream(new FileOutputStream(tmpProjectFile));
-                ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                ps.println("<projectDescription>");
-                ps.println("\t<name>" + projectName + "</name>");
-                ps.println("\t<comment></comment>");
-                ps.println("\t<projects></projects>");
-                ps.println("\t<buildSpec></buildSpec>");
-                ps.println("\t<natures>");
-                ps.println("\t\t<nature>org.talend.core.talendnature</nature>");
-                ps.println("\t</natures>");
-                ps.println("</projectDescription>");
-                ps.flush();
-                ps.close();
+                FileUtils.createProjectFile(projectName, tmpProjectFile);
             }
         }
         if (flag) {

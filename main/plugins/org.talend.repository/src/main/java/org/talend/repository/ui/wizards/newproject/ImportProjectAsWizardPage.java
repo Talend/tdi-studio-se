@@ -13,9 +13,7 @@
 package org.talend.repository.ui.wizards.newproject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -45,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.runtime.xml.XMLFileUtil;
 import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
@@ -357,8 +356,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
                 selectedArchiveTemp = checkPackageIsCompressed(selectedArchiveTemp);
                 selectedArchiveTemp = items2Projects(selectedArchiveTemp);
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                ExceptionHandler.process(e);
             }
             previouslyBrowsedDirectory = selectedDirectory;
             directoryPathField.setText(previouslyBrowsedDirectory);
@@ -395,8 +393,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
                 ZipFileUtils.zip(selectedArchiveTmp, selectedArchiveTmp + ".zip", false);
 
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                ExceptionHandler.process(e);
             }
             previouslyBrowsedArchive = selectedArchive;
             archivePathField.setText(previouslyBrowsedArchive);
@@ -460,17 +457,15 @@ public class ImportProjectAsWizardPage extends WizardPage {
      * @param path
      */
     public String checkPackageIsCompressed(String path) {
-        if (ArchiveFileManipulations.isTarFile(path) || ArchiveFileManipulations.isZipFile(path)) {
+        if (ArchiveFileManipulations.isZipFile(path)) {
+            File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+            String tmpPathStr = tmpPath.getPath();
             try {
-                if (ArchiveFileManipulations.isZipFile(path)) {
-                    File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
-                    String tmpPathStr = tmpPath.getPath();
-                    FilesUtils.unzip(path, tmpPathStr);
-                    path = tmpPathStr;
-                }
+                FilesUtils.unzip(path, tmpPathStr);
             } catch (Exception e) {
-                e.printStackTrace();
+                ExceptionHandler.process(e);
             }
+            path = tmpPathStr;
         }
         return path;
     }
@@ -518,20 +513,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
                         projectName = map.item(i).getNodeValue();
                     }
                 }
-                tmpProjectFile.createNewFile();
-                PrintStream ps = new PrintStream(new FileOutputStream(tmpProjectFile));
-                ps.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-                ps.println("<projectDescription>");
-                ps.println("\t<name>" + projectName + "</name>");
-                ps.println("\t<comment></comment>");
-                ps.println("\t<projects></projects>");
-                ps.println("\t<buildSpec></buildSpec>");
-                ps.println("\t<natures>");
-                ps.println("\t\t<nature>org.talend.core.talendnature</nature>");
-                ps.println("\t</natures>");
-                ps.println("</projectDescription>");
-                ps.flush();
-                ps.close();
+                FileUtils.createProjectFile(projectName, tmpProjectFile);
             }
             String talendFilePath = file.getPath();
             tepPath = talendFilePath.substring(0, talendFilePath.lastIndexOf(File.separator));
@@ -564,9 +546,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
         return finalPath;
     }
 
-    public static void main(String[] args) {
-        System.out.println(getFinalDir("C:\\Users\\xlwang\\Desktop\\123"));
-    }
+    
     /**
      * Answer a handle to the zip file currently specified as being the source. Return null if this file does not exist
      * or is not of valid format.
