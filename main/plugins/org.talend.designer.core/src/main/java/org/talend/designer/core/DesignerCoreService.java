@@ -96,6 +96,7 @@ import org.talend.designer.core.ui.views.problems.Problems;
 import org.talend.designer.core.ui.views.properties.ComponentSettings;
 import org.talend.designer.core.ui.views.properties.ComponentSettingsView;
 import org.talend.designer.core.utils.JavaProcessUtil;
+import org.talend.designer.core.utils.UnifiedComponentUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
@@ -841,5 +842,13 @@ public class DesignerCoreService implements IDesignerCoreService {
         if (preferenceStore != null) {
             preferenceStore.setValue(ITalendCorePrefConstants.PERFORMANCE_TAC_READ_TIMEOUT, timeout);
         }
+    }
+
+    public boolean isDelegateNode(INode node) {
+        if (node instanceof Node) {
+            Node n = (Node) node;
+            return UnifiedComponentUtil.isDelegateComponent(n.getDelegateComponent());
+        }
+        return false;
     }
 }

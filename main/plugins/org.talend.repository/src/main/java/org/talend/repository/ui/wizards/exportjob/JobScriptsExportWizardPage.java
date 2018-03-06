@@ -73,7 +73,6 @@ import org.eclipse.ui.internal.wizards.datatransfer.WizardFileSystemResourceExpo
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.utils.PasswordEncryptUtil;
-import org.talend.core.GlobalServiceRegister;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.metadata.MetadataTalendType;
 import org.talend.core.model.process.IContext;
@@ -84,7 +83,6 @@ import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.runtime.CoreRuntimePlugin;
-import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.export.ArchiveFileExportOperationFullPath;
 import org.talend.core.ui.export.FileSystemExporterFullPath;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
@@ -139,7 +137,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     protected Button jobItemButton;
 
     protected Button contextButton;
-    
+
     protected Button exportMSAsZipButton;
 
     protected Button jobScriptButton;
@@ -953,9 +951,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
                     }
                     if (property.equals(contextParameterName)) {
                         if (value == null || "".equals(value) || nameList.contains(value)) {
-                            MessageDialog.openError(
-                                    new Shell(),
-                                    Messages.getString("ContextProcessSection.errorTitle"), Messages.getString("ContextProcessSection.ParameterNameIsNotValid")); //$NON-NLS-1$ //$NON-NLS-2$
+                            MessageDialog.openError(new Shell(), Messages.getString("ContextProcessSection.errorTitle"), //$NON-NLS-1$
+                                    Messages.getString("ContextProcessSection.ParameterNameIsNotValid")); //$NON-NLS-1$
                         } else {
                             contextParamType.setName((String) value);
                         }
@@ -1315,7 +1312,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
     }
 
     // protected String getDestinationValueSU() {
-    //        return this.suDestinationFilePath != null ? this.suDestinationFilePath : ""; //$NON-NLS-1$
+    // return this.suDestinationFilePath != null ? this.suDestinationFilePath : ""; //$NON-NLS-1$
     //
     // }
 
@@ -1344,8 +1341,8 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
 
         if (ensureLog4jSettingIsValid()) {
             MessageDialog dialog = new MessageDialog(getShell(), "Question", null,
-                    Messages.getString("Log4jSettingPage.IlleagalBuild"), MessageDialog.QUESTION, new String[] {
-                            IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
+                    Messages.getString("Log4jSettingPage.IlleagalBuild"), MessageDialog.QUESTION,
+                    new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
             dialog.open();
             int result = dialog.getReturnCode();
             if (result != MessageDialog.OK) {
@@ -1354,12 +1351,13 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         }
 
         JobExportType jobExportType = getCurrentExportType1();
-        if (JobExportType.POJO.equals(jobExportType)) {
+        if (JobExportType.POJO.equals(jobExportType) || JobExportType.MSESB.equals(jobExportType)
+                || JobExportType.OSGI.equals(jobExportType)) {
             IRunnableWithProgress worker = new IRunnableWithProgress() {
 
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    buildJobWithMaven(JobExportType.POJO, monitor);
+                    buildJobWithMaven(jobExportType, monitor);
                 }
             };
 
@@ -1371,55 +1369,6 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             } catch (InterruptedException e) {
                 return false;
             }
-
-        } else if (JobExportType.MSESB.equals(jobExportType)) {
-            IRunnableWithProgress worker = null;
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
-                IESBMicroService microService = (IESBMicroService) GlobalServiceRegister.getDefault()
-                        .getService(IESBMicroService.class);
-                if (microService != null) {
-                    Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
-                    exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
-                    exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());
-                    exportChoiceMap.put(ExportChoice.onlyDefautContext, contextButton.getSelection());
-
-                    exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
-
-                    if (addBSButton.getSelection()) {
-                        exportChoiceMap.put(ExportChoice.needAssembly, true);
-                        exportChoiceMap.put(ExportChoice.needLauncher, true);
-                    }
-                    worker = microService.createRunnableWithProgress(exportChoiceMap, Arrays.asList(getCheckNodes()),
-                            getSelectedJobVersion(), getDestinationValue(), "");
-                }
-            }
-
-            try {
-                getContainer().run(false, true, worker);
-            } catch (InvocationTargetException e) {
-                MessageBoxExceptionHandler.process(e.getCause(), getShell());
-                return false;
-            } catch (InterruptedException e) {
-                return false;
-            }
-        }else if (JobExportType.OSGI.equals(jobExportType)) {
-            IRunnableWithProgress worker = new IRunnableWithProgress() {
-
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    buildJobWithMaven(JobExportType.OSGI, monitor);
-                }
-            };
-
-            try {
-                getContainer().run(false, true, worker);
-            } catch (InvocationTargetException e) {
-                MessageBoxExceptionHandler.process(e.getCause(), getShell());
-                return false;
-            } catch (InterruptedException e) {
-                return false;
-            }
-
         } else {
             List<ContextParameterType> contextEditableResultValuesList = null;
             if (manager != null) {
@@ -1521,7 +1470,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
      * @return
      */
     public FileSystemExporterFullPath getUnzipExporterOperation(List<ExportFileResource> resourcesToExport) {
-        String currentUnzipFile = getDestinationValue().replace("/", File.separator); //$NON-NLS-1$ 
+        String currentUnzipFile = getDestinationValue().replace("/", File.separator); //$NON-NLS-1$
         currentUnzipFile = currentUnzipFile.substring(0, currentUnzipFile.lastIndexOf(File.separator));
         FileSystemExporterFullPath exporterOperation = null;
         try {
@@ -1628,7 +1577,7 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
         // System.out.println(destinationText);
         // String b = destinationText.substring(0, (destinationText.length() - 4));
         // return (b + destinationText.subSequence((destinationText.length() - 4), destinationText.length()));
-        // System.out.println(destinationText + "  " + idealSuffix);
+        // System.out.println(destinationText + " " + idealSuffix);
         if (destinationText.endsWith(this.getSelectedJobVersion() + this.getOutputSuffix())) {
             return destinationText;
         }

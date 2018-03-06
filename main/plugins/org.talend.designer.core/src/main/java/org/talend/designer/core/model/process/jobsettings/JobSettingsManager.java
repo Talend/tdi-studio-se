@@ -947,10 +947,6 @@ public class JobSettingsManager {
                     .getValue();
             String fileSparator = (String) process.getElementParameter(EParameterName.FIELDSEPARATOR.getName()).getValue();
             tContextLoadNode.getElementParameter(EParameterName.IMPLICIT_TCONTEXTLOAD_FILE.getName()).setValue(inputFile);
-            if (fileSparator.startsWith(TalendQuoteUtils.getQuoteChar())
-                    && fileSparator.endsWith(TalendQuoteUtils.getQuoteChar())) {
-                fileSparator = TalendQuoteUtils.removeQuotes(fileSparator);
-            }
             String regex = FileSeparator.getSeparatorsRegexp(fileSparator);
             tContextLoadNode.getElementParameter(JobSettingsConstants.IMPLICIT_TCONTEXTLOAD_REGEX).setValue(regex);
         } else {
@@ -1210,55 +1206,39 @@ public class JobSettingsManager {
             realDbTypeForJDBC = ExtractMetaDataUtils.getInstance().getDbTypeByClassName(driverClassValue);
         }
         return realDbTypeForJDBC;
-    }
+    }    
 
     public static class FileSeparator {
 
-        private static List<String> ONE_CHAR_METADATA = getOneMetadataChars();
-
-        private static List<String> TWO_CHAR_METADATA = getTwoMetadataChars();
+        private static List<String> METADATA_CHAR = getMetadataChars();
 
         static String doRegexpQuote(String separators) {
             if (StringUtils.isEmpty(separators)) {
-                return separators;
-            } else if (separators.length() == 1) {
-                if (separators.equals("\\")) { // special \ //$NON-NLS-1$
-                    return "\\\\\\" + separators;//$NON-NLS-1$
-                } else if (ONE_CHAR_METADATA.contains(separators)) {
-                    return "\\\\" + separators;//$NON-NLS-1$
+                return TalendQuoteUtils.addQuotes("");
+            }
+            String filedSeparator = TalendQuoteUtils.removeQuotes(separators);
+            if (filedSeparator.length() == 1) {
+                if (filedSeparator.equals("\\")) { // special \ //$NON-NLS-1$
+                    return TalendQuoteUtils.addQuotes("\\\\\\" + filedSeparator);//$NON-NLS-1$
+                } else if (METADATA_CHAR.contains(filedSeparator)) {
+                    return TalendQuoteUtils.addQuotes("\\\\" + filedSeparator);//$NON-NLS-1$
                 }
-            } else if (TWO_CHAR_METADATA.contains(separators.toLowerCase())) {
-                return "\\" + separators;//$NON-NLS-1$
-            } else {
-                boolean isNeedProcessTwoChar = false;
-                for (String twoCharMeta : TWO_CHAR_METADATA) {
-                    if (separators.startsWith(twoCharMeta)) {
-                        isNeedProcessTwoChar = true;
-                        break;
-                    }
-                }
-                if (isNeedProcessTwoChar) {
-                    return doRegexpQuote(separators.substring(0, 2)) + doRegexpQuote(separators.substring(2));
-                } else {
-                    return doRegexpQuote(separators.substring(0, 1)) + doRegexpQuote(separators.substring(1));
-                }
+            } else if (filedSeparator.equals("||")) {// TUP-17232
+                return TalendQuoteUtils.addQuotes("\\\\" + "|" + "\\\\" + "|");//$NON-NLS-1$
             }
             return separators;
         }
 
         static String getSeparatorsRegexp(String fileSeparator) {
-            fileSeparator = TalendQuoteUtils.addQuotes(doRegexpQuote(fileSeparator));
+            fileSeparator = doRegexpQuote(fileSeparator);
             return "\"^([^\"+" + fileSeparator + "+\"]*)\"+" + fileSeparator + "+\"(.*)$\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
-        private static List<String> getOneMetadataChars() {
-            String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]" };
-            return Arrays.asList(metaChars);
-        }
-
-        private static List<String> getTwoMetadataChars() {
-            String[] metaChars = new String[] { "\\x", "\\t", "\\a", "\\\'", "\\\"", "\\?" };
+        private static List<String> getMetadataChars() {
+            String[] metaChars = new String[] { "\\", "^", "$", ".", "?", "|", "[", "+", "*", "{", "(", ")", "}", "]", "\"" };
             return Arrays.asList(metaChars);
         }
     }
 }
+
+

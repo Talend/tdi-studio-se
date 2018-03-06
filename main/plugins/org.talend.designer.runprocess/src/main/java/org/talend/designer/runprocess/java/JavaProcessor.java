@@ -645,39 +645,10 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         }
     }
 
-    /**
-     *
-     * Test the formating source codes,only when talend debug mode
-     */
-    private void writeCodesToFile(String contents, String fileBaseName) {
-        if (!CommonsPlugin.isDebugMode()) {
-            return;
-        }
-        IFolder folder = this.getTalendJavaProject().getTempFolder().getFolder("--CodesFormat");//$NON-NLS-1$
-        File codesDir = folder.getLocation().toFile();
-        codesDir.mkdirs();
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(new File(codesDir, this.getProcess().getName() + '_' + fileBaseName));
-            fw.write(contents);
-            fw.flush();
-        } catch (IOException e) {
-            ExceptionHandler.process(e);
-        } finally {
-            if (fw != null) {
-                try {
-                    fw.close();
-                } catch (IOException e) {
-                    //
-                }
-            }
-        }
-    }
 
     private String doFormat(String processCode) {
         // format the code before save the file.
         final String toFormat = processCode;
-        writeCodesToFile(toFormat, "1-beforeFormat");//$NON-NLS-1$
         // fix for 21320
         final Job job = new Job("t") { //$NON-NLS-1$
 
@@ -703,9 +674,6 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
                     if (!monitor.isCanceled()) {
                         ExceptionHandler.process(e);
                     }
-                }
-                if (isSucceed == Boolean.TRUE && !monitor.isCanceled()) {
-                    writeCodesToFile(formatedCode, "2-afterFormat");//$NON-NLS-1$
                 }
                 monitor.done();
                 return Status.OK_STATUS;

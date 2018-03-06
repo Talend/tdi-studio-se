@@ -14,15 +14,21 @@ package org.talend.designer.unifiedcomponent.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.metadata.IMetadataColumn;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.INodeConnector;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EmfComponent;
@@ -84,13 +90,23 @@ public class ChangeComponentCommand extends Command {
             if (service.isDelegateComponent(delegateComponent)) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 List<IMetadataTable> metadataList = node.getMetadataList();
+                Map<IMetadataTable, EConnectionType> metadataMap = new HashMap<IMetadataTable, EConnectionType>();
                 if (metadataList != null && !metadataList.isEmpty()) {
-                    parameters.put(INode.RELOAD_PARAMETER_METADATA_LIST, metadataList);
+                    for (IMetadataTable table : metadataList) {
+                        String attachedConnector = table.getAttachedConnector();
+                        INodeConnector connectorFromName = node.getConnectorFromName(attachedConnector);
+                        if (connectorFromName != null) {
+                            metadataMap.put(table, connectorFromName.getDefaultConnectionType());
+                        }
+                    }
                 }
                 parameters.put(INode.RELOAD_PARAMETER_ELEMENT_PARAMETERS,
                         new ArrayList<IElementParameter>(node.getElementParameters()));
                 parameters.put(INode.OLD_UNIFIED_COMPONENT, oldComponent);
                 node.reloadComponent(delegateComponent, parameters, false);
+
+                updateComponentSchema(metadataMap);
+
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
                     IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
                             IDesignerCoreService.class);
@@ -101,6 +117,46 @@ public class ChangeComponentCommand extends Command {
                 node.fireImageChage();
                 node.getProcess().checkStartNodes();
                 UnifiedComponentUtil.refreshComponentViewTitle();
+            }
+        }
+
+    }
+
+    private void updateComponentSchema(Map<IMetadataTable, EConnectionType> metadataMap) {
+        List<IMetadataTable> reloadMetadataList = node.getMetadataList();
+        for (IMetadataTable newTable : reloadMetadataList) {
+            for (IMetadataTable table : metadataMap.keySet()) {
+                boolean find = false;
+                INodeConnector connectorFromName = node.getConnectorFromName(newTable.getAttachedConnector());
+                if (connectorFromName != null) {
+                    find = true;
+                } else {
+                    EConnectionType eConnectionType = metadataMap.get(table);
+                    INodeConnector connectorFromType = node.getConnectorFromType(eConnectionType);
+                    if (connectorFromType != null) {
+                        find = true;
+                    }
+                }
+                if (find) {
+                    Set<String> columnLabels = new HashSet<String>();
+                    for (IMetadataColumn column : newTable.getListColumns()) {
+                        columnLabels.add(column.getLabel());
+                    }
+                    for (IMetadataColumn column : table.getListColumns()) {
+                        if (!columnLabels.contains(column.getLabel())) {
+                            newTable.getListColumns().add(column);
+                            columnLabels.add(column.getLabel());
+                        }
+                    }
+                    IGenericWizardService wizardService = null;
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                        wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+                                IGenericWizardService.class);
+                    }
+                    if (wizardService != null) {
+                        wizardService.updateComponentSchema(node, newTable);
+                    }
+                }
             }
         }
 
@@ -120,7 +176,17 @@ public class ChangeComponentCommand extends Command {
                     IUnifiedComponentService.class);
             if (service.isDelegateComponent(delegateComponent)) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put(INode.RELOAD_PARAMETER_METADATA_LIST, node.getMetadataList());
+                List<IMetadataTable> metadataList = node.getMetadataList();
+                Map<IMetadataTable, EConnectionType> metadataMap = new HashMap<IMetadataTable, EConnectionType>();
+                if (metadataList != null && !metadataList.isEmpty()) {
+                    for (IMetadataTable table : metadataList) {
+                        String attachedConnector = table.getAttachedConnector();
+                        INodeConnector connectorFromName = node.getConnectorFromName(attachedConnector);
+                        if (connectorFromName != null) {
+                            metadataMap.put(table, connectorFromName.getDefaultConnectionType());
+                        }
+                    }
+                }
                 parameters.put(INode.RELOAD_PARAMETER_ELEMENT_PARAMETERS,
                         new ArrayList<IElementParameter>(node.getElementParameters()));
                 parameters.put(INode.OLD_UNIFIED_COMPONENT, newComponent);
@@ -132,17 +198,20 @@ public class ChangeComponentCommand extends Command {
                         propertyType.getChildParameters().get("REPOSITORY_PROPERTY_TYPE").setValue(repositoryValue);
                     }
                 }
-            }
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
-                        IDesignerCoreService.class);
-                if (designerService != null) {
-                    designerService.refreshComponentView();
+
+                updateComponentSchema(metadataMap);
+
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
+                    IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
+                            IDesignerCoreService.class);
+                    if (designerService != null) {
+                        designerService.refreshComponentView();
+                    }
                 }
+                node.fireImageChage();
+                node.getProcess().checkStartNodes();
+                UnifiedComponentUtil.refreshComponentViewTitle();
             }
-            node.fireImageChage();
-            node.getProcess().checkStartNodes();
-            UnifiedComponentUtil.refreshComponentViewTitle();
         }
     }
 

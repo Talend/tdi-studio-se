@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IMultipleComponentManager;
 import org.talend.core.model.general.ModuleNeeded;
@@ -35,7 +36,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.unifiedcomponent.resources.ComponentIconLoading;
-import org.talend.designer.unifiedcomponent.resources.ComponentImage;
 
 /**
  * created by wchen on Dec 1, 2017 Detailled comment
@@ -49,7 +49,7 @@ public class DelegateComponent extends AbstractBasicComponent {
 
     private Boolean visible;
 
-    private ComponentImage componentImage;
+    private IImage componentImage;
 
     private Set<UnifiedObject> unifiedObjects = new HashSet<UnifiedObject>();
 
@@ -125,13 +125,13 @@ public class DelegateComponent extends AbstractBasicComponent {
      */
     @Override
     public ImageDescriptor getIcon32() {
-        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.name() + "_icon32")) { //$NON-NLS-1$
+        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.getPath() + "_icon32")) { //$NON-NLS-1$
             ComponentIconLoading cil = new ComponentIconLoading(imageRegistry, componentImage);
             cil.getImage32();
             cil.getImage16();
             cil.getImage24();
         }
-        return this.imageRegistry.get(componentImage.getLocation() + componentImage.name() + "_icon32"); //$NON-NLS-1$
+        return this.imageRegistry.get(componentImage.getLocation() + componentImage.getPath() + "_icon32"); //$NON-NLS-1$
 
     }
 
@@ -142,7 +142,7 @@ public class DelegateComponent extends AbstractBasicComponent {
      */
     @Override
     public ImageDescriptor getIcon24() {
-        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.name() + "_icon24")) { //$NON-NLS-1$
+        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.getPath() + "_icon24")) { //$NON-NLS-1$
             ComponentIconLoading cil = new ComponentIconLoading(imageRegistry, componentImage);
 
             // only call to initialize the icons in the registry
@@ -150,7 +150,7 @@ public class DelegateComponent extends AbstractBasicComponent {
             cil.getImage16();
             cil.getImage24();
         }
-        return this.imageRegistry.get(componentImage.getLocation() + componentImage.name() + "_icon24"); //$NON-NLS-1$
+        return this.imageRegistry.get(componentImage.getLocation() + componentImage.getPath() + "_icon24"); //$NON-NLS-1$
 
     }
 
@@ -161,7 +161,7 @@ public class DelegateComponent extends AbstractBasicComponent {
      */
     @Override
     public ImageDescriptor getIcon16() {
-        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.name() + "_icon16")) { //$NON-NLS-1$
+        if (!this.imageRegistry.containsKey(componentImage.getLocation() + componentImage.getPath() + "_icon16")) { //$NON-NLS-1$
             ComponentIconLoading cil = new ComponentIconLoading(imageRegistry, componentImage);
 
             // only call to initialize the icons in the registry
@@ -169,7 +169,7 @@ public class DelegateComponent extends AbstractBasicComponent {
             cil.getImage16();
             cil.getImage24();
         }
-        return this.imageRegistry.get(componentImage.getLocation() + componentImage.name() + "_icon16"); //$NON-NLS-1$
+        return this.imageRegistry.get(componentImage.getLocation() + componentImage.getPath() + "_icon16"); //$NON-NLS-1$
 
     }
 
@@ -763,7 +763,7 @@ public class DelegateComponent extends AbstractBasicComponent {
      * 
      * @param componentImage the componentImage to set
      */
-    public void setComponentImage(ComponentImage componentImage) {
+    public void setComponentImage(IImage componentImage) {
         this.componentImage = componentImage;
     }
 
@@ -772,7 +772,7 @@ public class DelegateComponent extends AbstractBasicComponent {
      * 
      * @return the componentImage
      */
-    public ComponentImage getComponentImage() {
+    public IImage getComponentImage() {
         return this.componentImage;
     }
 

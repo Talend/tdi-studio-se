@@ -30,6 +30,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.services.IGenericDBService;
 import org.talend.repository.generic.util.GenericConnectionUtil;
+import org.talend.repository.model.IRepositoryNode.ENodeType;
 import org.talend.repository.model.IRepositoryNode.EProperties;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.view.di.metadata.action.MetedataNodeActionProvier;
@@ -62,9 +63,9 @@ public class GenericNodeActionProvier extends MetedataNodeActionProvier {
             }
             if (isConnectionNode) {
                 IRepositoryViewObject repObj = repNode.getObject();
-                if (repObj == null) {
+                if (repObj == null || repNode.getType() == ENodeType.SIMPLE_FOLDER) {
                     createAndAddAction(manager, null, sel);
-                } else {
+                }else {
                     List<ComponentWizard> wizards = GenericConnectionUtil.getAllWizards(repNode);
                     for (ComponentWizard wizard : wizards) {
                         ComponentWizardDefinition definition = wizard.getDefinition();

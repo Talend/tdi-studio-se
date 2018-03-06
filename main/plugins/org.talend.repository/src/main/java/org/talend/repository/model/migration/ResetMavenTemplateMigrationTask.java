@@ -146,11 +146,13 @@ public class ResetMavenTemplateMigrationTask extends AbstractProjectMigrationTas
     }
 
     private void getAllCustomTemplates(File[] files, List<File> allTemplates, FileFilter filter) {
-        for (File file : files) {
-            if (file.isDirectory()) {
-                getAllCustomTemplates(file.listFiles(filter), allTemplates, filter);
-            } else {
-                allTemplates.add(file);
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    getAllCustomTemplates(file.listFiles(filter), allTemplates, filter);
+                } else {
+                    allTemplates.add(file);
+                }
             }
         }
     }

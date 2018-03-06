@@ -19,6 +19,8 @@ import org.talend.core.database.EDatabaseTypeName;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.PropertiesFactory;
@@ -149,6 +151,44 @@ public class ChangeComponentCommandTest {
         Assert.assertEquals(EmfComponent.REPOSITORY, elementParameter.getChildParameters().get("PROPERTY_TYPE").getValue());
         Assert.assertEquals("_zchgQdyyEeePQYjilYBwZg", elementParameter.getChildParameters().get("REPOSITORY_PROPERTY_TYPE")
                 .getValue());
+    }
+
+    @Test
+    public void testMysqlAndFlowflakSchema() {
+        IComponent tMysqlInput = compService.getComponentsFactory().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
+        Property property1 = PropertiesFactory.eINSTANCE.createProperty();
+        property1.setId("property1"); //$NON-NLS-1$
+        property1.setVersion("0.1"); //$NON-NLS-1$
+        property1.setLabel("test1");//$NON-NLS-1$
+        Process process1 = new Process(property1);
+        Node node = new Node(tMysqlInput, process1);
+        IMetadataTable metadataTable = node.getMetadataFromConnector("FLOW");
+        MetadataColumn column = new MetadataColumn();
+        column.setLabel("column1");
+        column.setTalendType("id_String");
+        metadataTable.getListColumns().add(column);
+
+        IElementParameter unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        ChangeComponentCommand command = new ChangeComponentCommand(node, unifiedParam, "Snowflake");
+        command.execute();
+
+        IMetadataTable flowTable = node.getMetadataFromConnector("FLOW");
+        Assert.assertNull(flowTable);
+
+        IMetadataTable mainTable = node.getMetadataFromConnector("MAIN");
+        Assert.assertNotNull(mainTable);
+        Assert.assertEquals(mainTable.getListColumns().get(0).getLabel(), "column1");
+
+        unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        command = new ChangeComponentCommand(node, unifiedParam, "MySQL");
+        command.execute();
+
+        flowTable = node.getMetadataFromConnector("FLOW");
+        Assert.assertNotNull(flowTable);
+
+        mainTable = node.getMetadataFromConnector("MAIN");
+        Assert.assertNull(mainTable);
+
     }
 
 }

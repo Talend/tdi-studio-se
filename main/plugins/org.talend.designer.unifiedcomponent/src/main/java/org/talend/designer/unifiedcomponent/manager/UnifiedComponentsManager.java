@@ -26,6 +26,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.talend.commons.exception.CommonExceptionHandler;
+import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.IComponent;
@@ -33,7 +34,6 @@ import org.talend.core.model.components.IComponentsService;
 import org.talend.designer.unifiedcomponent.component.DelegateComponent;
 import org.talend.designer.unifiedcomponent.component.UnifiedObject;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
-import org.talend.designer.unifiedcomponent.resources.ComponentImage;
 import org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier;
 
 /**
@@ -155,7 +155,7 @@ public class UnifiedComponentsManager {
         }
     }
 
-    private DelegateComponent createDelegateComponent(String familyName, String name, ComponentImage image) {
+    private DelegateComponent createDelegateComponent(String familyName, String name, IImage image) {
         DelegateComponent component = new DelegateComponent(familyName, name);
         component.setComponentImage(image);
         return component;

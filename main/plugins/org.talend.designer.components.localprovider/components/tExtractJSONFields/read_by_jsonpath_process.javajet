@@ -1,7 +1,5 @@
 <%@ jet%>
-
-<%
-if (outConn ==null ) {
+<%if (outConn ==null ) {
 	return stringBuffer.toString();
 }
 %>
@@ -84,6 +82,7 @@ if(outConns!=null){
 	nb_line_<%=cid%>++;
 	try {
 <%
+boolean splitList = "true".equals(ElementParameterParser.getValue(node.getProcess(), "__SPLIT_LIST__"));
 for (int i=0;i<mapping.size();i++) {
 	for(IMetadataColumn column : outConn.getMetadataTable().getListColumns()) {
 		String schemaColumn = mapping.get(i).get("SCHEMA_COLUMN");
@@ -132,6 +131,10 @@ for (int i=0;i<mapping.size();i++) {
 %>
 					<%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(value_<%=cid%>.toString(), <%=pattern%>);
 <%
+        		} else if(javaType == JavaTypesManager.LIST && splitList){
+        		%>
+        		    <%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_List(value_<%=cid%>.toString(),",");
+        		<%
         		} else {
 %>
 					<%=firstConnName%>.<%=column.getLabel() %> = ParserUtils.parseTo_<%=typeToGenerate %>(value_<%=cid%>.toString());

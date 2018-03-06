@@ -21,9 +21,7 @@ import java.util.Set;
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -37,6 +35,7 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -58,7 +57,6 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
-import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -255,6 +253,9 @@ public class MavenJavaProcessor extends JavaProcessor {
     }
 
     public void generatePom(int option) {
+        if (buildChildrenJobs != null) {
+            buildChildrenJobs.clear();
+        }
         initJobClasspath();
         try {
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
@@ -319,6 +320,10 @@ public class MavenJavaProcessor extends JavaProcessor {
 
     }
 
+    protected boolean packagingAndAssembly() {
+        return false;
+    }
+
     @Override
     public void build(IProgressMonitor monitor) throws Exception {
         BuildCacheManager buildCacheManager = BuildCacheManager.getInstance();
@@ -342,7 +347,8 @@ public class MavenJavaProcessor extends JavaProcessor {
             final Map<String, Object> argumentsMap = new HashMap<String, Object>();
             argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
             argumentsMap.put(TalendProcessArgumentConstant.ARG_PROGRAM_ARGUMENTS, "-T 1C -f " // $NON-NLS-1$
-                    + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P !" + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY); // $NON-NLS-1$
+                    + BuildCacheManager.BUILD_AGGREGATOR_POM_NAME + " -P " + (packagingAndAssembly() ? "" : "!")
+                    + TalendMavenConstants.PROFILE_PACKAGING_AND_ASSEMBLY); // $NON-NLS-1$
             // install all subjobs
             buildCacheManager.build(monitor, argumentsMap);
 
@@ -360,6 +366,16 @@ public class MavenJavaProcessor extends JavaProcessor {
             }
 
             buildCacheManager.buildAllSubjobMavenProjects();
+
+            if (CommonUIPlugin.isFullyHeadless()) {
+                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES, false, true);
+                if (ProcessUtils.isRequiredPigUDFs(null)) {
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF, false, true);
+                }
+                if (ProcessUtils.isRequiredBeans(null)) {
+                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS"), false, true); //$NON-NLS-1$
+                }
+            }
 
         }
         IFile jobJarFile = null;

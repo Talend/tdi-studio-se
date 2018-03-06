@@ -216,7 +216,7 @@ public class StatsAndLogsManager {
             IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS");
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS", EParameterName.TABLE_STATS.getName());
             }else{
                 DataNode statsNode = createStatsNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
@@ -253,18 +253,6 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
-                if(statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
-                    statsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-                }
-                if(statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
-                    statsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-                }
-                if(statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
-                    statsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
-                }
                 statsNode.setProcess(process);
                 nodeList.add(statsNode);
             }
@@ -274,7 +262,7 @@ public class StatsAndLogsManager {
             IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, LOG_UNIQUE_NAME, "tLogCatcher" ,"LOGS");
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, LOG_UNIQUE_NAME, "tLogCatcher" ,"LOGS", EParameterName.TABLE_LOGS.getName());
             }else{
                 DataNode logsNode = createLogsNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
@@ -333,7 +321,7 @@ public class StatsAndLogsManager {
             IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
             boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
             if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tFlowMeterCatcher" ,"METTER");
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tFlowMeterCatcher" ,"METTER", EParameterName.TABLE_METER.getName());
             }else{
                 DataNode meterNode = createMetterNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
@@ -370,18 +358,6 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
-                if(meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
-                    meterNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-                }
-                if(meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
-                    meterNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-                }
-                if(meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
-                    meterNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
-                }
                 
                 meterNode.setProcess(process);
                 nodeList.add(meterNode); 
@@ -391,7 +367,7 @@ public class StatsAndLogsManager {
         return nodeList;
     }
 
-    private static DataNode addGenericDataNodes(IProcess process, List<DataNode> nodeList, DataNode connectionNode, DataNode commitNode, IComponent dbOutputComponent, String prefixName, String inputComponentName, String inputComponentId) {
+    private static DataNode addGenericDataNodes(IProcess process, List<DataNode> nodeList, DataNode connectionNode, DataNode commitNode, IComponent dbOutputComponent, String prefixName, String inputComponentName, String inputComponentId, String dbTableParameterName) {
         IComponent inputComponent = ComponentsFactoryProvider.getInstance().get(
             inputComponentName, ComponentCategory.CATEGORY_4_DI.getName());
         String inputComponentUniqueName = prefixName + "_" + inputComponentId;
@@ -400,6 +376,22 @@ public class StatsAndLogsManager {
         inputNode.setSubProcessStart(true);
         inputNode.setActivate(true);
         inputNode.setProcess(process);
+        
+        //please see JobLogsComponent class
+        if("tLogCatcher".equals(inputComponentName)) {
+            if(inputNode.getElementParameter("CATCH_JAVA_EXCEPTION")!=null) {
+                inputNode.getElementParameter("CATCH_JAVA_EXCEPTION").setValue(process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+            }
+            
+            if(inputNode.getElementParameter("CATCH_TDIE")!=null) {
+                inputNode.getElementParameter("CATCH_TDIE").setValue(process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+            }
+            
+            if(inputNode.getElementParameter("CATCH_TWARN")!=null) {
+                inputNode.getElementParameter("CATCH_TWARN").setValue(process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+            }
+        }
+        
         nodeList.add(inputNode);
         
         boolean found = false;
@@ -426,7 +418,7 @@ public class StatsAndLogsManager {
         nodeList.add(outputNode);
         
         ComponentProperties tcomp_properties = outputNode.getComponentProperties();
-        outputNode.getElementParameter("tableSelection.tablename").setValue(process.getElementParameter(EParameterName.TABLE_STATS.getName()).getValue());
+        outputNode.getElementParameter("tableSelection.tablename").setValue(process.getElementParameter(dbTableParameterName).getValue());
         NamedThing referencedComponent = tcomp_properties.getProperty("referencedComponent");
         if (referencedComponent instanceof ComponentReferenceProperties) {
             ComponentReferenceProperties refProps = (ComponentReferenceProperties) referencedComponent;

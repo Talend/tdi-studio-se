@@ -313,12 +313,14 @@ public class ConnectionFormComposite extends Composite {
                 }
             }
         }
+        toActiveDynamicButtons(true);
         if (valid && getRepository() == null) {
             errorMsg = Messages.getString("connections.form.emptyField.repository"); //$NON-NLS-1$
         } else if (valid && getTextName().length() == 0) {
             errorMsg = Messages.getString("connections.form.emptyField.connname"); //$NON-NLS-1$
         } else if (valid && getUser().length() == 0) {
             errorMsg = Messages.getString("connections.form.emptyField.username"); //$NON-NLS-1$
+            toActiveDynamicButtons(false);
         } else if (valid && isLocalConnection() && !Pattern.matches(RepositoryConstants.MAIL_PATTERN, getUser())) {
             errorMsg = Messages.getString("connections.form.malformedField.username"); //$NON-NLS-1$
         } else if (valid && emptyUrl != null) {
@@ -445,6 +447,15 @@ public class ConnectionFormComposite extends Composite {
         layoutData.exclude = hide;
         if (autoLayout) {
             control.getParent().layout();
+        }
+    }
+
+    private void toActiveDynamicButtons(boolean enable) {
+        // Button would only be active if user are filled
+        if (getRepository() != null) {
+            for (Button control : dynamicButtons.get(getRepository()).values()) {
+                control.setEnabled(enable);
+            }
         }
     }
 
