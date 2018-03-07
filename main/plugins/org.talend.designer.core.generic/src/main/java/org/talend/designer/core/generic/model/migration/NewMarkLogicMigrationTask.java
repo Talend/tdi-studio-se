@@ -27,7 +27,8 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTask {
 
     private static final Integer DEFAULT_PAGE_SIZE = 10;
-    private Item item; 
+
+    private Item item;
 
     @Override
     public ExecutionResult execute(final Item item) {
@@ -55,7 +56,8 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
 
     /*
      * tMarkLogicInput (in tcomp) has 2 new properties: checkbox 'criteriaSearch' (should be true in criteria mode, when
-     * component doesn't have input connection) and input schema, which is output schema of source component (if exists)
+     * component doesn't have input connection), input schema, which is output schema of source component (if exists)
+     * Also need to migrate pageSize due to previously it supported text values and now only numeric
      * 
      * tMarkLogicBulkLoad has 1 new property: useExternalMLCP (when true - call commandline process as before).
      */
@@ -89,12 +91,21 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
     private void setNumericPageSize(NodeType node, NamedThing property) {
         String oldValue = ComponentUtilities.getNodeProperty(node, "PAGE_SIZE").getValue();
         Property<Integer> pageSizeProperty = (Property<Integer>) property;
-        if (oldValue!= null && !oldValue.isEmpty()) {
-            oldValue = oldValue.replaceAll("\"", ""); //remove all double-quotes 
-            pageSizeProperty.setValue(Integer.valueOf(oldValue));
+        if (oldValue != null && !oldValue.isEmpty() && isNotContextOrGlobalMap(oldValue)) {
+            try {
+            pageSizeProperty.setValue(Integer.valueOf(oldValue.replaceAll("\"", "")));
+            } catch (NumberFormatException e) {
+                pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
+            }
+        } else if (!isNotContextOrGlobalMap(oldValue)){
+            pageSizeProperty.setStoredValue(oldValue); //remain globalMap or context value
         } else {
             pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
         }
+    }
+
+    private boolean isNotContextOrGlobalMap(String oldValue) {
+        return !(oldValue.contains("context") || oldValue.contains("globalMap"));
     }
 
     private void setUseCriteriaMode(NamedThing currNamedThing, boolean noInputMainConnections) {
