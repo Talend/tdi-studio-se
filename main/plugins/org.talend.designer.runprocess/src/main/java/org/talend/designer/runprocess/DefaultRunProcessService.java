@@ -714,7 +714,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                 refHelper.installRootPom(true);
             }
             AggregatorPomsHelper.updateRefProjectModules(references);
-            AggregatorPomsHelper.updateCodeProjects(new NullProgressMonitor());
+            AggregatorPomsHelper.updateCodeProjects(new NullProgressMonitor(), true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
