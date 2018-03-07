@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import org.eclipse.help.IHelpContentProducer;
+import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.DocumentationContent;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
@@ -37,8 +38,14 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
         if (index != -1) {
             id = id.substring(0, index);
         }
+        ComponentDetailList componentList = client.v1().component().getDetail(locale.getLanguage(), new String[] { id });
+        if (componentList.getDetails() == null || componentList.getDetails().isEmpty()) {
+            return null;
+        }
+        String componentName = componentList.getDetails().get(0).getDisplayName();
         DocumentationContent content = client.v1().documentation().getDocumentation(locale.getLanguage(), id, "html");
-        String source = "<html><body>" + content.getSource() + "</body></html>";
+        String source = "<!DOCTYPE html>\r\n" + "<html>\r\n" + "<head>\r\n" + "<meta charset=\"UTF-8\">\r\n"
+                + "<title>" + componentName + "</title>\r\n" + "</head>" + content.getSource() + "</body></html>";
         return new ByteArrayInputStream(source.getBytes());
     }
 }

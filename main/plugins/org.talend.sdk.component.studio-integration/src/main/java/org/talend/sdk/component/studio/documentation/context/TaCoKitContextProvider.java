@@ -19,6 +19,7 @@ package org.talend.sdk.component.studio.documentation.context;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.help.AbstractContextProvider;
@@ -26,6 +27,7 @@ import org.eclipse.help.IContext;
 import org.eclipse.help.IHelpResource;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
+import org.talend.sdk.component.server.front.model.DocumentationContent;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.documentation.toc.TaCoKitTopic;
@@ -45,24 +47,62 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
         if (fullComponentName == null) {
             return null;
         }
-        //TODO: change to description from documentation
-        TaCoKitHelpContext context = new TaCoKitHelpContext(fullComponentName);
 
         Stream<Pair<ComponentIndex, ComponentDetail>> details =
                 client.v1().component().details(expLocale.getLanguage());
 
-        details.filter(pair -> {
+        List<Pair<ComponentIndex, ComponentDetail>> detailsList = details.filter(pair -> {
             final ComponentIndex index = pair.getFirst();
             return TaCoKitUtil.getFullComponentName(index.getFamilyDisplayName(), index.getDisplayName()).equals(fullComponentName);
-        }).forEach(pair -> {
-            final ComponentIndex index = pair.getFirst();
-            TaCoKitTopic topic = new TaCoKitTopic();
-            topic.setHref("/" + GAV.ARTIFACT_ID + "/" + index.getId().getId() + ".html");
-            topic.setLabel(index.getDisplayName());
-            context.addRelatedTopic(topic);
-        });
+        }).collect(Collectors.toList());
+
+        final ComponentIndex firstIndex = detailsList.get(0).getFirst();
+        if (firstIndex == null) {
+            return null;
+        }
+        DocumentationContent doc = client.v1().documentation().getDocumentation(expLocale.getLanguage(),
+                firstIndex.getId().getId(), "asciidoc");
+        TaCoKitHelpContext context = new TaCoKitHelpContext(parseDescription(doc.getSource(), firstIndex.getDisplayName()));
+
+        TaCoKitTopic topic = new TaCoKitTopic();
+        topic.setHref(
+                "/" + GAV.ARTIFACT_ID + "/" + firstIndex.getId().getId() + ".html#_" + firstIndex.getDisplayName().toLowerCase());
+        topic.setLabel(firstIndex.getDisplayName());
+        context.addRelatedTopic(topic);
 
         return context;
+    }
+
+    private String parseDescription(final String input, final String componentName) {
+        String result = componentName;
+        final String title = "== " + componentName;
+        int titleIndex = input.indexOf(title);
+        if (titleIndex != -1) {
+            int descriptionEndIndex = input.indexOf("===", titleIndex);
+            if (descriptionEndIndex < 0) {
+                descriptionEndIndex = input.length();
+            }
+            result = input.substring(titleIndex + title.length(), descriptionEndIndex);
+            // if we don't have configuration title starting with "===", we might have table starting with "|==="
+            // thus we need to trim the "|" symbol.
+            if (result.endsWith("|")) {
+                result = result.substring(0, result.length() - 1);
+            }
+            // Now we need to check if we haven't added the next component to description. For that we need to look for
+            // "=="
+            if (result.indexOf("== ") > 0) {
+                result = result.substring(0, result.indexOf("== "));
+            }
+            // Now trim if length is too big
+            if (result.length() > 200) {
+                result = result.substring(0, 197) + "...";
+            }
+        }
+        result = result.trim();
+        if (result == null || result.isEmpty()) {
+            result = componentName;
+        }
+        return result;
     }
 
     private Locale getLocale(final String locale) {

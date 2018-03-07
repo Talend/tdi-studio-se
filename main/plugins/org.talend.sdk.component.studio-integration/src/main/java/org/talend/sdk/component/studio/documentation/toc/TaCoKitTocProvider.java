@@ -61,7 +61,7 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
                 familyContributionsMap.put(familyName, familyContribution);
             }
             final TaCoKitTopic topic = new TaCoKitTopic();
-            topic.setHref(index.getId().getId() + ".html");
+            topic.setHref(index.getId().getId() + ".html#_" + index.getDisplayName().toLowerCase());
             topic.setLabel(index.getDisplayName());
             familyContribution.getToc().addTopic(topic);
         });
