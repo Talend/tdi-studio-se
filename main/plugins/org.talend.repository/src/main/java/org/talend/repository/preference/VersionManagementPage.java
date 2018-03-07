@@ -28,6 +28,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.ControlAdapter;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.internal.navigator.NavigatorContentServiceContentProvider;
 import org.eclipse.ui.internal.navigator.NavigatorDecoratingLabelProvider;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.LoginException;
@@ -60,6 +62,7 @@ import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ItemState;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -381,6 +384,33 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
                     } catch (PersistenceException et) {
                         ExceptionHandler.process(et);
                     }
+                }
+                
+                if(object.getItem() instanceof ProcessItem){
+                	RepositoryNode node = object.getRepositoryNode();
+                	IContentProvider contentProvider = treeViewer.getContentProvider();
+                    if (contentProvider instanceof NavigatorContentServiceContentProvider) {
+                        NavigatorContentServiceContentProvider navigatorProvider = (NavigatorContentServiceContentProvider) contentProvider;
+                        Object[] children = navigatorProvider.getChildren(node);
+                        for (Object child : children) {
+                            if (child instanceof RepositoryNode && ((RepositoryNode)child).getObject() != null) {
+                            	 ERepositoryObjectType childType = ((RepositoryNode)child).getObjectType();
+                                 if (ERepositoryObjectType.TEST_CONTAINER == childType) { // must be testcase
+                                	 for (ItemVersionObject obj2 : versionObjects) {
+                                         if (obj2.getItem() == ((RepositoryNode)child).getObject().getProperty().getItem()) {
+                                             ItemVersionObject relat = obj2;
+                                             if (!tableList.contains(relat)) {
+                                                 tableList.add(relat);
+                                                 checkAllVerSionLatest(tableList, relat);
+                                             }
+                                             break;
+                                         }
+                                     }
+                                 }
+                            }
+                        }
+                    }
+                
                 }
             }
         }

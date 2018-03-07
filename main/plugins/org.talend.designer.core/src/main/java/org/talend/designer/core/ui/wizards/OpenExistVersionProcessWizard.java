@@ -283,10 +283,10 @@ public class OpenExistVersionProcessWizard extends Wizard {
         IProxyRepositoryFactory repositoryFactory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
         try {
             repositoryFactory.save(getProperty(), this.originaleObjectLabel, this.originalVersion);
-            for (ProcessItem item : testcaseList) {
-            	item.getProperty().setVersion(mainPage.getNewVersion());
-            	repositoryFactory.save(ProjectManager.getInstance().getCurrentProject(), item.getProperty());
-			}
+//            for (ProcessItem item : testcaseList) {
+//            	item.getProperty().setVersion(mainPage.getNewVersion());
+//            	repositoryFactory.save(ProjectManager.getInstance().getCurrentProject(), item.getProperty());
+//			}
             ExpressionPersistance.getInstance().jobNameChanged(originaleObjectLabel, processObject.getLabel());
             ProxyRepositoryFactory.getInstance().saveProject(ProjectManager.getInstance().getCurrentProject());
             return true;

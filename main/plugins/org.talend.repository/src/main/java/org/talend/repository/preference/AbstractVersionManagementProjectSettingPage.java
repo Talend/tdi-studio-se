@@ -54,6 +54,7 @@ import org.talend.commons.ui.swt.advanced.composite.ThreeCompositesSashForm;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -482,6 +483,23 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 if (item != null && filterRepositoryNode(node)) { // must be item
                     ItemVersionObject object = createItemVersionObject(node, property);
                     objects.add(object);
+                }
+                if(item instanceof ProcessItem){
+                	IContentProvider contentProvider = treeViewer.getContentProvider();
+                    if (contentProvider instanceof NavigatorContentServiceContentProvider) {
+                        NavigatorContentServiceContentProvider navigatorProvider = (NavigatorContentServiceContentProvider) contentProvider;
+                        Object[] children = navigatorProvider.getChildren(node);
+                        for (Object child : children) {
+                            if (child instanceof RepositoryNode && ((RepositoryNode)child).getObject() != null) {
+                            	 ERepositoryObjectType childType = ((RepositoryNode)child).getObjectType();
+                                 if (ERepositoryObjectType.TEST_CONTAINER == childType) { // must be testcase
+                                	 Property childProperty = ((RepositoryNode)child).getObject().getProperty();
+                                     ItemVersionObject object = createItemVersionObject((RepositoryNode)child, childProperty);
+                                     objects.add(object);
+                                 }
+                            }
+                        }
+                    }
                 }
             }
         } else {
