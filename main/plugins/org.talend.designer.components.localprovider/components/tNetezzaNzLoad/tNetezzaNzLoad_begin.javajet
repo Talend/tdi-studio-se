@@ -342,7 +342,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	parametersList.add(dbtable);
 	
 	if (useExistingCtrlFile) {
-		parametersList.add("\"-df\"");
+		parametersList.add("\"-cf\"");
 		parametersList.add(ctrlFile);
 	}
 	else {
