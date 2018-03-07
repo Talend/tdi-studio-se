@@ -76,11 +76,9 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
             case "schema":
                 setInputSchema(nodeType, currNamedThing, allInputMainConnectors);
                 break;
-
             case "useExternalMLCP":
                 setUseExternalMLCPProperty(currNamedThing);
                 break;
-
             case "pageSize":
                 setNumericPageSize(nodeType, currNamedThing);
                 break;
@@ -91,21 +89,21 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
     private void setNumericPageSize(NodeType node, NamedThing property) {
         String oldValue = ComponentUtilities.getNodeProperty(node, "PAGE_SIZE").getValue();
         Property<Integer> pageSizeProperty = (Property<Integer>) property;
-        if (oldValue != null && !oldValue.isEmpty() && isNotContextOrGlobalMap(oldValue)) {
+        if (oldValue != null && !oldValue.isEmpty() && !isContextOrGlobalMapValue(oldValue)) {
             try {
-            pageSizeProperty.setValue(Integer.valueOf(oldValue.replaceAll("\"", "")));
+                pageSizeProperty.setValue(Integer.valueOf(oldValue.replaceAll("\"", "")));
             } catch (NumberFormatException e) {
                 pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
             }
-        } else if (!isNotContextOrGlobalMap(oldValue)){
-            pageSizeProperty.setStoredValue(oldValue); //remain globalMap or context value
+        } else if (isContextOrGlobalMapValue(oldValue)) {
+            pageSizeProperty.setStoredValue(oldValue); // remain globalMap or context value
         } else {
             pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
         }
     }
 
-    private boolean isNotContextOrGlobalMap(String oldValue) {
-        return !(oldValue.contains("context") || oldValue.contains("globalMap"));
+    private boolean isContextOrGlobalMapValue(String oldValue) {
+        return oldValue.contains("context") || oldValue.contains("globalMap");
     }
 
     private void setUseCriteriaMode(NamedThing currNamedThing, boolean noInputMainConnections) {
