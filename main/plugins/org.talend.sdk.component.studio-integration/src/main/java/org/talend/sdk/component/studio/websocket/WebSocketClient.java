@@ -20,6 +20,7 @@ import static java.util.Locale.ENGLISH;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import javax.json.bind.Jsonb;
 import javax.json.bind.spi.JsonbProvider;
 import javax.json.stream.JsonParsingException;
@@ -50,12 +52,14 @@ import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
+
 import org.apache.tomcat.websocket.Constants;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
+import org.talend.sdk.component.server.front.model.DocumentationContent;
 import org.talend.sdk.component.server.front.model.Environment;
 import org.talend.sdk.component.server.front.model.error.ErrorPayload;
 import org.talend.sdk.component.studio.lang.Pair;
@@ -223,6 +227,10 @@ public class WebSocketClient implements AutoCloseable {
             return new V1Component(root);
         }
 
+        public V1Documentation documentation() {
+            return new V1Documentation(root);
+        }
+
         public boolean healthCheck() {
             root.sendAndWait("/v1/get/environment", "/environment", null, Environment.class, false);
             return true;
@@ -253,6 +261,22 @@ public class WebSocketClient implements AutoCloseable {
         public <T> T execute(final Class<T> expectedResponse, final String family, final String type, final String action, final Map<String, String> payload) {
             return root.sendAndWait("/v1/post/action/execute", "/action/execute?family=" + family + "&type=" + type + "&action=" + action, payload, expectedResponse, true);
         }
+    }
+
+    public static class V1Documentation {
+
+        private final WebSocketClient root;
+
+        private V1Documentation(final WebSocketClient root) {
+            this.root = root;
+        }
+
+        public DocumentationContent getDocumentation(final String language, final String componentId, final String format) {
+            return root.sendAndWait("/v1/get/documentation/component",
+                    "/documentation/component/" + componentId + "?language=" + language + "&format=" + format, null,
+                    DocumentationContent.class, true);
+        }
+
     }
 
 

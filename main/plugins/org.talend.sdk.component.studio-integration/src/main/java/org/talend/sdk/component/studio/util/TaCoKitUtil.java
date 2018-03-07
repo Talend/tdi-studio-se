@@ -169,4 +169,15 @@ public class TaCoKitUtil {
     public static boolean isEmpty(final String str) {
         return str == null || str.length() == 0;
     }
+
+    /**
+     * Method to create component name from component's family name and component's name itself.
+     * 
+     * @param familyName component's family name
+     * @param componentName component's name
+     * @return full component name
+     */
+    public static String getFullComponentName(final String familyName, final String componentName) {
+        return familyName + TaCoKitConst.COMPONENT_NAME_SEPARATOR + componentName;
+    }
 }

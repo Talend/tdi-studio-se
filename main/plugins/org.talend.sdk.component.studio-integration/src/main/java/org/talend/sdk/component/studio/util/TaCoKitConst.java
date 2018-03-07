@@ -48,4 +48,6 @@ public class TaCoKitConst {
 
     public static final String TYPE_STRING = "STRING"; //$NON-NLS-1$
 
+    public static final String COMPONENT_NAME_SEPARATOR = "";
+
 }

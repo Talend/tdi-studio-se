@@ -63,6 +63,7 @@ import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.service.ComponentService;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 // TODO: finish the impl
 public class ComponentModel extends AbstractBasicComponent implements IAdditionalInfo {
@@ -169,7 +170,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     @Override
     public String getName() {
-        return index.getId().getFamily() + COMPONENT_SEPARATOR + index.getId().getName();
+        return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), index.getId().getName());
     }
 
     /**
