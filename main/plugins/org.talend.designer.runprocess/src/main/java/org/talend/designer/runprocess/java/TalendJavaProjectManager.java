@@ -326,10 +326,20 @@ public class TalendJavaProjectManager {
                     for (IRepositoryViewObject object : allVersionObjects) {
                         String realVersion = object.getVersion();
                         Property property = object.getProperty();
-                        IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
-                        IFile file = ResourcesPlugin.getWorkspace().getRoot()
-                                .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
-                        AggregatorPomsHelper.removeFromParentModules(file);
+                        String currentName = property.getLabel();
+                        try {
+                            if (oldName != null) {
+                                property.setLabel(oldName);
+                            }
+                            IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
+                            IFile file = ResourcesPlugin.getWorkspace().getRoot()
+                                    .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
+                            AggregatorPomsHelper.removeFromParentModules(file);
+                        } finally {
+                            if (oldName != null) {
+                                property.setLabel(currentName);
+                            }
+                        }
                     }
                     Set<String> removedVersions = new HashSet<>();
                     Iterator<String> iterator = talendJobJavaProjects.keySet().iterator();
