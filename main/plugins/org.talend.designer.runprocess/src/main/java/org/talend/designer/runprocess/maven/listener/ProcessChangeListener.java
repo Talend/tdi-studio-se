@@ -73,7 +73,13 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     caseFolderDelete(oldValue, newValue);
                 } else if (propertyName.equals(ERepositoryActionName.SAVE.getName())
                         || propertyName.equals(ERepositoryActionName.CREATE.getName())) {
-                    caseCreateAndSave(propertyName, newValue);
+                    boolean avoidGeneratePom = false;
+                    if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
+                        avoidGeneratePom = Boolean.valueOf(String.valueOf(oldValue));
+                    }
+                    if (!avoidGeneratePom) {
+                        caseCreateAndSave(propertyName, newValue);
+                    }
                 } else if (propertyName.equals(ERepositoryActionName.IMPORT.getName())) {
                     caseImport(propertyName, newValue);
                 }

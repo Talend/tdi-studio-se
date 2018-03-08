@@ -64,6 +64,7 @@ import org.talend.core.model.update.UpdatesConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
@@ -164,7 +165,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                             if (repValue == null) {
                                 continue;
                             }
-                            if(repositoryValue.equals("connection.driverTable")){//PASSWORD
+                            if (repositoryValue.equals("connection.driverTable")) {// PASSWORD
                                 ConnectionUtil.resetDriverValue(repValue);
                             }
                             if (repositoryValue.equals(UpdatesConstants.TYPE)) { // datebase type
@@ -378,6 +379,9 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
     private boolean addContextModel = false;
 
     protected void save() {
+        final boolean generatePom = MessageDialog.openQuestion(getShell(), "Question",
+                Messages.getString("AbstractJobSettingsPage.save"));
+
         List<String> checkedObjects = new ArrayList<String>();
         List<IRepositoryViewObject> allProcess = null;
         try {
@@ -477,11 +481,11 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                     @Override
                     public void run(IProgressMonitor monitor) throws CoreException {
                         for (IRepositoryViewObject object : checkedNodeObject) {
-                            saveProcess(object, addContextModel, contextVars, monitor);
+                            saveProcess(object, addContextModel, generatePom, contextVars, monitor);
                         }
                     }
                 };
-                
+
                 IWorkspace workspace = ResourcesPlugin.getWorkspace();
                 try {
                     ISchedulingRule schedulingRule = workspace.getRoot();
@@ -515,8 +519,8 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
     protected abstract String getTaskMessages();
 
-    protected void saveProcess(IRepositoryViewObject object, boolean addContextModel, Map<String, Set<String>> contextVars,
-            IProgressMonitor monitor) {
+    protected void saveProcess(IRepositoryViewObject object, boolean addContextModel, boolean generatePom,
+            Map<String, Set<String>> contextVars, IProgressMonitor monitor) {
         Property property = object.getProperty();
         ProcessItem pItem = (ProcessItem) property.getItem();
 
@@ -531,8 +535,8 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
                 IElementParameter propertyElem = ptParam.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName());
                 Object proValue = propertyElem.getValue();
                 if (proValue instanceof String && ((String) proValue).equalsIgnoreCase(EmfComponent.REPOSITORY)) {
-                    IElementParameter repositoryElem = ptParam.getChildParameters().get(
-                            EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                    IElementParameter repositoryElem = ptParam.getChildParameters()
+                            .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                     String value = (String) repositoryElem.getValue();
                     ConnectionItem connectionItem = UpdateRepositoryUtils.getConnectionItemByItemId(value);
                     if (connectionItem != null) {
@@ -550,7 +554,7 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
             try {
 
                 reloadFromProjectSetings(pItem, addContextModel, contextVars);
-                factory.save(pItem);
+                factory.save(pItem, false, !generatePom);
                 monitor.worked(100);
             } catch (PersistenceException e) {
                 ExceptionHandler.process(e);
