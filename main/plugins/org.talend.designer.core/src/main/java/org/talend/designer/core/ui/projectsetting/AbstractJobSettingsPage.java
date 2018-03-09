@@ -101,6 +101,15 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
 
     private boolean isConnectionChanged = false;
 
+    private static boolean isUserIdentified;
+
+    public AbstractJobSettingsPage() {
+        super();
+        if (isUserIdentified) {
+            isUserIdentified = false;
+        }
+    }
+
     /*
      * (non-Javadoc)
      * 
@@ -379,9 +388,13 @@ public abstract class AbstractJobSettingsPage extends ProjectSettingPage {
     private boolean addContextModel = false;
 
     protected void save() {
-        final boolean generatePom = MessageDialog.openQuestion(getShell(), "Question",
-                Messages.getString("AbstractJobSettingsPage.save"));
-
+        boolean confirm = false;
+        if (!isUserIdentified) {
+            confirm = MessageDialog.openQuestion(getShell(), "Question",
+                    Messages.getString("AbstractJobSettingsPage.save"));
+            isUserIdentified = true;
+        }
+        final boolean generatePom = confirm;
         List<String> checkedObjects = new ArrayList<String>();
         List<IRepositoryViewObject> allProcess = null;
         try {
