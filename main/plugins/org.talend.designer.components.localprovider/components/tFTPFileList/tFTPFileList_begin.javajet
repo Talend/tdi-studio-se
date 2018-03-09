@@ -319,7 +319,7 @@ if (sftp) {// *** sftp *** //
 	List<org.apache.commons.net.ftp.FTPFile> fileListTemp_<%=cid %> = new java.util.ArrayList<>();
 
 	<%/*read files*/ %>
-	String remotedir_<%=cid %> = <%=remotedir%>;
+	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 
 	if (!cwdSuccess_<%=cid %>) {
@@ -421,7 +421,7 @@ if (sftp) {// *** sftp *** //
 			log.info("<%=cid%> - Connect to '" + <%=host %> + "' has succeeded.");
 		<%}%>
 	<%}%>
-	String remotedir_<%=cid %> = <%=remotedir%>;
+	String remotedir_<%=cid %> = (<%=remotedir%>).replaceAll("\\\\","/");
 	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
 	String[] fileList_<%=cid %>;
 
