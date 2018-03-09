@@ -74,6 +74,7 @@ imports="
 		%>
 		
 		com.amazonaws.services.s3.transfer.TransferManager tm_<%=cid%> = com.amazonaws.services.s3.transfer.TransferManagerBuilder
+			.standard()
 			.withMinimumUploadPartSize(partSizeInBytes_<%=cid%>)
 			.withMultipartUploadThreshold(multipart_upload_threshold_<%=cid%>)
 			.withS3Client(conn_<%=cid%>)
