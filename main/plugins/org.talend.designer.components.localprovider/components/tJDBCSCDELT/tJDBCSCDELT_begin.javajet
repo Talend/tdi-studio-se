@@ -178,6 +178,8 @@ String sequenceValueFetchPattern_<%=cid%> = "NEXT VALUE FOR <%=text_util.wrap("s
 	<%@ include file="./common_scd_pattern2.javajet"%>
 <%} else if("vertica_id".equals(dbmsId)){%>
 	<%@ include file="./vertica.javajet"%>
+<%} else if("saphana_id".equals(dbmsId)){%>
+    <%@ include file="./sap_hana.javajet"%>
 <%} else {%>
 	<%@ include file="./common_scd_pattern1.javajet"%>
 <%}%>
