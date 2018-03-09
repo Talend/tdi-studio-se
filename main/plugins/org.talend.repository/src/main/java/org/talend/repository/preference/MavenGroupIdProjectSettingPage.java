@@ -96,7 +96,7 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
         });
 
         oldAppendFolder = getPreferenceStore().getBoolean(MavenConstants.APPEND_FOLDER_TO_GROUPID);
-        BooleanFieldEditor appendFolderButton = new BooleanFieldEditor(MavenConstants.APPEND_FOLDER_TO_GROUPID,
+        appendFolderButton = new BooleanFieldEditor(MavenConstants.APPEND_FOLDER_TO_GROUPID,
                 Messages.getString("MavenGroupIdProjectSettingPage.appendFolderLabel"), parent); //$NON-NLS-1$
         addField(appendFolderButton);
 
@@ -105,8 +105,9 @@ public class MavenGroupIdProjectSettingPage extends AbstractProjectSettingPage {
     @Override
     public boolean performOk() {
         if (groupIdText != null && !groupIdText.isDisposed() && appendFolderButton != null) {
-            getPreferenceStore().setValue(MavenConstants.PROJECT_GROUPID, groupIdText.getText());
             if (!oldGroupId.equals(groupIdText.getText()) || oldAppendFolder != appendFolderButton.getBooleanValue()) {
+                getPreferenceStore().setValue(MavenConstants.PROJECT_GROUPID, groupIdText.getText());
+                getPreferenceStore().setValue(MavenConstants.APPEND_FOLDER_TO_GROUPID, appendFolderButton.getBooleanValue());
                 try {
                     new AggregatorPomsHelper().syncAllPoms();
                 } catch (Exception e) {
