@@ -123,7 +123,8 @@ public final class Expression {
         return evaluate(string, listParam, null);
     }
 
-    public static boolean evaluate(final String string, List<? extends IElementParameter> listParam, ElementParameter curParam) {
+    public static boolean evaluate(final String string, List<? extends IElementParameter> listParam,
+            ElementParameter curParam) {
         if (Boolean.FALSE.toString().equals(string)) {
             return false;
         }
@@ -248,8 +249,8 @@ public final class Expression {
         }
     }
 
-    private static boolean evaluateSimpleExpression(String simpleExpression, List<? extends IElementParameter> listParam,
-            ElementParameter currentParam) {
+    private static boolean evaluateSimpleExpression(String simpleExpression,
+            List<? extends IElementParameter> listParam, ElementParameter currentParam) {
         boolean showParameter = false;
         String test = null;
         if (simpleExpression.contains(EQUALS)) {
@@ -566,11 +567,17 @@ public final class Expression {
                                         if (baseColumn != null) {
                                             switch (LanguageManager.getCurrentLanguage()) {
                                             case JAVA:
-                                                value = JavaTypesManager.getTypeToGenerate(baseColumn.getTalendType(),
-                                                        baseColumn.isNullable());
-                                                // PARTICULAR_SURVIVORSHIP is the table name of survivorship rule for columns
-                                                if ("PARTICULAR_SURVIVORSHIP".equals(param.getName()) //$NON-NLS-1$
-                                                        // Number is from DefaultSurvivorShipDataTypeEnum in record.linkage plugin
+                                                value =
+                                                        JavaTypesManager.getTypeToGenerate(baseColumn.getTalendType(),
+                                                                baseColumn.isNullable());
+                                                // PARTICULAR_SURVIVORSHIP and SURVIVORSHIP_JOIN_KEY are the table names
+                                                // which will use the filter
+                                                IElementParameter filterParameter =
+                                                        node.getElementParameter(param.getName() + "_FILTER_PARAMETER"); //$NON-NLS-1$
+                                                if (filterParameter != null
+                                                        && "true".equals(filterParameter.getValue().toString()) //$NON-NLS-1$
+                                                        // Number is from DefaultSurvivorShipDataTypeEnum in
+                                                        // record.linkage plugin
                                                         && "Number".equals(variableValue) //$NON-NLS-1$
                                                         && JavaTypesManager.isNumber(baseColumn.getTalendType())) {
                                                     value = variableValue;
@@ -710,7 +717,8 @@ public final class Expression {
         INode node = retrieveNodeElementFromParameter(currentParam, listParam);
 
         if (node != null) {
-            String relatedNodeName = ElementParameterParser.getValue(node, "__" + distributionParam.split("\\.")[1] + "__"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            String relatedNodeName =
+                    ElementParameterParser.getValue(node, "__" + distributionParam.split("\\.")[1] + "__"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             // if relatedNodeName is empty, maybe means this property have not been setted
             if (relatedNodeName != null && !relatedNodeName.trim().isEmpty()) {
                 for (INode aNode : node.getProcess().getGeneratingNodes()) {
@@ -810,7 +818,8 @@ public final class Expression {
      * except on an error case.
      * @return
      */
-    private static boolean executeBooleanMethod(String methodName, String distribution, String version, boolean positiveAssertion) {
+    private static boolean executeBooleanMethod(String methodName, String distribution, String version,
+            boolean positiveAssertion) {
         try {
             boolean ret = DistributionFactory.executeBooleanMethod(methodName, distribution, version);
             return positiveAssertion ? ret : !ret;
@@ -837,8 +846,9 @@ public final class Expression {
         return paraNames;
     }
 
-    private static void checkIsShowLoop(String testParamName, String expression, List<? extends IElementParameter> listParam,
-            IElementParameter currentParam, List<String> testedParaNames) throws Exception {
+    private static void checkIsShowLoop(String testParamName, String expression,
+            List<? extends IElementParameter> listParam, IElementParameter currentParam, List<String> testedParaNames)
+            throws Exception {
         List<String> paraNames = testedParaNames;
         if (paraNames == null) {
             paraNames = new ArrayList<String>();
@@ -857,8 +867,9 @@ public final class Expression {
                         + "\" bring an endless loop by parameter \"" + testParamName + "\" in the element \"" //$NON-NLS-1$ //$NON-NLS-2$
                         + currentParam.getElement().getElementName() + "\". Please check and amend it!"); //$NON-NLS-1$
             } else {
-                throw new Exception("Expression \"" + expression + "\" bring an endless loop by parameter \"" + testParamName //$NON-NLS-1$ //$NON-NLS-2$
-                        + "\". Please check and amend it!"); //$NON-NLS-1$
+                throw new Exception(
+                        "Expression \"" + expression + "\" bring an endless loop by parameter \"" + testParamName //$NON-NLS-1$ //$NON-NLS-2$
+                                + "\". Please check and amend it!"); //$NON-NLS-1$
             }
         } else {
             paraNames.add(testParamName);
