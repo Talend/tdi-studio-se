@@ -16,11 +16,13 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.talend.commons.CommonsPlugin;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 
 /**
  * DOC zwxue class global comment. Detailled comment
@@ -35,7 +37,8 @@ public class GenerateJobPomMigrationTask extends AbstractItemMigrationTask {
 
     @Override
     public ExecutionResult execute(Item item) {
-        if (item instanceof ProcessItem) {
+        // only execute the migration task during logon, disable it for the import item (check of log finished)
+        if (item instanceof ProcessItem && !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
             ProcessItem processItem = (ProcessItem) item;
             CorePlugin.getDefault().getRunProcessService().generateJobPom(processItem);
             return ExecutionResult.SUCCESS_NO_ALERT;

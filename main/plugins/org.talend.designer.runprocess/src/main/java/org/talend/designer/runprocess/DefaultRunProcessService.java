@@ -252,8 +252,12 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             } else {
-                boolean isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(),
-                        false) == null;
+                boolean isImportedRoute = false;
+                try {
+                    isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(), false) == null;
+                } catch (Exception e) {
+                    System.out.println("Could not find the RepoViewNode according to " + property.getId());
+                }
                 if (routeService != null && !isImportedRoute) {
                     return routeService.createJavaProcessor(process, property, filenameFromLabel, false);
                 }
@@ -714,7 +718,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                 refHelper.installRootPom(true);
             }
             AggregatorPomsHelper.updateRefProjectModules(references);
-            AggregatorPomsHelper.updateCodeProjects(new NullProgressMonitor());
+            AggregatorPomsHelper.updateCodeProjects(new NullProgressMonitor(), true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }

@@ -276,6 +276,7 @@ if (sftp) {  // *** sftp *** //
 				throw new RuntimeException("Login failed");
 			}
 
+			ftp_<%=cid %>.setFileType(org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE); //to calculate md5 for binary files correctly
 			ftp_<%=cid %>.execPROT(<%=protectionLevel %>);
 			ftp_<%=cid %>.execPBSZ(<%=protectionBufferSize %>);
 		} catch (Exception e) {
