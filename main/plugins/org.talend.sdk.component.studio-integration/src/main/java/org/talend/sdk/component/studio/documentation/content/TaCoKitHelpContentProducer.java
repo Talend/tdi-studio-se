@@ -23,8 +23,11 @@ import java.util.Locale;
 import org.eclipse.help.IHelpContentProducer;
 import org.talend.sdk.component.server.front.model.ComponentDetailList;
 import org.talend.sdk.component.server.front.model.DocumentationContent;
+import org.talend.sdk.component.server.front.model.ErrorDictionary;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
+import org.talend.sdk.component.studio.websocket.WebSocketClient.ClientException;
 
 public class TaCoKitHelpContentProducer implements IHelpContentProducer {
 
@@ -42,10 +45,31 @@ public class TaCoKitHelpContentProducer implements IHelpContentProducer {
         if (componentList.getDetails() == null || componentList.getDetails().isEmpty()) {
             return null;
         }
+        String source = null;
         String componentName = componentList.getDetails().get(0).getDisplayName();
-        DocumentationContent content = client.v1().documentation().getDocumentation(locale.getLanguage(), id, "html");
-        String source = "<!DOCTYPE html>\r\n" + "<html>\r\n" + "<head>\r\n" + "<meta charset=\"UTF-8\">\r\n"
-                + "<title>" + componentName + "</title>\r\n" + "</head>" + content.getSource() + "</body></html>";
+        try {
+            DocumentationContent content = client.v1().documentation().getDocumentation(locale.getLanguage(), id, "html");
+            source = "<!DOCTYPE html>\r\n" + "<html>\r\n" + getHeader(componentName) + content.getSource() + "</body></html>";
+        } catch (ClientException e) {
+            if (e.getErrorPayload().getCode().equals(ErrorDictionary.COMPONENT_MISSING)) {
+                source = createErrorPage(componentName);
+            }
+        }
+        if (source == null || source.isEmpty()) {
+            return null;
+        }
         return new ByteArrayInputStream(source.getBytes());
     }
+
+    private String createErrorPage(final String componentName) {
+        return "<!DOCTYPE html>\r\n" + "<html>\r\n" + getHeader(componentName) + "<body>\r\n" + "<p>\r\n"
+                + Messages.getString("documentation.content.error.missing", componentName) + "\r\n" + "</p>\r\n" + "</body>\r\n"
+                + "</html>";
+    }
+
+    private String getHeader(final String componentName) {
+        return "<head>\r\n" + "<meta charset=\"UTF-8\">\r\n" + "<title>" + componentName.toUpperCase() + "</title>\r\n"
+                + "</head>\r\n";
+    }
+
 }

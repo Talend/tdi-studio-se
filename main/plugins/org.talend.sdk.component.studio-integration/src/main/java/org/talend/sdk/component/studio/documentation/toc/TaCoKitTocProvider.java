@@ -54,7 +54,7 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
             final String familyName = index.getFamilyDisplayName();
             TaCoKitContribution familyContribution = familyContributionsMap.get(familyName);
             if(familyContribution == null) {
-                familyContribution = new TaCoKitContribution();
+                familyContribution = new TaCoKitContribution(index.getId().getFamilyId());
                 familyContribution.setLocale(expLocale.getLanguage());
                 final TaCoKitIToc familyItoc = new TaCoKitIToc("", Messages.getString("documentation.reference.guide", familyName));
                 familyContribution.setToc(familyItoc);

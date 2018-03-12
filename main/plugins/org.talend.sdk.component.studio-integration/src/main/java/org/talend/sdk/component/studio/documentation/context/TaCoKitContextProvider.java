@@ -53,7 +53,7 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
 
         List<Pair<ComponentIndex, ComponentDetail>> detailsList = details.filter(pair -> {
             final ComponentIndex index = pair.getFirst();
-            return TaCoKitUtil.getFullComponentName(index.getFamilyDisplayName(), index.getDisplayName()).equals(fullComponentName);
+            return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), index.getId().getName()).equals(fullComponentName);
         }).collect(Collectors.toList());
 
         final ComponentIndex firstIndex = detailsList.get(0).getFirst();
