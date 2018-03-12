@@ -48,9 +48,10 @@ class PartitionMapperConnectorCreator extends AbstractConnectorCreator {
                 .stream() //
                 .filter(output -> FLOW_MAIN.equals(getType(output))) //
                 .map(output -> { //
-                    final INodeConnector main = TaCoKitNodeConnector.newFlow(node, output);
+                    final TaCoKitNodeConnector main = TaCoKitNodeConnector.newFlow(node, output);
                     main.setMaxLinkInput(0);
                     main.setMaxLinkOutput(1);
+                    main.setInput(false);
                     main.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(), FLOW_REF.getDefaultLineStyle());
                     main.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(), FLOW_MERGE.getDefaultLineStyle());
                     existingTypes.add(getType(output));
