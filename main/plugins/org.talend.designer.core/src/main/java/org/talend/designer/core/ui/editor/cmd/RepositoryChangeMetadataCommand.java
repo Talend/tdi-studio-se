@@ -322,17 +322,23 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                 }
                             }
                         } else if ("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) {
-                            param.setValue(newOutputMetadata.getTableName());
+                            param.setValue(TalendQuoteUtils.addQuotes(newOutputMetadata.getTableName()));
+                            if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
+                                param.setRepositoryValueUsed(true);
+                            } else {
+                                param.setRepositoryValueUsed(false);
+                            }
                         }
                     }
                 }
             } else if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
                 for (IElementParameter param : node.getElementParameters()) {
-                    if (("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) 
+                    if (("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName()))
                             && newOutputMetadata.getTableName() != null) {
-                        param.setValue(newOutputMetadata.getTableName());
+                        param.setValue(TalendQuoteUtils.addQuotes(newOutputMetadata.getTableName()));
+                        param.setRepositoryValueUsed(true);
                     }
-            	}
+                }
             }
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);
