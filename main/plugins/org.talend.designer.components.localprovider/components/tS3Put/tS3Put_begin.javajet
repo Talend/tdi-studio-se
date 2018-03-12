@@ -19,13 +19,13 @@ imports="
 	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
     String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
 	
-	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-KMS__"));
+	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_KMS__"));
 	
 	if(partSizeMb == null) {
 		partSizeMb = "5";
 	}
 	
-	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
+	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
 	
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>

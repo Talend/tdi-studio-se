@@ -3035,6 +3035,15 @@
               name="WriteJSONQuoteAllValuesMigrationTask"
               version="7.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.RenameParamName4tS3XXServerEncryption"
+              description="Rename parameter ENABLE-SERVER-SIDE-ENCRYPTION to ENABLE_SERVER_SIDE_ENCRYPTION for S3 components"
+              id="org.talend.repository.model.migration.RenameParamName4tS3XXServerEncryption"
+              name="RenameParamName4tS3XXServerEncryption"
+              version="7.0.1">
+        </projecttask>
    </extension>
 
    <extension
