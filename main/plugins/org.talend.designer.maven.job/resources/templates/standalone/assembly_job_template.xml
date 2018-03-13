@@ -154,7 +154,7 @@
 		<!-- If have children jobs, will add here -->
 		<fileSet><!-- microservice config files -->
 			<directory>${microservice.configs.dir}</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>${file.separator}</outputDirectory>
 			<includes>
 				<include>config/**</include>
 			</includes>
