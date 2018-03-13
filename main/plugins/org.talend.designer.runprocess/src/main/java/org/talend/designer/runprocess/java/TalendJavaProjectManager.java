@@ -81,7 +81,7 @@ import org.talend.utils.io.FilesUtils;
  */
 public class TalendJavaProjectManager {
 
-    private static Map<ERepositoryObjectType, ITalendProcessJavaProject> talendCodeJavaProjects = new HashMap<>();
+    private static Map<String, ITalendProcessJavaProject> talendCodeJavaProjects = new HashMap<>();
 
     private static Map<String, ITalendProcessJavaProject> talendJobJavaProjects = new HashMap<>();
 
@@ -152,14 +152,18 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type) {
-        Project project = ProjectManager.getInstance().getCurrentProject();
-        AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
-        ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(type);
+        return getTalendCodeJavaProject(type, ProjectManager.getInstance().getCurrentProject());
+    }
+
+    public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
+        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, project.getTechnicalLabel());
+        ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(codeProjectId);
         if (talendCodeJavaProject == null || talendCodeJavaProject.getProject() == null
                 || !talendCodeJavaProject.getProject().exists()) {
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
                 IProject codeProject = root.getProject((project.getTechnicalLabel() + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
@@ -170,11 +174,11 @@ public class TalendJavaProjectManager {
                 if (!javaProject.isOpen()) {
                     javaProject.open(monitor);
                 }
-                AggregatorPomsHelper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
                 talendCodeJavaProject.cleanMavenFiles(monitor);
                 BuildCacheManager.getInstance().clearCache(type);
-                talendCodeJavaProjects.put(type, talendCodeJavaProject);
+                talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -285,6 +289,14 @@ public class TalendJavaProjectManager {
 
     public static ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
         return talendJobJavaProjects.get(AggregatorPomsHelper.getJobProjectId(property));
+    }
+
+    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, Project project) {
+        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    }
+
+    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, Project project) {
+        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,

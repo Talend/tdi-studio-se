@@ -97,7 +97,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             // for Shadow Process/Data Preview
             try {
                 PomUtil.updatePomDependenciesFromProcessor(this);
-                AggregatorPomsHelper.createRoutinesPom(getPomFile(), null);
+                new AggregatorPomsHelper().createRoutinesPom(getPomFile(), null);
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }
