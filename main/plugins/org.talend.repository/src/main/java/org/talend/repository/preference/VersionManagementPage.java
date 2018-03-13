@@ -70,6 +70,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.model.routines.RoutinesUtil;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.images.CoreImageProvider;
 import org.talend.repository.RepositoryWorkUnit;
@@ -387,30 +388,25 @@ public class VersionManagementPage extends AbstractVersionManagementProjectSetti
                 }
                 
                 if(object.getItem() instanceof ProcessItem){
-                	RepositoryNode node = object.getRepositoryNode();
-                	IContentProvider contentProvider = treeViewer.getContentProvider();
-                    if (contentProvider instanceof NavigatorContentServiceContentProvider) {
-                        NavigatorContentServiceContentProvider navigatorProvider = (NavigatorContentServiceContentProvider) contentProvider;
-                        Object[] children = navigatorProvider.getChildren(node);
-                        for (Object child : children) {
-                            if (child instanceof RepositoryNode && ((RepositoryNode)child).getObject() != null) {
-                            	 ERepositoryObjectType childType = ((RepositoryNode)child).getObjectType();
-                                 if (ERepositoryObjectType.TEST_CONTAINER == childType) { // must be testcase
-                                	 for (ItemVersionObject obj2 : versionObjects) {
-                                         if (obj2.getItem() == ((RepositoryNode)child).getObject().getProperty().getItem()) {
-                                             ItemVersionObject relat = obj2;
-                                             if (!tableList.contains(relat)) {
-                                                 tableList.add(relat);
-                                                 checkAllVerSionLatest(tableList, relat);
-                                             }
-                                             break;
-                                         }
-                                     }
-                                 }
+                	if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                        ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                                .getDefault().getService(ITestContainerProviderService.class);
+                        if (testContainerService != null) {
+                            List<ProcessItem> testsItems = testContainerService.getAllTestContainers((ProcessItem)object.getItem());
+                            for(ProcessItem testItem : testsItems){
+                            	for (ItemVersionObject obj2 : versionObjects) {
+                                    if (obj2.getItem().getProperty().getId().equals(testItem.getProperty().getId())) {
+                                        ItemVersionObject relat = obj2;
+                                        if (!tableList.contains(relat)) {
+                                            tableList.add(relat);
+                                            checkAllVerSionLatest(tableList, relat);
+                                        }
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
-                
                 }
             }
         }
