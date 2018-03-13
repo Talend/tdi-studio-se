@@ -145,7 +145,7 @@ class IndexedRecordToRowStructGenerator {
                     } else if (type_<%=cid%> == org.apache.avro.Schema.Type.INT) {
                         talendType_<%=cid%> = "<%=JavaTypesManager.INTEGER.getId()%>";
                     } else if (org.talend.daikon.avro.AvroUtils.isSameType(org.talend.daikon.avro.AvroUtils.unwrapIfNullable(dynamicField_<%=cid%>.schema()),org.talend.daikon.avro.AvroUtils._decimal())) {
-                        talendType_tSalesforceInput_1 = "<%=JavaTypesManager.BIGDECIMAL.getId()%>";
+                        talendType_<%=cid%> = "<%=JavaTypesManager.BIGDECIMAL.getId()%>";
                     } else if (type_<%=cid%> == org.apache.avro.Schema.Type.LONG) {
                     	String pattern_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PATTERN);
                     	if(pattern_<%=cid%>!=null && !pattern_<%=cid%>.trim().isEmpty()){
