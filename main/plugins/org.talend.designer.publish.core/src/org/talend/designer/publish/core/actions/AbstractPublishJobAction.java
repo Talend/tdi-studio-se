@@ -110,34 +110,35 @@ public abstract class AbstractPublishJobAction implements IRunnableWithProgress 
 
     private void exportJobForOSGI(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
         File tmpJob = null;
-        final ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
         try {
-            tmpJob = File.createTempFile("job", ".jar", null);
-            jobScriptsManager = JobScriptsManagerFactory.createManagerInstance(
-                    JobScriptsManagerFactory.getDefaultExportChoiceMap(), processItem.getProcess().getDefaultContext(),
-                    JobScriptsManager.LAUNCHER_ALL, IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, JobExportType.OSGI);
-            // generate
-            jobScriptsManager.setDestinationPath(tmpJob.getAbsolutePath());
-            JobExportAction action = new JobExportAction(Collections.singletonList(node), jobVersion, bundleVersion,
-                    jobScriptsManager, System.getProperty("java.io.tmpdir"));
+            tmpJob = File.createTempFile("item", ".jar", null);
 
-            action.run(monitor);
-            if (!action.isBuildSuccessful()) {
-                return;
+            // TDI-32861, because for publish job, so means, must be binaries
+            exportChoiceMap.put(ExportChoice.binaries, true);
+            exportChoiceMap.put(ExportChoice.includeLibs, true);
+
+            ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+            String contextName = (String) exportChoiceMap.get(ExportChoice.contextName);
+            if (contextName == null) {
+                contextName = processItem.getProcess().getDefaultContext();
             }
+            BuildJobManager.getInstance().buildJob(tmpJob.getAbsolutePath(), processItem, jobVersion, contextName,
+                    exportChoiceMap, exportType, monitor);
+            if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
+                IRunProcessService service = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
+                        IRunProcessService.class);
+                boolean hasError = service.checkExportProcess(new StructuredSelection(node), true);
+                if (hasError) {
+                    return;
+                }
+            }
+
             monitor.beginTask("Deploy to Artifact Repository....", IProgressMonitor.UNKNOWN);
             FeaturesModel featuresModel = getFeatureModel(tmpJob);
-
-            // [TESB-12036] add talend-data-mapper feature
-            NodeType tHMapNode = EmfModelUtils.getComponentByName(processItem, THMAP_COMPONENT_NAME);
-            if (tHMapNode != null) {
-                featuresModel.addFeature(new FeatureModel(FeaturesModel.TALEND_DATA_MAPPER_FEATURE_NAME));
-            }
-
-            processModules(featuresModel, ((JobJavaScriptOSGIForESBManager) jobScriptsManager).getExcludedModuleNeededs());
-
             process(processItem, featuresModel, monitor);
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
+            throw e;
+        } catch (Exception e) {
             throw new InvocationTargetException(e);
         } finally {
             if (tmpJob != null && tmpJob.exists()) {
