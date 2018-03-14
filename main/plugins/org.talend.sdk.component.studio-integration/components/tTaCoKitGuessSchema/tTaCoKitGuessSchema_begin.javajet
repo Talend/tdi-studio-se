@@ -41,19 +41,19 @@ final String cid = node.getUniqueName();
 final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
 final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
 final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
-// Please see TaCoKitConst.GUESS_SCHEMA_PARAMETER_TEMP_FILE_KEY
-final String tacokitTempFilePath = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_TEMP_FILE_KEY___").getValue();
-// Please see TaCoKitConst.GUESS_SCHEMA_PARAMETER_ENCODING_KEY
-final String tacokitEncoding = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_ENCODING_KEY___").getValue();
+final String pluginName = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_PLUGIN_NAME___").getValue();
+final String actionName = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_ACTION_NAME___").getValue();
 %>
 
-<%@include file="./TaCoKitGuessSchema.javajet"%>
 <%@include file="../../jet_stub/generic/configuration.javajet"%>
 
-StringBuffer strBuff = new StringBuffer();
-TaCoKitGuessSchema tacokitGuessSchema = new TaCoKitGuessSchema(configuration_<%=cid%>, "<%=family%>", "<%=family%>", "<%=originalName%>", "default", "schema", "<%=tacokitTempFilePath%>", "<%=tacokitEncoding%>");
-try {
-    tacokitGuessSchema.guessSchema(strBuff);
-} finally {
-    tacokitGuessSchema.close();
-}
+final java.io.PrintStream out = System.out;
+System.setOut(System.err);
+org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema tacokitGuessSchema =
+                            new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(configuration_<%=cid%>,
+                                                                                    "<%=pluginName%>",
+                                                                                    "<%=family%>",
+                                                                                    "<%=originalName%>",
+                                                                                    <% if(actionName == null || actionName.isEmpty()){%> null <%}else {%> "<%=actionName%>" <%}%>
+                                                                                    );
+tacokitGuessSchema.guessSchema(out);

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
@@ -322,7 +323,11 @@ public class SettingsCreator implements PropertyVisitor {
         final String connectionName =
                 connectorName.equals("__default__") ? EConnectionType.FLOW_MAIN.getName() : connectorName;
         final String schemaName = node.getProperty().getSchemaName();
-        return createSchemaParameter(connectionName, schemaName, true);
+        final String discoverSchemaAction = ofNullable(node.getProperty().getMetadata()).orElse(emptyMap())
+                .entrySet().stream().filter(e -> "ui::structure::discoverSchema".equals(e.getKey()))
+                .map(Map.Entry::getValue).filter(Objects::nonNull).findFirst().orElse(null);
+
+        return createSchemaParameter(connectionName, schemaName, discoverSchemaAction, true);
     }
 
     // TODO i18n it
@@ -346,6 +351,7 @@ public class SettingsCreator implements PropertyVisitor {
     }
 
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
+            final String discoverSchemaAction,
             final boolean show) {
         // Maybe need to find some other condition. this way we will show schema widget for main flow only.
         final TaCoKitElementParameter schema = new TaCoKitElementParameter(getNode());
@@ -396,6 +402,7 @@ public class SettingsCreator implements PropertyVisitor {
             final TaCoKitElementParameter guessSchemaParameter = new TaCoKitElementParameter(getNode());
             guessSchemaParameter.setCategory(EComponentCategory.BASIC);
             guessSchemaParameter.setContext(connectionName);
+            guessSchemaParameter.setValue(discoverSchemaAction);
             guessSchemaParameter.setDisplayName(Messages.getString("guessSchema.button", connectionName));
             guessSchemaParameter.setFieldType(EParameterFieldType.TACOKIT_GUESS_SCHEMA);
             guessSchemaParameter.setListItemsDisplayName(new String[0]);
@@ -406,7 +413,6 @@ public class SettingsCreator implements PropertyVisitor {
             guessSchemaParameter.setReadOnly(false);
             guessSchemaParameter.setRequired(false);
             guessSchemaParameter.setShow(show);
-            guessSchemaParameter.setValue("");
         }
 
         return schema;
@@ -428,7 +434,7 @@ public class SettingsCreator implements PropertyVisitor {
      * Setup common for all {@link TaCoKitElementParameter} fields
      *
      * @param parameter parameter to setup
-     * @param node property tree node
+     * @param node      property tree node
      */
     private void commonSetup(final IElementParameter parameter, final PropertyNode node) {
         parameter.setCategory(category);

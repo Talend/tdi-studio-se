@@ -12,86 +12,170 @@
  */
 package org.talend.sdk.component.studio.ui.guessschema;
 
+import static java.util.stream.Collectors.joining;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
+import org.talend.core.CorePlugin;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.properties.Property;
+import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.process.DataProcess;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.core.ui.editor.properties.controllers.AbstractGuessSchemaProcess;
+import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.ProcessorUtilities;
+import org.talend.sdk.component.server.front.model.ActionReference;
+import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.model.ComponentModelSpy;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public class TaCoKitGuessSchemaProcess extends AbstractGuessSchemaProcess {
+public class TaCoKitGuessSchemaProcess {
 
-    public TaCoKitGuessSchemaProcess(final Property property, final INode node, final IContext selectContext) {
-        super(property, node, selectContext);
+    protected static final String DEFAULT_JOB_NAME = "Mock_job_for_Guess_schema"; //$NON-NLS-1$
+
+    protected static final int maximumRowsToPreview = CorePlugin.getDefault().getPreferenceStore()
+            .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT);
+
+    private INode node;
+
+    private IContext context;
+
+    private final String discoverSchemaAction;
+
+    private final Property property;
+
+    private final ExecutorService executorService = ExecutorService.class.cast(Lookups.uiActionsThreadPool()
+            .getExecutor());
+
+    public TaCoKitGuessSchemaProcess(final Property property, final INode node, final IContext context,
+            final String discoverSchemaAction) {
+        this.node = node;
+        this.context = context;
+        this.discoverSchemaAction = discoverSchemaAction;
+        this.property = property;
     }
 
-    @Override
-    protected void buildProcess() {
-        Process process = new Process(getProperty());
-        setProcess(process);
-        INode node = getNode();
-        configContext(process, node);
+    public Future<String> run() {
+        return executorService.submit(new Task(property, context, node, discoverSchemaAction));
+    }
 
-        List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
-        try {
-            node.setOutgoingConnections(new ArrayList<>());
-            DataProcess dataProcess = new DataProcess(process);
-            INode newNode = dataProcess.buildNodeFromNode(node, process);
+    public static class Task implements Callable<String> {
 
-            IComponent component = newNode.getComponent();
-            ComponentModelSpy componentSpy = createComponnetModelSpy(component);
-            newNode.setComponent(componentSpy);
-            setNode(newNode);
+        private final Process process;
 
-            IElementParameter tempFileElemParam = new ElementParameter(newNode);
-            tempFileElemParam.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_TEMP_FILE_KEY);
-            tempFileElemParam.setValue(getTemppath().toPortableString());
-            IElementParameter encodingElemParam = new ElementParameter(newNode);
-            encodingElemParam.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_ENCODING_KEY);
-            encodingElemParam.setValue(getCurrentProcessEncoding());
+        private final IContext context;
 
-            List<IElementParameter> elementParameters = (List<IElementParameter>) newNode.getElementParameters();
-            elementParameters.add(tempFileElemParam);
-            elementParameters.add(encodingElemParam);
-        } finally {
-            node.setOutgoingConnections(outgoingConnections);
+        private INode node;
+
+        private final String actionName;
+
+        public Task(final Property property, final IContext context, final INode node, final String actionName) {
+            this.process = new Process(property);
+            this.context = context;
+            this.node = node;
+            this.actionName = actionName;
         }
-    }
 
-    @Override
-    protected boolean isCheckError() {
-        return true;
-    }
+        @Override
+        public String call() throws Exception {
+            buildProcess();
+            IProcessor processor = ProcessorUtilities.getProcessor(process, null);
+            processor.setContext(context);
+            java.lang.Process executeProcess = processor.run(IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, null);
+            try {
+                final int exitCode = executeProcess.waitFor(); //wait check error stream
+                if (exitCode != 0) {
+                    try (
+                            final BufferedReader reader = new BufferedReader(
+                                    new InputStreamReader(executeProcess.getErrorStream()));
+                    ) {
+                        throw new IllegalStateException(reader.lines().collect(joining("\n")));
+                    } catch (IOException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException(e);
+            }
 
-    @Override
-    protected String getErrorMessage() {
-        return Messages.getString("guessSchema.error"); //$NON-NLS-1$
-    }
+            try (
+                    final BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(executeProcess.getInputStream()));
+            ) {
+                return reader.lines().collect(joining("\n"));
 
-    private ComponentModelSpy createComponnetModelSpy(final IComponent component) {
-        ComponentModelSpy componentSpy = new ComponentModelSpy(component);
-        IComponent guessComponent = Lookups.taCoKitCache().getTaCoKitGuessSchemaComponent();
-        componentSpy.spyName(guessComponent.getName());
-        componentSpy.spyOriginalName(guessComponent.getOriginalName());
-        componentSpy.spyShortName(guessComponent.getShortName());
-        componentSpy.spyTemplateFolder(guessComponent.getTemplateFolder());
-        componentSpy.spyTemplateNamePrefix(guessComponent.getTemplateNamePrefix());
-        componentSpy.spyAvailableCodeParts(guessComponent.getAvailableCodeParts());
-        return componentSpy;
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+
+        private void buildProcess() {
+            process.getContextManager().getListContext().addAll(node.getProcess().getContextManager().getListContext());
+            process.getContextManager().setDefaultContext(this.context);
+            List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
+            try {
+                node.setOutgoingConnections(new ArrayList<>());
+                DataProcess dataProcess = new DataProcess(process);
+                INode newNode = dataProcess.buildNodeFromNode(node, process);
+
+                IComponent component = newNode.getComponent();
+                ComponentModelSpy componentSpy = createComponnetModelSpy(component);
+                newNode.setComponent(componentSpy);
+                this.node = newNode;
+                if (ComponentModel.class.isInstance(component)) {
+                    List<IElementParameter> elementParameters =
+                            (List<IElementParameter>) newNode.getElementParameters();
+                    final ComponentModel cm = ComponentModel.class.cast(component);
+                    final IElementParameter pluginName = new ElementParameter(newNode);
+                    pluginName.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_PLUGIN_NAME);
+                    pluginName.setValue(cm.getPluginName());
+                    elementParameters.add(pluginName);
+
+                    final IElementParameter actionNameParam = new ElementParameter(newNode);
+                    actionNameParam.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_ACTION_NAME);
+                    final List<ActionReference> actions = cm.getDiscoverSchemaActions();
+                    if (actionName != null && !actions.isEmpty() && actions.stream()
+                            .anyMatch(a -> a.getName().equals(actionName))) {
+                        actionNameParam.setValue(actions.stream()
+                                .filter(a -> a.getName().equals(actionName)).findFirst().get().getName());
+
+                    }
+                    elementParameters.add(actionNameParam);
+                }
+
+            } finally {
+                node.setOutgoingConnections(outgoingConnections);
+            }
+        }
+
+        private ComponentModelSpy createComponnetModelSpy(final IComponent component) {
+            ComponentModelSpy componentSpy = new ComponentModelSpy(component);
+            IComponent guessComponent = Lookups.taCoKitCache().getTaCoKitGuessSchemaComponent();
+            componentSpy.spyName(guessComponent.getName());
+            componentSpy.spyOriginalName(guessComponent.getOriginalName());
+            componentSpy.spyShortName(guessComponent.getShortName());
+            componentSpy.spyTemplateFolder(guessComponent.getTemplateFolder());
+            componentSpy.spyTemplateNamePrefix(guessComponent.getTemplateNamePrefix());
+            componentSpy.spyAvailableCodeParts(guessComponent.getAvailableCodeParts());
+            return componentSpy;
+        }
     }
 
 }

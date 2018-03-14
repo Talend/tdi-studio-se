@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
@@ -54,6 +55,7 @@ import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.model.process.DataNode;
+import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -159,9 +161,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         return Collections.unmodifiableList((detail.getType().equalsIgnoreCase("input")) //$NON-NLS-1$
                 ? Arrays.asList(ECodePart.BEGIN, ECodePart.END, ECodePart.FINALLY)
                 : (useLookup()
-                        ? Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END_HEAD, ECodePart.END_BODY,
-                                ECodePart.END_TAIL, ECodePart.FINALLY)
-                        : Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END, ECodePart.FINALLY)));
+                ? Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END_HEAD, ECodePart.END_BODY,
+                ECodePart.END_TAIL, ECodePart.FINALLY)
+                : Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END, ECodePart.FINALLY)));
     }
 
     /**
@@ -273,7 +275,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     /**
      * Creates component return variables For the moment it returns only
      * ERROR_MESSAGE and NB_LINE after variables
-     * 
+     *
      * @return list of component return variables
      */
     @Override
@@ -303,10 +305,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * Creates component connectors. It creates all possible connector even if some
      * of them are not applicable for component. In such cases not applicable
      * connector has 0 outgoing and incoming links.
-     * 
-     * @param node
-     * component node - object representing component instance on design
-     * canvas
+     *
+     * @param node component node - object representing component instance on design
+     *             canvas
      */
     @Override
     public List<? extends INodeConnector> createConnectors(final INode node) {
@@ -331,7 +332,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     /**
      * Get the default modules needed for the component.
-     * 
+     *
      * @return common v1 components Job dependencies
      */
     @Override
@@ -344,7 +345,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * no have sense for v1 as Job classpath should contain only common API
      * dependencies All component specific dependencies will be resolved by
      * ComponentManager class
-     * 
+     *
      * @return the needed dependencies for the framework,
      * component dependencies are loaded later through ComponentManager.
      */
@@ -364,7 +365,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                     modulesNeeded.add(new ModuleNeeded(getName(), "", true,
                             "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
                     modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                            "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.COMPONENT_RUNTIME_VERSION));
+                            "mvn:org.talend.sdk.component/component-runtime-design-extension/"
+                                    + GAV.COMPONENT_RUNTIME_VERSION));
                     modulesNeeded
                             .add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
 
@@ -450,10 +452,10 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     /**
      * Check whether current component can use the given configuration
-     * 
+     *
      * @param familyNodeName family name
-     * @param configType configuration type
-     * @param configName configuration name
+     * @param configType     configuration type
+     * @param configName     configuration name
      * @return true if support, otherwise false
      */
     public boolean supports(final String familyNodeName, final String configType, final String configName) {
@@ -604,6 +606,27 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
             targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
         }
+    }
+
+    public List<ActionReference> getDiscoverSchemaActions() {
+        if (detail == null || detail.getActions() == null || detail.getActions().isEmpty()) {
+            return emptyList();
+        }
+
+        return detail.getActions().stream()
+                .filter(a -> "schema".equals(a.getType()))
+                .collect(toList());
+    }
+
+    public String getPluginName() {
+        if (index == null
+                || index.getId() == null
+                || index.getId().getPlugin() == null
+                || index.getId().getPlugin().isEmpty()) {
+            throw new IllegalStateException("No plugin id found for this node " + this);
+        }
+
+        return index.getId().getPlugin();
     }
 
 }
