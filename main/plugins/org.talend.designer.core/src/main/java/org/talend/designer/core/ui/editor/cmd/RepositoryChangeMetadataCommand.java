@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,38 +236,38 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 }
             }
             setTableRelevantParameterValues();
-            if (getConnection() != null) {
-                // for salesforce
-                IElementParameter param = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-                if (param != null
-                        && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
-                                .getValue())) {
-                    IElementParameter module = node.getElementParameter("module.moduleName");
-                    if (module != null) {
-                        String repositoryValue = module.getRepositoryValue();
-                        if (repositoryValue == null) {
-                            List<ComponentProperties> componentProperties = null;
-                            IGenericWizardService wizardService = null;
-                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-                                wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
-                                        IGenericWizardService.class);
-                            }
-                            if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
-                                componentProperties = wizardService.getAllComponentProperties(getConnection(), null);
-                            }
-                            repositoryValue = String.valueOf(RepositoryToComponentProperty.getGenericRepositoryValue(
-                                    getConnection(), componentProperties, module.getName()));
-                        }
-                        if (repositoryValue != null) {
-                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), repositoryValue,
-                                    newOutputMetadata, node.getComponent().getName());
-                            if (objectValue != null) {
-                                module.setValue(objectValue);
-                            }
-                        }
-                    }
-                }
-            }
+//            if (getConnection() != null) {
+//                // for salesforce
+//                IElementParameter param = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+//                if (param != null
+//                        && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
+//                                .getValue())) {
+//                    IElementParameter module = node.getElementParameter("module.moduleName");
+//                    if (module != null) {
+//                        String repositoryValue = module.getRepositoryValue();
+//                        if (repositoryValue == null) {
+//                            List<ComponentProperties> componentProperties = null;
+//                            IGenericWizardService wizardService = null;
+//                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+//                                wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
+//                                        IGenericWizardService.class);
+//                            }
+//                            if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
+//                                componentProperties = wizardService.getAllComponentProperties(getConnection(), null);
+//                            }
+//                            repositoryValue = String.valueOf(RepositoryToComponentProperty.getGenericRepositoryValue(
+//                                    getConnection(), componentProperties, module.getName()));
+//                        }
+//                        if (repositoryValue != null) {
+//                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), repositoryValue,
+//                                    newOutputMetadata, node.getComponent().getName());
+//                            if (objectValue != null) {
+//                                module.setValue(objectValue);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         }
         super.setConnection(connection);
         super.execute();
@@ -323,21 +324,27 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                             }
                         } else if ("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) {
                             param.setValue(TalendQuoteUtils.addQuotes(newOutputMetadata.getTableName()));
-                            if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
-                                param.setRepositoryValueUsed(true);
-                            } else {
-                                param.setRepositoryValueUsed(false);
-                            }
+                            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+                        } else if (newOutputMetadata.getTableName() == null &&
+                                ("table.main.schema".equals(param.getName()) || "module.main.schema".equals(param.getName()))) {
+                            param.setValue(null);
+                            param.getChildParameters().put("REPOSITORY_SCHEMA_TYPE", null);
                         }
                     }
                 }
             } else if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
-                for (IElementParameter param : node.getElementParameters()) {
-                    if (("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName()))
-                            && newOutputMetadata.getTableName() != null) {
-                        param.setValue(TalendQuoteUtils.addQuotes(newOutputMetadata.getTableName()));
-                        param.setRepositoryValueUsed(true);
+                IElementParameter param, schemaParam;
+                if (((param = node.getElementParameter("table.tableName")) != null && (schemaParam = node.getElementParameter("table.main.schema")) != null)
+                        || ((param = node.getElementParameter("module.moduleName")) != null && (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
+                    String tableName = newOutputMetadata.getTableName();
+                    if (tableName == null) {
+                        IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
+                        repositorySchema.setLabelFromRepository("");
+                        repositorySchema.setValue("");
+                        schemaParam.setValue(org.apache.avro.Schema.createRecord(Collections.emptyList()));
                     }
+                    param.setValue(TalendQuoteUtils.addQuotes(tableName));
+                    param.setRepositoryValueUsed(true);
                 }
             }
         }
