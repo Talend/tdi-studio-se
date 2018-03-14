@@ -86,6 +86,13 @@
      </Action>
   </extension>
   <extension
+        point="org.talend.core.runtime.service">
+     <Service
+           class="org.talend.sdk.component.studio.service.TaCoKitService"
+           serviceId="ITaCoKitService">
+     </Service>
+  </extension>
+  <extension
         point="org.talend.designer.core.generators">
      <generator
            class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitGuessSchemaGenerator"

@@ -180,4 +180,8 @@ public class TaCoKitUtil {
     public static String getFullComponentName(final String familyName, final String componentName) {
         return familyName + TaCoKitConst.COMPONENT_NAME_SEPARATOR + componentName;
     }
+
+    public static boolean isBlank(final String str) {
+        return isEmpty(str) || str.trim().isEmpty();
+    }
 }

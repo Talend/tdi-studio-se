@@ -60,7 +60,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 return true;
             }
         } catch (Exception e) {
-            /// nothing to do
+            ExceptionHandler.process(e);
         }
         return false;
     }

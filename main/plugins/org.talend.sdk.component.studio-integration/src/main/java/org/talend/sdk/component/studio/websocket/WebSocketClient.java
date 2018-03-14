@@ -248,6 +248,11 @@ public class WebSocketClient implements AutoCloseable {
         public ConfigTypeNodes getRepositoryModel() {
             return root.sendAndWait("/v1/get/configurationtype/index", "/configurationtype/index?language=" + Locale.getDefault().getLanguage(), null, ConfigTypeNodes.class, true);
         }
+
+        public Map<String, String> migrate(final String id, final int configurationVersion, final Map<String, String> payload) {
+            return root.sendAndWait("/v1/post/configurationtype/migrate/{id}/{configurationVersion}",
+                    "/configurationtype/migrate/" + id + "/" + configurationVersion, payload, Map.class, true);
+        }
     }
 
 

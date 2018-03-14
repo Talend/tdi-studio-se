@@ -209,13 +209,17 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
             try {
                 List<IRepositoryViewObject> repObjs = ProxyRepositoryFactory.getInstance().getAll(project, type);
                 for (IRepositoryViewObject repObj : repObjs) {
-                    if (repObj != null && repObj.getProperty() != null) {
-                        ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
-                        Connection connection = item.getConnection();
-                        TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-                        if (!items.contains(item) && model.getConfigurationId().equals(configId)) {
-                            items.add(item);
+                    try {
+                        if (repObj != null && repObj.getProperty() != null) {
+                            ConnectionItem item = (ConnectionItem) repObj.getProperty().getItem();
+                            Connection connection = item.getConnection();
+                            TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
+                            if (!items.contains(item) && model.getConfigurationId().equals(configId)) {
+                                items.add(item);
+                            }
                         }
+                    } catch (Exception e) {
+                        ExceptionHandler.process(e);
                     }
                 }
             } catch (PersistenceException e) {
@@ -313,10 +317,15 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
         }
         IWorkbench wb = workbench != null ? workbench : PlatformUI.getWorkbench();
         if (creation) {
-            CreateTaCoKitConfigurationAction createTaCoKitConfigurationAction =
-                    new CreateTaCoKitConfigurationAction(ITaCoKitRepositoryNode.class.cast(node).getConfigTypeNode());
-            createTaCoKitConfigurationAction.init(node);
-            return createTaCoKitConfigurationAction.createWizard(wb);
+            try {
+                CreateTaCoKitConfigurationAction createTaCoKitConfigurationAction = new CreateTaCoKitConfigurationAction(
+                        ITaCoKitRepositoryNode.class.cast(node).getConfigTypeNode());
+                createTaCoKitConfigurationAction.init(node);
+                return createTaCoKitConfigurationAction.createWizard(wb);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            return null;
         } else {
             EditTaCoKitConfigurationAction editTaCoKitConfigurationAction = new EditTaCoKitConfigurationAction();
             editTaCoKitConfigurationAction.init(node);

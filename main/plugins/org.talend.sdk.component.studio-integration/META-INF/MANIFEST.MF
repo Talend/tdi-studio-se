@@ -81,3 +81,4 @@ Require-Bundle: org.eclipse.core.runtime,
   org.talend.cwm.mip,
   org.talend.utils,
   org.apache.log4j
+Import-Package: org.talend.components.api.properties

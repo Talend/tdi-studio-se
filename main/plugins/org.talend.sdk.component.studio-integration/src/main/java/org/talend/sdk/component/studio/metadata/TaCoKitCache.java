@@ -15,10 +15,12 @@ package org.talend.sdk.component.studio.metadata;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.IComponent;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNodes;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -30,6 +32,8 @@ public class TaCoKitCache {
     private ConfigTypeNodes configTypeNodesCache;
 
     private Map<String, ConfigTypeNode> configTypeNodeMapCache;
+
+    private TaCoKitMigrationManager migrationManager;
 
     /**
      * Stores family ConfigTypeNode. A key represents family name. Value - family ConfigTypeNode
@@ -137,10 +141,22 @@ public class TaCoKitCache {
         this.tacokitGuessSchemaComponent = guessSchemaComponent;
     }
 
+    public TaCoKitMigrationManager getMigrationManager() {
+        if (this.migrationManager == null) {
+            this.migrationManager = new TaCoKitMigrationManager();
+        }
+        return this.migrationManager;
+    }
+
     public void clearCache() {
         configTypeNodesCache = null;
         if (configTypeNodeMapCache != null) {
             configTypeNodeMapCache.clear();
+        }
+        try {
+            getMigrationManager().runMigrationJob();
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
         }
     }
 
