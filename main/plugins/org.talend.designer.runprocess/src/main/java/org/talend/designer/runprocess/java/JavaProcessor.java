@@ -16,7 +16,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,7 +100,6 @@ import org.talend.core.context.RepositoryContext;
 import org.talend.core.hadoop.HadoopConstants;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.general.ModuleNeeded;
-import org.talend.core.model.general.Project;
 import org.talend.core.model.process.ElementParameterParser;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
@@ -1585,18 +1583,22 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
      */
     @Override
     public void generateContextCode() throws ProcessorException {
-        RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
-                Context.REPOSITORY_CONTEXT_KEY);
-        Project project = repositoryContext.getProject();
+        String projectTechName;
+        if (getProperty() != null) {
+            projectTechName = ProjectManager.getInstance().getProject(getProperty()).getTechnicalLabel();
+        } else {
+            RepositoryContext repositoryContext = (RepositoryContext) CorePlugin.getContext().getProperty(
+                    Context.REPOSITORY_CONTEXT_KEY);
+            projectTechName = repositoryContext.getProject().getTechnicalLabel();
+        }
 
         ICodeGenerator codeGen;
         ICodeGeneratorService service = RunProcessPlugin.getDefault().getCodeGeneratorService();
         String javaInterpreter = ""; //$NON-NLS-1$
         String javaLib = ""; //$NON-NLS-1$
-        String currentJavaProject = project.getTechnicalLabel();
         String javaContext = getContextPath().toPortableString();
 
-        codeGen = service.createCodeGenerator(process, false, false, javaInterpreter, javaLib, javaContext, currentJavaProject);
+        codeGen = service.createCodeGenerator(process, false, false, javaInterpreter, javaLib, javaContext, projectTechName);
 
         updateContextCode(codeGen);
     }
