@@ -73,7 +73,7 @@ public class OutputConnectorCreator extends AbstractConnectorCreator {
                 .filter(output -> REJECT.equals(getType(output))) //
                 .findFirst() //
                 .map(output -> { //
-                    final TaCoKitNodeConnector reject = TaCoKitNodeConnector.newReject(node);
+                    final TaCoKitNodeConnector reject = TaCoKitNodeConnector.newReject(node, output);
                     reject.setMaxLinkInput(0);
                     reject.setMaxLinkOutput(1);
                     reject.setInput(false);

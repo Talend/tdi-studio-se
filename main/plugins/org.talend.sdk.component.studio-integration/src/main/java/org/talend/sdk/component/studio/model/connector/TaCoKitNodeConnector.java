@@ -99,10 +99,12 @@ public class TaCoKitNodeConnector extends NodeConnector {
      * A specialty of REJECT connector is it should have FLOW_MAIN type as default connector type
      * 
      * @param node node to which this connector belongs to
+     * @param originalName original connector name set in component
      * @return TaCoKitNodeConnector of REJECT type
      */
-    static TaCoKitNodeConnector newReject(final INode node) {
-        return new TaCoKitNodeConnector(node, REJECT.getName(), REJECT.getDefaultLinkName(), REJECT.getDefaultMenuName(), REJECT, FLOW_MAIN);
+    static TaCoKitNodeConnector newReject(final INode node, final String originalName) {
+        return new TaCoKitNodeConnector(node, originalName, REJECT.getDefaultLinkName(), REJECT.getDefaultMenuName(), REJECT,
+                FLOW_MAIN);
     }
 
     public boolean isInput() {
