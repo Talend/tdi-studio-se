@@ -31,11 +31,15 @@ import org.talend.sdk.component.studio.websocket.WebSocketClient.ClientException
 
 public class TaCoKitHelpContentProducer implements IHelpContentProducer {
 
-    @Override public InputStream getInputStream(String s, String s1, Locale locale) {
-        //s is a plugin(contributor) name. s1 is an href which we set.
-        // In our case href is a component id + .html[?lang=en_US], which we can use to get the documentation from
-        // server.
-        String id = s1;
+    /**
+     * @see org.eclipse.help.IHelpContentProducer#getInputStream(java.lang.String, java.lang.String, java.util.Locale)
+     * 
+     * @param pluginId plugin(contributor) name.
+     * @param href href is a component id + .html[?lang=en_US], which we can use to get the documentation
+     * @param locale to be used
+     */
+    @Override public InputStream getInputStream(String pluginId, String href, Locale locale) {
+        String id = href;
         final WebSocketClient client = Lookups.client();
         int index = id.lastIndexOf(".html");
         if (index != -1) {

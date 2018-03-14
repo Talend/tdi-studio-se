@@ -27,7 +27,9 @@ import org.eclipse.help.IUAElement;
 public class TaCoKitIToc implements IToc {
 
     private final List<ITopic> topicsList = new ArrayList<>();
+
     private String href;
+
     private String label;
 
     public TaCoKitIToc(final String href, final String label) {
@@ -35,13 +37,14 @@ public class TaCoKitIToc implements IToc {
         this.label = label;
     }
 
-    public void addTopic(ITopic topic) {
+    public void addTopic(final ITopic topic) {
         topicsList.add(topic);
     }
 
     @Override public ITopic[] getTopics() {
         return topicsList.toArray(new ITopic[0]);
     }
+    
 
     @Override public ITopic getTopic(final String s) {
         for(ITopic topic : topicsList) {

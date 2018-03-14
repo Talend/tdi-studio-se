@@ -15,7 +15,7 @@ public class TaCoKitTopic implements ITopic {
 
     private String href;
 
-    public void addSubTopic(ITopic topic) {
+    public void addSubTopic(final ITopic topic) {
         subTopics.add(topic);
     }
 

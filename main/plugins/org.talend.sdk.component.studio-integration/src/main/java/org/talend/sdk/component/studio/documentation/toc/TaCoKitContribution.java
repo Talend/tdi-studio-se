@@ -22,30 +22,37 @@ import org.talend.sdk.component.studio.GAV;
 public class TaCoKitContribution implements ITocContribution {
 
     private final String contributionName;
+
     private String locale;
+
     private TaCoKitIToc iToc;
 
     public TaCoKitContribution(String contributionName) {
         this.contributionName = contributionName;
     }
 
-    @Override public String getCategoryId() {
+    @Override
+    public String getCategoryId() {
         return null;
     }
 
-    @Override public String getContributorId() {
+    @Override
+    public String getContributorId() {
         return GAV.ARTIFACT_ID;
     }
 
-    @Override public String[] getExtraDocuments() {
+    @Override
+    public String[] getExtraDocuments() {
         return new String[0];
     }
 
-    @Override public String getId() {
+    @Override
+    public String getId() {
         return GAV.ARTIFACT_ID + "." + contributionName;
     }
 
-    @Override public String getLocale() {
+    @Override
+    public String getLocale() {
         return locale;
     }
 
@@ -53,7 +60,8 @@ public class TaCoKitContribution implements ITocContribution {
         this.locale = locale;
     }
 
-    @Override public String getLinkTo() {
+    @Override
+    public String getLinkTo() {
         return null;
     }
 
@@ -66,7 +74,8 @@ public class TaCoKitContribution implements ITocContribution {
         return iToc;
     }
 
-    @Override public boolean isPrimary() {
+    @Override
+    public boolean isPrimary() {
         return true;
     }
 }

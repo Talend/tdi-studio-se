@@ -26,16 +26,20 @@ import org.eclipse.help.ITocContribution;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.documentation.Locales;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.websocket.WebSocketClient;
 
 public class TaCoKitTocProvider extends AbstractTocProvider {
 
-    //Contributions by language.
+    /**
+     * Contributions by language.
+     */
     private final Map<String, ITocContribution[]> languagePack = new HashMap<>();
 
-    @Override public ITocContribution[] getTocContributions(String language) {
+    @Override
+    public ITocContribution[] getTocContributions(final String language) {
         ITocContribution[] contributions = languagePack.get(language);
         if(contributions != null) {
             return contributions;
@@ -43,7 +47,7 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
         final WebSocketClient client = Lookups.client();
         // we need to get the locale from display language. We might have a "en_US"/"en-US" or something different
         // as an incoming locale String
-        final Locale expLocale = getLocale(language);
+        final Locale expLocale = Locales.fromLanguagePresentation(language);
         
         // let's build map of component families.
         final Map<String, TaCoKitContribution> familyContributionsMap = new HashMap<>();
@@ -52,14 +56,13 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
         details.forEach(pair -> {
             final ComponentIndex index = pair.getFirst();
             final String familyName = index.getFamilyDisplayName();
-            TaCoKitContribution familyContribution = familyContributionsMap.get(familyName);
-            if(familyContribution == null) {
-                familyContribution = new TaCoKitContribution(index.getId().getFamilyId());
-                familyContribution.setLocale(expLocale.getLanguage());
-                final TaCoKitIToc familyItoc = new TaCoKitIToc("", Messages.getString("documentation.reference.guide", familyName));
-                familyContribution.setToc(familyItoc);
-                familyContributionsMap.put(familyName, familyContribution);
-            }
+            TaCoKitContribution familyContribution = familyContributionsMap.computeIfAbsent(familyName, name -> {
+                final TaCoKitContribution contribution = new TaCoKitContribution(index.getId().getFamilyId());
+                contribution.setLocale(expLocale.getLanguage());
+                final TaCoKitIToc familyItoc = new TaCoKitIToc("", Messages.getString("documentation.reference.guide", name));
+                contribution.setToc(familyItoc);
+                return contribution;
+            });
             final TaCoKitTopic topic = new TaCoKitTopic();
             topic.setHref(index.getId().getId() + ".html#_" + index.getDisplayName().toLowerCase());
             topic.setLabel(index.getDisplayName());
@@ -70,16 +73,6 @@ public class TaCoKitTocProvider extends AbstractTocProvider {
         contributions = familyContributionsMap.values().toArray(new ITocContribution[0]);
         languagePack.put(language, contributions);
         return contributions;
-    }
-
-    private Locale getLocale(final String locale) {
-        if (locale != null && locale.length() >= 5) {
-            return new Locale(locale.substring(0, 2), locale.substring(3, 5));
-        } else if (locale != null && locale.length() >= 2) {
-            return new Locale(locale.substring(0, 2));
-        } else {
-            return Locale.getDefault();
-        }
     }
 
     @Override

@@ -30,6 +30,7 @@ import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.DocumentationContent;
 import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.documentation.Locales;
 import org.talend.sdk.component.studio.documentation.toc.TaCoKitTopic;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
@@ -38,8 +39,8 @@ import org.talend.sdk.component.studio.websocket.WebSocketClient;
 public class TaCoKitContextProvider extends AbstractContextProvider {
 
     @Override
-    public IContext getContext(String pluginId, String contextName) {
-        final Locale expLocale = getLocale(contextName);
+    public IContext getContext(final String pluginId, final String contextName) {
+        final Locale expLocale = Locales.fromLanguagePresentation(contextName);
         final WebSocketClient client = Lookups.client();
         //pluginId consists of two parts - plugin name and full component name and locale after the "."
         //we will need to parse it to get the correct value of related topics.
@@ -90,8 +91,9 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
             }
             // Now we need to check if we haven't added the next component to description. For that we need to look for
             // "=="
-            if (result.indexOf("== ") > 0) {
-                result = result.substring(0, result.indexOf("== "));
+            int nextComponentIndex = result.indexOf("== ");
+            if (nextComponentIndex > 0) {
+                result = result.substring(0, nextComponentIndex);
             }
             // Now trim if length is too big
             if (result.length() > 200) {
@@ -103,16 +105,6 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
             result = componentName;
         }
         return result;
-    }
-
-    private Locale getLocale(final String locale) {
-        if (locale != null && locale.length() >= 5) {
-            return new Locale(locale.substring(0, 2), locale.substring(3, 5));
-        } else if (locale != null && locale.length() >= 2) {
-            return new Locale(locale.substring(0, 2));
-        } else {
-            return Locale.getDefault();
-        }
     }
 
     private String getFullComponentName(final String pluginId) {
