@@ -63,7 +63,7 @@ if(isEnableType1) {
     String setColumnsString = StringUtils.join(setColumns.toArray(), ", ");
     String whereClauseString = StringUtils.join(whereClause.toArray(), " OR ");
     %>
-    String updateForType1_<%=cid%> = "UPDATE d SET <%=setColumnsString%> FROM <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>)";
+    String updateForType1_<%=cid%> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=setColumnsString%> FROM <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>)";
     
     java.sql.Statement stmtType1Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType1Update_<%=cid%>.executeUpdate(updateForType1_<%=cid%>);
@@ -100,13 +100,7 @@ if(isEnableType2) {
     %>        
     String changeDateTime_<%=cid%> = (new java.sql.Timestamp((Long)start_Hash.get("<%=cid %>"))).toString();
 	
-    String updateForType2_<%=cid %> = "UPDATE d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> FROM  <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> IS NULL"; 
-    <%
-    if(isEnableDebug) {
-        %>
-        System.out.println("[<%=cid%>] type2 update sql\n" + updateForType2_<%=cid%> + "\ndone");
-        <%
-    } %>
+    String updateForType2_<%=cid %> = "UPDATE <%=text_util.wrap("tableName", cid)%> d SET <%=text_util.wrap(endDateField)%> = '" + (changeDateTime_<%=cid%>) + "'<%if (isEnableActive) {%>, <%=text_util.wrap(activeField)%> = 0<%}%> FROM  <%=text_util.wrap("tableName", cid)%> d, <%=text_util.wrap("sourceTable", cid)%> t WHERE <%=joinClauseString%> AND (<%=whereClauseString%>) AND d.<%=text_util.wrap(endDateField)%> IS NULL"; 
  
     java.sql.Statement stmtType2Update_<%=cid%> = conn_<%=cid%>.createStatement();
     stmtType2Update_<%=cid%>.executeUpdate(updateForType2_<%=cid%>);
