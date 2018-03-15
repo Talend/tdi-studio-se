@@ -13,6 +13,7 @@
 package org.talend.sdk.component.studio.metadata.migration;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +70,8 @@ public class TaCoKitMigrationManager {
         if (configTypeNodes != null) {
             Map<String, ConfigTypeNode> nodes = configTypeNodes.getNodes();
             if (nodes != null && !nodes.isEmpty()) {
-                for (ConfigTypeNode node : nodes.values()) {
+                Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
+                for (ConfigTypeNode node : topLevelNodes) {
                     try {
                         checkMigration(node, progressMonitor);
                     } catch (UserCancelledException e) {

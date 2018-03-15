@@ -13,6 +13,7 @@
 package org.talend.sdk.component.studio.metadata.provider;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -344,13 +345,8 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
                 Map<String, IRepositoryViewObject> repoViewObjMap = new HashMap<>();
                 Map<String, ITaCoKitRepositoryNode> repoNodeMap = new HashMap<>();
                 Set<IRepositoryViewObject> visitedCollection = new HashSet<>();
-                for (ConfigTypeNode node : nodes.values()) {
-                    String parentId = node.getParentId();
-                    String configType = node.getConfigurationType();
-                    if (StringUtils.isNotEmpty(parentId) || StringUtils.isNotEmpty(configType)) {
-                        continue;
-                    }
-
+                Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
+                for (ConfigTypeNode node : topLevelNodes) {
                     TaCoKitFamilyRepositoryNode familyRepositoryNode = createFamilyRepositoryNode(repositoryNode, node);
                     initilizeContentProviderWithTopLevelNode(familyRepositoryNode);
                     repositoryNode.getChildren().add(familyRepositoryNode);
