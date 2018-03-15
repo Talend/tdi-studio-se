@@ -430,8 +430,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void deleteEclipseProjects() {
-        delegateService.deleteEclipseProjects();
+    public void clearProjectRelatedSettings() {
+        delegateService.clearProjectRelatedSettings();
     }
 
     @Override

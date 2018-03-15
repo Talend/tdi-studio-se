@@ -74,7 +74,9 @@ import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
@@ -677,8 +679,10 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void deleteEclipseProjects() {
+    public void clearProjectRelatedSettings() {
         try {
+            PomIdsHelper.resetPreferencesManagers();
+            MavenPomSynchronizer.removeChangeLibrariesListener();
             TalendJavaProjectManager.deleteEclipseProjectByNatureId(TalendJobNature.ID);
         } catch (CoreException e) {
             ExceptionHandler.process(e);

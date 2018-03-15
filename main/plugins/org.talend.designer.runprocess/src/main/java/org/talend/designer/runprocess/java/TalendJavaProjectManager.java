@@ -183,6 +183,9 @@ public class TalendJavaProjectManager {
                 ExceptionHandler.process(e);
             }
         }
+
+        MavenPomSynchronizer.addChangeLibrariesListener();
+
         return talendCodeJavaProject;
     }
 
@@ -249,6 +252,8 @@ public class TalendJavaProjectManager {
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
+
+        MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendJobJavaProject;
     }
