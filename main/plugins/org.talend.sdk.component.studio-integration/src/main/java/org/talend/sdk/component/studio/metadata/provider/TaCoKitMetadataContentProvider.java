@@ -426,7 +426,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
     @Override
     public void clearCache() {
         super.clearCache();
-        Lookups.taCoKitCache().clearCache();
+        // Lookups.taCoKitCache().clearCache();
 
         if (familyNodesMapCache != null && !familyNodesMapCache.isEmpty()) {
             familyNodesMapCache.clear();

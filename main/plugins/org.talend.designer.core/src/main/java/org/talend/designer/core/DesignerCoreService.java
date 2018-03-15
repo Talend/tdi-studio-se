@@ -15,6 +15,7 @@ package org.talend.designer.core;
 import java.beans.PropertyChangeEvent;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.components.ComponentCategory;
@@ -63,6 +65,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.core.ui.context.view.Contexts;
 import org.talend.core.utils.CsvArray;
@@ -115,6 +118,9 @@ public class DesignerCoreService implements IDesignerCoreService {
 
     @Override
     public List<IProcess2> getOpenedProcess(IEditorReference[] reference) {
+        if (CommonsPlugin.isHeadless() || !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+            return Collections.EMPTY_LIST;
+        }
         return RepositoryManagerHelper.getOpenedProcess(reference);
     }
 
@@ -844,6 +850,7 @@ public class DesignerCoreService implements IDesignerCoreService {
         }
     }
 
+    @Override
     public boolean isDelegateNode(INode node) {
         if (node instanceof Node) {
             Node n = (Node) node;

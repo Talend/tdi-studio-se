@@ -33,10 +33,12 @@ import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.repository.model.VersionList;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
@@ -85,7 +87,6 @@ public class TaCoKitMigrationManager {
     }
 
     public void checkMigration(final ConfigTypeNode configTypeNode, final IProgressMonitor progressMonitor) throws Exception {
-        // is logging on
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -109,12 +110,25 @@ public class TaCoKitMigrationManager {
             List<IRepositoryViewObject> allRepoViewObjs = repoFactory.getAll(project, repoObjType, true, true);
             checkMonitor(monitor);
             if (allRepoViewObjs != null && !allRepoViewObjs.isEmpty()) {
+                VersionList latestVersion = new VersionList(false);
+                latestVersion.addAll(allRepoViewObjs);
                 for (IRepositoryViewObject repoViewObj : allRepoViewObjs) {
                     try {
                         ConnectionItem item = (ConnectionItem) repoViewObj.getProperty().getItem();
+                        String itemLabel = ""; //$NON-NLS-1$
+                        try {
+                            itemLabel = item.getProperty().getLabel();
+                        } catch (Exception e) {
+                            // ignore
+                        }
                         if (checkMigration(item, progressMonitor)) {
+                            monitor.subTask(Messages.getString("migration.check.progress.save", itemLabel)); //$NON-NLS-1$
                             repoFactory.save(item);
-                            RepositoryUpdateManager.updateDBConnection(item, false);
+                            String version = item.getProperty().getVersion();
+                            if (repoViewObj == latestVersion.get(0)) {
+                                version = RelationshipItemBuilder.LATEST_VERSION;
+                            }
+                            updatedRelatedItems(item, version, progressMonitor);
                         }
                     } catch (UserCancelledException e) {
                         throw e;
@@ -236,6 +250,16 @@ public class TaCoKitMigrationManager {
         migrationJob.setUser(false);
         migrationJob.schedule();
         migrationJob.join();
+    }
+
+    private void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
+            throws Exception {
+        IProgressMonitor monitor = progressMonitor;
+        if (monitor == null) {
+            monitor = new NullProgressMonitor();
+        }
+        monitor.subTask(Messages.getString("migration.check.progress.updateRelated")); //$NON-NLS-1$
+        RepositoryUpdateManager.updateDBConnection(item, version, false, false);
     }
 
 }
