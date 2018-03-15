@@ -322,31 +322,22 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                                     }
                                 }
                             }
-                        } else if ("table.tableName".equals(param.getName()) || "module.moduleName".equals(param.getName())) {
-                            param.setValue(TalendQuoteUtils.addQuotes(newOutputMetadata.getTableName()));
-                            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
-                        } else if (newOutputMetadata.getTableName() == null &&
-                                ("table.main.schema".equals(param.getName()) || "module.main.schema".equals(param.getName()))) {
-                            param.setValue(null);
-                            param.getChildParameters().put("REPOSITORY_SCHEMA_TYPE", null);
                         }
                     }
                 }
-            } else if (EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName()))) {
-                IElementParameter param, schemaParam;
-                if (((param = node.getElementParameter("table.tableName")) != null && (schemaParam = node.getElementParameter("table.main.schema")) != null)
-                        || ((param = node.getElementParameter("module.moduleName")) != null && (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
-                    String tableName = newOutputMetadata.getTableName();
-                    if (tableName == null) {
-                        IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
-                        repositorySchema.setLabelFromRepository("");
-                        repositorySchema.setValue("");
-                        schemaParam.setValue(org.apache.avro.Schema.createRecord(Collections.emptyList()));
-                    }
-                    param.setValue(TalendQuoteUtils.addQuotes(tableName));
-                    param.setRepositoryValueUsed(true);
-                }
             }
+        }
+        IElementParameter param, schemaParam;
+        if (((param = node.getElementParameter("table.tableName")) != null && (schemaParam = node.getElementParameter("table.main.schema")) != null)
+                || ((param = node.getElementParameter("module.moduleName")) != null && (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
+            String tableName = newOutputMetadata.getTableName();
+            if (tableName == null) {
+                IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
+                repositorySchema.setValue("");
+                schemaParam.setValue(org.apache.avro.Schema.createRecord("Record", null, null, false));
+            }
+            param.setValue(TalendQuoteUtils.addQuotes(tableName));
+            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);
     }
