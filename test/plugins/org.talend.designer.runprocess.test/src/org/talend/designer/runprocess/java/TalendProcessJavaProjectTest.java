@@ -115,7 +115,7 @@ public class TalendProcessJavaProjectTest {
         Assert.assertNotNull(resFolder);
         Assert.assertTrue(resFolder.exists());
         IPath projectRelativePath = resFolder.getProjectRelativePath();
-        Assert.assertEquals(MavenSystemFolders.RESOURCES.getPath(), projectRelativePath.toString());
+        Assert.assertEquals(MavenSystemFolders.EXT_RESOURCES.getPath(), projectRelativePath.toString());
     }
 
     /**
