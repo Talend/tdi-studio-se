@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +39,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
@@ -292,7 +297,15 @@ public class BuildJobManager {
                         processItem.getProperty());
                 String mvnLogFilePath = talendJavaProject.getProject()
                         .getFile("lastGenerated.log").getLocation().toPortableString(); //$NON-NLS-1$
-                throw new Exception(Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath)); //$NON-NLS-1$
+                String causeMsg = Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath); //$NON-NLS-1$
+                String logMsg = getLogErrorMsg(mvnLogFilePath); //$NON-NLS-1$
+                for (String line : logMsg.split("\n")) { //$NON-NLS-1$
+                    if (line.startsWith("[ERROR] Tests run")) { //$NON-NLS-1$
+                    	causeMsg += ". There exists test case job failure."; //$NON-NLS-1$
+                    	break;
+                    }
+                }
+                throw new Exception(Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath)+"\n"+logMsg,new Throwable(causeMsg)); //$NON-NLS-1$
             }
             if (checkCompilationError) {
                 CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);
@@ -307,6 +320,28 @@ public class BuildJobManager {
                 TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
             }
         }
+    }
+    
+    private String getLogErrorMsg(String filepath) throws IOException{
+    	BufferedReader reader = null;
+    	StringBuffer errorbuffer = new StringBuffer();
+    	try {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+			String line;
+			while ((line = reader.readLine()) != null) { //$NON-NLS-1$
+				if (line.startsWith("[ERROR]")) { //$NON-NLS-1$
+					errorbuffer.append(line + "\n"); //$NON-NLS-1$
+                }
+			}
+			return errorbuffer.toString();
+		} catch (IOException e) {
+			 ExceptionHandler.process(e);
+			return null;
+		}finally {
+			 if (reader != null) {
+				 reader.close();
+			 }
+		}
     }
 
     private boolean needClasspathJar(Map<ExportChoice, Object> exportChoiceMap) {
