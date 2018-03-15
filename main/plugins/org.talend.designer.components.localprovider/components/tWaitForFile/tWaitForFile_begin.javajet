@@ -272,8 +272,7 @@
 				{
 					intersectionList.add(cachedFile);
 				}
-			}
-			originalFiles_<%=cid%> = intersectionList;          
+			}     
             
             util_<%=cid%> = new Util_<%=cid%>();
             <%
