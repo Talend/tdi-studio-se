@@ -14,7 +14,7 @@ imports="
         java.util.Map
         java.util.HashMap
 "
-skeleton="db_output_bulk.skeleton"
+skeleton="../templates/db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/Log4jFileUtil.javajet"%>
@@ -247,10 +247,6 @@ if(columnList != null && columnList.size() > 0) {
 java.sql.Connection conn_<%=cid%> = null;
 <%
 boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
-boolean isEnableDatasource = false;
-if(cid.indexOf("tMSSqlOutput")>-1 || cid.indexOf("tMSSqlSP")>-1 ){
-	isEnableDatasource = true;
-}
 %>
 String dbUser_<%=cid %> = null;
 <%
@@ -261,33 +257,9 @@ if(useExistingConnection) {
 	%>
 	dbschema_<%=cid%> = (String)globalMap.get("<%=schema%>");
 	conn_<%=cid%> = (java.sql.Connection)globalMap.get("<%=conn%>");
-    <%
-	INode connectionNode = NodeUtil.getNodeByUniqueName(node.getProcess(),connection);
-	boolean specify_alias = "true".equals(ElementParameterParser.getValue(connectionNode, "__SPECIFY_DATASOURCE_ALIAS__"));
-	if(isEnableDatasource && specify_alias){
-		String alias = ElementParameterParser.getValue(connectionNode, "__DATASOURCE_ALIAS__");
-		%>
-		if (null == conn_<%=cid%>) {
-			java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
-			conn_<%=cid%> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
-		}
-	<%
-	}
-	%>
-	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
 <%
 } else {
-	boolean specify_alias = "true".equals(ElementParameterParser.getValue(node, "__SPECIFY_DATASOURCE_ALIAS__"));   
-	if(isEnableDatasource && specify_alias){
-		String alias = ElementParameterParser.getValue(node, "__DATASOURCE_ALIAS__");
-		%>
-		java.util.Map<String, routines.system.TalendDataSource> dataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap.get(KEY_DB_DATASOURCES);
-		if (null != dataSources_<%=cid%>) {
-			conn_<%=cid %> = dataSources_<%=cid%>.get(<%=(null != alias && !("".equals(alias)))?alias:"\"\""%>).getConnection();
-		} else {
-	<%
-	}
-    %>
+%>
     dbschema_<%=cid%> = <%=dbschema%>;
     String driverClass_<%=cid%> = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	<%dbLog.conn().logJDBCDriver(dbLog.var("driverClass"));%>
@@ -314,12 +286,7 @@ if(useExistingConnection) {
     <%dbLog.conn().connTry(dbLog.var("url"), dbLog.var("dbUser"));%>	
     conn_<%=cid%> = java.sql.DriverManager.getConnection(url_<%=cid %>,dbUser_<%=cid%>,dbPwd_<%=cid%>);
     <%dbLog.conn().connDone(dbLog.var("url"));%>
-	<%
-	if(isEnableDatasource && specify_alias){
-	%>
-		}
-	<%
-	}
+<%
 }
 %>
 
@@ -708,141 +675,113 @@ if(!isDynamic) {
 				boolean tableNameCaseSensitive=false;
 
 				%>
-				<%
-				//to fixed: bug8422
-				if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB"))){
-				%>
-
-						// [%connection%][checktable][tableName]
-						String keyCheckTable_<%=cid %> = conn_<%=cid%> + "[checktable]" + "[" + <%=table%> + "]";
-				   
-
-						if(GlobalResource.resourceMap.get(keyCheckTable_<%=cid %>)== null){//}
-
-						synchronized (GlobalResource.resourceLockMap.get(keyCheckTable_<%=cid %>)) {//}
-						if(GlobalResource.resourceMap.get(keyCheckTable_<%=cid %>)== null){//}
-				<%
-				}
-				%>
-								//check if table exists
-								java.sql.Statement isExistStmt_<%=cid%> = conn_<%=cid%>.createStatement();
-								boolean whetherExist_<%=cid%> = false;
+						//check if table exists
+						java.sql.Statement isExistStmt_<%=cid%> = conn_<%=cid%>.createStatement();
+						boolean whetherExist_<%=cid%> = false;
+						
+						try {
+								isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
+								whetherExist_<%=cid%> = true;
+							} catch (java.lang.Exception e){
+								whetherExist_<%=cid%> = false;
+							}
+						isExistStmt_<%=cid%>.close();
+						<%
+						if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
+						%>
+							if(!whetherExist_<%=cid%>) {
+							
+								java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
 								
-								try {
-										isExistStmt_<%=cid%>.execute("SELECT TOP 1 1 FROM [" +  tableName_<%=cid%> + "]" );
-										whetherExist_<%=cid%> = true;
-									} catch (java.lang.Exception e){
-										whetherExist_<%=cid%> = false;
-									}
-								isExistStmt_<%=cid%>.close();
+								<%dbLog.table().createTry(dbLog.var("tableName"));%>
+								
+								stmtCreate_<%=cid%>.execute("CREATE TABLE [" +  tableName_<%=cid%> + "] WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ") AS SELECT * FROM [" + ext_tableName_<%=cid%> + "] WHERE 1=2");
+								
+								<%dbLog.table().createDone(dbLog.var("tableName"));%>
+								
+								stmtCreate_<%=cid%>.close();
+								
+							}
+							
+								java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();
+								
 								<%
-								if(("CREATE_IF_NOT_EXISTS").equals(tableAction)) {
+								if(isLog4jEnabled) {
 								%>
-									if(!whetherExist_<%=cid%>) {
-									
-										java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
-										
-										<%dbLog.table().createTry(dbLog.var("tableName"));%>
-										
-										stmtCreate_<%=cid%>.execute("CREATE TABLE [" +  tableName_<%=cid%> + "] WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ") AS SELECT * FROM [" + ext_tableName_<%=cid%> + "] WHERE 1=2");
-										
-										<%dbLog.table().createDone(dbLog.var("tableName"));%>
-										
-										stmtCreate_<%=cid%>.close();
-										
-									}
-									
-										java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();
-										
-										<%
-										if(isLog4jEnabled) {
-										%>
-											log.info("<%=cid%> - Starting INSERT into table : [" + tableName_<%=cid%> + "].");
-										<%
-										}
-										%>  
-										
-										int insertedCount_<%=cid%> = stmtInsert_<%=cid%>.executeUpdate("INSERT INTO [" +  tableName_<%=cid%> + "] SELECT * FROM [" + ext_tableName_<%=cid%> + "]");
-										
-										globalMap.put("<%=cid%>_NB_LINE_INSERTED",insertedCount_<%=cid%>);
+									log.info("<%=cid%> - Starting INSERT into table : [" + tableName_<%=cid%> + "].");
+								<%
+								}
+								%>  
+								
+								int insertedCount_<%=cid%> = stmtInsert_<%=cid%>.executeUpdate("INSERT INTO [" +  tableName_<%=cid%> + "] SELECT * FROM [" + ext_tableName_<%=cid%> + "]");
+								
+								globalMap.put("<%=cid%>_NB_LINE_INSERTED",insertedCount_<%=cid%>);
 
 										stmtInsert_<%=cid%>.close();
-										
-										<%
-										if(isLog4jEnabled) {
-										%>
-											log.info("<%=cid%> - INSERT into table : [" + tableName_<%=cid%> + "] completed successfully.");
-											log.info("<%=cid%> - Number of Rows Inserted : " + insertedCount_<%=cid%> + ".");
-										<%
-										}										
-										%>
-									
+								
 								<%
-								} else {
+								if(isLog4jEnabled) {
 								%>
-									if(whetherExist_<%=cid%>) {
-									
-										java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
+									log.info("<%=cid%> - INSERT into table : [" + tableName_<%=cid%> + "] completed successfully.");
+									log.info("<%=cid%> - Number of Rows Inserted : " + insertedCount_<%=cid%> + ".");
+								<%
+								}										
+								%>
+							
+						<%
+						} else {
+						%>
+							if(whetherExist_<%=cid%>) {
+							
+								java.sql.Statement stmtDrop_<%=cid%> = conn_<%=cid%>.createStatement();
 
 										<%dbLog.table().dropTry(dbLog.var("tableName"));%>
-										
-										
-										stmtDrop_<%=cid%>.execute("DROP TABLE [" + tableName_<%=cid%> + "]");
-										
-										<%dbLog.table().dropDone(dbLog.var("tableName"));%>
-										
-										stmtDrop_<%=cid%>.close();
+								
+								
+								stmtDrop_<%=cid%>.execute("DROP TABLE [" + tableName_<%=cid%> + "]");
+								
+								<%dbLog.table().dropDone(dbLog.var("tableName"));%>
+								
+								stmtDrop_<%=cid%>.close();
 
 									}
 									
 									java.sql.Statement stmtCreate_<%=cid%> = conn_<%=cid%>.createStatement();
 
 									<%dbLog.table().createTry(dbLog.var("tableName"));%>
-									
-									stmtCreate_<%=cid%>.execute("CREATE TABLE [" +  tableName_<%=cid%> + "] WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ") AS SELECT * FROM [" + ext_tableName_<%=cid%> + "] WHERE 1=2");
-			
-									<%dbLog.table().createDone(dbLog.var("tableName"));%>
-									
-									stmtCreate_<%=cid%>.close();
-									
-									java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();
-									
-									<%
-									if(isLog4jEnabled) {
-									%>
-										log.info("<%=cid%> - Starting INSERT into table : [" + tableName_<%=cid%> + "].");
-									<%
-									}
-									%>  
-									
-									int insertedCount_<%=cid%> = stmtInsert_<%=cid%>.executeUpdate("INSERT INTO [" +  tableName_<%=cid%> + "] SELECT * FROM [" + ext_tableName_<%=cid%> + "]");
-									
-									globalMap.put("<%=cid%>_NB_LINE_INSERTED",insertedCount_<%=cid%>);
+							
+							stmtCreate_<%=cid%>.execute("CREATE TABLE [" +  tableName_<%=cid%> + "] WITH (" + dwTableOptions_<%=cid%> + dwDistributionOptions_<%=cid%> + dwPartition_<%=cid%> + ") AS SELECT * FROM [" + ext_tableName_<%=cid%> + "] WHERE 1=2");
+	
+							<%dbLog.table().createDone(dbLog.var("tableName"));%>
+							
+							stmtCreate_<%=cid%>.close();
+							
+							java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();
+							
+							<%
+							if(isLog4jEnabled) {
+							%>
+								log.info("<%=cid%> - Starting INSERT into table : [" + tableName_<%=cid%> + "].");
+							<%
+							}
+							%>  
+							
+							int insertedCount_<%=cid%> = stmtInsert_<%=cid%>.executeUpdate("INSERT INTO [" +  tableName_<%=cid%> + "] SELECT * FROM [" + ext_tableName_<%=cid%> + "]");
+							
+							globalMap.put("<%=cid%>_NB_LINE_INSERTED",insertedCount_<%=cid%>);
 
 									stmtInsert_<%=cid%>.close();
-									
-									<%
-									if(isLog4jEnabled) {
-									%>
-										log.info("<%=cid%> - INSERT into table : [" + tableName_<%=cid%> + "] completed successfully.");
-										log.info("<%=cid%> - Number of Rows Inserted : " + insertedCount_<%=cid%> + ".");
-									<%
+							
+							<%
+							if(isLog4jEnabled) {
+							%>
+								log.info("<%=cid%> - INSERT into table : [" + tableName_<%=cid%> + "] completed successfully.");
+								log.info("<%=cid%> - Number of Rows Inserted : " + insertedCount_<%=cid%> + ".");
+							<%
 									}									
 
 								}
 								%>
-				<%
-				//to fixed: bug8422
-				if((cid.equals("talendLogs_DB") || cid.equals("talendStats_DB") || cid.equals("talendMeter_DB"))){
-				%>
-								GlobalResource.resourceMap.put(keyCheckTable_<%=cid %>, true);
-				//{{{
-							} // end of if
-						} // end synchronized
-					}
-				<%
-				}
-				%>
 			<%
 			} else if(("CLEAR").equals(tableAction)) {
 			%>
@@ -1080,8 +1019,6 @@ if(!useExistingConnection) {
 	<%
 
 }
-
-
 
 %>
 	
