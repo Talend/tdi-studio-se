@@ -4307,6 +4307,10 @@ public class CLASS {
     
     public class SQLDWHManager extends MSSQLManager{
         
+        public SQLDWHManager(String cid) {
+            super(cid);
+        }
+        
         public String getDropTableSQL() {
             StringBuilder dropTableSQL = new StringBuilder();
             dropTableSQL.append("DROP EXTERNAL TABLE " + getLProtectedChar() + "\" + ext_tableName_" + cid + " + \"" + getRProtectedChar());
@@ -4468,6 +4472,8 @@ public class CLASS {
             }
             return createSQL.toString();
         }
+        
+    }
     
     public class UnDefinedManager extends Manager{
         
