@@ -33,6 +33,7 @@ import org.talend.commons.exception.LoginException;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -122,12 +123,12 @@ public class TaCoKitMigrationManager {
                             // ignore
                         }
                         if (checkMigration(item, progressMonitor)) {
-                            monitor.subTask(Messages.getString("migration.check.progress.save", itemLabel)); //$NON-NLS-1$
-                            repoFactory.save(item);
                             String version = item.getProperty().getVersion();
                             if (repoViewObj == latestVersion.get(0)) {
                                 version = RelationshipItemBuilder.LATEST_VERSION;
                             }
+                            monitor.subTask(Messages.getString("migration.check.progress.save", itemLabel, version)); //$NON-NLS-1$
+                            repoFactory.save(item);
                             updatedRelatedItems(item, version, progressMonitor);
                         }
                     } catch (UserCancelledException e) {
@@ -148,12 +149,15 @@ public class TaCoKitMigrationManager {
         }
         checkMonitor(monitor);
         String itemLabel = ""; //$NON-NLS-1$
+        String version = ""; //$NON-NLS-1$
         try {
-            itemLabel = item.getProperty().getLabel();
+            Property property = item.getProperty();
+            itemLabel = property.getLabel();
+            version = property.getVersion();
         } catch (Exception e) {
             // ignore
         }
-        monitor.subTask(Messages.getString("migration.check.progress.start", itemLabel)); //$NON-NLS-1$
+        monitor.subTask(Messages.getString("migration.check.progress.start", itemLabel, version)); //$NON-NLS-1$
         TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(item, false);
         TaCoKitConfigurationModel configModel = itemModel.getConfigurationModel();
         if (isNeedMigration(configModel)) {
@@ -258,7 +262,14 @@ public class TaCoKitMigrationManager {
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
-        monitor.subTask(Messages.getString("migration.check.progress.updateRelated")); //$NON-NLS-1$
+        String label = ""; //$NON-NLS-1$
+        try {
+            label = item.getProperty().getLabel();
+        } catch (Exception e) {
+            // ignore
+        }
+
+        monitor.subTask(Messages.getString("migration.check.progress.updateRelated", label, version)); //$NON-NLS-1$
         RepositoryUpdateManager.updateDBConnection(item, version, false, false);
     }
 

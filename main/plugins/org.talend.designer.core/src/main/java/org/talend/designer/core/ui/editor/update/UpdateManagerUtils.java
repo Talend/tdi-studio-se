@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.gef.commands.Command;
@@ -258,12 +259,16 @@ public final class UpdateManagerUtils {
             return false;
         }
         try {
-            // changed by hqzhang, Display.getCurrent().getActiveShell() may cause studio freeze
-            UpdateDetectionDialog checkDialog = new UpdateDetectionDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                    .getShell(), results, onlySimpleShow);
+            if (CommonsPlugin.isHeadless() || !ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                doExecuteUpdates(results, updateAllJobs);
+            } else {
+                // changed by hqzhang, Display.getCurrent().getActiveShell() may cause studio freeze
+                UpdateDetectionDialog checkDialog = new UpdateDetectionDialog(
+                        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), results, onlySimpleShow);
 
-            if (checkDialog.open() == IDialogConstants.OK_ID) {
-                return doExecuteUpdates(checkDialog.getSelectedElements(), updateAllJobs);
+                if (checkDialog.open() == IDialogConstants.OK_ID) {
+                    return doExecuteUpdates(checkDialog.getSelectedElements(), updateAllJobs);
+                }
             }
         } finally {
             results.clear();
@@ -453,18 +458,20 @@ public final class UpdateManagerUtils {
                     // update joblet reference
                     upadateJobletReferenceInfor();
 
-                    final List<UpdateResult> tempResults = new ArrayList<UpdateResult>(results);
-                    // refresh
-                    Display.getDefault().asyncExec(new Runnable() {
-                        
-                        @Override
-                        public void run() {
-                            refreshRelatedViewers(tempResults);
-                            
-                            // hyWang add method checkandRefreshProcess for bug7248
-                            checkandRefreshProcess(tempResults);
-                        }
-                    });
+                    if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                        final List<UpdateResult> tempResults = new ArrayList<UpdateResult>(results);
+                        // refresh
+                        Display.getDefault().asyncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                refreshRelatedViewers(tempResults);
+
+                                // hyWang add method checkandRefreshProcess for bug7248
+                                checkandRefreshProcess(tempResults);
+                            }
+                        });
+                    }
 
 
                     monitor.worked(1 * UpdatesConstants.SCALE);
@@ -472,21 +479,25 @@ public final class UpdateManagerUtils {
                 }
             };
             
-            IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
+            final IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
 
                 @Override
                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                     IWorkspace workspace = ResourcesPlugin.getWorkspace();
                     try {
-                        ISchedulingRule schedulingRule = workspace.getRoot();
-                        workspace.run(op, schedulingRule, IWorkspace.AVOID_UPDATE, monitor);
+                        ISchedulingRule refreshRule = workspace.getRuleFactory().refreshRule(workspace.getRoot());
+                        workspace.run(op, refreshRule, IWorkspace.AVOID_UPDATE, monitor);
                     } catch (CoreException e) {
                         throw new InvocationTargetException(e);
                     }
                 }
             };
             try {
-                new ProgressMonitorDialog(null).run(false, false, iRunnableWithProgress);
+                if (!CommonsPlugin.isHeadless() && ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                    new ProgressMonitorDialog(null).run(false, false, iRunnableWithProgress);
+                } else {
+                    iRunnableWithProgress.run(new NullProgressMonitor());
+                }
             } catch (InvocationTargetException e) {
                 ExceptionHandler.process(e);
             } catch (InterruptedException e) {
