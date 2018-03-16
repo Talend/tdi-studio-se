@@ -34,8 +34,12 @@ public class TaCoKitNodeConnector extends NodeConnector {
     
     static final String DEFAULT = "__default__";
 
-    private boolean isInput = false;
+    private boolean hasInput = false;
     
+    private boolean hasOutput = false;
+
+    private Boolean isMultiSchema = null;
+
     /**
      * This constructor should be used by default. It is suitable to create connectors of all types except FLOW and REJECT.
      * FLOW connector may have different name, linkName and menuName from default values for FLOW connection type.
@@ -87,11 +91,15 @@ public class TaCoKitNodeConnector extends NodeConnector {
     static TaCoKitNodeConnector newFlow(final INode node, final String name) {
         Objects.requireNonNull(name);
         Strings.requireNonEmpty(name);
+        TaCoKitNodeConnector tacokitConnector = null;
         if (DEFAULT.equals(name)) {
-            return new TaCoKitNodeConnector(node, FLOW_MAIN.getName(), FLOW_MAIN.getDefaultLinkName(), FLOW_MAIN.getDefaultMenuName(), FLOW_MAIN, FLOW_MAIN);
+            tacokitConnector = new TaCoKitNodeConnector(node, FLOW_MAIN.getName(), FLOW_MAIN.getDefaultLinkName(),
+                    FLOW_MAIN.getDefaultMenuName(), FLOW_MAIN, FLOW_MAIN);
         } else {
-            return new TaCoKitNodeConnector(node, name, name, name, FLOW_MAIN, FLOW_MAIN);
+            tacokitConnector = new TaCoKitNodeConnector(node, name, name, name, FLOW_MAIN, FLOW_MAIN);
         }
+        tacokitConnector.setMultiSchema(true);
+        return tacokitConnector;
     }
     
     /**
@@ -103,15 +111,38 @@ public class TaCoKitNodeConnector extends NodeConnector {
      * @return TaCoKitNodeConnector of REJECT type
      */
     static TaCoKitNodeConnector newReject(final INode node, final String originalName) {
-        return new TaCoKitNodeConnector(node, originalName, REJECT.getDefaultLinkName(), REJECT.getDefaultMenuName(), REJECT,
+        return new TaCoKitNodeConnector(node, originalName, REJECT.getDefaultLinkName(), REJECT.getDefaultMenuName(), FLOW_MAIN,
                 FLOW_MAIN);
     }
 
-    public boolean isInput() {
-        return isInput;
+    @Override
+    public void setMultiSchema(boolean multiSchema) {
+        super.setMultiSchema(multiSchema);
+        this.isMultiSchema = multiSchema;
     }
 
-    void setInput(final boolean input) {
-        isInput = input;
+    @Override
+    public boolean isMultiSchema() {
+        if (this.isMultiSchema == null) {
+            return super.isMultiSchema();
+        } else {
+            return this.isMultiSchema;
+        }
+    }
+
+    public boolean hasInput() {
+        return hasInput;
+    }
+
+    void setHasInput(final boolean input) {
+        hasInput = input;
+    }
+
+    public boolean hasOutput() {
+        return hasOutput;
+    }
+
+    void setHasOutput(final boolean output) {
+        hasOutput = output;
     }
 }

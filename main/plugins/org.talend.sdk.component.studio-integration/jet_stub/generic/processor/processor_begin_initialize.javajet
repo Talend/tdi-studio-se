@@ -1,0 +1,72 @@
+<%/*
+  Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+   Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/%>
+<%@ jet
+    imports="
+        org.talend.core.model.components.IComponent
+        org.talend.core.model.process.INode
+        org.talend.core.runtime.IAdditionalInfo
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.designer.core.model.components.EParameterName
+        org.talend.designer.core.model.components.ElementParameter
+        org.talend.core.model.process.IElementParameter
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.EParameterFieldType
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.utils.NodeUtil
+        java.util.List
+        java.util.Locale
+    "
+%>
+
+<%
+    final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
+    final INode node = INode.class.cast(codeGenArgument.getArgument());
+    final String cid = node.getUniqueName();
+    final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+    final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+    final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
+    final IComponent component = node.getComponent();
+    final boolean useLookup = component.useLookup();
+%>
+
+    final org.talend.sdk.component.runtime.manager.ComponentManager mgr_<%=cid%> = org.talend.sdk.component.runtime.manager.ComponentManager.instance();
+
+    <%@include file="../configuration.javajet"%>
+
+<%
+    final IElementParameter chunkSizeParam = node.getElementParameter("CHUNK_SIZE");
+    final String chunkSizeStr = (chunkSizeParam == null) ? "" : ElementParameterParser.getStringElementParameterValue(chunkSizeParam);
+%>
+
+    final String chunkSizeStr_<%=cid%> = "<%=chunkSizeStr%>";
+
+    int chunkSize_<%=cid%> = chunkSizeStr_<%=cid%> == null || chunkSizeStr_<%=cid%>.trim().isEmpty() ? 100 : Integer.parseInt(chunkSizeStr_<%=cid%>.trim());
+
+    final org.talend.sdk.component.runtime.output.Processor processorImpl_<%=cid%> = mgr_<%=cid%>.findProcessor("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
+                                                                                 .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
+    final javax.json.bind.Jsonb jsonb_<%=cid%> = (javax.json.bind.Jsonb)mgr_<%=cid%>.findPlugin(processorImpl_<%=cid%>.plugin()).get()
+                     .get(org.talend.sdk.component.runtime.manager.ComponentManager.AllServices.class)
+                     .getServices().get(javax.json.bind.Jsonb.class);
+    final org.talend.sdk.component.runtime.di.AutoChunkProcessor processor_<%=cid%> = new org.talend.sdk.component.runtime.di.AutoChunkProcessor(chunkSize_<%=cid%>, processorImpl_<%=cid%>);
+
+    org.talend.sdk.component.runtime.di.JobStateAware.init(processor_<%=cid%>, globalMap);
+    processor_<%=cid%>.start();
+    globalMap.put("processor_<%=cid%>", processor_<%=cid%>);
+
+    int nbLineInput_<%=cid%> = 0;

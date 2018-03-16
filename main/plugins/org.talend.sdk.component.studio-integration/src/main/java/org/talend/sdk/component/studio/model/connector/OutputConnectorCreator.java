@@ -53,7 +53,7 @@ public class OutputConnectorCreator extends AbstractConnectorCreator {
                     final TaCoKitNodeConnector main = TaCoKitNodeConnector.newFlow(node, input);
                     main.setMaxLinkInput(1);
                     main.setMaxLinkOutput(0);
-                    main.setInput(true);
+                    main.setHasInput(true);
                     main.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(), FLOW_REF.getDefaultLineStyle());
                     main.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(), FLOW_MERGE.getDefaultLineStyle());
                     existingTypes.add(getType(input));
@@ -76,7 +76,7 @@ public class OutputConnectorCreator extends AbstractConnectorCreator {
                     final TaCoKitNodeConnector reject = TaCoKitNodeConnector.newReject(node, output);
                     reject.setMaxLinkInput(0);
                     reject.setMaxLinkOutput(1);
-                    reject.setInput(false);
+                    reject.setHasInput(false);
                     reject.addConnectionProperty(EConnectionType.FLOW_MAIN, new RGB(255, 0, 0), 2);
                     reject.getConnectionProperty(EConnectionType.FLOW_MAIN).setRGB(new RGB(255, 0, 0));
                     existingTypes.add(getType(output));

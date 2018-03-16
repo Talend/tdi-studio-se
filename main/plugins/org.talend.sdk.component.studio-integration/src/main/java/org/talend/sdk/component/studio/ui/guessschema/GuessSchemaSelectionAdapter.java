@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -37,9 +38,11 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
 import org.talend.core.utils.KeywordsValidator;
 import org.talend.designer.core.model.components.EParameterName;
@@ -47,6 +50,8 @@ import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.uidialog.OpenContextChooseComboDialog;
 import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class GuessSchemaSelectionAdapter extends SelectionAdapter {
 
@@ -117,16 +122,18 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         final String schema = guessSchema.getSchema();
-        if (schema == null) {
+        if (TaCoKitUtil.isBlank(schema)) {
             ExceptionMessageDialog.openError(composite.getShell(),
                     Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
-                    Messages.getString("guessSchema.dialog.error.msg.default"));
+                    Messages.getString("guessSchema.dialog.error.msg.default")); //$NON-NLS-1$
             return;
         }
 
         final Node node = Node.class.cast(elementParameter.getElement());
-        IMetadataTable newMeta = buildMetadata(schema, Node.class.cast(elementParameter.getElement()));
+        IMetadataTable newMeta = buildMetadata(schema, node);
         if (newMeta == null) {
+            ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
+                    Messages.getString("guessSchema.dialog.error.msg.default"), new Exception(schema)); //$NON-NLS-1$
             return;
         }
         MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), newMeta, node, commandStack);
@@ -134,7 +141,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         if (metaDialog.open() == MetadataDialog.OK) {
             final IMetadataTable outputMetaCopy = metaDialog.getOutputMetaData();
             boolean modified = false;
-            final IMetadataTable old = node.getMetadataTable(elementParameter.getName());
+            final IMetadataTable old = node.getMetadataTable(outputMetaCopy.getTableName());
             if (!outputMetaCopy.sameMetadataAs(old, IMetadataColumn.OPTIONS_NONE)) {
                 modified = true;
             }
@@ -146,11 +153,28 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
                     switchParam.setValue(Boolean.FALSE);
                 }
                 IElementParameter param = node.getElementParameter(elementParameter.getName());
-                final ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, param, old, outputMetaCopy);
-                if (commandStack != null) {
-                    commandStack.execute(cmd);
-                } else {
-                    cmd.execute();
+                if (param instanceof IAdditionalInfo) {
+                    IElementParameter schemaParam = (IElementParameter) ((IAdditionalInfo) param)
+                            .getInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT);
+                    if (schemaParam != null) {
+                        param = node.getElementParameter(schemaParam.getName());
+                    }
+
+                }
+                List<? extends IConnection> incomingConnections = new ArrayList<>(node.getIncomingConnections());
+                List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
+                try {
+                    node.setIncomingConnections(Collections.EMPTY_LIST);
+                    node.setOutgoingConnections(node.getOutgoingConnections(outputMetaCopy.getTableName()));
+                    final ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, param, old, outputMetaCopy);
+                    if (commandStack != null) {
+                        commandStack.execute(cmd);
+                    } else {
+                        cmd.execute();
+                    }
+                } finally {
+                    node.setIncomingConnections(incomingConnections);
+                    node.setOutgoingConnections(outgoingConnections);
                 }
             }
         }
@@ -160,6 +184,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         final String[] lines = schema.split("\n");
         List<String[]> schemaContent = Stream.of(lines)
                 .filter(Objects::nonNull)
+                .filter(l -> !l.contains(" ") && !l.contains("\t"))
                 .filter(l -> !l.trim().isEmpty())
                 .filter(l -> l.contains(";"))
                 .map(l -> l.split(";"))
@@ -226,10 +251,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         IMetadataTable metadataTable = new MetadataTable();
-        /* for bug 20973 */
-        if (metadataTable.getTableName() == null) {
-            metadataTable.setTableName(inputNode.getUniqueName());
-        }
+        metadataTable.setTableName(elementParameter.getContext());
         metadataTable.setListColumns(columns);
         return metadataTable;
     }

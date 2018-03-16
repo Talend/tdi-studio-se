@@ -1,0 +1,86 @@
+<%/*
+  Copyright (C) 2006-2018 Talend Inc. - www.talend.com
+   Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+*/%>
+
+<%@ jet
+    imports="
+        org.talend.core.model.components.IComponent
+        org.talend.core.model.process.INode
+        org.talend.core.runtime.IAdditionalInfo
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.designer.core.model.components.EParameterName
+        org.talend.designer.core.model.components.ElementParameter
+        org.talend.core.model.process.IElementParameter
+        org.talend.core.model.process.EParameterFieldType
+        org.talend.core.model.metadata.IMetadataColumn
+        org.talend.core.model.metadata.IMetadataTable
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.process.IConnectionCategory
+        org.talend.core.model.process.EConnectionType
+        org.talend.core.model.utils.NodeUtil
+        java.util.Arrays
+        java.util.List
+        java.util.Locale
+    "
+%>
+<%
+        final CodeGeneratorArgument processorBeginCodeGenArgument = CodeGeneratorArgument.class.cast(argument);
+        final INode processorBeginNode = INode.class.cast(processorBeginCodeGenArgument.getArgument());
+        if(processorBeginNode == null) {
+            throw new IllegalArgumentException("node cannot be null");
+        }
+        final String processorBeginCid = processorBeginNode.getUniqueName();
+        final String processorBeginOriginalName = (String)processorBeginNode.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+        final String processorBeginFamily = (String)processorBeginNode.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+        final String processorBeginVersion = (String)processorBeginNode.getElementParameter(EParameterName.VERSION.getName()).getValue();
+        final String processorBeginPluginName = (String)processorBeginNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_PLUGIN_NAME___").getValue();
+        final String processorBeginActionName = (String)processorBeginNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_ACTION_NAME___").getValue();
+        final String processorBeginTacokitComponentType = (String)processorBeginNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_COMPONENT_TYPE___").getValue();
+        final String processorBeginOutputConnectionName = (String)processorBeginNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_OUTPUT_CONNECTION_NAME___").getValue();
+        final IComponent processorBeginComponent = processorBeginNode.getComponent();
+        final boolean processorBeginUseLookup = guessSchemaComponent.useLookup();
+%>
+<%
+    { 
+        // 1. use code block to avoid variables conflict
+        // 2. initialization part for processor begin
+%>
+
+        <%@include file="../../jet_stub/generic/processor/processor_begin_initialize.javajet"%>
+<%
+    }
+%>
+<%
+    {
+        // 1. use code block to avoid variables conflict
+        // 2. generate inputs part for processor begin
+%>
+
+        <%@include file="../../jet_stub/generic/processor/processor_begin_inputs.javajet"%>
+<%
+    }
+%>
+<%
+    {
+        // 1. use code block to avoid variables conflict
+        // 2. generate outputs part for processor begin
+%>
+
+        final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=processorBeginCid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=processorBeginCid%>);
+        outputHandler_<%=processorBeginCid%>.addConnection("<%= processorBeginOutputConnectionName %>", Object.class);
+        final org.talend.sdk.component.runtime.output.OutputFactory outputs_<%=processorBeginCid%> = outputHandler_<%=processorBeginCid%>.asOutputFactory();
+<%
+    }
+%>

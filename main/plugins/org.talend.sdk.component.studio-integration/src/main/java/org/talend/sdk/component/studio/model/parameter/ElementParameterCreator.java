@@ -137,14 +137,40 @@ public class ElementParameterCreator {
                 .map(IElementParameter::getContext)
                 .collect(Collectors.toSet());
         // Get all connectors without schema parameter for them
-        final Set<? extends INodeConnector> connectorNames = component
+        final List<? extends INodeConnector> connectorNames = component
                 // Use null instead of node here, because connector.getMaxLinkOutput() would try to retrieve
                 // element parameters list from non-null node, which will be null.
                 .createConnectors(null)
                 .stream()
                 .filter(c -> c.getDefaultConnectionType().hasConnectionCategory(IConnectionCategory.FLOW)
                         && !schemasPresent.contains(c.getName()))
-                .collect(Collectors.toSet());
+                .sorted((c1, c2) -> {
+                    String c1Name = c1.getName();
+                    String c2Name = c2.getName();
+                    if (c1Name == null) {
+                        c1Name = "";
+                    }
+                    if (c2Name == null) {
+                        c2Name = "";
+                    }
+                    final int nameCompare = c1Name.compareTo(c2Name);
+                    final boolean c1HasOutput = (0 < c1.getMaxLinkOutput());
+                    final boolean c2HasOutput = (0 < c2.getMaxLinkOutput());
+                    if (c1HasOutput) {
+                        if (c2HasOutput) {
+                            return nameCompare;
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        if (c2HasOutput) {
+                            return -1;
+                        } else {
+                            return nameCompare;
+                        }
+                    }
+                })
+                .collect(Collectors.toList());
         // Create schema parameter for each connector without schema parameter
         for (final INodeConnector connectorWithoutSchema : connectorNames) {
             parameters.add(mainSettingsCreator.createSchemaParameter(connectorWithoutSchema.getName(),

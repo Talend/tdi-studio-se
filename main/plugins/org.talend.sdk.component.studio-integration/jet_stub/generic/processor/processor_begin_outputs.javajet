@@ -38,20 +38,21 @@
     final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
     final INode node = INode.class.cast(codeGenArgument.getArgument());
     final String cid = node.getUniqueName();
+    final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+    final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+    final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
     final IComponent component = node.getComponent();
     final boolean useLookup = component.useLookup();
 %>
-
+    final org.talend.sdk.component.runtime.di.OutputsHandler outputHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.OutputsHandler(jsonb_<%=cid%>);
 <%
-    if (!useLookup) {
-%>
-
+    for (final IConnection connection : node.getOutgoingSortedConnections()) {
+        if (connection.getLineStyle() != EConnectionType.FLOW_MAIN) {
+            continue;
         }
-<%
-    } else {
 %>
-
-        }
+        outputHandler_<%=cid%>.addConnection("<%= connection.getConnectorName() %>", <%= connection.getName() %>.getClass());
 <%
     }
 %>
+    final org.talend.sdk.component.runtime.output.OutputFactory outputs_<%=cid%> = outputHandler_<%=cid%>.asOutputFactory();

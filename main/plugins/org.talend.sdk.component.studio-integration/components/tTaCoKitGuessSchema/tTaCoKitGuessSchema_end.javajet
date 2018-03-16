@@ -54,34 +54,10 @@
 %>
 <%
     if ("input".equalsIgnoreCase(tacokitComponentType)) {
-        final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
-        final INode node = INode.class.cast(codeGenArgument.getArgument());
-        if(node == null) {
-            throw new IllegalArgumentException("node cannot be null");
-        }
-        final String cid = node.getUniqueName();
-        final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
-        final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
-        final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
-%>
-        <%@include file="../../jet_stub/generic/configuration.javajet"%>
-<%
+        // nothing to do
     } else {
 %>
-        <%@include file="./tTaCoKitGuessSchema_begin_for_processor.javajet"%>
-        
+        <%@include file="../../jet_stub/generic/processor/processor_end.javajet"%>
 <%
     }
 %>
-
-
-    final java.io.PrintStream out = System.out;
-    System.setOut(System.err);
-    org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema tacokitGuessSchema =
-                            new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(out, globalMap, configuration_<%=guessSchemaCid%>,
-                                                                                    "<%=pluginName%>",
-                                                                                    "<%=guessSchemaFamily%>",
-                                                                                    "<%=guessSchemaOriginalName%>",
-                                                                                    <% if(actionName == null || actionName.isEmpty()){%> null <%}else {%> "<%=actionName%>" <%}%>
-                                                                                    );
-    globalMap.put("___tacokitGuessSchema___", tacokitGuessSchema);
