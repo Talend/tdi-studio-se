@@ -223,13 +223,10 @@ public class TalendJavaProjectManager {
             if (talendJobJavaProject == null || talendJobJavaProject.getProject() == null
                     || !talendJobJavaProject.getProject().exists()) {
                 String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IProject jobProject = root.getProject(helper.getJobProjectName(property));
-                IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
-                String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
-                ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-                IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+                IFolder jobFolder = getItemPomFolder(property);
                 if (!jobProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, jobProject)) {
                     createMavenJavaProject(monitor, jobProject, jobFolder, enbleMavenNature);
                 }
@@ -256,6 +253,35 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendJobJavaProject;
+    }
+
+    /**
+     * DOC nrousseau Comment method "getItemPomFolder".
+     * 
+     * @param property
+     * @param helper
+     * @return
+     * @throws CoreException 
+     */
+    public static IFolder getItemPomFolder(Property property) throws CoreException {
+        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
+        AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+        IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
+        String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+        createFoldersIfNeeded(jobFolder);
+        return jobFolder;
+    }
+    
+    private static void createFoldersIfNeeded(IFolder folder) throws CoreException {
+        if (!folder.exists()) {
+            if (folder.getParent() instanceof IFolder) {
+                createFoldersIfNeeded((IFolder) folder.getParent());
+            }
+            folder.create(true, true, null);
+        }
+        
     }
 
     public static ITalendProcessJavaProject getTempJavaProject() {
@@ -510,13 +536,23 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
-        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
-        IProcess process = service.getProcessFromProcessItem(processItem);
-        IContext context = process.getContextManager().getDefaultContext();
-        IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
-        if (processor instanceof MavenJavaProcessor) {
-            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-            ((MavenJavaProcessor) processor).generatePom(1);
+        ProcessorUtilities.setGeneratePomOnly(true);
+        try {
+            IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
+            IProcess process = service.getProcessFromProcessItem(processItem);
+            IContext context = process.getContextManager().getDefaultContext();
+            IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
+            if (processor instanceof MavenJavaProcessor) {
+                LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+                ((MavenJavaProcessor) processor).generatePom(1);
+            }
+            AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            ProcessorUtilities.setGeneratePomOnly(false);
         }
     }
 

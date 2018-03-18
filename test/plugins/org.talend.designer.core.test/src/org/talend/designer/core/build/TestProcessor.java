@@ -568,4 +568,13 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs(boolean)
+     */
+    @Override
+    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
