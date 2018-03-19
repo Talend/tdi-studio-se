@@ -289,19 +289,7 @@ if(useExistingConnection) {
 
 // From "../templates/tMSSql/_tMSSqlConnection.javajet" ******end******
 
-if(!useExistingConnection) {
-	%>
-		resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
-	<%
-    if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
-        %>
-        conn_<%=cid%>.setAutoCommit(false);
-        int commitEvery_<%=cid%> = <%=commitEvery%>;
-        int commitCounter_<%=cid%> = 0;
 
-        <%
-    }
-}
 dbLog.commit().logAutoCommit("conn_"+cid+".getAutoCommit()");
 if (useBatch) {
 %>
@@ -325,6 +313,22 @@ if(!isDynamic) {
 
    <%@ include file="../templates/_tableActionForOutput.javajet"%>
    <%
+   
+   if(!useExistingConnection) {
+	%>
+		resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
+	<%
+    if(!("").equals(commitEvery) && !("0").equals(commitEvery)) {
+        %>
+        conn_<%=cid%>.setAutoCommit(false);
+        int commitEvery_<%=cid%> = <%=commitEvery%>;
+        int commitCounter_<%=cid%> = 0;
+
+        <%
+    }
+}
+
+
     Map<String, StringBuilder> actionSQLMap = getManager(dbmsId, cid).createProcessSQL(stmtStructure);
     StringBuilder insertColName = actionSQLMap.get(INSERT_COLUMN_NAME);
     StringBuilder insertValueStmt = actionSQLMap.get(INSERT_VALUE_STMT);
