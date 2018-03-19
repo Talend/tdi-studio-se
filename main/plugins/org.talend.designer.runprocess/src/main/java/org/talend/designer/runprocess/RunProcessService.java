@@ -457,4 +457,9 @@ public class RunProcessService implements IRunProcessService {
         delegateService.initializeRootPoms();
     }
 
+    @Override
+    public boolean isGeneratePomOnly() {
+        return delegateService.isGeneratePomOnly();
+    }
+
 }

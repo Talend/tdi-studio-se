@@ -235,7 +235,6 @@ public class TalendJavaProjectManager {
                 if (talendJobJavaProject != null) {
                     AggregatorPomsHelper.checkJobPomCreation(talendJobJavaProject);
                     MavenPomSynchronizer pomSynchronizer = new MavenPomSynchronizer(talendJobJavaProject);
-                    pomSynchronizer.syncTemplates(false);
                     pomSynchronizer.cleanMavenFiles(monitor);
                 }
                 talendJobJavaProjects.put(jobProjectId, talendJobJavaProject);
