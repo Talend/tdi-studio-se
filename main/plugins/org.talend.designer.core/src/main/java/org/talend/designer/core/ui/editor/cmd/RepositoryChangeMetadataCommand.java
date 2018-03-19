@@ -236,38 +236,6 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 }
             }
             setTableRelevantParameterValues();
-//            if (getConnection() != null) {
-//                // for salesforce
-//                IElementParameter param = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-//                if (param != null
-//                        && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
-//                                .getValue())) {
-//                    IElementParameter module = node.getElementParameter("module.moduleName");
-//                    if (module != null) {
-//                        String repositoryValue = module.getRepositoryValue();
-//                        if (repositoryValue == null) {
-//                            List<ComponentProperties> componentProperties = null;
-//                            IGenericWizardService wizardService = null;
-//                            if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-//                                wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
-//                                        IGenericWizardService.class);
-//                            }
-//                            if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
-//                                componentProperties = wizardService.getAllComponentProperties(getConnection(), null);
-//                            }
-//                            repositoryValue = String.valueOf(RepositoryToComponentProperty.getGenericRepositoryValue(
-//                                    getConnection(), componentProperties, module.getName()));
-//                        }
-//                        if (repositoryValue != null) {
-//                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), repositoryValue,
-//                                    newOutputMetadata, node.getComponent().getName());
-//                            if (objectValue != null) {
-//                                module.setValue(objectValue);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
         super.setConnection(connection);
         super.execute();
@@ -327,17 +295,19 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 }
             }
         }
-        IElementParameter param, schemaParam;
-        if (((param = node.getElementParameter("table.tableName")) != null && (schemaParam = node.getElementParameter("table.main.schema")) != null)
-                || ((param = node.getElementParameter("module.moduleName")) != null && (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
+        IElementParameter param;
+        if ((param = node.getElementParameter("table.tableName")) != null || (param = node.getElementParameter("module.moduleName")) != null) {
             String tableName = newOutputMetadata.getTableName();
-            if (tableName == null) {
-                IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
-                repositorySchema.setValue("");
-                schemaParam.setValue(org.apache.avro.Schema.createRecord("Record", null, null, false));
-            }
+            IElementParameter schemaParam;
             param.setValue(TalendQuoteUtils.addQuotes(tableName));
             param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+            if (tableName == null &&
+                    ((schemaParam = node.getElementParameter("table.main.schema")) != null || (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
+                param.setRepositoryValue("");
+                IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
+                repositorySchema.setValue("");
+                schemaParam.setValue(org.apache.avro.Schema.createRecord("Record", null, null, false, Collections.emptyList()));
+            }
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);
     }
