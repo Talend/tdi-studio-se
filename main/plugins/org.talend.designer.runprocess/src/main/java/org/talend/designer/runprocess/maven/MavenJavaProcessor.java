@@ -237,7 +237,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             if (this.getTalendJavaProject() == null) {
                 try {
                     return TalendJavaProjectManager.getItemPomFolder(property).getFile(pomFileName);
-                } catch (CoreException e) {
+                } catch (Exception e) {
                     ExceptionHandler.process(e);
                     return null;
                 }
