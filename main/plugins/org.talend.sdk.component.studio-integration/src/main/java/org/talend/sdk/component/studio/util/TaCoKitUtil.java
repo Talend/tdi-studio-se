@@ -12,8 +12,11 @@
  */
 package org.talend.sdk.component.studio.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.talend.core.model.general.Project;
@@ -168,5 +171,35 @@ public class TaCoKitUtil {
 
     public static boolean isEmpty(final String str) {
         return str == null || str.length() == 0;
+    }
+
+    public static boolean isBlank(final String str) {
+        return StringUtils.isBlank(str);
+    }
+
+    /**
+     * Method to create component name from component's family name and component's name itself.
+     * 
+     * @param familyName component's family name
+     * @param componentName component's name
+     * @return full component name
+     */
+    public static String getFullComponentName(final String familyName, final String componentName) {
+        return familyName + TaCoKitConst.COMPONENT_NAME_SEPARATOR + componentName;
+    }
+
+    public static Collection<ConfigTypeNode> filterTopLevelNodes(Collection<ConfigTypeNode> nodes) {
+        Collection<ConfigTypeNode> filteredNodes = new ArrayList<>();
+        if (nodes != null && !nodes.isEmpty()) {
+            for (ConfigTypeNode node : nodes) {
+                String parentId = node.getParentId();
+                String configType = node.getConfigurationType();
+                if (StringUtils.isNotBlank(parentId) || StringUtils.isNotBlank(configType)) {
+                    continue;
+                }
+                filteredNodes.add(node);
+            }
+        }
+        return filteredNodes;
     }
 }

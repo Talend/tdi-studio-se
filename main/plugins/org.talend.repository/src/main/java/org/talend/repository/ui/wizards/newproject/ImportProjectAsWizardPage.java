@@ -14,6 +14,9 @@ package org.talend.repository.ui.wizards.newproject;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -40,6 +43,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.internal.wizards.datatransfer.ArchiveFileManipulations;
 import org.eclipse.ui.internal.wizards.datatransfer.TarException;
 import org.eclipse.ui.internal.wizards.datatransfer.TarFile;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.runtime.xml.XMLFileUtil;
+import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -49,6 +55,12 @@ import org.talend.repository.RepositoryPlugin;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.ui.actions.importproject.ImportProjectHelper;
+import org.talend.repository.ui.wizards.newproject.copyfromeclipse.TalendWizardProjectsImportPage;
+import org.talend.repository.utils.ZipFileUtils;
+import org.talend.utils.files.FileUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * Page for new project details. <br/>
@@ -120,6 +132,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
     /**
      * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     public void createControl(Composite parent) {
         Composite container = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout();
@@ -337,10 +350,17 @@ public class ImportProjectAsWizardPage extends WizardPage {
         }
 
         String selectedDirectory = dialog.open();
+        String selectedArchiveTemp = selectedDirectory;
         if (selectedDirectory != null) {
+            try {
+                selectedArchiveTemp = checkPackageIsCompressed(selectedArchiveTemp);
+                selectedArchiveTemp = items2Projects(selectedArchiveTemp);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
             previouslyBrowsedDirectory = selectedDirectory;
             directoryPathField.setText(previouslyBrowsedDirectory);
-            evaluateSpecifiedPath(selectedDirectory);
+            evaluateSpecifiedPath(selectedArchiveTemp);
         }
 
     }
@@ -365,10 +385,19 @@ public class ImportProjectAsWizardPage extends WizardPage {
         }
 
         String selectedArchive = dialog.open();
+        String selectedArchiveTmp = selectedArchive;
         if (selectedArchive != null) {
+            try {
+                selectedArchiveTmp = checkPackageIsCompressed(selectedArchive);
+                selectedArchiveTmp = items2Projects(selectedArchiveTmp);
+                ZipFileUtils.zip(selectedArchiveTmp, selectedArchiveTmp + ".zip", false);
+
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
             previouslyBrowsedArchive = selectedArchive;
             archivePathField.setText(previouslyBrowsedArchive);
-            evaluateSpecifiedPath(selectedArchive);
+            evaluateSpecifiedPath(selectedArchiveTmp + ".zip");
         }
 
     }
@@ -421,6 +450,103 @@ public class ImportProjectAsWizardPage extends WizardPage {
         checkFieldsValue();
     }
 
+    /**
+     * 
+     * DOC xlwang Comment method "createProjectFile".
+     * 
+     * @param path
+     */
+    public String checkPackageIsCompressed(String path) {
+        if (ArchiveFileManipulations.isZipFile(path)) {
+            File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+            String tmpPathStr = tmpPath.getPath();
+            try {
+                FilesUtils.unzip(path, tmpPathStr);
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+            path = tmpPathStr;
+        }
+        return path;
+    }
+
+    /**
+     * 
+     * DOC xlwang Comment method "items2Projects".
+     * 
+     * @param sourcePath
+     * @return
+     * @throws Exception
+     */
+    public String items2Projects(String sourcePath) throws Exception {
+        TalendWizardProjectsImportPage tp = new TalendWizardProjectsImportPage();
+        Collection files = new ArrayList();
+        // find the talend.project file
+        tp.collectProjectFilesFromDirectory(files, new File(sourcePath), null);
+        File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
+        System.out.println(tmpPath.getPath());
+        Iterator filesIterator = files.iterator();
+        String tepPath = "";
+        while (filesIterator.hasNext()) {
+            File file = (File) filesIterator.next();
+            String talendFilePath = file.getPath();
+            String projectPath = talendFilePath.substring(0, talendFilePath.lastIndexOf(File.separator));
+            FilesUtils.copyDirectory(new File(projectPath), tmpPath);
+        }
+        // loop the tmp file
+        files = new ArrayList();
+        tp.collectProjectFilesFromDirectory(files, tmpPath, null);
+        Iterator tmpFilesIterator = files.iterator();
+        while (tmpFilesIterator.hasNext()) {
+            File file = (File) tmpFilesIterator.next();
+            String tmpTalendFilePath = file.getPath();
+            String tmpProjectPath = tmpTalendFilePath.substring(0, tmpTalendFilePath.lastIndexOf(File.separator));
+            String tmpProjectFileStr = tmpProjectPath + File.separator + ".project";
+            File tmpProjectFile = new File(tmpProjectFileStr);
+            String projectName = "";
+            if (!tmpProjectFile.exists()) {
+                Document document = XMLFileUtil.loadDoc(new File(tmpTalendFilePath));
+                Node node = document.getChildNodes().item(0).getChildNodes().item(1);
+                NamedNodeMap map = node.getAttributes();
+                for (int i = 0; i < map.getLength(); i++) {
+                    if ("label".equals(map.item(i).getNodeName())) {
+                        projectName = map.item(i).getNodeValue();
+                    }
+                }
+                FileUtils.createProjectFile(projectName, tmpProjectFile);
+            }
+            String talendFilePath = file.getPath();
+            tepPath = talendFilePath.substring(0, talendFilePath.lastIndexOf(File.separator));
+        }
+        return tepPath;
+    }
+
+    /**
+     * 
+     * DOC xlwang Comment method "getFinalDir".
+     * 
+     * @param path
+     * @return
+     */
+    public static String getFinalDir(String path) {
+        String finalPath = path;
+        File file = new File(path);
+        if (file.isDirectory()) {
+            File[] listFile = file.listFiles();
+            for (int i = 0; i < listFile.length; i++) {
+                finalPath = getFinalDir(listFile[i].getPath());
+                if (file.getName().equals("talend.project")) {
+                    finalPath = file.getPath();
+                }
+            }
+        }
+        if (file.getName().equals("talend.project")) {
+            finalPath = file.getPath();
+        }
+        return finalPath;
+    }
+
+    
     /**
      * Answer a handle to the zip file currently specified as being the source. Return null if this file does not exist
      * or is not of valid format.
@@ -501,6 +627,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
     private void addListeners() {
         nameText.addModifyListener(new ModifyListener() {
 
+            @Override
             public void modifyText(ModifyEvent e) {
                 checkFieldsValue();
             }

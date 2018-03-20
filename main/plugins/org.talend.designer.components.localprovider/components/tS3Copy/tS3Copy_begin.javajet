@@ -16,9 +16,9 @@ imports="
     String to_bucket = ElementParameterParser.getValue(node,"__TO_BUCKET__");
     String to_key = ElementParameterParser.getValue(node,"__TO_KEY__");
 	String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
-	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-SERVER-SIDE-ENCRYPTION__"));
+	boolean enableServerSideEncryption = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_SERVER_SIDE_ENCRYPTION__"));
 	String kmsid = ElementParameterParser.getValue(node, "__KMSID__");
-	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE-KMS__"));
+	boolean enableKMS = "true".equals(ElementParameterParser.getValue(node, "__ENABLE_KMS__"));
 	
 	%>
 	<%@ include file="../tS3Connection/S3Client.javajet" %>

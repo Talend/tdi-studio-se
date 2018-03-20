@@ -26,6 +26,8 @@ import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 
 public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTask {
 
+    private static final Integer DEFAULT_PAGE_SIZE = 10;
+
     private Item item;
 
     @Override
@@ -54,7 +56,8 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
 
     /*
      * tMarkLogicInput (in tcomp) has 2 new properties: checkbox 'criteriaSearch' (should be true in criteria mode, when
-     * component doesn't have input connection) and input schema, which is output schema of source component (if exists)
+     * component doesn't have input connection), input schema, which is output schema of source component (if exists)
+     * Also need to migrate pageSize due to previously it supported text values and now only numeric
      * 
      * tMarkLogicBulkLoad has 1 new property: useExternalMLCP (when true - call commandline process as before).
      */
@@ -66,33 +69,66 @@ public class NewMarkLogicMigrationTask extends NewComponentFrameworkMigrationTas
         if (currNamedThing instanceof Property) {
             List<ConnectionType> allInputMainConnectors = getAllInputMainConnectors(nodeType);
             String namedThingName = currNamedThing.getName();
-            if ("criteriaSearch".equals(namedThingName)) {
-                // set due to input connection
-                Property<Boolean> criteriaSearchProperty = (Property<Boolean>) currNamedThing;
-                criteriaSearchProperty.setValue(allInputMainConnectors.isEmpty());
-
-            }
-
-            if ("schema".equals(namedThingName) && schmemaIsEmpty(currNamedThing)) {
-
-                // set input schema from input component OR empty schema
-                if (!allInputMainConnectors.isEmpty()) {
-                    NodeType sourceNode = getSourceNode(allInputMainConnectors, nodeType);
-                    if (sourceNode != null) {
-                        // "old schemas" of input component
-                        List<MetadataType> sourceNodeMetadatas = sourceNode.getMetadata();
-                        MetadataType sourceMetadata = getAppropriateMetadata(sourceNodeMetadatas, allInputMainConnectors);
-
-                        ((Property<Schema>) currNamedThing).setValue(createSchemaFromMetadata(sourceMetadata));
-                    }
-                }
-            }
-
-            if ("useExternalMLCP".equals(namedThingName)) {
-                Property<Boolean> useExternalMLCP = (Property<Boolean>) currNamedThing;
-                useExternalMLCP.setValue(true);
+            switch (namedThingName) {
+            case "criteriaSearch":
+                setUseCriteriaMode(currNamedThing, allInputMainConnectors.isEmpty());
+                break;
+            case "schema":
+                setInputSchema(nodeType, currNamedThing, allInputMainConnectors);
+                break;
+            case "useExternalMLCP":
+                setUseExternalMLCPProperty(currNamedThing);
+                break;
+            case "pageSize":
+                setNumericPageSize(nodeType, currNamedThing);
+                break;
             }
         }
+    }
+
+    private void setNumericPageSize(NodeType node, NamedThing property) {
+        String oldValue = ComponentUtilities.getNodeProperty(node, "PAGE_SIZE").getValue();
+        Property<Integer> pageSizeProperty = (Property<Integer>) property;
+        if (oldValue != null && !oldValue.isEmpty() && !isContextOrGlobalMapValue(oldValue)) {
+            try {
+                pageSizeProperty.setValue(Integer.valueOf(oldValue.replaceAll("\"", "")));
+            } catch (NumberFormatException e) {
+                pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
+            }
+        } else if (isContextOrGlobalMapValue(oldValue)) {
+            pageSizeProperty.setStoredValue(oldValue); // remain globalMap or context value
+        } else {
+            pageSizeProperty.setValue(DEFAULT_PAGE_SIZE);
+        }
+    }
+
+    private boolean isContextOrGlobalMapValue(String oldValue) {
+        return oldValue.contains("context") || oldValue.contains("globalMap");
+    }
+
+    private void setUseCriteriaMode(NamedThing currNamedThing, boolean noInputMainConnections) {
+        // set due to input connection
+        Property<Boolean> criteriaSearchProperty = (Property<Boolean>) currNamedThing;
+        criteriaSearchProperty.setValue(noInputMainConnections);
+    }
+
+    private void setInputSchema(NodeType nodeType, NamedThing currNamedThing, List<ConnectionType> allInputMainConnectors) {
+        // set input schema from input component OR empty schema
+        if (!allInputMainConnectors.isEmpty()) {
+            NodeType sourceNode = getSourceNode(allInputMainConnectors, nodeType);
+            if (sourceNode != null) {
+                // "old schemas" of input component
+                List<MetadataType> sourceNodeMetadatas = sourceNode.getMetadata();
+                MetadataType sourceMetadata = getAppropriateMetadata(sourceNodeMetadatas, allInputMainConnectors);
+
+                ((Property<Schema>) currNamedThing).setValue(createSchemaFromMetadata(sourceMetadata));
+            }
+        }
+    }
+
+    private void setUseExternalMLCPProperty(NamedThing property) {
+        Property<Boolean> useExternalMLCP = (Property<Boolean>) property;
+        useExternalMLCP.setValue(true);
     }
 
     private boolean schmemaIsEmpty(NamedThing schemaProperty) {

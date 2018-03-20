@@ -415,6 +415,11 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
+        return delegateService.getTalendCodeJavaProject(type, project);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return delegateService.getTalendJobJavaProject(property);
     }
@@ -425,8 +430,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void deleteEclipseProjects() {
-        delegateService.deleteEclipseProjects();
+    public void clearProjectRelatedSettings() {
+        delegateService.clearProjectRelatedSettings();
     }
 
     @Override
@@ -450,6 +455,11 @@ public class RunProcessService implements IRunProcessService {
     @Override
     public void initializeRootPoms() {
         delegateService.initializeRootPoms();
+    }
+
+    @Override
+    public boolean isGeneratePomOnly() {
+        return delegateService.isGeneratePomOnly();
     }
 
 }

@@ -13,6 +13,7 @@
 package org.talend.sdk.component.studio.metadata.provider;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -338,28 +339,27 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
     private Set<RepositoryNode> getTaCoKitFamilies(final RepositoryNode repositoryNode, final boolean createChildren,
             final boolean collectStorage) {
         try {
-            RootContainer<String, IRepositoryViewObject> metadata = ProxyRepositoryFactory.getInstance().getMetadata(
-                    repositoryNode.getRoot().getProject(), TaCoKitConst.METADATA_TACOKIT, true);
             Map<String, ConfigTypeNode> nodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
             Set<RepositoryNode> familyNodes = new HashSet<>();
             if (nodes != null) {
                 Map<String, IRepositoryViewObject> repoViewObjMap = new HashMap<>();
                 Map<String, ITaCoKitRepositoryNode> repoNodeMap = new HashMap<>();
                 Set<IRepositoryViewObject> visitedCollection = new HashSet<>();
-                for (ConfigTypeNode node : nodes.values()) {
-                    String parentId = node.getParentId();
-                    String configType = node.getConfigurationType();
-                    if (StringUtils.isNotEmpty(parentId) || StringUtils.isNotEmpty(configType)) {
-                        continue;
-                    }
-
+                Collection<ConfigTypeNode> topLevelNodes = TaCoKitUtil.filterTopLevelNodes(nodes.values());
+                for (ConfigTypeNode node : topLevelNodes) {
                     TaCoKitFamilyRepositoryNode familyRepositoryNode = createFamilyRepositoryNode(repositoryNode, node);
                     initilizeContentProviderWithTopLevelNode(familyRepositoryNode);
                     repositoryNode.getChildren().add(familyRepositoryNode);
                     familyNodes.add(familyRepositoryNode);
                     if (createChildren) {
                         String name = TaCoKitUtil.getTaCoKitFolderName(node);
-                        Container<String, IRepositoryViewObject> subContainer = metadata.getSubContainer(name);
+                        Container<String, IRepositoryViewObject> subContainer = null;
+                        if (collectStorage) {
+                            // improve performance
+                            RootContainer<String, IRepositoryViewObject> metadata = ProxyRepositoryFactory.getInstance()
+                                    .getMetadata(repositoryNode.getRoot().getProject(), TaCoKitConst.METADATA_TACOKIT, true);
+                            subContainer = metadata.getSubContainer(name);
+                        }
                         getConfigurations(familyRepositoryNode, subContainer, repoViewObjMap, repoNodeMap,
                                 visitedCollection, collectStorage);
                         familyRepositoryNode.setInitialized(collectStorage);
@@ -426,7 +426,7 @@ public class TaCoKitMetadataContentProvider extends AbstractMetadataContentProvi
     @Override
     public void clearCache() {
         super.clearCache();
-        Lookups.taCoKitCache().clearCache();
+        // Lookups.taCoKitCache().clearCache();
 
         if (familyNodesMapCache != null && !familyNodesMapCache.isEmpty()) {
             familyNodesMapCache.clear();

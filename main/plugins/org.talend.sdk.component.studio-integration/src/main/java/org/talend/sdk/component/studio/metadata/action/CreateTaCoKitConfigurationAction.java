@@ -18,6 +18,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.utils.VersionUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.context.Context;
@@ -82,15 +83,20 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
 
     @Override
     protected WizardDialog createWizardDialog() {
-        IWizard wizard = createWizard(PlatformUI.getWorkbench());
-        return new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
+        try {
+            IWizard wizard = createWizard(PlatformUI.getWorkbench());
+            return new WizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), wizard);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        }
+        return null;
     }
 
-    public TaCoKitCreateWizard createWizard(final IWorkbench wb) {
+    public TaCoKitCreateWizard createWizard(final IWorkbench wb) throws Exception {
         return new TaCoKitCreateWizard(wb, createRuntimeData());
     }
 
-    private TaCoKitConfigurationRuntimeData createRuntimeData() {
+    private TaCoKitConfigurationRuntimeData createRuntimeData() throws Exception {
         TaCoKitConfigurationRuntimeData runtimeData = new TaCoKitConfigurationRuntimeData();
         runtimeData.setTaCoKitRepositoryNode(repositoryNode);
         runtimeData.setConfigTypeNode(configTypeNode);
@@ -100,7 +106,7 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
         return runtimeData;
     }
 
-    private ConnectionItem createConnectionItem() {
+    private ConnectionItem createConnectionItem() throws Exception {
         Connection connection = ConnectionFactory.eINSTANCE.createConnection();
 
         Property property = PropertiesFactory.eINSTANCE.createProperty();
@@ -120,6 +126,7 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
         if (repositoryNode.isLeafNode()) {
             configurationModel.setParentItemId(repositoryNode.getObject().getId());
         }
+        configurationModel.initVersion();
 
         return connectionItem;
     }

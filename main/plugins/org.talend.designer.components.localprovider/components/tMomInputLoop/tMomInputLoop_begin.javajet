@@ -44,6 +44,7 @@ imports="
 	
 	boolean isUseSSL = ("true").equals(ElementParameterParser.getValue(node, "__USE_SSL__"));
 	String transProtocol="tcp";
+	String connectionCid = cid;
 	if(isUseSSL){
 		transProtocol = "ssl";
 	}
@@ -61,6 +62,7 @@ imports="
 		String cNodeName = ElementParameterParser.getValue(cNode,"__CONNECTION__");
 		if(cid.equals(cNodeName) || (isUseExistConnection && connectionComponentName.equals(cNodeName))){
 			isCommitRollback = true;
+			connectionCid = ElementParameterParser.getValue(node,"__CONNECTION__");
 			break;
 		}
 	}
@@ -714,7 +716,7 @@ imports="
 			<%
 			if(isAutoBackout){
 			%>
-				globalMap.put("currentMessageIsConsumed_<%=cid%>",false);//if current message has been commited,no need to backout it to the backout queue.
+				globalMap.put("currentMessageIsConsumed_<%=connectionCid%>",false);//if current message has been commited,no need to backout it to the backout queue.
 			<%
 			}
 			

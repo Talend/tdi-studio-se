@@ -12,56 +12,30 @@
  */
 package org.talend.sdk.component.studio.ui.composite.controller;
 
-import org.eclipse.gef.commands.Command;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.talend.commons.exception.ExceptionHandler;
-import org.talend.core.model.process.IContextManager;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
-import org.talend.designer.core.ui.editor.properties.controllers.EmptyContextManager;
-import org.talend.sdk.component.studio.ui.guessschema.GuessSchema;
+import org.talend.sdk.component.studio.ui.guessschema.GuessSchemaSelectionAdapter;
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
 public class TaCoKitGuessSchemaController extends AbstractTaCoKitController {
 
-    private static final String CONTEXT_CHOOSE_DIALOG_TITLE = "Choose a context for query :";//$NON-NLS-1$
-
     private static final String GUESS_SCHEMA_NAME = "Guess schema"; //$NON-NLS-1$
 
     private static final String SCHEMA = "SCHEMA"; //$NON-NLS-1$
 
-    private final SelectionListener listenerSelection = new SelectionAdapter() {
-
-        @Override
-        public void widgetSelected(final SelectionEvent e) {
-
-            Command cmd = null;
-
-            if (part == null) {
-                cmd = createButtonCommand((Button) e.getSource(), new EmptyContextManager());
-            } else {
-                cmd = createButtonCommand((Button) e.getSource(), part.getProcess().getContextManager());
-            }
-
-            executeCommand(cmd);
-        }
-
-    };
-
     public TaCoKitGuessSchemaController(final IDynamicProperty dp) {
         super(dp);
+
     }
 
     @Override
@@ -87,20 +61,9 @@ public class TaCoKitGuessSchemaController extends AbstractTaCoKitController {
         btnCmd.setData(NAME, SCHEMA);
         btnCmd.setData(SCHEMA, checkQuotes((String) param.getValue()));
         btnCmd.setEnabled(!param.isReadOnly());
-        btnCmd.addSelectionListener(listenerSelection);
+        btnCmd.addSelectionListener(new GuessSchemaSelectionAdapter(elem, curParameter, composite, getCommandStack()));
 
         return btnCmd;
-    }
-
-    private Command createButtonCommand(final Button btn, final IContextManager manager) {
-        GuessSchema gs = new GuessSchema(elem, curParameter, composite, getCommandStack());
-        try {
-            gs.guessSchema();
-            return gs.getChangeMetadataCommand();
-        } catch (Exception e) {
-            ExceptionHandler.process(e);
-        }
-        return null;
     }
 
     private String checkQuotes(final String str) {

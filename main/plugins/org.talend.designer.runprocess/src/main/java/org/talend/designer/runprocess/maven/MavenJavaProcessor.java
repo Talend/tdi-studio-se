@@ -35,7 +35,6 @@ import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -57,6 +56,7 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
+import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -97,7 +97,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             // for Shadow Process/Data Preview
             try {
                 PomUtil.updatePomDependenciesFromProcessor(this);
-                AggregatorPomsHelper.createRoutinesPom(getPomFile(), null);
+                new AggregatorPomsHelper().createRoutinesPom(getPomFile(), null);
             } catch (Exception e) {
                 throw new ProcessorException(e);
             }
@@ -234,7 +234,16 @@ public class MavenJavaProcessor extends JavaProcessor {
     protected IFile getPomFile() {
         if (isStandardJob()) {
             String pomFileName = TalendMavenConstants.POM_FILE_NAME;
-            return this.getTalendJavaProject().getProject().getFile(pomFileName);
+            if (this.getTalendJavaProject() == null) {
+                try {
+                    return TalendJavaProjectManager.getItemPomFolder(property).getFile(pomFileName);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                    return null;
+                }
+            } else {
+                return this.getTalendJavaProject().getProject().getFile(pomFileName);
+            }
         } else { // not standard job, won't have pom file.
             return null;
         }
@@ -244,7 +253,7 @@ public class MavenJavaProcessor extends JavaProcessor {
      * .Java/src/main/assemblies/assembly_TestJob_0.1.xml
      */
     protected IFile getAssemblyFile() {
-        if (isStandardJob()) {
+        if (isStandardJob() && !ProcessorUtilities.isGeneratePomOnly()) {
             String assemblyFileName = TalendMavenConstants.ASSEMBLY_FILE_NAME;
             return this.getTalendJavaProject().getAssembliesFolder().getFile(assemblyFileName);
         } else { // not standard job, won't have assembly file.
@@ -256,7 +265,11 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
         }
-        initJobClasspath();
+        if (ProcessorUtilities.isGeneratePomOnly()) {
+            ProcessorUtilities.resetExportConfig();
+        } else {
+            initJobClasspath();
+        }
         try {
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
@@ -265,7 +278,9 @@ public class MavenJavaProcessor extends JavaProcessor {
                 ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
                 ProcessUtils.setJarWithContext(previousValue);
-                getTalendJavaProject().setUseTempPom(false);
+                if (getTalendJavaProject() != null) {
+                    getTalendJavaProject().setUseTempPom(false);
+                }
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -366,16 +381,6 @@ public class MavenJavaProcessor extends JavaProcessor {
             }
 
             buildCacheManager.buildAllSubjobMavenProjects();
-
-            if (CommonUIPlugin.isFullyHeadless()) {
-                AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.ROUTINES, false, true);
-                if (ProcessUtils.isRequiredPigUDFs(null)) {
-                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.PIG_UDF, false, true);
-                }
-                if (ProcessUtils.isRequiredBeans(null)) {
-                    AggregatorPomsHelper.buildAndInstallCodesProject(monitor, ERepositoryObjectType.valueOf("BEANS"), false, true); //$NON-NLS-1$
-                }
-            }
 
         }
         IFile jobJarFile = null;

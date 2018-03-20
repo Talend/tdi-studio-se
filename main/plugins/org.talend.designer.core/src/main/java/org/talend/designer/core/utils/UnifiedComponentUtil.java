@@ -114,6 +114,7 @@ public class UnifiedComponentUtil {
             IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
                     IUnifiedComponentService.class);
             IComponentsHandler componentsHandler = ComponentsFactoryProvider.getInstance().getComponentsHandler();
+            filtedList.addAll(componentList);
             for (IComponent component : componentList) {
                 if (componentsHandler != null && componentsHandler.extractComponentsCategory() != null) {
                     if (!component.getPaletteType().equals(componentsHandler.extractComponentsCategory().getName())) {

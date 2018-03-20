@@ -353,7 +353,7 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
                 return true;
             }
         }
-        return true;
+        return false;
     }
 
 }

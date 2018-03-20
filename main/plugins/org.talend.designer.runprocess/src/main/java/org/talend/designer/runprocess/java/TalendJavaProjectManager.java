@@ -81,7 +81,7 @@ import org.talend.utils.io.FilesUtils;
  */
 public class TalendJavaProjectManager {
 
-    private static Map<ERepositoryObjectType, ITalendProcessJavaProject> talendCodeJavaProjects = new HashMap<>();
+    private static Map<String, ITalendProcessJavaProject> talendCodeJavaProjects = new HashMap<>();
 
     private static Map<String, ITalendProcessJavaProject> talendJobJavaProjects = new HashMap<>();
 
@@ -152,14 +152,18 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type) {
-        Project project = ProjectManager.getInstance().getCurrentProject();
-        AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
-        ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(type);
+        return getTalendCodeJavaProject(type, ProjectManager.getInstance().getCurrentProject());
+    }
+
+    public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
+        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, project.getTechnicalLabel());
+        ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(codeProjectId);
         if (talendCodeJavaProject == null || talendCodeJavaProject.getProject() == null
                 || !talendCodeJavaProject.getProject().exists()) {
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
                 IProject codeProject = root.getProject((project.getTechnicalLabel() + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
@@ -170,15 +174,18 @@ public class TalendJavaProjectManager {
                 if (!javaProject.isOpen()) {
                     javaProject.open(monitor);
                 }
-                AggregatorPomsHelper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
+                helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
                 talendCodeJavaProject.cleanMavenFiles(monitor);
                 BuildCacheManager.getInstance().clearCache(type);
-                talendCodeJavaProjects.put(type, talendCodeJavaProject);
+                talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
         }
+
+        MavenPomSynchronizer.addChangeLibrariesListener();
+
         return talendCodeJavaProject;
     }
 
@@ -216,13 +223,10 @@ public class TalendJavaProjectManager {
             if (talendJobJavaProject == null || talendJobJavaProject.getProject() == null
                     || !talendJobJavaProject.getProject().exists()) {
                 String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IProject jobProject = root.getProject(helper.getJobProjectName(property));
-                IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
-                String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
-                ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-                IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+                IFolder jobFolder = getItemPomFolder(property);
                 if (!jobProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, jobProject)) {
                     createMavenJavaProject(monitor, jobProject, jobFolder, enbleMavenNature);
                 }
@@ -231,7 +235,6 @@ public class TalendJavaProjectManager {
                 if (talendJobJavaProject != null) {
                     AggregatorPomsHelper.checkJobPomCreation(talendJobJavaProject);
                     MavenPomSynchronizer pomSynchronizer = new MavenPomSynchronizer(talendJobJavaProject);
-                    pomSynchronizer.syncTemplates(false);
                     pomSynchronizer.cleanMavenFiles(monitor);
                 }
                 talendJobJavaProjects.put(jobProjectId, talendJobJavaProject);
@@ -246,7 +249,47 @@ public class TalendJavaProjectManager {
             ExceptionHandler.process(e);
         }
 
+        MavenPomSynchronizer.addChangeLibrariesListener();
+
         return talendJobJavaProject;
+    }
+
+    /**
+     * DOC nrousseau Comment method "getItemPomFolder".
+     * 
+     * @param property
+     * @param helper
+     * @return
+     * @throws Exception 
+     */
+    public static IFolder getItemPomFolder(Property property) throws Exception {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
+            if (testContainerService.isTestContainerItem(property.getItem())) {
+                Item jobItem = testContainerService.getParentJobItem(property.getItem());
+                if (jobItem != null) {
+                    property = jobItem.getProperty();
+                }
+            }
+        }
+        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
+        AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+        IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
+        String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+        createFoldersIfNeeded(jobFolder);
+        return jobFolder;
+    }
+    
+    private static void createFoldersIfNeeded(IFolder folder) throws CoreException {
+        if (!folder.exists()) {
+            if (folder.getParent() instanceof IFolder) {
+                createFoldersIfNeeded((IFolder) folder.getParent());
+            }
+            folder.create(true, true, null);
+        }
+        
     }
 
     public static ITalendProcessJavaProject getTempJavaProject() {
@@ -285,6 +328,14 @@ public class TalendJavaProjectManager {
 
     public static ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
         return talendJobJavaProjects.get(AggregatorPomsHelper.getJobProjectId(property));
+    }
+
+    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, Project project) {
+        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    }
+
+    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, Project project) {
+        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,
@@ -326,10 +377,20 @@ public class TalendJavaProjectManager {
                     for (IRepositoryViewObject object : allVersionObjects) {
                         String realVersion = object.getVersion();
                         Property property = object.getProperty();
-                        IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
-                        IFile file = ResourcesPlugin.getWorkspace().getRoot()
-                                .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
-                        AggregatorPomsHelper.removeFromParentModules(file);
+                        String currentName = property.getLabel();
+                        try {
+                            if (oldName != null) {
+                                property.setLabel(oldName);
+                            }
+                            IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
+                            IFile file = ResourcesPlugin.getWorkspace().getRoot()
+                                    .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
+                            AggregatorPomsHelper.removeFromParentModules(file);
+                        } finally {
+                            if (oldName != null) {
+                                property.setLabel(currentName);
+                            }
+                        }
                     }
                     Set<String> removedVersions = new HashSet<>();
                     Iterator<String> iterator = talendJobJavaProjects.keySet().iterator();
@@ -483,13 +544,23 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
-        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
-        IProcess process = service.getProcessFromProcessItem(processItem);
-        IContext context = process.getContextManager().getDefaultContext();
-        IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
-        if (processor instanceof MavenJavaProcessor) {
-            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-            ((MavenJavaProcessor) processor).generatePom(1);
+        ProcessorUtilities.setGeneratePomOnly(true);
+        try {
+            IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
+            IProcess process = service.getProcessFromProcessItem(processItem);
+            IContext context = process.getContextManager().getDefaultContext();
+            IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
+            if (processor instanceof MavenJavaProcessor) {
+                LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+                ((MavenJavaProcessor) processor).generatePom(1);
+            }
+            AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            ProcessorUtilities.setGeneratePomOnly(false);
         }
     }
 

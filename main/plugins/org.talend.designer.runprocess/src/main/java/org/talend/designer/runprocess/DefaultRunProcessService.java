@@ -17,8 +17,10 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -69,8 +71,12 @@ import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.maven.launch.MavenPomCommandLauncher;
+import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
+import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.tools.ProjectPomManager;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
@@ -252,8 +258,12 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             } else {
-                boolean isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(),
-                        false) == null;
+                boolean isImportedRoute = false;
+                try {
+                    isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(), false) == null;
+                } catch (Exception e) {
+                    System.out.println("Could not find the RepoViewNode according to " + property.getId());
+                }
                 if (routeService != null && !isImportedRoute) {
                     return routeService.createJavaProcessor(process, property, filenameFromLabel, false);
                 }
@@ -654,6 +664,11 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
+    public ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
+        return TalendJavaProjectManager.getTalendCodeJavaProject(type, project);
+    }
+
+    @Override
     public ITalendProcessJavaProject getTalendJobJavaProject(Property property) {
         return TalendJavaProjectManager.getTalendJobJavaProject(property);
     }
@@ -664,8 +679,10 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void deleteEclipseProjects() {
+    public void clearProjectRelatedSettings() {
         try {
+            PomIdsHelper.resetPreferencesManagers();
+            MavenPomSynchronizer.removeChangeLibrariesListener();
             TalendJavaProjectManager.deleteEclipseProjectByNatureId(TalendJobNature.ID);
         } catch (CoreException e) {
             ExceptionHandler.process(e);
@@ -710,14 +727,58 @@ public class DefaultRunProcessService implements IRunProcessService {
 
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
             for (ProjectReference ref : references) {
-                AggregatorPomsHelper refHelper = new AggregatorPomsHelper(ref.getReferencedProject().getTechnicalLabel());
-                refHelper.installRootPom(true);
+                initRefPoms(new Project(ref.getReferencedProject()));
             }
             AggregatorPomsHelper.updateRefProjectModules(references);
-            AggregatorPomsHelper.updateCodeProjects(new NullProgressMonitor());
+            helper.updateCodeProjects(new NullProgressMonitor(), true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
+    }
+
+    private void initRefPoms(Project project) throws Exception {
+        for (ProjectReference ref : project.getProjectReferenceList(true)) {
+            initRefPoms(new Project(ref.getReferencedProject()));
+        }
+        String refProjectTechName = project.getTechnicalLabel();
+        AggregatorPomsHelper refHelper = new AggregatorPomsHelper(refProjectTechName);
+
+        // install ref project pom.
+        refHelper.installRootPom(true);
+
+        // install ref codes project.
+        Project refProject = ProjectManager.getInstance().getProjectFromProjectTechLabel(refProjectTechName);
+        Map<String, Object> argumentsMap = new HashMap<>();
+        argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_INSTALL);
+        IProgressMonitor monitor = new NullProgressMonitor();
+        installRefCodeProject(ERepositoryObjectType.ROUTINES, refProject, refHelper, argumentsMap, monitor);
+
+        if (ProcessUtils.isRequiredPigUDFs(null, refProject)) {
+            installRefCodeProject(ERepositoryObjectType.PIG_UDF, refProject, refHelper, argumentsMap, monitor);
+        }
+
+        if (ProcessUtils.isRequiredBeans(null, refProject)) {
+            installRefCodeProject(ERepositoryObjectType.valueOf("BEANS"), refProject, refHelper, argumentsMap, monitor); //$NON-NLS-1$
+        }
+    }
+
+    private void installRefCodeProject(ERepositoryObjectType codeType, Project refProject, AggregatorPomsHelper refHelper,
+            Map<String, Object> argumentsMap, IProgressMonitor monitor) throws Exception, CoreException {
+        ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, refProject);
+        if (codeProject != null) {
+            codeProject.buildModules(monitor, null, argumentsMap);
+            codeProject.getProject().delete(false, true, monitor);
+            TalendJavaProjectManager.removeFromCodeJavaProjects(codeType, refProject);
+        } else {
+            IFile pomFile = refHelper.getCodeFolder(codeType).getFile(TalendMavenConstants.POM_FILE_NAME);
+            MavenPomCommandLauncher launcher = new MavenPomCommandLauncher(pomFile, TalendMavenConstants.GOAL_INSTALL);
+            launcher.execute(monitor);
+        }
+    }
+
+    @Override
+    public boolean isGeneratePomOnly() {
+        return ProcessorUtilities.isGeneratePomOnly();
     }
 
 }
