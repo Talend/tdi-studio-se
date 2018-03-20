@@ -122,6 +122,9 @@ public class ButtonController extends AbstractElementPropertySectionController {
             }
             if(GenericTypeUtils.isListStringType((Property)thing)){
                 List<String> listString = (List<String>) ((Property)thing).getValue();
+                if(listString == null){
+                	continue;
+                }
                 for(String path : listString){
                     jars.add(GenericTableUtils.getDriverJarPath(path));
                 }
