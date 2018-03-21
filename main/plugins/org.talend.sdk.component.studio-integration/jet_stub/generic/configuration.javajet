@@ -93,21 +93,18 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 }
             } else {
-%>
-            configuration_<%=cid%>.put(
-                "<%=p.getName().replace('$', '.')%>",
-                <%if(p.getFieldType() == EParameterFieldType.PASSWORD) {%>
-                <%=ElementParameterParser.getPasswordValue(node, p.getVariableName())%>
-                <%} else {
-                    String value = ElementParameterParser.getStringElementParameterValue(p);
-                    if (ContextParameterUtils.isDynamic(value)) {%>
-                        <%=value%>
-                    <%} else {
-                        value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);%>
-                        <%=org.talend.core.model.utils.TalendTextUtils.addQuotes(value)%>
-                    <%}%>
-                <%}%>
-                );
+                final String key = p.getName().replace('$', '.');
+                String value = null;
+                if(p.getFieldType() == EParameterFieldType.PASSWORD) {
+                    value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
+                } else {
+                    value = ElementParameterParser.getStringElementParameterValue(p);
+                    if (!ContextParameterUtils.isDynamic(value)) {
+                        value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                        value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                    }
+                }%>
+                configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%
             }
         }
