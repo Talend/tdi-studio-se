@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -297,8 +298,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // buttonComposite.setLayout(new GridLayout());
         //
         // moveButton = new Button(buttonComposite, SWT.PUSH);
-        //        moveButton.setText("<<"); //$NON-NLS-1$
-        //        moveButton.setToolTipText(Messages.getString("ProcessComposite.hideContext")); //$NON-NLS-1$
+        // moveButton.setText("<<"); //$NON-NLS-1$
+        // moveButton.setToolTipText(Messages.getString("ProcessComposite.hideContext")); //$NON-NLS-1$
         //
         // final GridData layoutData = new GridData();
         // layoutData.verticalAlignment = GridData.CENTER;
@@ -330,7 +331,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // // // Group context
         // //
         // CTabItem contextTabItem = new CTabItem(leftTabFolder, SWT.BORDER);
-        //        contextTabItem.setText(Messages.getString("ProcessComposite.contextTab")); //$NON-NLS-1$
+        // contextTabItem.setText(Messages.getString("ProcessComposite.contextTab")); //$NON-NLS-1$
         // // contextComposite = new ProcessContextComposite(this, SWT.NONE);
         // // contextComposite.setBackground(leftTabFolder.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         // // contextTabItem.setControl(contextComposite);
@@ -339,20 +340,20 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // targetExecutionComposite.setBackground(leftTabFolder.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         // //
         // targetExecutionTabItem = new CTabItem(leftTabFolder, SWT.BORDER);
-        //        targetExecutionTabItem.setText(Messages.getString("ProcessComposite.targetExecutionTab")); //$NON-NLS-1$
+        // targetExecutionTabItem.setText(Messages.getString("ProcessComposite.targetExecutionTab")); //$NON-NLS-1$
         // targetExecutionTabItem.setToolTipText(Messages.getString("ProcessComposite.targetExecutionTabTooltipAvailable"));
         // targetExecutionTabItem.setControl(targetExecutionComposite);
         // //
         // // // Job Run VM Arguments Tab if language is java.
         // if (LanguageManager.getCurrentLanguage() == ECodeLanguage.JAVA) {
         // jobVMTabItem = new CTabItem(leftTabFolder, SWT.BORDER);
-        //            jobVMTabItem.setText(Messages.getString("ProcessComposite.JVMTab")); //$NON-NLS-1$
+        // jobVMTabItem.setText(Messages.getString("ProcessComposite.JVMTab")); //$NON-NLS-1$
         // argumentsComposite = new Composite(leftTabFolder, SWT.NONE);
         // argumentsComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
         // GridLayout gridLayoutArguments = new GridLayout(1, false);
         // argumentsComposite.setLayout(gridLayoutArguments);
         // argumentsViewer = new JobVMArgumentsComposite("vmarguments", Messages
-        //                    .getString("RunProcessPreferencePage.vmArgument"), //$NON-NLS-1$
+        // .getString("RunProcessPreferencePage.vmArgument"), //$NON-NLS-1$
         // argumentsComposite);
         // // argumentsViewer.setEnabled(false, argumentsComposite);
         // jobVMTabItem.setControl(argumentsComposite);
@@ -401,7 +402,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
         // Run
         // final MenuItem menuItem1 = new MenuItem(menu, SWT.PUSH);
-        //        menuItem1.setText(" " + Messages.getString("ProcessComposite.exec"));//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+        // menuItem1.setText(" " + Messages.getString("ProcessComposite.exec"));//$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
         // menuItem1.setImage(ImageProvider.getImage(ERunprocessImages.RUN_PROCESS_ACTION));
         // menuItem1.setData(ProcessView.EXEC_ID);
         // menuItem1.addSelectionListener(new SelectionAdapter() {
@@ -412,17 +413,17 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // itemDropDown.setText(menuItem1.getText());
         // itemDropDown.setData(ProcessView.EXEC_ID);
         // itemDropDown.setImage(ImageProvider.getImage(ERunprocessImages.RUN_PROCESS_ACTION));
-        //                    itemDropDown.setToolTipText(Messages.getString("ProcessComposite.execHint"));//$NON-NLS-1$
+        // itemDropDown.setToolTipText(Messages.getString("ProcessComposite.execHint"));//$NON-NLS-1$
         // toolBar.getParent().layout();
         // }
         // }
         // });
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
         // if (brandingService.getBrandingConfiguration().isAllowDebugMode()) {
         // // Debug
         // debugMenuItem = new MenuItem(menu, SWT.PUSH);
-        //            debugMenuItem.setText(" " + Messages.getString("ProcessDebugDialog.debugBtn")); //$NON-NLS-1$//$NON-NLS-2$
+        // debugMenuItem.setText(" " + Messages.getString("ProcessDebugDialog.debugBtn")); //$NON-NLS-1$//$NON-NLS-2$
         // debugMenuItem.setData(ProcessView.DEBUG_ID);
         // debugMenuItem.setImage(ImageProvider.getImage(ERunprocessImages.DEBUG_PROCESS_ACTION));
         // debugMenuItem.addSelectionListener(new SelectionAdapter() {
@@ -433,7 +434,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // itemDropDown.setText(debugMenuItem.getText());
         // itemDropDown.setData(ProcessView.DEBUG_ID);
         // itemDropDown.setImage(ImageProvider.getImage(ERunprocessImages.DEBUG_PROCESS_ACTION));
-        //                        itemDropDown.setToolTipText(Messages.getString("ProcessComposite.debugHint"));//$NON-NLS-1$
+        // itemDropDown.setToolTipText(Messages.getString("ProcessComposite.debugHint"));//$NON-NLS-1$
         // toolBar.getParent().layout();
         // }
         //
@@ -504,8 +505,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         killBtn.setLayoutData(formData);
 
         // saveJobBeforeRunButton = new Button(execHeader, SWT.CHECK);
-        //        saveJobBeforeRunButton.setText(Messages.getString("ProcessComposite.saveBeforeRun")); //$NON-NLS-1$
-        //        saveJobBeforeRunButton.setToolTipText(Messages.getString("ProcessComposite.saveBeforeRunHint")); //$NON-NLS-1$
+        // saveJobBeforeRunButton.setText(Messages.getString("ProcessComposite.saveBeforeRun")); //$NON-NLS-1$
+        // saveJobBeforeRunButton.setToolTipText(Messages.getString("ProcessComposite.saveBeforeRunHint"));
+        // //$NON-NLS-1$
         // // saveJobBeforeRunButton.setEnabled(false);
         // saveJobBeforeRunButton.setSelection(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(
         // RunProcessPrefsConstants.ISSAVEBEFORERUN));
@@ -519,8 +521,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // saveJobBeforeRunButton.setLayoutData(formData);
 
         // clearBeforeExec = new Button(execHeader, SWT.CHECK);
-        //        clearBeforeExec.setText(Messages.getString("ProcessComposite.clearBefore")); //$NON-NLS-1$
-        //        clearBeforeExec.setToolTipText(Messages.getString("ProcessComposite.clearBeforeHint")); //$NON-NLS-1$
+        // clearBeforeExec.setText(Messages.getString("ProcessComposite.clearBefore")); //$NON-NLS-1$
+        // clearBeforeExec.setToolTipText(Messages.getString("ProcessComposite.clearBeforeHint")); //$NON-NLS-1$
         // // clearBeforeExec.setEnabled(false);
         // clearBeforeExec.setSelection(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(
         // RunProcessPrefsConstants.ISCLEARBEFORERUN));
@@ -534,8 +536,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // clearBeforeExec.setLayoutData(formData);
         //
         // watchBtn = new Button(execHeader, SWT.CHECK);
-        //        watchBtn.setText(Messages.getString("ProcessComposite.execTime")); //$NON-NLS-1$
-        //        watchBtn.setToolTipText(Messages.getString("ProcessComposite.execTimeHint")); //$NON-NLS-1$
+        // watchBtn.setText(Messages.getString("ProcessComposite.execTime")); //$NON-NLS-1$
+        // watchBtn.setToolTipText(Messages.getString("ProcessComposite.execTimeHint")); //$NON-NLS-1$
         // watchBtn.setEnabled(false);
         // watchBtn.setSelection(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(
         // RunProcessPrefsConstants.ISEXECTIMERUN));
@@ -549,7 +551,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // watchBtn.setLayoutData(formData);
         //
         // Group statisticsComposite = new Group(execHeader, SWT.NONE);
-        //        statisticsComposite.setText(Messages.getString("ProcessComposite2.statsComposite")); //$NON-NLS-1$
+        // statisticsComposite.setText(Messages.getString("ProcessComposite2.statsComposite")); //$NON-NLS-1$
         // layout = new GridLayout(3, false);
         // layout.marginWidth = 0;
         // statisticsComposite.setLayout(layout);
@@ -565,14 +567,14 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // statisticsButtonComposite.setLayoutData(new GridData(GridData.FILL_VERTICAL));
 
         // perfBtn = new Button(statisticsButtonComposite, SWT.CHECK);
-        //        perfBtn.setText(Messages.getString("ProcessComposite.stat")); //$NON-NLS-1$
-        //        perfBtn.setToolTipText(Messages.getString("ProcessComposite.statHint")); //$NON-NLS-1$
+        // perfBtn.setText(Messages.getString("ProcessComposite.stat")); //$NON-NLS-1$
+        // perfBtn.setToolTipText(Messages.getString("ProcessComposite.statHint")); //$NON-NLS-1$
         // perfBtn.setEnabled(false);
         // perfBtn.setSelection(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(
         // RunProcessPrefsConstants.ISSTATISTICSRUN));
         // traceBtn = new Button(statisticsButtonComposite, SWT.CHECK);
-        //        traceBtn.setText(Messages.getString("ProcessComposite.trace")); //$NON-NLS-1$
-        //        traceBtn.setToolTipText(Messages.getString("ProcessComposite.traceHint")); //$NON-NLS-1$
+        // traceBtn.setText(Messages.getString("ProcessComposite.trace")); //$NON-NLS-1$
+        // traceBtn.setToolTipText(Messages.getString("ProcessComposite.traceHint")); //$NON-NLS-1$
         // traceBtn.setEnabled(false);
         // traceBtn
         // .setSelection(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISTRACESRUN));
@@ -580,8 +582,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         clearTracePerfBtn = new Button(execHeader, SWT.PUSH);
         clearTracePerfBtn.setText(Messages.getString("ProcessComposite.clear")); //$NON-NLS-1$
         clearTracePerfBtn.setToolTipText(Messages.getString("ProcessComposite.clearHint")); //$NON-NLS-1$
-        clearTracePerfBtn.setImage(ImageProvider.getImage(RunProcessPlugin.imageDescriptorFromPlugin(RunProcessPlugin.PLUGIN_ID,
-                "icons/process_stat_clear.gif"))); //$NON-NLS-1$
+        clearTracePerfBtn.setImage(ImageProvider.getImage(
+                RunProcessPlugin.imageDescriptorFromPlugin(RunProcessPlugin.PLUGIN_ID, "icons/process_stat_clear.gif"))); //$NON-NLS-1$
         clearTracePerfBtn.setEnabled(false);
         formData = new FormData();
         formData.top = new FormAttachment(killBtn, 0, SWT.TOP);
@@ -706,8 +708,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             @Override
             public void widgetSelected(SelectionEvent e) {
                 lineLimitText.setEditable(enableLineLimitButton.getSelection());
-                RunProcessPlugin.getDefault().getPluginPreferences()
-                        .setValue(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT, enableLineLimitButton.getSelection());
+                RunProcessPlugin.getDefault().getPluginPreferences().setValue(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT,
+                        enableLineLimitButton.getSelection());
             }
         });
 
@@ -738,8 +740,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
             @Override
             public void modifyText(ModifyEvent e) {
-                RunProcessPlugin.getDefault().getPluginPreferences()
-                        .setValue(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT, lineLimitText.getText());
+                RunProcessPlugin.getDefault().getPluginPreferences().setValue(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT,
+                        lineLimitText.getText());
             }
         });
 
@@ -948,8 +950,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         boolean isPause = id == ProcessView.PAUSE_ID;
         setExecBtn(isPause);
         // if (isPause) {
-        //            run.setText(Messages.getString("ProcessComposite.textContent")); //$NON-NLS-1$
-        //            run.setToolTipText(Messages.getString("ProcessComposite.tipTextContent")); //$NON-NLS-1$
+        // run.setText(Messages.getString("ProcessComposite.textContent")); //$NON-NLS-1$
+        // run.setToolTipText(Messages.getString("ProcessComposite.tipTextContent")); //$NON-NLS-1$
         // run.setData(ProcessView.RESUME_ID);
         // } else {
         // run.setData(ProcessView.PAUSE_ID);
@@ -1129,7 +1131,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             run.redraw();
             run.getParent().layout();
             // if (itemDropDown.getData().equals(ProcessView.DEBUG_ID)) {
-            //            debugMenuItem.setText(" " + Messages.getString("ProcessDebugDialog.debugBtn")); //$NON-NLS-1$//$NON-NLS-2$
+            // debugMenuItem.setText(" " + Messages.getString("ProcessDebugDialog.debugBtn"));
+            // //$NON-NLS-1$//$NON-NLS-2$
             // debugMenuItem.setData(ProcessView.DEBUG_ID);
             // debugMenuItem.setImage(ImageProvider.getImage(ERunprocessImages.DEBUG_PROCESS_ACTION));
             // } else {
@@ -1141,44 +1144,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         // }
         // }
 
-    }
-
-    private ConcurrentLinkedQueue<IProcessMessage> newMessages = new ConcurrentLinkedQueue<IProcessMessage>();
-
-    private ConcurrentLinkedQueue<IProcessMessage> messagesToDisplay = new ConcurrentLinkedQueue<IProcessMessage>();
-
-    protected void processNextMessage() {
-        // one list for display, one list for the waiting pool.
-        // don't try to display once the list to display is not finished to handle.
-        if (messagesToDisplay.isEmpty() && !newMessages.isEmpty()) {
-            IProcessMessage message = newMessages.poll();
-            if (message == null) {
-                return;
-            }
-            messagesToDisplay.add(message);
-            getDisplay().asyncExec(new Runnable() {
-
-                @Override
-                public void run() {
-                    List<IProcessMessage> messages = new ArrayList<IProcessMessage>();
-                    // only do a peek here, to get the first message, but without remove it (to make sure nothing else
-                    // call the appendConsole)
-                    IProcessMessage msg = messagesToDisplay.peek();
-                    if (msg != null) {
-                        messages.add(msg);
-                        doAppendToConsole(messages);
-                        scrollToEnd();
-                    }
-
-                    // do a poll here to remove the first element that we just displayed.
-                    messagesToDisplay.poll();
-                }
-            });
-        }
-    }
-
-    protected void appendToConsole(final IProcessMessage message) {
-        newMessages.add(message);
     }
 
     /**
@@ -1246,49 +1211,35 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     private void doAppendToConsole(Collection<IProcessMessage> messages) {
-        if (consoleText == null || consoleText.isDisposed()) {
-            return;
-        }
-        int linesLimit = getConsoleRowLimit();
-        int currentLines = consoleText.getLineCount();
-        if (linesLimit > 0 && currentLines > linesLimit) {
+        if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
             return;
         }
 
         List<StyleRange> styles = new ArrayList<StyleRange>();
         StringBuffer consoleMsgText = new StringBuffer();
-        int startLength = consoleText.getText().length();
-        for (StyleRange curStyle : consoleText.getStyleRanges()) {
-            styles.add(curStyle);
-        }
+        int startLength = 0; //consoleText.getText().length();
+//        for (StyleRange curStyle : consoleText.getStyleRanges()) {
+//            styles.add(curStyle);
+//        }
 
         boolean newStyle = false;
         for (IProcessMessage message : messages) {
             if (message.getType() == MsgType.STD_OUT) {
                 String[] splitLines = message.getContent().split("\n"); //$NON-NLS-1$
                 for (String lineContent : splitLines) {
-                    if (linesLimit > 0 && currentLines > linesLimit) {
-                        return;
-                    }
-                    currentLines++;
                     IProcessMessage lineMsg = new ProcessMessage(getLog4jMsgType(MsgType.STD_OUT, lineContent), lineContent);
                     newStyle = newStyle | processMessage(consoleMsgText, lineMsg, startLength, styles);
                 }
             } else {
-                if (linesLimit > 0 && currentLines > linesLimit) {
-                    return;
-                }
-                currentLines++;
                 // count as only one line for the error, to avoid the error to be cut from original
                 newStyle = newStyle | processMessage(consoleMsgText, message, startLength, styles);
             }
         }
-
-        if (messages.size() > 1) {
-            consoleText.setText(consoleText.getText() + consoleMsgText);
-        } else {
-            consoleText.append(consoleMsgText.toString());
+        if (consoleText.getText().equals(consoleMsgText.toString())) {
+            return;
         }
+
+        consoleText.setText(consoleMsgText.toString());
         if (newStyle) {
             consoleText.setStyleRanges(styles.toArray(new StyleRange[0]));
         }
@@ -1318,12 +1269,13 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     protected void fillConsole(Collection<IProcessMessage> messages) {
+        isUpdating.set(true);
         if (consoleText == null || consoleText.isDisposed()) {
             return;
         }
-        consoleText.setText(""); //$NON-NLS-1$
         doAppendToConsole(messages);
         scrollToEnd();
+        isUpdating.set(false);
     }
 
     private void scrollToEnd() {
@@ -1400,7 +1352,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
         boolean isTestContainerEditor = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-            ITestContainerProviderService testService = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
+            ITestContainerProviderService testService = (ITestContainerProviderService) GlobalServiceRegister.getDefault()
+                    .getService(ITestContainerProviderService.class);
             isTestContainerEditor = testService.isTestContainerEditor(activeEditor);
         }
         if (CorePlugin.getDefault().getDesignerCoreService().isTalendEditor(activeEditor) || isTestContainerEditor) {
@@ -1500,15 +1453,15 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
                 @Override
                 public void run(IProgressMonitor monitor) {
-                    IProcessor processor = ProcessorUtilities.getProcessor(processContext.getProcess(), processContext
-                            .getProcess().getProperty(), context);
+                    IProcessor processor = ProcessorUtilities.getProcessor(processContext.getProcess(),
+                            processContext.getProcess().getProperty(), context);
                     monitor.beginTask("Launching debugger", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
                     try {
                         // use this function to generate childrens also.
                         ProcessorUtilities.generateCode(processContext.getProcess(), context, false, false, true, monitor);
 
-                        ILaunchConfiguration config = ((Processor) processor).getDebugConfiguration(
-                                processContext.getStatisticsPort(), processContext.getTracesPort(), null);
+                        ILaunchConfiguration config = ((Processor) processor)
+                                .getDebugConfiguration(processContext.getStatisticsPort(), processContext.getTracesPort(), null);
 
                         // see feature 0004820: The run job doesn't verify if
                         // code is correct before launching
@@ -1521,12 +1474,12 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
                             } else {
                                 MessageDialog.openInformation(getShell(), Messages.getString("ProcessDebugDialog.debugBtn"), //$NON-NLS-1$
-                                        Messages.getString("ProcessDebugDialog.errortext")); //$NON-NLS-1$ 
+                                        Messages.getString("ProcessDebugDialog.errortext")); //$NON-NLS-1$
                             }
                         }
                     } catch (ProcessorException e) {
-                        IStatus status = new Status(IStatus.ERROR, RunProcessPlugin.PLUGIN_ID, IStatus.OK,
-                                "Debug launch failed.", e); //$NON-NLS-1$
+                        IStatus status = new Status(IStatus.ERROR, RunProcessPlugin.PLUGIN_ID, IStatus.OK, "Debug launch failed.", //$NON-NLS-1$
+                                e);
                         RunProcessPlugin.getDefault().getLog().log(status);
                         MessageDialog.openError(getShell(), Messages.getString("ProcessDebugDialog.debugBtn"), ""); //$NON-NLS-1$ //$NON-NLS-2$
                     } finally {
@@ -1537,8 +1490,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
             IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
             try {
-                progressService.runInUI(PlatformUI.getWorkbench().getProgressService(), worker, ResourcesPlugin.getWorkspace()
-                        .getRoot());
+                progressService.runInUI(PlatformUI.getWorkbench().getProgressService(), worker,
+                        ResourcesPlugin.getWorkspace().getRoot());
             } catch (InvocationTargetException e) {
                 // e.printStackTrace();
                 ExceptionHandler.process(e);
@@ -1579,8 +1532,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                                                 byeMsg = "\n" //$NON-NLS-1$
                                                         + mf.format(new Object[] { processContext.getProcess().getName(),
                                                                 new Date(), new Integer(process.getExitValue()) });
-                                                processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
-                                                        byeMsg));
+                                                processContext
+                                                        .addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT, byeMsg));
                                             } catch (DebugException e) {
                                                 // e.printStackTrace();
                                                 ExceptionHandler.process(e);
@@ -1623,10 +1576,10 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
                                             final String startingPattern = Messages.getString("ProcessComposite.startPattern"); //$NON-NLS-1$
                                             MessageFormat mf = new MessageFormat(startingPattern);
-                                            String welcomeMsg = mf.format(new Object[] { processContext.getProcess().getName(),
-                                                    new Date() });
-                                            processContext.addDebugResultToConsole(new ProcessMessage(MsgType.CORE_OUT,
-                                                    welcomeMsg + "\r\n"));//$NON-NLS-1$
+                                            String welcomeMsg = mf
+                                                    .format(new Object[] { processContext.getProcess().getName(), new Date() });
+                                            processContext.addDebugResultToConsole(
+                                                    new ProcessMessage(MsgType.CORE_OUT, welcomeMsg + "\r\n"));//$NON-NLS-1$
                                         }
                                     }
                                 });
@@ -1668,6 +1621,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             action.run();
         }
     }
+    
+    private AtomicBoolean isUpdating = new AtomicBoolean(false);
 
     private void runProcessContextChanged(final PropertyChangeEvent evt) {
         if (isDisposed()) {
@@ -1675,23 +1630,43 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         }
         String propName = evt.getPropertyName();
         if (ProcessMessageManager.UPDATE_CONSOLE.equals(propName)) {
-            processNextMessage();
+            if (!isUpdating.get()) {
+                getDisplay().asyncExec(new Runnable() {
+    
+                    @Override
+                    public void run() {
+                        if (isDisposed()) {
+                            return;
+                        }
+                        fillConsole(processContext.getMessages());
+                    }
+                });
+            }
         } else if (ProcessMessageManager.PROP_MESSAGE_ADD.equals(propName)
                 || ProcessMessageManager.PROP_DEBUG_MESSAGE_ADD.equals(propName)) {
-            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
-
-            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
-                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
-                if (!(LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL))) {
-                    getAllErrorMess(psMess);
-                } else {
-                    addPerlMark(psMess);
-                }
-            }
-            appendToConsole(psMess);
+//            IProcessMessage psMess = (IProcessMessage) evt.getNewValue();
+//
+//            if (errorMessMap.size() <= CorePlugin.getDefault().getPreferenceStore()
+//                    .getInt(ITalendCorePrefConstants.PREVIEW_LIMIT)) {
+//                if (!(LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL))) {
+//                    getAllErrorMess(psMess);
+//                } else {
+//                    addPerlMark(psMess);
+//                }
+//            }
+//            processContext.getMessages().add(psMess);
+//            getDisplay().asyncExec(new Runnable() {
+//
+//                @Override
+//                public void run() {
+//                    if (isDisposed()) {
+//                        return;
+//                    }
+//                    fillConsole(processContext.getMessages());
+//                }
+//            });
         } else if (ProcessMessageManager.PROP_MESSAGE_CLEAR.equals(propName)) {
-            newMessages.clear();
-            messagesToDisplay.clear();
+            processContext.getMessages().clear();
             getDisplay().asyncExec(new Runnable() {
 
                 @Override
@@ -1716,12 +1691,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     boolean running = ((Boolean) evt.getNewValue()).booleanValue();
                     setRunnable(!running);
                     killBtn.setEnabled(running);
-                    while (!newMessages.isEmpty()) {
-                        messagesToDisplay.add(newMessages.poll());
-                    }
-                    doAppendToConsole(messagesToDisplay);
-                    scrollToEnd();
-                    messagesToDisplay.clear();
+                    fillConsole(processContext.getMessages());
                 }
             });
         }
@@ -1773,8 +1743,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     public void setDebugEnabled(boolean enabled) {
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                IBrandingService.class);
+        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                .getService(IBrandingService.class);
         if (brandingService.getBrandingConfiguration().isAllowDebugMode()) {
             debugMenuItem.setEnabled(enabled);
         }
@@ -1867,7 +1837,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
 
         for (String element : message) {
             if (isPattern(element)) {
-
                 int firIndex = element.indexOf("$"); //$NON-NLS-1$
                 int secIndex = element.indexOf("%"); //$NON-NLS-1$
                 uniqueName = element.substring(0, firIndex);
@@ -1875,7 +1844,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
 
             Double extentPro = new Double(0);
-            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$  
+            if ((!"".equals(mess)) && mess != null) { //$NON-NLS-1$
                 extentPro = Double.parseDouble(mess);
             }
 
@@ -1893,8 +1862,8 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         List<? extends INode> nodeList = process.getGraphicalNodes();
         for (INode node : nodeList) {
             if ((node instanceof Node) && (((Node) node).isMapReduceStart())) {
-                ((JobletContainer) ((Node) node).getNodeContainer()).updateState(
-                        "UPDATE_STATUS", "CLEAR", new Double(0), new Double(0)); //$NON-NLS-1$ //$NON-NLS-2$
+                ((JobletContainer) ((Node) node).getNodeContainer()).updateState("UPDATE_STATUS", "CLEAR", new Double(0), //$NON-NLS-1$ //$NON-NLS-2$
+                        new Double(0));
             }
         }
     }
@@ -1907,82 +1876,25 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         List<? extends ISubjobContainer> subjobContainers = process.getSubjobContainers();
         for (ISubjobContainer subjobContainer : subjobContainers) {
             if (subjobContainer instanceof SparkStreamingSubjobContainer) {
-                ((SparkStreamingSubjobContainer) subjobContainer).updateState(
-                        "UPDATE_SPARKSTREAMING_STATUS", null, 0, 0, "", "", ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                ((SparkStreamingSubjobContainer) subjobContainer).updateState("UPDATE_SPARKSTREAMING_STATUS", null, 0, 0, "", "", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        ""); //$NON-NLS-1$
             }
         }
     }
+    private Pattern pattern1 = Pattern.compile("\\$\\s*\\d+(\\.\\d*)?%"); //$NON-NLS-1$
+    
+    private Pattern pattern2 = Pattern.compile("\\[\\s*\\d+(\\.\\d*)?%\\]"); //$NON-NLS-1$
 
     private boolean isPattern(String content) {
-        Pattern pattern = Pattern.compile("\\$\\s*\\d+(\\.\\d*)?%"); //$NON-NLS-1$
-        Matcher m = pattern.matcher(content);
+        Matcher m = pattern1.matcher(content);
         return m.find();
     }
 
     private boolean isPatternFor(String content) {
-        Pattern pattern = Pattern.compile("\\[\\s*\\d+(\\.\\d*)?%\\]"); //$NON-NLS-1$
-        Matcher m = pattern.matcher(content);
+        Matcher m = pattern2.matcher(content);
         return m.find();
     }
-
-    protected void addPerlMark(IProcessMessage psMess) {
-        if (psMess.getType().equals(MsgType.STD_ERR)) {
-            String content = psMess.getContent();
-            String path = null;
-            String uniName = null;
-            int lineNo = -1;
-            Pattern errorPattern = Pattern.compile("(.*) at (\\S+) line (\\d+)[\\.,]");//$NON-NLS-1$
-            Matcher m = errorPattern.matcher(content);
-            String matchContent = null;
-
-            while (m.find()) {
-                path = m.group(2);
-                lineNo = parseInt(m.group(3));
-
-                matchContent = m.group();
-
-                if ((!("".equals(path)) && path != null) && lineNo > 0) {//$NON-NLS-1$ 
-                    uniName = Problems.setErrorMark(path, lineNo);
-                }
-
-                if (uniName != null) {
-                    if (!errorMessMap.containsKey(uniName)) {
-                        errorMessMap.put(uniName, new ProcessMessage(MsgType.STD_ERR, matchContent));
-                    } else {
-                        String uniMess = errorMessMap.get(uniName).getContent();
-                        errorMessMap.put(uniName, new ProcessMessage(MsgType.STD_ERR, uniMess.concat(matchContent)));
-                    }
-                }
-
-            }
-        }
-        refreshNode(psMess);
-    }
-
-    private int parseInt(String str) {
-        try {
-            return Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    private List<Node> getTRunjobList(org.talend.core.model.process.IProcess process) {
-        List<Node> trunjobList = new ArrayList<Node>();
-        if (!(process instanceof Process)) {
-            return trunjobList;
-        }
-        List<INode> nodeList = (List<INode>) ((Process) process).getGraphicalNodes();
-        for (INode node : nodeList) {
-            if (node.getComponent().getName().equals("tRunJob")) { //$NON-NLS-1$
-                if (node instanceof Node) {
-                    trunjobList.add((Node) node);
-                }
-            }
-        }
-        return trunjobList;
-    }
-
+    
     /*
      * (non-Javadoc)
      * 
