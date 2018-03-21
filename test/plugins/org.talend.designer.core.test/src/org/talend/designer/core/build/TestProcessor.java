@@ -285,9 +285,8 @@ public class TestProcessor implements IProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see
-     * org.talend.designer.runprocess.IProcessor#setSyntaxCheckableEditor(org.talend.designer.core.ISyntaxCheckableEditor
-     * )
+     * @see org.talend.designer.runprocess.IProcessor#setSyntaxCheckableEditor(org.talend.designer.core.
+     * ISyntaxCheckableEditor )
      */
     @Override
     public void setSyntaxCheckableEditor(ISyntaxCheckableEditor editor) {
@@ -551,7 +550,7 @@ public class TestProcessor implements IProcessor {
 
     @Override
     public void setSkipClasspathJar(boolean skipClasspathJar) {
-        
+
     }
 
     @Override
@@ -559,7 +558,9 @@ public class TestProcessor implements IProcessor {
         return false;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.designer.runprocess.IProcessor#getNeededModules(boolean)
      */
     @Override
@@ -568,11 +569,24 @@ public class TestProcessor implements IProcessor {
         return null;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs(boolean)
      */
     @Override
     public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.runprocess.IProcessor#getSrcCodePath()
+     */
+    @Override
+    public IPath getSrcCodePath() {
         // TODO Auto-generated method stub
         return null;
     }
