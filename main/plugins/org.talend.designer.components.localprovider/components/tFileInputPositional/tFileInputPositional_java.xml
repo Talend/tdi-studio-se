@@ -70,15 +70,6 @@
     </PARAMETER>
 
     <PARAMETER
-      NAME="USE_BYTE"
-      FIELD="CHECK"
-      REQUIRED="true"
-      NUM_ROW="29"
-    >
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-
-    <PARAMETER
       NAME="ADVANCED_OPTION"
       FIELD="CHECK"
       REQUIRED="true"
@@ -90,11 +81,19 @@
     <PARAMETER
       NAME="PATTERN"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="35"
       REPOSITORY_VALUE="PATTERN"
       SHOW_IF="ADVANCED_OPTION == 'false'"
     >
       <DEFAULT>"5,4,5"</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER NAME="PATTERN_UNITS" FIELD="CLOSED_LIST" NUM_ROW="35">
+        <ITEMS DEFAULT="SYMBOLS">
+            <ITEM NAME="BYTES" VALUE="BYTES"/>
+            <ITEM NAME="SYMBOLS" VALUE="SYMBOLS"/>
+            <ITEM NAME="RARE_SYMBOLS" VALUE="RARE_SYMBOLS"/>
+        </ITEMS>
     </PARAMETER>
 
     <PARAMETER

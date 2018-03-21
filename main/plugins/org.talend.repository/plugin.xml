@@ -2972,6 +2972,14 @@
 	          name="AddSchemaDatePatternUseForImpalaTask"
 	          version="6.4.2">
 	    </projecttask>
+        <projecttask
+            beforeLogon="false"
+            breaks="6.5.2"
+            class="org.talend.repository.model.migration.FileInputPositionalByteLengthMigrationTask"
+            id="org.talend.repository.model.migration.FileInputPositionalByteLengthMigrationTask"
+            name="FileInputPositionalByteLengthMigrationTask"
+            version="6.5.2">
+        </projecttask>
    </extension>
 
    <extension
