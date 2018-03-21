@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
@@ -98,14 +99,12 @@ public class ImportProjectAsWizardPage extends WizardPage {
 
     private Button browseArchivesButton;
 
-    private Button importManyProjectsButton;
-
     private String previouslyBrowsedDirectory = ""; //$NON-NLS-1$
 
     private String previouslyBrowsedArchive = ""; //$NON-NLS-1$
 
     private String lastPath;
-
+    
     // constant from WizardArchiveFileResourceImportPage1
     private static final String[] FILE_IMPORT_MASK = { "*.jar;*.zip;*.tar;*.tar.gz;*.tgz", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -484,7 +483,6 @@ public class ImportProjectAsWizardPage extends WizardPage {
         // find the talend.project file
         tp.collectProjectFilesFromDirectory(files, new File(sourcePath), null);
         File tmpPath = FileUtils.createTmpFolder("talendImportTmp", null);
-        System.out.println(tmpPath.getPath());
         Iterator filesIterator = files.iterator();
         String tepPath = "";
         while (filesIterator.hasNext()) {
