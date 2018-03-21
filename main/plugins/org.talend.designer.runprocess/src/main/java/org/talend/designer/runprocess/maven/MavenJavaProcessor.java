@@ -67,6 +67,8 @@ public class MavenJavaProcessor extends JavaProcessor {
 
     protected String windowsClasspath, unixClasspath;
 
+    private boolean isMainJob = false;
+
     public MavenJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         super(process, property, filenameFromLabel);
         if (isStandardJob() && getContext() != null && getTalendJavaProject().isUseTempPom()) {
@@ -217,13 +219,15 @@ public class MavenJavaProcessor extends JavaProcessor {
         String jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
         String exportJar = libPrefixPath + jarName + FileExtensions.JAR_FILE_SUFFIX;
 
-        Set<JobInfo> infos = getBuildChildrenJobs();
-        for (JobInfo jobInfo : infos) {
-            if (jobInfo.isTestContainer()) {
-                continue;
+        if (!isMainJob || isMainJob && !ProcessorUtilities.hasLoopDependency()) {
+            Set<JobInfo> infos = getBuildChildrenJobs();
+            for (JobInfo jobInfo : infos) {
+                if (jobInfo.isTestContainer()) {
+                    continue;
+                }
+                String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
+                exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
             }
-            String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
-            exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
         }
         return exportJar;
     }
@@ -265,6 +269,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
         }
+        isMainJob = option == 0;
         if (ProcessorUtilities.isGeneratePomOnly()) {
             ProcessorUtilities.resetExportConfig();
         } else {
@@ -273,8 +278,8 @@ public class MavenJavaProcessor extends JavaProcessor {
         try {
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
-                createTemplatePom.setSyncCodesPoms(option == 0);
-                if (option == 0) {
+                createTemplatePom.setSyncCodesPoms(isMainJob);
+                if (isMainJob) {
                     createTemplatePom.setHasLoopDependency(ProcessorUtilities.hasLoopDependency());
                 }
                 boolean previousValue = ProcessUtils.jarNeedsToContainContext();
