@@ -37,7 +37,7 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                             key = key + columnName;
                         }
                         String value = lineValues.get(items[j]);
-                        if (!ContextParameterUtils.isDynamic(value)) {
+                        if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
                             value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
                             value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
                         }
@@ -104,7 +104,7 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 } else {
                     value = ElementParameterParser.getStringElementParameterValue(p);
-                    if (!ContextParameterUtils.isDynamic(value)) {
+                    if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
                         value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
                         value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
                     }
