@@ -12,7 +12,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */%>
-<%@include file="utils.javajet"%>
 final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashMap<>();
 <%
     final List<ElementParameter> params = List.class.cast(node.getElementParametersWithChildrens());
@@ -101,7 +100,7 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                 <%=ElementParameterParser.getPasswordValue(node, p.getVariableName())%>
                 <%} else {
                     String value = ElementParameterParser.getStringElementParameterValue(p);
-                    if (new Utils().isDynamic(value)) {%>
+                    if (ContextParameterUtils.isDynamic(value)) {%>
                         <%=value%>
                     <%} else {
                         value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);%>
