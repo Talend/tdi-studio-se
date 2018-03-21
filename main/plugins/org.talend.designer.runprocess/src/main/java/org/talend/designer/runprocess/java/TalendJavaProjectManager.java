@@ -260,9 +260,18 @@ public class TalendJavaProjectManager {
      * @param property
      * @param helper
      * @return
-     * @throws CoreException 
+     * @throws Exception 
      */
-    public static IFolder getItemPomFolder(Property property) throws CoreException {
+    public static IFolder getItemPomFolder(Property property) throws Exception {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
+            if (testContainerService.isTestContainerItem(property.getItem())) {
+                Item jobItem = testContainerService.getParentJobItem(property.getItem());
+                if (jobItem != null) {
+                    property = jobItem.getProperty();
+                }
+            }
+        }
         String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
         AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
         IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);

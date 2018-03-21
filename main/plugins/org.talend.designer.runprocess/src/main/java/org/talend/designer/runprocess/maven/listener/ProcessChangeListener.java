@@ -247,6 +247,11 @@ public class ProcessChangeListener implements PropertyChangeListener {
             Set<Item> importItems = (Set<Item>) newValue;
             for (Item item : importItems) {
                 if (item instanceof ProcessItem) {
+                    ITestContainerProviderService testcontainerService = getTestContainerProviderService();
+                    if (testcontainerService != null && testcontainerService.isTestContainerItem(item)) {
+                        // do nothing
+                        return;
+                    }
                     TalendJavaProjectManager.generatePom((ProcessItem) item);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
