@@ -97,15 +97,21 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                 String value = null;
                 if(p.getFieldType() == EParameterFieldType.PASSWORD) {
                     value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
+                    if (value == null || value.trim().isEmpty()) {
+                        value = null;
+                    }
                 } else {
                     value = ElementParameterParser.getStringElementParameterValue(p);
                     if (!ContextParameterUtils.isDynamic(value)) {
                         value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
                         value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
                     }
-                }%>
-                configuration_<%=cid%>.put("<%=key%>", <%=value%>);
+                }
+                if (value != null) {
+%>
+                    configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%
+                } // else do not put value in configuration
             }
         }
     }
