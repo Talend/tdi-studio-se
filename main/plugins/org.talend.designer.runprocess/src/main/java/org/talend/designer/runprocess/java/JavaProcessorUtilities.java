@@ -71,8 +71,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.maven.utils.PomUtil;
-import org.talend.designer.runprocess.ClasspathAdjusterProvider;
-import org.talend.designer.runprocess.IClasspathAdjuster;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -195,15 +193,6 @@ public class JavaProcessorUtilities {
         Property property = ((IProcess2) process).getProperty();
         if (neededLibraries.isEmpty()) {
             neededLibraries = process.getNeededModules(withChildrens);
-            
-            // not generating, so will run classpath adjuster only on this job
-            List<IClasspathAdjuster> classPathAdjusters = ClasspathAdjusterProvider.getClasspathAdjuster();
-            for (IClasspathAdjuster adjuster : classPathAdjusters) {
-                adjuster.initialize();
-                adjuster.collectInfo(process, neededLibraries);
-                neededLibraries = adjuster.adjustClassPath(process, neededLibraries);
-            }
-
             if (neededLibraries == null) {
                 neededLibraries = new HashSet<ModuleNeeded>();
                 for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getModulesNeeded()) {
