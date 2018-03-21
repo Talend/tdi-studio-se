@@ -16,6 +16,7 @@
 package org.talend.sdk.component.studio.service;
 
 import static java.util.Collections.emptySet;
+import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toSet;
 
@@ -88,14 +89,16 @@ public class ComponentService {
         if (dependencies == null) {
             synchronized (this) {
                 if (dependencies == null) {
-                    dependencies = new Dependencies(readDependencies("manager", false), readDependencies("beam", true));
+                    dependencies = new Dependencies(
+                            readDependencies("manager", false, null),
+                            readDependencies("beam", true, "beam-runner_" + System.getProperty("talend.beam.runner.artifactId", "beam-runners-direct-java")));
                 }
             }
         }
         return dependencies;
     }
 
-    private Set<String> readDependencies(final String name, final boolean acceptProvided) {
+    private Set<String> readDependencies(final String name, final boolean acceptProvided, final String companionStack) {
         final String gav = GAV.GROUP_ID + ":component-runtime-" + name + ":" + GAV.COMPONENT_RUNTIME_VERSION;
         final File module;
         try {
@@ -109,8 +112,17 @@ public class ComponentService {
         }
         try {
             return Stream
-                    .concat(Stream.of(Mvn.locationToMvn(gav)),
-                            Mvn.withDependencies(module, "TALEND-INF/" + name + ".dependencies", acceptProvided, identity()))
+                    .concat(Stream.concat(
+                            Stream.of(Mvn.locationToMvn(gav)),
+                            Mvn.withDependencies(module, "TALEND-INF/" + name + ".dependencies", acceptProvided, identity())),
+                            ofNullable(companionStack).map(r -> {
+                                try {
+                                    return Mvn.withDependencies(module,
+                                            "TALEND-INF/" + r + ".dependencies", false, identity());
+                                } catch (final IOException e) {
+                                    throw new IllegalStateException(e);
+                                }
+                            }).orElseGet(Stream::<String>empty))
                     .map(mvn -> mvn.replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")).collect(toSet());
         } catch (final IOException e) {
             throw new IllegalStateException("No TALEND-INF/" + name + ".dependencies found in " + gav, e);

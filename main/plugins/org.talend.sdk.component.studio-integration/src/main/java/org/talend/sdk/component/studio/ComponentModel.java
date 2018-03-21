@@ -394,7 +394,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                                     .stream()
                                     .map(s -> new ModuleNeeded(getName(), "", true, s))
                                     .collect(toList()));
-                            // transitivity works through pom
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true,
+                                    "mvn:org.talend.sdk.component/component-runtime-standalone/"
+                                            + GAV.COMPONENT_RUNTIME_VERSION));
                         }
                     }
 
