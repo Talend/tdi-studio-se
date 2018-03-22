@@ -35,6 +35,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.ui.ITestContainerProviderService;
+import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
@@ -117,7 +118,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     } else if (!oldVersion.equals(property.getVersion())) {
                         // version change, will create new item
                         // create new job project.
-                        TalendJavaProjectManager.generatePom((ProcessItem) property.getItem());
+                        TalendJavaProjectManager.generatePom((ProcessItem) property.getItem(),
+                                TalendJavaProjectConstants.GEN_PROPERTIES_CHANGED);
                     }
                 }
             }
@@ -233,7 +235,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         if (newValue instanceof Item) {
             if (newValue instanceof ProcessItem) {
                 if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
-                    TalendJavaProjectManager.generatePom((ProcessItem) newValue);
+                    TalendJavaProjectManager.generatePom((ProcessItem) newValue, TalendJavaProjectConstants.GEN_SAVE_AND_CREATE);
                 }
             } else if (newValue instanceof RoutineItem) {
                 updateCodesChange((RoutineItem) newValue);
@@ -252,7 +254,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         // do nothing
                         return;
                     }
-                    TalendJavaProjectManager.generatePom((ProcessItem) item);
+                    TalendJavaProjectManager.generatePom((ProcessItem) item, TalendJavaProjectConstants.GEN_IMPORT);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
                 }

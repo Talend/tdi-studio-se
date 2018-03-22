@@ -45,7 +45,7 @@
             
             String pattern1 = ElementParameterParser.getValue(node, "__PATTERN__");
             
-            boolean useByte = ("true").equals(ElementParameterParser.getValue(node, "__USE_BYTE__"));
+            String patternUnits = ElementParameterParser.getValue(node, "__PATTERN_UNITS__");
             boolean advanced = ("true").equals(ElementParameterParser.getValue(node, "__ADVANCED_OPTION__"));
             
 			String filename = ElementParameterParser.getValueWithUIFieldKey(node,"__FILENAME__", "FILENAME");
@@ -141,7 +141,7 @@
             int nb_limit_<%=cid %> = <%=limit%>;
 
 			<%
-			if(useByte){
+			if("BYTES".equals(patternUnits)){
 			%>
                 class Arrays_<%=cid %>{
                     public byte[] copyOfRange(byte[] original, int from, int to) {
@@ -192,7 +192,7 @@
                 					if(valueN%100==0){
     						        %>
                   						void setValue_<%=(valueN/100)%>(<%=firstConnName %>Struct <%=firstConnName %>,int[] begins_<%=cid %>,int[] ends_<%=cid %>,int rowLen_<%=cid %>,
-                  						<% if(useByte){ %>byte[] byteArray_<%=cid %>,Arrays_<%=cid %> arrays_<%=cid %>,<% } %>String column_<%=cid %>,String row_<%=cid %>)throws java.lang.Exception {  
+                  						<% if("BYTES".equals(patternUnits)){ %>byte[] byteArray_<%=cid %>,Arrays_<%=cid %> arrays_<%=cid %>,<% } %>String column_<%=cid %>,String row_<%=cid %>)throws java.lang.Exception {  
 									<%
 									}
 									%>
@@ -202,7 +202,7 @@
 									if((currentRow == (sizeListColumns-1)) && useStar) {
     									if(begins_<%=cid %>[<%=valueN %>] < rowLen_<%=cid %>){
         									<%
-        									if(useByte){
+        									if("BYTES".equals(patternUnits)){
 											%>
                                             	byteArray_<%=cid %>=arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),begins_<%=cid %>[<%=valueN %>],rowLen_<%=cid %>);
                                             	column_<%=cid %> = TalendString.talendTrim(new String(byteArray_<%=cid %>,<%=encoding %>), <%=paddingChar %>, <%=align %>);
@@ -218,7 +218,7 @@
                                         }
                                     } else {
                                     	<%
-                                    	if(useByte){
+                                    	if("BYTES".equals(patternUnits)){
 										%>
 											if(begins_<%=cid %>[<%=valueN %>] < rowLen_<%=cid %>){
         										if(ends_<%=cid %>[<%=valueN %>] <= rowLen_<%=cid %>){
@@ -271,12 +271,25 @@
 											for (int i<%=cid%>=0;i<%=cid%><maxColumnCount_<%=cid %>;i<%=cid%>++) {
 												routines.system.DynamicMetadata dynamicMetadataColumn_<%=cid%> = dynamic_<%=cid %>.getColumnMetadata(i<%=cid%>);
 												int currentFieldLength_<%=cid%> = dynamicMetadataColumn_<%=cid%>.getLength();
-												substringEnd<%=cid %> = substringBegin<%=cid %>+currentFieldLength_<%=cid%>;
-												if(substringEnd<%=cid %> > rowLen_<%=cid %>){
-													substringEnd<%=cid %> = rowLen_<%=cid %>;
-												}
-        										<%
-        										if(useByte){
+                                                <%
+                                                if(!"RARE_SYMBOLS".equals(patternUnits)){
+                                                %>
+                                                    substringEnd<%=cid %> = substringBegin<%=cid %>+currentFieldLength_<%=cid%>;
+                                                    if(substringEnd<%=cid %> > rowLen_<%=cid %>){
+                                                        substringEnd<%=cid %> = rowLen_<%=cid %>;
+                                                    }
+                                                <%
+                                                } else {
+                                                %>
+                                                    int codePointCount = currentFieldLength_<%=cid%>;
+                                                    int codePointCountLeft = row_<%=cid %>.codePointCount(substringBegin<%=cid %>, rowLen_<%=cid %>);
+                                                    if(codePointCountLeft < codePointCount){
+                                                        codePointCount = codePointCountLeft;
+                                                    }
+                                                    substringEnd<%=cid %> = row_<%=cid %>.offsetByCodePoints(substringBegin<%=cid %>, codePointCount);
+                                                <%
+                                                }
+        										if("BYTES".equals(patternUnits)){
 												%>
 													byte[] temp_byteArray_<%=cid %> = arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),substringBegin<%=cid %>, substringEnd<%=cid %>);
 													String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);						
@@ -361,7 +374,7 @@
 								for(int i=0;i <	columnList.size();i++){
 									if(i % 100 == 0){
                         		    %>
-                        		    	int parseValue_<%=i%>(String row_<%=cid%>, int substringBegin<%=cid%>, int substringEnd<%=cid%>, int rowLen_<%=cid%>, String[] columnValue<%=cid%> <%if(useByte){%>, Arrays_<%=cid%> arrays_<%=cid%>, byte[][] byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, routines.system.Dynamic dynamic_<%=cid%><%}%>)throws java.lang.Exception{
+                        		    	int parseValue_<%=i%>(String row_<%=cid%>, int substringBegin<%=cid%>, int substringEnd<%=cid%>, int rowLen_<%=cid%>, String[] columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, Arrays_<%=cid%> arrays_<%=cid%>, byte[][] byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, routines.system.Dynamic dynamic_<%=cid%><%}%>)throws java.lang.Exception{
                         		    <%
                         		    }
                         		    IMetadataColumn column = columnList.get(i);
@@ -375,12 +388,25 @@
                         				for (int i<%=cid%>=0;i<%=cid%><maxColumnCount_<%=cid %>;i<%=cid%>++) {
                         					routines.system.DynamicMetadata dynamicMetadataColumn_<%=cid%> = dynamic_<%=cid %>.getColumnMetadata(i<%=cid%>);
                         					int currentFieldLength_<%=cid%> = dynamicMetadataColumn_<%=cid%>.getLength();
-                        					substringEnd<%=cid %> = substringBegin<%=cid %>+currentFieldLength_<%=cid%>;
-                        					if(substringEnd<%=cid %> > rowLen_<%=cid %>){
-                        						substringEnd<%=cid %> = rowLen_<%=cid %>;
-                        					}
-											<%
-											if(useByte){
+                                            <%
+                                            if(!"RARE_SYMBOLS".equals(patternUnits)){
+                                            %>
+                                                substringEnd<%=cid %> = substringBegin<%=cid %>+currentFieldLength_<%=cid%>;
+                                                if(substringEnd<%=cid %> > rowLen_<%=cid %>){
+                                                    substringEnd<%=cid %> = rowLen_<%=cid %>;
+                                                }
+                                            <%
+                                            } else {
+                                            %>
+                                                int codePointCount = currentFieldLength_<%=cid%>;
+                                                int codePointCountLeft = row_<%=cid %>.codePointCount(substringBegin<%=cid %>, rowLen_<%=cid %>);
+                                                if(codePointCountLeft < codePointCount){
+                                                    codePointCount = codePointCountLeft;
+                                                }
+                                                substringEnd<%=cid %> = row_<%=cid %>.offsetByCodePoints(substringBegin<%=cid %>, codePointCount);
+                                            <%
+                                            }
+											if("BYTES".equals(patternUnits)){
 											%>
                     							byte[] temp_byteArray_<%=cid %>= arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),substringBegin<%=cid %>, substringEnd<%=cid %>);
 	                    						String currentColumnValue_<%=cid%> = new String(temp_byteArray_<%=cid %>,<%=encoding %>);						
@@ -423,13 +449,28 @@
                                 			if("*".equals(positions_<%=cid%>[<%=i%>])){
         			 							substringEnd<%=cid %>=rowLen_<%=cid %>;
             								} else {
-            									substringEnd<%=cid %> = substringEnd<%=cid %> + Integer.parseInt(positions_<%=cid%>[<%=i%>]);
-                        				        if(substringEnd<%=cid %> > rowLen_<%=cid %>){
-                        				        	substringEnd<%=cid %> = rowLen_<%=cid %>;
-                        				    	}
+                                                <%
+                                                if(!"RARE_SYMBOLS".equals(patternUnits)){
+                                                %>
+                                                    substringEnd<%=cid %> = substringEnd<%=cid %> + Integer.parseInt(positions_<%=cid%>[<%=i%>]);
+                                                    if(substringEnd<%=cid %> > rowLen_<%=cid %>){
+                                                        substringEnd<%=cid %> = rowLen_<%=cid %>;
+                                                    }
+                                                <%
+                                                } else {
+                                                %>
+                                                    int codePointCount = Integer.parseInt(positions_<%=cid%>[<%=i%>]);
+                                                    int codePointCountLeft = row_<%=cid %>.codePointCount(substringBegin<%=cid %>, rowLen_<%=cid %>);
+                                                    if(codePointCountLeft < codePointCount){
+                                                        codePointCount = codePointCountLeft;
+                                                    }
+                                                    substringEnd<%=cid %> = row_<%=cid %>.offsetByCodePoints(substringBegin<%=cid %>, codePointCount);
+                                                <%
+                                                }
+                                                %>
                         				    }
     										<%
-                        					if(useByte){
+                        					if("BYTES".equals(patternUnits)){
     										%>
                             					byteArray_<%=cid %>[<%=i%>] = arrays_<%=cid %>.copyOfRange(row_<%=cid %>.getBytes(<%=encoding %>),substringBegin<%=cid %>, substringEnd<%=cid %>);
                             					columnValue<%=cid %>[<%=i%>] = new String(byteArray_<%=cid %>[<%=i%>],<%=encoding %>);
@@ -551,7 +592,13 @@
                 int[] sizes_<%=cid %> = new int[<%=formats.size() %>];
                 int[] begins_<%=cid %> = new int[<%=formats.size() %>];
                 int[] ends_<%=cid %> = new int[<%=formats.size() %>];
-				<%
+                <%
+                if("RARE_SYMBOLS".equals(patternUnits)){
+                %>
+                    int[] surrogateBegins_<%=cid %> = new int[begins_<%=cid %>.length];
+                    int[] surrogateEnds_<%=cid %> = new int[ends_<%=cid %>.length];
+                <%
+                }
 				for(int i = 0; i < formats.size(); i++){ 
     				if(i == formats.size() - 1 && !(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
     					//now we have to treat the empty string as star, please check the tujs. It's not good.
@@ -651,7 +698,7 @@
                 	int rowLen_<%=cid %> = 0;
                 	<%
                 	if(advanced){
-                		if(useByte){
+                		if("BYTES".equals(patternUnits)){
                 		%>
                 			byte[] byteArray_<%=cid %> = new byte[0];
                     	<%
@@ -660,7 +707,7 @@
                 		String column_<%=cid %> = null;
                 	<%
                 	}else{
-                		if(useByte){
+                		if("BYTES".equals(patternUnits)){
                 		%>
                 			byte[][] byteArray_<%=cid %> = new byte[<%=metadata.getListColumns().size()%>][];
                 		<%
@@ -679,7 +726,7 @@
                 int rowLen_<%=cid %> = 0;
                 <%
                 if(advanced){
-                	if(useByte){
+                	if("BYTES".equals(patternUnits)){
                		%>
             			byte[] byteArray_<%=cid %> = new byte[0];
                     <%
@@ -688,7 +735,7 @@
 					String column_<%=cid %> = null;
                 <%
                 }else{
-                	if(useByte){
+                	if("BYTES".equals(patternUnits)){
                     %>
 		                byte[][] byteArray_<%=cid %> = new byte[<%=metadata.getListColumns().size()%>][];
         	        <%
@@ -726,7 +773,7 @@
 					}
 					<%
 				}
-				if(useByte){
+				if("BYTES".equals(patternUnits)){
 						if(uncompress){
 				%>
                               byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(zis_<%=cid %>, rowLength_<%=cid %>);
@@ -749,7 +796,7 @@
 			}
 			%>
 				<%
-            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+            	if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
                 %>
                     byteReader_<%=cid %>.setSafetySwitch(<%=bSafetySwitch%>);
                     byteReader_<%=cid %>.skipHeaders(<%=header %>);
@@ -763,7 +810,7 @@
             	%>
             if(footer_<%=cid %> > 0){
             	<%
-            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+            	if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
             	%>
             	int available_<%=cid %> = (int)byteReader_<%=cid %>.getAvailableRowCount(footer_<%=cid %>);
             	byteReader_<%=cid %>.close();
@@ -781,7 +828,7 @@
             		in_<%=cid %> = new java.io.BufferedReader(new java.io.InputStreamReader(new java.io.FileInputStream(String.valueOf(filename_<%=cid %>)), <%=encoding %>));
             	}
 				<%
-				if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+				if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
 						if(uncompress){
 				%>
                                byteReader_<%=cid %> = new org.talend.fileprocess.delimited.RowParserByByte(zis_<%=cid %>, rowLength_<%=cid %>);
@@ -798,7 +845,7 @@
 				}
 				%>	
                 <%
-            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator)) ){
+            	if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator)) ){
                 %>
                       byteReader_<%=cid %>.skipHeaders(<%=header %>);
                 <%
@@ -827,7 +874,7 @@
         	<% } %>
         }
                 <%
-            	if(useByte&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
+            	if("BYTES".equals(patternUnits)&&(("").equals(rowSeparator) || ("\"\"").equals(rowSeparator))){
                 %>
                     while (nb_limit_<%=cid %> != 0 && byteReader_<%=cid %>!=null && byteReader_<%=cid %>.readRecord()) {
         	            row_<%=cid %> = new String(byteReader_<%=cid %>.getBuffer(),<%=encoding %>);
@@ -841,7 +888,7 @@
             	%>
 
 			<%
-			if(useByte){
+			if("BYTES".equals(patternUnits)){
 			%>
 				rowLen_<%=cid %> = row_<%=cid %>.getBytes(<%=encoding %>).length;
 			<%	
@@ -900,10 +947,30 @@
                 						align = "1";
                 					}
                        				if(valueN%100==0){
-    								%>
-                      					positionalUtil_<%=cid%>.setValue_<%=(valueN/100)%>(<%=firstConnName %>,begins_<%=cid %>,ends_<%=cid %>,rowLen_<%=cid %>,
-                          				<% if(useByte){ %>byteArray_<%=cid %>,arrays_<%=cid %>,<% } %>column_<%=cid %>,row_<%=cid %>);          
-        							<%
+                                        if("RARE_SYMBOLS".equals(patternUnits)){
+                                        %>
+                                            int surrogateRowLen_<%=(valueN/100)%> = row_<%=cid %>.codePointCount(0, rowLen_<%=cid %>);
+                                            for (int index = 0; index < begins_<%=cid %>.length; index++){
+                                                if (index > 0){
+                                                    surrogateBegins_<%=cid %>[index] = surrogateEnds_<%=cid %>[index-1];
+                                                }else{
+                                                    surrogateBegins_<%=cid %>[index] = begins_<%=cid %>[index];
+                                                }
+                                                if (ends_<%=cid %>[index] > 0 && ends_<%=cid %>[index] <= surrogateRowLen_<%=(valueN/100)%>){
+                                                    int codePoints = ends_<%=cid %>[index] - begins_<%=cid %>[index];
+                                                    surrogateEnds_<%=cid %>[index] = row_<%=cid %>.offsetByCodePoints(surrogateBegins_<%=cid %>[index], codePoints);
+                                                }else{
+                                                    surrogateEnds_<%=cid %>[index] = rowLen_<%=cid %>;
+                                                }
+                                            }
+                                            positionalUtil_<%=cid%>.setValue_<%=(valueN/100)%>(<%=firstConnName %>,surrogateBegins_<%=cid %>,surrogateEnds_<%=cid %>,rowLen_<%=cid %>,column_<%=cid %>,row_<%=cid %>);
+                                        <%
+                                        } else {
+                                        %>
+                                            positionalUtil_<%=cid%>.setValue_<%=(valueN/100)%>(<%=firstConnName %>,begins_<%=cid %>,ends_<%=cid %>,rowLen_<%=cid %>,
+                                            <% if("BYTES".equals(patternUnits)){ %>byteArray_<%=cid %>,arrays_<%=cid %>,<% } %>column_<%=cid %>,row_<%=cid %>);
+                                        <%
+                                        }
                       				}
         						}
         					}else{// end if(advance)
@@ -917,7 +984,7 @@
                         			IMetadataColumn column = columnList.get(i);
                     				if(i % 100 == 0){
                     				%>
-                        				substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if(useByte){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, dynamic_<%=cid%><%}%>);
+                        				substringBegin<%=cid%> = positionalUtil_<%=cid%>.parseValue_<%=i%>(row_<%=cid%>, substringBegin<%=cid%>, substringEnd<%=cid%>, rowLen_<%=cid%>, columnValue<%=cid%> <%if("BYTES".equals(patternUnits)){%>, arrays_<%=cid%>, byteArray_<%=cid%><%}%><%if(useExistingDynamic){%>, dynamic_<%=cid%><%}%>);
                         				substringEnd<%=cid%> = substringBegin<%=cid%>;
                     				<%
                         			}

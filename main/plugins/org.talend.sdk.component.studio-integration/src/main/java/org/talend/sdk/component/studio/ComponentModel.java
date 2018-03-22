@@ -39,6 +39,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EConnectionType;
@@ -48,6 +49,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -409,9 +411,30 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     }
 
     protected boolean hasTcomp0Component(final INode iNode) {
-        return iNode.getProcess() != null && new ArrayList<>(iNode.getProcess().getGraphicalNodes()).stream().anyMatch(
-                node -> node.getComponent().getComponentType() == EComponentType.GENERIC
-                        && !getClass().isInstance(node.getComponent()));
+        if (iNode == null) {
+            return false;
+        }
+        IProcess process = iNode.getProcess();
+        if (process == null) {
+            return false;
+        }
+        List<? extends INode> graphicalNodes = process.getGraphicalNodes();
+        if (graphicalNodes == null || graphicalNodes.isEmpty()) {
+            return false;
+        }
+        boolean hasTcomp0Component = false;
+        for (INode node : graphicalNodes) {
+            if (node != null) {
+                IComponent component = node.getComponent();
+                if (component != null) {
+                    if (component.getComponentType() == EComponentType.GENERIC && !getClass().isInstance(component)) {
+                        hasTcomp0Component = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return hasTcomp0Component;
     }
 
     protected ComponentService.Dependencies getDependencies() {

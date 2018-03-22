@@ -61,6 +61,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -544,6 +545,18 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
+        generatePom(processItem, TalendJavaProjectConstants.GEN_UNKNOWN);
+    }
+
+    /**
+     * 
+     * DOC sunchaoqun Comment method "generatePom".
+     * 
+     * @param processItem
+     * @param source 0. unknown 1. import 2. sync 4. saveAndCreate 8. properties changed
+     */
+    public static void generatePom(ProcessItem processItem, int source) {
+
         ProcessorUtilities.setGeneratePomOnly(true);
         try {
             IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
@@ -552,7 +565,12 @@ public class TalendJavaProjectManager {
             IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
             if (processor instanceof MavenJavaProcessor) {
                 LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-                ((MavenJavaProcessor) processor).generatePom(1);
+
+                int option = TalendJavaProjectConstants.GEN_UNKNOWN;
+
+                option |= source;
+
+                ((MavenJavaProcessor) processor).generatePom(option);
             }
             AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
         } catch (CoreException e) {
