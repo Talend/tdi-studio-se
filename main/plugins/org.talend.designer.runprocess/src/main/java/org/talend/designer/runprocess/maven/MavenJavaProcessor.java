@@ -269,7 +269,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
         }
-        isMainJob = option == 0;
+        isMainJob = BitwiseOptionUtils.containOption(option, TalendProcessOptionConstants.GENERATE_IS_MAINJOB);
         if (ProcessorUtilities.isGeneratePomOnly()) {
             ProcessorUtilities.resetExportConfig();
         } else {
