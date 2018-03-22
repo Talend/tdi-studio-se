@@ -59,9 +59,9 @@ import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.IDesignerCoreService;
-import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -545,19 +545,14 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
-        generatePom(processItem, TalendJavaProjectConstants.GEN_UNKNOWN);
+        generatePom(processItem, 0);
     }
 
-    /**
-     * 
-     * DOC sunchaoqun Comment method "generatePom".
-     * 
-     * @param processItem
-     * @param source 0. unknown 1. import 2. sync 4. saveAndCreate 8. properties changed
-     */
-    public static void generatePom(ProcessItem processItem, int source) {
+    public static void generatePom(ProcessItem processItem, int option) {
 
         ProcessorUtilities.setGeneratePomOnly(true);
+        option |= TalendProcessOptionConstants.GENERATE_POM_ONLY;
+        option |= TalendProcessOptionConstants.GENERATE_IS_MAINJOB;
         try {
             IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
             IProcess process = service.getProcessFromProcessItem(processItem);
@@ -565,11 +560,6 @@ public class TalendJavaProjectManager {
             IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
             if (processor instanceof MavenJavaProcessor) {
                 LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-
-                int option = TalendJavaProjectConstants.GEN_UNKNOWN;
-
-                option |= source;
-
                 ((MavenJavaProcessor) processor).generatePom(option);
             }
             AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
