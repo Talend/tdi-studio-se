@@ -71,6 +71,7 @@ import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
 import org.talend.core.service.IESBMicroService;
 import org.talend.core.service.IESBRouteService;
@@ -717,7 +718,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     @Override
     public void generateJobPom(ProcessItem processItem) {
-        TalendJavaProjectManager.generatePom(processItem);
+        TalendJavaProjectManager.generatePom(processItem, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
     }
 
     /*

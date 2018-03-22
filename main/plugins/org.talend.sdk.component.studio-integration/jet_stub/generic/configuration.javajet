@@ -31,17 +31,19 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                 for (int i = 0; i < tableValues.size(); i++) {
                     java.util.Map<String, String> lineValues = tableValues.get(i);
                     for (int j = 0; j < items.length; j++) {
-                        String currentValue = org.talend.core.model.utils.TalendTextUtils.removeQuotes(lineValues.get(items[j]));
-                        if (primitiveTable) {
-                            %>
-                            configuration_<%=cid%>.put("<%=tableName%>[<%=i%>]", "<%=currentValue%>");
-                            <%
-                        } else {
-                            String columnName = items[j].substring(tableNamePrefix.length(), items[j].length());
-                            %>
-                            configuration_<%=cid%>.put("<%=tableName%>[<%=i%>]<%=columnName%>", "<%=currentValue%>");
-                            <%
+                        String key = tableName + "[" + i + "]";
+                        if (!primitiveTable) {
+                            final String columnName = items[j].substring(tableNamePrefix.length(), items[j].length());
+                            key = key + columnName;
                         }
+                        String value = lineValues.get(items[j]);
+                        if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                            value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                            value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                        }
+%>
+                        configuration_<%=cid%>.put("<%=key%>",<%=value%>);
+<%
                     }
                 }
             } else if(p.getFieldType() == EParameterFieldType.SCHEMA_TYPE) {
@@ -93,19 +95,25 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 }
             } else {
+                final String key = p.getName().replace('$', '.');
+                String value = null;
+                if(p.getFieldType() == EParameterFieldType.PASSWORD) {
+                    value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
+                    if (value == null || value.trim().isEmpty()) {
+                        value = null;
+                    }
+                } else {
+                    value = ElementParameterParser.getStringElementParameterValue(p);
+                    if (!org.talend.core.model.utils.ContextParameterUtils.isDynamic(value)) {
+                        value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
+                        value = org.talend.core.model.utils.TalendTextUtils.addQuotes(value);
+                    }
+                }
+                if (value != null) {
 %>
-            configuration_<%=cid%>.put(
-                "<%=p.getName().replace('$', '.')%>",
-                <%if(p.getFieldType() == EParameterFieldType.PASSWORD) {%>
-                <%=ElementParameterParser.getPasswordValue(node, p.getVariableName())%>
-                <%} else {
-                    String value = ElementParameterParser.getStringElementParameterValue(p);
-                    value = org.talend.core.model.utils.TalendTextUtils.removeQuotes(value);
-                %>
-                <%=org.talend.core.model.utils.TalendTextUtils.addQuotes(value)%>
-                <%}%>
-                );
+                    configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%
+                } // else do not put value in configuration
             }
         }
     }
