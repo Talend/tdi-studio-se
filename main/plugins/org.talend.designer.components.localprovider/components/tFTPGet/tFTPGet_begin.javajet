@@ -210,8 +210,10 @@ if (sftp) { // *** sftp *** //
       				}
 				}
 
-    			public void chdir(String path) throws com.jcraft.jsch.SftpException{
-					cnlSFTP.cd(path);
+				public void chdir(String path) throws com.jcraft.jsch.SftpException{
+					if (!".".equals(path)) {
+						cnlSFTP.cd(path);
+					}
 				}
 
 				public String pwd() throws com.jcraft.jsch.SftpException{
