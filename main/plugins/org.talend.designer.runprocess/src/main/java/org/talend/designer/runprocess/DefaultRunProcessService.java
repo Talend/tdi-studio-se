@@ -803,9 +803,6 @@ public class DefaultRunProcessService implements IRunProcessService {
         Set<String> childJobDependencies = new HashSet<String>();
         List<IFile> childPoms = new ArrayList<IFile>();
         for (JobInfo info : listJobs) {
-            if (info.equals(mainJobInfo)) {
-                continue;
-            }
             IRepositoryViewObject specificVersion = factory.getSpecificVersion(info.getJobId(), info.getJobVersion(), true);
             Property property = specificVersion.getProperty();
             String groupId = PomIdsHelper.getJobGroupId(property);
@@ -813,6 +810,9 @@ public class DefaultRunProcessService implements IRunProcessService {
             String version = PomIdsHelper.getJobVersion(property);
             String generateMvnUrl = MavenUrlHelper.generateMvnUrl(groupId, artifactId, version, "jar", null);
             childJobDependencies.add(generateMvnUrl);
+            if (info.equals(mainJobInfo)) {
+                continue;
+            }
             childPoms.add(info.getPomFile());
 
             // copy source code to the main project
