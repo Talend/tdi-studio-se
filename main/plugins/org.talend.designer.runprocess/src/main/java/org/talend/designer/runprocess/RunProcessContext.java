@@ -968,8 +968,7 @@ public class RunProcessContext {
                 haveErrorsMessages = extractMessage(errIs, MsgType.STD_ERR, flush);
                 haveOutMessages = extractMessage(outIs, MsgType.STD_OUT, flush);
             } catch (IOException ioe) {
-                addErrorMessage(ioe);
-                ExceptionHandler.process(ioe);
+                // don't log, since it will be for example "stream closed"
             }
             if (isESBRuntimeProcessor()) {
                 if (haveErrorsMessages || haveOutMessages) {

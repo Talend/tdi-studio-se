@@ -112,6 +112,18 @@ public class ProcessMessageManager implements IProcessMessageManager {
     @Override
     public void clearMessages() {
         synchronized (messages) {
+            boolean enableLimit = RunProcessPlugin.getDefault().getPluginPreferences()
+                    .getBoolean(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT);
+            String line = RunProcessPlugin.getDefault().getPluginPreferences()
+                    .getString(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT);
+            if (enableLimit && !"".equals(line) && line != null) {
+                lineLimit = (Integer.parseInt(line));
+                if (lineLimit <= 0) {
+                    lineLimit = 1; // can't have 0 size buffer
+                }
+            } else {
+                lineLimit = LIMIT_MESSAGES;
+            }
             lastUpdateConsole = 0;
             messages.clear();
             firePropertyChange(PROP_MESSAGE_CLEAR, messages, null);

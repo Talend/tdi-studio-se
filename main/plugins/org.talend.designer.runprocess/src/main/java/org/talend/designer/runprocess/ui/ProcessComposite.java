@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,7 +95,6 @@ import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.ISubjobContainer;
 import org.talend.core.model.process.ReplaceNodesInProcessProvider;
 import org.talend.core.model.properties.ConnectionItem;
-import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.core.ui.branding.IBrandingService;
@@ -110,7 +108,6 @@ import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.connections.ConnectionTrace;
 import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
-import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.ui.editor.subjobcontainer.sparkstreaming.SparkStreamingSubjobContainer;
 import org.talend.designer.core.ui.preferences.TalendDesignerPrefConstants;
 import org.talend.designer.core.ui.views.problems.Problems;
@@ -593,7 +590,11 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         clearTracePerfBtn.setLayoutData(formData);
 
         consoleText = new StyledText(execContent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
-        consoleText.setWordWrap(true);
+        boolean wordWrap = RunProcessPlugin.getDefault().getPluginPreferences()
+                .getBoolean(RunprocessConstants.CONSOLE_WRAP);
+        if (wordWrap) {
+            consoleText.setWordWrap(wordWrap);
+        }
         data = new GridData(GridData.FILL_BOTH);
         data.horizontalSpan = 2;
         data.minimumHeight = MINIMUM_HEIGHT;
@@ -761,14 +762,26 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
         formData.left = new FormAttachment(lineLimitText, 15, SWT.RIGHT);
         wrapButton.setLayoutData(formData);
         wrapButton.setText(Messages.getString("ProcessComposite.wrapbutton")); //$NON-NLS-1$
-        wrapButton.setSelection(true);
+        boolean wordWrap = RunProcessPlugin.getDefault().getPluginPreferences()
+                .getBoolean(RunprocessConstants.CONSOLE_WRAP);
+        wrapButton.setSelection(wordWrap);
         wrapButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
                 if (wrapButton.getSelection()) {
-                    consoleText.setWordWrap(true);
+                    boolean confirm = MessageDialog.openConfirm(getShell(), Messages.getString("ProcessComposite.usageWrapTitle"), Messages.getString("ProcessComposite.usageWrapLine1") //$NON-NLS-1$ //$NON-NLS-2$
+                            + Messages.getString("ProcessComposite.usageWrapLine2")); //$NON-NLS-1$
+                    if (confirm) {
+                        enableLineLimitButton.setSelection(true);
+                        RunProcessPlugin.getDefault().getPluginPreferences().setValue(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT, true);
+                        RunProcessPlugin.getDefault().getPluginPreferences().setValue(RunprocessConstants.CONSOLE_WRAP, true);
+                        consoleText.setWordWrap(true);
+                    } else {
+                        wrapButton.setSelection(false);
+                    }
                 } else {
+                    RunProcessPlugin.getDefault().getPluginPreferences().setValue(RunprocessConstants.CONSOLE_WRAP, false);
                     consoleText.setWordWrap(false);
                 }
             }
@@ -785,29 +798,6 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
             }
         }
         return SWT.DEFAULT;
-    }
-
-    /**
-     * DOC amaumont Comment method "getTargetExecutionComposite".
-     * 
-     * @param parent
-     * @return
-     */
-    protected Composite createTargetExecutionComposite(Composite parent) {
-        Composite composite = new Composite(parent, SWT.NONE);
-
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
-        composite.setLayout(layout);
-
-        StyledText text = new StyledText(composite, SWT.NONE);
-        text.setText(Messages.getString("ProcessComposite.targetExecutionTabTooltipAvailable")); //$NON-NLS-1$
-        text.setWordWrap(true);
-        text.setEditable(false);
-        text.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-        return composite;
     }
 
     public boolean hasProcess() {
