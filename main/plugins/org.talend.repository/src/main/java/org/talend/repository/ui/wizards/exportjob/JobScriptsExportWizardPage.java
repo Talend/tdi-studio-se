@@ -433,6 +433,12 @@ public abstract class JobScriptsExportWizardPage extends WizardFileSystemResourc
             @Override
             public void widgetSelected(SelectionEvent e) {
                 selectedJobVersion = versionCombo.getText();
+                if(selectedJobVersion.equals(currentVersion) || selectedJobVersion.equals(RelationshipItemBuilder.LATEST_VERSION)){
+                	executeTestsButton.setEnabled(true);
+                }else{
+                	executeTestsButton.setEnabled(false);
+                    executeTestsButton.setSelection(false);
+                }
             }
 
             @Override

@@ -61,6 +61,7 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.core.IDesignerCoreService;
+import org.talend.designer.maven.model.TalendJavaProjectConstants;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.BuildCacheManager;
@@ -223,13 +224,10 @@ public class TalendJavaProjectManager {
             if (talendJobJavaProject == null || talendJobJavaProject.getProject() == null
                     || !talendJobJavaProject.getProject().exists()) {
                 String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
-                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IProject jobProject = root.getProject(helper.getJobProjectName(property));
-                IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
-                String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
-                ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
-                IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+                IFolder jobFolder = getItemPomFolder(property);
                 if (!jobProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, jobProject)) {
                     createMavenJavaProject(monitor, jobProject, jobFolder, enbleMavenNature);
                 }
@@ -238,7 +236,6 @@ public class TalendJavaProjectManager {
                 if (talendJobJavaProject != null) {
                     AggregatorPomsHelper.checkJobPomCreation(talendJobJavaProject);
                     MavenPomSynchronizer pomSynchronizer = new MavenPomSynchronizer(talendJobJavaProject);
-                    pomSynchronizer.syncTemplates(false);
                     pomSynchronizer.cleanMavenFiles(monitor);
                 }
                 talendJobJavaProjects.put(jobProjectId, talendJobJavaProject);
@@ -256,6 +253,44 @@ public class TalendJavaProjectManager {
         MavenPomSynchronizer.addChangeLibrariesListener();
 
         return talendJobJavaProject;
+    }
+
+    /**
+     * DOC nrousseau Comment method "getItemPomFolder".
+     * 
+     * @param property
+     * @param helper
+     * @return
+     * @throws Exception 
+     */
+    public static IFolder getItemPomFolder(Property property) throws Exception {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+            ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
+            if (testContainerService.isTestContainerItem(property.getItem())) {
+                Item jobItem = testContainerService.getParentJobItem(property.getItem());
+                if (jobItem != null) {
+                    property = jobItem.getProperty();
+                }
+            }
+        }
+        String projectTechName = ProjectManager.getInstance().getProject(property).getTechnicalLabel();
+        AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
+        IPath itemRelativePath = ItemResourceUtil.getItemRelativePath(property);
+        String jobFolderName = AggregatorPomsHelper.getJobProjectFolderName(property);
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(property.getItem());
+        IFolder jobFolder = helper.getProcessFolder(type).getFolder(itemRelativePath).getFolder(jobFolderName);
+        createFoldersIfNeeded(jobFolder);
+        return jobFolder;
+    }
+    
+    private static void createFoldersIfNeeded(IFolder folder) throws CoreException {
+        if (!folder.exists()) {
+            if (folder.getParent() instanceof IFolder) {
+                createFoldersIfNeeded((IFolder) folder.getParent());
+            }
+            folder.create(true, true, null);
+        }
+        
     }
 
     public static ITalendProcessJavaProject getTempJavaProject() {
@@ -510,13 +545,40 @@ public class TalendJavaProjectManager {
     }
 
     public static void generatePom(ProcessItem processItem) {
-        IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
-        IProcess process = service.getProcessFromProcessItem(processItem);
-        IContext context = process.getContextManager().getDefaultContext();
-        IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
-        if (processor instanceof MavenJavaProcessor) {
-            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-            ((MavenJavaProcessor) processor).generatePom(1);
+        generatePom(processItem, TalendJavaProjectConstants.GEN_UNKNOWN);
+    }
+
+    /**
+     * 
+     * DOC sunchaoqun Comment method "generatePom".
+     * 
+     * @param processItem
+     * @param source 0. unknown 1. import 2. sync 4. saveAndCreate 8. properties changed
+     */
+    public static void generatePom(ProcessItem processItem, int source) {
+
+        ProcessorUtilities.setGeneratePomOnly(true);
+        try {
+            IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
+            IProcess process = service.getProcessFromProcessItem(processItem);
+            IContext context = process.getContextManager().getDefaultContext();
+            IProcessor processor = ProcessorUtilities.getProcessor(process, processItem.getProperty(), context);
+            if (processor instanceof MavenJavaProcessor) {
+                LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+
+                int option = TalendJavaProjectConstants.GEN_UNKNOWN;
+
+                option |= source;
+
+                ((MavenJavaProcessor) processor).generatePom(option);
+            }
+            AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
+        } catch (CoreException e) {
+            ExceptionHandler.process(e);
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            ProcessorUtilities.setGeneratePomOnly(false);
         }
     }
 

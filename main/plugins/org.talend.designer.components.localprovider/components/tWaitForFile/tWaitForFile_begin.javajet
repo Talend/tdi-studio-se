@@ -278,6 +278,7 @@
             <%
             if(("filecreated").equals(triggerAction)) {
             %>
+				originalFiles_<%=cid%> = intersectionList;
             	if(globalMap.get("<%=cid %>_CREATED_FILE") != null){
 	                globalMap.remove("<%=cid %>_CREATED_FILE");
 				}

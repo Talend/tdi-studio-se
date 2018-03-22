@@ -47,7 +47,7 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
     private static final List<String> ESB_COMPONENTS;
     static {
         final List<String> esbComponents = Arrays.asList("tESBProviderRequest", "tRESTClient", "tRESTRequest", "tRESTResponse",
-                "tESBConsumer", "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse");
+                "tESBConsumer", "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput");
         ESB_COMPONENTS = Collections.unmodifiableList(esbComponents);
     }
 

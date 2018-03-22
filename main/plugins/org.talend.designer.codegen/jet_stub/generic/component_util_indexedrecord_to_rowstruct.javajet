@@ -140,6 +140,11 @@ class IndexedRecordToRowStructGenerator {
                     if (length_<%=cid%> != null) {
                         dynamicMetadata_<%=cid%>.setLength(Integer.parseInt(String.valueOf(length_<%=cid%>)));
                     }
+                    // set DbType
+                    Object dbType_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_DB_TYPE);
+                    if (dbType_<%=cid%> != null) {
+                        dynamicMetadata_<%=cid%>.setDbType(String.valueOf(dbType_<%=cid%>));
+                    }
                     // set precision
                     Object precision_<%=cid%> = dynamicField_<%=cid%>.getProp(org.talend.daikon.avro.SchemaConstants.TALEND_COLUMN_PRECISION); 
                     if (precision_<%=cid%> != null) {

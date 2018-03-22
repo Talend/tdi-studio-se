@@ -16,8 +16,6 @@
 
 	<properties>
 		<talend.job.path>@JobPath@</talend.job.path>
-		<talend.job.package>@JobPackage@</talend.job.package>
-
 		<!-- for jobInfo.properties -->
 		<maven.build.timestamp.format>@JobDateFormat@</maven.build.timestamp.format>
 		<talend.project.name>@ProjectName@</talend.project.name>
@@ -33,18 +31,9 @@
 		<talend.job.id>@JobId@</talend.job.id>
 		<talend.job.type>@JobType@</talend.job.type>
 		<talend.job.framework>@Framework@</talend.job.framework>
-		<talend.job.class>@JobClass@</talend.job.class>
 		<talend.job.stat>@JobStat@</talend.job.stat>
 		<talend.job.applyContextToChildren>@JobApplyContextToChildren@</talend.job.applyContextToChildren>
 		<talend.product.version>@ProductVersion@</talend.product.version>
-
-		<!-- for bat/sh -->
-		<talend.job.jvmargs>@JobJvmArgs@</talend.job.jvmargs>
-		<talend.job.bat.classpath>@JobBatClasspath@</talend.job.bat.classpath>
-		<talend.job.bat.addition>@JobBatAddition@</talend.job.bat.addition>
-		<talend.job.sh.classpath>@JobShClasspath@</talend.job.sh.classpath>
-		<talend.job.sh.addition>@JobShAddition@</talend.job.sh.addition>
-
 		<talend.job.finalName>@JobFinalName@</talend.job.finalName>
 
 		<!-- for global properties -->
