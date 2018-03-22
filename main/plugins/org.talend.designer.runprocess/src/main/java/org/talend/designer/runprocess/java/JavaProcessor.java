@@ -132,7 +132,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -266,15 +265,18 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public Set<JobInfo> getBuildChildrenJobs() {
         return getBuildChildrenJobs(false);
     }
+
     @Override
     public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
+        // FIXME should remove and use MavenJavaProcessor.getBuildChildrenJobs() instead.
+        // the judgment of lastMainJob is not clean.
         if (buildChildrenJobs == null) {
             buildChildrenJobs = new HashSet<JobInfo>();
 
             JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
             Set<JobInfo> infos = null;
             if (lastMainJob == null && property != null) {
-                infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem(), firstChildOnly);
+                infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
             } else {
                 infos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
             }
@@ -1330,7 +1332,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         final String classPathSeparator = extractClassPathSeparator();
         final String libPrefixPath = getRootWorkingDir(true);
 
-        Set<ModuleNeeded> neededModules = getNeededModules();
+        Set<ModuleNeeded> neededModules = getNeededModules(TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
         // Ignore hadoop confs jars in lib path.
@@ -1392,13 +1394,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     }
 
     @Override
-    public Set<ModuleNeeded> getNeededModules() {
-        return getNeededModules(true);
-    }
-
-    @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrenJobs) {
-        Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, withChildrenJobs);
+    public Set<ModuleNeeded> getNeededModules(int options) {
+        Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
             JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);

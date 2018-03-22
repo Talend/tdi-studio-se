@@ -23,21 +23,17 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.talend.commons.exception.CommonExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
-import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.PomUtil;
@@ -46,7 +42,6 @@ import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessorUtilities;
-import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -386,7 +381,7 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededPerJob(
                 getProcess().getId(), getProcess().getVersion());
         if (modulesNeeded.isEmpty()) {
-            modulesNeeded = getNeededModules(false);
+            modulesNeeded = getNeededModules(TalendProcessOptionConstants.MODULES_DEFAULT);
             LastGenerationInfo.getInstance().setModulesNeededPerJob(getProcess().getId(),
                     getProcess().getVersion(), modulesNeeded);
         }

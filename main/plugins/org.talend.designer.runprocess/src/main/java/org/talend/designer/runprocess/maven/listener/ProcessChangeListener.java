@@ -49,7 +49,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     private AggregatorPomsHelper helper;
 
-    private List<ERepositoryObjectType> allProcessTypes = ERepositoryObjectType.getAllTypesOfProcess();
+    private List<ERepositoryObjectType> allProcessTypes;
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
@@ -94,7 +94,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         // oldValue: [oldName, oldVersion], newValue: property
         if (oldValue instanceof String[] && newValue instanceof Property) {
             Property property = (Property) newValue;
-            if (property.getItem() instanceof ProcessItem) {
+            if (isNeedUpdateItem(property.getItem())) {
                 ITestContainerProviderService service = getTestContainerProviderService();
                 boolean isTestCase = false;
                 if (service != null) {
@@ -118,7 +118,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     } else if (!oldVersion.equals(property.getVersion())) {
                         // version change, will create new item
                         // create new job project.
-                        TalendJavaProjectManager.generatePom((ProcessItem) property.getItem());
+                        TalendJavaProjectManager.generatePom(property.getItem());
                     }
                 }
             }
@@ -130,7 +130,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         if (oldValue instanceof IRepositoryViewObject && newValue instanceof IPath[]) {
             // delete all version job project, create all version new projects
             IRepositoryViewObject obj = (IRepositoryViewObject) oldValue;
-            if (obj.getProperty().getItem() instanceof ProcessItem) {
+            if (isNeedUpdateItem(obj.getProperty().getItem())) {
                 // TalendJavaProjectManager.deleteAllVersionTalendJobProject(obj.getId(), null, false);
                 IPath sourcePath = ((IPath[]) newValue)[0];
                 IPath targetPath = ((IPath[]) newValue)[1];
@@ -232,9 +232,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     private void caseCreateAndSave(String propertyName, Object newValue) {
         if (newValue instanceof Item) {
-            if (newValue instanceof ProcessItem) {
+            if (isNeedUpdateItem((Item) newValue)) {
                 if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
-                    TalendJavaProjectManager.generatePom((ProcessItem) newValue);
+                    TalendJavaProjectManager.generatePom((Item) newValue);
                 }
             } else if (newValue instanceof RoutineItem) {
                 updateCodesChange((RoutineItem) newValue);
@@ -253,7 +253,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                         // do nothing
                         return;
                     }
-                    TalendJavaProjectManager.generatePom((ProcessItem) item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
+                    TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
                 }
@@ -264,6 +264,14 @@ public class ProcessChangeListener implements PropertyChangeListener {
     private void updateCodesChange(RoutineItem codesItem) {
         ERepositoryObjectType type = ERepositoryObjectType.getItemType(codesItem);
         BuildCacheManager.getInstance().updateCodesLastChangeDate(type, codesItem.getProperty());
+    }
+
+    private boolean isNeedUpdateItem(Item item) {
+        ERepositoryObjectType type = ERepositoryObjectType.getItemType(item);
+        if (type != null) {
+            return getAllProcessTypes().contains(type);
+        }
+        return false;
     }
 
     private ITestContainerProviderService getTestContainerProviderService() {
@@ -279,6 +287,13 @@ public class ProcessChangeListener implements PropertyChangeListener {
             helper = new AggregatorPomsHelper();
         }
         return helper;
+    }
+
+    private List<ERepositoryObjectType> getAllProcessTypes() {
+        if (allProcessTypes == null) {
+            allProcessTypes = ERepositoryObjectType.getAllTypesOfProcess2();
+        }
+        return allProcessTypes;
     }
 
 }

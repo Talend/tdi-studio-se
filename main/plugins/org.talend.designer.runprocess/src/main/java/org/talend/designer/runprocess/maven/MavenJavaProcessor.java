@@ -33,7 +33,6 @@ import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
@@ -56,7 +55,6 @@ import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
-import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.i18n.Messages;
 
 /**
@@ -108,11 +106,16 @@ public class MavenJavaProcessor extends JavaProcessor {
 
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
+        return getBuildChildrenJobs(false);
+    }
+
+    @Override
+    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
         if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
             buildChildrenJobs = new HashSet<>();
 
             if (property != null && property.getItem() != null) {
-                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem());
+                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
                 for (JobInfo jobInfo : infos) {
                     if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
                             TalendProcessArgumentConstant.ARG_GENERATE_OPTION, TalendProcessOptionConstants.GENERATE_TESTS)) {
@@ -240,7 +243,7 @@ public class MavenJavaProcessor extends JavaProcessor {
             String pomFileName = TalendMavenConstants.POM_FILE_NAME;
             if (this.getTalendJavaProject() == null) {
                 try {
-                    return TalendJavaProjectManager.getItemPomFolder(property).getFile(pomFileName);
+                    return AggregatorPomsHelper.getItemPomFolder(property).getFile(pomFileName);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                     return null;
