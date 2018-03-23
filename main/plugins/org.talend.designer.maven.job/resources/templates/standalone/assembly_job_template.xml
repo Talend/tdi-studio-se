@@ -161,7 +161,7 @@
 		</fileSet>
 		<fileSet><!-- microservice running config files -->
 			<directory>${microservice.running.configs.dir}</directory>
-			<outputDirectory>${talend.job.path}</outputDirectory>
+			<outputDirectory>${talend.job.name}</outputDirectory>
 			<includes>
 				<include>config/**</include>
 			</includes>
