@@ -228,7 +228,7 @@
 		<profile>
 			<id>include-microservice-running-configs</id>
 			<properties>
-				<microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
+				<microservice.running.configs.dir>${current.int-resources.dir}/</microservice.running.configs.dir>
 			</properties>
 		</profile>
 		<profile>
