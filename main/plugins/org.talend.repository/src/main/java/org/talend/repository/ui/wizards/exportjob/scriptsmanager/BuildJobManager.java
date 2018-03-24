@@ -204,7 +204,6 @@ public class BuildJobManager {
             final String label = processItem.getProperty().getLabel();
             final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
                     exportChoiceMap, jobExportType);
-            ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar(processItem));
             final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
                 @Override
@@ -252,7 +251,6 @@ public class BuildJobManager {
                 }
                 throw new PersistenceException(cause);
             }
-            ProcessUtils.setJarWithContext(false);
             IFile jobTargetFile = buildJobHandler.getJobTargetFile();
             if (jobTargetFile != null && jobTargetFile.exists()) {
                 IPath jobZipLocation = jobTargetFile.getLocation();
@@ -268,23 +266,6 @@ public class BuildJobManager {
                     creator.deleteTempFiles();
                     TimeMeasure.step(timeMeasureId, "Recreate job jar for classpath");
                 }
-                // TBD-2500
-                Set<ProcessItem> processItems = new HashSet<ProcessItem>();
-                processItems.add(processItem);
-                // We get the father job childs.
-                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(processItem);
-                Iterator<JobInfo> infoIterator = infos.iterator();
-                while (infoIterator.hasNext()) {
-                    processItems.add(infoIterator.next().getProcessItem());
-                }
-                TimeMeasure.step(timeMeasureId, "getChildrenJobInfo");
-
-                // We iterate over the job and its childs in order to re-archive them if needed.
-                for (ProcessItem pi : processItems) {
-                    BDJobReArchieveCreator bdRecreator = new BDJobReArchieveCreator(pi, processItem);
-                    bdRecreator.create(jobZipFile);
-                }
-                TimeMeasure.step(timeMeasureId, "BDJobReArchieveCreator");
 
                 File jobFileTarget = new File(destinationPath);
                 if (jobFileTarget.isDirectory()) {

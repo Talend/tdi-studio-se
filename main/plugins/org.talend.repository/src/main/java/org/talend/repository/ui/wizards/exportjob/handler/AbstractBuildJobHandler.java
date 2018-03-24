@@ -232,7 +232,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         // the running context is only useful, when binaries
         addArg(profileBuffer, isBinaries && isOptionChoosed(ExportChoice.needContext),
-                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS, ProcessUtils.jarNeedsToContainContext());
+                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS);
 
         // for test
         addArg(profileBuffer, isOptionChoosed(ExportChoice.includeTestSource), TalendMavenConstants.PROFILE_INCLUDE_TEST_SOURCES);
@@ -291,15 +291,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
     protected void addArg(StringBuffer commandBuffer, boolean include, String arg) {
         addArg(commandBuffer, false, include, arg);
-    }
-
-    private void addArg(StringBuffer commandBuffer, boolean include, String arg, boolean isHD) {
-        if (isHD) {
-            commandBuffer.append(COMMA);
-            commandBuffer.append(arg);
-        } else {
-            addArg(commandBuffer, false, include, arg);
-        }
     }
 
     @Override

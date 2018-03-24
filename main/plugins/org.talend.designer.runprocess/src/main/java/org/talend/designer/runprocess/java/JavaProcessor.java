@@ -141,6 +141,7 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.RunProcessContext;
 import org.talend.designer.runprocess.RunProcessPlugin;
+import org.talend.designer.runprocess.bigdata.BigDataJobUtil;
 import org.talend.designer.runprocess.i18n.Messages;
 import org.talend.designer.runprocess.prefs.RunProcessPrefsConstants;
 import org.talend.designer.runprocess.utils.JobVMArgumentsUtil;
@@ -333,7 +334,11 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             outputFolder = tProcessJavaProject.getTestOutputFolder();
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
-            resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
+            if (ProcessorUtilities.isExportConfig() && property != null && !new BigDataJobUtil((ProcessItem)property.getItem()).needsToHaveContextInsideJar()) {
+                resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
+            } else {
+                resourcesFolder = tProcessJavaProject.getResourcesFolder();
+            }
             outputFolder = tProcessJavaProject.getOutputFolder();
         }
 

@@ -41,6 +41,7 @@ import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.IMavenPomCreator;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.maven.utils.PomUtil;
+import org.talend.designer.runprocess.IBigDataProcessor;
 import org.talend.designer.runprocess.ProcessorConstants;
 import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -50,7 +51,7 @@ import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
-public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
+public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements IBigDataProcessor {
 
     protected String windowsAddition, unixAddition;
 
@@ -217,7 +218,14 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
 
         // We iterate over the depencendies, and for each of them, we get its path and append it to the libjars
         // StringBuffer.
-        if (libNames != null && libNames.size() > 0) {
+        boolean needAllLibJars = true;
+        if (needsShade()) {
+            BigDataJobUtil bdUtil = new BigDataJobUtil((ProcessItem)this.getProperty().getItem()) ;
+            if (bdUtil.isMRWithHDInsight() || bdUtil.isSparkWithHDInsight()) {
+                needAllLibJars = false;
+            }
+        }
+        if (libNames != null && libNames.size() > 0 && needAllLibJars) {
             Iterator<String> itLibNames = libNames.iterator();
             while (itLibNames.hasNext()) {
                 if (isExport) {
@@ -233,23 +241,6 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
             // In an export mode, we add the job jar which is located in the current working directory
             libJars.append("./" + makeupJobJarName()); //$NON-NLS-1$
         } else {
-            // In a local mode,we must append the routines/beans/udfs jars which are located in the target directory.
-            ITalendProcessJavaProject routineProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
-            IFile routinesJar = routineProject.getTargetFolder().getFile(JavaUtils.ROUTINE_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
-            libJars.append(routinesJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
-
-            if (ProcessUtils.isRequiredPigUDFs(process)) {
-                ITalendProcessJavaProject pigudfProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.PIG_UDF);
-                IFile pigudfsJar = pigudfProject.getTargetFolder().getFile(JavaUtils.PIGUDFS_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
-                libJars.append(pigudfsJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
-            }
-
-            if (ProcessUtils.isRequiredBeans(process)) {
-                ITalendProcessJavaProject beansProject = TalendJavaProjectManager.getTalendCodeJavaProject(ERepositoryObjectType.valueOf("BEANS")); //$NON-NLS-1$
-                IFile beansJar = beansProject.getTargetFolder().getFile(JavaUtils.BEANS_JAR_NAME + "-" + PomUtil.getDefaultMavenVersion() + FileExtensions.JAR_FILE_SUFFIX); //$NON-NLS-1$
-                libJars.append(beansJar.getLocation().toPortableString() + ","); //$NON-NLS-1$
-            }
-            
             // ... and add the jar of the job itself also located in the target directory/
             libJars.append(getTalendJavaProject().getTargetFolder().getLocation().toPortableString() + "/" + makeupJobJarName()); //$NON-NLS-1$
         }
@@ -372,6 +363,35 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor {
         String[] checkedcmds = super.checkExecutingCommands(path, cmds);
         // also, need check the "-libjars" for BD jobs.
         return checkExecutingCommandsForRootPath(path, checkedcmds, ProcessorConstants.CMD_KEY_WORD_LIBJAR);
+    }
+    
+    private Boolean needsShade = false;
+
+    /* (non-Javadoc)
+     * @see org.talend.designer.runprocess.IBigDataProcessor#needsShade()
+     */
+    @Override
+    public boolean needsShade() {
+        if (needsShade == null && property != null) {
+            needsShade = new BigDataJobUtil((ProcessItem)property.getItem()).needsShade();
+        }
+        return needsShade;
+    }
+
+    /* (non-Javadoc)
+     * @see org.talend.designer.runprocess.IBigDataProcessor#getShadedModules()
+     */
+    @Override
+    public Set<ModuleNeeded> getShadedModulesExclude() {
+        Set<ModuleNeeded> modulesNeeded = LastGenerationInfo.getInstance().getModulesNeededPerJob(
+                getProcess().getId(), getProcess().getVersion());
+        if (modulesNeeded.isEmpty()) {
+            modulesNeeded = getNeededModules(false);
+            LastGenerationInfo.getInstance().setModulesNeededPerJob(getProcess().getId(),
+                    getProcess().getVersion(), modulesNeeded);
+        }
+        
+        return new BigDataJobUtil((ProcessItem)property.getItem()).getShadedModulesExclude(modulesNeeded);
     }
 
 }

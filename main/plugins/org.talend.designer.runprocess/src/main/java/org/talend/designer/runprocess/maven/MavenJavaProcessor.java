@@ -282,10 +282,7 @@ public class MavenJavaProcessor extends JavaProcessor {
                 if (isMainJob) {
                     createTemplatePom.setHasLoopDependency(ProcessorUtilities.hasLoopDependency());
                 }
-                boolean previousValue = ProcessUtils.jarNeedsToContainContext();
-                ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
                 createTemplatePom.create(null);
-                ProcessUtils.setJarWithContext(previousValue);
                 if (getTalendJavaProject() != null) {
                     getTalendJavaProject().setUseTempPom(false);
                 }
