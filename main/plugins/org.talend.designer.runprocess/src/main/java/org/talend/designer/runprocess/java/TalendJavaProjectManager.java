@@ -169,7 +169,7 @@ public class TalendJavaProjectManager {
                 IProject codeProject = root.getProject((project.getTechnicalLabel() + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
-                    createMavenJavaProject(monitor, codeProject, codeProjectFolder, true);
+                    createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);
                 }
                 IJavaProject javaProject = JavaCore.create(codeProject);
                 if (!javaProject.isOpen()) {
@@ -229,7 +229,7 @@ public class TalendJavaProjectManager {
                 IProject jobProject = root.getProject(helper.getJobProjectName(property));
                 IFolder jobFolder = getItemPomFolder(property);
                 if (!jobProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, jobProject)) {
-                    createMavenJavaProject(monitor, jobProject, jobFolder, enbleMavenNature);
+                    createMavenJavaProject(monitor, jobProject, property, jobFolder, enbleMavenNature);
                 }
                 IJavaProject javaProject = JavaCore.create(jobProject);
                 talendJobJavaProject = new TalendProcessJavaProject(javaProject, property);
@@ -467,7 +467,7 @@ public class TalendJavaProjectManager {
         ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
     }
 
-    private static void createMavenJavaProject(IProgressMonitor monitor, IProject jobProject, IFolder projectFolder,
+    private static void createMavenJavaProject(IProgressMonitor monitor, IProject jobProject, Property property, IFolder projectFolder,
             boolean enbleMavenNature) throws CoreException, Exception {
         if (jobProject.exists()) {
             if (jobProject.isOpen()) {
@@ -475,7 +475,7 @@ public class TalendJavaProjectManager {
             }
             jobProject.delete(false, true, monitor);
         }
-        CreateMavenCodeProject createProject = new CreateMavenCodeProject(jobProject, enbleMavenNature);
+        CreateMavenCodeProject createProject = new CreateMavenCodeProject(jobProject, property, enbleMavenNature);
         createProject.setProjectLocation(projectFolder.getLocation());
         createProject.setPomFile(projectFolder.getFile(TalendMavenConstants.POM_FILE_NAME));
         createProject.create(monitor);
@@ -562,7 +562,7 @@ public class TalendJavaProjectManager {
                 LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
                 ((MavenJavaProcessor) processor).generatePom(option);
             }
-            AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME));
+            AggregatorPomsHelper.addToParentModules(TalendJavaProjectManager.getItemPomFolder(processItem.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),processItem.getProperty());
         } catch (CoreException e) {
             ExceptionHandler.process(e);
         } catch (Exception e) {
