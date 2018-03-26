@@ -85,8 +85,8 @@ public class ChangeComponentCommand extends Command {
         IElementParameter param = node.getElementParameterFromField(unifiedParam.getFieldType());
         param.setValue(newComponent);
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             if (service.isDelegateComponent(delegateComponent)) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 List<IMetadataTable> metadataList = node.getMetadataList();
@@ -108,8 +108,8 @@ public class ChangeComponentCommand extends Command {
                 updateComponentSchema(metadataMap);
 
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                    IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
-                            IDesignerCoreService.class);
+                    IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                            .getService(IDesignerCoreService.class);
                     if (designerService != null) {
                         designerService.refreshComponentView();
                     }
@@ -125,38 +125,41 @@ public class ChangeComponentCommand extends Command {
     private void updateComponentSchema(Map<IMetadataTable, EConnectionType> metadataMap) {
         List<IMetadataTable> reloadMetadataList = node.getMetadataList();
         for (IMetadataTable newTable : reloadMetadataList) {
+            IMetadataTable oldTable = null;
             for (IMetadataTable table : metadataMap.keySet()) {
-                boolean find = false;
-                INodeConnector connectorFromName = node.getConnectorFromName(newTable.getAttachedConnector());
-                if (connectorFromName != null) {
-                    find = true;
-                } else {
-                    EConnectionType eConnectionType = metadataMap.get(table);
-                    INodeConnector connectorFromType = node.getConnectorFromType(eConnectionType);
-                    if (connectorFromType != null) {
-                        find = true;
-                    }
+                if (table.getAttachedConnector().equals(newTable.getAttachedConnector())) {
+                    oldTable = table;
+                    break;
                 }
-                if (find) {
-                    Set<String> columnLabels = new HashSet<String>();
-                    for (IMetadataColumn column : newTable.getListColumns()) {
+            }
+            // tMysqlInput==>tSnowflakeInput , the attached connector name are different
+            if (oldTable == null && metadataMap.size() == 1) {
+                INodeConnector connectorFromName = node.getConnectorFromName(newTable.getAttachedConnector());
+                if (metadataMap.values().contains(connectorFromName.getDefaultConnectionType())) {
+                    oldTable = metadataMap.keySet().iterator().next();
+                }
+
+            }
+            if (oldTable != null) {
+                Set<String> columnLabels = new HashSet<String>();
+                for (IMetadataColumn column : newTable.getListColumns()) {
+                    columnLabels.add(column.getLabel());
+                }
+                for (IMetadataColumn column : oldTable.getListColumns()) {
+                    if (!columnLabels.contains(column.getLabel())) {
+                        newTable.getListColumns().add(column);
                         columnLabels.add(column.getLabel());
                     }
-                    for (IMetadataColumn column : table.getListColumns()) {
-                        if (!columnLabels.contains(column.getLabel())) {
-                            newTable.getListColumns().add(column);
-                            columnLabels.add(column.getLabel());
-                        }
-                    }
-                    IGenericWizardService wizardService = null;
-                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-                        wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
-                                IGenericWizardService.class);
-                    }
-                    if (wizardService != null) {
-                        wizardService.updateComponentSchema(node, newTable);
-                    }
                 }
+                IGenericWizardService wizardService = null;
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                    wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault()
+                            .getService(IGenericWizardService.class);
+                }
+                if (wizardService != null) {
+                    wizardService.updateComponentSchema(node, newTable);
+                }
+                break;
             }
         }
 
@@ -172,8 +175,8 @@ public class ChangeComponentCommand extends Command {
         IElementParameter param = node.getElementParameterFromField(unifiedParam.getFieldType());
         param.setValue(oldComponent);
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             if (service.isDelegateComponent(delegateComponent)) {
                 Map<String, Object> parameters = new HashMap<String, Object>();
                 List<IMetadataTable> metadataList = node.getMetadataList();
@@ -202,8 +205,8 @@ public class ChangeComponentCommand extends Command {
                 updateComponentSchema(metadataMap);
 
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IDesignerCoreService.class)) {
-                    IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault().getService(
-                            IDesignerCoreService.class);
+                    IDesignerCoreService designerService = (IDesignerCoreService) GlobalServiceRegister.getDefault()
+                            .getService(IDesignerCoreService.class);
                     if (designerService != null) {
                         designerService.refreshComponentView();
                     }
