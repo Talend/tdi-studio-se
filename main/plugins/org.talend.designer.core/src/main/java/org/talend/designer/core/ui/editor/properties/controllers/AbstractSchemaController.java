@@ -1217,13 +1217,7 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 IElementParameter repositorySchemaType = param.getParentParameter().getChildParameters()
                         .get(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
                 String schemaSelected = (String) repositorySchemaType.getValue();
-                /*
-                 * For Salesforce and Snowflake after switching from BUILT_IN to REPOSITORY,
-                 * we have to erase schema value. Since repository value has to be set only from repository metadata.
-                 */
-                if (schemaSelected == null || 
-                        (EmfComponent.BUILTIN.equals(param.getValue())
-                                && ("module.main.schema".equals(curParameter.getName()) || "table.main.schema".equals(curParameter.getName())))) {
+                if (schemaSelected == null) {
                     schemaSelected = ""; //$NON-NLS-1$
                 }
 
