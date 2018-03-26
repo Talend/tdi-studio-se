@@ -1201,7 +1201,7 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
     }
 
     private void doAppendToConsole(Collection<IProcessMessage> messages) {
-        if (consoleText == null || consoleText.isDisposed() || messages.isEmpty()) {
+        if (consoleText == null || consoleText.isDisposed()) {
             return;
         }
 
