@@ -78,7 +78,7 @@ org.talend.mdm.bulkload.client.BulkloadClient bulkloadClient_<%=cid %> = new org
             <% logUtil.debug("\"Got transaction successfully with key=\" + transKey_" + cid);%>
         }
         bulkloadClient_<%=cid %>.setTransactionId(mdmTransaction_<%=cid %>.getId());
-        bulkloadClient_<%=cid %>.setSessionId(mdmTransaction_<%=cid%>.getSessionId());
+        bulkloadClient_<%=cid %>.setCookies(mdmTransaction_<%=cid%>.getCookies());
     }
 <%}%>
 
