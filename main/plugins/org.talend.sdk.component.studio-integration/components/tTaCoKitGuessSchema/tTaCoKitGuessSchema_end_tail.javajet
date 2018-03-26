@@ -54,7 +54,9 @@
 %>
 <%
     if ("input".equalsIgnoreCase(tacokitComponentType)) {
-        // nothing to do
+%>
+        }
+<%
     } else {
 %>
         <%@include file="../../jet_stub/generic/processor/processor_end_tail.javajet"%>

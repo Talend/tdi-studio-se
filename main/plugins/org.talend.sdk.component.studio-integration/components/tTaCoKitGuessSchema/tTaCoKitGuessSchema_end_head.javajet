@@ -54,7 +54,11 @@
 %>
 <%
     if ("input".equalsIgnoreCase(tacokitComponentType)) {
-        // nothing to do
+%>
+        // single input can't run into this codes
+        boolean canRunIntoGuessSchemaEndCodes_<%=guessSchemaCid%> = false;
+        if (canRunIntoGuessSchemaEndCodes_<%=guessSchemaCid%>) {
+<%
     } else {
 %>
         <%@include file="../../jet_stub/generic/processor/processor_end_head.javajet"%>
