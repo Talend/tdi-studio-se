@@ -136,7 +136,8 @@ imports="
                     	.withKey(key_<%=cid%>).withUploadId(uploadId_<%=cid%>)
                     	.withPartNumber(partNumber_<%=cid%>).withPartSize(curPartSize_<%=cid%>);
             		    uploadRequest_<%=cid%>.setInputStream(uploadStream_<%=cid%>);
-            		    if(sourceStream_<%=cid%>.read(TestAvailable_<%=cid%>) == -1){
+            		    streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(TestAvailable_<%=cid%>) != -1;
+            		    if(!streamHasNext_<%=cid%>){
                     	    uploadRequest_<%=cid%>.setLastPart(true);
                     	}
 
@@ -146,7 +147,7 @@ imports="
           		     	if(uploadStream_<%=cid%>!=null){
       		         			uploadStream_<%=cid%>.close();
           		     	}
-          		     	streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(buffer_<%=cid%>,1,partSizeInBytes_<%=cid%>-1) != -1;
+          		     	sourceStream_<%=cid%>.read(buffer_<%=cid%>,1,partSizeInBytes_<%=cid%>-1);
           		     	buffer_<%=cid%>[0] = TestAvailable_<%=cid%>[0];
           		     	curPartSize_<%=cid%> = streamUtil_<%=cid%>.getLength(buffer_<%=cid%>);
           		     	uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>);
