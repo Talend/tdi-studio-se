@@ -152,9 +152,9 @@ public class BuildJobManager {
                 IFile jobTargetFile = buildJobHandler.getJobTargetFile();
                 if (jobTargetFile != null && jobTargetFile.exists()) {
                     // unzip to temp folder
-                    FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
-                    String zipPath = jobTargetFile.getLocation().toPortableString();
                     if (needClasspathJar(exportChoiceMap)) {
+                        FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
+                        String zipPath = jobTargetFile.getLocation().toPortableString();
                         JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipPath, processItem
                                 .getProperty().getLabel());
                         creator.setTempFolder(tempFolder.getAbsolutePath());
@@ -197,7 +197,7 @@ public class BuildJobManager {
             pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * total); //$NON-NLS-1$
             ProcessItem processItem = itemToExport;
             // get correct version
-            if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version)
+            if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version) //$NON-NLS-1$
                     && !version.equals(processItem.getProperty().getVersion())) {
                 processItem = ItemCacheManager.getProcessItem(processItem.getProperty().getId(), version);
             }
@@ -210,30 +210,30 @@ public class BuildJobManager {
                 @Override
                 public void run(IProgressMonitor wrMonitor) throws CoreException {
                     try {
-                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
+                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), //$NON-NLS-1$
                                 scale * 3);
 
-                        Map<String, Object> prepareParams = new HashMap<String, Object>();
+                        Map<String, Object> prepareParams = new HashMap<>();
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
 
                         buildJobHandler.prepare(new SubProgressMonitor(wrMonitor, scale), prepareParams);
 
                         wrMonitor.worked(scale);
-                        TimeMeasure.step(timeMeasureId, "prepare to build job");
+                        TimeMeasure.step(timeMeasureId, "prepare to build job"); //$NON-NLS-1$
                         if (wrMonitor.isCanceled()) {
-                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
 
                         buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
-                        TimeMeasure.step(timeMeasureId, "build and package");
+                        TimeMeasure.step(timeMeasureId, "build and package"); //$NON-NLS-1$
                         if (wrMonitor.isCanceled()) {
-                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
                         wrMonitor.done();
                     } catch (Exception e) {
                         throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
-                                this.getClass()).getSymbolicName(), "Error", e));
+                                this.getClass()).getSymbolicName(), "Error", e)); //$NON-NLS-1$
                     }
                 };
 
