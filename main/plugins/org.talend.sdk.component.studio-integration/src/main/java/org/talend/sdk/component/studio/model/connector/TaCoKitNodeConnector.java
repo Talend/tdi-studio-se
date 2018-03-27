@@ -98,7 +98,6 @@ public class TaCoKitNodeConnector extends NodeConnector {
         } else {
             tacokitConnector = new TaCoKitNodeConnector(node, name, name, name, FLOW_MAIN, FLOW_MAIN);
         }
-        tacokitConnector.setMultiSchema(true);
         return tacokitConnector;
     }
     

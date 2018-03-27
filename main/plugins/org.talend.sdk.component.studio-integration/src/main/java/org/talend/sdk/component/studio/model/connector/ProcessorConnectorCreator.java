@@ -108,31 +108,34 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                                 .stream() //
                                 .filter(output -> FLOW_MAIN.equals(getType(output))) //
                                 .map(output -> { //
-                                    // if (MAIN_CONNECTOR_NAME.equalsIgnoreCase(output)) {
-                                    // output = output + "_output"; //$NON-NLS-1$
-                                    // }
-                                    TaCoKitNodeConnector outputConnector = TaCoKitNodeConnector.newFlow(node, output);
-                                    TaCoKitNodeConnector existingConnector = connectorMap.get(outputConnector.getName());
-                                    if (existingConnector != null) {
-                                        outputConnector = existingConnector;
-                                        int maxOutput = outputConnector.getMaxLinkOutput();
-                                        if (maxOutput < 0) {
-                                            maxOutput = 0;
+                                    TaCoKitNodeConnector outputConnector = null;
+                                    try {
+                                        outputConnector = TaCoKitNodeConnector.newFlow(node, output);
+                                        TaCoKitNodeConnector existingConnector = connectorMap.get(outputConnector.getName());
+                                        if (existingConnector != null) {
+                                            outputConnector = existingConnector;
+                                            int maxOutput = outputConnector.getMaxLinkOutput();
+                                            if (maxOutput < 0) {
+                                                maxOutput = 0;
+                                            }
+                                            outputConnector.setMaxLinkOutput(maxOutput + 1);
+                                            return null;
+                                        } else {
+                                            outputConnector.setMaxLinkInput(0);
+                                            outputConnector.setMaxLinkOutput(1);
+                                            outputConnector.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(),
+                                                    FLOW_REF.getDefaultLineStyle());
+                                            outputConnector.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(),
+                                                    FLOW_MERGE.getDefaultLineStyle());
+                                            existingTypes.add(getType(output));
+                                            connectorMap.put(outputConnector.getName(), outputConnector);
                                         }
-                                        outputConnector.setMaxLinkOutput(maxOutput + 1);
-                                    } else {
-                                        outputConnector.setMaxLinkInput(0);
-                                        outputConnector.setMaxLinkOutput(1);
-                                        outputConnector.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(),
-                                                FLOW_REF.getDefaultLineStyle());
-                                        outputConnector.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(),
-                                                FLOW_MERGE.getDefaultLineStyle());
-                                        existingTypes.add(getType(output));
-                                        connectorMap.put(outputConnector.getName(), outputConnector);
+                                        return outputConnector;
+                                    } finally {
+                                        outputConnector.setHasOutput(true);
                                     }
-                                    outputConnector.setHasOutput(true);
-                                    return outputConnector;
                                 }))
+                .filter(c -> c != null)
                 .collect(toList());
 
         connectors.addAll(generatedConnectors);
