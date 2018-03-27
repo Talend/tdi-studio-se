@@ -45,7 +45,7 @@ class StandAloneConnectorCreator extends AbstractConnectorCreator {
         final TaCoKitNodeConnector main = TaCoKitNodeConnector.newFlow(node, TaCoKitNodeConnector.DEFAULT);
         main.setMaxLinkInput(0);
         main.setMaxLinkOutput(0);
-        main.setInput(false);
+        main.setHasInput(false);
         main.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(), FLOW_REF.getDefaultLineStyle());
         main.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(), FLOW_MERGE.getDefaultLineStyle());
         return Collections.singletonList(main);

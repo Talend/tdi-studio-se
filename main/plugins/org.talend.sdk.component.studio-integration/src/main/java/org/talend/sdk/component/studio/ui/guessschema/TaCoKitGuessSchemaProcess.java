@@ -18,7 +18,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -29,6 +31,7 @@ import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Property;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -60,24 +63,29 @@ public class TaCoKitGuessSchemaProcess {
 
     private final Property property;
 
+    private final String connectionName;
+
     private final ExecutorService executorService = ExecutorService.class.cast(Lookups.uiActionsThreadPool()
             .getExecutor());
 
     public TaCoKitGuessSchemaProcess(final Property property, final INode node, final IContext context,
-            final String discoverSchemaAction) {
+            final String discoverSchemaAction, final String connectionName) {
         this.node = node;
         this.context = context;
         this.discoverSchemaAction = discoverSchemaAction;
         this.property = property;
+        this.connectionName = connectionName;
     }
 
     public Future<String> run() {
-        return executorService.submit(new Task(property, context, node, discoverSchemaAction));
+        return executorService.submit(new Task(property, context, node, discoverSchemaAction, connectionName));
     }
 
     public static class Task implements Callable<String> {
 
-        private final Process process;
+        private final Property property;
+
+        private IProcess process;
 
         private final IContext context;
 
@@ -85,11 +93,15 @@ public class TaCoKitGuessSchemaProcess {
 
         private final String actionName;
 
-        public Task(final Property property, final IContext context, final INode node, final String actionName) {
-            this.process = new Process(property);
+        private final String connectionName;
+
+        public Task(final Property property, final IContext context, final INode node, final String actionName,
+                final String connectionName) {
+            this.property = property;
             this.context = context;
             this.node = node;
             this.actionName = actionName;
+            this.connectionName = connectionName;
         }
 
         @Override
@@ -105,7 +117,7 @@ public class TaCoKitGuessSchemaProcess {
                             final BufferedReader reader = new BufferedReader(
                                     new InputStreamReader(executeProcess.getErrorStream()));
                     ) {
-                        throw new IllegalStateException(reader.lines().collect(joining("\n")));
+                        throw new IllegalStateException(reader.lines().collect(joining("\r\n")));
                     } catch (IOException e) {
                         throw new IllegalStateException(e);
                     }
@@ -127,18 +139,50 @@ public class TaCoKitGuessSchemaProcess {
         }
 
         private void buildProcess() {
-            process.getContextManager().getListContext().addAll(node.getProcess().getContextManager().getListContext());
-            process.getContextManager().setDefaultContext(this.context);
+            IProcess originalProcess = null;
+
+            boolean useMokeJob = true;
+            if (useMokeJob) {
+                /**
+                 * use mocked process to run guess schema job in .Java maven project
+                 */
+                originalProcess = new Process(property);
+                // seems mock job has problems with log
+            } else {
+                /**
+                 * if we use node.getProcess(), guess schema job will be run in the maven project of the job, but seems
+                 * still have problem for guessing schema of input
+                 */
+                originalProcess = node.getProcess();
+            }
+
             List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
             try {
                 node.setOutgoingConnections(new ArrayList<>());
-                DataProcess dataProcess = new DataProcess(process);
-                INode newNode = dataProcess.buildNodeFromNode(node, process);
+
+                List<INode> nodes = new ArrayList<>();
+                retrieveNodes(nodes, new HashSet<>(), node);
+
+                DataProcess dataProcess = new DataProcess(originalProcess);
+                dataProcess.buildFromGraphicalProcess(nodes);
+                process = dataProcess.getDuplicatedProcess();
+                if (useMokeJob) {
+                    process.getContextManager().getListContext().addAll(originalProcess.getContextManager().getListContext());
+                    process.getContextManager().setDefaultContext(this.context);
+                }
+                List<INode> nodeList = dataProcess.getNodeList();
+                INode newNode = null;
+                // INode newNode = dataProcess.buildNodeFromNode(node, process);
+                for (INode curNode : nodeList) {
+                    if (curNode.getUniqueName().equals(node.getUniqueName())) {
+                        newNode = curNode;
+                        break;
+                    }
+                }
 
                 IComponent component = newNode.getComponent();
                 ComponentModelSpy componentSpy = createComponnetModelSpy(component);
                 newNode.setComponent(componentSpy);
-                this.node = newNode;
                 if (ComponentModel.class.isInstance(component)) {
                     List<IElementParameter> elementParameters =
                             (List<IElementParameter>) newNode.getElementParameters();
@@ -158,10 +202,36 @@ public class TaCoKitGuessSchemaProcess {
 
                     }
                     elementParameters.add(actionNameParam);
+
+                    final IElementParameter tacokitComponentType = new ElementParameter(newNode);
+                    tacokitComponentType.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_TACOKIT_COMPONENT_TYPE);
+                    tacokitComponentType.setValue(cm.getTaCoKitComponentType().toString());
+                    elementParameters.add(tacokitComponentType);
+
+                    final IElementParameter outputConnectionName = new ElementParameter(newNode);
+                    outputConnectionName.setName(TaCoKitConst.GUESS_SCHEMA_PARAMETER_OUTPUT_CONNECTION_NAME);
+                    outputConnectionName.setValue(connectionName);
+                    elementParameters.add(outputConnectionName);
                 }
 
             } finally {
                 node.setOutgoingConnections(outgoingConnections);
+            }
+        }
+
+        private void retrieveNodes(final List<INode> nodeList, final Set<INode> recordedNodes, final INode currentNode) {
+            if (currentNode == null || recordedNodes.contains(currentNode)) {
+                return;
+            }
+            nodeList.add(currentNode);
+            recordedNodes.add(currentNode);
+            List<? extends IConnection> incomingConnections = currentNode.getIncomingConnections();
+            if (incomingConnections != null && !incomingConnections.isEmpty()) {
+                for (IConnection conn : incomingConnections) {
+                    if (conn != null) {
+                        retrieveNodes(nodeList, recordedNodes, conn.getSource());
+                    }
+                }
             }
         }
 

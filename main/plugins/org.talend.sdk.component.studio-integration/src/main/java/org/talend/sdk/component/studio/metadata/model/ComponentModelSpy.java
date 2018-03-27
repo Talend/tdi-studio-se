@@ -17,6 +17,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.talend.core.model.components.AbstractLayerComponent;
 import org.talend.core.model.components.EComponentType;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IMultipleComponentManager;
@@ -31,7 +32,7 @@ import org.talend.core.model.temp.ECodePart;
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public class ComponentModelSpy implements IComponent {
+public class ComponentModelSpy extends AbstractLayerComponent {
 
     private IComponent component;
 

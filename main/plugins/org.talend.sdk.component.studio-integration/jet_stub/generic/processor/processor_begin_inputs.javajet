@@ -38,20 +38,32 @@
     final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
     final INode node = INode.class.cast(codeGenArgument.getArgument());
     final String cid = node.getUniqueName();
+    final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+    final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+    final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
     final IComponent component = node.getComponent();
     final boolean useLookup = component.useLookup();
 %>
 
+    final org.talend.sdk.component.runtime.di.InputsHandler inputsHandler_<%=cid%> = new org.talend.sdk.component.runtime.di.InputsHandler(jsonb_<%=cid%>);
 <%
-    if (!useLookup) {
+    if (useLookup) {
 %>
-
-        }
+        <%@include file="./processor_multiple_input_begin.javajet"%>
 <%
     } else {
+        for (final IConnection connection : node.getIncomingConnections(EConnectionType.FLOW_MAIN)) {
+            String connName = connection.getConnectorName();
+            if(connection instanceof IAdditionalInfo) {
+                String additionalName = (String)IAdditionalInfo.class.cast(connection).getInfo("INPUT_NAME");
+                if(additionalName != null && !additionalName.isEmpty()) {
+                    connName = additionalName;
+                }
+            }
 %>
-
-        }
+            inputsHandler_<%=cid%>.addConnection("<%= connName %>", <%= connection.getName() %>.getClass());
 <%
+        }
     }
 %>
+    final org.talend.sdk.component.runtime.output.InputFactory inputs_<%=cid%> = inputsHandler_<%=cid%>.asInputFactory();
