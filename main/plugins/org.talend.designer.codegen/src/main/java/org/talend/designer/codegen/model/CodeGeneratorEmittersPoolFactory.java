@@ -674,8 +674,7 @@ public final class CodeGeneratorEmittersPoolFactory {
                     }
                     return;
                 }
-                // 10901: Component synchronization fails
-                if (CommonsPlugin.isHeadless()) {
+                if (Boolean.getBoolean("force_full_codegen")) { //$NON-NLS-1$
                     try {
                         emitter.initialize(sub);
                     } catch (JETException e) {
