@@ -120,6 +120,7 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
@@ -192,6 +193,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     protected Set<JobInfo> buildChildrenJobs;
 
+    protected Set<JobInfo> buildFirstChildrenJobs;
+
     private final ITalendProcessJavaProject talendJavaProject;
 
     protected boolean isTestJob = false;
@@ -263,28 +266,35 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
-        return getBuildChildrenJobs(false);
+        if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
+            buildChildrenJobs = getChildrenJobInfo(false);
+        }
+        return buildChildrenJobs;
+
     }
 
     @Override
-    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
-        // FIXME should remove and use MavenJavaProcessor.getBuildChildrenJobs() instead.
-        // the judgment of lastMainJob is not clean.
-        if (buildChildrenJobs == null) {
-            buildChildrenJobs = new HashSet<JobInfo>();
+    public Set<JobInfo> getBuildFirstChildrenJobs() {
+        if (buildFirstChildrenJobs == null || buildFirstChildrenJobs.isEmpty()) {
+            buildFirstChildrenJobs = getChildrenJobInfo(true);
+        }
+        return buildFirstChildrenJobs;
+    }
 
-            JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
-            Set<JobInfo> infos = null;
-            if (lastMainJob == null && property != null) {
-                infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
-            } else {
-                infos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
-            }
+    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly) {
+        Set<JobInfo> childrenJobs = new HashSet<>();
+        if (property != null && property.getItem() != null) {
+            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
             for (JobInfo jobInfo : infos) {
-                buildChildrenJobs.add(jobInfo);
+                if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
+                        TalendProcessArgumentConstant.ARG_GENERATE_OPTION,
+                        TalendProcessOptionConstants.GENERATE_TESTS)) {
+                    continue;
+                }
+                childrenJobs.add(jobInfo);
             }
         }
-        return this.buildChildrenJobs;
+        return childrenJobs;
     }
 
     /*
@@ -321,6 +331,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public void initCodePath(IContext c) throws ProcessorException {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
+        }
+        if (buildFirstChildrenJobs != null) {
+            buildFirstChildrenJobs.clear();
         }
 
         ITalendProcessJavaProject tProcessJavaProject = getTalendJavaProject();

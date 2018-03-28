@@ -14,7 +14,6 @@ package org.talend.designer.runprocess.maven;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -102,30 +101,6 @@ public class MavenJavaProcessor extends JavaProcessor {
                 throw new ProcessorException(e);
             }
         }
-    }
-
-    @Override
-    public Set<JobInfo> getBuildChildrenJobs() {
-        return getBuildChildrenJobs(false);
-    }
-
-    @Override
-    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
-        if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
-            buildChildrenJobs = new HashSet<>();
-
-            if (property != null && property.getItem() != null) {
-                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
-                for (JobInfo jobInfo : infos) {
-                    if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
-                            TalendProcessArgumentConstant.ARG_GENERATE_OPTION, TalendProcessOptionConstants.GENERATE_TESTS)) {
-                        continue;
-                    }
-                    buildChildrenJobs.add(jobInfo);
-                }
-            }
-        }
-        return this.buildChildrenJobs;
     }
 
     public void initJobClasspath() {
@@ -359,7 +334,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
-                buildCacheManager.putCache(getProperty());
+                buildCacheManager.putJobCache(getProperty());
             } else {
                 // for already installed sub jobs, can restore pom here directly
                 PomUtil.restorePomFile(getTalendJavaProject());

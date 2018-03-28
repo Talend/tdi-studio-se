@@ -194,7 +194,7 @@ public class TalendJavaProjectManager {
                 helper.updateCodeProjectPom(monitor, type, codeProject.getFile(TalendMavenConstants.POM_FILE_NAME));
                 talendCodeJavaProject = new TalendProcessJavaProject(javaProject);
                 talendCodeJavaProject.cleanMavenFiles(monitor);
-                BuildCacheManager.getInstance().clearCache(type);
+                BuildCacheManager.getInstance().clearCodesCache(type);
                 talendCodeJavaProjects.put(codeProjectId, talendCodeJavaProject);
             } catch (Exception e) {
                 ExceptionHandler.process(e);
