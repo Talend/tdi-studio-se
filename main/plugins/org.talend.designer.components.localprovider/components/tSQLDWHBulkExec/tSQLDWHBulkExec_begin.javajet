@@ -615,7 +615,13 @@ skeleton="../templates/db_output_bulk.skeleton"
                         <%dbLog.table().truncateTry(dbLog.var("tableName"));%>
                         stmtTrunc_<%=cid%>.executeUpdate("<%=manager.getTruncateTableSQL()%>");
                         <%dbLog.table().truncateDone(dbLog.var("tableName"));%>
-                        deletedCount_<%=cid%> += rsTruncCountNumber_<%=cid%>;
+<%
+                        if(isLog4jEnabled) {
+%>
+                            log.info("<%=cid%> - Number of Rows Truncated : " + rsTruncCountNumber_<%=cid%> + ".");
+<%
+                        }
+%>
                         stmtTrunc_<%=cid%>.close();
                         
                         java.sql.Statement stmtInsert_<%=cid%> = conn_<%=cid%>.createStatement();

@@ -6,7 +6,8 @@
 	</HEADER>
 
   <FAMILIES>
-    <FAMILY>Databases/MS SQL Server</FAMILY>
+     <FAMILY>Databases/DB Specifics/Azure/SQL Data Warehouse</FAMILY>
+     <FAMILY>Cloud/Azure/SQL Data Warehouse</FAMILY>
   </FAMILIES>
 
 	<DOCUMENTATION>
