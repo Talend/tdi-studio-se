@@ -226,7 +226,6 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			}
 		}
 		%>
-		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier + "]");
 	    } catch (java.lang.Exception e) {
 	        whetherReject_<%=cid%> = true;
 	        <%
