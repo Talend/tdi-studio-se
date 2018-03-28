@@ -58,6 +58,8 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
 import org.talend.designer.runprocess.java.TalendJavaProjectManager;
 import org.talend.repository.i18n.Messages;
+import org.talend.designer.core.model.process.IGeneratingProcess;
+import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * created by ggu on 2 Feb 2015 Detailled comment
@@ -80,6 +82,10 @@ public class MavenJavaProcessor extends JavaProcessor {
     @Override
     public void generateCode(boolean statistics, boolean trace, boolean javaProperties, int option) throws ProcessorException {
         super.generateCode(statistics, trace, javaProperties, option);
+        if (this.getProcess() instanceof Process) {
+            IGeneratingProcess generatingProcess = (((Process)this.getProcess()).getGeneratingProcess());
+            generatingProcess.generateAdditionalCode();
+        }
         generateCodeAfter(statistics, trace, javaProperties, option);
     }
 
