@@ -151,8 +151,11 @@ public class ProcessChangeListener implements PropertyChangeListener {
                                     .removeFromParentModules(sourceFolder.getFile(TalendMavenConstants.POM_FILE_NAME));
                             MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
                             change.perform(new NullProgressMonitor());
-                            AggregatorPomsHelper.addToParentModules(
-                                    targetFolder.getFolder(sourceFolder.getName()).getFile(TalendMavenConstants.POM_FILE_NAME));
+                            IFile pomFile = targetFolder
+                                    .getFolder(sourceFolder.getName())
+                                    .getFile(TalendMavenConstants.POM_FILE_NAME);
+                            AggregatorPomsHelper.updateGroupIdAndRelativePath(pomFile, property);
+                            AggregatorPomsHelper.addToParentModules(pomFile, property);
                         }
                     }
                 } catch (Exception e) {
@@ -196,7 +199,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     RenameResourceChange change = new RenameResourceChange(sourceFolder.getFullPath(), newName);
                     change.perform(monitor);
                     IFolder newFolder = parent.getFolder(new Path(newName));
-                    addToParentInNewFolder(newFolder);
+                    updatePomsInNewFolder(newFolder);
                 } catch (CoreException e) {
                     ExceptionHandler.process(e);
                 }
@@ -205,24 +208,27 @@ public class ProcessChangeListener implements PropertyChangeListener {
     }
 
     /**
-     * DOC nrousseau Comment method "addToParentInNewFolder".
+     * DOC nrousseau Comment method "updatePomsInNewFolder".
+     * update all jobs' relative path and groupId
+     * add job to parent modules
      * 
      * @param newFolder
      * @throws CoreException
      */
-    private void addToParentInNewFolder(IFolder newFolder) throws CoreException {
+    private void updatePomsInNewFolder(IFolder newFolder) throws CoreException {
         for (IResource res : newFolder.members()) {
             if (res instanceof IFolder) {
                 IFolder currentFolder = (IFolder) res;
                 IFile pomFile = currentFolder.getFile(TalendMavenConstants.POM_FILE_NAME);
                 if (pomFile.exists()) {
                     try {
+                        AggregatorPomsHelper.updateGroupIdAndRelativePath(pomFile);
                         AggregatorPomsHelper.addToParentModules(pomFile);
                     } catch (Exception e) {
                         ExceptionHandler.process(e);
                     }
                 } else {
-                    addToParentInNewFolder(currentFolder);
+                    updatePomsInNewFolder(currentFolder);
                 }
             }
         }
@@ -267,7 +273,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     IFolder targetFolder = processTypeFolder.getFolder(targetPath);
                     MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
                     change.perform(new NullProgressMonitor());
-                    addToParentInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                    updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
                 } catch (OperationCanceledException | CoreException e) {
                     ExceptionHandler.process(e);
                 }
