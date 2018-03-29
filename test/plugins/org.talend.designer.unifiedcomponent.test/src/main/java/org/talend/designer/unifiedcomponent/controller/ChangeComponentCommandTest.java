@@ -23,12 +23,15 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.properties.PropertiesFactory;
 import org.talend.core.model.properties.Property;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -38,8 +41,8 @@ import org.talend.designer.core.ui.editor.process.Process;
  */
 public class ChangeComponentCommandTest {
 
-    private IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-            IComponentsService.class);
+    private IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault()
+            .getService(IComponentsService.class);
 
     private IUnifiedComponentService unifiedCompservice = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
             .getService(IUnifiedComponentService.class);
@@ -151,13 +154,14 @@ public class ChangeComponentCommandTest {
         Assert.assertEquals(node.getElementParameter("PASS").getValue(), "my_password");
         elementParameter = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
         Assert.assertEquals(EmfComponent.REPOSITORY, elementParameter.getChildParameters().get("PROPERTY_TYPE").getValue());
-        Assert.assertEquals("_zchgQdyyEeePQYjilYBwZg", elementParameter.getChildParameters().get("REPOSITORY_PROPERTY_TYPE")
-                .getValue());
+        Assert.assertEquals("_zchgQdyyEeePQYjilYBwZg",
+                elementParameter.getChildParameters().get("REPOSITORY_PROPERTY_TYPE").getValue());
     }
 
     @Test
     public void testMysqlAndFlowflakSchema() {
         IComponent tMysqlInput = compService.getComponentsFactory().get("tMysqlInput", ComponentCategory.CATEGORY_4_DI.getName());
+        IComponent tLogRow = compService.getComponentsFactory().get("tLogRow", ComponentCategory.CATEGORY_4_DI.getName());
         Property property1 = PropertiesFactory.eINSTANCE.createProperty();
         property1.setId("property1"); //$NON-NLS-1$
         property1.setVersion("0.1"); //$NON-NLS-1$
@@ -169,6 +173,13 @@ public class ChangeComponentCommandTest {
         column.setLabel("column1");
         column.setTalendType("id_String");
         metadataTable.getListColumns().add(column);
+        Node logRowNode = new Node(tLogRow, process1);
+        logRowNode.getMetadataList().get(0).getListColumns().add(column.clone());
+
+        Connection connection = new Connection(node, logRowNode, EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(),
+                metadataTable.getTableName(), "row1", metadataTable.getTableName(), false);
+        connection.getTargetNodeConnector().setCurLinkNbInput(1);
+        connection.getSourceNodeConnector().setCurLinkNbOutput(1);
 
         IElementParameter unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
         ChangeComponentCommand command = new ChangeComponentCommand(node, unifiedParam, "Snowflake");
@@ -179,7 +190,10 @@ public class ChangeComponentCommandTest {
 
         IMetadataTable mainTable = node.getMetadataFromConnector("MAIN");
         Assert.assertNotNull(mainTable);
-        Assert.assertEquals(mainTable.getListColumns().get(0).getLabel(), "column1");
+        Assert.assertTrue(mainTable.sameMetadataAs(metadataTable));
+        IConnection newConnection = node.getOutgoingConnections().get(0);
+        Assert.assertEquals(newConnection.getConnectorName(), "MAIN");
+        Assert.assertEquals(newConnection.getMetaName(), mainTable.getTableName());
 
         unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
         command = new ChangeComponentCommand(node, unifiedParam, "MySQL");
@@ -187,9 +201,56 @@ public class ChangeComponentCommandTest {
 
         flowTable = node.getMetadataFromConnector("FLOW");
         Assert.assertNotNull(flowTable);
+        Assert.assertTrue(flowTable.sameMetadataAs(metadataTable));
 
         mainTable = node.getMetadataFromConnector("MAIN");
         Assert.assertNull(mainTable);
+
+        newConnection = node.getOutgoingConnections().get(0);
+        Assert.assertEquals(newConnection.getConnectorName(), "FLOW");
+        Assert.assertEquals(newConnection.getMetaName(), flowTable.getTableName());
+
+    }
+
+    @Test
+    public void testTUP_19802ForSchema() {
+        IComponent tMysqlRow = compService.getComponentsFactory().get("tMysqlRow", ComponentCategory.CATEGORY_4_DI.getName());
+        Property property1 = PropertiesFactory.eINSTANCE.createProperty();
+        property1.setId("property1"); //$NON-NLS-1$
+        property1.setVersion("0.1"); //$NON-NLS-1$
+        property1.setLabel("test1");//$NON-NLS-1$
+        Process process1 = new Process(property1);
+        Node node = new Node(tMysqlRow, process1);
+        IMetadataTable schema = node.getMetadataFromConnector("FLOW");
+        IMetadataTable reject = node.getMetadataFromConnector("REJECT");
+
+        IElementParameter unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        ChangeComponentCommand command = new ChangeComponentCommand(node, unifiedParam, "MySQL");
+        command.execute();
+
+        IMetadataTable schemaNew = node.getMetadataFromConnector("FLOW");
+        IMetadataTable rejectNew = node.getMetadataFromConnector("REJECT");
+
+        Assert.assertTrue(schema.sameMetadataAs(schemaNew));
+        Assert.assertTrue(reject.getListColumns().size() == 2);
+        Assert.assertTrue(reject.sameMetadataAs(rejectNew));
+
+        MetadataColumn column = new MetadataColumn();
+        column.setLabel("column1");
+        column.setTalendType("id_String");
+        schemaNew.getListColumns().add(column);
+        rejectNew.getListColumns().add(0, column.clone());
+
+        unifiedParam = node.getElementParameterFromField(EParameterFieldType.UNIFIED_COMPONENTS);
+        command = new ChangeComponentCommand(node, unifiedParam, "MySQL");
+        command.execute();
+
+        IMetadataTable schemaNew1 = node.getMetadataFromConnector("FLOW");
+        IMetadataTable rejectNew1 = node.getMetadataFromConnector("REJECT");
+
+        Assert.assertTrue(schemaNew1.sameMetadataAs(schemaNew));
+        Assert.assertTrue(rejectNew1.getListColumns().size() == 3);
+        Assert.assertTrue(rejectNew1.sameMetadataAs(rejectNew));
 
     }
 

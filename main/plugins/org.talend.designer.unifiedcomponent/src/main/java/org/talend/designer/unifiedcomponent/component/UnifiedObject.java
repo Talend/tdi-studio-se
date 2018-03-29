@@ -31,6 +31,8 @@ public class UnifiedObject {
 
     private Map<String, String> parameterMapping = new HashMap<String, String>();
 
+    private Map<String, String> connectorMapping = new HashMap<String, String>();
+
     private Set<String> paramMappingExclude = new HashSet<String>();
 
     private Set<String> hideFamilies = new HashSet<String>();
@@ -96,6 +98,15 @@ public class UnifiedObject {
      */
     public Set<String> getParamMappingExclude() {
         return this.paramMappingExclude;
+    }
+
+    /**
+     * Getter for connectorMapping.
+     * 
+     * @return the connectorMapping
+     */
+    public Map<String, String> getConnectorMapping() {
+        return this.connectorMapping;
     }
 
     /**

@@ -8,6 +8,11 @@
             "connection.userPassword.userId":"USERNAME",
             "connection.userPassword.password":"PASSWORD",
         }
+     },
+     "connector":{
+            "mapping":{
+                "MAIN":"FLOW"
+            }
      }
 },
 {
@@ -62,6 +67,11 @@
             "connection.userPassword.userId":"USERNAME",
             "connection.userPassword.password":"PASSWORD",
         }
+     },
+     "connector":{
+            "mapping":{
+                "MAIN":"FLOW"
+            }
      }
 },
 {

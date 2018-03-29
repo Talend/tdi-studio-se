@@ -11,6 +11,11 @@
             "connection.schemaName":"SCHEMA",
             "connection.db":"SID"
         }
+     },
+     "connector":{
+            "mapping":{
+                "MAIN":"FLOW"
+            }
      }
 },
 {
@@ -62,6 +67,11 @@
             "connection.schemaName":"SCHEMA",
             "connection.db":"SID"
         }
+     },
+     "connector":{
+            "mapping":{
+                "MAIN":"FLOW"
+            }
      }
 }
 ]
