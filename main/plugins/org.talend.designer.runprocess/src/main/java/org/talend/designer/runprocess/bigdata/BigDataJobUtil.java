@@ -68,7 +68,8 @@ public class BigDataJobUtil {
     public boolean isSparkWithHDInsight() {
         boolean isSparkWithHDInsight = false;
         if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM,
+                        HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
             EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
             boolean modeParameterVisited = false;
             for (ElementParameterType pt : parameters) {
@@ -118,7 +119,8 @@ public class BigDataJobUtil {
         Boolean isSparkInYarnClusterMode = false;
         // Test if we are in Spark or Spark streaming
         if (isBDJobWithFramework(ERepositoryObjectType.PROCESS_MR, HadoopConstants.FRAMEWORK_SPARK)
-                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
+                || isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM,
+                        HadoopConstants.FRAMEWORK_SPARKSTREAMING)) {
 
             EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
             for (ElementParameterType pt : parameters) {
@@ -148,19 +150,21 @@ public class BigDataJobUtil {
 
     /** Find the distribution where the generated jar rquired to have the context files inside **/
     public boolean needsToHaveContextInsideJar() {
-        EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
-        for (ElementParameterType pt : parameters) {
-            if (pt.getName().equals("DISTRIBUTION")) { //$NON-NLS-1$
-                String value = pt.getValue();
-                if ("MICROSOFT_HD_INSIGHT".equals(value) //$NON-NLS-1$
-                        || "GOOGLE_CLOUD_DATAPROC".equals(value) //$NON-NLS-1$
-                        || "CLOUDERA_ALTUS".equals(value)) { //$NON-NLS-1$
-                    return true;
+        if (processItem.getProcess() != null) {
+            EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
+            for (ElementParameterType pt : parameters) {
+                if (pt.getName().equals("DISTRIBUTION")) { //$NON-NLS-1$
+                    String value = pt.getValue();
+                    if ("MICROSOFT_HD_INSIGHT".equals(value) //$NON-NLS-1$
+                            || "GOOGLE_CLOUD_DATAPROC".equals(value) //$NON-NLS-1$
+                            || "CLOUDERA_ALTUS".equals(value)) { //$NON-NLS-1$
+                        return true;
+                    }
                 }
             }
-        }
-        if (isSparkWithYarnClusterMode()) {
-            return true;
+            if (isSparkWithYarnClusterMode()) {
+                return true;
+            }
         }
         return false;
     }
@@ -183,7 +187,7 @@ public class BigDataJobUtil {
         }
         // only left is: isBDJobWithFramework(ERepositoryObjectType.PROCESS_STORM, HadoopConstants.FRAMEWORK_STORM))
         // which must be true
-        
+
         Set<String> stormJarNames = new HashSet<>();
         try {
             // from org.talend.libraries.apache.storm/lib
