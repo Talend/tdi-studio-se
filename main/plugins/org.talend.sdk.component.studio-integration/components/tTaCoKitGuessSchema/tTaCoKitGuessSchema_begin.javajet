@@ -15,45 +15,87 @@
 
 <%@ jet
     imports="
+        org.talend.core.model.components.IComponent
         org.talend.core.model.process.INode
+        org.talend.core.runtime.IAdditionalInfo
         org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.ElementParameterParser
         org.talend.designer.core.model.components.EParameterName
         org.talend.designer.core.model.components.ElementParameter
-        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.process.IElementParameter
         org.talend.core.model.process.EParameterFieldType
         org.talend.core.model.metadata.IMetadataColumn
         org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.process.IConnection
         org.talend.core.model.process.IConnectionCategory
         org.talend.core.model.process.EConnectionType
-        org.talend.core.runtime.IAdditionalInfo
         org.talend.core.model.utils.NodeUtil
+        java.util.Arrays
         java.util.List
+        java.util.Locale
     "
 %>
 <%
-final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
-final INode node = INode.class.cast(codeGenArgument.getArgument());
-if(node == null) {
-    throw new IllegalArgumentException("node cannot be null");
-}
-final String cid = node.getUniqueName();
-final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
-final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
-final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
-// Please see TaCoKitConst.GUESS_SCHEMA_PARAMETER_TEMP_FILE_KEY
-final String tacokitTempFilePath = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_TEMP_FILE_KEY___").getValue();
-// Please see TaCoKitConst.GUESS_SCHEMA_PARAMETER_ENCODING_KEY
-final String tacokitEncoding = (String)node.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_ENCODING_KEY___").getValue();
+    final CodeGeneratorArgument guessSchemaCodeGenArgument = CodeGeneratorArgument.class.cast(argument);
+    final INode guessSchemaNode = INode.class.cast(guessSchemaCodeGenArgument.getArgument());
+    if(guessSchemaNode == null) {
+        throw new IllegalArgumentException("node cannot be null");
+    }
+    final String guessSchemaCid = guessSchemaNode.getUniqueName();
+    final String guessSchemaOriginalName = (String)guessSchemaNode.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+    final String guessSchemaFamily = (String)guessSchemaNode.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+    final String guessSchemaVersion = (String)guessSchemaNode.getElementParameter(EParameterName.VERSION.getName()).getValue();
+    final String pluginName = (String)guessSchemaNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_PLUGIN_NAME___").getValue();
+    final String actionName = (String)guessSchemaNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_ACTION_NAME___").getValue();
+    final String tacokitComponentType = (String)guessSchemaNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_COMPONENT_TYPE___").getValue();
+    final String outputConnectionName = (String)guessSchemaNode.getElementParameter("___TACOKIT_GUESS_SCHEMA_PARAMETER_OUTPUT_CONNECTION_NAME___").getValue();
+    final IComponent guessSchemaComponent = guessSchemaNode.getComponent();
+    final boolean guessSchemaUseLookup = guessSchemaComponent.useLookup();
 %>
 
-<%@include file="./TaCoKitGuessSchema.javajet"%>
-<%@include file="../../jet_stub/generic/configuration.javajet"%>
+final java.io.PrintStream out = System.out;
+System.setOut(System.err);
+System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
+        @Override
+        public void write(final int b) {
+            // deactivate System.out for guess schema
+            // This stream is used to transfer the schema between process
+        }
+}));
 
-StringBuffer strBuff = new StringBuffer();
-TaCoKitGuessSchema tacokitGuessSchema = new TaCoKitGuessSchema(configuration_<%=cid%>, "<%=family%>", "<%=family%>", "<%=originalName%>", "default", "schema", "<%=tacokitTempFilePath%>", "<%=tacokitEncoding%>");
-try {
-    tacokitGuessSchema.guessSchema(strBuff);
-} finally {
-    tacokitGuessSchema.close();
-}
+
+<%
+    if ("input".equalsIgnoreCase(tacokitComponentType)) {
+        final CodeGeneratorArgument codeGenArgument = CodeGeneratorArgument.class.cast(argument);
+        final INode node = INode.class.cast(codeGenArgument.getArgument());
+        if(node == null) {
+            throw new IllegalArgumentException("node cannot be null");
+        }
+        final String cid = node.getUniqueName();
+        final String originalName = (String)node.getElementParameter(EParameterName.COMPONENT_NAME.getName()).getValue();
+        final String family = (String)node.getElementParameter(EParameterName.FAMILY.getName()).getValue();
+        final String version = (String)node.getElementParameter(EParameterName.VERSION.getName()).getValue();
+%>
+        <%@include file="../../jet_stub/generic/configuration.javajet"%>
+
+<%  } else { %>
+        <%@include file="./tTaCoKitGuessSchema_begin_for_processor.javajet"%>
+<%  } %>
+
+    org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema tacokitGuessSchema =
+                            new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(out, globalMap, configuration_<%=guessSchemaCid%>,
+                                                                                    "<%=pluginName%>",
+                                                                                    "<%=guessSchemaFamily%>",
+                                                                                    "<%=guessSchemaOriginalName%>",
+                                                                                    <% if(actionName == null || actionName.isEmpty()){%> null <%}else {%> "<%=actionName%>" <%}%>
+                                                                                    );
+    <% if ("input".equalsIgnoreCase(tacokitComponentType)) {  %>
+            try {
+                tacokitGuessSchema.guessInputComponentSchema();
+            } finally {
+                tacokitGuessSchema.close();
+            }
+    <% } else { %>
+        globalMap.put("___tacokitGuessSchema___", tacokitGuessSchema);
+        int _recordsCount_<%=guessSchemaCid%> = 0;
+    <% } %>

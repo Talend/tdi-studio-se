@@ -20,4 +20,6 @@ public class RunprocessConstants {
     public final static String ENABLE_CONSOLE_LINE_LIMIT = "ENABLE_CONSOLE_LINE_LIMIT"; //$NON-NLS-1$
 
     public final static String CONSOLE_LINE_LIMIT_COUNT = "CONSOLE_LINE_LIMIT_COUNT"; //$NON-NLS-1$
+    
+    public final static String CONSOLE_WRAP = "CONSOLE_WRAP"; //$NON-NLS-1$
 }

@@ -58,6 +58,7 @@ Require-Bundle: org.eclipse.core.runtime,
   org.eclipse.core.resources,
   org.eclipse.emf.common,
   org.eclipse.gef,
+  org.eclipse.help,
   org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
   org.eclipse.m2e.core,
   org.eclipse.m2e.maven.runtime,
@@ -80,3 +81,4 @@ Require-Bundle: org.eclipse.core.runtime,
   org.talend.cwm.mip,
   org.talend.utils,
   org.apache.log4j
+Import-Package: org.talend.components.api.properties

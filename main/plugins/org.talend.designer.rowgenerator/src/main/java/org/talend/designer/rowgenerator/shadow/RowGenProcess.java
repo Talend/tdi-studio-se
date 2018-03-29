@@ -616,7 +616,7 @@ public class RowGenProcess extends Element implements IProcess {
     }
 
     @Override
-    public Set<String> getNeededLibraries(boolean withChildrens) {
+    public Set<String> getNeededLibraries(int options) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -842,7 +842,7 @@ public class RowGenProcess extends Element implements IProcess {
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrens) {
+    public Set<ModuleNeeded> getNeededModules(int options) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -126,9 +126,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//A1
                             <%
                             }
                             if(column.getTalendType().equals("id_Dynamic")){
-                            %>
-                                routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid%>, OUT_DELIM_<%=cid%>);
-                            <%
+                                if(advancedSeparator){
+%>
+                                routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>, <%= thousandsSeparator %>, <%= decimalSeparator %>);
+<%
+							    }else{%>
+							    routines.system.DynamicUtils.writeValuesToStringBuilder(<%=conn.getName() %>.<%=column.getLabel() %>, sb_<%=cid %>, OUT_DELIM_<%=cid %>);
+							    <%}
                             }else{
                             %>
                                 sb_<%=cid%>.append(

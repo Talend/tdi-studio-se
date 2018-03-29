@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.repository.ui.wizards.exportjob.scriptsmanager;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,6 +39,7 @@ import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.CommonsPlugin;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
@@ -147,9 +152,9 @@ public class BuildJobManager {
                 IFile jobTargetFile = buildJobHandler.getJobTargetFile();
                 if (jobTargetFile != null && jobTargetFile.exists()) {
                     // unzip to temp folder
-                    FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
-                    String zipPath = jobTargetFile.getLocation().toPortableString();
                     if (needClasspathJar(exportChoiceMap)) {
+                        FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
+                        String zipPath = jobTargetFile.getLocation().toPortableString();
                         JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipPath, processItem
                                 .getProperty().getLabel());
                         creator.setTempFolder(tempFolder.getAbsolutePath());
@@ -192,43 +197,42 @@ public class BuildJobManager {
             pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * total); //$NON-NLS-1$
             ProcessItem processItem = itemToExport;
             // get correct version
-            if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version)
+            if (!RelationshipItemBuilder.LATEST_VERSION.equals(version) && version != null && !"".equals(version) //$NON-NLS-1$
                     && !version.equals(processItem.getProperty().getVersion())) {
                 processItem = ItemCacheManager.getProcessItem(processItem.getProperty().getId(), version);
             }
             final String label = processItem.getProperty().getLabel();
             final IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context, version,
                     exportChoiceMap, jobExportType);
-            ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar(processItem));
             final IWorkspaceRunnable op = new IWorkspaceRunnable() {
 
                 @Override
                 public void run(IProgressMonitor wrMonitor) throws CoreException {
                     try {
-                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType),
+                        wrMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), //$NON-NLS-1$
                                 scale * 3);
 
-                        Map<String, Object> prepareParams = new HashMap<String, Object>();
+                        Map<String, Object> prepareParams = new HashMap<>();
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
                         prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
 
                         buildJobHandler.prepare(new SubProgressMonitor(wrMonitor, scale), prepareParams);
 
                         wrMonitor.worked(scale);
-                        TimeMeasure.step(timeMeasureId, "prepare to build job");
+                        TimeMeasure.step(timeMeasureId, "prepare to build job"); //$NON-NLS-1$
                         if (wrMonitor.isCanceled()) {
-                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
 
                         buildJobHandler.build(new SubProgressMonitor(wrMonitor, scale));
-                        TimeMeasure.step(timeMeasureId, "build and package");
+                        TimeMeasure.step(timeMeasureId, "build and package"); //$NON-NLS-1$
                         if (wrMonitor.isCanceled()) {
-                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled"));
+                            throw new OperationCanceledException(Messages.getString("BuildJobManager.operationCanceled")); //$NON-NLS-1$
                         }
                         wrMonitor.done();
                     } catch (Exception e) {
                         throw new CoreException(new org.eclipse.core.runtime.Status(IStatus.ERROR, FrameworkUtil.getBundle(
-                                this.getClass()).getSymbolicName(), "Error", e));
+                                this.getClass()).getSymbolicName(), "Error", e)); //$NON-NLS-1$
                     }
                 };
 
@@ -247,7 +251,6 @@ public class BuildJobManager {
                 }
                 throw new PersistenceException(cause);
             }
-            ProcessUtils.setJarWithContext(false);
             IFile jobTargetFile = buildJobHandler.getJobTargetFile();
             if (jobTargetFile != null && jobTargetFile.exists()) {
                 IPath jobZipLocation = jobTargetFile.getLocation();
@@ -263,23 +266,6 @@ public class BuildJobManager {
                     creator.deleteTempFiles();
                     TimeMeasure.step(timeMeasureId, "Recreate job jar for classpath");
                 }
-                // TBD-2500
-                Set<ProcessItem> processItems = new HashSet<ProcessItem>();
-                processItems.add(processItem);
-                // We get the father job childs.
-                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(processItem);
-                Iterator<JobInfo> infoIterator = infos.iterator();
-                while (infoIterator.hasNext()) {
-                    processItems.add(infoIterator.next().getProcessItem());
-                }
-                TimeMeasure.step(timeMeasureId, "getChildrenJobInfo");
-
-                // We iterate over the job and its childs in order to re-archive them if needed.
-                for (ProcessItem pi : processItems) {
-                    BDJobReArchieveCreator bdRecreator = new BDJobReArchieveCreator(pi, processItem);
-                    bdRecreator.create(jobZipFile);
-                }
-                TimeMeasure.step(timeMeasureId, "BDJobReArchieveCreator");
 
                 File jobFileTarget = new File(destinationPath);
                 if (jobFileTarget.isDirectory()) {
@@ -292,7 +278,15 @@ public class BuildJobManager {
                         processItem.getProperty());
                 String mvnLogFilePath = talendJavaProject.getProject()
                         .getFile("lastGenerated.log").getLocation().toPortableString(); //$NON-NLS-1$
-                throw new Exception(Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath)); //$NON-NLS-1$
+                String causeMsg = Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath); //$NON-NLS-1$
+                String logMsg = getLogErrorMsg(mvnLogFilePath); //$NON-NLS-1$
+                for (String line : logMsg.split("\n")) { //$NON-NLS-1$
+                    if (line.startsWith("[ERROR] Tests run")) { //$NON-NLS-1$
+                    	causeMsg += ". There exists test case job failure."; //$NON-NLS-1$
+                    	break;
+                    }
+                }
+                throw new Exception(Messages.getString("BuildJobManager.mavenErrorMessage", mvnLogFilePath)+"\n"+logMsg,new Throwable(causeMsg)); //$NON-NLS-1$
             }
             if (checkCompilationError) {
                 CorePlugin.getDefault().getRunProcessService().checkLastGenerationHasCompilationError(false);
@@ -307,6 +301,28 @@ public class BuildJobManager {
                 TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = false;
             }
         }
+    }
+    
+    private String getLogErrorMsg(String filepath) throws IOException{
+    	BufferedReader reader = null;
+    	StringBuffer errorbuffer = new StringBuffer();
+    	try {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(filepath)));
+			String line;
+			while ((line = reader.readLine()) != null) { //$NON-NLS-1$
+				if (line.startsWith("[ERROR]")) { //$NON-NLS-1$
+					errorbuffer.append(line + "\n"); //$NON-NLS-1$
+                }
+			}
+			return errorbuffer.toString();
+		} catch (IOException e) {
+			 ExceptionHandler.process(e);
+			return null;
+		}finally {
+			 if (reader != null) {
+				 reader.close();
+			 }
+		}
     }
 
     private boolean needClasspathJar(Map<ExportChoice, Object> exportChoiceMap) {

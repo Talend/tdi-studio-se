@@ -130,8 +130,8 @@ public class UnifiedComponentsManager {
                         delegateComp.getImage());
             }
 
-            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-                    IComponentsService.class);
+            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault()
+                    .getService(IComponentsService.class);
             Set<String> exsitCategories = new HashSet<String>();
             for (String paletteType : unifier.getCategories()) {
                 IComponent emfComponent = compService.getComponentsFactory().get(componentName, paletteType);
@@ -145,6 +145,7 @@ public class UnifiedComponentsManager {
                 object.setComponentName(componentName);
                 object.getSupportedCategories().addAll(unifier.getCategories());
                 object.getParameterMapping().putAll(unifier.getParameterMapping());
+                object.getConnectorMapping().putAll(unifier.getConnectorMapping());
                 object.getParamMappingExclude().addAll(unifier.getMappingExclude());
                 object.getHideFamilies().addAll(unifier.getFamilies());
                 component.getUnifiedObjects().add(object);

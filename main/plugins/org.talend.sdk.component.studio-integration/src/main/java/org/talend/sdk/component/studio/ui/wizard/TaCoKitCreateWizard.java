@@ -58,6 +58,7 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
      * 
      * @return operation to perform on finish
      */
+    @Override
     protected IWorkspaceRunnable createFinishOperation() {
         return new IWorkspaceRunnable() {
 
@@ -89,6 +90,7 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
         if (taCoKitRepositoryNode.isLeafNode()) {
             model.setParentItemId(taCoKitRepositoryNode.getObject().getId());
         }
+        model.initVersion();
         factory.create(connectionItem, getWizardPropertiesPage().getDestinationPath());
         RepositoryManager.refreshCreatedNode(TaCoKitConst.METADATA_TACOKIT);
         // RepositoryUpdateManager.updateFileConnection(connectionItem);

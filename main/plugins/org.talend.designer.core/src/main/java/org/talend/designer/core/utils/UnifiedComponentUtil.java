@@ -23,8 +23,10 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsHandler;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
@@ -47,8 +49,8 @@ public class UnifiedComponentUtil {
             if (elementParameter != null && elementParameter.getValue() != null) {
                 String emfCompName = String.valueOf(elementParameter.getValue());
                 String paletteType = component.getPaletteType();
-                IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-                        IComponentsService.class);
+                IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault()
+                        .getService(IComponentsService.class);
                 IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
                 if (emfComponent != null) {
                     return emfComponent;
@@ -62,8 +64,8 @@ public class UnifiedComponentUtil {
 
     public static boolean isDelegateComponent(IComponent component) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             if (service.isDelegateComponent(component)) {
                 return true;
             }
@@ -73,8 +75,8 @@ public class UnifiedComponentUtil {
 
     public static IComponent getDelegateComponent(IComponent component) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             return service.getDelegateComponent(component);
         }
         return component;
@@ -82,8 +84,8 @@ public class UnifiedComponentUtil {
 
     public static IComponent getDelegateComponent(String componentName, String paletteType) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             return service.getDelegateComponent(componentName, paletteType);
         }
         return null;
@@ -92,18 +94,19 @@ public class UnifiedComponentUtil {
     public static void createParameters(INode node, List<IElementParameter> listParams, IComponent delegateComp,
             IComponent emfComp) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             service.createParameters(node, listParams, delegateComp, emfComp);
         }
     }
 
     public static void switchComponent(INode node, IComponent delegateComponent, String oldEmfComponent,
-            List<? extends IElementParameter> oldParms) {
+            List<? extends IElementParameter> oldParms, List<IMetadataTable> oldMetadataTables,
+            List<INodeConnector> oldConnectors) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
-            service.switchComponent(node, delegateComponent, oldEmfComponent, oldParms);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
+            service.switchComponent(node, delegateComponent, oldEmfComponent, oldParms, oldMetadataTables, oldConnectors);
         }
 
     }
@@ -111,8 +114,8 @@ public class UnifiedComponentUtil {
     public static List<IComponent> filterUnifiedComponent(RepositoryComponentSetting setting, List<IComponent> componentList) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
             List<IComponent> filtedList = new ArrayList<IComponent>();
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             IComponentsHandler componentsHandler = ComponentsFactoryProvider.getInstance().getComponentsHandler();
             filtedList.addAll(componentList);
             for (IComponent component : componentList) {
@@ -146,12 +149,12 @@ public class UnifiedComponentUtil {
 
     public static IComponent getEmfComponent(IComponentName setting, IComponent selectedComponent) {
         if (isDelegateComponent(selectedComponent)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             String paletteType = selectedComponent.getPaletteType();
             String emfCompName = service.getUnifiedComponetName4DndFromRepository(setting, selectedComponent);
-            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-                    IComponentsService.class);
+            IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault()
+                    .getService(IComponentsService.class);
             IComponent emfComponent = compService.getComponentsFactory().get(emfCompName, paletteType);
             if (emfComponent != null) {
                 return emfComponent;
@@ -164,8 +167,8 @@ public class UnifiedComponentUtil {
 
     public static String getUnifiedComponentDisplayName(IComponent delegateComponent, String emfComponent) {
         if (isDelegateComponent(delegateComponent)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             return service.getUnifiedCompDisplayName(delegateComponent, emfComponent);
         }
         return delegateComponent.getName();
@@ -191,8 +194,8 @@ public class UnifiedComponentUtil {
 
     public static String getComponentDisplayNameForPalette(IComponent delegateComponent, String keyWord) {
         if (isDelegateComponent(delegateComponent)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             return service.getComponentDisplayNameForPalette(delegateComponent, keyWord);
         }
         return delegateComponent.getName();
@@ -200,8 +203,8 @@ public class UnifiedComponentUtil {
 
     public static IComponent getUnifiedComponentByFilter(IComponent delegateComponent, String filter) {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IUnifiedComponentService.class)) {
-            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                    IUnifiedComponentService.class);
+            IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                    .getService(IUnifiedComponentService.class);
             return service.getUnifiedComponentByFilter(delegateComponent, filter);
         }
         return null;

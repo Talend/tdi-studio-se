@@ -55,6 +55,7 @@ public class CodeGenInit implements IApplication {
 
     @Override
     public Object start(IApplicationContext context) throws Exception {
+        System.setProperty("force_full_codegen", "true");
         Timer.getTimer("CodeGenInit").start(); //$NON-NLS-1$
         CommonsPlugin.setHeadless(true);
         initLocalRepository();

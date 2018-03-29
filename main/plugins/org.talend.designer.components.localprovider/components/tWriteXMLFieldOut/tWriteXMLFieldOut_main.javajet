@@ -226,7 +226,15 @@ class GenerateToolByDom4j{
 		if(<%tool.getValue(node);%>!=null){
 			nestXMLTool_<%=cid%> .setText(<%=currEleName%>_<%=cid%>,<%tool.getValue(node);%>);
 <%
-                if (istWriteJSONField && !isQuoteAllValues) {
+                boolean hasCustomAttrs = false;
+                for (XMLNode attribute : node.attributes) {
+                    if (!"type".equals(attribute.name) && !"class".equals(attribute.name)) {
+                        hasCustomAttrs = true;
+                        break;
+                    }
+                }
+
+                if (istWriteJSONField && !isQuoteAllValues && !hasCustomAttrs) {
                     if (javaType == JavaTypesManager.BOOLEAN) {
 %>
             <%=currEleName%>_<%=cid%>.addAttribute("type", "boolean");

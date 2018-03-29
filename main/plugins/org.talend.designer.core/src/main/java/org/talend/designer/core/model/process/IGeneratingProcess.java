@@ -34,5 +34,7 @@ public interface IGeneratingProcess {
      * @param sortedFlow
      */
     void buildFromGraphicalProcess(List<INode> sortedFlow);
+    
+    void generateAdditionalCode();
 
 }

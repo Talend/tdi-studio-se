@@ -271,7 +271,9 @@ public class JobErrorsChecker {
         String errorMessage = null;
         try {
             HashSet<JobInfo> jobInfos = new HashSet<>();
-            jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            if (LastGenerationInfo.getInstance().getLastMainJob() != null) {
+                jobInfos.add(LastGenerationInfo.getInstance().getLastMainJob());
+            }
             for (JobInfo jobInfo : jobInfos) {
                 if (jobInfo.isTestContainer()) {
                     continue;

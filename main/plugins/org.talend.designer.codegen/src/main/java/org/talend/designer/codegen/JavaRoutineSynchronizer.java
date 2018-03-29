@@ -37,6 +37,7 @@ import org.talend.commons.utils.io.FilesUtils;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ILibrariesService;
+import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.PigudfItem;
 import org.talend.core.model.properties.ProcessItem;
@@ -46,6 +47,7 @@ import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.repository.ProjectManager;
 
 /**
  * Routine synchronizer of java project.
@@ -65,12 +67,12 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
      */
     @Override
     public void syncAllRoutines() throws SystemException {
-        syncRoutineItems(getRoutines(), false);
+        syncRoutineItems(getRoutines(false), false);
     }
 
     @Override
     public void syncAllRoutinesForLogOn() throws SystemException {
-        syncRoutineItems(getRoutines(), true);
+        syncRoutineItems(getRoutines(true), true);
     }
 
     /*
@@ -80,19 +82,23 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
      */
     @Override
     public void syncAllPigudf() throws SystemException {
-        syncRoutineItems(getAllPigudf(), false);
+        syncRoutineItems(getAllPigudf(false), false);
     }
 
     @Override
     public void syncAllPigudfForLogOn() throws SystemException {
-        syncRoutineItems(getAllPigudf(), true);
+        syncRoutineItems(getAllPigudf(true), true);
     }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
         for (RoutineItem routineItem : routineObjects) {
-            syncRoutine(routineItem, true, forceUpdate);
+            syncRoutine(routineItem, true, true, forceUpdate);
         }
+        syncSystemRoutine(ProjectManager.getInstance().getCurrentProject());
+    }
 
+    @Override
+    protected void syncSystemRoutine(Project project) throws SystemException {
         try {
             ILibrariesService jms = CorePlugin.getDefault().getLibrariesService();
             List<URL> urls = jms.getTalendRoutinesFolder();
@@ -105,7 +111,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
                     }
                     File f = new File(systemModuleURL.getPath());
                     if (f.isDirectory()) {
-                        syncModule(f.listFiles());
+                        syncModule(project, f.listFiles());
                     }
                 }
             }
@@ -139,9 +145,9 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
      * 
      * @see org.talend.designer.codegen.IRoutineSynchronizer#syncRoutine(org.talend .core.model.properties.RoutineItem)
      */
-    private static void syncModule(File[] modules) throws SystemException {
+    private static void syncModule(Project project, File[] modules) throws SystemException {
         IRunProcessService service = CodeGeneratorActivator.getDefault().getRunProcessService();
-        ITalendProcessJavaProject talenCodeJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES);
+        ITalendProcessJavaProject talenCodeJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES, project);
         if (talenCodeJavaProject == null) {
             return;
         }

@@ -47,14 +47,11 @@ public class TalendGridLayer extends GridLayer {
         FreeformFigure ff = (FreeformFigure) this.getParent();
         Rectangle clientArea = getClientArea();
         Rectangle bounds = ff.getFreeformExtent().getCopy();
-        bounds.union(0, 0, clientArea.width * AnimatableZoomManager.currentZoom, clientArea.height
-                * AnimatableZoomManager.currentZoom);
+        bounds.union(clientArea.x, clientArea.y, clientArea.width * AnimatableZoomManager.currentZoom,
+                clientArea.height * AnimatableZoomManager.currentZoom);
         ff.setFreeformBounds(bounds);
 
-        Rectangle original = g.getClip(Rectangle.SINGLETON);
-
-        Rectangle clip = new Rectangle(original.x - original.x % distanceX, original.y - original.y % distanceY, original.width
-                + Math.abs(original.x % distanceX), original.height + Math.abs(original.y % distanceY));
+        Rectangle clip = g.getClip(Rectangle.SINGLETON);
         if (distanceX > 0 && distanceY > 0) {
             if (origin.x >= clip.x) {
                 while (origin.x - distanceX >= clip.x) {
@@ -65,7 +62,6 @@ public class TalendGridLayer extends GridLayer {
                     origin.x += distanceX;
                 }
             }
-
             if (origin.y >= clip.y) {
                 while (origin.y - distanceY >= clip.y) {
                     origin.y -= distanceY;
@@ -75,18 +71,15 @@ public class TalendGridLayer extends GridLayer {
                     origin.y += distanceY;
                 }
             }
-
-            for (int i = origin.x; i < clip.x + clip.width; i += distanceX) {
-                for (int j = origin.y; j < clip.y + clip.height; j += distanceY) {
+            for (int i = origin.x - distanceX; i < clip.x + clip.width; i += distanceX) {
+                for (int j = origin.y - distanceY; j < clip.y + clip.height; j += distanceY) {
                     // g.drawPoint(i, j);
                     int re = Math.abs(i - j);
                     if (re / distanceY % 2 == 0) {
                         g.drawImage(ImageProvider.getImage(EImage.CHESS_GRAY), i, j);
                     }
-
                 }
             }
         }
-
     }
 }

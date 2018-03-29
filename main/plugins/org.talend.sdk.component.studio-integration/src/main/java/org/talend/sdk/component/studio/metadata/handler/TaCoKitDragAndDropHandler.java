@@ -54,13 +54,16 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     @Override
     public boolean canHandle(final Connection connection) {
+        if (connection == null) {
+            return false;
+        }
         try {
             TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
             if (!TaCoKitUtil.isEmpty(model.getConfigurationId())) {
                 return true;
             }
         } catch (Exception e) {
-            /// nothing to do
+            ExceptionHandler.process(e);
         }
         return false;
     }
@@ -69,6 +72,9 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     public Object getComponentValue(final Connection connection, final String value, final IMetadataTable table,
             final String targetComponent) {
         try {
+            if (connection == null) {
+                return null;
+            }
             if (TaCoKitUtil.isEmpty(value)) {
                 return null;
             }

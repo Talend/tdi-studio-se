@@ -22,9 +22,10 @@ public class MavenVersionManagementProjectSettingPageInitializer extends Abstrac
 
     @Override
     public void initializeDefaultPreferences() {
-        IPreferenceStore preferenceStore = DesignerMavenPlugin.getPlugin().getProjectPreferenceManager().getPreferenceStore();
-        preferenceStore.setDefault(MavenConstants.PROJECT_VERSION, PomUtil.getDefaultMavenVersion());
-        preferenceStore.setDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, false);
+        // IPreferenceStore preferenceStore =
+        // DesignerMavenPlugin.getPlugin().getProjectPreferenceManager().getPreferenceStore();
+        // preferenceStore.setDefault(MavenConstants.PROJECT_VERSION, PomUtil.getDefaultMavenVersion());
+        // preferenceStore.setDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, false);
     }
 
 }

@@ -164,7 +164,7 @@ if (sftp) { // *** sftp *** //
 
 				public void getAllFiles(String remoteDirectory, String localDirectory) throws com.jcraft.jsch.SftpException {
       
-					cnlSFTP.cd(remoteDirectory);
+					chdir(remoteDirectory);
 					java.util.Vector sftpFiles = cnlSFTP.ls(".");
 
 					for (Object sftpFile : sftpFiles) {
@@ -181,7 +181,7 @@ if (sftp) { // *** sftp *** //
 								localFile.mkdir();
 							}
 							getAllFiles(remoteDirectory + "/" + lsEntry.getFilename(), localDirectory + "/" + lsEntry.getFilename());
-							cnlSFTP.cd(remoteDirectory);
+							chdir(remoteDirectory);
 						} else if (!attrs.isLink()) {
 							downloadFile(localDirectory, lsEntry.getFilename());
 						}
@@ -190,7 +190,7 @@ if (sftp) { // *** sftp *** //
 
 				public void getFiles(String remoteDirectory, String localDirectory, String maskStr) throws com.jcraft.jsch.SftpException {
       
-					cnlSFTP.cd(remoteDirectory);
+					chdir(remoteDirectory);
 					java.util.Vector sftpFiles = cnlSFTP.ls(".");
 
 					for (Object sftpFile : sftpFiles) {
@@ -210,8 +210,10 @@ if (sftp) { // *** sftp *** //
       				}
 				}
 
-    			public void chdir(String path) throws com.jcraft.jsch.SftpException{
-					cnlSFTP.cd(path);
+				public void chdir(String path) throws com.jcraft.jsch.SftpException{
+					if (!".".equals(path)) {
+						cnlSFTP.cd(path);
+					}
 				}
 
 				public String pwd() throws com.jcraft.jsch.SftpException{
@@ -333,7 +335,9 @@ if (sftp) { // *** sftp *** //
 			getter_<%=cid%>.cnlSFTP = c_<%=cid%>;
 			getter_<%=cid%>.monitor = monitor_<%=cid%>;
 			String remotedir_<%=cid %> = <%=remotedir%>;
-			c_<%=cid%>.cd(remotedir_<%=cid %>);
+			if (!".".equals(remotedir_<%=cid %>)) {
+				c_<%=cid%>.cd(remotedir_<%=cid %>);
+			}
 <%
 } else if (!ftps) { // *** ftp *** //
 %>  
@@ -346,7 +350,7 @@ if (sftp) { // *** sftp *** //
     	public void getAllFiles(String remoteDirectory, String localDirectory) throws java.io.IOException, 
 		com.enterprisedt.net.ftp.FTPException, java.text.ParseException {
 
-			ftpClient.chdir(remoteDirectory);
+			chdir(remoteDirectory);
 			String path = ftpClient.pwd();
 			String[] ftpFileNames = null;
 			com.enterprisedt.net.ftp.FTPFile[] ftpFiles = null;
@@ -375,12 +379,12 @@ if (sftp) { // *** sftp *** //
 							log.warn("<%=cid%> - " + e.getMessage());
 						<%}%>
       		      		java.io.File localFile = new java.io.File(localDirectory + "/" + ftpFileName);
-            
+
         	    		if (!localFile.exists()) {
         	      			localFile.mkdir();
         	    		}
-			            getAllFiles(path + "/" + ftpFileName, localDirectory + "/" + ftpFileName);
-      		  		    ftpClient.chdir(path);
+						getAllFiles(path + "/" + ftpFileName, localDirectory + "/" + ftpFileName);
+						chdir(path);
 					}
 				}
 			} else {
@@ -394,7 +398,7 @@ if (sftp) { // *** sftp *** //
 				                localFile.mkdir();
 							}
 							getAllFiles(path + "/" + ftpFile.getName(), localDirectory + "/" + ftpFile.getName());
-							ftpClient.chdir(path);
+							chdir(path);
 			            }
 					} else if (!ftpFile.isLink()) {
 			            downloadFile(localDirectory + "/" + ftpFile.getName(),ftpFile.getName());
@@ -405,7 +409,7 @@ if (sftp) { // *** sftp *** //
 
 		public void getFiles(String remoteDirectory, String localDirectory, String maskStr) throws java.io.IOException,
 		com.enterprisedt.net.ftp.FTPException, java.text.ParseException {
-			ftpClient.chdir(remoteDirectory);
+			chdir(remoteDirectory);
 			String[] ftpFileNames = null;
 			com.enterprisedt.net.ftp.FTPFile[] ftpFiles = null;
 
@@ -444,7 +448,9 @@ if (sftp) { // *** sftp *** //
 		}
 
 	    public void chdir(String path) throws java.io.IOException,  com.enterprisedt.net.ftp.FTPException{
-    		ftpClient.chdir(path);
+			if (!".".equals(path)) {
+				ftpClient.chdir(path);
+			}
 		}
 
 		public String pwd() throws java.io.IOException,  com.enterprisedt.net.ftp.FTPException{
@@ -597,7 +603,9 @@ if (sftp) { // *** sftp *** //
 	FTPGetter_<%=cid%> getter_<%=cid%> = new FTPGetter_<%=cid%>();
 	getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
 	String remotedir_<%=cid %> = <%=remotedir%>;
-	ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
+	if (!".".equals(remotedir_<%=cid %>)) {
+		ftp_<%=cid %>.chdir(remotedir_<%=cid %>);
+	}
 <%
 } else { // *** ftps *** //
 %>
@@ -608,7 +616,7 @@ if (sftp) { // *** sftp *** //
 		public void getAllFiles(String remoteDirectory, String localDirectory)
 		throws IllegalStateException, IOException, java.io.FileNotFoundException {
 
-			ftpClient.changeWorkingDirectory(remoteDirectory);
+			chdir(remoteDirectory);
 			String path = ftpClient.printWorkingDirectory();
 			org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
 			ftpFiles = ftpClient.listFiles();
@@ -624,7 +632,7 @@ if (sftp) { // *** sftp *** //
 							localFile.mkdir();
 						}
 						getAllFiles(path + "/" + ftpFile.getName(), localDirectory + "/" + ftpFile.getName());
-						ftpClient.changeWorkingDirectory(path);
+						chdir(path);
 					}
 				} else if (!ftpFile.isSymbolicLink()) {
 					downloadFile(localDirectory + "/" + ftpFile.getName(),ftpFile.getName());
@@ -635,7 +643,7 @@ if (sftp) { // *** sftp *** //
 		public void getFiles(String remoteDirectory, String localDirectory, String maskStr) 
 		throws IllegalStateException, IOException, java.io.FileNotFoundException {
 
-			ftpClient.changeWorkingDirectory(remoteDirectory);
+			chdir(remoteDirectory);
 			org.apache.commons.net.ftp.FTPFile[] ftpFiles = null;
 			ftpFiles = ftpClient.listFiles(".");
 
@@ -653,7 +661,9 @@ if (sftp) { // *** sftp *** //
 
 		public void chdir(String path) 
 		throws IllegalStateException, IOException {
-			ftpClient.changeWorkingDirectory(path);
+			if (!".".equals(path)) {
+				ftpClient.changeWorkingDirectory(path);
+			}
 		}
 
 		public String pwd() 
@@ -772,10 +782,12 @@ if (sftp) { // *** sftp *** //
 		getter_<%=cid%> = new FTPSGetter_<%=cid%>();
 		getter_<%=cid%>.ftpClient = ftp_<%=cid %>;
 		remotedir_<%=cid%> = <%=remotedir%>;
-		boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
+		if (!".".equals(remotedir_<%=cid %>)) {
+			boolean cwdSuccess_<%=cid %> = ftp_<%=cid %>.changeWorkingDirectory(remotedir_<%=cid %>);
 
-		if (!cwdSuccess_<%=cid %>) {
-			throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+			if (!cwdSuccess_<%=cid %>) {
+				throw new RuntimeException("Failed to change remote directory. " + ftp_<%=cid %>.getReplyString());
+			}
 		}
 <%
 }
@@ -811,6 +823,10 @@ if (!dirHandle_<%=cid %>.exists()) {
   dirHandle_<%=cid %>.mkdirs();
 }
 String root_<%=cid %> = getter_<%=cid %>.pwd();
+<% /*avoid sending CWD when remotedir is "."*/%>
+if ("/".equals(root_<%=cid %>)) {
+	root_<%=cid %> = ".";
+}
 
 <%if(isLog4jEnabled){%>
 	log.info("<%=cid%> - Downloading files from the server.");

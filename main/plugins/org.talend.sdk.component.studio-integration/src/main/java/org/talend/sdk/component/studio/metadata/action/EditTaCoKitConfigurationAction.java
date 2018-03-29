@@ -12,16 +12,31 @@
  */
 package org.talend.sdk.component.studio.metadata.action;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
+import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
+import org.talend.commons.ui.runtime.exception.ExceptionMessageDialog;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
+import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
+import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitConfigurationRuntimeData;
 import org.talend.sdk.component.studio.ui.wizard.TaCoKitEditWizard;
@@ -90,7 +105,51 @@ public class EditTaCoKitConfigurationAction extends TaCoKitMetadataContextualAct
     }
 
     public TaCoKitEditWizard createWizard(final IWorkbench wb) {
-        return new TaCoKitEditWizard(wb, createRuntimeData());
+        TaCoKitConfigurationRuntimeData runtimeData = createRuntimeData();
+        if (!runtimeData.isReadonly()) {
+            try {
+                TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(runtimeData.getConnectionItem());
+                TaCoKitConfigurationModel configurationModel = itemModel.getConfigurationModel();
+                TaCoKitMigrationManager migrationManager = Lookups.taCoKitCache().getMigrationManager();
+                if (migrationManager.isNeedMigration(configurationModel)) {
+                    String label = ""; //$NON-NLS-1$
+                    try {
+                        label = itemModel.getDisplayLabel();
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                    MessageDialog dialog = new MessageDialog(DisplayUtils.getDefaultShell(),
+                            Messages.getString("migration.check.dialog.title"), null, //$NON-NLS-1$
+                            Messages.getString("migration.check.dialog.ask", label), MessageDialog.WARNING, //$NON-NLS-1$
+                            new String[] { IDialogConstants.YES_LABEL, IDialogConstants.NO_LABEL }, 0);
+                    int result = dialog.open();
+                    if (result == 0) {
+                        final Exception[] ex = new Exception[1];
+                        ProgressMonitorDialog monitorDialog = new ProgressMonitorDialog(DisplayUtils.getDefaultShell());
+                        monitorDialog.run(true, true, new IRunnableWithProgress() {
+
+                            @Override
+                            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                try {
+                                    migrationManager.migrate(configurationModel, monitor);
+                                } catch (Exception e) {
+                                    ex[0] = e;
+                                }
+                            }
+                        });
+                        if (ex[0] != null) {
+                            ExceptionMessageDialog.openWarning(DisplayUtils.getDefaultShell(),
+                                    Messages.getString("migration.check.dialog.title"), //$NON-NLS-1$
+                                    Messages.getString("migration.check.dialog.failed"), ex[0]); //$NON-NLS-1$
+                            throw ex[0];
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        return new TaCoKitEditWizard(wb, runtimeData);
     }
 
     private TaCoKitConfigurationRuntimeData createRuntimeData() {

@@ -100,10 +100,7 @@ public class BuildOSGiBundleHandler extends BuildJobHandler {
      */
     @Override
     public void build(IProgressMonitor monitor) throws Exception {
-        // Change to maven online,
-    	CommonsPlugin.setMavenOfflineState(false);
         super.build(monitor);
-        CommonsPlugin.setMavenOfflineState(true);
     }
 
     private IFile getTargetFile(String path, String fileName, IProgressMonitor monitor) {

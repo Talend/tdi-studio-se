@@ -23,7 +23,7 @@
 	String msgBobyType =  ElementParameterParser.getValue(node, "__MESSAGE_BODY_TYPE__");
 	boolean transacted = "true".equals(ElementParameterParser.getValue(node, "__IS_TRANSACTED__"));	
     String connectionComponentName = ElementParameterParser.getValue(node, "__CONNECTION__");
-    
+    String connectionCid = cid;
     List<? extends INode> commitNodes=node.getProcess().getNodesOfType("tMomCommit");
     List<? extends INode> rollBackNodes=node.getProcess().getNodesOfType("tMomRollback");
 
@@ -32,6 +32,7 @@
     	String cNodeName = ElementParameterParser.getValue(cNode,"__CONNECTION__");
     	if(cid.equals(cNodeName) || (isUseExistConnection && connectionComponentName.equals(cNodeName))){
     		isCommitRollback = true;
+    		connectionCid = ElementParameterParser.getValue(node,"__CONNECTION__");
     		break;
     	}
     }
@@ -153,7 +154,7 @@
 		
 		if(isAutoBackout){
 		%>
-			if(!(Boolean)globalMap.get("currentMessageIsConsumed_<%=cid%>")) {
+			if(!(Boolean)globalMap.get("currentMessageIsConsumed_<%=connectionCid%>")) {
 				if (backoutQueue_<%=cid%>!=null && threshold_<%=cid%> > 0 && inMessage<%=cid%>.backoutCount >= threshold_<%=cid%>-1) {
 					<%
 					if(isLog4jEnabled){

@@ -23,9 +23,13 @@ public class TaCoKitConfigurationItemModel {
 
     private final TaCoKitConfigurationModel configurationModel;
 
-    public TaCoKitConfigurationItemModel(final ConnectionItem item) {
+    public TaCoKitConfigurationItemModel(final ConnectionItem item) throws Exception {
+        this(item, true);
+    }
+
+    public TaCoKitConfigurationItemModel(final ConnectionItem item, final boolean checkVersion) throws Exception {
         this.connectionItem = item;
-        configurationModel = new TaCoKitConfigurationModel(item.getConnection());
+        configurationModel = new TaCoKitConfigurationModel(item.getConnection(), checkVersion);
     }
 
     public String getDisplayLabel() {

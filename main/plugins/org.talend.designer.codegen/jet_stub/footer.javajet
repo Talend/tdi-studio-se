@@ -502,19 +502,18 @@
 
         try {
             //call job/subjob with an existing context, like: --context=production. if without this parameter, there will use the default context instead.
-            java.io.InputStream inContext = <%=className%>.class.getClassLoader().getResourceAsStream("<%=jobClassPackageFolder%>/contexts/"+contextStr+".properties");
-            if(isDefaultContext && inContext ==null) {
-
-            } else {
-                if (inContext!=null) {
-                    //defaultProps is in order to keep the original context value
-                    defaultProps.load(inContext);
-                    inContext.close();
-                    context = new ContextProperties(defaultProps);
-                }else{
-                    //print info and job continue to run, for case: context_param is not empty.
-                    System.err.println("Could not find the context " + contextStr);
-                }
+            java.io.InputStream inContext = <%=className%>.class.getClassLoader().getResourceAsStream("<%=jobClassPackageFolder%>/contexts/" + contextStr + ".properties");
+            if (inContext == null) {
+                inContext = <%=className%>.class.getClassLoader().getResourceAsStream("config/contexts/" + contextStr + ".properties");
+            }
+            if (inContext != null) {
+                //defaultProps is in order to keep the original context value
+                defaultProps.load(inContext);
+                inContext.close();
+                context = new ContextProperties(defaultProps);
+            } else if (!isDefaultContext) {
+                //print info and job continue to run, for case: context_param is not empty.
+                System.err.println("Could not find the context " + contextStr);
             }
 
             if(!context_param.isEmpty()) {

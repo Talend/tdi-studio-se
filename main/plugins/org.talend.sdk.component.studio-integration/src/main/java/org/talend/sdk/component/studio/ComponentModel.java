@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
@@ -38,6 +39,7 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.PluginChecker;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.core.model.components.EComponentType;
+import org.talend.core.model.components.IComponent;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.metadata.types.JavaTypesManager;
 import org.talend.core.model.process.EConnectionType;
@@ -47,6 +49,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.process.INodeReturn;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.temp.ECodePart;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.maven.MavenConstants;
@@ -54,15 +57,18 @@ import org.talend.core.runtime.util.ComponentReturnVariableUtils;
 import org.talend.designer.core.model.components.AbstractBasicComponent;
 import org.talend.designer.core.model.components.NodeReturn;
 import org.talend.designer.core.model.process.DataNode;
+import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.model.connector.TaCoKitNodeConnector;
 import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.service.ComponentService;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 // TODO: finish the impl
 public class ComponentModel extends AbstractBasicComponent implements IAdditionalInfo {
@@ -100,11 +106,14 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     private Boolean useLookup = null;
 
+    private ETaCoKitComponentType tacokitComponentType;
+
     public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ImageDescriptor image32,
             final String reportPath, final boolean isCatcherAvailable) {
         setPaletteType(ComponentCategory.CATEGORY_4_DI.getName());
         this.index = component;
         this.detail = detail;
+        this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         this.familyName = computeFamilyName();
         this.codePartListX = createCodePartList();
         this.reportPath = reportPath;
@@ -119,6 +128,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         setPaletteType("DI");
         this.index = component;
         this.detail = detail;
+        this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         this.familyName = computeFamilyName();
         this.codePartListX = createCodePartList();
         this.image = null;
@@ -156,7 +166,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * @return
      */
     private List<ECodePart> createCodePartList() {
-        return Collections.unmodifiableList((detail.getType().equalsIgnoreCase("input")) //$NON-NLS-1$
+        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType())
                 ? Arrays.asList(ECodePart.BEGIN, ECodePart.END, ECodePart.FINALLY)
                 : (useLookup()
                         ? Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END_HEAD, ECodePart.END_BODY,
@@ -169,7 +179,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     @Override
     public String getName() {
-        return index.getId().getFamily() + COMPONENT_SEPARATOR + index.getId().getName();
+        return TaCoKitUtil.getFullComponentName(index.getId().getFamily(), index.getId().getName());
     }
 
     /**
@@ -273,7 +283,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     /**
      * Creates component return variables For the moment it returns only
      * ERROR_MESSAGE and NB_LINE after variables
-     * 
+     *
      * @return list of component return variables
      */
     @Override
@@ -303,10 +313,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * Creates component connectors. It creates all possible connector even if some
      * of them are not applicable for component. In such cases not applicable
      * connector has 0 outgoing and incoming links.
-     * 
-     * @param node
-     * component node - object representing component instance on design
-     * canvas
+     *
+     * @param node component node - object representing component instance on design
+     *             canvas
      */
     @Override
     public List<? extends INodeConnector> createConnectors(final INode node) {
@@ -331,7 +340,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     /**
      * Get the default modules needed for the component.
-     * 
+     *
      * @return common v1 components Job dependencies
      */
     @Override
@@ -344,7 +353,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * no have sense for v1 as Job classpath should contain only common API
      * dependencies All component specific dependencies will be resolved by
      * ComponentManager class
-     * 
+     *
      * @return the needed dependencies for the framework,
      * component dependencies are loaded later through ComponentManager.
      */
@@ -364,7 +373,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                     modulesNeeded.add(new ModuleNeeded(getName(), "", true,
                             "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
                     modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                            "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.COMPONENT_RUNTIME_VERSION));
+                            "mvn:org.talend.sdk.component/component-runtime-design-extension/"
+                                    + GAV.COMPONENT_RUNTIME_VERSION));
                     modulesNeeded
                             .add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
 
@@ -391,7 +401,9 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                                     .stream()
                                     .map(s -> new ModuleNeeded(getName(), "", true, s))
                                     .collect(toList()));
-                            // transitivity works through pom
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true,
+                                    "mvn:org.talend.sdk.component/component-runtime-standalone/"
+                                            + GAV.COMPONENT_RUNTIME_VERSION));
                         }
                     }
 
@@ -406,9 +418,30 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     }
 
     protected boolean hasTcomp0Component(final INode iNode) {
-        return iNode.getProcess() != null && new ArrayList<>(iNode.getProcess().getGraphicalNodes()).stream().anyMatch(
-                node -> node.getComponent().getComponentType() == EComponentType.GENERIC
-                        && !getClass().isInstance(node.getComponent()));
+        if (iNode == null) {
+            return false;
+        }
+        IProcess process = iNode.getProcess();
+        if (process == null) {
+            return false;
+        }
+        List<? extends INode> graphicalNodes = process.getGraphicalNodes();
+        if (graphicalNodes == null || graphicalNodes.isEmpty()) {
+            return false;
+        }
+        boolean hasTcomp0Component = false;
+        for (INode node : graphicalNodes) {
+            if (node != null) {
+                IComponent component = node.getComponent();
+                if (component != null) {
+                    if (component.getComponentType() == EComponentType.GENERIC && !getClass().isInstance(component)) {
+                        hasTcomp0Component = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return hasTcomp0Component;
     }
 
     protected ComponentService.Dependencies getDependencies() {
@@ -450,10 +483,10 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     /**
      * Check whether current component can use the given configuration
-     * 
+     *
      * @param familyNodeName family name
-     * @param configType configuration type
-     * @param configName configuration name
+     * @param configType     configuration type
+     * @param configName     configuration name
      * @return true if support, otherwise false
      */
     public boolean supports(final String familyNodeName, final String configType, final String configName) {
@@ -491,7 +524,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             return useLookup;
         }
         useLookup = Boolean.FALSE;
-        List<? extends INodeConnector> connectors = createConnectors(new DataNode(this, "checkLookup"));
+        List<? extends INodeConnector> connectors = createConnectors(new DataNode(this, "checkLookup")); //$NON-NLS-1$
         if (connectors != null) {
             for (INodeConnector connector : connectors) {
                 if (EConnectionType.FLOW_MAIN.equals(connector.getDefaultConnectionType())) {
@@ -580,7 +613,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             List<? extends INodeConnector> connectors = createConnectors(node);
             for (INodeConnector connector : connectors) {
                 if (connector instanceof TaCoKitNodeConnector) {
-                    if (((TaCoKitNodeConnector) connector).isInput()) {
+                    if (((TaCoKitNodeConnector) connector).hasInput()) {
                         String connectorName = connector.getName();
                         if (!availableInputs.contains(connectorName)) {
                             availableInputs.add(connectorName);
@@ -606,4 +639,31 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         }
     }
 
+    public List<ActionReference> getDiscoverSchemaActions() {
+        if (detail == null || detail.getActions() == null || detail.getActions().isEmpty()) {
+            return emptyList();
+        }
+
+        return detail.getActions().stream()
+                .filter(a -> "schema".equals(a.getType()))
+                .collect(toList());
+    }
+
+    public String getPluginName() {
+        if (index == null
+                || index.getId() == null
+                || index.getId().getPlugin() == null
+                || index.getId().getPlugin().isEmpty()) {
+            throw new IllegalStateException("No plugin id found for this node " + this);
+        }
+
+        return index.getId().getPlugin();
+    }
+
+    public ETaCoKitComponentType getTaCoKitComponentType() {
+        if (this.tacokitComponentType == null) {
+            this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
+        }
+        return this.tacokitComponentType;
+    }
 }

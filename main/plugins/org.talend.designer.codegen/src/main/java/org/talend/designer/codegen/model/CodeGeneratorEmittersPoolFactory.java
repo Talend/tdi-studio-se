@@ -157,8 +157,8 @@ public final class CodeGeneratorEmittersPoolFactory {
 
                 long startTime = System.currentTimeMillis();
 
-                
-                defaultTemplate = templatesFactory.getTemplatesFromType(EInternalTemplate.DEFAULT_TEMPLATE).get(0).getTemplateRelativeUri();
+                defaultTemplate = templatesFactory.getTemplatesFromType(EInternalTemplate.DEFAULT_TEMPLATE).get(0)
+                        .getTemplateRelativeUri();
 
                 List<JetBean> jetBeans = new ArrayList<JetBean>();
                 List<TemplateUtil> templates = templatesFactory.getTemplates();
@@ -213,7 +213,8 @@ public final class CodeGeneratorEmittersPoolFactory {
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.END_BODY, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.END_TAIL, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.MAIN, genericComponent, genericTemplates);
-                    initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_BEGIN, genericComponent, genericTemplates);
+                    initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_BEGIN, genericComponent,
+                            genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.PROCESS_DATA_END, genericComponent, genericTemplates);
                     initGenericComponent(codeLanguage, jetBeans, ECodePart.FINALLY, genericComponent, genericTemplates);
                 }
@@ -398,14 +399,23 @@ public final class CodeGeneratorEmittersPoolFactory {
      * @return
      */
     private static JetBean initializeUtilTemplate(TemplateUtil template, ECodeLanguage codeLanguage) {
-        JetBean jetBean = new JetBean(template.getJetPluginRepository(),
-                template.getTemplateRelativeUri(),
+        JetBean jetBean = new JetBean(template.getJetPluginRepository(), template.getTemplateRelativeUri(),
                 template.getResourceName(), template.getVersion(), codeLanguage.getName(), ""); //$NON-NLS-1$
+        jetBean.addClassPath("EMF_ECORE", "org.eclipse.emf.ecore"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("EMF_COMMON", "org.eclipse.emf.common"); //$NON-NLS-1$ //$NON-NLS-2$
         jetBean.addClassPath("CORERUNTIME_LIBRARIES", "org.talend.core.runtime"); //$NON-NLS-1$ //$NON-NLS-2$
         jetBean.addClassPath("MANAGEMENT_LIBRARIES", "org.talend.metadata.managment"); //$NON-NLS-1$ //$NON-NLS-2$
         jetBean.addClassPath("CORE_LIBRARIES", CorePlugin.PLUGIN_ID); //$NON-NLS-1$
         jetBean.addClassPath("CODEGEN_LIBRARIES", CodeGeneratorActivator.PLUGIN_ID); //$NON-NLS-1$
         jetBean.addClassPath("COMMON_LIBRARIES", CommonsPlugin.PLUGIN_ID); //$NON-NLS-1$
+        jetBean.addClassPath("COMPONENT_FRAMEWORK", "org.talend.components.api"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("TALEND_MODEL", "org.talend.model"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("DAIKON", "org.talend.daikon"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("COMPONENT_CORE", "org.talend.designer.core.generic"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("DESIGNER_CORE", "org.talend.designer.core"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("HADOOP_DISTRIBUTIONS", "org.talend.hadoop.distribution"); //$NON-NLS-1$ //$NON-NLS-2$
+        jetBean.addClassPath("HADOOP_CUSTOM_DISTRIBUTIONS", "org.talend.hadoop.distribution.custom"); //$NON-NLS-1$ //$NON-NLS-2$
+
         jetBean.setClassLoader(new CodeGeneratorEmittersPoolFactory().getClass().getClassLoader());
         String sparkUtilsPluginName = "org.talend.designer.spark"; //$NON-NLS-1$
         if (PluginChecker.isPluginLoaded(sparkUtilsPluginName)) {
@@ -664,13 +674,15 @@ public final class CodeGeneratorEmittersPoolFactory {
                     }
                     return;
                 }
-                // 10901: Component synchronization fails
-                try {
-                    emitter.initialize(sub);
-                } catch (JETException e) {
-                    log.error(Messages.getString("CodeGeneratorEmittersPoolFactory.jetEmitterInitialException") + e.getMessage(), //$NON-NLS-1$
-                            e);
-                    continue;
+                if (Boolean.getBoolean("force_full_codegen")) { //$NON-NLS-1$
+                    try {
+                        emitter.initialize(sub);
+                    } catch (JETException e) {
+                        log.error(
+                                Messages.getString("CodeGeneratorEmittersPoolFactory.jetEmitterInitialException") //$NON-NLS-1$
+                                        + e.getMessage(), e);
+                        continue;
+                    }
                 }
 
                 if (emitter.isClassAvailable()) {

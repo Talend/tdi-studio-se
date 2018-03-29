@@ -15,6 +15,22 @@
 -->
 <?eclipse version="3.4"?>
 <plugin>
+   <extension point="org.eclipse.help.contentProducer"
+               id="org.talend.sdk.component.studio.documentation.content.TaCoKitHelpContentProducer"
+               name="TaCoKit Help Content">
+        <contentProducer producer="org.talend.sdk.component.studio.documentation.content.TaCoKitHelpContentProducer" />
+    </extension>
+   <extension
+           point="org.eclipse.help.toc">
+       <tocProvider
+               class="org.talend.sdk.component.studio.documentation.toc.TaCoKitTocProvider">
+       </tocProvider>
+   </extension>
+   <extension
+       point="org.eclipse.help.contexts">
+       <contextProvider
+           class="org.talend.sdk.component.studio.documentation.context.TaCoKitContextProvider"/>
+   </extension>
    <extension
          point="org.talend.core.components_provider">
       <ComponentsProvider
@@ -68,6 +84,13 @@
            level="1"
            name="Edit TaCoKit">
      </Action>
+  </extension>
+  <extension
+        point="org.talend.core.runtime.service">
+     <Service
+           class="org.talend.sdk.component.studio.service.TaCoKitService"
+           serviceId="ITaCoKitService">
+     </Service>
   </extension>
   <extension
         point="org.talend.designer.core.generators">

@@ -716,17 +716,25 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
             if (connection instanceof DatabaseConnection) {
                 String databaseType = ((DatabaseConnection) connection).getDatabaseType();
                 if ("JDBC".equals(databaseType)) {
-                    IComponent component = node.getComponent();
-                    if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
-                            && component.getName().startsWith("tJDBC")) {
-                        if (EParameterName.URL.getName().equals(paramName)) {
+                    boolean supportJDBC = false;
+                    List<IElementParameter> params = node.getElementParametersFromField(EParameterFieldType.PROPERTY_TYPE);
+                    for(IElementParameter proParam : params){
+                    	if(proParam.getRepositoryValue() != null && proParam.getRepositoryValue().contains("JDBC")){
+                    		supportJDBC = true;
+                    		break;
+                    	}
+                    }
+                    if (supportJDBC) {
+                        if (EParameterName.URL.getName().equals(paramName) 
+                        		|| EParameterName.URL.getName().equals(param.getRepositoryValue())) {
                             return "connection.jdbcUrl";
                         } else if (EParameterName.DRIVER_JAR.getName().equals(paramName)) {
                             return "connection.driverTable";
                         } else if (EParameterName.DRIVER_CLASS.getName().equals(paramName)) {
                             return "connection.driverClass";
+                        }else if (EParameterName.MAPPING.getName().equals(paramName)) {
+                        	return "connection.mappingFile";
                         }
-
                     }
                 }
             }

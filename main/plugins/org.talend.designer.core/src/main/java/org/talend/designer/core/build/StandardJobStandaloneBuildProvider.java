@@ -19,10 +19,12 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -32,6 +34,7 @@ import org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvide
 import org.talend.core.service.IESBRouteService;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
@@ -48,6 +51,53 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
     @Override
     protected ERepositoryObjectType getObjectType() {
         return ERepositoryObjectType.PROCESS;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvider#valid(java.util.Map)
+     */
+    @Override
+    public boolean valid(Map<String, Object> parameters) {
+        if (parameters == null || parameters.isEmpty()) {
+            return false;
+        }
+
+        ERepositoryObjectType type = null;
+        Property property = null;
+
+        Object object = parameters.get(PROCESS);
+        if (object != null && object instanceof IProcess2) {
+            property = ((IProcess2) object).getProperty();
+            if (property != null) {
+                type = ERepositoryObjectType.getType(property);
+            }
+        }
+
+        if (type == null) {
+            object = parameters.get(ITEM);
+            if (object != null && object instanceof Item) {
+                property = ((Item) object).getProperty();
+                if (property != null) {
+                    type = ERepositoryObjectType.getType(property);
+                }
+            }
+        }
+        if (type == null) {
+            object = parameters.get(REPOSITORY_OBJECT);
+            if (object != null && object instanceof IRepositoryViewObject) {
+                IRepositoryViewObject repObject = (IRepositoryViewObject) object;
+                type = repObject.getRepositoryObjectType();
+                property = repObject.getProperty();
+            }
+        }
+
+        if (type != null && type.equals(getObjectType()) && !isServiceOperation(property)) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -81,7 +131,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         }
 
         final Object assemblyFile = parameters.get(FILE_ASSEMBLY);
-        if (assemblyFile == null || !(assemblyFile instanceof IFile)) {
+        if (!ProcessorUtilities.isGeneratePomOnly() && (assemblyFile == null || !(assemblyFile instanceof IFile))) {
             return null;
         }
         final Object winClassPath = parameters.get(CP_WIN);
@@ -94,9 +144,9 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         }
 
         final Property itemProperty = ((Item) item).getProperty();
-        
+
         CreateMavenJobPom creator = null;
-        if ("ROUTE".equals(itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))){
+        if ("ROUTE".equals(itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
 
             IESBRouteService routeService = null;
 
@@ -110,7 +160,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
                 creator = new CreateMavenJobPom((IProcessor) processor, (IFile) pomFile);
             }
 
-        }else {
+        } else {
             creator = new CreateMavenJobPom((IProcessor) processor, (IFile) pomFile);
         }
 

@@ -48,6 +48,7 @@ import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -232,7 +233,7 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
 
         // the running context is only useful, when binaries
         addArg(profileBuffer, isBinaries && isOptionChoosed(ExportChoice.needContext),
-                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS, ProcessUtils.jarNeedsToContainContext());
+                TalendMavenConstants.PROFILE_INCLUDE_CONTEXTS);
 
         // for test
         addArg(profileBuffer, isOptionChoosed(ExportChoice.includeTestSource), TalendMavenConstants.PROFILE_INCLUDE_TEST_SOURCES);
@@ -293,15 +294,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         addArg(commandBuffer, false, include, arg);
     }
 
-    private void addArg(StringBuffer commandBuffer, boolean include, String arg, boolean isHD) {
-        if (isHD) {
-            commandBuffer.append(COMMA);
-            commandBuffer.append(arg);
-        } else {
-            addArg(commandBuffer, false, include, arg);
-        }
-    }
-
     @Override
     public IFile getJobTargetFile() {
         if (talendProcessJavaProject == null) {
@@ -315,9 +307,16 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
             for (IResource resource : targetFolder.members()) {
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
-                    if (JOB_EXTENSION.equals(file.getFileExtension())) {
-                        jobFile = file;
-                        break;
+                    if (ProcessorUtilities.isExportJobAsMicroService()) {
+                        if ("jar".equals(file.getFileExtension())) {
+                            jobFile = file;
+                            break;
+                        }
+                    } else {
+                        if (JOB_EXTENSION.equals(file.getFileExtension())) {
+                            jobFile = file;
+                            break;
+                        }
                     }
                 }
             }

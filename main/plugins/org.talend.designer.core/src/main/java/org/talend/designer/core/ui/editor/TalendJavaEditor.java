@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.editor;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
@@ -28,6 +29,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.part.FileEditorInput;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
@@ -52,13 +54,14 @@ import org.talend.designer.core.ui.views.problems.Problems;
  */
 public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCheckableEditor {
 
-    private org.eclipse.jdt.core.ICompilationUnit unit;
 
     private boolean disposed = false;
 
     private String currentSelection;
 
     private IProcess2 process;
+    
+    private boolean initialized = false;
 
     /**
      * DOC amaumont TalendJavaEditor constructor comment.
@@ -78,17 +81,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     @Override
     public void createPartControl(Composite parent) {
         super.createPartControl(parent);
-        addCompiler();
         getSourceViewer().setEditable(isEditable());
-    }
-
-    /**
-     * Add complier for error check in this Java editor.
-     * 
-     * DOC yzhang Comment method "addCompiler".
-     */
-    private void addCompiler() {
-        unit = (org.eclipse.jdt.core.ICompilationUnit) getInputJavaElement();
     }
 
     /*
@@ -108,6 +101,12 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
      */
     @Override
     public void validateSyntax() {
+        FileEditorInput fileEditorInput = (FileEditorInput)this.getEditorInput();
+        IFile codeFile = fileEditorInput.getFile();
+        if (!initialized) {
+            this.setInput(new FileEditorInput(codeFile));
+            initialized = true;
+        }
         ISourceViewer sourceViewer = getSourceViewer();
         if (sourceViewer instanceof JavaSourceViewer) {
             this.getSourceViewer().getTextWidget().getDisplay().asyncExec(new Runnable() {
@@ -209,7 +208,6 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
     @Override
     public void dispose() {
         this.disposed = true;
-        this.unit = null;
         this.process = null;
         super.dispose();
     }
@@ -232,7 +230,7 @@ public class TalendJavaEditor extends CompilationUnitEditor implements ISyntaxCh
      * @return the unit
      */
     public org.eclipse.jdt.core.ICompilationUnit getUnit() {
-        return unit;
+        return (org.eclipse.jdt.core.ICompilationUnit) getInputJavaElement();
     }
 
     /**

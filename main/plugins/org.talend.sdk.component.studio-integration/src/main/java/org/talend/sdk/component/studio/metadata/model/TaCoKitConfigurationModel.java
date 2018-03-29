@@ -12,12 +12,23 @@
  */
 package org.talend.sdk.component.studio.metadata.model;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.log4j.Priority;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.metadata.builder.connection.Connection;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
@@ -44,8 +55,55 @@ public class TaCoKitConfigurationModel {
 
     private String parentConfigurationModelItemIdCache;
 
-    public TaCoKitConfigurationModel(final Connection connection) {
+    public TaCoKitConfigurationModel(final Connection connection) throws Exception {
+        this(connection, true);
+    }
+
+    public TaCoKitConfigurationModel(final Connection connection, final boolean checkVersion) throws Exception {
         this.connection = connection;
+        if (checkVersion) {
+            String configurationId = getConfigurationId();
+            if (!TaCoKitUtil.isBlank(configurationId)) {
+                try {
+                    if (!TaCoKitUtil.equals(getStoredVersion(), String.valueOf(getConfigTypeNodeVersion()))) {
+                        ExceptionHandler.process(new Exception(Messages.getString("migration.check.version.different", //$NON-NLS-1$
+                                configurationId, getStoredVersion(), getConfigTypeNodeVersion())), Priority.WARN);
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+                try {
+                    /**
+                     * In case TaCoKit metadata is used in jobs which are migrating during logon project, so just
+                     * migrate it first to provide latest information.
+                     */
+                    if (!ProxyRepositoryFactory.getInstance().isFullLogonFinished()) {
+                        TaCoKitMigrationManager migrationManager = Lookups.taCoKitCache().getMigrationManager();
+                        if (migrationManager.isNeedMigration(this)) {
+                            migrationManager.migrate(this, null);
+                        }
+                    }
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                }
+            }
+        }
+    }
+
+    public String getStoredVersion() {
+        return this.connection.getVersion();
+    }
+
+    public void storeVersion(final String newVersion) {
+        this.connection.setVersion(newVersion);
+    }
+
+    public int getConfigTypeNodeVersion() throws Exception {
+        return getConfigTypeNode().getVersion();
+    }
+
+    public void initVersion() throws Exception {
+        storeVersion(String.valueOf(getConfigTypeNodeVersion()));
     }
 
     public String getConfigurationId() {
@@ -163,8 +221,49 @@ public class TaCoKitConfigurationModel {
      * @return map of connection properties
      */
     @SuppressWarnings({ "deprecation", "rawtypes" })
-    private Map getProperties() {
+    public Map getProperties() {
         return connection.getProperties();
+    }
+
+    public Map getPropertiesWithoutBuiltIn() {
+        Map propertiesWithoutBuiltin = new HashMap(connection.getProperties());
+
+        Iterator iterator = propertiesWithoutBuiltin.entrySet().iterator();
+        Set<String> builtinKeys = getBuiltinKeys();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Entry) iterator.next();
+            String key = (String) entry.getKey();
+            if (builtinKeys.contains(key)) {
+                iterator.remove();
+            }
+        }
+
+        return propertiesWithoutBuiltin;
+    }
+
+    public Set<String> getBuiltinKeys() {
+        Set<String> builtinKeys = new HashSet<>();
+        builtinKeys.add(TACOKIT_CONFIG_ID);
+        builtinKeys.add(TACOKIT_CONFIG_PARENT_ID);
+        builtinKeys.add(TACOKIT_PARENT_ITEM_ID);
+        return builtinKeys;
+    }
+
+    public void clearProperties(final boolean isClearBuiltin) {
+        Iterator iterator = connection.getProperties().entrySet().iterator();
+        Set<String> builtinKeys = getBuiltinKeys();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Entry) iterator.next();
+            String key = (String) entry.getKey();
+            boolean isBuiltin = builtinKeys.contains(key);
+            if (isClearBuiltin == isBuiltin) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public static class ValueModel {

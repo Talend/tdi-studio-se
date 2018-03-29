@@ -101,7 +101,7 @@ public class GenericAction extends AbstractCreateAction {
         }
         ComponentWizardDefinition wizardDefinition = compWizard.getDefinition();
         this.setText(wizardDefinition.getMenuItemName());
-        Image nodeImage = GenericWizardServiceFactory.getGenericWizardService().getNodeImage(repObjType.getType());
+        Image nodeImage = GenericWizardServiceFactory.getGenericWizardService().getNodeImage(wizardDefinition.getName());
         if (nodeImage != null) {
             this.setImageDescriptor(ImageDescriptor.createFromImage(nodeImage));
         }
