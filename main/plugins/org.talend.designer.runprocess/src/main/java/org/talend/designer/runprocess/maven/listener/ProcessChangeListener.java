@@ -31,7 +31,6 @@ import org.eclipse.ltk.core.refactoring.resource.RenameResourceChange;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -70,11 +69,14 @@ public class ProcessChangeListener implements PropertyChangeListener {
                     caseMove(oldValue, newValue);
                 } else if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
                     caseDeleteForever(newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())) {
+                } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())
+                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_RENAME.getName())) {
                     caseFolderRename(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_MOVE.getName())) {
+                } else if (propertyName.equals(ERepositoryActionName.FOLDER_MOVE.getName())
+                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_MOVE.getName())) {
                     caseFolderMove(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_DELETE.getName())) {
+                } else if (propertyName.equals(ERepositoryActionName.FOLDER_DELETE.getName())
+                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_DELETE.getName())) {
                     caseFolderDelete(oldValue, newValue);
                 } else if (propertyName.equals(ERepositoryActionName.SAVE.getName())
                         || propertyName.equals(ERepositoryActionName.CREATE.getName())) {
@@ -98,32 +100,26 @@ public class ProcessChangeListener implements PropertyChangeListener {
         // oldValue: [oldName, oldVersion], newValue: property
         if (oldValue instanceof String[] && newValue instanceof Property) {
             Property property = (Property) newValue;
-            if (isNeedUpdateItem(property.getItem())) {
-                ITestContainerProviderService service = getTestContainerProviderService();
-                boolean isTestCase = false;
-                if (service != null) {
-                    isTestCase = service.isTestContainerItem(property.getItem());
+            ITestContainerProviderService service = getTestContainerProviderService();
+            if (service != null && service.isTestContainerItem(property.getItem())) {
+                // FIXME
+            } else if (isNeedUpdateItem(property.getItem())) {
+                String[] oldFields = (String[]) oldValue;
+                if (oldFields.length == 0) {
+                    // Do nothing case import project
+                    return;
                 }
-                if (isTestCase) {
-                    // FIXME
-                } else {
-                    String[] oldFields = (String[]) oldValue;
-                    if (oldFields.length == 0) {
-                        // Do nothing case import project
-                        return;
-                    }
-                    String oldName = oldFields[0];
-                    String oldVersion = oldFields[1];
-                    if (!oldName.equals(property.getLabel())) {
-                        // job name change, will change all old version job name
-                        // delete all version old job projects physically(need to recreate pom), and create new for all.
-                        TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), oldName, true);
-                        TalendJavaProjectManager.createAllVersionTalendJobProject(property.getId());
-                    } else if (!oldVersion.equals(property.getVersion())) {
-                        // version change, will create new item
-                        // create new job project.
-                        TalendJavaProjectManager.generatePom(property.getItem());
-                    }
+                String oldName = oldFields[0];
+                String oldVersion = oldFields[1];
+                if (!oldName.equals(property.getLabel())) {
+                    // job name change, will change all old version job name
+                    // delete all version old job projects physically(need to recreate pom), and create new for all.
+                    TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), oldName, true);
+                    TalendJavaProjectManager.createAllVersionTalendJobProject(property.getId());
+                } else if (!oldVersion.equals(property.getVersion())) {
+                    // version change, will create new item
+                    // create new job project.
+                    TalendJavaProjectManager.generatePom(property.getItem());
                 }
             }
         }
@@ -170,15 +166,11 @@ public class ProcessChangeListener implements PropertyChangeListener {
         // newValue: obj
         if (newValue instanceof IRepositoryViewObject) {
             Property property = ((IRepositoryViewObject) newValue).getProperty();
-            if (property != null) {
+            if (property != null && property.getItem() != null) {
                 ITestContainerProviderService service = getTestContainerProviderService();
-                boolean isTestCase = false;
-                if (service != null && property.getItem() != null) {
-                    isTestCase = service.isTestContainerItem(property.getItem());
-                }
-                if (isTestCase) {
+                if (service != null && service.isTestContainerItem(property.getItem())) {
                     // FIXME testcase should regenerate pom to remove extra dependencies.
-                } else {
+                } else if (isNeedUpdateItem(property.getItem())) {
                     // delete all version old job projects physically, won't check to remove parent folder
                     TalendJavaProjectManager.deleteAllVersionTalendJobProject(property.getId(), null, true);
                 }
@@ -267,17 +259,18 @@ public class ProcessChangeListener implements PropertyChangeListener {
             IPath sourcePath = ((IPath[]) oldValue)[0];
             IPath targetPath = ((IPath[]) oldValue)[1];
             ERepositoryObjectType processType = (ERepositoryObjectType) newValue;
-            // TalendJavaProjectManager.deleteTalendJobProjectsUnderFolder(processType, sourcePath, false);
-            IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
-            IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
-            try {
-                removeFromParentSourceFolder(sourceFolder);
-                IFolder targetFolder = processTypeFolder.getFolder(targetPath);
-                MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
-                change.perform(new NullProgressMonitor());
-                addToParentInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
-            } catch (OperationCanceledException | CoreException e) {
-                ExceptionHandler.process(e);
+            if (getAllProcessTypes().contains(processType)) {
+                IFolder processTypeFolder = getAggregatorPomsHelper().getProcessFolder(processType);
+                IFolder sourceFolder = processTypeFolder.getFolder(sourcePath);
+                try {
+                    removeFromParentSourceFolder(sourceFolder);
+                    IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                    MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
+                    change.perform(new NullProgressMonitor());
+                    addToParentInNewFolder(targetFolder.getFolder(sourceFolder.getName()));
+                } catch (OperationCanceledException | CoreException e) {
+                    ExceptionHandler.process(e);
+                }
             }
         }
     }
@@ -288,7 +281,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
             // delete all version job projects under it physically, remove this folder.
             IPath folderPath = (IPath) oldValue;
             ERepositoryObjectType processType = (ERepositoryObjectType) newValue;
-            TalendJavaProjectManager.deleteTalendJobProjectsUnderFolder(processType, folderPath, true);
+            if (getAllProcessTypes().contains(processType)) {
+                TalendJavaProjectManager.deleteTalendJobProjectsUnderFolder(processType, folderPath, true);
+            }
         }
     }
 
@@ -309,12 +304,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
         if (newValue instanceof Set) {
             Set<Item> importItems = (Set<Item>) newValue;
             for (Item item : importItems) {
-                if (item instanceof ProcessItem) {
-                    ITestContainerProviderService testcontainerService = getTestContainerProviderService();
-                    if (testcontainerService != null && testcontainerService.isTestContainerItem(item)) {
-                        // do nothing
-                        return;
-                    }
+                if (isNeedUpdateItem(item)) {
                     TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
                 } else if (item instanceof RoutineItem) {
                     updateCodesChange((RoutineItem) item);
