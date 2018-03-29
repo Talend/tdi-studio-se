@@ -180,7 +180,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
      * @see org.talend.core.model.process.IProcess#getNeededLibraries(boolean)
      */
     @Override
-    public Set<String> getNeededLibraries(boolean withChildrens) {
+    public Set<String> getNeededLibraries(int options) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -814,7 +814,7 @@ public class AnyIntoLogRowProcess<K extends ShadowNode> implements IProcess {
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrens) {
+    public Set<ModuleNeeded> getNeededModules(int options) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -818,10 +818,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
     @Override
     public List<? extends INode> getGeneratingNodes() {
-        if (generatingProcess == null) {
-            generatingProcess = new DataProcess(this);
-        }
-        List<? extends INode> generatedNodeList = generatingProcess.getNodeList();
+        List<? extends INode> generatedNodeList = getGeneratingProcess().getNodeList();
         if (!isBuilding()) {
             if (isProcessModified() || routinesDependencies == null || routinesDependencies.isEmpty()) {
                 checkRoutineDependencies();
@@ -3770,8 +3767,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     @Override
-    public Set<String> getNeededLibraries(boolean withChildrens) {
-        return JavaProcessUtil.getNeededLibraries(this, withChildrens);
+    public Set<String> getNeededLibraries(int options) {
+        return JavaProcessUtil.getNeededLibraries(this, options);
     }
 
     /**
@@ -4705,8 +4702,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
      * @see org.talend.core.model.process.IProcess#getNeededModules(boolean)
      */
     @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrens) {
-        return JavaProcessUtil.getNeededModules(this, withChildrens);
+    public Set<ModuleNeeded> getNeededModules(int options) {
+        return JavaProcessUtil.getNeededModules(this, options);
     }
 
     /*
@@ -4737,6 +4734,18 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     @Override
     public void setNeedLoadmodules(boolean isNeedLoadmodules) {
         this.isNeedLoadmodules = isNeedLoadmodules;
+    }
+
+    
+    /**
+     * Getter for generatingProcess.
+     * @return the generatingProcess
+     */
+    public IGeneratingProcess getGeneratingProcess() {
+        if (generatingProcess == null) {
+            generatingProcess = new DataProcess(this);
+        }
+        return this.generatingProcess;
     }
 
 }

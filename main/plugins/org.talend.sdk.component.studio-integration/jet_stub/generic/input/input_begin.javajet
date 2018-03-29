@@ -52,6 +52,7 @@ final org.talend.sdk.component.runtime.input.Mapper tempMapper_<%=cid%> = mgr_<%
 
 int nbLineInput_<%=cid%> = 0;
 
+org.talend.sdk.component.runtime.di.JobStateAware.init(tempMapper_<%=cid%>, globalMap);
 tempMapper_<%=cid%>.start();
 final org.talend.sdk.component.runtime.manager.chain.ChainedMapper mapper_<%=cid%>;
 try {

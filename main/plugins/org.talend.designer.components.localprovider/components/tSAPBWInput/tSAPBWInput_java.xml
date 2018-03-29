@@ -1,7 +1,7 @@
 <COMPONENT>
 	<HEADER PLATEFORM="ALL" SERIAL="" VERSION="0.102" STATUS="ALPHA"
 		COMPATIBILITY="ALL" AUTHOR="Talend" RELEASE_DATE="200110803A"
-		STARTABLE="true">
+		STARTABLE="true" VISIBLE="false">
 		<SIGNATURE />
 	</HEADER>
 
@@ -109,7 +109,7 @@
 
 		</TEMPLATES>
 		<IMPORTS>
-			<IMPORT NAME="Driver-OLAP" MODULE="jdbc4olap-1.1.4.jar" MVN="mvn:org.talend.libraries/jdbc4olap-1.1.4/6.0.0" 
+			<IMPORT NAME="Driver-OLAP" MODULE="jdbc4olap-1.1.4.jar" MVN="mvn:org.jdbc4olap/jdbc4olap/1.1.4" 
 				REQUIRED="true" />
 			<IMPORT NAME="COMMONS-CODEC" MODULE="commons-codec-1.6.jar" MVN="mvn:org.talend.libraries/commons-codec-1.6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.6.jar"
 				REQUIRED="true" />

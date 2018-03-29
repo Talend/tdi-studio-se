@@ -217,8 +217,8 @@ public class RunProcessContext {
         setMonitorTrace(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISTRACESRUN));
         setWatchAllowed(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISEXECTIMERUN));
         setSaveBeforeRun(RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISSAVEBEFORERUN));
-        setClearBeforeExec(RunProcessPlugin.getDefault().getPreferenceStore()
-                .getBoolean(RunProcessPrefsConstants.ISCLEARBEFORERUN));
+        setClearBeforeExec(
+                RunProcessPlugin.getDefault().getPreferenceStore().getBoolean(RunProcessPrefsConstants.ISCLEARBEFORERUN));
         loadLog4jContextFromProcess();
     }
 
@@ -562,13 +562,14 @@ public class RunProcessContext {
                             new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
                         }
 
-                        final String watchParam = RunProcessContext.this.isWatchAllowed() ? TalendProcessArgumentConstant.CMD_ARG_WATCH
+                        final String watchParam = RunProcessContext.this.isWatchAllowed()
+                                ? TalendProcessArgumentConstant.CMD_ARG_WATCH
                                 : null;
                         final String log4jRuntimeLevel = getLog4jRuntimeLevel();
                         processor.setContext(context);
                         ((IEclipseProcessor) processor).setTargetExecutionConfig(getSelectedTargetExecutionConfig());
 
-                            final boolean oldMeasureActived = TimeMeasure.measureActive;
+                        final boolean oldMeasureActived = TimeMeasure.measureActive;
                         if (!oldMeasureActived) { // not active before.
                             TimeMeasure.display = TimeMeasure.displaySteps = TimeMeasure.measureActive = CommonsPlugin
                                     .isDebugMode();
@@ -576,12 +577,12 @@ public class RunProcessContext {
                         final String generateCodeId = "Generate job source codes and compile before run"; //$NON-NLS-1$
                         TimeMeasure.begin(generateCodeId);
                         try {
-                        	BuildCacheManager.getInstance().clearCurrentCache();
+                            BuildCacheManager.getInstance().clearCurrentCache();
                             ProcessorUtilities.resetExportConfig();
                             ProcessorUtilities.generateCode(processor, process, context,
-                                    getStatisticsPort() != IProcessor.NO_STATISTICS, getTracesPort() != IProcessor.NO_TRACES
-                                            && hasConnectionTrace(), true, progressMonitor);
-                            } catch (Throwable e) {
+                                    getStatisticsPort() != IProcessor.NO_STATISTICS,
+                                    getTracesPort() != IProcessor.NO_TRACES && hasConnectionTrace(), true, progressMonitor);
+                        } catch (Throwable e) {
                             BuildCacheManager.getInstance().performBuildFailure();
                             // catch any Exception or Error to kill the process,
                             // see bug 0003567
@@ -633,8 +634,8 @@ public class RunProcessContext {
                                                         .getString("ProcessComposite.startPattern"); //$NON-NLS-1$
                                                 MessageFormat mf = new MessageFormat(startingPattern);
                                                 String welcomeMsg = mf.format(new Object[] { process.getLabel(), new Date() });
-                                                processMessageManager.addMessage(new ProcessMessage(MsgType.CORE_OUT, welcomeMsg
-                                                        + "\r\n")); //$NON-NLS-1$
+                                                processMessageManager
+                                                        .addMessage(new ProcessMessage(MsgType.CORE_OUT, welcomeMsg + "\r\n")); //$NON-NLS-1$
                                                 processMonitorThread = new Thread(psMonitor);
                                                 processMonitorThread.start();
                                             } else {
@@ -961,26 +962,16 @@ public class RunProcessContext {
         }
 
         private boolean extractMessages(boolean flush) {
-            IProcessMessage messageOut = null;
-            IProcessMessage messageErr = null;
+            boolean haveErrorsMessages = false;
+            boolean haveOutMessages = false;
             try {
-                messageErr = extractMessage(errIs, MsgType.STD_ERR, flush);
-                if (messageErr != null) {
-                    if (messageErr.getContent().contains("Unresolved compilation problem")) { //$NON-NLS-1$
-                        hasCompilationError = true;
-                    }
-                    processMessageManager.addMessage(messageErr);
-                }
-                messageOut = extractMessage(outIs, MsgType.STD_OUT, flush);
-                if (messageOut != null) {
-                    processMessageManager.addMessage(messageOut);
-                }
+                haveErrorsMessages = extractMessage(errIs, MsgType.STD_ERR, flush);
+                haveOutMessages = extractMessage(outIs, MsgType.STD_OUT, flush);
             } catch (IOException ioe) {
-                addErrorMessage(ioe);
-                ExceptionHandler.process(ioe);
+                // don't log, since it will be for example "stream closed"
             }
             if (isESBRuntimeProcessor()) {
-                if (messageOut != null || messageErr != null) {
+                if (haveErrorsMessages || haveOutMessages) {
                     Display.getDefault().syncExec(new Runnable() {
 
                         @Override
@@ -991,7 +982,7 @@ public class RunProcessContext {
                 }
                 return true;
             }
-            return messageOut != null || messageErr != null;
+            return haveErrorsMessages || haveOutMessages;
         }
 
         /**
@@ -1003,12 +994,11 @@ public class RunProcessContext {
          * @return the message extracted or null if no message was present.
          * @throws IOException Extraction failure.
          */
-        private IProcessMessage extractMessage(final BufferedReader is, MsgType type, boolean flush) throws IOException {
+        private boolean extractMessage(final BufferedReader is, MsgType type, boolean flush) throws IOException {
 
             IProcessMessage msg;
+            boolean haveMessage = false;
             if (is.ready()) {
-
-                StringBuilder sb = new StringBuilder();
 
                 String data = null;
                 long timeStart = System.currentTimeMillis();
@@ -1017,16 +1007,18 @@ public class RunProcessContext {
                     if (data == null) {
                         break;
                     }
-                    sb.append(data).append("\n"); //$NON-NLS-1$
-                    if (sb.length() > 1024 || System.currentTimeMillis() - timeStart > 100) {
+                    if (data.contains("Unresolved compilation problem")) { //$NON-NLS-1$
+                        hasCompilationError = true;
+                    }
+                    msg = new ProcessMessage(type, data);
+                    haveMessage = true;
+                    processMessageManager.addMessage(msg);
+                    if (System.currentTimeMillis() - timeStart > 100) {
                         break;
                     }
                 }
-                msg = new ProcessMessage(type, sb.toString());
-            } else {
-                msg = null;
             }
-            return msg;
+            return haveMessage;
         }
 
     }
@@ -1130,9 +1122,12 @@ public class RunProcessContext {
                                 // "0|GnqOsQ|GnqOsQ|GnqOsQ|iterate1|exec1" -->"iterate1|exec1"
                                 if (line.trim().length() > 22) {
                                     String temp = line.substring(line.indexOf("|") + 1); // remove the 0| //$NON-NLS-1$
-                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the first GnqOsQ| //$NON-NLS-1$
-                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the second GnqOsQ| //$NON-NLS-1$
-                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the third GnqOsQ| //$NON-NLS-1$
+                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the first //$NON-NLS-1$
+                                                                                  // GnqOsQ|
+                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the second //$NON-NLS-1$
+                                                                                  // GnqOsQ|
+                                    temp = temp.substring(temp.indexOf("|") + 1); // remove the third //$NON-NLS-1$
+                                                                                  // GnqOsQ|
                                     line = temp;
                                 }
                             }
@@ -1403,8 +1398,8 @@ public class RunProcessContext {
                                     for (int b = 0; b < connectionSize.size(); b++) {
                                         if ((dataSize - readSize < connectionData.size())) {
                                             if (readSize >= 0) {
-                                                final Map<String, TraceData> nextRowTrace = connectionData.get(dataSize
-                                                        - readSize);
+                                                final Map<String, TraceData> nextRowTrace = connectionData
+                                                        .get(dataSize - readSize);
                                                 if (nextRowTrace != null) {
                                                     String connectionId = null;
                                                     for (String key : nextRowTrace.keySet()) {
@@ -1728,7 +1723,8 @@ public class RunProcessContext {
     //
     // final EventLoopProgressMonitor progressMonitor = new EventLoopProgressMonitor(monitor);
     //
-    //                    progressMonitor.beginTask(Messages.getString("ProcessComposite.buildTask"), IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+    // progressMonitor.beginTask(Messages.getString("ProcessComposite.buildTask"), IProgressMonitor.UNKNOWN);
+    // //$NON-NLS-1$
     // try {
     // testPort();
     // // findNewStatsPort();
@@ -1736,13 +1732,13 @@ public class RunProcessContext {
     // if (monitorPerf) {
     // clearThreads();
     // perfMonitor = new PerformanceMonitor();
-    //                            new Thread(perfMonitor, "PerfMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
+    // new Thread(perfMonitor, "PerfMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
     // perMonitorList.add(perfMonitor);
     // }
     // // findNewTracesPort();
     // if (monitorTrace) {
     // traceMonitor = new TraceMonitor();
-    //                            new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
+    // new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
     // }
     // } catch (Throwable e) {
     // ExceptionHandler.process(e);
@@ -1878,9 +1874,8 @@ public class RunProcessContext {
                 List<? extends ISubjobContainer> subjobContainers = process.getSubjobContainers();
                 for (ISubjobContainer subjobContainer : subjobContainers) {
                     if (subjobContainer instanceof SparkStreamingSubjobContainer) {
-                        ((SparkStreamingSubjobContainer) subjobContainer)
-                                .updateState(
-                                        "UPDATE_SPARKSTREAMING_STATUS", null, batchCompleted, batchStarted, lastProcessingDelay, lastSchedulingDelay, lastTotalDelay); //$NON-NLS-1$
+                        ((SparkStreamingSubjobContainer) subjobContainer).updateState("UPDATE_SPARKSTREAMING_STATUS", null, //$NON-NLS-1$
+                                batchCompleted, batchStarted, lastProcessingDelay, lastSchedulingDelay, lastTotalDelay);
                     }
                 }
             }
@@ -1899,16 +1894,16 @@ public class RunProcessContext {
             return;
         }
         final Integer groupID = new Integer(datas[0]);
-        //        if ((!"".equals(datas[0])) && datas[0] != null) { //$NON-NLS-1$
+        // if ((!"".equals(datas[0])) && datas[0] != null) { //$NON-NLS-1$
         // groupID = Integer.parseInt(datas[0]);
         // }
         final String mrName = datas[1];
         final Double percentMap = new Double(datas[2]);
-        //        if ((!"".equals(datas[2])) && datas[2] != null) { //$NON-NLS-1$  
+        // if ((!"".equals(datas[2])) && datas[2] != null) { //$NON-NLS-1$
         // percentMap = Double.parseDouble(datas[2]);
         // }
         final Double percentReduce = new Double(datas[3]);
-        //        if ((!"".equals(datas[3])) && datas[3] != null) { //$NON-NLS-1$  
+        // if ((!"".equals(datas[3])) && datas[3] != null) { //$NON-NLS-1$
         // percentMap = Double.parseDouble(datas[3]);
         // }
 
@@ -1923,8 +1918,8 @@ public class RunProcessContext {
                         if (((Node) node).getNodeContainer() instanceof JobletContainer) {
                             ((JobletContainer) ((Node) node).getNodeContainer()).setMrName(mrName);
                             if (((Node) node).isMapReduceStart()) {
-                                ((JobletContainer) ((Node) node).getNodeContainer()).updateState(
-                                        "UPDATE_STATUS", mrName, percentMap, percentReduce); //$NON-NLS-1$
+                                ((JobletContainer) ((Node) node).getNodeContainer()).updateState("UPDATE_STATUS", mrName, //$NON-NLS-1$
+                                        percentMap, percentReduce);
                             }
                         }
                     }
@@ -1945,8 +1940,8 @@ public class RunProcessContext {
         if (useCustomLevel) {
             IElementParameter log4jLevelParam = process.getElementParameter(EParameterName.LOG4J_RUN_LEVEL.getName());
             if (log4jLevelParam != null && log4jLevelParam.getValue() != null) {
-                RunProcessPlugin.getDefault().getPreferenceStore()
-                        .setValue(RunProcessPrefsConstants.LOG4JLEVEL, (String) log4jLevelParam.getValue());
+                RunProcessPlugin.getDefault().getPreferenceStore().setValue(RunProcessPrefsConstants.LOG4JLEVEL,
+                        (String) log4jLevelParam.getValue());
             } else {
                 RunProcessPlugin.getDefault().getPreferenceStore().setValue(RunProcessPrefsConstants.LOG4JLEVEL, "");
             }

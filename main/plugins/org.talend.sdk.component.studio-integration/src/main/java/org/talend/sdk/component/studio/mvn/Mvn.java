@@ -77,6 +77,7 @@ public final class Mvn {
 
     private static Set<String> toDependencies(final InputStream deps, final boolean acceptProvided) throws IOException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(deps))) {
+            // this logic excludes  (optional)  intentionally
             return reader.lines().map(String::trim).filter(s -> !s.isEmpty() || s.split(":").length < 4)
                     .filter(s -> !s.endsWith(":test"))
                     .filter(s -> (acceptProvided && s.endsWith(":provided"))

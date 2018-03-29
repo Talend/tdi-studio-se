@@ -21,13 +21,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
 import org.eclipse.core.runtime.FileLocator;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.model.components.ComponentCategory;
 import org.talend.designer.unifiedcomponent.delegate.service.IComponentDelegate;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 /**
  * created by wchen on Dec 5, 2017 Detailled comment
@@ -146,6 +146,32 @@ public abstract class AbstractComponentsUnifier implements IComponentsUnifier {
             }
         }
         return mappingExclude;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.talend.designer.unifiedcomponent.unifier.IComponentsUnifier#getConnectorMapping()
+     */
+    @Override
+    public Map<String, String> getConnectorMapping() {
+        JSONObject jsonObject = unifiedMap.get(unifiedComp.getComponentName());
+        if (jsonObject != null) {
+            if (jsonObject.has("connector")) {
+                JSONObject paramObject = jsonObject.getJSONObject("connector");
+                if (paramObject.has("mapping")) {
+                    JSONObject mappingObj = paramObject.getJSONObject("mapping");
+                    Map<String, String> repValueAndParamMap = new HashMap<String, String>();
+                    for (Object object : mappingObj.keySet()) {
+                        String repValue = object.toString();
+                        repValueAndParamMap.put(repValue, mappingObj.getString(repValue));
+                    }
+                    return repValueAndParamMap;
+                }
+            }
+        }
+
+        return new HashMap<String, String>();
     }
 
     /*

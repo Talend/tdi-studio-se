@@ -559,6 +559,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public boolean performOk() {
         if (!checkInvalidProject()) {
             return false;
@@ -576,48 +577,62 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
                     Messages.getString("RepoReferenceProjectSetupAction.MsgReferenceChanged")); //$NON-NLS-1$
             // Apply new setting
             errorException = null;
-            IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
+            RepositoryWorkUnit repositoryWorkUnit =
+                    new RepositoryWorkUnit(Messages.getString("ReferenceProjectSetupPage.TaskApplyReferenceSetting")) { //$NON-NLS-1$
 
-                final String mainProjectLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+                        public void run() throws PersistenceException {
+                            IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
 
-                @Override
-                public void run(IProgressMonitor monitor) throws CoreException {
-                    try {
-                        relogin(mainProjectLabel, false, monitor);
-                        saveData();
-                    } catch (Exception ex) {
-                        errorException = ex;
-                        synSetErrorMessage(errorException);
-                        // If failed, try to roll back
-                        try {
-                            relogin(mainProjectLabel, true, monitor);
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                            log.error("Roll back reference project settings failed:" + e); //$NON-NLS-1$
+                                final String mainProjectLabel =
+                                        ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
+
+                                @Override
+                                public void run(IProgressMonitor monitor) throws CoreException {
+                                    try {
+                                        relogin(mainProjectLabel, false, monitor);
+                                        saveData();
+                                    } catch (Exception ex) {
+                                        errorException = ex;
+                                        synSetErrorMessage(errorException);
+                                        // If failed, try to roll back
+                                        try {
+                                            relogin(mainProjectLabel, true, monitor);
+                                        } catch (Exception e) {
+                                            ExceptionHandler.process(e);
+                                            log.error("Roll back reference project settings failed:" + e); //$NON-NLS-1$
+                                        }
+                                    }
+                                }
+                            };
+
+                            IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
+
+                                @Override
+                                public void run(IProgressMonitor monitor)
+                                        throws InvocationTargetException, InterruptedException {
+                                    try {
+                                        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+                                        ISchedulingRule schedulingRule = workspace.getRoot();
+                                        workspace.run(workspaceRunnable, schedulingRule, IWorkspace.AVOID_UPDATE,
+                                                monitor);
+                                    } catch (CoreException e) {
+                                        throw new InvocationTargetException(e);
+                                    }
+                                }
+                            };
+                            ProgressMonitorDialog progressDialog =
+                                    new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+                            try {
+                                progressDialog.run(true, false, iRunnableWithProgress);
+                            } catch (InvocationTargetException | InterruptedException ex) {
+                                errorException = ex;
+                            }
                         }
-                    }
-                }
-            };
-
-            IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
-
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                        ISchedulingRule schedulingRule = workspace.getRoot();
-                        workspace.run(workspaceRunnable, schedulingRule, IWorkspace.AVOID_UPDATE, monitor);
-                    } catch (CoreException e) {
-                        throw new InvocationTargetException(e);
-                    }
-                }
-            };
-            ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
-            try {
-                progressDialog.run(true, false, iRunnableWithProgress);
-            } catch (InvocationTargetException | InterruptedException ex) {
-                errorException = ex;
-            }
+                    };
+            repositoryWorkUnit.setAvoidUnloadResources(true);
+            repositoryWorkUnit.setUnloadResourcesAfterRun(true);
+            repositoryWorkUnit.setForceTransaction(true);
+            ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(repositoryWorkUnit);
         }
         if (errorException != null) {
             return false;
@@ -734,31 +749,17 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
         return output;
     }
 
-    @SuppressWarnings("rawtypes")
     private void saveData() {
-        RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit(
-                Messages.getString("ReferenceProjectSetupPage.TaskApplyReferenceSetting")) { //$NON-NLS-1$
-
-            public void run() throws PersistenceException {
-                try {
-                    List<ProjectReference> refrences = convertToProjectReference(viewerInput);
-                    ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(refrences);
-                    AggregatorPomsHelper.updateRefProjectModules(refrences);
-                    getRepositoryContext().getProject().setReferenceProjectProvider(null);
-                    ReferenceProjectProvider.removeAllTempReferenceList();
-                } catch (Exception e) {
-                    errorException = e;
-                    String errorMessage = Messages.getString("ReferenceProjectSetupPage.ErrorSaveReferenceSettingFailed", //$NON-NLS-1$
-                            e.getLocalizedMessage());
-                    synSetErrorMessage(errorMessage);
-                    log.error("Save reference project settings failed:" + e);//$NON-NLS-1$
-                }
-            }
-        };
-        repositoryWorkUnit.setAvoidUnloadResources(true);
-        repositoryWorkUnit.setUnloadResourcesAfterRun(true);
-        repositoryWorkUnit.setForceTransaction(true);
-        ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(repositoryWorkUnit);
+        try {
+            ProjectManager.getInstance().getCurrentProject().saveProjectReferenceList(convertToProjectReference(viewerInput));           
+            ReferenceProjectProvider.removeAllTempReferenceList();
+        } catch (Exception e) {
+            errorException = e;
+            String errorMessage = Messages.getString("ReferenceProjectSetupPage.ErrorSaveReferenceSettingFailed", //$NON-NLS-1$
+                    e.getLocalizedMessage());
+            synSetErrorMessage(errorMessage);
+            log.error("Save reference project settings failed:" + e);//$NON-NLS-1$
+        }
     }
 
     private void relogin(String mainProjectLabel, boolean isRollback, IProgressMonitor monitor)

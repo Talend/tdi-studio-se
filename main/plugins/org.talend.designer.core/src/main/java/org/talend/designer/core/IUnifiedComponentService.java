@@ -6,8 +6,10 @@ import java.util.List;
 import org.talend.core.IService;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
+import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.IComponentName;
 
 // ============================================================================
@@ -76,7 +78,8 @@ public interface IUnifiedComponentService extends IService {
     public void createParameters(INode node, List<IElementParameter> listParams, IComponent delegateComp, IComponent emfComp);
 
     public void switchComponent(INode node, IComponent delegateComponent, String oldEmfComponent,
-            List<? extends IElementParameter> oldParms);
+            List<? extends IElementParameter> oldParms, List<IMetadataTable> oldMetadataTables,
+            List<INodeConnector> oldConnectors);
 
     public String getUnifiedCompDisplayName(IComponent delegateComponent, String emfComponent);
 

@@ -33,6 +33,8 @@ public interface IComponentsUnifier {
 
     public Map<String, String> getParameterMapping();
 
+    public Map<String, String> getConnectorMapping();
+
     public Set<String> getMappingExclude();
 
     public Set<String> getCategories();

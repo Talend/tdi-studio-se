@@ -114,6 +114,8 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
         ITaCoKitRepositoryNode repositoryNode = runtimeData.getTaCoKitRepositoryNode();
         ENodeType nodeType = repositoryNode.getType();
         if (ENodeType.REPOSITORY_ELEMENT.equals(nodeType)) {
+            setRepositoryObject(repositoryNode.getObject());
+            isRepositoryObjectEditable();
             initLockStrategy();
         }
     }

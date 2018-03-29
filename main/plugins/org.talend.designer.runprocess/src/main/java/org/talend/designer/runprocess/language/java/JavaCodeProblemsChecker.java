@@ -43,6 +43,7 @@ import org.talend.core.language.CodeProblemsChecker;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.Problem;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.codegen.IAloneProcessNodeConfigurer;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.codegen.ICodeGeneratorService;
@@ -168,7 +169,7 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
                         // use working copy to hold source with error
                         org.eclipse.jdt.core.ICompilationUnit workingCopy = null;
                         try {
-                            JavaProcessorUtilities.computeLibrariesPath(process.getNeededModules(false), process);
+                            JavaProcessorUtilities.computeLibrariesPath(process.getNeededModules(TalendProcessOptionConstants.MODULES_DEFAULT), process);
                             try {
                                 WorkingCopyOwner workingCopyOwner = new WorkingCopyOwner() {
                                 };

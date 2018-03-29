@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.runprocess;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
@@ -31,7 +32,8 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
-import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.process.JobInfo;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -68,7 +70,8 @@ public class RunProcessService implements IRunProcessService {
      * org.talend.core.language.ECodeLanguage, boolean)
      */
     @Override
-    public IProcessor createCodeProcessor(IProcess process, Property property, ECodeLanguage language, boolean filenameFromLabel) {
+    public IProcessor createCodeProcessor(IProcess process, Property property, ECodeLanguage language,
+            boolean filenameFromLabel) {
         return delegateService.createCodeProcessor(process, property, language, filenameFromLabel);
     }
 
@@ -430,8 +433,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void deleteEclipseProjects() {
-        delegateService.deleteEclipseProjects();
+    public void clearProjectRelatedSettings() {
+        delegateService.clearProjectRelatedSettings();
     }
 
     @Override
@@ -445,16 +448,29 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void generateJobPom(ProcessItem processItem) {
-        delegateService.generateJobPom(processItem);
+    public void generatePom(Item item) {
+        delegateService.generatePom(item);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
     public void initializeRootPoms() {
         delegateService.initializeRootPoms();
+    }
+
+    @Override
+    public boolean isGeneratePomOnly() {
+        return delegateService.isGeneratePomOnly();
+    }
+
+    @Override
+    public void handleJobDependencyLoop(JobInfo mainJobInfo, List<JobInfo> listJobs, IProgressMonitor progressMonitor)
+            throws Exception {
+        delegateService.handleJobDependencyLoop(mainJobInfo, listJobs, progressMonitor);
     }
 
 }

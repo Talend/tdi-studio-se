@@ -106,7 +106,6 @@ imports="
       	S3StreamUtil streamUtil_<%=cid%> = new S3StreamUtil();
     		byte[] buffer_<%=cid%> = new byte[partSizeInBytes_<%=cid%>];
     		sourceStream_<%=cid%>.read(buffer_<%=cid%>);
-    		//TODO check is it necessary? the read method above can't return the read byte number?
     		long curPartSize_<%=cid%> = streamUtil_<%=cid%>.getLength(buffer_<%=cid%>);
     		boolean multiUpload_<%=cid%> = curPartSize_<%=cid%> == partSizeInBytes_<%=cid%>;
     		
@@ -129,25 +128,27 @@ imports="
       			String uploadId_<%=cid%> = initResponse_<%=cid%>.getUploadId();
       			int partNumber_<%=cid%> = 1;
       			boolean streamHasNext_<%=cid%> = true;
+      			byte[] TestAvailable_<%=cid%> = new byte[1];
       			try {
   							while (streamHasNext_<%=cid%>) {
         						com.amazonaws.services.s3.model.UploadPartRequest uploadRequest_<%=cid%> = new com.amazonaws.services.s3.model.UploadPartRequest()
                     	.withBucketName(<%=bucket%>)
                     	.withKey(key_<%=cid%>).withUploadId(uploadId_<%=cid%>)
                     	.withPartNumber(partNumber_<%=cid%>).withPartSize(curPartSize_<%=cid%>);
-                    	
             		    uploadRequest_<%=cid%>.setInputStream(uploadStream_<%=cid%>);
+            		    streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(TestAvailable_<%=cid%>) != -1;
+            		    if(!streamHasNext_<%=cid%>){
+                    	    uploadRequest_<%=cid%>.setLastPart(true);
+                    	}
 
-                		// Upload part and add response to our list.
                 		partTags_<%=cid%>.add(conn_<%=cid%>.uploadPart(uploadRequest_<%=cid%>).getPartETag());
-                  	partNumber_<%=cid%>++;
+                  	    partNumber_<%=cid%>++;
 
           		     	if(uploadStream_<%=cid%>!=null){
       		         			uploadStream_<%=cid%>.close();
           		     	}
-          		     	
-          		     	buffer_<%=cid%> = new byte[partSizeInBytes_<%=cid%>];
-          		     	streamHasNext_<%=cid%> = sourceStream_<%=cid%>.read(buffer_<%=cid%>) != -1;
+          		     	sourceStream_<%=cid%>.read(buffer_<%=cid%>,1,partSizeInBytes_<%=cid%>-1);
+          		     	buffer_<%=cid%>[0] = TestAvailable_<%=cid%>[0];
           		     	curPartSize_<%=cid%> = streamUtil_<%=cid%>.getLength(buffer_<%=cid%>);
           		     	uploadStream_<%=cid%> = new java.io.ByteArrayInputStream(buffer_<%=cid%>);
         				}

@@ -15,14 +15,18 @@ package org.talend.sdk.component.studio.model.parameter;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.talend.core.model.process.IElement;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public class TaCoKitElementParameter extends ElementParameter {
+public class TaCoKitElementParameter extends ElementParameter implements IAdditionalInfo {
 
     private static final String GUESS_BUTTON_PREFIX = "Guess Schema_";
 
@@ -36,6 +40,8 @@ public class TaCoKitElementParameter extends ElementParameter {
      * It will redraw UI after value is changed
      */
     private ElementParameter redrawParameter;
+
+    private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     /**
      * Sets tagged value "org.talend.sdk.component.source", which is used in code generation to recognize component type
@@ -142,5 +148,30 @@ public class TaCoKitElementParameter extends ElementParameter {
      */
     public void setRedrawParameter(final ElementParameter redrawParameter) {
         this.redrawParameter = redrawParameter;
+    }
+
+    @Override
+    public Object getInfo(final String key) {
+        return additionalInfoMap.get(key);
+    }
+
+    @Override
+    public void putInfo(final String key, final Object value) {
+        additionalInfoMap.put(key, value);
+    }
+
+    @Override
+    public void onEvent(final String event, final Object... parameters) {
+        // nothing to do
+    }
+
+    @Override
+    public void cloneAddionalInfoTo(final IAdditionalInfo targetAdditionalInfo) {
+        if (targetAdditionalInfo == null) {
+            return;
+        }
+        for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
+            targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
+        }
     }
 }

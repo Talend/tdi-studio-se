@@ -64,7 +64,11 @@
 
 <%
     if (!useLookup) {
-        // nothing to do
+%>
+        // single input can't run into this codes
+        boolean canRunIntoMutileInputsCodes_<%=cid%> = false;
+        if (canRunIntoMutileInputsCodes_<%=cid%>) {
+<%
     } else {
 %>
         boolean continueLoop = true;

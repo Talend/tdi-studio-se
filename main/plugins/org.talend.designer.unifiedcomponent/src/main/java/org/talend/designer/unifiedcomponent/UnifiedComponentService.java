@@ -24,10 +24,16 @@ import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsService;
+import org.talend.core.model.metadata.IMetadataColumn;
+import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.IComponentName;
+import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.designer.core.IUnifiedComponentService;
 import org.talend.designer.core.model.components.EParameterName;
@@ -194,17 +200,20 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
     @Override
     public void switchComponent(INode node, IComponent delegateComponent, String oldEmfComponent,
-            List<? extends IElementParameter> oldParams) {
+            List<? extends IElementParameter> oldParams, List<IMetadataTable> oldMetadataTables,
+            List<INodeConnector> oldConnectors) {
         if (!(delegateComponent instanceof DelegateComponent)) {
             return;
         }
         DelegateComponent dComp = (DelegateComponent) delegateComponent;
 
         Map<String, String> oldParamMapping = new HashMap<String, String>();
+        Map<String, String> oldConnectorMapping = new HashMap<String, String>();
         if (oldEmfComponent != null) {
             UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(oldEmfComponent);
             if (unifiedObject != null) {
                 oldParamMapping.putAll(unifiedObject.getParameterMapping());
+                oldConnectorMapping.putAll(unifiedObject.getConnectorMapping());
             }
         }
 
@@ -212,10 +221,12 @@ public class UnifiedComponentService implements IUnifiedComponentService {
         String unifiedComp = String.valueOf(newUnifiedParam.getValue());
         UnifiedObject unifiedObject = dComp.getUnifiedObjectByName(unifiedComp);
         Map<String, String> newParamMapping = new HashMap<String, String>();
+        Map<String, String> newConnectorMapping = new HashMap<String, String>();
         Set<String> mappingExelude = new HashSet<String>();
         if (unifiedObject != null) {
             newParamMapping.putAll(unifiedObject.getParameterMapping());
             mappingExelude.addAll(unifiedObject.getParamMappingExclude());
+            newConnectorMapping.putAll(unifiedObject.getConnectorMapping());
         }
         List<? extends IElementParameter> newParams = node.getElementParameters();
         Map<String, Object> storeValueMap = storeValue(oldParams);
@@ -273,6 +284,8 @@ public class UnifiedComponentService implements IUnifiedComponentService {
 
             }
         }
+        updateComponentSchema(node, oldMetadataTables, oldConnectors, oldConnectorMapping, newConnectorMapping);
+
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), true);
 
     }
@@ -295,6 +308,112 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             }
         }
         return map;
+    }
+
+    private void updateComponentSchema(INode node, List<IMetadataTable> oldMetadataTables, List<INodeConnector> oldConnectors,
+            Map<String, String> oldConnectorMapping, Map<String, String> newConnectorMapping) {
+        List<IMetadataTable> reloadMetadataList = node.getMetadataList();
+        if (oldMetadataTables != null) {
+            for (IMetadataTable newTable : reloadMetadataList) {
+                String connNewFromMapping = newConnectorMapping.get(newTable.getAttachedConnector()) == null
+                        ? newTable.getAttachedConnector()
+                        : newConnectorMapping.get(newTable.getAttachedConnector());
+                for (IMetadataTable oldTable : oldMetadataTables) {
+                    String connOldFromMapping = oldConnectorMapping.get(oldTable.getAttachedConnector()) == null
+                            ? oldTable.getAttachedConnector()
+                            : oldConnectorMapping.get(oldTable.getAttachedConnector());
+                    if (connNewFromMapping.equals(connOldFromMapping)) {
+                        newTable.getListColumns().clear();
+                        for (IMetadataColumn column : oldTable.getListColumns()) {
+                            newTable.getListColumns().add(column);
+                        }
+                        IGenericWizardService wizardService = null;
+                        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
+                            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault()
+                                    .getService(IGenericWizardService.class);
+                        }
+                        if (wizardService != null) {
+                            wizardService.updateComponentSchema(node, newTable);
+                        }
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        List<? extends INodeConnector> listConnector = node.getListConnector();
+        for (INodeConnector newConnector : listConnector) {
+            if (newConnector.getDefaultConnectionType().hasConnectionCategory(EConnectionType.FLOW)) {
+                String newMappedName = newConnectorMapping.get(newConnector.getName()) == null ? newConnector.getName()
+                        : newConnectorMapping.get(newConnector.getName());
+                INodeConnector oldConnectorOut = findConnectors(newMappedName, oldConnectors, oldConnectorMapping, false);
+                if (oldConnectorOut != null) {
+                    if (oldConnectorOut.getCurLinkNbOutput() > 0
+                            && oldConnectorOut.getDefaultConnectionType().hasConnectionCategory(EConnectionType.FLOW)) {
+                        List<? extends IConnection> outgoingConnections = node.getOutgoingConnections(oldConnectorOut.getName());
+                        IMetadataTable findConnectedTable = findConnectedTable(newConnector, reloadMetadataList);
+                        if (findConnectedTable != null) {
+                            for (IConnection connection : outgoingConnections) {
+                                connection.setConnectorName(newConnector.getName());
+                                connection.setMetaName(findConnectedTable.getTableName());
+                            }
+                        }
+                    }
+                } else {
+                    List<? extends IConnection> outgoingConnections = node.getOutgoingConnections(newConnector.getName());
+                    IMetadataTable findConnectedTable = findConnectedTable(newConnector, reloadMetadataList);
+                    if (findConnectedTable != null) {
+                        for (IConnection connection : outgoingConnections) {
+                            connection.setConnectorName(newConnector.getName());
+                            connection.setMetaName(findConnectedTable.getTableName());
+                        }
+                    }
+                }
+            }
+        }
+        List<? extends IConnection> incomingConnections = node.getIncomingConnections();
+        for (IConnection connection : incomingConnections) {
+            INodeConnector targetNodeConnector = connection.getTargetNodeConnector();
+            targetNodeConnector.setCurLinkNbInput(targetNodeConnector.getCurLinkNbInput() + 1);
+        }
+
+        List<? extends IConnection> outgoingConnections = node.getOutgoingConnections();
+        for (IConnection connection : outgoingConnections) {
+            INodeConnector sourceNodeConnector = connection.getSourceNodeConnector();
+            sourceNodeConnector.setCurLinkNbOutput(sourceNodeConnector.getCurLinkNbOutput() + 1);
+        }
+
+    }
+
+    private INodeConnector findConnectors(String newMappedName, List<INodeConnector> listConnector,
+            Map<String, String> oldConnectorMapping, boolean input) {
+        for (INodeConnector connector : listConnector) {
+            String oldMappedName = oldConnectorMapping.get(connector.getName()) == null ? connector.getName()
+                    : oldConnectorMapping.get(connector.getName());
+            if (newMappedName.equals(oldMappedName)) {
+                if (input) {
+                    if (connector.getMaxLinkInput() == -1 || connector.getMaxLinkInput() > 0) {
+                        return connector;
+                    }
+                } else {
+                    if (connector.getMaxLinkOutput() == -1 || connector.getMaxLinkOutput() > 0) {
+                        return connector;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private IMetadataTable findConnectedTable(INodeConnector connector, List<IMetadataTable> metadataList) {
+        for (IMetadataTable table : metadataList) {
+            if (table.getAttachedConnector() != null && table.getAttachedConnector().equals(connector.getName())) {
+                return table;
+            }
+        }
+        return null;
+
     }
 
     /*
@@ -348,8 +467,8 @@ public class UnifiedComponentService implements IUnifiedComponentService {
     @Override
     public void filterUnifiedComponentForPalette(IComponentsFactory compFac, Collection<IComponent> componentSet,
             String lowerCasedKeyword) {
-        IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault().getService(
-                IUnifiedComponentService.class);
+        IUnifiedComponentService service = (IUnifiedComponentService) GlobalServiceRegister.getDefault()
+                .getService(IUnifiedComponentService.class);
         // filter unified components
         Iterator<IComponent> iterator = componentSet.iterator();
         while (iterator.hasNext()) {
@@ -423,8 +542,8 @@ public class UnifiedComponentService implements IUnifiedComponentService {
             if (filter != null) {
                 for (UnifiedObject obj : dcomp.getUnifiedObjects()) {
                     if (matchFilter(obj, filter)) {
-                        IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault().getService(
-                                IComponentsService.class);
+                        IComponentsService compService = (IComponentsService) GlobalServiceRegister.getDefault()
+                                .getService(IComponentsService.class);
                         IComponent emfComponent = compService.getComponentsFactory().get(obj.getComponentName(),
                                 dcomp.getPaletteType());
                         return emfComponent;

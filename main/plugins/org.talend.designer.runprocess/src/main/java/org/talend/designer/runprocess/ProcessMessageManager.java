@@ -15,8 +15,7 @@ package org.talend.designer.runprocess;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collection;
-
-import org.apache.commons.collections.buffer.BoundedFifoBuffer;
+import java.util.LinkedList;
 
 /**
  * DOC amaumont class global comment. Detailled comment <br/>
@@ -29,7 +28,7 @@ public class ProcessMessageManager implements IProcessMessageManager {
     private transient PropertyChangeSupport pcsDelegate;
 
     /** Messages associated to the process. */
-    private BoundedFifoBuffer messages;
+    private LinkedList<IProcessMessage> messages;
 
     public static final String PROP_MESSAGE_ADD = "RunProcessContext.Message.Added"; //$NON-NLS-1$
 
@@ -39,26 +38,31 @@ public class ProcessMessageManager implements IProcessMessageManager {
 
     public static final String UPDATE_CONSOLE = "UPDATE_CONSOLE"; //$NON-NLS-1$
 
-    public static final int LIMIT_MESSAGES = 500;
+    public static final int LIMIT_MESSAGES = 10000;
 
     public static int lineLimit;
+    
+    private long lastUpdateConsole = System.currentTimeMillis();
 
     /**
      * DOC amaumont ProcessMessageManager constructor comment.
      */
     public ProcessMessageManager() {
         super();
+        boolean enableLimit = RunProcessPlugin.getDefault().getPluginPreferences()
+                .getBoolean(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT);
         String line = RunProcessPlugin.getDefault().getPluginPreferences()
                 .getString(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT);
-        if (!"".equals(line) && line != null) {
+        if (enableLimit && !"".equals(line) && line != null) {
             lineLimit = (Integer.parseInt(line));
             if (lineLimit <= 0) {
                 lineLimit = 1; // can't have 0 size buffer
             }
-            messages = new BoundedFifoBuffer(lineLimit);
         } else {
-            messages = new BoundedFifoBuffer(LIMIT_MESSAGES);
+            lineLimit = LIMIT_MESSAGES;
         }
+        lastUpdateConsole = 0;
+        messages = new LinkedList<>();
         pcsDelegate = new PropertyChangeSupport(this);
     }
 
@@ -86,17 +90,21 @@ public class ProcessMessageManager implements IProcessMessageManager {
     }
 
     public void updateConsole() {
-        firePropertyChange(UPDATE_CONSOLE, null, null);
+        if (System.currentTimeMillis() - lastUpdateConsole > 100) {
+            firePropertyChange(UPDATE_CONSOLE, null, null);
+            lastUpdateConsole = System.currentTimeMillis();
+        }
     }
 
     @Override
     public void addMessage(IProcessMessage message) {
         synchronized (messages) {
-            if (messages.isFull()) {
+            while (messages.size() >= lineLimit) {
                 messages.remove();
             }
             messages.add(message);
             firePropertyChange(PROP_MESSAGE_ADD, null, message);
+            updateConsole();
         }
 
     }
@@ -104,15 +112,31 @@ public class ProcessMessageManager implements IProcessMessageManager {
     @Override
     public void clearMessages() {
         synchronized (messages) {
+            boolean enableLimit = RunProcessPlugin.getDefault().getPluginPreferences()
+                    .getBoolean(RunprocessConstants.ENABLE_CONSOLE_LINE_LIMIT);
+            String line = RunProcessPlugin.getDefault().getPluginPreferences()
+                    .getString(RunprocessConstants.CONSOLE_LINE_LIMIT_COUNT);
+            if (enableLimit && !"".equals(line) && line != null) {
+                lineLimit = (Integer.parseInt(line));
+                if (lineLimit <= 0) {
+                    lineLimit = 1; // can't have 0 size buffer
+                }
+            } else {
+                lineLimit = LIMIT_MESSAGES;
+            }
+            lastUpdateConsole = 0;
             messages.clear();
             firePropertyChange(PROP_MESSAGE_CLEAR, messages, null);
         }
 
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Collection<IProcessMessage> getMessages() {
-        return messages;
+        synchronized (messages) {
+            return new LinkedList<>(messages);
+        }
     }
 
     @Override
@@ -129,11 +153,12 @@ public class ProcessMessageManager implements IProcessMessageManager {
     @Override
     public void addDebugResultToConsole(IProcessMessage debugResultMessage) {
         synchronized (messages) {
-            if (messages.isFull()) {
+            while (messages.size() >= lineLimit) {
                 messages.remove();
             }
             messages.add(debugResultMessage);
             firePropertyChange(PROP_DEBUG_MESSAGE_ADD, null, debugResultMessage);
+            updateConsole();
         }
 
     }

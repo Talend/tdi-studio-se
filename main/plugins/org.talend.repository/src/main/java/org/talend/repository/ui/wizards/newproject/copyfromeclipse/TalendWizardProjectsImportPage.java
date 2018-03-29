@@ -19,9 +19,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -87,6 +89,8 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
     private String sourcePath;
 
     private ILeveledImportStructureProvider structureProvider;
+    
+    private Map<String,String> oldToNewSource = new HashMap<>();
 
     /**
      * 
@@ -305,19 +309,15 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
         // String destinationPerlPath = null;
         try {
             if (!("".equals(sourcePath))) { //$NON-NLS-1$
-
-                sourcePath = items2Projects(sourcePath);
-                this.sourcePath = sourcePath;
-                // destinationJavaPath = CorePlugin.getDefault().getLibrariesService().getJavaLibrariesPath();
-                // destinationPerlPath = CorePlugin.getDefault().getLibrariesService().getPerlLibrariesPath();
-                //
-                // IPathVariableManager pathVariableManager = ResourcesPlugin.getWorkspace().getPathVariableManager();
-                // pathVariableManager.setValue(EXTERNAL_LIB_JAVA_PATH, new Path(destinationJavaPath));
-                // if (destinationPerlPath != null) {
-                // pathVariableManager.setValue(EXTERNAL_LIB_PERL_PATH, new Path(destinationPerlPath));
-                // }
-
-                super.updateProjectsList(sourcePath);
+                String finalSource = sourcePath;
+                if (oldToNewSource.containsKey(sourcePath)) {
+                    finalSource = oldToNewSource.get(sourcePath);
+                } else {
+                    finalSource = items2Projects(sourcePath);
+                    oldToNewSource.put(sourcePath, finalSource);
+                }
+                this.sourcePath = finalSource;
+                super.updateProjectsList(finalSource);
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -338,7 +338,6 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
             FilesUtils.unzip(sourcePath, tmpPath.getPath());
             flag = true;
         }
-        System.out.println(tmpPath.getPath());
         Iterator filesIterator = files.iterator();
         while (filesIterator.hasNext()) {
             File file = (File) filesIterator.next();

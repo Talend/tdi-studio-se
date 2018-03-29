@@ -108,7 +108,19 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
     @Override
     public List<INodeConnector> createConnectors() {
         ArrayList<INodeConnector> connectors = new ArrayList<>();
-        connectors.addAll(createMainConnectors());
+
+        List<INodeConnector> mainConnectors = createMainConnectors();
+        boolean useMultiSchema = 1 < mainConnectors.stream().filter(c -> {
+            if (TaCoKitNodeConnector.class.isInstance(c)) {
+                return TaCoKitNodeConnector.class.cast(c).hasOutput();
+            }
+            return false;
+        }).count();
+        if (useMultiSchema) {
+            mainConnectors.stream().forEach(c -> c.setMultiSchema(useMultiSchema));
+        }
+        connectors.addAll(mainConnectors);
+
         createRejectConnector().ifPresent(c -> connectors.add(c));
         connectors.add(createIterateConnector());
         connectors.addAll(createStandardConnectors());

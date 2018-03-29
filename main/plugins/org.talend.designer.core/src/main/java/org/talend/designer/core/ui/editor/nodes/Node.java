@@ -603,13 +603,12 @@ public class Node extends Element implements IGraphicalNode {
             }
         }
 
-        IElementParameter mappingParameter = MetadataToolHelper.getMappingParameter((List<IElementParameter>) this
-                .getElementParameters());
+        IElementParameter mappingParameter = MetadataToolHelper
+                .getMappingParameter((List<IElementParameter>) this.getElementParameters());
 
         for (IMetadataTable table : metadataList) {
-            if (table.getAttachedConnector() != null
-                    && (table.getAttachedConnector().equals(EConnectionType.FLOW_MAIN.getName()) || table.getAttachedConnector()
-                            .equals(EConnectionType.TABLE.getName()))) {
+            if (table.getAttachedConnector() != null && (table.getAttachedConnector().equals(EConnectionType.FLOW_MAIN.getName())
+                    || table.getAttachedConnector().equals(EConnectionType.TABLE.getName()))) {
                 table.setTableName(uniqueName2);
             } else {
                 table.setTableName(table.getAttachedConnector());
@@ -626,9 +625,9 @@ public class Node extends Element implements IGraphicalNode {
                     table.setDbms((String) param.getValue());
                 }
                 if ((param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
-                        || param.getFieldType().equals(EParameterFieldType.DCSCHEMA) || param.getFieldType().equals(
-                        EParameterFieldType.SCHEMA_REFERENCE))
-                        && param.getContext() != null && param.getContext().equals(table.getAttachedConnector())) {
+                        || param.getFieldType().equals(EParameterFieldType.DCSCHEMA)
+                        || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) && param.getContext() != null
+                        && param.getContext().equals(table.getAttachedConnector())) {
                     if (param.getValue() instanceof IMetadataTable) {
                         IMetadataTable paramTable = (IMetadataTable) param.getValue();
                         table.getListColumns().addAll(paramTable.getListColumns());
@@ -1288,14 +1287,16 @@ public class Node extends Element implements IGraphicalNode {
             }
             if (!mainConnector.isMultiSchema()
                     && (connection.getLineStyle() == EConnectionType.FLOW_MAIN
-                            || (connection.getLineStyle() == EConnectionType.TABLE) || (connection.getLineStyle() == EConnectionType.FLOW_MERGE))
+                            || (connection.getLineStyle() == EConnectionType.TABLE)
+                            || (connection.getLineStyle() == EConnectionType.FLOW_MERGE))
                     && ((Process) getProcess()).isActivate()) {
 
                 boolean repositoryMode = false;
                 IMetadataTable mainTargetTable = this.getMetadataFromConnector(mainConnector.getName());
                 for (IElementParameter param : getElementParameters()) {
-                    if ((EParameterFieldType.SCHEMA_TYPE.equals(param.getFieldType()) || EParameterFieldType.SCHEMA_REFERENCE
-                            .equals(param.getFieldType())) && (param.getContext().equals(mainConnector.getName()))) {
+                    if ((EParameterFieldType.SCHEMA_TYPE.equals(param.getFieldType())
+                            || EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType()))
+                            && (param.getContext().equals(mainConnector.getName()))) {
                         IElementParameter schemaTypeParam = param.getChildParameters().get(EParameterName.SCHEMA_TYPE.getName());
                         if (schemaTypeParam.getValue().equals(EmfComponent.REPOSITORY)) {
                             repositoryMode = true;
@@ -1316,8 +1317,9 @@ public class Node extends Element implements IGraphicalNode {
                 IElementParameter inputSchemaParam = null;
 
                 for (IElementParameter param : conn.getSource().getElementParameters()) {
-                    if ((EParameterFieldType.SCHEMA_TYPE.equals(param.getFieldType()) || EParameterFieldType.SCHEMA_REFERENCE
-                            .equals(param.getFieldType())) && (param.getContext().equals(inputConnector))) {
+                    if ((EParameterFieldType.SCHEMA_TYPE.equals(param.getFieldType())
+                            || EParameterFieldType.SCHEMA_REFERENCE.equals(param.getFieldType()))
+                            && (param.getContext().equals(inputConnector))) {
                         inputSchemaParam = param;
                         break;
                     }
@@ -1333,7 +1335,8 @@ public class Node extends Element implements IGraphicalNode {
                         if (mainConnector.getName().equals(connector.getBaseSchema())
                                 && (isFlowMain ? connector.getMaxLinkInput() > 0 : true)) {
                             /**
-                             * For FLOW(not include TABLE), I think, only for the input metatable is enough, because:<br>
+                             * For FLOW(not include TABLE), I think, only for the input metatable is enough,
+                             * because:<br>
                              * 1. The following called ChangeMetadataCommand are always seem everytime<br>
                              * 2. If the input table is not changed, maybe output table should not change too, because
                              * output data is come from input data<br>
@@ -1368,17 +1371,16 @@ public class Node extends Element implements IGraphicalNode {
                             }
                             customFound = customColNumber > 0;
                             int nonCustomColNumber = targetTable.getListColumns().size() - customColNumber;
-                            if (nonCustomColNumber == 0
-                                    && (((customFound && targetTable.isReadOnly()) || (outputs.size() == 0) || (connection
-                                            .getLineStyle() == EConnectionType.FLOW_MERGE)) && (inputTable.getListColumns()
-                                            .size() != 0))) {
+                            if (nonCustomColNumber == 0 && (((customFound && targetTable.isReadOnly()) || (outputs.size() == 0)
+                                    || (connection.getLineStyle() == EConnectionType.FLOW_MERGE))
+                                    && (inputTable.getListColumns().size() != 0))) {
                                 // For the auto propagate.
                                 // MetadataTool.copyTable(inputTable, targetTable);
                                 // add by wzhang for feature 7611.
                                 String dbmsId = targetTable.getDbms();
                                 MetadataToolHelper.copyTable(dbmsId, inputTable, targetTable);
-                                ChangeMetadataCommand cmc = new ChangeMetadataCommand(this, null, tmpTableCreated ? targetTable
-                                        : null, targetTable, inputSchemaParam);
+                                ChangeMetadataCommand cmc = new ChangeMetadataCommand(this, null,
+                                        tmpTableCreated ? targetTable : null, targetTable, inputSchemaParam);
                                 cmc.execute();
 
                                 ColumnListController.updateColumnList(this, null, true);
@@ -1402,12 +1404,11 @@ public class Node extends Element implements IGraphicalNode {
                             break;
                         }
                     }
-                    if ((!haveNonCustomColumn)
-                            || mainTargetTable.sameMetadataAs(connection.getMetadataTable(), IMetadataColumn.OPTIONS_IGNORE_KEY
-                                    | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                    | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                    | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                    | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
+                    if ((!haveNonCustomColumn) || mainTargetTable.sameMetadataAs(connection.getMetadataTable(),
+                            IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                    | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                    | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DBTYPE
+                                    | IMetadataColumn.OPTIONS_IGNORE_DEFAULT | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
                         return;
                     }
                     IConnection outputConnection = null;
@@ -1509,8 +1510,8 @@ public class Node extends Element implements IGraphicalNode {
     @Override
     public IElementParameter getSchemaParameterFromConnector(String connector) {
         for (IElementParameter param : getElementParameters()) {
-            if ((param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || param.getFieldType().equals(
-                    EParameterFieldType.SCHEMA_REFERENCE))
+            if ((param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE))
                     && param.getContext().equals(connector)) {
                 return param;
             }
@@ -1548,8 +1549,8 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         if (schemaParamTarget.getValue().equals(EmfComponent.REPOSITORY)) {
-            IElementParameter repositorySchemaParamTarget = paramTarget.getChildParameters().get(
-                    EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
+            IElementParameter repositorySchemaParamTarget = paramTarget.getChildParameters()
+                    .get(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
             /*
              * param.getChildParameters() .get(EParameterName.SCHEMA_TYPE.getName()).setValue( EmfComponent.REPOSITORY);
              */
@@ -1953,7 +1954,7 @@ public class Node extends Element implements IGraphicalNode {
                     // IConnection[] conns = process.getAllConnections(null);
                     // for (IConnection conn : conns) {
                     // if (conn instanceof IPerformance) {
-                    //                            ((IPerformance) conn).setPerformanceData(""); //$NON-NLS-1$
+                    // ((IPerformance) conn).setPerformanceData(""); //$NON-NLS-1$
                     // }
                     // }
                 }
@@ -1971,7 +1972,7 @@ public class Node extends Element implements IGraphicalNode {
         }
 
         if (id.equals(EParameterName.VARIABLES.getName()) /* tSetGlovarVar */
-                || id.equals("MAP") || id.equals(EParameterName.DEFAULT_MAP.getName()))/* tFlowToIterate */{ //$NON-NLS-1$
+                || id.equals("MAP") || id.equals(EParameterName.DEFAULT_MAP.getName()))/* tFlowToIterate */ { //$NON-NLS-1$
             firePropertyChange(RETURNS_CHANGED, null, null);
         }
 
@@ -2136,7 +2137,8 @@ public class Node extends Element implements IGraphicalNode {
                     // check if the input has activated outputs
                     hasActivatedOutput = false;
                     for (Connection sourceConn : (List<Connection>) connection.getSource().getOutgoingConnections()) {
-                        if (sourceConn.isActivate() && sourceConn.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
+                        if (sourceConn.isActivate()
+                                && sourceConn.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
                             hasActivatedOutput = true;
                         }
                     }
@@ -2190,8 +2192,8 @@ public class Node extends Element implements IGraphicalNode {
                 if (connec.isActivate()) {
                     if ((connec.getLineStyle().equals(EConnectionType.RUN_IF)
                             || connec.getLineStyle().equals(EConnectionType.ON_COMPONENT_ERROR)
-                            || connec.getLineStyle().equals(EConnectionType.ON_COMPONENT_OK) || connec.getLineStyle().equals(
-                            EConnectionType.STARTS))) {
+                            || connec.getLineStyle().equals(EConnectionType.ON_COMPONENT_OK)
+                            || connec.getLineStyle().equals(EConnectionType.STARTS))) {
                         runIf = true;
                     }
                     if (!runIf) {
@@ -2382,8 +2384,8 @@ public class Node extends Element implements IGraphicalNode {
             if ((connection.getLineStyle().hasConnectionCategory(IConnectionCategory.USE_HASH)
                     || nodeTmp.getOutgoingConnections(EConnectionType.TABLE).size() != 0
                     || nodeTmp.getIncomingConnections(EConnectionType.TABLE).size() != 0
-                    || nodeTmp.getOutgoingConnections(EConnectionType.TABLE_REF).size() != 0 || nodeTmp.getIncomingConnections(
-                    EConnectionType.TABLE_REF).size() != 0)
+                    || nodeTmp.getOutgoingConnections(EConnectionType.TABLE_REF).size() != 0
+                    || nodeTmp.getIncomingConnections(EConnectionType.TABLE_REF).size() != 0)
                     && !connection.getLineStyle().hasConnectionCategory(IConnectionCategory.DEPENDENCY)) {
                 // System.out.println(" ** Ref Link Found in:" + nodeTmp + "
                 // from:" + this);
@@ -2404,8 +2406,8 @@ public class Node extends Element implements IGraphicalNode {
                 for (INode node : mergeInfo.keySet()) {
                     if (mergeInfo.get(node) != 1) {
                         // get the first merge connection to have the main branch (id 1 for merge connection)
-                        List<? extends IConnection> connections = NodeUtil
-                                .getIncomingConnections(node, IConnectionCategory.MERGE);
+                        List<? extends IConnection> connections = NodeUtil.getIncomingConnections(node,
+                                IConnectionCategory.MERGE);
                         if (connections.size() > 0) {
                             IConnection connection = connections.get(0);
                             return ((Node) connection.getSource()).getMainBranch(visitedNodes);
@@ -2520,8 +2522,8 @@ public class Node extends Element implements IGraphicalNode {
 
             List<String> newErrorList = Problems.getStatusList(ProblemStatus.ERROR,
                     nodeContainer == null ? this : nodeContainer.getNode());
-            List<String> newWarningList = Problems.getStatusList(ProblemStatus.WARNING, nodeContainer == null ? this
-                    : nodeContainer.getNode());
+            List<String> newWarningList = Problems.getStatusList(ProblemStatus.WARNING,
+                    nodeContainer == null ? this : nodeContainer.getNode());
 
             if (newErrorList.size() != errorList.size()) {
                 toUpdate = true;
@@ -2707,8 +2709,8 @@ public class Node extends Element implements IGraphicalNode {
                                             }
                                         }
                                         if (!found) {
-                                            String warnMessage = Messages.getString(
-                                                    "Node.notExistedContextName", value, index, itemParameter.getDisplayName()); //$NON-NLS-1$
+                                            String warnMessage = Messages.getString("Node.notExistedContextName", value, index, //$NON-NLS-1$
+                                                    itemParameter.getDisplayName());
                                             Problems.add(ProblemStatus.WARNING, this, warnMessage);
                                         }
                                     }
@@ -2753,8 +2755,8 @@ public class Node extends Element implements IGraphicalNode {
                 }
                 if (inexistentColumns.length() > 0) {
                     inexistentColumns.deleteCharAt(inexistentColumns.length() - 1);
-                    String warnMessage = Messages.getString(
-                            "Node.hasInexistentColumn", inexistentColumns.toString(), param.getDisplayName()); //$NON-NLS-1$
+                    String warnMessage = Messages.getString("Node.hasInexistentColumn", inexistentColumns.toString(), //$NON-NLS-1$
+                            param.getDisplayName());
                     Problems.add(ProblemStatus.WARNING, this, warnMessage);
                 }
             }
@@ -2786,17 +2788,17 @@ public class Node extends Element implements IGraphicalNode {
                 if (param.getFieldType().equals(EParameterFieldType.TABLE)) {
                     List<Map<String, String>> tableValues = (List<Map<String, String>>) param.getValue();
                     // add by wzhang. all schemas need loop element.
-                    if (tableValues != null
-                            && "tFileOutputMSXML".equalsIgnoreCase(component.getName()) && param.getName().equals("LOOP")) { //$NON-NLS-1$ //$NON-NLS-2$
+                    if (tableValues != null && "tFileOutputMSXML".equalsIgnoreCase(component.getName()) //$NON-NLS-1$
+                            && param.getName().equals("LOOP")) { //$NON-NLS-1$
                         checkFileOutputMSXML(param, tableValues);
                     } else if (tableValues != null && "tAdvancedFileOutputXML".equalsIgnoreCase(component.getName()) //$NON-NLS-1$
                             && param.getName().equals("LOOP") && tableValues.size() != 0) { //$NON-NLS-1$
                         // for bug 10108
                         if (((Boolean) this.getElementParameter("MERGE").getValue()) == true) { //$NON-NLS-1$
-                            List<Map<String, String>> listGroup = (List<Map<String, String>>) externalNode.getElementParameter(
-                                    "GROUP").getValue(); //$NON-NLS-1$
-                            List<Map<String, String>> listLoop = (List<Map<String, String>>) externalNode.getElementParameter(
-                                    "LOOP").getValue(); //$NON-NLS-1$
+                            List<Map<String, String>> listGroup = (List<Map<String, String>>) externalNode
+                                    .getElementParameter("GROUP").getValue(); //$NON-NLS-1$
+                            List<Map<String, String>> listLoop = (List<Map<String, String>>) externalNode
+                                    .getElementParameter("LOOP").getValue(); //$NON-NLS-1$
                             if (listGroup.size() == 0 || listLoop.size() == 0) {
                                 String errorMessage = Messages.getString("Node.needLoopAndGroup", param.getDisplayName()); //$NON-NLS-1$
                                 Problems.add(ProblemStatus.ERROR, this, errorMessage);
@@ -2819,8 +2821,8 @@ public class Node extends Element implements IGraphicalNode {
                 case TABLE:
                     List<Map<String, String>> tableValues = (List<Map<String, String>>) param.getValue();
                     // add by wzhang. all schemas need loop element.
-                    if (tableValues != null
-                            && "tFileOutputMSXML".equalsIgnoreCase(component.getName()) && param.getName().equals("LOOP")) { //$NON-NLS-1$ //$NON-NLS-2$
+                    if (tableValues != null && "tFileOutputMSXML".equalsIgnoreCase(component.getName()) //$NON-NLS-1$
+                            && param.getName().equals("LOOP")) { //$NON-NLS-1$
                         checkFileOutputMSXML(param, tableValues);
                     } else {
                         if (tableValues == null || tableValues.size() == 0) {
@@ -2848,7 +2850,8 @@ public class Node extends Element implements IGraphicalNode {
                 case DCSCHEMA:
                     // IMetadataTable metadataTable = getMetadataTable(getUniqueName());
                     // if(metadataTable == null || !(metadataTable.getListColumns().size() > 0)) {
-                    //                  String errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName()); //$NON-NLS-1$
+                    // String errorMessage = Messages.getString("Node.parameterEmpty", param.getDisplayName());
+                    // //$NON-NLS-1$
                     // Problems.add(ProblemStatus.ERROR, this, errorMessage);
                     // }
                     break;
@@ -3004,12 +3007,12 @@ public class Node extends Element implements IGraphicalNode {
             processTypeParam = this.getElementParameterFromField(EParameterFieldType.ROUTE_INPUT_PROCESS_TYPE);
         }
         if (processTypeParam != null) {
-            IElementParameter jobElemParam = processTypeParam.getChildParameters().get(
-                    EParameterName.PROCESS_TYPE_PROCESS.getName());
-            IElementParameter jobVersionParam = processTypeParam.getChildParameters().get(
-                    EParameterName.PROCESS_TYPE_VERSION.getName());
-            IElementParameter contextElemParam = processTypeParam.getChildParameters().get(
-                    EParameterName.PROCESS_TYPE_CONTEXT.getName());
+            IElementParameter jobElemParam = processTypeParam.getChildParameters()
+                    .get(EParameterName.PROCESS_TYPE_PROCESS.getName());
+            IElementParameter jobVersionParam = processTypeParam.getChildParameters()
+                    .get(EParameterName.PROCESS_TYPE_VERSION.getName());
+            IElementParameter contextElemParam = processTypeParam.getChildParameters()
+                    .get(EParameterName.PROCESS_TYPE_CONTEXT.getName());
             // get context list
             String processId = (String) jobElemParam.getValue();
             String contextName = (String) contextElemParam.getValue();
@@ -3120,8 +3123,8 @@ public class Node extends Element implements IGraphicalNode {
                         in: for (Object object : list) {
                             if (object instanceof ElementParameterType) {
                                 if (((ElementParameterType) object).getName().equals("UNIQUE_NAME")) { //$NON-NLS-1$
-                                    IElementParameter elementParam = this.getElementParameter(((ElementParameterType) object)
-                                            .getValue());
+                                    IElementParameter elementParam = this
+                                            .getElementParameter(((ElementParameterType) object).getValue());
                                     if (elementParam == null) {
                                         continue out;
                                     }
@@ -3159,8 +3162,8 @@ public class Node extends Element implements IGraphicalNode {
             final IElementParameter paramValidation = getElementParameter(EParameterName.VALIDATION_RULES.getName());
             if (paramValidation != null && paramValidation.getValue() != null && paramValidation.getValue() instanceof Boolean
                     && (Boolean) paramValidation.getValue()) {
-                final IElementParameter elementParameter = getElementParameter(EParameterName.REPOSITORY_VALIDATION_RULE_TYPE
-                        .getName());
+                final IElementParameter elementParameter = getElementParameter(
+                        EParameterName.REPOSITORY_VALIDATION_RULE_TYPE.getName());
                 String vItemId = String.valueOf(elementParameter.getValue());
                 String errorMessage;
                 if (StringUtils.trimToNull(vItemId) == null) {
@@ -3305,8 +3308,8 @@ public class Node extends Element implements IGraphicalNode {
     private void checkHasMultiPrejobOrPostJobComponents() {
         Map<String, INode> multiNodes = new HashMap<String, INode>();
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (jobletService != null) {
                 // need to check all node from the process
                 List<INode> joblets = new ArrayList<INode>();
@@ -3358,8 +3361,8 @@ public class Node extends Element implements IGraphicalNode {
     public void checkLinks() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
             }
@@ -3426,7 +3429,8 @@ public class Node extends Element implements IGraphicalNode {
 
             // Check if there's an input run after / before on a component that is
             // not a sub process start
-            if ((!isELTComponent() && !isSubProcessStart()) || (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName()))) {
+            if ((!isELTComponent() && !isSubProcessStart())
+                    || (!(Boolean) getPropertyValue(EParameterName.STARTABLE.getName()))) {
                 if ((getCurrentActiveLinksNbInput(EConnectionType.ON_SUBJOB_OK) > 0)
                         || (getCurrentActiveLinksNbInput(EConnectionType.RUN_IF) > 0)
                         || (getCurrentActiveLinksNbInput(EConnectionType.ON_COMPONENT_OK) > 0)
@@ -3562,8 +3566,8 @@ public class Node extends Element implements IGraphicalNode {
                                 if (newTarget.isELTComponent() && newTarget.getComponent().getName().endsWith("Map")) { //$NON-NLS-1$
                                     Object[] errorParams = new String[] { this.getLabel(), newTarget.getLabel(),
                                             EConnectionType.TABLE_REF.getDefaultMenuName() };
-                                    String errorMessage = Messages.getString(
-                                            "Node.ELTDBMap.canNotHaveMultiStartNode", errorParams); //$NON-NLS-1$
+                                    String errorMessage = Messages.getString("Node.ELTDBMap.canNotHaveMultiStartNode", //$NON-NLS-1$
+                                            errorParams);
                                     Problems.add(ProblemStatus.ERROR, this, errorMessage);
                                 }
                             }
@@ -3691,9 +3695,8 @@ public class Node extends Element implements IGraphicalNode {
         boolean canEditSchema = false;
         boolean noSchema = false;
         for (IElementParameter param : this.getElementParameters()) {
-            if (param.isShow(getElementParameters())
-                    && (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || param.getFieldType().equals(
-                            EParameterFieldType.SCHEMA_REFERENCE))) {
+            if (param.isShow(getElementParameters()) && (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                    || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE))) {
                 canEditSchema = true;
                 break;
             }
@@ -3728,7 +3731,8 @@ public class Node extends Element implements IGraphicalNode {
                 }
                 // display error in the tRunJob Component that the schema is empty when a output main link exists.
                 if ((mainConnector.getMaxLinkInput() == 0 || ("tRunJob".equals(getComponent().getName()) //$NON-NLS-1$
-                        && (mainConnector.getMaxLinkInput() != 0) && getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) > 0))
+                        && (mainConnector.getMaxLinkInput() != 0)
+                        && getCurrentActiveLinksNbOutput(EConnectionType.FLOW_MAIN) > 0))
                         && (mainConnector.getMaxLinkOutput() != 0)) {
                     if (table.getListColumns().size() == 0) {
                         String errorMessage = Messages.getString("Node.noSchemaDefined"); //$NON-NLS-1$
@@ -3831,19 +3835,19 @@ public class Node extends Element implements IGraphicalNode {
                         if ((actualConnector.getMaxLinkInput() != 0) && (actualConnector.getMaxLinkOutput() != 0)) {
                             IConnection inputConnecion = null;
                             for (IConnection connection : inputs) {
-                                if (connection.isActivate()
-                                        && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN) || connection
-                                                .getLineStyle().equals(EConnectionType.TABLE))) {
+                                if (connection.isActivate() && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN)
+                                        || connection.getLineStyle().equals(EConnectionType.TABLE))) {
                                     inputMeta = connection.getMetadataTable();
                                     inputConnecion = connection;
                                 }
                             }
                             if (inputMeta != null) {
-                                if ((!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
-                                        | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                        | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                        | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                        | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
+                                if ((!outputMeta.sameMetadataAs(inputMeta,
+                                        IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                                | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                                | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
+                                                | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                                | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
                                     if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_NONE)
                                             && outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_LENGTH)) {
                                         String warningMessage = Messages.getString("Node.lengthDiffWarning", //$NON-NLS-1$
@@ -3851,8 +3855,8 @@ public class Node extends Element implements IGraphicalNode {
                                         Problems.add(ProblemStatus.WARNING, this, warningMessage);
                                     } else {
                                         schemaSynchronized = false;
-                                        String errorMessage = Messages.getString(
-                                                "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
+                                        String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                                inputConnecion.getName());
                                         Problems.add(ProblemStatus.ERROR, this, errorMessage);
                                     }
                                 }
@@ -3872,9 +3876,8 @@ public class Node extends Element implements IGraphicalNode {
                 if (maxFlowInput <= 1 || getComponent().useLookup() || isELTComponent()) {
                     IMetadataTable inputMeta = null, outputMeta = getMetadataList().get(0);
                     for (IConnection connection : inputs) {
-                        if (connection.isActivate()
-                                && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN) || connection.getLineStyle()
-                                        .equals(EConnectionType.TABLE))) {
+                        if (connection.isActivate() && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN)
+                                || connection.getLineStyle().equals(EConnectionType.TABLE))) {
                             inputMeta = connection.getMetadataTable();
                             inputConnecion = connection;
                         }
@@ -3883,13 +3886,14 @@ public class Node extends Element implements IGraphicalNode {
                     if (inputMeta != null) {
                         INodeConnector connector = getConnectorFromName(outputMeta.getAttachedConnector());
                         if (connector != null
-                                && ((connector.getMaxLinkInput() != 0 && connector.getMaxLinkOutput() != 0) || getComponent()
-                                        .getComponentType() == EComponentType.JOBLET_INPUT_OUTPUT)
-                                && (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
-                                        | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                        | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                        | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                        | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
+                                && ((connector.getMaxLinkInput() != 0 && connector.getMaxLinkOutput() != 0)
+                                        || getComponent().getComponentType() == EComponentType.JOBLET_INPUT_OUTPUT)
+                                && (!outputMeta.sameMetadataAs(inputMeta,
+                                        IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                                | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                                | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
+                                                | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                                | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
                             if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_NONE)
                                     && outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_LENGTH)) {
                                 String warningMessage = Messages.getString("Node.lengthDiffWarning", //$NON-NLS-1$
@@ -3897,19 +3901,20 @@ public class Node extends Element implements IGraphicalNode {
                                 Problems.add(ProblemStatus.WARNING, this, warningMessage);
                             } else {
                                 schemaSynchronized = false;
-                                String errorMessage = Messages.getString(
-                                        "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
+                                String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                        inputConnecion.getName());
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
                         } else if (connector != null && connector.getMaxLinkInput() != 0 && connector.getMaxLinkOutput() == 0) {
-                            if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
-                                    | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                    | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                    | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                    | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
+                            if (!outputMeta.sameMetadataAs(inputMeta,
+                                    IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                            | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                            | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DBTYPE
+                                            | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                            | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
                                 schemaSynchronized = false;
-                                String errorMessage = Messages.getString(
-                                        "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
+                                String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                        inputConnecion.getName());
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
                         }
@@ -3941,18 +3946,14 @@ public class Node extends Element implements IGraphicalNode {
                         if (table != null && connParam != null && !StringUtils.isEmpty((String) connParam.getValue())) {
                             for (IConnection connection : inputs) {
                                 if (connection.isActivate() && connection.getName().equals(connParam.getValue())) {
-                                    if (!table
-                                            .sameMetadataAs(connection.getMetadataTable(), IMetadataColumn.OPTIONS_IGNORE_KEY
-                                                    | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
-                                                    | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                                    | IMetadataColumn.OPTIONS_IGNORE_PATTERN
-                                                    | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                                    | IMetadataColumn.OPTIONS_IGNORE_DBTYPE
-                                                    | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                                    | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
+                                    if (!table.sameMetadataAs(connection.getMetadataTable(), IMetadataColumn.OPTIONS_IGNORE_KEY
+                                            | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
+                                            | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
+                                            | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
+                                            | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE)) {
                                         schemaSynchronized = false;
-                                        String errorMessage = Messages.getString(
-                                                "Node.differentFromSchemaDefined", connection.getName()); //$NON-NLS-1$
+                                        String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                                connection.getName());
                                         Problems.add(ProblemStatus.ERROR, this, errorMessage);
                                     }
                                 }
@@ -3982,8 +3983,8 @@ public class Node extends Element implements IGraphicalNode {
                                     IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
                                             | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_DBTYPE);
                             if (!isSame) {
-                                String warningMessage = Messages.getString(
-                                        "Node.inputLinkDifferentFromSchemaDefined", getUniqueName()); //$NON-NLS-1$
+                                String warningMessage = Messages.getString("Node.inputLinkDifferentFromSchemaDefined", //$NON-NLS-1$
+                                        getUniqueName());
                                 Problems.add(ProblemStatus.WARNING, this, warningMessage);
                             }
                         }
@@ -4078,10 +4079,9 @@ public class Node extends Element implements IGraphicalNode {
 
                 outputMeta = getMetadataList().get(0);
                 for (IConnection connection : getIncomingConnections()) {
-                    if (connection.isActivate()
-                            && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN)
-                                    || connection.getLineStyle().equals(EConnectionType.TABLE) || connection.getLineStyle()
-                                    .equals(EConnectionType.TABLE_REF))) {
+                    if (connection.isActivate() && (connection.getLineStyle().equals(EConnectionType.FLOW_MAIN)
+                            || connection.getLineStyle().equals(EConnectionType.TABLE)
+                            || connection.getLineStyle().equals(EConnectionType.TABLE_REF))) {
                         inputMeta = connection.getMetadataTable();
                         inputConnecion = connection;
                     }
@@ -4089,13 +4089,11 @@ public class Node extends Element implements IGraphicalNode {
 
                 if (inputMeta != null && outputMeta != null) {
                     INodeConnector connector = getConnectorFromName(outputMeta.getAttachedConnector());
-                    if (connector != null
-                            && connector.getMaxLinkInput() != 0
-                            && (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
-                                    | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                                    | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                                    | IMetadataColumn.OPTIONS_IGNORE_DBTYPE | IMetadataColumn.OPTIONS_IGNORE_DEFAULT
-                                    | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
+                    if (connector != null && connector.getMaxLinkInput() != 0 && (!outputMeta.sameMetadataAs(inputMeta,
+                            IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                    | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                    | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DBTYPE
+                                    | IMetadataColumn.OPTIONS_IGNORE_DEFAULT | IMetadataColumn.OPTIONS_IGNORE_BIGGER_SIZE))) {
                         if (!outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_NONE)
                                 && outputMeta.sameMetadataAs(inputMeta, IMetadataColumn.OPTIONS_IGNORE_LENGTH)) {
                             String warningMessage = Messages.getString("Node.lengthDiffWarning", //$NON-NLS-1$
@@ -4123,13 +4121,13 @@ public class Node extends Element implements IGraphicalNode {
                             }
                             if (errorStatus) {
                                 schemaSynchronized = false;
-                                String errorMessage = Messages.getString(
-                                        "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
+                                String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                        inputConnecion.getName());
                                 Problems.add(ProblemStatus.ERROR, this, errorMessage);
                             } else {
                                 schemaSynchronized = false;
-                                String errorMessage = Messages.getString(
-                                        "Node.differentFromSchemaDefined", inputConnecion.getName()); //$NON-NLS-1$
+                                String errorMessage = Messages.getString("Node.differentFromSchemaDefined", //$NON-NLS-1$
+                                        inputConnecion.getName());
                                 Problems.add(ProblemStatus.WARNING, this, errorMessage);
                             }
                         }
@@ -4161,9 +4159,8 @@ public class Node extends Element implements IGraphicalNode {
             // for each schema in the component, check if for the connector there is the option INPUT_LINK_SELECTION
             // if there is, check that the schema of the link selection is the same
             for (IElementParameter param : this.getElementParameters()) {
-                if (param.isShow(getElementParameters())
-                        && (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE) || param.getFieldType().equals(
-                                EParameterFieldType.SCHEMA_REFERENCE))) {
+                if (param.isShow(getElementParameters()) && (param.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
+                        || param.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE))) {
                     IMetadataTable table = getMetadataFromConnector(param.getContext());
                     IElementParameter connParam = param.getChildParameters().get(EParameterName.CONNECTION.getName());
                     if (table != null && connParam != null && !StringUtils.isEmpty((String) connParam.getValue())) {
@@ -4349,38 +4346,39 @@ public class Node extends Element implements IGraphicalNode {
     }
 
     /**
-     * This methods adds a {@link org.talend.core.model.process.Problem} to the tRunJob if the box
-     * "Use an indenpendent process" is not checked for a target Big Data job. DOC rdubois Comment method
-     * "checkTRunjobwithMRProcess".
+     * This methods adds a {@link org.talend.core.model.process.Problem} to the tRunJob if the box "Use an indenpendent
+     * process" is not checked for a target Big Data job. DOC rdubois Comment method "checkTRunjobwithMRProcess".
      */
     private void checkTRunjobwithMRProcess() {
         // check tRunJob
-        if (getComponent() != null && "tRunJob".equals(getComponent().getName())) { //$NON-NLS-1$;
+        if (getComponent() != null && "tRunJob".equals(getComponent().getName())) { //$NON-NLS-1$ ;
             boolean targetIsBigdata = false;
             String bigDataType = "Batch"; //$NON-NLS-1$
             try {
-                boolean isStormServiceRegistered = GlobalServiceRegister.getDefault().isServiceRegistered(
-                        IStormProcessService.class);
+                boolean isStormServiceRegistered = GlobalServiceRegister.getDefault()
+                        .isServiceRegistered(IStormProcessService.class);
                 boolean isMRServiceRegistered = GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class);
                 if (isStormServiceRegistered || isMRServiceRegistered) {
-                    IElementParameter elementParameter = getElementParameter("PROCESS:PROCESS_TYPE_PROCESS"); //$NON-NLS-1$;
+                    IElementParameter elementParameter = getElementParameter("PROCESS:PROCESS_TYPE_PROCESS"); //$NON-NLS-1$ ;
                     if (elementParameter != null) {
                         Object value = elementParameter.getValue();
-                        if (value != null && !"".equals(value)) { //$NON-NLS-1$;
+                        if (value != null && !"".equals(value)) { //$NON-NLS-1$ ;
                             IRepositoryViewObject lastVersion;
                             lastVersion = DesignerPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory()
                                     .getLastVersion(value.toString());
                             if (lastVersion != null) {
                                 if (isMRServiceRegistered) {
-                                    if (((IMRProcessService) GlobalServiceRegister.getDefault().getService(
-                                            IMRProcessService.class)).isMapReduceItem(lastVersion.getProperty().getItem())) {
+                                    if (((IMRProcessService) GlobalServiceRegister.getDefault()
+                                            .getService(IMRProcessService.class))
+                                                    .isMapReduceItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Batch"; //$NON-NLS-1$
                                     }
                                 }
                                 if (isStormServiceRegistered) {
-                                    if (((IStormProcessService) GlobalServiceRegister.getDefault().getService(
-                                            IStormProcessService.class)).isStormItem(lastVersion.getProperty().getItem())) {
+                                    if (((IStormProcessService) GlobalServiceRegister.getDefault()
+                                            .getService(IStormProcessService.class))
+                                                    .isStormItem(lastVersion.getProperty().getItem())) {
                                         targetIsBigdata = true;
                                         bigDataType = "Streaming"; //$NON-NLS-1$
                                     }
@@ -4394,12 +4392,12 @@ public class Node extends Element implements IGraphicalNode {
             }
 
             if (targetIsBigdata) {
-                IElementParameter indepedentElement = getElementParameter("USE_INDEPENDENT_PROCESS"); //$NON-NLS-1$;
+                IElementParameter indepedentElement = getElementParameter("USE_INDEPENDENT_PROCESS"); //$NON-NLS-1$ ;
                 if (indepedentElement != null) {
                     if (!indepedentElement.isShow(getElementParameters())
                             || !Boolean.valueOf(String.valueOf(indepedentElement.getValue()))) {
-                        String message = Messages.getString(
-                                "Node.checkTRunjobwithMRProcess", indepedentElement.getDisplayName(), bigDataType); //$NON-NLS-1$;
+                        String message = Messages.getString("Node.checkTRunjobwithMRProcess", indepedentElement.getDisplayName(), //$NON-NLS-1$
+                                bigDataType); // ;
                         Problems.add(ProblemStatus.ERROR, this, message);
                     }
                 }
@@ -4794,8 +4792,8 @@ public class Node extends Element implements IGraphicalNode {
         }
         boolean isJobletNode = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJobletNode = true;
             }
@@ -4805,7 +4803,20 @@ public class Node extends Element implements IGraphicalNode {
             if (UnifiedComponentUtil.isDelegateComponent(getDelegateComponent())) {
                 Object object = parameters.get(INode.OLD_UNIFIED_COMPONENT);
                 String oldComponent = object == null ? null : object.toString();
-                UnifiedComponentUtil.switchComponent(this, component, oldComponent, (List<? extends IElementParameter>) obj);
+
+                Object metadatObj = parameters.get(INode.SWITCH_NODE_METADATA_LIST);
+                List<IMetadataTable> oldTables = null;
+                if (metadatObj != null) {
+                    oldTables = (List<IMetadataTable>) metadatObj;
+                }
+                Object connectorObj = parameters.get(INode.SWITCH_NODE_CONNECTORS);
+                List<INodeConnector> oldConnectors = null;
+                if (metadatObj != null) {
+                    oldConnectors = (List<INodeConnector>) connectorObj;
+                }
+
+                UnifiedComponentUtil.switchComponent(this, component, oldComponent, (List<? extends IElementParameter>) obj,
+                        oldTables, oldConnectors);
             } else {
                 List<? extends IElementParameter> oldElementParameters = (List<? extends IElementParameter>) obj;
                 for (IElementParameter sourceParam : oldElementParameters) {
@@ -4846,7 +4857,8 @@ public class Node extends Element implements IGraphicalNode {
                             } else if (targetChildParam.getFieldType() == EParameterFieldType.CONNECTION_LIST) {
                                 if (((getPropertyValue(pname) == null || getPropertyValue(pname).toString().length() == 0))
                                         && component.getProcess() instanceof IProcess2
-                                        && storeValueMap.containsKey(sourceParam.getName()) && !storeValueMap.containsKey(pname)) {
+                                        && storeValueMap.containsKey(sourceParam.getName())
+                                        && !storeValueMap.containsKey(pname)) {
                                     storeConn(sourceParam, pname);
                                 }
                             }
@@ -4979,8 +4991,8 @@ public class Node extends Element implements IGraphicalNode {
      */
     private void checkStartLinks() {
         boolean isFirstLinkOrder = process.getMergelinkOrder(this) > 1;
-        if ((getCurrentActiveLinksNbInput(EConnectionType.ON_SUBJOB_OK) > 0 || getCurrentActiveLinksNbInput(EConnectionType.ON_SUBJOB_ERROR) > 0)
-                && isFirstLinkOrder) {
+        if ((getCurrentActiveLinksNbInput(EConnectionType.ON_SUBJOB_OK) > 0
+                || getCurrentActiveLinksNbInput(EConnectionType.ON_SUBJOB_ERROR) > 0) && isFirstLinkOrder) {
             String errorMessage = Messages.getString("Node.errorMessage1"); //$NON-NLS-1$
             Problems.add(ProblemStatus.ERROR, this, errorMessage);
         } else if ((getCurrentActiveLinksNbInput(EConnectionType.RUN_IF) > 0) && isFirstLinkOrder) {
@@ -4990,8 +5002,8 @@ public class Node extends Element implements IGraphicalNode {
             String errorMessage = Messages.getString("Node.errorMessage5"); //$NON-NLS-1$
             Problems.add(ProblemStatus.ERROR, this, errorMessage);
         } else if ((getCurrentActiveLinksNbInput(EConnectionType.ON_COMPONENT_OK) > 0
-                || getCurrentActiveLinksNbInput(EConnectionType.ON_COMPONENT_ERROR) > 0 || getCurrentActiveLinksNbInput(EConnectionType.STARTS) > 0)
-                && isFirstLinkOrder) {
+                || getCurrentActiveLinksNbInput(EConnectionType.ON_COMPONENT_ERROR) > 0
+                || getCurrentActiveLinksNbInput(EConnectionType.STARTS) > 0) && isFirstLinkOrder) {
             String errorMessage = Messages.getString("Node.errorMessage4"); //$NON-NLS-1$
             Problems.add(ProblemStatus.ERROR, this, errorMessage);
         }
@@ -5149,8 +5161,8 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isStandardJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (service != null && service.isStandardJobletComponent(this)) {
                 isJoblet = true;
             }
@@ -5161,8 +5173,8 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isJoblet() {
         boolean isJoblet = false;
         if (PluginChecker.isJobLetPluginLoaded()) {
-            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                    IJobletProviderService.class);
+            IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault()
+                    .getService(IJobletProviderService.class);
             if (service != null && service.isJobletComponent(this)) {
                 isJoblet = true;
             }
@@ -5222,8 +5234,8 @@ public class Node extends Element implements IGraphicalNode {
     public boolean isProgressBarNeeded() {
         boolean needBar = true;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
-                    IMRProcessService.class);
+            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IMRProcessService.class);
             needBar = mrService.isProgressBarNeeded(process);
         }
         return needBar;
@@ -5418,8 +5430,8 @@ public class Node extends Element implements IGraphicalNode {
     public void refreshNodeContainer() {
         boolean isRunning = false;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
-            IRunProcessService runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(
-                    IRunProcessService.class);
+            IRunProcessService runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IRunProcessService.class);
             if (runProcessService != null) {
                 isRunning = runProcessService.isJobRunning();
             }
@@ -5430,8 +5442,8 @@ public class Node extends Element implements IGraphicalNode {
         List<? extends INode> nodeList = this.process.getGraphicalNodes();
         for (INode node : nodeList) {
             if ((node instanceof Node) && (((Node) node).isMapReduceStart())) {
-                ((JobletContainer) ((Node) node).getNodeContainer()).updateState(
-                        "UPDATE_STATUS", "CLEAR", new Double(0), new Double(0)); //$NON-NLS-1$ //$NON-NLS-2$
+                ((JobletContainer) ((Node) node).getNodeContainer()).updateState("UPDATE_STATUS", "CLEAR", new Double(0), //$NON-NLS-1$ //$NON-NLS-2$
+                        new Double(0));
             }
         }
 

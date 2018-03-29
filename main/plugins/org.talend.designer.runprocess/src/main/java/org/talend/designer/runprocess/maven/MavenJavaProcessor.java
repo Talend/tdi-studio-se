@@ -14,7 +14,6 @@ package org.talend.designer.runprocess.maven;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,9 +32,7 @@ import org.talend.commons.utils.resource.FileExtensions;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
-import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
-import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -58,6 +55,8 @@ import org.talend.designer.runprocess.ProcessorException;
 import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.java.JavaProcessor;
 import org.talend.repository.i18n.Messages;
+import org.talend.designer.core.model.process.IGeneratingProcess;
+import org.talend.designer.core.ui.editor.process.Process;
 
 /**
  * created by ggu on 2 Feb 2015 Detailled comment
@@ -66,6 +65,8 @@ import org.talend.repository.i18n.Messages;
 public class MavenJavaProcessor extends JavaProcessor {
 
     protected String windowsClasspath, unixClasspath;
+
+    private boolean isMainJob = false;
 
     public MavenJavaProcessor(IProcess process, Property property, boolean filenameFromLabel) {
         super(process, property, filenameFromLabel);
@@ -78,6 +79,10 @@ public class MavenJavaProcessor extends JavaProcessor {
     @Override
     public void generateCode(boolean statistics, boolean trace, boolean javaProperties, int option) throws ProcessorException {
         super.generateCode(statistics, trace, javaProperties, option);
+        if (this.getProcess() instanceof Process) {
+            IGeneratingProcess generatingProcess = (((Process)this.getProcess()).getGeneratingProcess());
+            generatingProcess.generateAdditionalCode();
+        }
         generateCodeAfter(statistics, trace, javaProperties, option);
     }
 
@@ -102,25 +107,6 @@ public class MavenJavaProcessor extends JavaProcessor {
                 throw new ProcessorException(e);
             }
         }
-    }
-
-    @Override
-    public Set<JobInfo> getBuildChildrenJobs() {
-        if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
-            buildChildrenJobs = new HashSet<>();
-
-            if (property != null && property.getItem() != null) {
-                Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem());
-                for (JobInfo jobInfo : infos) {
-                    if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
-                            TalendProcessArgumentConstant.ARG_GENERATE_OPTION, TalendProcessOptionConstants.GENERATE_TESTS)) {
-                        continue;
-                    }
-                    buildChildrenJobs.add(jobInfo);
-                }
-            }
-        }
-        return this.buildChildrenJobs;
     }
 
     public void initJobClasspath() {
@@ -217,13 +203,15 @@ public class MavenJavaProcessor extends JavaProcessor {
         String jarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
         String exportJar = libPrefixPath + jarName + FileExtensions.JAR_FILE_SUFFIX;
 
-        Set<JobInfo> infos = getBuildChildrenJobs();
-        for (JobInfo jobInfo : infos) {
-            if (jobInfo.isTestContainer()) {
-                continue;
+        if (!isMainJob || isMainJob && !ProcessorUtilities.hasLoopDependency()) {
+            Set<JobInfo> infos = getBuildChildrenJobs();
+            for (JobInfo jobInfo : infos) {
+                if (jobInfo.isTestContainer()) {
+                    continue;
+                }
+                String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
+                exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
             }
-            String childJarName = JavaResourcesHelper.getJobJarName(jobInfo.getJobName(), jobInfo.getJobVersion());
-            exportJar += classPathSeparator + libPrefixPath + childJarName + FileExtensions.JAR_FILE_SUFFIX;
         }
         return exportJar;
     }
@@ -234,7 +222,16 @@ public class MavenJavaProcessor extends JavaProcessor {
     protected IFile getPomFile() {
         if (isStandardJob()) {
             String pomFileName = TalendMavenConstants.POM_FILE_NAME;
-            return this.getTalendJavaProject().getProject().getFile(pomFileName);
+            if (this.getTalendJavaProject() == null) {
+                try {
+                    return AggregatorPomsHelper.getItemPomFolder(property).getFile(pomFileName);
+                } catch (Exception e) {
+                    ExceptionHandler.process(e);
+                    return null;
+                }
+            } else {
+                return this.getTalendJavaProject().getProject().getFile(pomFileName);
+            }
         } else { // not standard job, won't have pom file.
             return null;
         }
@@ -244,7 +241,7 @@ public class MavenJavaProcessor extends JavaProcessor {
      * .Java/src/main/assemblies/assembly_TestJob_0.1.xml
      */
     protected IFile getAssemblyFile() {
-        if (isStandardJob()) {
+        if (isStandardJob() && !ProcessorUtilities.isGeneratePomOnly()) {
             String assemblyFileName = TalendMavenConstants.ASSEMBLY_FILE_NAME;
             return this.getTalendJavaProject().getAssembliesFolder().getFile(assemblyFileName);
         } else { // not standard job, won't have assembly file.
@@ -256,16 +253,23 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
         }
-        initJobClasspath();
+        isMainJob = BitwiseOptionUtils.containOption(option, TalendProcessOptionConstants.GENERATE_IS_MAINJOB);
+        if (ProcessorUtilities.isGeneratePomOnly()) {
+            ProcessorUtilities.resetExportConfig();
+        } else {
+            initJobClasspath();
+        }
         try {
             IMavenPomCreator createTemplatePom = createMavenPomCreator();
             if (createTemplatePom != null) {
-                createTemplatePom.setSyncCodesPoms(option == 0);
-                boolean previousValue = ProcessUtils.jarNeedsToContainContext();
-                ProcessUtils.setJarWithContext(ProcessUtils.needsToHaveContextInsideJar((ProcessItem) property.getItem()));
+                createTemplatePom.setSyncCodesPoms(isMainJob);
+                if (isMainJob) {
+                    createTemplatePom.setHasLoopDependency(ProcessorUtilities.hasLoopDependency());
+                }
                 createTemplatePom.create(null);
-                ProcessUtils.setJarWithContext(previousValue);
-                getTalendJavaProject().setUseTempPom(false);
+                if (getTalendJavaProject() != null) {
+                    getTalendJavaProject().setUseTempPom(false);
+                }
             }
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -336,7 +340,7 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
-                buildCacheManager.putCache(getProperty());
+                buildCacheManager.putJobCache(getProperty());
             } else {
                 // for already installed sub jobs, can restore pom here directly
                 PomUtil.restorePomFile(getTalendJavaProject());
@@ -366,8 +370,6 @@ public class MavenJavaProcessor extends JavaProcessor {
             }
 
             buildCacheManager.buildAllSubjobMavenProjects();
-
-            
 
         }
         IFile jobJarFile = null;

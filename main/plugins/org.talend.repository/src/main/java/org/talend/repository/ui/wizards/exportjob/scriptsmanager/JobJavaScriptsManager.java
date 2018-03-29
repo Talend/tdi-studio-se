@@ -93,6 +93,7 @@ import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
 import org.talend.core.ui.services.IRulesProviderService;
@@ -1231,7 +1232,7 @@ public class JobJavaScriptsManager extends JobScriptsManager {
                     selectedProcessItem = ItemCacheManager.getProcessItem(item.getProperty().getId(), version);
                 }
                 IProcess iProcess = designerService.getProcessFromProcessItem(selectedProcessItem);
-                Set<String> processNeededLibraries = iProcess.getNeededLibraries(true);
+                Set<String> processNeededLibraries = iProcess.getNeededLibraries(TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
                 if (processNeededLibraries != null) {
                     listModulesReallyNeeded.addAll(processNeededLibraries);
                 }

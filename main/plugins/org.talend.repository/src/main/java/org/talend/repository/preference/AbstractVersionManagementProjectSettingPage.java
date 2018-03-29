@@ -52,8 +52,10 @@ import org.talend.commons.ui.runtime.image.IImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.advanced.composite.ThreeCompositesSashForm;
 import org.talend.core.CorePlugin;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.Item;
+import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
@@ -61,6 +63,7 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProjectRepositoryNode;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.ui.ITestContainerProviderService;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
@@ -482,6 +485,34 @@ public abstract class AbstractVersionManagementProjectSettingPage extends Projec
                 if (item != null && filterRepositoryNode(node)) { // must be item
                     ItemVersionObject object = createItemVersionObject(node, property);
                     objects.add(object);
+                }
+                if(item instanceof ProcessItem){
+                	if (GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
+                        ITestContainerProviderService testContainerService = (ITestContainerProviderService) GlobalServiceRegister
+                                .getDefault().getService(ITestContainerProviderService.class);
+                        if (testContainerService != null) {
+                            List<ProcessItem> testsItems = testContainerService.getAllTestContainers((ProcessItem)item);
+                            List<String> testIDs = new ArrayList<String>();
+                            for(ProcessItem testItem : testsItems){
+                            	Property childProperty = testItem.getProperty();
+                            	if(testIDs.contains(childProperty.getId())){
+									continue;
+								}
+                            	IRepositoryViewObject testNode = null;
+								try {
+									testNode = ProxyRepositoryFactory.getInstance().getLastVersion(childProperty.getId());
+									testIDs.add(childProperty.getId());
+								} catch (PersistenceException e) {
+									ExceptionHandler.process(e);
+								}
+								if(testNode != null){
+									RepositoryNode nodeChild = new RepositoryNode(testNode, node, ENodeType.REPOSITORY_ELEMENT);
+									ItemVersionObject object = createItemVersionObject(nodeChild, testNode.getProperty());
+                                    objects.add(object);
+								}
+                            }
+                        }
+                    }
                 }
             }
         } else {

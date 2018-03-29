@@ -43,9 +43,13 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
+import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
+import org.talend.designer.core.model.process.DataNode;
+import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -54,15 +58,11 @@ import org.talend.librariesmanager.model.ModulesNeededProvider;
  */
 public class JavaProcessUtil {
 
-    public static Set<ModuleNeeded> getNeededModules(final IProcess process, boolean withChildrens) {
-        return getNeededModules(process, withChildrens, false);
-    }
-
-    public static Set<ModuleNeeded> getNeededModules(final IProcess process, boolean withChildrens, boolean forMR) {
+    public static Set<ModuleNeeded> getNeededModules(final IProcess process, int options) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         // see bug 4939: making tRunjobs work loop will cause a error of "out of memory"
         Set<ProcessItem> searchItems = new HashSet<ProcessItem>();
-        if (withChildrens) {
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
             ProcessItem processItem = null;
             if (process.getVersion() != null) {
                 processItem = ItemCacheManager.getProcessItem(process.getId(), process.getVersion());
@@ -75,7 +75,7 @@ public class JavaProcessUtil {
         }
 
         // call recursive function to get all dependencies from job & subjobs
-        getNeededModules(process, withChildrens, searchItems, modulesNeeded, forMR);
+        getNeededModules(process, searchItems, modulesNeeded, options);
 
         /*
          * Remove duplicates in the modulesNeeded list after having prioritize the modules. Details in the
@@ -101,23 +101,20 @@ public class JavaProcessUtil {
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    public static Set<String> getNeededLibraries(final IProcess process, boolean withChildrens) {
-        return getNeededLibraries(process, withChildrens, false);
-    }
-
     // for MapReduce job, if the jar on Xml don't set MRREQUIRED="true", shouldn't add it to
     // DistributedCache
-    public static Set<String> getNeededLibraries(final IProcess process, boolean withChildrens, boolean forMR) {
+    public static Set<String> getNeededLibraries(final IProcess process, int options) {
         Set<String> libsNeeded = new HashSet<String>();
-        for (ModuleNeeded module : getNeededModules(process, withChildrens, forMR)) {
+        for (ModuleNeeded module : getNeededModules(process, options)) {
             libsNeeded.add(module.getModuleName());
         }
 
         return libsNeeded;
     }
 
-    private static void getNeededModules(final IProcess process, boolean withChildrens, Set<ProcessItem> searchItems,
-            List<ModuleNeeded> modulesNeeded, boolean forMR) {
+    @SuppressWarnings("unchecked")
+    private static void getNeededModules(final IProcess process, Set<ProcessItem> searchItems,
+            List<ModuleNeeded> modulesNeeded, int options) {
         IElementParameter headerParameter = process.getElementParameter(EParameterName.HEADER_LIBRARY.getName());
         if (headerParameter != null) {
             Object value = headerParameter.getValue();
@@ -164,7 +161,16 @@ public class JavaProcessUtil {
         }
 
         String hadoopItemId = null;
-        List<? extends INode> nodeList = process.getGeneratingNodes();
+        List<INode> nodeList = null;
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_JOBLET)) {
+            nodeList = (List<INode>) process.getGraphicalNodes();
+            if (JobSettingsManager.isImplicittContextLoadActived(process)) {
+                List<DataNode> contextLoadNodes = JobSettingsManager.createExtraContextLoadNodes(process);
+                nodeList.addAll(contextLoadNodes);
+            }
+        } else {
+            nodeList = (List<INode>) process.getGeneratingNodes();
+        }
         for (INode node : nodeList) {
             if (hadoopItemId == null) {
                 String itemId = getHadoopClusterItemId(node);
@@ -176,7 +182,7 @@ public class JavaProcessUtil {
                 ((IProcess2) node.getProcess()).setNeedLoadmodules(((IProcess2) process).isNeedLoadmodules());
             }
 
-            Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, withChildrens, forMR);
+            Set<ModuleNeeded> nodeNeededModules = getNeededModules(node, searchItems, options);
             if (nodeNeededModules != null) {
                 modulesNeeded.addAll(nodeNeededModules);
                 if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
@@ -242,26 +248,25 @@ public class JavaProcessUtil {
         return false;
     }
 
-    public static Set<ModuleNeeded> getNeededModules(final INode node, boolean withChildrens, boolean forMR) {
-        return getNeededModules(node, null, withChildrens, forMR);
+    public static Set<ModuleNeeded> getNeededModules(final INode node, int options) {
+        return getNeededModules(node, null, options);
     }
 
-    private static Set<ModuleNeeded> getNeededModules(final INode node, Set<ProcessItem> searchItems, boolean withChildrens,
-            boolean forMR) {
+    private static Set<ModuleNeeded> getNeededModules(final INode node, Set<ProcessItem> searchItems, int options) {
         if (searchItems == null) {
             searchItems = new HashSet<ProcessItem>();
         }
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
-        addNodeRelatedModules(node.getProcess(), modulesNeeded, node, forMR);
+        addNodeRelatedModules(node.getProcess(), modulesNeeded, node, options);
         // for children job
-        if (withChildrens) {
-            modulesNeeded.addAll(getChildrenModules(node, searchItems, forMR));
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
+            modulesNeeded.addAll(getChildrenModules(node, searchItems, options));
         }
 
         return new HashSet<ModuleNeeded>(modulesNeeded);
     }
 
-    static List<ModuleNeeded> getChildrenModules(final INode node, Set<ProcessItem> searchItems, boolean forMR) {
+    static List<ModuleNeeded> getChildrenModules(final INode node, Set<ProcessItem> searchItems, int options) {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         if (node.getComponent().getName().equals("tRunJob")) { //$NON-NLS-1$
             IElementParameter processIdparam = node.getElementParameter("PROCESS_TYPE_PROCESS"); //$NON-NLS-1$
@@ -279,14 +284,17 @@ public class JavaProcessUtil {
             if (processItem != null && !searchItems.contains(processItem)) {
                 boolean seperated = getBooleanParamValue(node, "USE_INDEPENDENT_PROCESS") //$NON-NLS-1$
                         || getBooleanParamValue(node, "USE_DYNAMIC_JOB"); //$NON-NLS-1$
-                if (!seperated) {
+                if (!seperated || BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_INDEPENDENT)) {
                     // avoid dead loop of method call
                     searchItems.add(processItem);
                     JobInfo subJobInfo = new JobInfo(processItem, context);
                     IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
                     IProcess child = service.getProcessFromItem(subJobInfo.getProcessItem());
-
-                    getNeededModules(child, true, searchItems, modulesNeeded, forMR);
+                    
+                    if (!BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
+                        options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+                    }
+                    getNeededModules(child, searchItems, modulesNeeded, options);
                 }
             }
         }
@@ -316,16 +324,16 @@ public class JavaProcessUtil {
      * @param node
      */
     public static void addNodeRelatedModules(final IProcess process, List<ModuleNeeded> modulesNeeded, INode node) {
-        addNodeRelatedModules(process, modulesNeeded, node, false);
+        addNodeRelatedModules(process, modulesNeeded, node, TalendProcessOptionConstants.MODULES_DEFAULT);
     }
 
     public static void addNodeRelatedModules(final IProcess process, List<ModuleNeeded> modulesNeeded, INode node,
-            boolean onlyMR) {
+            int options) {
         if (!node.isActivate()) {
             // if node is deactivated, we don't need at all its dependencies.
             return;
         }
-
+        boolean onlyMR = BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_FOR_MR);
         List<ModuleNeeded> moduleList = node.getModulesNeeded();
         for (ModuleNeeded needed : moduleList) {
             if (needed != null) {

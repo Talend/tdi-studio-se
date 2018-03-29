@@ -138,9 +138,9 @@
                     BundleID=""
                     />
                  <IMPORT
-                    NAME="xmlschema-core-2.2.2"
-                    MODULE="xmlschema-core-2.2.2.jar"
-                    MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.2"
+                    NAME="xmlschema-core-2.2.3"
+                    MODULE="xmlschema-core-2.2.3.jar"
+                    MVN="mvn:org.apache.ws.xmlschema/xmlschema-core/2.2.3"
                     REQUIRED="true"
                     BundleID=""
                     />
@@ -252,9 +252,9 @@
                     BundleID=""
                     />
                 <IMPORT
-                    NAME="neethi-3.1.0"
-                    MODULE="neethi-3.1.0.jar"
-                    MVN="mvn:org.apache.neethi/neethi/3.1.0"
+                    NAME="neethi-3.1.1"
+                    MODULE="neethi-3.1.1.jar"
+                    MVN="mvn:org.apache.neethi/neethi/3.1.1"
                     REQUIRED="true"
                     BundleID=""
                     />
