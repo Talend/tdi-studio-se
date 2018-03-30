@@ -65,8 +65,8 @@ public class ComponentContextPropertyValueEvaluator extends AbstractPropertyValu
                 List newList = new ArrayList<>();
                 for(Object v : (List)storedValue){
                 	String vString = String.valueOf(v);
-                	if(ContextParameterUtils.isContainContextParam(vString)){
-                		newList.addAll(ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers));
+                    if (ContextParameterUtils.isContainContextParam(vString) && isDrivers) {
+                        newList.addAll(ContextParameterUtils.parseScriptContextCodeList(storedValue, context, isDrivers));
                 	}else{
                 		newList.add(v);
                 	}
