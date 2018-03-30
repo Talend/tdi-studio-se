@@ -125,14 +125,14 @@ public class JavaCodeProblemsChecker extends CodeProblemsChecker {
                     if (editorPart instanceof AbstractMultiPageTalendEditor) {
                         AbstractMultiPageTalendEditor multiPageTalendEditor = ((AbstractMultiPageTalendEditor) editorPart);
                         AbstractTalendEditor talendEditor = multiPageTalendEditor.getTalendEditor();
+                        IProcess process = talendEditor.getProcess();
                         TalendJavaEditor codeEditor = (TalendJavaEditor) multiPageTalendEditor.getCodeEditor();
+                        if (codeEditor == null || AbstractProcessProvider.isExtensionProcessForJoblet(process)) { // joblet
+                            return;
+                        }
                         org.eclipse.jdt.core.ICompilationUnit compilationUnit = (org.eclipse.jdt.core.ICompilationUnit) codeEditor
                                 .getUnit();
 
-                        IProcess process = talendEditor.getProcess();
-                        if (AbstractProcessProvider.isExtensionProcessForJoblet(process)) { // joblet
-                            return;
-                        }
                         String selectedNodeName = multiPageTalendEditor.getSelectedNodeName();
 
                         if (selectedNodeName == null) {
