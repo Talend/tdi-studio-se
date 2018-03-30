@@ -66,6 +66,7 @@ import org.talend.core.model.update.UpdateResult;
 import org.talend.core.model.utils.RepositoryManagerHelper;
 import org.talend.core.prefs.ITalendCorePrefConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.component.ComponentPaletteUtilities;
 import org.talend.core.ui.context.view.Contexts;
 import org.talend.core.utils.CsvArray;
@@ -751,13 +752,23 @@ public class DesignerCoreService implements IDesignerCoreService {
      */
     @Override
     public Set<ModuleNeeded> getNeededLibrariesForProcess(IProcess process, boolean withChildrens) {
-        return JavaProcessUtil.getNeededModules(process, withChildrens);
+        int options = TalendProcessOptionConstants.MODULES_DEFAULT;
+        if (withChildrens) {
+            options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        }
+        return JavaProcessUtil.getNeededModules(process, options);
     }
 
     @Override
     public Set<ModuleNeeded> getNeededModules(INode node, boolean withChildrens) {
-        return JavaProcessUtil.getNeededModules(node, withChildrens,
-                ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(node.getProcess().getComponentsType()));
+        int options = TalendProcessOptionConstants.MODULES_DEFAULT;
+        if (withChildrens) {
+            options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
+        }
+        if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(node.getProcess().getComponentsType())) {
+            options |= TalendProcessOptionConstants.MODULES_FOR_MR;
+        }
+        return JavaProcessUtil.getNeededModules(node, options);
     }
 
     @Override

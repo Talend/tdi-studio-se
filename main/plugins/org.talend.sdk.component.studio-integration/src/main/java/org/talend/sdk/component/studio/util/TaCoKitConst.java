@@ -46,8 +46,20 @@ public class TaCoKitConst {
     public static final String GUESS_SCHEMA_PARAMETER_ACTION_NAME =
             "___TACOKIT_GUESS_SCHEMA_PARAMETER_ACTION_NAME___"; //$NON-NLS-1$
 
+    /**
+     * DON'T modify the value, otherwise please also modify it in tTaCoKitGuessSchema_begin.javajet
+     */
+    public static final String GUESS_SCHEMA_PARAMETER_TACOKIT_COMPONENT_TYPE = "___TACOKIT_GUESS_SCHEMA_PARAMETER_COMPONENT_TYPE___"; //$NON-NLS-1$
+
+    /**
+     * DON'T modify the value, otherwise please also modify it in tTaCoKitGuessSchema_begin.javajet
+     */
+    public static final String GUESS_SCHEMA_PARAMETER_OUTPUT_CONNECTION_NAME = "___TACOKIT_GUESS_SCHEMA_PARAMETER_OUTPUT_CONNECTION_NAME___"; //$NON-NLS-1$
+
     public static final String TYPE_STRING = "STRING"; //$NON-NLS-1$
 
     public static final String COMPONENT_NAME_SEPARATOR = "";
+
+    public static final String ADDITIONAL_PARAM_METADATA_ELEMENT = "TACOKIT_ADDITIONAL_PARAM_METADATA_ELEMENT"; //$NON-NLS-1$
 
 }

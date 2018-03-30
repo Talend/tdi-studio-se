@@ -48,6 +48,7 @@ import org.talend.core.runtime.util.ParametersUtil;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.ui.utils.Log4jPrefsSettingManager;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -306,9 +307,16 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
             for (IResource resource : targetFolder.members()) {
                 if (resource instanceof IFile) {
                     IFile file = (IFile) resource;
-                    if (JOB_EXTENSION.equals(file.getFileExtension())) {
-                        jobFile = file;
-                        break;
+                    if (ProcessorUtilities.isExportJobAsMicroService()) {
+                        if ("jar".equals(file.getFileExtension())) {
+                            jobFile = file;
+                            break;
+                        }
+                    } else {
+                        if (JOB_EXTENSION.equals(file.getFileExtension())) {
+                            jobFile = file;
+                            break;
+                        }
                     }
                 }
             }

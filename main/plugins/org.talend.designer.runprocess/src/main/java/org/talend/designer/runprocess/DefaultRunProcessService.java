@@ -58,7 +58,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
-import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
@@ -717,8 +717,8 @@ public class DefaultRunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void generateJobPom(ProcessItem processItem) {
-        TalendJavaProjectManager.generatePom(processItem, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
+    public void generatePom(Item item) {
+        TalendJavaProjectManager.generatePom(item, TalendProcessOptionConstants.GENERATE_NO_CODEGEN);
     }
 
     /*

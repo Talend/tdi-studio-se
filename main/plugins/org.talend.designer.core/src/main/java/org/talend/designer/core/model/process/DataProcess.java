@@ -3556,4 +3556,12 @@ public class DataProcess implements IGeneratingProcess {
         }, null);
     }
 
+    /* (non-Javadoc)
+     * @see org.talend.designer.core.model.process.IGeneratingProcess#generateAdditionalCode()
+     */
+    @Override
+    public void generateAdditionalCode() {
+        // nothing by default
+    }
+
 }

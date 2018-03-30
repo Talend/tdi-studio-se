@@ -34,6 +34,7 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -84,7 +85,7 @@ public class JavaProcessUtilTest {
         when(node.getComponent()).thenReturn(component);
         when(component.getName()).thenReturn("tLogRow");
 
-        List<ModuleNeeded> childrenModules = JavaProcessUtil.getChildrenModules(node, Collections.emptySet(), false);
+        List<ModuleNeeded> childrenModules = JavaProcessUtil.getChildrenModules(node, Collections.emptySet(), TalendProcessOptionConstants.MODULES_DEFAULT);
         assertTrue(childrenModules.isEmpty());
     }
 

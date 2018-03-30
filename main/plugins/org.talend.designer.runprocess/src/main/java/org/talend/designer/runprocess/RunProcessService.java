@@ -33,7 +33,7 @@ import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -448,8 +448,8 @@ public class RunProcessService implements IRunProcessService {
     }
 
     @Override
-    public void generateJobPom(ProcessItem processItem) {
-        delegateService.generateJobPom(processItem);
+    public void generatePom(Item item) {
+        delegateService.generatePom(item);
     }
 
     /*

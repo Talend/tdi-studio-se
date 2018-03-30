@@ -478,17 +478,6 @@ public class TestProcessor implements IProcessor {
     /*
      * (non-Javadoc)
      * 
-     * @see org.talend.designer.runprocess.IProcessor#getNeededModules()
-     */
-    @Override
-    public Set<ModuleNeeded> getNeededModules() {
-
-        return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs()
      */
     @Override
@@ -564,7 +553,7 @@ public class TestProcessor implements IProcessor {
      * @see org.talend.designer.runprocess.IProcessor#getNeededModules(boolean)
      */
     @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrenJobs) {
+    public Set<ModuleNeeded> getNeededModules(int options) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -575,7 +564,7 @@ public class TestProcessor implements IProcessor {
      * @see org.talend.designer.runprocess.IProcessor#getBuildChildrenJobs(boolean)
      */
     @Override
-    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
+    public Set<JobInfo> getBuildFirstChildrenJobs() {
         // TODO Auto-generated method stub
         return null;
     }

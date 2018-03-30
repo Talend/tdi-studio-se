@@ -61,8 +61,10 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.service.IMRProcessService;
 import org.talend.core.service.IStormProcessService;
+import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.core.model.utils.emf.component.IMPORTType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
@@ -100,7 +102,8 @@ public class JavaProcessorUtilities {
      * @return
      */
     public static Set<ModuleNeeded> extractLibsOnlyForMapperAndReducer(IProcess process) {
-        Set<ModuleNeeded> allModules = JavaProcessUtil.getNeededModules(process, true, true);
+        int options = TalendProcessOptionConstants.MODULES_WITH_CHILDREN | TalendProcessOptionConstants.MODULES_FOR_MR;
+        Set<ModuleNeeded> allModules = JavaProcessUtil.getNeededModules(process, options);
         return allModules;
     }
 
@@ -142,10 +145,10 @@ public class JavaProcessorUtilities {
     }
     
     public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process) {
-        return getNeededModulesForProcess(process, true);
+        return getNeededModulesForProcess(process, TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
     }
 
-    public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process, boolean withChildrens) {
+    public static Set<ModuleNeeded> getNeededModulesForProcess(IProcess process, int options) {
         Set<ModuleNeeded> neededLibraries = new TreeSet<ModuleNeeded>(new Comparator<ModuleNeeded>() {
 
             @Override
@@ -155,7 +158,7 @@ public class JavaProcessorUtilities {
         });
 
         Set<ModuleNeeded> neededModules;
-        if (withChildrens) {
+        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
             neededModules = LastGenerationInfo.getInstance().getModulesNeededWithSubjobPerJob(process.getId(),
                 process.getVersion());
         } else {
@@ -176,7 +179,7 @@ public class JavaProcessorUtilities {
 
         if (process == null || !(process instanceof IProcess2)) {
             if (neededLibraries.isEmpty() && process != null) {
-                neededLibraries = process.getNeededModules(withChildrens);
+                neededLibraries = process.getNeededModules(options);
                 if (neededLibraries == null) {
                     neededLibraries = new HashSet<ModuleNeeded>();
                     // for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getModulesNeeded()) {
@@ -192,7 +195,7 @@ public class JavaProcessorUtilities {
         }
         Property property = ((IProcess2) process).getProperty();
         if (neededLibraries.isEmpty()) {
-            neededLibraries = process.getNeededModules(withChildrens);
+            neededLibraries = process.getNeededModules(options);
             if (neededLibraries == null) {
                 neededLibraries = new HashSet<ModuleNeeded>();
                 for (ModuleNeeded moduleNeeded : ModulesNeededProvider.getModulesNeeded()) {

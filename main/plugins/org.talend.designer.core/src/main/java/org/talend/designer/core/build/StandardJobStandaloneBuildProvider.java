@@ -34,6 +34,7 @@ import org.talend.core.runtime.repository.build.RepositoryObjectTypeBuildProvide
 import org.talend.core.service.IESBRouteService;
 import org.talend.designer.maven.tools.creator.CreateMavenJobPom;
 import org.talend.designer.runprocess.IProcessor;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
@@ -130,7 +131,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         }
 
         final Object assemblyFile = parameters.get(FILE_ASSEMBLY);
-        if (assemblyFile == null || !(assemblyFile instanceof IFile)) {
+        if (!ProcessorUtilities.isGeneratePomOnly() && (assemblyFile == null || !(assemblyFile instanceof IFile))) {
             return null;
         }
         final Object winClassPath = parameters.get(CP_WIN);

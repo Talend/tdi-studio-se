@@ -12,6 +12,8 @@
  */
 package org.talend.sdk.component.studio.ui.guessschema;
 
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.InvocationTargetException;
@@ -37,16 +39,20 @@ import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.MetadataColumn;
 import org.talend.core.model.metadata.MetadataTable;
 import org.talend.core.model.metadata.MetadataToolHelper;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INodeConnector;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.ui.metadata.dialog.MetadataDialog;
 import org.talend.core.utils.KeywordsValidator;
-import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.properties.controllers.uidialog.OpenContextChooseComboDialog;
 import org.talend.sdk.component.studio.i18n.Messages;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 public class GuessSchemaSelectionAdapter extends SelectionAdapter {
 
@@ -110,6 +116,8 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
             if (InterruptedException.class.isInstance(e)) {
                 Thread.currentThread().interrupt();
             }
+
+            return; // Guess schema failed
         }
 
         if (guessSchema.isCanceled()) {
@@ -117,41 +125,52 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         final String schema = guessSchema.getSchema();
-        if (schema == null) {
-            ExceptionMessageDialog.openError(composite.getShell(),
-                    Messages.getString("guessSchema.dialog.error.title"), //$NON-NLS-1$
-                    Messages.getString("guessSchema.dialog.error.msg.default"));
+        if (TaCoKitUtil.isBlank(schema)) {
+            ExceptionMessageDialog.openInformation(composite.getShell(),
+                    Messages.getString("guessSchema.dialog.info.NoSchema.title"), //$NON-NLS-1$
+                    Messages.getString("guessSchema.dialog.info.NoSchema.msg")); //$NON-NLS-1$
             return;
         }
 
         final Node node = Node.class.cast(elementParameter.getElement());
-        IMetadataTable newMeta = buildMetadata(schema, Node.class.cast(elementParameter.getElement()));
+        IMetadataTable newMeta = buildMetadata(schema, node);
         if (newMeta == null) {
+            ExceptionMessageDialog.openError(composite.getShell(), Messages.getString("guessSchema.dialog.error.title"),
+                    //$NON-NLS-1$
+                    Messages.getString("guessSchema.dialog.error.msg.default"), new Exception(schema)); //$NON-NLS-1$
             return;
         }
         MetadataDialog metaDialog = new MetadataDialog(composite.getShell(), newMeta, node, commandStack);
         metaDialog.setText(Messages.getString("guessSchema.dialog.title", node.getLabel())); //$NON-NLS-1$
         if (metaDialog.open() == MetadataDialog.OK) {
             final IMetadataTable outputMetaCopy = metaDialog.getOutputMetaData();
-            boolean modified = false;
-            final IMetadataTable old = node.getMetadataTable(elementParameter.getName());
-            if (!outputMetaCopy.sameMetadataAs(old, IMetadataColumn.OPTIONS_NONE)) {
-                modified = true;
-            }
-
-            if (modified) {
-                IElementParameter switchParam =
-                        elem.getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
-                if (switchParam != null) {
-                    switchParam.setValue(Boolean.FALSE);
+            final IMetadataTable old = node.getMetadataTable(outputMetaCopy.getTableName());
+            IElementParameter param = node.getElementParameter(elementParameter.getName());
+            if (param instanceof IAdditionalInfo) {
+                IElementParameter schemaParam = (IElementParameter) ((IAdditionalInfo) param)
+                        .getInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT);
+                if (schemaParam != null) {
+                    param = node.getElementParameter(schemaParam.getName());
                 }
-                IElementParameter param = node.getElementParameter(elementParameter.getName());
+            }
+            final List<? extends IConnection> incomingConnections = new ArrayList<>(node.getIncomingConnections());
+            final List<? extends IConnection> outgoingConnections = new ArrayList<>(node.getOutgoingConnections());
+            final List<? extends INodeConnector> connectorsList = new ArrayList<>(node.getListConnector());
+
+            try {
+                node.setIncomingConnections(EMPTY_LIST);
+                node.setListConnector(singletonList(node.getConnectorFromName(outputMetaCopy.getTableName())));
+                node.setOutgoingConnections(node.getOutgoingConnections(outputMetaCopy.getTableName()));
                 final ChangeMetadataCommand cmd = new ChangeMetadataCommand(node, param, old, outputMetaCopy);
                 if (commandStack != null) {
                     commandStack.execute(cmd);
                 } else {
                     cmd.execute();
                 }
+            } finally {
+                node.setIncomingConnections(incomingConnections);
+                node.setOutgoingConnections(outgoingConnections);
+                node.setListConnector(connectorsList);
             }
         }
     }
@@ -160,6 +179,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         final String[] lines = schema.split("\n");
         List<String[]> schemaContent = Stream.of(lines)
                 .filter(Objects::nonNull)
+                .filter(l -> !l.contains(" ") && !l.contains("\t"))
                 .filter(l -> !l.trim().isEmpty())
                 .filter(l -> l.contains(";"))
                 .map(l -> l.split(";"))
@@ -226,10 +246,7 @@ public class GuessSchemaSelectionAdapter extends SelectionAdapter {
         }
 
         IMetadataTable metadataTable = new MetadataTable();
-        /* for bug 20973 */
-        if (metadataTable.getTableName() == null) {
-            metadataTable.setTableName(inputNode.getUniqueName());
-        }
+        metadataTable.setTableName(elementParameter.getContext());
         metadataTable.setListColumns(columns);
         return metadataTable;
     }

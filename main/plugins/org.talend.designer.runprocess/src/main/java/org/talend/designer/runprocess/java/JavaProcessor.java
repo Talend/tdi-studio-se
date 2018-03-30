@@ -120,6 +120,7 @@ import org.talend.core.runtime.maven.MavenArtifact;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
+import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.core.ui.services.IRulesProviderService;
 import org.talend.core.utils.BitwiseOptionUtils;
@@ -132,7 +133,6 @@ import org.talend.designer.core.model.utils.emf.talendfile.ProcessType;
 import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
-import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
@@ -192,6 +192,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     protected Property property;
 
     protected Set<JobInfo> buildChildrenJobs;
+
+    protected Set<JobInfo> buildFirstChildrenJobs;
 
     private final ITalendProcessJavaProject talendJavaProject;
 
@@ -264,25 +266,35 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
 
     @Override
     public Set<JobInfo> getBuildChildrenJobs() {
-        return getBuildChildrenJobs(false);
-    }
-    @Override
-    public Set<JobInfo> getBuildChildrenJobs(boolean firstChildOnly) {
-        if (buildChildrenJobs == null) {
-            buildChildrenJobs = new HashSet<JobInfo>();
+        if (buildChildrenJobs == null || buildChildrenJobs.isEmpty()) {
+            buildChildrenJobs = getChildrenJobInfo(false);
+        }
+        return buildChildrenJobs;
 
-            JobInfo lastMainJob = LastGenerationInfo.getInstance().getLastMainJob();
-            Set<JobInfo> infos = null;
-            if (lastMainJob == null && property != null) {
-                infos = ProcessorUtilities.getChildrenJobInfo((ProcessItem) property.getItem(), firstChildOnly);
-            } else {
-                infos = LastGenerationInfo.getInstance().getLastGeneratedjobs();
-            }
+    }
+
+    @Override
+    public Set<JobInfo> getBuildFirstChildrenJobs() {
+        if (buildFirstChildrenJobs == null || buildFirstChildrenJobs.isEmpty()) {
+            buildFirstChildrenJobs = getChildrenJobInfo(true);
+        }
+        return buildFirstChildrenJobs;
+    }
+
+    private Set<JobInfo> getChildrenJobInfo(boolean firstChildOnly) {
+        Set<JobInfo> childrenJobs = new HashSet<>();
+        if (property != null && property.getItem() != null) {
+            Set<JobInfo> infos = ProcessorUtilities.getChildrenJobInfo(property.getItem(), firstChildOnly);
             for (JobInfo jobInfo : infos) {
-                buildChildrenJobs.add(jobInfo);
+                if (jobInfo.isTestContainer() && !ProcessUtils.isOptionChecked(getArguments(),
+                        TalendProcessArgumentConstant.ARG_GENERATE_OPTION,
+                        TalendProcessOptionConstants.GENERATE_TESTS)) {
+                    continue;
+                }
+                childrenJobs.add(jobInfo);
             }
         }
-        return this.buildChildrenJobs;
+        return childrenJobs;
     }
 
     /*
@@ -319,6 +331,9 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     public void initCodePath(IContext c) throws ProcessorException {
         if (buildChildrenJobs != null) {
             buildChildrenJobs.clear();
+        }
+        if (buildFirstChildrenJobs != null) {
+            buildFirstChildrenJobs.clear();
         }
 
         ITalendProcessJavaProject tProcessJavaProject = getTalendJavaProject();
@@ -1330,7 +1345,7 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         final String classPathSeparator = extractClassPathSeparator();
         final String libPrefixPath = getRootWorkingDir(true);
 
-        Set<ModuleNeeded> neededModules = getNeededModules();
+        Set<ModuleNeeded> neededModules = getNeededModules(TalendProcessOptionConstants.MODULES_WITH_CHILDREN);
         JavaProcessorUtilities.checkJavaProjectLib(neededModules);
 
         // Ignore hadoop confs jars in lib path.
@@ -1392,13 +1407,8 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
     }
 
     @Override
-    public Set<ModuleNeeded> getNeededModules() {
-        return getNeededModules(true);
-    }
-
-    @Override
-    public Set<ModuleNeeded> getNeededModules(boolean withChildrenJobs) {
-        Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, withChildrenJobs);
+    public Set<ModuleNeeded> getNeededModules(int options) {
+        Set<ModuleNeeded> neededLibraries = JavaProcessorUtilities.getNeededModulesForProcess(process, options);
         boolean isLog4jEnabled = Boolean.parseBoolean(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__")); //$NON-NLS-1$
         if (isLog4jEnabled) {
             JavaProcessorUtilities.addLog4jToModuleList(neededLibraries);

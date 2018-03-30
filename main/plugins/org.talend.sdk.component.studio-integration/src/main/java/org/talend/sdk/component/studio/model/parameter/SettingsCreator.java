@@ -34,7 +34,6 @@ import java.util.Objects;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.core.model.process.IConnectionCategory;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INodeConnector;
@@ -51,6 +50,8 @@ import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.parameter.listener.ParameterActivator;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
+import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 /**
  * Creates properties from leafs
@@ -353,6 +354,7 @@ public class SettingsCreator implements PropertyVisitor {
     protected TaCoKitElementParameter createSchemaParameter(final String connectionName, final String schemaName,
             final String discoverSchemaAction,
             final boolean show) {
+        String baseSchema = EConnectionType.FLOW_MAIN.getName();
         // Maybe need to find some other condition. this way we will show schema widget for main flow only.
         final TaCoKitElementParameter schema = new TaCoKitElementParameter(getNode());
         schema.setName(schemaName);
@@ -369,7 +371,7 @@ public class SettingsCreator implements PropertyVisitor {
         // defines whether schema is built-in or repository
         final ElementParameter childParameter1 = new ElementParameter(getNode());
         childParameter1.setCategory(EComponentCategory.BASIC);
-        childParameter1.setContext(connectionName);
+        childParameter1.setContext(baseSchema);
         childParameter1.setDisplayName(schemaDisplayName(connectionName, schemaName));
         childParameter1.setFieldType(EParameterFieldType.TECHNICAL);
         childParameter1.setListItemsDisplayCodeName(new String[] { "BUILT_IN", "REPOSITORY" });
@@ -385,7 +387,7 @@ public class SettingsCreator implements PropertyVisitor {
 
         final ElementParameter childParameter2 = new ElementParameter(getNode());
         childParameter2.setCategory(EComponentCategory.BASIC);
-        childParameter2.setContext(connectionName);
+        childParameter2.setContext(baseSchema);
         childParameter2.setDisplayName("Repository");
         childParameter2.setFieldType(EParameterFieldType.TECHNICAL);
         childParameter2.setListItemsDisplayName(new String[0]);
@@ -398,7 +400,7 @@ public class SettingsCreator implements PropertyVisitor {
         childParameter2.setValue("");
         schema.getChildParameters().put(EParameterName.REPOSITORY_SCHEMA_TYPE.getName(), childParameter2);
 
-        if (canAddGuessSchema()) {
+        if (canAddGuessSchema(connectionName)) {
             final TaCoKitElementParameter guessSchemaParameter = new TaCoKitElementParameter(getNode());
             guessSchemaParameter.setCategory(EComponentCategory.BASIC);
             guessSchemaParameter.setContext(connectionName);
@@ -413,6 +415,7 @@ public class SettingsCreator implements PropertyVisitor {
             guessSchemaParameter.setReadOnly(false);
             guessSchemaParameter.setRequired(false);
             guessSchemaParameter.setShow(show);
+            guessSchemaParameter.putInfo(TaCoKitConst.ADDITIONAL_PARAM_METADATA_ELEMENT, schema);
         }
 
         return schema;
@@ -524,23 +527,27 @@ public class SettingsCreator implements PropertyVisitor {
         }
     }
 
-    private boolean canAddGuessSchema() {
+    private boolean canAddGuessSchema(final String connectorName) {
+        if (TaCoKitUtil.isBlank(connectorName)) {
+            return false;
+        }
         boolean canAddGuessSchema = false;
         final IElement node = getNode();
         if (node instanceof Node) {
-            boolean hasIncommingConnection = false;
+            boolean hasOutputConnector = false;
             final List<? extends INodeConnector> listConnector = ((Node) node).getListConnector();
             if (listConnector != null) {
                 for (final INodeConnector connector : listConnector) {
-                    final EConnectionType connectionType = connector.getDefaultConnectionType();
-                    if (connectionType != null && connectionType.hasConnectionCategory(IConnectionCategory.FLOW)
-                            && 0 < connector.getMaxLinkInput()) {
-                        hasIncommingConnection = true;
-                        break;
+                    if (connectorName.equals(connector.getName())) {
+                        if (0 < connector.getMaxLinkOutput()) {
+                            hasOutputConnector = true;
+                            // input and output connectors may have same name
+                            break;
+                        }
                     }
                 }
             }
-            canAddGuessSchema = !hasIncommingConnection;
+            canAddGuessSchema = hasOutputConnector;
         }
         return canAddGuessSchema;
     }

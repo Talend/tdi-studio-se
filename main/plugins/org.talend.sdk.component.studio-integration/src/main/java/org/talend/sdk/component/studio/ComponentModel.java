@@ -61,6 +61,7 @@ import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ComponentIndex;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.model.connector.TaCoKitNodeConnector;
 import org.talend.sdk.component.studio.model.parameter.ElementParameterCreator;
@@ -105,11 +106,14 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     private Boolean useLookup = null;
 
+    private ETaCoKitComponentType tacokitComponentType;
+
     public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ImageDescriptor image32,
             final String reportPath, final boolean isCatcherAvailable) {
         setPaletteType(ComponentCategory.CATEGORY_4_DI.getName());
         this.index = component;
         this.detail = detail;
+        this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         this.familyName = computeFamilyName();
         this.codePartListX = createCodePartList();
         this.reportPath = reportPath;
@@ -124,6 +128,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         setPaletteType("DI");
         this.index = component;
         this.detail = detail;
+        this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
         this.familyName = computeFamilyName();
         this.codePartListX = createCodePartList();
         this.image = null;
@@ -161,12 +166,12 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * @return
      */
     private List<ECodePart> createCodePartList() {
-        return Collections.unmodifiableList((detail.getType().equalsIgnoreCase("input")) //$NON-NLS-1$
+        return Collections.unmodifiableList(ETaCoKitComponentType.input.equals(getTaCoKitComponentType())
                 ? Arrays.asList(ECodePart.BEGIN, ECodePart.END, ECodePart.FINALLY)
                 : (useLookup()
-                ? Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END_HEAD, ECodePart.END_BODY,
-                ECodePart.END_TAIL, ECodePart.FINALLY)
-                : Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END, ECodePart.FINALLY)));
+                        ? Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END_HEAD, ECodePart.END_BODY,
+                                ECodePart.END_TAIL, ECodePart.FINALLY)
+                        : Arrays.asList(ECodePart.BEGIN, ECodePart.MAIN, ECodePart.END, ECodePart.FINALLY)));
     }
 
     /**
@@ -519,7 +524,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             return useLookup;
         }
         useLookup = Boolean.FALSE;
-        List<? extends INodeConnector> connectors = createConnectors(new DataNode(this, "checkLookup"));
+        List<? extends INodeConnector> connectors = createConnectors(new DataNode(this, "checkLookup")); //$NON-NLS-1$
         if (connectors != null) {
             for (INodeConnector connector : connectors) {
                 if (EConnectionType.FLOW_MAIN.equals(connector.getDefaultConnectionType())) {
@@ -608,7 +613,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             List<? extends INodeConnector> connectors = createConnectors(node);
             for (INodeConnector connector : connectors) {
                 if (connector instanceof TaCoKitNodeConnector) {
-                    if (((TaCoKitNodeConnector) connector).isInput()) {
+                    if (((TaCoKitNodeConnector) connector).hasInput()) {
                         String connectorName = connector.getName();
                         if (!availableInputs.contains(connectorName)) {
                             availableInputs.add(connectorName);
@@ -655,4 +660,10 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         return index.getId().getPlugin();
     }
 
+    public ETaCoKitComponentType getTaCoKitComponentType() {
+        if (this.tacokitComponentType == null) {
+            this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
+        }
+        return this.tacokitComponentType;
+    }
 }
