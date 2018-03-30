@@ -538,7 +538,10 @@ public class TalendJavaProjectManager {
                     .getItemPomFolder(item.getProperty())
                     .getFile(TalendMavenConstants.POM_FILE_NAME), item.getProperty());
         } catch (Exception e) {
-            ExceptionHandler.process(e);
+            String errorMsg = "Job [" + item.getProperty().getLabel() + "_" + item.getProperty().getVersion() //$NON-NLS-1$ //$NON-NLS-2$
+                    + "] encountered problems while generating pom :"; //$NON-NLS-1$
+            Exception exception = new Exception(errorMsg, e);
+            ExceptionHandler.process(exception);
         } finally {
             ProcessorUtilities.setGeneratePomOnly(false);
         }
