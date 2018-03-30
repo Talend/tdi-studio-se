@@ -243,6 +243,10 @@ public abstract class BigDataJavaProcessor extends MavenJavaProcessor implements
         if (isExport) {
             // In an export mode, we add the job jar which is located in the current working directory
             libJars.append("./" + makeupJobJarName()); //$NON-NLS-1$
+            if (!needAllLibJars) {
+                // to avoid issue TPSVC-4826
+                libJars.append(","); //$NON-NLS-1$
+            }
         } else {
             if (needAllLibJars) {
                 // In a local mode,we must append the routines/beans/udfs jars which are located in the target
