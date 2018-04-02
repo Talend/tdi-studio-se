@@ -771,6 +771,9 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     private void installRefCodeProject(ERepositoryObjectType codeType, Project refProject, AggregatorPomsHelper refHelper,
             Map<String, Object> argumentsMap, IProgressMonitor monitor) throws Exception, CoreException {
+        if (!refHelper.getProjectPomsFolder().getFile(TalendMavenConstants.POM_FILE_NAME).exists()) {
+            return;
+        }
         ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, refProject);
         if (codeProject != null) {
             codeProject.buildModules(monitor, null, argumentsMap);
