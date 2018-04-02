@@ -200,7 +200,7 @@ public class SettingsCreator implements PropertyVisitor {
 
                 break;
             }
-        } else if (node.getProperty().isCheckable()) {
+        } else if (node.getProperty().isCheckable() && !node.getChildren(form).isEmpty()) {
             final ActionReference action = actions
                     .stream()
                     .filter(a -> HEALTH_CHECK.equals(a.getType()))
