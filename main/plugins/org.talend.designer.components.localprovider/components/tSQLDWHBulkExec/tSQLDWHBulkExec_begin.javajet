@@ -273,13 +273,16 @@ skeleton="../templates/db_output_bulk.skeleton"
     } else {
         tableName_<%=cid%> = dbschema_<%=cid%> + "].[" + <%=table%>;
     }
-
-    externalTableRejectOptions_<%=cid%> = "REJECT_TYPE = <%=rejectType%>" + ",REJECT_VALUE = " + <%=rejectValue%>;
 <%
-    if("Percentage".equals(rejectType)){
+    if(isEnabledExtTableOptions){
 %>
-        externalTableRejectOptions_<%=cid%> += ",REJECT_SAMPLE_VALUE = " + <%=rejectSampleValue%>;
+        externalTableRejectOptions_<%=cid%> = "REJECT_TYPE = <%=rejectType%>" + ",REJECT_VALUE = " + <%=rejectValue%>;
+<%
+        if("Percentage".equals(rejectType)){
+%>
+            externalTableRejectOptions_<%=cid%> += ",REJECT_SAMPLE_VALUE = " + <%=rejectSampleValue%>;
 <%    
+        }
     }
 
     if(("DROP_CREATE").equals(tableAction) || ("CREATE").equals(tableAction) || ("CREATE_IF_NOT_EXISTS").equals(tableAction) || ("DROP_IF_EXISTS_AND_CREATE").equals(tableAction)) {   
