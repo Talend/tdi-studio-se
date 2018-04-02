@@ -79,10 +79,7 @@ public class PropertyNode {
     /**
      * Checks whether it is column according ui::gridlayout for specified <code>form</code>
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return true, if it column; false - otherwise
      */
     public boolean isColumn(final String form) {
@@ -98,8 +95,6 @@ public class PropertyNode {
 
     /**
      * Traverses all nodes
-     *
-     * 
      * 
      * @param visitor the property visitor to use to traverse the nodes.
      */
@@ -111,10 +106,7 @@ public class PropertyNode {
     /**
      * Traverses nodes of specified <code>form</code> in sorted according metadata order
      *
-     * 
-     * 
      * @param visitor the property visitor to use to traverse the nodes.
-     * 
      * @param form Name of form
      */
     public void accept(final PropertyVisitor visitor, final String form) {
@@ -130,17 +122,33 @@ public class PropertyNode {
     }
 
     /**
-     * Returns children, which belongs to specified <code>form</code>
+     * Returns children, which belongs to specified {@code form}
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return children of specified form
      */
     public List<PropertyNode> getChildren(final String form) {
         final Set<String> childrenNames = getChildrenNames(form);
         return children.stream().filter(node -> childrenNames.contains(node.property.getName())).collect(Collectors.toList());
+    }
+    
+    /**
+     * Checks whether subtree rooted by this node has leaves, which belongs to specified {@code form}
+     * 
+     * @param form Name of form
+     * @return true, if it has leaves
+     */
+    public boolean hasLeaves(final String form) {
+        final ArrayList<PropertyNode> subNodes = new ArrayList<>(getChildren(form));
+        for (int i = 0; i < subNodes.size(); i++) {
+            final PropertyNode current = subNodes.get(i);
+            if (current.isLeaf()) {
+                return true;
+            } else {
+                subNodes.addAll(current.getChildren(form));
+            }
+        }
+        return false;
     }
 
     private PropertyNode getChild(final String name, final String form) {
@@ -153,11 +161,9 @@ public class PropertyNode {
     /**
      * Sorts children according order specified in metadata or do nothing if order is not specified
      *
-     * 
-     * 
      * @param children children node, which belongs specified form
-     * 
      * @param form Name or form
+     * @return sorted list
      */
     private List<PropertyNode> sortChildren(final List<PropertyNode> children, final String form) {
         final HashMap<String, Integer> order = property.getChildrenOrder(form);
@@ -174,17 +180,11 @@ public class PropertyNode {
 
     /**
      * Returns children names for specified <code>form</code>.
-     * 
      * If <code>form</code> is Main form its children may be specified by ui::gridlayout or ui:optionsorder.
-     * 
      * If it has no both metadata, then all children are considered as Main children.
-     * 
      * For other <code>form</code> children may be specified only by ui::gridlayout.
      *
-     * 
-     * 
      * @param form Name of form
-     * 
      * @return children names of specified <code>form</code>
      */
     private Set<String> getChildrenNames(final String form) {
@@ -197,17 +197,11 @@ public class PropertyNode {
 
     /**
      * Returns children names for Main form
-     * 
      * If it has ui:gridlayout metadata value for Main form, then names are retrieved from there
-     * 
      * If it has ui:gridlayout for other forms, then it is considered that Main form is empty
-     * 
      * If it has ui:optionsorder (and has no any ui:gridlayout), then names are retrieved from there
-     * 
      * If it has no both metadatas, then all children belong to Main form
      *
-     * 
-     * 
      * @return children names for Main form
      */
     private Set<String> getMainChildrenNames() {
@@ -234,11 +228,8 @@ public class PropertyNode {
 
     /**
      * Creates layout for specified {@code form} and computes position for all children nodes.
-     * 
      * It traverse a tree in-depth. Children nodes are visited before parent
      *
-     * 
-     * 
      * @param form Layout form for which node position is computed
      */
     void computePosition(final String form) {
@@ -358,8 +349,6 @@ public class PropertyNode {
         /**
          * Adds "Test Connection" button
          *
-         * 
-         * 
          * @param layout parent node layout
          */
         private void addButton(final Layout layout) {

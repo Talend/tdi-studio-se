@@ -32,7 +32,10 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
+import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
 import org.talend.sdk.component.studio.ui.wizard.page.TaCoKitConfigurationWizardPage;
+import org.talend.sdk.component.studio.ui.wizard.page.WizardTypeMapper;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 
 /**
@@ -129,17 +132,22 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
     public void addPages() {
         wizardPropertiesPage = new Step0WizardPage(runtimeData.getConnectionItem().getProperty(), pathToSave,
                 TaCoKitConst.METADATA_TACOKIT, runtimeData.isReadonly(), creation);
-        ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
+        final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
         wizardPropertiesPage.setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", //$NON-NLS-1$
                 configTypeNode.getConfigurationType(), configTypeNode.getDisplayName()));
         wizardPropertiesPage.setDescription(""); //$NON-NLS-1$
         addPage(wizardPropertiesPage);
-        mainPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.MAIN_FORM);
-        addPage(mainPage);
-        advancedPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.ADVANCED_FORM);
-        addPage(advancedPage);
+        final PropertyNode root = new PropertyTreeCreator(new WizardTypeMapper()).createPropertyTree(configTypeNode);
+        if (root.hasLeaves(Metadatas.MAIN_FORM)) {
+            mainPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.MAIN_FORM);
+            addPage(mainPage);
+        }
+        if (root.hasLeaves(Metadatas.ADVANCED_FORM)) {
+            advancedPage = new TaCoKitConfigurationWizardPage(runtimeData, Metadatas.ADVANCED_FORM);
+            addPage(advancedPage);
+        }
     }
-
+    
     @Override
     public boolean performFinish() {
         if (mainPage.isPageComplete()) {
