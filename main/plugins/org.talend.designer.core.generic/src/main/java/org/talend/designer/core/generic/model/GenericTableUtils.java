@@ -100,7 +100,7 @@ public class GenericTableUtils {
                             } else {
                                 line.put(columnName, Boolean.FALSE);
                             }
-                        } else {
+                        } else if (values.size() > i){
                             if(param.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())){
                                 line.put(columnName, getDriverJarPath((String)values.get(i)));
                             }else{

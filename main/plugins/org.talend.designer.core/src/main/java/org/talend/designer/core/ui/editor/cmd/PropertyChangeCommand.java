@@ -243,6 +243,11 @@ public class PropertyChangeCommand extends Command {
 
             repositoryValueWasUsed = true;
         } else {
+            if ("table.main.schema:SCHEMA_TYPE".equals(propName)) {
+                elem.getElementParameter("table.tableName").setRepositoryValueUsed(false);
+            } else if ("module.main.schema:SCHEMA_TYPE".equals(propName)) {
+                elem.getElementParameter("module.moduleName").setRepositoryValueUsed(false);
+            }
             repositoryValueWasUsed = false;
         }
 

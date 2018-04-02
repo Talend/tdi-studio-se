@@ -850,6 +850,9 @@ public class JobSettingsManager {
      */
     public static boolean isImplicittContextLoadActived(IProcess process) {
         String paramName = EParameterName.IMPLICIT_TCONTEXTLOAD.getName();
+        if (process.getElementParameter(paramName) == null) {
+            return false;
+        }
         boolean useContextLoad = ((Boolean) process.getElementParameter(paramName).getValue())
                 && process.getElementParameter(paramName).isShow(process.getElementParameters());
         if (!useContextLoad) {

@@ -83,6 +83,7 @@ import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.services.IGenericDBService;
+import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
 import org.talend.daikon.properties.Properties;
 import org.talend.daikon.properties.PropertiesVisitor;
@@ -102,6 +103,7 @@ import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.core.utils.ConnectionUtil;
 import org.talend.designer.core.utils.JavaProcessUtil;
 import org.talend.designer.core.utils.ValidationRulesUtil;
+import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.repository.model.IProxyRepositoryFactory;
 
 /**
@@ -3339,7 +3341,17 @@ public class DataProcess implements IGeneratingProcess {
      */
     public void replaceNodeFromProviders(List<INode> graphicalNodeList) {
         List<INode> orginalList = new ArrayList<INode>(graphicalNodeList);
+        IJobletProviderService jobletService = null;
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
+            jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
+                IJobletProviderService.class);
+        }
+
         for (INode node : orginalList) {
+            if (ProcessorUtilities.isGeneratePomOnly() && jobletService.isJobletComponent(node)) {
+                // skip any joblet contained during the pom generation
+                continue;
+            }
             for (IReplaceNodeInProcess replaceProvider : ReplaceNodesInProcessProvider.findReplaceNodesProvider()) {
                 replaceProvider.rebuildGraphicProcessFromNode(node, graphicalNodeList);
             }

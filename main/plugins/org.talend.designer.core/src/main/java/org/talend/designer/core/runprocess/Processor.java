@@ -43,7 +43,6 @@ import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.codegen.ICodeGenerator;
 import org.talend.designer.core.ISyntaxCheckableEditor;
 import org.talend.designer.core.i18n.Messages;
-import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IProcessMessageManager;
 import org.talend.designer.runprocess.IProcessor;
 import org.talend.designer.runprocess.ProcessorException;
@@ -346,8 +345,7 @@ public abstract class Processor implements IProcessor, IEclipseProcessor, Talend
      * @throws ProcessorException
      */
     protected Process exec(Level level, int statOption, int traceOption, String... codeOptions) throws ProcessorException {
-        String execPath = getTalendJavaProject().getTargetFolder().getLocation().toPortableString();
-        return execFrom(execPath, level, statOption, traceOption, codeOptions);
+        return execFrom(null, level, statOption, traceOption, codeOptions);
     }
 
     protected Process execFrom(String path, Level level, int statOption, int traceOption, String... codeOptions)

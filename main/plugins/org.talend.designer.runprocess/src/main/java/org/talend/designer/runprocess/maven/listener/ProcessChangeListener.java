@@ -56,44 +56,49 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     @Override
     public void propertyChange(PropertyChangeEvent event) {
-        String propertyName = event.getPropertyName();
-        Object oldValue = event.getOldValue();
-        Object newValue = event.getNewValue();
-        RepositoryWorkUnit<Object> workUnit = new RepositoryWorkUnit<Object>("update poms by " + propertyName) { //$NON-NLS-1$
+        try {
+            String propertyName = event.getPropertyName();
+            Object oldValue = event.getOldValue();
+            Object newValue = event.getNewValue();
+            RepositoryWorkUnit<Object> workUnit = new RepositoryWorkUnit<Object>("update poms by " + propertyName) { //$NON-NLS-1$
 
-            @Override
-            protected void run() {
-                if (propertyName.equals(ERepositoryActionName.PROPERTIES_CHANGE.getName())) {
-                    casePropertiesChange(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.MOVE.getName())) {
-                    caseMove(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
-                    caseDeleteForever(newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())
-                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_RENAME.getName())) {
-                    caseFolderRename(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_MOVE.getName())
-                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_MOVE.getName())) {
-                    caseFolderMove(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.FOLDER_DELETE.getName())
-                        || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_DELETE.getName())) {
-                    caseFolderDelete(oldValue, newValue);
-                } else if (propertyName.equals(ERepositoryActionName.SAVE.getName())
-                        || propertyName.equals(ERepositoryActionName.CREATE.getName())) {
-                    boolean avoidGeneratePom = false;
-                    if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
-                        avoidGeneratePom = Boolean.valueOf(String.valueOf(oldValue));
+                @Override
+                protected void run() {
+                    if (propertyName.equals(ERepositoryActionName.PROPERTIES_CHANGE.getName())) {
+                        casePropertiesChange(oldValue, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.MOVE.getName())) {
+                        caseMove(oldValue, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.DELETE_FOREVER.getName())) {
+                        caseDeleteForever(newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.FOLDER_RENAME.getName())
+                            || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_RENAME.getName())) {
+                        caseFolderRename(oldValue, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.FOLDER_MOVE.getName())
+                            || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_MOVE.getName())) {
+                        caseFolderMove(oldValue, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.FOLDER_DELETE.getName())
+                            || propertyName.equals(ERepositoryActionName.JOBLET_FOLDER_DELETE.getName())) {
+                        caseFolderDelete(oldValue, newValue);
+                    } else if (propertyName.equals(ERepositoryActionName.SAVE.getName())
+                            || propertyName.equals(ERepositoryActionName.CREATE.getName())) {
+                        boolean avoidGeneratePom = false;
+                        if (propertyName.equals(ERepositoryActionName.SAVE.getName())) {
+                            avoidGeneratePom = Boolean.valueOf(String.valueOf(oldValue));
+                        }
+                        if (!avoidGeneratePom) {
+                            caseCreateAndSave(propertyName, newValue);
+                        }
+                    } else if (propertyName.equals(ERepositoryActionName.IMPORT.getName())) {
+                        caseImport(propertyName, newValue);
                     }
-                    if (!avoidGeneratePom) {
-                        caseCreateAndSave(propertyName, newValue);
-                    }
-                } else if (propertyName.equals(ERepositoryActionName.IMPORT.getName())) {
-                    caseImport(propertyName, newValue);
                 }
-            }
-        };
-        workUnit.setAvoidUnloadResources(true);
-        ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+            };
+            workUnit.setAvoidUnloadResources(true);
+            ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(workUnit);
+        } catch (Exception e) {
+            // Any exception here must be catched/logged, but it should not block the operations of user
+            ExceptionHandler.process(e);
+        }
     }
 
     private void casePropertiesChange(Object oldValue, Object newValue) {
@@ -151,8 +156,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
                                     .removeFromParentModules(sourceFolder.getFile(TalendMavenConstants.POM_FILE_NAME));
                             MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
                             change.perform(new NullProgressMonitor());
-                            IFile pomFile = targetFolder
-                                    .getFolder(sourceFolder.getName())
+                            IFile pomFile = targetFolder.getFolder(sourceFolder.getName())
                                     .getFile(TalendMavenConstants.POM_FILE_NAME);
                             AggregatorPomsHelper.updateGroupIdAndRelativePath(pomFile, property);
                             AggregatorPomsHelper.addToParentModules(pomFile, property);
@@ -208,9 +212,8 @@ public class ProcessChangeListener implements PropertyChangeListener {
     }
 
     /**
-     * DOC nrousseau Comment method "updatePomsInNewFolder".
-     * update all jobs' relative path and groupId
-     * add job to parent modules
+     * DOC nrousseau Comment method "updatePomsInNewFolder". update all jobs' relative path and groupId add job to
+     * parent modules
      * 
      * @param newFolder
      * @throws CoreException

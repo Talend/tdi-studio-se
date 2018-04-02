@@ -561,6 +561,9 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     @Override
     @SuppressWarnings("rawtypes")
     public boolean performOk() {
+        if (!this.isControlCreated()) {
+            return true;
+        }
         if (!checkInvalidProject()) {
             return false;
         }
@@ -687,7 +690,7 @@ public class ProjectRefSettingPage extends ProjectSettingPage {
     private boolean validate() {
         this.setErrorMessage(null);
         Map<String, List<ProjectReference>> projectRefMap = new HashMap<String, List<ProjectReference>>();
-        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(this.getShell()) {
+        AProgressMonitorDialogWithCancel<Boolean> dialog = new AProgressMonitorDialogWithCancel<Boolean>(Display.getCurrent().getActiveShell()) {
 
             protected Boolean runWithCancel(IProgressMonitor monitor) throws Throwable {
                 return checkCycleReference(projectRefMap);

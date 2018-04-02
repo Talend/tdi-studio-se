@@ -370,7 +370,15 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
 
                         objectValue = RepositoryToComponentProperty.getXmlAndXSDFileValue((XmlFileConnection) connection,
                                 repositoryValue);
+                    } else if ("module.moduleName".equals(repositoryValue)) {
+                        objectValue = null;
+                        param.setRepositoryValueUsed(false);
                     } else if (connection instanceof SalesforceSchemaConnection && "MODULENAME".equals(repositoryValue)) { //$NON-NLS-1$
+                        /*
+                         * SalesforceSchemaConnection is no longer available with new TCOMP Wizard(?). In debug, connection is GenericConnectionImpl. 
+                         * "MODULENAME" is also unavailable, since it has to be module.moduleName. The same situation with "CUSTOM_MODULE_NAME".
+                         * Feel free to remove this code, or improve it by fixing SalesforceSchemaConnection usage and corrected repositoryValue.
+                         */
                         if (this.moduleUnit != null) {
                             objectValue = moduleUnit.getModuleName();
                         } else {
@@ -381,10 +389,13 @@ public class ChangeValuesFromRepository extends ChangeMetadataCommand {
                       // module which was the last one be retrived
                     else if (connection instanceof SalesforceSchemaConnection && "CUSTOM_MODULE_NAME".equals(repositoryValue)) { //$NON-NLS-1$
                         if (this.moduleUnit != null) {
-                            objectValue = moduleUnit.getModuleName();
-                        } else {
-                            objectValue = null;
-                        }
+                             objectValue = moduleUnit.getModuleName();
+                         } else {
+                             objectValue = null;
+                         }
+                    } else if ("table.tableName".equals(repositoryValue)) {
+                        objectValue = null;
+                        param.setRepositoryValueUsed(false);
                     } else if (connection instanceof MDMConnection) {
                         if (table == null) {
                             IMetadataTable metaTable = null;

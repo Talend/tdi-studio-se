@@ -1217,7 +1217,8 @@ public abstract class AbstractSchemaController extends AbstractRepositoryControl
                 IElementParameter repositorySchemaType = param.getParentParameter().getChildParameters()
                         .get(EParameterName.REPOSITORY_SCHEMA_TYPE.getName());
                 String schemaSelected = (String) repositorySchemaType.getValue();
-                if (schemaSelected == null) {
+                if (schemaSelected == null || (EmfComponent.BUILTIN.equals(param.getValue())
+                                && ("module.main.schema".equals(curParameter.getName()) || "table.main.schema".equals(curParameter.getName())))) {
                     schemaSelected = ""; //$NON-NLS-1$
                 }
 

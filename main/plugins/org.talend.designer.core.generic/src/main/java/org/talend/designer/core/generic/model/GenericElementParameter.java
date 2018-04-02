@@ -134,13 +134,20 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
         if (!isFirstCall
                 || (widget.getContent() instanceof PropertiesImpl && !Widget.TABLE_WIDGET_TYPE.equals(widget.getWidgetType()))) {
             updateProperty(o);
-            boolean calledValidate = callValidate();
-            if (calledValidate) {
-                fireValidateStatusEvent();
-            }
-            boolean calledAfter = callAfter();
-            if (calledAfter) {
-                fireValueChangedEvent();
+            /*
+             * Prevent Salesforce and Snowflake from performing API calls to retrieve table metadata.
+             * Possible values is going to be a marker that shows that method was called from RepositoryChangeMetadataCommand.
+             * Otherwise method was called to perform "validate" and "after" operations. 
+             */
+            if ((!"table.tableName".equals(getName()) && !"module.moduleName".equals(getName())) || !possibleValues.isEmpty()) {
+	            boolean calledValidate = callValidate();
+	            if (calledValidate) {
+	                fireValidateStatusEvent();
+	            }
+	            boolean calledAfter = callAfter();
+	            if (calledAfter) {
+	                fireValueChangedEvent();
+	            }
             }
         }
         isFirstCall = false;

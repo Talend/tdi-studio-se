@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.cmd;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,12 +236,12 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                 }
             }
             setTableRelevantParameterValues();
+            //This might be a duplicate code usage for Salesforce. All values are set even without this piece of code.
             if (getConnection() != null) {
                 // for salesforce
                 IElementParameter param = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
-                if (param != null
-                        && EmfComponent.REPOSITORY.equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName())
-                                .getValue())) {
+                if (param != null && EmfComponent.REPOSITORY
+                        .equals(param.getChildParameters().get(EParameterName.PROPERTY_TYPE.getName()).getValue())) {
                     IElementParameter module = node.getElementParameter("module.moduleName");
                     if (module != null) {
                         String repositoryValue = module.getRepositoryValue();
@@ -254,12 +255,12 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                             if (wizardService != null && wizardService.isGenericConnection(getConnection())) {
                                 componentProperties = wizardService.getAllComponentProperties(getConnection(), null);
                             }
-                            repositoryValue = String.valueOf(RepositoryToComponentProperty.getGenericRepositoryValue(
-                                    getConnection(), componentProperties, module.getName()));
+                            repositoryValue = String.valueOf(RepositoryToComponentProperty
+                                    .getGenericRepositoryValue(getConnection(), componentProperties, module.getName()));
                         }
                         if (repositoryValue != null) {
-                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(), repositoryValue,
-                                    newOutputMetadata, node.getComponent().getName());
+                            Object objectValue = RepositoryToComponentProperty.getValue(getConnection(),
+                                    repositoryValue, newOutputMetadata, node.getComponent().getName());
                             if (objectValue != null) {
                                 module.setValue(objectValue);
                             }
@@ -284,6 +285,10 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                     List<? extends IElementParameter> elementParameters = new ArrayList(node.getElementParameters());
                     for (IElementParameter param : elementParameters) {
                         if (param.getRepositoryValue() != null && !param.getRepositoryValue().equals("")) {//$NON-NLS-1$
+                            /*
+                             * Dead code. SalesforceSchemaConnectionItem is not used anymore. GenericConnectionItemImpl is an instance for item.
+                             * "MODULENAME" is replaced with "module.moduleName".
+                             */
                             boolean isCustomSfConn = false;
                             if (item instanceof SalesforceSchemaConnectionItem) {
                                 SalesforceSchemaConnection sfConn = (SalesforceSchemaConnection) ((SalesforceSchemaConnectionItem) item)
@@ -324,6 +329,22 @@ public class RepositoryChangeMetadataCommand extends ChangeMetadataCommand {
                         }
                     }
                 }
+            }
+        }
+        //Performs setting value for "table.tableName" or "module.moduleName" for Snowflake and Salesforce.
+        IElementParameter param;
+        if ((param = node.getElementParameter("table.tableName")) != null || (param = node.getElementParameter("module.moduleName")) != null) {
+            String tableName = newOutputMetadata.getTableName();
+            IElementParameter schemaParam;
+            param.setValue(TalendQuoteUtils.addQuotes(tableName));
+            param.setRepositoryValueUsed(EmfComponent.REPOSITORY.equals((String) node.getPropertyValue(EParameterName.SCHEMA_TYPE.getName())));
+            //If tableName value is empty we have to erase schema value and repository_schema_type, to prevent setting previous values. New values must be set instead.
+            if (tableName == null &&
+                    ((schemaParam = node.getElementParameter("table.main.schema")) != null || (schemaParam = node.getElementParameter("module.main.schema")) != null)) {
+                param.setRepositoryValue("");
+                IElementParameter repositorySchema = schemaParam.getChildParameters().get("REPOSITORY_SCHEMA_TYPE");
+                repositorySchema.setValue("");
+                schemaParam.setValue(org.apache.avro.Schema.createRecord("Record", null, null, false, Collections.emptyList()));
             }
         }
         node.setPropertyValue(EParameterName.UPDATE_COMPONENTS.getName(), Boolean.TRUE);

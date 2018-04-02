@@ -48,8 +48,6 @@ import org.talend.core.utils.BitwiseOptionUtils;
 import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.EmfComponent;
-import org.talend.designer.core.model.process.DataNode;
-import org.talend.designer.core.model.process.jobsettings.JobSettingsManager;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.librariesmanager.model.ModulesNeededProvider;
 
@@ -161,16 +159,8 @@ public class JavaProcessUtil {
         }
 
         String hadoopItemId = null;
-        List<INode> nodeList = null;
-        if (BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_JOBLET)) {
-            nodeList = (List<INode>) process.getGraphicalNodes();
-            if (JobSettingsManager.isImplicittContextLoadActived(process)) {
-                List<DataNode> contextLoadNodes = JobSettingsManager.createExtraContextLoadNodes(process);
-                nodeList.addAll(contextLoadNodes);
-            }
-        } else {
-            nodeList = (List<INode>) process.getGeneratingNodes();
-        }
+        List<INode> nodeList = (List<INode>) process.getGeneratingNodes();
+        
         for (INode node : nodeList) {
             if (hadoopItemId == null) {
                 String itemId = getHadoopClusterItemId(node);
