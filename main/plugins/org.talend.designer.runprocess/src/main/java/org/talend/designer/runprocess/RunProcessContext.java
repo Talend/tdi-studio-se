@@ -584,6 +584,7 @@ public class RunProcessContext {
                                     getTracesPort() != IProcessor.NO_TRACES && hasConnectionTrace(), true, progressMonitor);
                         } catch (Throwable e) {
                             BuildCacheManager.getInstance().performBuildFailure();
+                            PomUtil.restorePomFile(processor.getTalendJavaProject());
                             // catch any Exception or Error to kill the process,
                             // see bug 0003567
                             running = true;
