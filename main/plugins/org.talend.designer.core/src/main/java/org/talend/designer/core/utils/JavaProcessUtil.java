@@ -83,6 +83,7 @@ public class JavaProcessUtil {
 
         Set<String> dedupModulesList = new HashSet<String>();
         Iterator<ModuleNeeded> it = modulesNeeded.iterator();
+        ModuleNeeded previousModule = null;
         while (it.hasNext()) {
             ModuleNeeded module = it.next();
             // try to keep only real files (with extension, no matter be jar or other)
@@ -90,9 +91,13 @@ public class JavaProcessUtil {
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
                 it.remove();
             } else if (dedupModulesList.contains(module.getModuleName())) {
+                if (module.isMrRequired() && previousModule != null && previousModule.getModuleName().equals(module.getModuleName())) {
+                    previousModule.setMrRequired(Boolean.TRUE);
+                }
                 it.remove();
             } else {
                 dedupModulesList.add(module.getModuleName());
+                previousModule = module;
             }
         }
 
