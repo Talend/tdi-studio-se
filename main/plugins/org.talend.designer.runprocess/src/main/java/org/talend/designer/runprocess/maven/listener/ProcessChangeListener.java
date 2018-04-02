@@ -324,7 +324,7 @@ public class ProcessChangeListener implements PropertyChangeListener {
 
     private void updateCodesChange(RoutineItem codesItem) {
         ERepositoryObjectType type = ERepositoryObjectType.getItemType(codesItem);
-        BuildCacheManager.getInstance().updateCodesLastChangeDate(type, codesItem.getProperty());
+        BuildCacheManager.getInstance().updateCodesLastChangeDate(type);
     }
 
     private boolean isNeedUpdateItem(Item item) {
