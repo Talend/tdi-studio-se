@@ -269,13 +269,13 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         if (!isOptionChoosed(ExportChoice.executeTests)) {
             otherArgsBuffer.append(TalendMavenConstants.ARG_SKIPTESTS);
         } else {
-            otherArgsBuffer.append("-fn");
+            otherArgsBuffer.append(TalendMavenConstants.ARG_TEST_FAILURE_IGNORE);
         }
-        otherArgsBuffer.append(" -Dmaven.main.skip=true");
+        otherArgsBuffer.append(" -Dmaven.main.skip=true"); //$NON-NLS-1$
 
         // if debug
         if (CommonsPlugin.isDebugMode()) {
-            otherArgsBuffer.append(" -X");
+            otherArgsBuffer.append(" -X"); //$NON-NLS-1$
         }
         return otherArgsBuffer;
     }
