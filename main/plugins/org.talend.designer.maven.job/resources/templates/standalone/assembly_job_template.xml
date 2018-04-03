@@ -166,6 +166,13 @@
 				<include>config/**</include>
 			</includes>
 		</fileSet>
+		<fileSet><!-- microservice context -->
+			<directory>${microservice.context.dir}</directory>
+			<outputDirectory>${talend.job.name}</outputDirectory>
+			<includes>
+				<include>config/**</include>
+			</includes>
+		</fileSet>		
 		<fileSet><!-- survivorship rules -->
 			<directory>${survivorship.rules.dir}</directory>
 			<outputDirectory>${talend.job.name}/items/${talend.project.name.lowercase}/metadata/survivorship/</outputDirectory>
