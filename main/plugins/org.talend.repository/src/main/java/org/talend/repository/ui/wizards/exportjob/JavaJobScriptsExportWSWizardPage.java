@@ -893,6 +893,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
+            if(exportMSAsZipButton!=null) {
+            	exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
+            	exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());	
+            }
             if (addBSButton != null) {
                 exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
             }
