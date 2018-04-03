@@ -273,7 +273,7 @@ public class TalendJavaProjectManager {
 
     public static ITalendProcessJavaProject getTempJavaProject() {
         NullProgressMonitor monitor = new NullProgressMonitor();
-        if (tempJavaProject == null) {
+        if (tempJavaProject == null || tempJavaProject.getProject() == null || !tempJavaProject.getProject().exists()) {
             try {
                 IProject project = TalendCodeProjectUtil.initCodeProject(monitor);
                 if (project != null) {
