@@ -150,22 +150,34 @@ public abstract class TaCoKitConfigurationWizard extends CheckLastVersionReposit
     
     @Override
     public boolean performFinish() {
-        if (mainPage.isPageComplete()) {
-            try {
-                IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                IWorkspaceRunnable operation = createFinishOperation();
-                ISchedulingRule schedulingRule = workspace.getRoot();
-                workspace.run(operation, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
-                return true;
-            } catch (Exception e) {
-                ExceptionHandler.process(e);
-                String message = e.getLocalizedMessage();
-                if (StringUtils.isEmpty(message)) {
-                    message = Messages.getString("TaCoKitConfiguration.wizard.exception.message.default"); //$NON-NLS-1$
-                }
-                ExceptionMessageDialog.openError(getShell(), Messages.getString("TaCoKitConfiguration.wizard.exception.title"), //$NON-NLS-1$
-                        message, e);
+        // if both are null, then nothing to do and "perform finish" operation is always accepted
+        if (mainPage == null && advancedPage == null) {
+            return true;
+        }
+        // if main page is present, then it controls "perform finish" operation acceptence/refuse
+        if (mainPage != null) {
+            return mainPage.isPageComplete() && doPerformFinish();
+        // otherwise advanced page controls "perform finish" operation
+        } else {
+            return advancedPage.isPageComplete() && doPerformFinish();
+        }
+    }
+    
+    private boolean doPerformFinish() {
+        try {
+            IWorkspace workspace = ResourcesPlugin.getWorkspace();
+            IWorkspaceRunnable operation = createFinishOperation();
+            ISchedulingRule schedulingRule = workspace.getRoot();
+            workspace.run(operation, schedulingRule, IWorkspace.AVOID_UPDATE, new NullProgressMonitor());
+            return true;
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+            String message = e.getLocalizedMessage();
+            if (StringUtils.isEmpty(message)) {
+                message = Messages.getString("TaCoKitConfiguration.wizard.exception.message.default"); //$NON-NLS-1$
             }
+            ExceptionMessageDialog.openError(getShell(), Messages.getString("TaCoKitConfiguration.wizard.exception.title"), //$NON-NLS-1$
+                    message, e);
         }
         return false;
     }
