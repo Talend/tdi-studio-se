@@ -256,7 +256,9 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         if (classRootFileLocation == null) {
             return;
         }
-        FileCopyUtils.copyFolder(getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")), classRootFileLocation);
+        if (ERepositoryObjectType.valueOf("BEANS") != null) {
+            FileCopyUtils.copyFolder(getCodeClassRootFileLocation(ERepositoryObjectType.valueOf("BEANS")), classRootFileLocation);
+        }
         try {
             JarBuilder jarbuilder = new JarBuilder(classRootFileLocation, jarFile);
             jarbuilder.setIncludeDir(getRoutinesPaths());
