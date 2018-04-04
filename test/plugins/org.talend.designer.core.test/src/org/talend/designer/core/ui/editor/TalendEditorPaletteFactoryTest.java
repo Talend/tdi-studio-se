@@ -45,15 +45,13 @@ import org.talend.designer.core.ui.editor.TalendEditorPaletteFactory.RecentlyUse
 @SuppressWarnings("nls")
 public class TalendEditorPaletteFactoryTest {
 
-    private static final String TDBSP = "tDBSP";
-
-    private static final String TDBROW = "tDBRow";
-
     private static final String TJAVA = "tJava";
 
     private static final String TJAVAROW = "tJavaRow";
 
     private static final String TROWGENERATOR = "tRowGenerator";
+
+    private static final String TMYSQLSP = "tMysqlSP";
 
     /**
      * NOTE: the first ran junit test in this class may take longer time, since it will index help document first time.
@@ -75,7 +73,7 @@ public class TalendEditorPaletteFactoryTest {
         /**
          * NOTE: the expect result may change if we add/change some new components in someday
          */
-        assert (componentHits.iterator().next().getName().equals(TDBSP));
+        assert (componentHits.iterator().next().getName().equals(TMYSQLSP));
     }
 
     @Test
@@ -163,13 +161,13 @@ public class TalendEditorPaletteFactoryTest {
         List<IComponent> componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword);
         Assert.assertFalse("Can't find any components", componentHits.isEmpty());
         assertExistedComponent(TJAVAROW, keyword, componentHits);
-        assertExistedComponent(TDBROW, keyword, componentHits);
+        assertExistedComponent(TROWGENERATOR, keyword, componentHits);
 
         keyword = "Row";
         componentHits = TalendEditorPaletteFactory.getRelatedComponents(componentsFactory, keyword);
         Assert.assertFalse("Can't find any components", componentHits.isEmpty());
         assertExistedComponent(TJAVAROW, keyword, componentHits);
-        assertExistedComponent(TDBROW, keyword, componentHits);
+        assertExistedComponent(TROWGENERATOR, keyword, componentHits);
     }
 
     @Test
@@ -205,7 +203,7 @@ public class TalendEditorPaletteFactoryTest {
         List<RecentlyUsedComponent> recentlyUsedList = new ArrayList<RecentlyUsedComponent>(3);
         RecentlyUsedComponent urc = new RecentlyUsedComponent();
         GregorianCalendar gregorianCalendar = new GregorianCalendar();
-        urc.setName(TDBROW);
+        urc.setName(TROWGENERATOR);
         gregorianCalendar.set(2016, 7, 22);
         urc.setTimestamp(gregorianCalendar.getTime());
         recentlyUsedList.add(urc);
@@ -220,7 +218,7 @@ public class TalendEditorPaletteFactoryTest {
     }
 
     private void removeRecentlyUsed() {
-        TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TDBROW);
+        TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TROWGENERATOR);
         TalendEditorPaletteFactory.deleteRecentlyUsedComponentFromPreference(TJAVAROW);
     }
 
