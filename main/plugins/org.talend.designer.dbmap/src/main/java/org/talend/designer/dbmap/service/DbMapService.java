@@ -12,6 +12,7 @@
 // ============================================================================
 package org.talend.designer.dbmap.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,8 @@ import org.talend.core.service.IDbMapService;
 import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.dbmap.DbMapComponent;
+import org.talend.designer.dbmap.external.data.ExternalDbMapEntry;
+import org.talend.designer.dbmap.external.data.ExternalDbMapTable;
 import org.talend.designer.dbmap.model.emf.dbmap.DBMapData;
 import org.talend.designer.dbmap.model.emf.dbmap.DBMapperTableEntry;
 import org.talend.designer.dbmap.model.emf.dbmap.InputTable;
@@ -70,6 +73,38 @@ public class DbMapService implements IDbMapService {
             }
         }
         
+    }
+
+    @Override
+    public void undoConnectionDelete(IExternalNode node, AbstractExternalData oldEmfData, String connectionLabel) {
+        if (oldEmfData instanceof DBMapData && node instanceof DbMapComponent) {
+            DbMapComponent dbMapCDBMapDataomp = (DbMapComponent) node;
+            DBMapData emfData = (DBMapData) oldEmfData;
+            for (int i = 0; i < emfData.getInputTables().size(); i++) {
+                InputTable inputTable = emfData.getInputTables().get(i);
+                if (inputTable.getTableName().equals(connectionLabel)) {
+                    ExternalDbMapTable externalTable = new ExternalDbMapTable();
+                    externalTable.setName(inputTable.getName());
+                    externalTable.setMinimized(inputTable.isMinimized());
+                    externalTable.setAlias(inputTable.getAlias());
+                    externalTable.setJoinType(inputTable.getJoinType());
+                    externalTable.setTableName(inputTable.getTableName());
+                    List<ExternalDbMapEntry> entities = new ArrayList<ExternalDbMapEntry>();
+                    for (DBMapperTableEntry pEntity : inputTable.getDBMapperTableEntries()) {
+                        ExternalDbMapEntry entity = new ExternalDbMapEntry();
+                        entity.setExpression(pEntity.getExpression());
+                        entity.setJoin(pEntity.isJoin());
+                        entity.setName(pEntity.getName());
+                        entity.setOperator(pEntity.getOperator());
+                        entities.add(entity);
+                    }
+                    externalTable.setMetadataTableEntries(entities);
+                    dbMapCDBMapDataomp.getExternalData().getInputTables().add(i, externalTable);
+                    break;
+                }
+            }
+        }
+
     }
 
 }

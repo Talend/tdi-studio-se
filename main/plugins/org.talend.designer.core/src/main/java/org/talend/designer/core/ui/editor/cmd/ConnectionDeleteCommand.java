@@ -19,12 +19,15 @@ import java.util.Map;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.core.service.IDbMapService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.ExternalUtilities;
+import org.talend.designer.core.model.utils.emf.talendfile.AbstractExternalData;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
@@ -41,6 +44,10 @@ public class ConnectionDeleteCommand extends Command {
     private List<Connection> connectionList;
 
     private Map<Connection, ConnectionDeletedInfo> connectionDeletedInfosMap;
+
+
+    private AbstractExternalData externalEMFData;
+
 
     /**
      * Initialisation of the command that will delete the given connection.
@@ -83,6 +90,7 @@ public class ConnectionDeleteCommand extends Command {
             }
             if (target.isExternalNode()) {
                 IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+                externalEMFData = externalNode.getExternalEmfData();
                 externalNode.removeInput(connection);
                 ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
                 cmd.execute();
@@ -131,6 +139,10 @@ public class ConnectionDeleteCommand extends Command {
             }
             if (target.isExternalNode()) {
                 IExternalNode externalNode = ExternalUtilities.getExternalNodeReadyToOpen((Node)target);
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IDbMapService.class)) {
+                    IDbMapService service = (IDbMapService) GlobalServiceRegister.getDefault().getService(IDbMapService.class);
+                    service.undoConnectionDelete(target.getExternalNode(), externalEMFData, connection.getName());
+                }
                 externalNode.addInput(connection);
                 ExternalNodeChangeCommand cmd = new ExternalNodeChangeCommand((Node) target, externalNode);
                 cmd.execute();
