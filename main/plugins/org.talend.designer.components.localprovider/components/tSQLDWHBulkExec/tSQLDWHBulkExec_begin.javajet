@@ -24,9 +24,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     String storageType = ElementParameterParser.getValue(node, "__AZURE_STORAGE__");
     String accountName = ElementParameterParser.getValue(node, "__ACCOUNT_NAME__");
-    String accountSecret = ElementParameterParser.getValue(node, "__SECRET_KEY__");
     
-    String principalKey = ElementParameterParser.getValue(node, "__PRINCIPAL_KEY__");
     String clientId = ElementParameterParser.getValue(node, "__CLIENT_ID__");
     String oauthEndpoint = ElementParameterParser.getValue(node, "__ENDPOINT__");    
     
@@ -140,7 +138,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     String randomIdentifier_<%=cid%> = java.util.UUID.randomUUID().toString().replaceAll("-","");
     
-    String azureAccessKey_<%=cid%> = "";
     String azureCredIdentity_<%=cid%> = "";
     String azureCredName_<%=cid%> = "";
     String azureContainer_<%=cid%> = "";    
@@ -156,15 +153,30 @@ skeleton="../templates/db_output_bulk.skeleton"
     String oauthEndpoint_<%=cid%> = <%=oauthEndpoint%>;
     
 <%
+    String passwordFieldName = "";
+    if ("ADLS".equals(storageType)) {
+        passwordFieldName = "__PRINCIPAL_KEY__";
+    }else{
+        passwordFieldName = "__SECRET_KEY__";
+    }
+    if (ElementParameterParser.canEncrypt(node, passwordFieldName)) {
+%> 
+        final String azureAccessKey_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldName)%>);
+<%
+    } else {
+        
+%>
+        final String azureAccessKey_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldName)%>; 
+<%
+    }
+     
     if ("ADLS".equals(storageType)) {
 %>
-        azureAccessKey_<%=cid%> = <%=principalKey%>;
         azureCredIdentity_<%=cid%> = clientId_<%=cid%> + "@" + oauthEndpoint_<%=cid%>;
         azureCredName_<%=cid%> = "talend_ADLCredential_" + randomIdentifier_<%=cid%>;
 <%
     } else {
 %>
-        azureAccessKey_<%=cid%> = <%=accountSecret%>;
         azureCredIdentity_<%=cid%> = "talend";
         azureCredName_<%=cid%> = "talend_AzureStorageCredential_" + randomIdentifier_<%=cid%>;
         azureContainer_<%=cid%> = <%=container%>;
@@ -178,9 +190,6 @@ skeleton="../templates/db_output_bulk.skeleton"
     
     String azureFileLoadType_<%=cid%> = "<%=loadFileFormat%>";
     
-
-
-    String externalTableRejectOptions_<%=cid%> = "";
     String dwDistributionOptions_<%=cid%> = "";
     String dwTableOptions_<%=cid%> = "";
     String dwPartition_<%=cid%> = "";
@@ -238,7 +247,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         dbUser_<%=cid %> = <%=dbuser%>;
 
 <%
-        String passwordFieldName = "__PASS__";
+        passwordFieldName = "__PASS__";
 %>
 
         <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/password.javajet"%>
@@ -276,7 +285,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
     if(isEnabledExtTableOptions){
 %>
-        externalTableRejectOptions_<%=cid%> = "REJECT_TYPE = <%=rejectType%>" + ",REJECT_VALUE = " + <%=rejectValue%>;
+        String externalTableRejectOptions_<%=cid%> = "REJECT_TYPE = <%=rejectType%>" + ",REJECT_VALUE = " + <%=rejectValue%>;
 <%
         if("Percentage".equals(rejectType)){
 %>
@@ -430,7 +439,15 @@ skeleton="../templates/db_output_bulk.skeleton"
             //CREATE EXTERNAL TABLE
             java.sql.Statement stmtCreateExt_<%=cid%> = conn_<%=cid%>.createStatement();
             <%dbLog.table().createTry(dbLog.var("ext_tableName"));%>
-            stmtCreateExt_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)  WITH (LOCATION='/ " + azureFolder_<%=cid%> + "', DATA_SOURCE=" + azureExtDataSrc_<%=cid%> + ", FILE_FORMAT= " + azureExtFileFormat_<%=cid%> + "," + externalTableRejectOptions_<%=cid%> + ")");
+            stmtCreateExt_<%=cid%>.execute("<%=manager.getCreateTableSQL(stmtStructure)%>)  WITH (LOCATION='/ " + azureFolder_<%=cid%> + "', DATA_SOURCE=" + azureExtDataSrc_<%=cid%> + ", FILE_FORMAT= " + azureExtFileFormat_<%=cid%> 
+<%
+            if(isEnabledExtTableOptions){
+%> 
+            + "," + externalTableRejectOptions_<%=cid%> 
+<%
+            }
+%>  
+            + ")");
             <%dbLog.table().createDone(dbLog.var("ext_tableName"));%>
             stmtCreateExt_<%=cid%>.close();
 <%
