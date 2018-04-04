@@ -728,16 +728,17 @@ public class DefaultRunProcessService implements IRunProcessService {
      */
     @Override
     public void initializeRootPoms() {
+        IProgressMonitor monitor = new NullProgressMonitor();
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
             helper.installRootPom(true);
-
+            AggregatorPomsHelper.updateAllCodesProjectNeededModules(monitor);
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
             AggregatorPomsHelper.updateRefProjectModules(references);
-            helper.updateCodeProjects(new NullProgressMonitor(), true);
+            helper.updateCodeProjects(monitor, true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
