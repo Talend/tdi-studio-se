@@ -100,33 +100,37 @@
  		                    				<%
  		                    				} else {
                     						%>
- 		                    						StringBuilder strB = new StringBuilder();
+ 		                    						StringBuilder s = new StringBuilder();
                     						<%
      		                    				for(int i=0; i<splits.length; i++) {
      		                    						String currentSplit = splits[i];
      		                    						if(i == 0) {
      		                    						%>
-     		                    						strB.append(<%=currentSplit%>");
+     		                    						a(<%=currentSplit%>",s);
      		                    						<%
      		                    								continue;
      		                    						}
      		                    						
      		                    						if(i == (splits.length - 1)) {
      		                    						%>
-     		                    						strB.append("<%=currentSplit%>);
+     		                    						a("<%=currentSplit%>,s);
      		                    						<%
      		                    								continue;
      		                    						}
      		                    						
      		                    						%>
-     		                    						strB.append("<%=currentSplit%>");
+     		                    						a("<%=currentSplit%>",s);
      		                    						<%
      		                    				}
      		                    		%>
-     		                    				return strB.toString();
+     		                    				return s.toString();
      		                    		<%
  		                    				}
  		                    				%>
+ 		                    		}
+ 		                    		
+ 		                    		void a(String part, StringBuilder strB) {
+ 		                    				strB.append(part);
  		                    		}
  		                    		
  		                    }
