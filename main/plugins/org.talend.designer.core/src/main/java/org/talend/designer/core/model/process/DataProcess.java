@@ -3346,9 +3346,9 @@ public class DataProcess implements IGeneratingProcess {
             jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
                 IJobletProviderService.class);
         }
-
         for (INode node : orginalList) {
-            if (ProcessorUtilities.isGeneratePomOnly() && jobletService.isJobletComponent(node)) {
+            if (ProcessorUtilities.isGeneratePomOnly() && jobletService != null
+                    && jobletService.isJobletComponent(node)) {
                 // skip any joblet contained during the pom generation
                 continue;
             }
