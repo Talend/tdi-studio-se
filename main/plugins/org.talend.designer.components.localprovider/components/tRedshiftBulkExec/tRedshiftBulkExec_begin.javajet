@@ -156,7 +156,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 		}
 	}
 %>
-	command_<%=cid%>.append("COPY ").append(tableName2_<%=cid%>)
+	command_<%=cid%>.append("COPY ").append("\"")
+		.append(tableName_<%=cid%>)
+		.append("\"")
 	
 <%
 	if(columnList != null && columnList.size() > 0) {
