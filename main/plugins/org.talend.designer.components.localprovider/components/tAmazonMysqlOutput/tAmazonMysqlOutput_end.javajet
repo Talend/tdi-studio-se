@@ -458,11 +458,13 @@ skeleton="../templates/db_output_bulk.skeleton"
         }
 <%
         }
+        if(!("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
         if(pstmt_<%=cid %> != null) {
             pstmt_<%=cid %>.close();
         }
     <%
+    }
 	if(!("true").equals(useExistingConn)){
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery))
 		{

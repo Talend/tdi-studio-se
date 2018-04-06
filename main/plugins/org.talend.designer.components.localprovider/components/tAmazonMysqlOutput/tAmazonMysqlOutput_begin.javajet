@@ -177,8 +177,12 @@ long year10000_<%=cid %> = calendar_<%=cid %>.getTime().getTime();
 long date_<%=cid %>;
 
 java.sql.Connection conn_<%=cid%> = null;
+<%
+    if(isDynamic || !("UPDATE_OR_INSERT").equals(dataAction)) {
+%>
 java.sql.PreparedStatement pstmt_<%=cid %> = null;
 <%
+    }
     if (isDynamic || ("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
 java.sql.PreparedStatement pstmtInsert_<%=cid %> = null;
