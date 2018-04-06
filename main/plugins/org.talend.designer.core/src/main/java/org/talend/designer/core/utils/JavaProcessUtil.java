@@ -499,6 +499,10 @@ public class JavaProcessUtil {
                                     getModulesInTable(process, curParam, modulesNeeded);
                                 } else {
                                     ModuleNeeded module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(driverName), null, true);
+                                    if (map.get("JAR_NEXUS_VERSION") != null) {
+                                        String a = driverName.replaceFirst("[.][^.]+$", "");
+                                        module.setMavenUri("mvn:org.talend.libraries/" + a + "/" + map.get("JAR_NEXUS_VERSION") + "/jar");
+                                    }
                                     modulesNeeded.add(module);
                                 }
                             }
