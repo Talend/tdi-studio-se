@@ -129,7 +129,7 @@ imports="
 	    }
 		<%
 	}
-              if(useBatch){
+              if(useBatch && (!("INSERT_OR_UPDATE").equals(dataAction) || !("UPDATE_OR_INSERT").equals(dataAction))){
             %>
                 if(batchSizeCounter_<%=cid%> > 0){
                 try {

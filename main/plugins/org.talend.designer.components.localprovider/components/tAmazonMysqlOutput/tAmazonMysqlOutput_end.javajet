@@ -393,7 +393,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		}
 	}
 
-    if (useBatch) {
+    if (useBatch && (!("INSERT_OR_UPDATE").equals(dataAction) || !("UPDATE_OR_INSERT").equals(dataAction))) {
     %>
     try {
 			int countSum_<%=cid%> = 0;
