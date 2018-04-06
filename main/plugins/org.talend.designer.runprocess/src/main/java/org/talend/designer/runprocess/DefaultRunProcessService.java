@@ -265,13 +265,7 @@ public class DefaultRunProcessService implements IRunProcessService {
                     }
                 }
             } else {
-                boolean isImportedRoute = false;
-                try {
-                    isImportedRoute = RepositorySeekerManager.getInstance().searchRepoViewNode(property.getId(), false) == null;
-                } catch (Exception e) {
-                    System.out.println("Could not find the RepoViewNode according to " + property.getId());
-                }
-                if (routeService != null && !isImportedRoute) {
+                if (routeService != null) {
                     return routeService.createJavaProcessor(process, property, filenameFromLabel, false);
                 }
             }
