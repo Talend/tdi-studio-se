@@ -340,6 +340,14 @@ public class MavenJavaProcessor extends JavaProcessor {
         if (!isMainJob && isGoalInstall) {
             if (!buildCacheManager.isJobBuild(getProperty())) {
                 deleteExistedJobJarFile(talendJavaProject);
+                
+                final Map<String, Object> argumentsMap = new HashMap<>();
+                argumentsMap.put(TalendProcessArgumentConstant.ARG_GOAL, TalendMavenConstants.GOAL_COMPILE);
+                if (!MavenProjectUtils.hasMavenNature(project)) {
+                    MavenProjectUtils.enableMavenNature(monitor, project);
+                }                 
+                talendJavaProject.buildModules(monitor, null, argumentsMap);
+                
                 buildCacheManager.putJobCache(getProperty());
             } else {
                 // for already installed sub jobs, can restore pom here directly
