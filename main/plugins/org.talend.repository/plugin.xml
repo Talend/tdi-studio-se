@@ -3242,6 +3242,9 @@
             class="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             id="org.talend.repository.preference.MavenGroupIdProjectSettingPage"
             title="%ProjectSetting.groupId">
+      <tester
+            class="org.talend.repository.preference.MavenGroupIdProjectSettingPageTester">
+      </tester>
       </page>
       <page
             category="projectsetting.Maven"
