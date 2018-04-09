@@ -217,7 +217,9 @@ int nb_file_<%=cid%> = 0;
 					try {
 							return client.stat(path).getAtimeString() != null;
 					} catch (Exception e) {
+							<%if(isLog4jEnabled){%>
 							log.warn("<%=cid%> - Directory or file permission denied for checking the status of the path : " + path);
+							<%}%>
 					}
 					
 					return false;
