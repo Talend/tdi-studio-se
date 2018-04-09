@@ -14,6 +14,7 @@ package org.talend.designer.core.ui.views.jobsettings.tabs;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -79,7 +80,6 @@ import org.talend.core.repository.ui.actions.DeleteActionCache;
 import org.talend.core.repository.ui.dialog.ItemReferenceDialog;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ConvertJobsUtil.JobType;
-import org.talend.core.repository.utils.ConvertJobsUtil.Status;
 import org.talend.core.repository.utils.RepositoryNodeDeleteManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.ui.branding.IBrandingService;
@@ -142,6 +142,8 @@ public class MainComposite extends AbstractTabComposite {
     protected StatusHelper statusHelper = null;
 
     protected String statusLabelText = null;
+
+    protected final Map<String, String> statusMap;
 
     public MainComposite(Composite parent, int style, HorizontalTabFactory tabFactory, IRepositoryViewObject obj) {
         this(parent, style, tabFactory.getWidgetFactory(), obj);
@@ -327,7 +329,7 @@ public class MainComposite extends AbstractTabComposite {
         data.top = new FormAttachment(modificationDate, 0, SWT.CENTER);
         modificationLabel.setLayoutData(data);
 
-        final Map<String, String> statusMap = getStatusMap();
+        statusMap = getStatusMap();
         if (allowEnableControl) {
             // Job Type
             jobTypeCCombo = widgetFactory.createCCombo(composite, SWT.READ_ONLY | SWT.DROP_DOWN);
@@ -400,7 +402,7 @@ public class MainComposite extends AbstractTabComposite {
             statusText.setLayoutData(data);
             String status = repositoryObject.getStatusCode();
             statusText.setText(status != null ? status : ""); //$NON-NLS-1$
-            statusText.setItems(Status.getStatusToDispaly());
+            statusText.setItems(statusMap.values().toArray(new String[statusMap.values().size()]));
             statusLabelText = statusMap.get(status);
             setStatusComboText(statusLabelText);
             statusText.setEnabled(allowEnableControl);
@@ -443,7 +445,7 @@ public class MainComposite extends AbstractTabComposite {
         data.right = new FormAttachment(statusText, -ITabbedPropertyConstants.HSPACE);
         data.top = new FormAttachment(statusText, 0, SWT.CENTER);
         statusLabel.setLayoutData(data);
-        statusText.setItems(Status.getStatusToDispaly());
+        statusText.setItems(statusMap.values().toArray(new String[statusMap.values().size()]));
         String status = repositoryObject.getStatusCode();
         statusLabelText = statusMap.get(status);
         setStatusComboText(statusLabelText);
@@ -836,7 +838,7 @@ public class MainComposite extends AbstractTabComposite {
 
     protected Map<String, String> getStatusMap() {
         statusHelper = new StatusHelper(CoreRuntimePlugin.getInstance().getProxyRepositoryFactory());
-        Map<String, String> statusMap = new HashMap();
+        Map<String, String> statusMap = new LinkedHashMap();
         try {
             if (statusHelper != null) {
                 List<org.talend.core.model.properties.Status> statusList = statusHelper.getStatusList(repositoryObject
@@ -869,7 +871,7 @@ public class MainComposite extends AbstractTabComposite {
             return;
         }
         int i = 0;
-        for (String s : Status.getStatusToDispaly()) {
+        for (String s : statusMap.values()) {
             if (statusLabel != null && !statusLabel.equals(s)) {
                 i++;
             } else {
