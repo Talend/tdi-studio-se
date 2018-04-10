@@ -16,7 +16,10 @@
 package org.talend.sdk.component.studio.model.parameter;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
 import static org.talend.sdk.component.studio.model.action.Action.HEALTH_CHECK;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
@@ -47,7 +50,7 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.model.parameter.listener.ParameterActivator;
+import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -56,7 +59,7 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 /**
  * Creates properties from leafs
  */
-public class SettingsCreator implements PropertyVisitor {
+public class SettingVisitor implements PropertyVisitor {
 
     /**
      * Specifies row number, on which schema properties (schema widget and guess schema button) should be displayed
@@ -80,12 +83,12 @@ public class SettingsCreator implements PropertyVisitor {
      * It may be {@link EComponentCategory#BASIC} or {@link EComponentCategory#ADVANCED}
      * for Basic and Advanced view correspondingly
      */
-    private final EComponentCategory category;
+    private EComponentCategory category;
 
     /**
      * Defines a Form name, for which properties are built. E.g. "Main" or "Advanced"
      */
-    private final String form;
+    private String form;
 
     private String family;
 
@@ -96,36 +99,38 @@ public class SettingsCreator implements PropertyVisitor {
 
     private final Collection<ActionReference> actions;
 
-    /**
-     * Stores created {@link ParameterActivator} for further registering them into corresponding
-     * {@link ElementParameter}
-     */
-    private final Map<String, List<ParameterActivator>> activators = new HashMap<>();
+    private final Map<String, Map<Integer, List<PropertyDefinitionDecorator.Condition>>> activations =
+            new LinkedHashMap<>();
 
     private final List<ValidationResolver> actionResolvers = new ArrayList<>();
 
-    public SettingsCreator(final IElement iNode, final EComponentCategory category,
+    public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
-        this(iNode, category, redrawParameter, config.getActions());
+        this(iNode, redrawParameter, config.getActions());
     }
 
-    public SettingsCreator(final IElement iNode, final EComponentCategory category,
+    public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ComponentDetail detail) {
-        this(iNode, category, redrawParameter, detail.getActions());
+        this(iNode, redrawParameter, detail.getActions());
     }
 
-    public SettingsCreator(final IElement iNode, final EComponentCategory category,
+    public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final Collection<ActionReference> actions) {
         this.element = iNode;
-        this.category = category;
         this.redrawParameter = redrawParameter;
-        this.form = category == EComponentCategory.ADVANCED ? Metadatas.ADVANCED_FORM : Metadatas.MAIN_FORM;
+
         this.actions = ofNullable(actions).orElseGet(Collections::emptyList);
         this.actions.stream().findFirst().ifPresent(a -> this.family = a.getFamily());
     }
 
-    SettingsCreator(final IElement iNode, final EComponentCategory category, final ElementParameter redrawParameter) {
-        this(iNode, category, redrawParameter, Collections.emptyList());
+    SettingVisitor(final IElement iNode, final ElementParameter redrawParameter) {
+        this(iNode, redrawParameter, Collections.emptyList());
+    }
+
+    public SettingVisitor withCategory(final EComponentCategory category) {
+        this.category = category;
+        this.form = category == EComponentCategory.ADVANCED ? Metadatas.ADVANCED_FORM : Metadatas.MAIN_FORM;
+        return this;
     }
 
     /**
@@ -135,32 +140,33 @@ public class SettingsCreator implements PropertyVisitor {
      * @return created parameters
      */
     public List<IElementParameter> getSettings() {
+        activations.forEach((path, conditions) -> {
+            settings.keySet().stream()
+                    .filter(key -> key.equals(path))
+                    .filter(p -> TaCoKitElementParameter.class.isInstance(settings.get(p)))
+                    .map(setting -> TaCoKitElementParameter.class.cast(settings.get(setting)))
+                    .forEach(param -> {
+                        param.setRedrawParameter(redrawParameter);
+                        final Map<String, TaCoKitElementParameter> targetParams =
+                                conditions.values().stream().flatMap(Collection::stream)
+                                        .map(c -> TaCoKitElementParameter.class.cast(settings.get(c.getTargetPath())))
+                                        .collect(toMap(ElementParameter::getName, identity()));
 
-        activators.forEach((path, activators) -> {
-            final IElementParameter targetParameter = settings.get(path);
-            if (TaCoKitElementParameter.class.isInstance(targetParameter)) {
-                final TaCoKitElementParameter param = TaCoKitElementParameter.class.cast(targetParameter);
-                param.setRedrawParameter(redrawParameter);
-                activators.forEach(activator -> {
-                    param.registerListener(param.getName(), activator);
-                    initVisibility(param, activator);
-                });
-            }
+                        final ActiveIfListener activationListener =
+                                new ActiveIfListener(conditions, param, targetParams);
+
+                        targetParams.forEach((name, p) -> {
+                            p.setRedrawParameter(redrawParameter);
+                            p.registerListener(name, activationListener);
+                            //Sends initial event to listener to set initial visibility
+                            activationListener.propertyChange(
+                                    new PropertyChangeEvent(p, name, p.getValue(), p.getValue()));
+                        });
+                    });
         });
 
         actionResolvers.forEach(resolver -> resolver.resolveParameters(Collections.unmodifiableMap(settings)));
-
-        return Collections.unmodifiableList(new ArrayList<>(settings.values()));
-    }
-
-    /**
-     * Sends initial event to listener to set initial visibility
-     */
-    private void initVisibility(final ElementParameter targetParameter, final PropertyChangeListener listener) {
-        final Object initialValue = targetParameter.getValue();
-        final PropertyChangeEvent event =
-                new PropertyChangeEvent(targetParameter, targetParameter.getName(), initialValue, initialValue);
-        listener.propertyChange(event);
+        return unmodifiableList(new ArrayList<>(settings.values()));
     }
 
     /**
@@ -272,7 +278,7 @@ public class SettingsCreator implements PropertyVisitor {
             parameter.setListItemsDisplayName(labels);
             parameter.setListItemsDisplayCodeName(labels);
         } else {
-            final Collection<String> possibleValues = validation.getEnumValues();
+            final List<String> possibleValues = new ArrayList<>(validation.getEnumValues());
             valuesCount = possibleValues.size();
 
             final String[] valuesArray = possibleValues.toArray(new String[valuesCount]);
@@ -286,7 +292,10 @@ public class SettingsCreator implements PropertyVisitor {
         parameter.setListItemsShowIf(new String[valuesCount]);
         parameter.setListItemsNotShowIf(new String[valuesCount]);
 
-        final String defaultValue = node.getProperty().getDefaultValue();
+        String defaultValue = node.getProperty().getDefaultValue();
+        if (defaultValue == null && node.getProperty().getMetadata() != null) {
+            defaultValue = node.getProperty().getMetadata().get("ui::defaultvalue::value");
+        }
         parameter.setDefaultClosedListValue(defaultValue);
         parameter.setDefaultValue(defaultValue);
         return parameter;
@@ -313,7 +322,7 @@ public class SettingsCreator implements PropertyVisitor {
         parameter.setListItemsShowIf(new String[tableParameters.size()]);
         parameter.setListItemsNotShowIf(new String[tableParameters.size()]);
 
-        parameter.setValue(new ArrayList<Map<String, Object>>());
+        parameter.updateValueOnly(new ArrayList<Map<String, Object>>());
         // TODO change to real value
         parameter.setBasedOnSchema(false);
         return parameter;
@@ -404,7 +413,7 @@ public class SettingsCreator implements PropertyVisitor {
             final TaCoKitElementParameter guessSchemaParameter = new TaCoKitElementParameter(getNode());
             guessSchemaParameter.setCategory(EComponentCategory.BASIC);
             guessSchemaParameter.setContext(connectionName);
-            guessSchemaParameter.setValue(discoverSchemaAction);
+            guessSchemaParameter.updateValueOnly(discoverSchemaAction);
             guessSchemaParameter.setDisplayName(Messages.getString("guessSchema.button", connectionName));
             guessSchemaParameter.setFieldType(EParameterFieldType.TACOKIT_GUESS_SCHEMA);
             guessSchemaParameter.setListItemsDisplayName(new String[0]);
@@ -444,15 +453,42 @@ public class SettingsCreator implements PropertyVisitor {
         parameter.setDisplayName(node.getProperty().getDisplayName());
         parameter.setFieldType(node.getFieldType());
         parameter.setName(node.getProperty().getPath());
-        node.getRepositoryKeys().ifPresent(repositoryKey -> parameter.setRepositoryValue(repositoryKey));
+        node.getRepositoryKeys().ifPresent(parameter::setRepositoryValue);
         parameter.setNumRow(node.getLayout(form).getPosition());
         parameter.setShow(true);
-        parameter.setValue(node.getProperty().getDefaultValue());
+        String defaultValue = node.getProperty().getDefaultValue();
+        if (defaultValue == null && node.getProperty().getMetadata() != null) {
+            defaultValue = node.getProperty().getMetadata().get("ui::defaultvalue::value");
+        }
+
+        if (TaCoKitElementParameter.class.isInstance(parameter)) {
+            TaCoKitElementParameter.class.cast(parameter).updateValueOnly(defaultValue);
+        } else {
+            parameter.setValue(defaultValue);
+        }
         parameter.setRequired(node.getProperty().isRequired());
-        createParameterActivator(node, parameter);
         if (node.getProperty().hasConstraint() || node.getProperty().hasValidation()) {
             createValidationLabel(node, (TaCoKitElementParameter) parameter);
         }
+
+        buildActivationCondition(node, node, 0);
+    }
+
+    private void buildActivationCondition(final PropertyNode node, final PropertyNode origin, final int level) {
+        if (node == null) {
+            return;
+        }
+
+        node.getProperty().getCondition()
+                .forEach(c -> {
+                    c.setTargetPath(PathResolver.resolve(node, c.getTarget()));
+                    activations.computeIfAbsent(origin.getProperty().getPath(), (key) -> new HashMap<>());
+                    activations.get(origin.getProperty().getPath()).computeIfAbsent(level, (k) -> new ArrayList<>());
+                    activations.get(origin.getProperty().getPath()).get(level).add(c);
+                });
+
+        final int l = level + 1;
+        buildActivationCondition(node.getParent(), origin, l);
     }
 
     /**
@@ -472,17 +508,10 @@ public class SettingsCreator implements PropertyVisitor {
             layout.setPosition(tableNode.getLayout(form).getPosition());
             c.addLayout(form, layout);
         });
-        final SettingsCreator creator = new SettingsCreator(new FakeElement("table"), category, redrawParameter);
+        final SettingVisitor creator =
+                new SettingVisitor(new FakeElement("table"), redrawParameter).withCategory(category);
         columns.forEach(creator::visit);
-        return creator.getSettings();
-    }
-
-    private void createParameterActivator(final PropertyNode node, final IElementParameter parameter) {
-        node.getProperty().getConditions().collect(() -> activators, (agg, c) -> {
-            final ParameterActivator activator = new ParameterActivator(c.getValues(), parameter);
-            activators.computeIfAbsent(PathResolver.resolve(node, c.getTarget()), k -> new ArrayList<>()).add(
-                    activator);
-        }, Map::putAll);
+        return unmodifiableList(new ArrayList<>(creator.settings.values()));
     }
 
     /**
@@ -493,7 +522,7 @@ public class SettingsCreator implements PropertyVisitor {
         final ValidationLabel label = new ValidationLabel(element);
         label.setCategory(category);
         label.setName(node.getProperty().getPath() + PropertyNode.VALIDATION);
-        label.setSerialized(false);
+        label.setRedrawParameter(redrawParameter);
         // it is shown on the next row by default, but may be changed
         label.setNumRow(node.getLayout(form).getPosition() + 1);
         settings.put(label.getName(), label);

@@ -12,6 +12,8 @@
  */
 package org.talend.sdk.component.studio.ui.composite;
 
+import java.util.Objects;
+
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.talend.commons.exception.ExceptionHandler;
@@ -41,8 +43,27 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
         init();
     }
 
-    private void init() {
+    @Override
+    protected void postInit() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
+                .filter(TaCoKitElementParameter::isRedrawable)
+                .forEach(p -> p.registerListener(p.getName(), getParamChangedListener()));
+    }
 
+    @Override
+    protected void preDispose() {
+        elem.getElementParameters().stream()
+                .filter(Objects::nonNull)
+                .filter(TaCoKitElementParameter.class::isInstance)
+                .map(TaCoKitElementParameter.class::cast)
+                .filter(TaCoKitElementParameter::isRedrawable)
+                .forEach(p -> p.unregisterListener(p.getName(), getParamChangedListener()));
+    }
+
+    private void init() {
         elem
                 .getElementParameters()
                 .stream()
@@ -80,7 +101,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
     /**
      * Overrides parent method as Property Type widget should not be shown in wizard pages
-     * 
+     *
      * @param parent parent Composite
      * @return last Composite added
      */
@@ -93,10 +114,10 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
 
         /**
          * Updates {@link TaCoKitConfigurationModel} each time some of {@link TaCoKitElementParameter} is changed
-         * 
+         *
          * @param elementParameter changed {@link TaCoKitElementParameter}
-         * @param oldValue parameter old value
-         * @param newValue parameter new value
+         * @param oldValue         parameter old value
+         * @param newValue         parameter new value
          */
         @Override
         public void onValueChanged(final TaCoKitElementParameter elementParameter, final Object oldValue,

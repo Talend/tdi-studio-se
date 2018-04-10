@@ -15,6 +15,8 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.stream.Stream.of;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -37,9 +39,6 @@ public class ValidationLabel extends TaCoKitElementParameter {
 
     private static final RGB RED = new RGB(255, 0, 0);
 
-    /**
-     * Constraint messages
-     */
     private final Set<String> constraintMessages = new HashSet<>();
 
     /**
@@ -50,39 +49,41 @@ public class ValidationLabel extends TaCoKitElementParameter {
     public ValidationLabel(final IElement element) {
         super(element);
         setColor(RED);
-        setDisplayName("Validation Label");
         setFieldType(EParameterFieldType.LABEL);
+        setDisplayName("");
         setShow(false);
+        setSerialized(false);
+        setReadOnly(true);
         setValue("");
     }
 
     public void showValidation(final String message) {
         validationMessage = message;
-        setValue(buildValue());
         setShow(true);
+        setValue(buildValue());
     }
 
     public void hideValidation() {
         validationMessage = null;
-        setValue(buildValue());
         setShow(false);
+        setValue("");
     }
 
     public void showConstraint(final String message) {
         constraintMessages.add(message);
-        setValue(buildValue());
         setShow(true);
+        setValue(buildValue());
     }
 
     public void hideConstraint(final String message) {
         constraintMessages.remove(message);
+        setShow(false);
         setValue(buildValue());
-        setShow(!constraintMessages.isEmpty());
     }
 
     private String buildValue() {
         return Stream
-                .concat(constraintMessages.stream(), Stream.of(validationMessage))
+                .concat(constraintMessages.stream(), of(validationMessage))
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(DELIMITER));
     }

@@ -45,7 +45,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     /**
      * Sets tagged value "org.talend.sdk.component.source", which is used in code generation to recognize component type
-     * 
+     *
      * @param element {@link IElement} to which this parameter belongs to
      */
     public TaCoKitElementParameter(final IElement element) {
@@ -81,17 +81,17 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         return valueChangeListeners.remove(listener);
     }
 
-    protected void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
+    public void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
         pcs.firePropertyChange(name, oldValue, newValue);
     }
 
-    protected void fireValueChange(final Object oldValue, final Object newValue) {
+    public void fireValueChange(final Object oldValue, final Object newValue) {
         for (final IValueChangedListener listener : valueChangeListeners) {
             listener.onValueChanged(this, oldValue, newValue);
         }
     }
 
-    protected void redraw() {
+    public void redraw() {
         if (isRedrawable()) {
             redrawParameter.setValue(true);
         }
@@ -102,7 +102,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      * super class fields
      * This overridden implementation fixes an error, when <code>item</code> wasn't found in both arrays.
      * It returns 0 in such case instead of -1. -1 causes ArrayIndexOutOfBoundsException, when new table column is added
-     * 
+     *
      * @param item default closed list value
      * @return default value index in possible values array
      */
@@ -118,7 +118,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     /**
      * Checks whether this {@link TaCoKitElementParameter} forces redraw after each value change
      * It forces redraw if {@link #redrawParameter} was set
-     * 
+     *
      * @return true, if it forces redraw; false - otherwise
      */
     public boolean isRedrawable() {
@@ -173,5 +173,25 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
             targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * Sets parameter value and fires parameter change event, which is handled by registered listeners.
+     * Subclasses should extend (override and call super.setValue()) this method to provide correct conversion, when
+     * they use other value type than String.
+     *
+     * @param newValue value to be set
+     */
+    @Override
+    public void setValue(final Object newValue) {
+        final Object oldValue = super.getValue();
+        super.setValue(newValue);
+        firePropertyChange(getName(), oldValue, newValue);
+        fireValueChange(oldValue, newValue);
+        redraw();
+    }
+
+    public void updateValueOnly(final Object newValue) {
+        super.setValue(newValue);
     }
 }

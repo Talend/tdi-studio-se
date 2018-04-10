@@ -100,20 +100,15 @@ public class ElementParameterCreator {
     private void addSettings() {
         if (!properties.isEmpty()) {
             final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
-            // add main parameters
-            final SettingsCreator mainSettingsCreator =
-                    new SettingsCreator(node, BASIC, updateComponentsParameter, detail);
-            root.accept(mainSettingsCreator, Metadatas.MAIN_FORM);
-            parameters.addAll(mainSettingsCreator.getSettings());
+            final SettingVisitor settingVisitor = new SettingVisitor(node, updateComponentsParameter, detail);
+            root.accept(settingVisitor.withCategory(BASIC), Metadatas.MAIN_FORM);
+            root.accept(settingVisitor.withCategory(ADVANCED), Metadatas.ADVANCED_FORM);
+            parameters.addAll(settingVisitor.getSettings());
             addLayoutParameter(root, Metadatas.MAIN_FORM);
-            // add advanced parameters
-            final SettingsCreator advancedCreator =
-                    new SettingsCreator(node, ADVANCED, updateComponentsParameter, detail);
-            root.accept(advancedCreator, Metadatas.ADVANCED_FORM);
-            parameters.addAll(advancedCreator.getSettings());
             addLayoutParameter(root, Metadatas.ADVANCED_FORM);
         }
-        checkSchemaProperties(new SettingsCreator(node, BASIC, updateComponentsParameter, detail));
+
+        checkSchemaProperties(new SettingVisitor(node, updateComponentsParameter, detail).withCategory(BASIC));
     }
 
     private void addLayoutParameter(final PropertyNode root, final String form) {
@@ -126,10 +121,10 @@ public class ElementParameterCreator {
     /**
      * Check whether all required schema settings are created and create ones we still need depending on connectors we
      * have.
-     * 
+     *
      * @param mainSettingsCreator SettingsCreator for Basic settings
      */
-    protected void checkSchemaProperties(final SettingsCreator mainSettingsCreator) {
+    protected void checkSchemaProperties(final SettingVisitor mainSettingsCreator) {
         // Get all schema parameters created for current component
         final Set<String> schemasPresent = parameters
                 .stream()
@@ -174,7 +169,7 @@ public class ElementParameterCreator {
         // Create schema parameter for each connector without schema parameter
         for (final INodeConnector connectorWithoutSchema : connectorNames) {
             parameters.add(mainSettingsCreator.createSchemaParameter(connectorWithoutSchema.getName(),
-                    "SCHEMA_" + connectorWithoutSchema.getName(), 
+                    "SCHEMA_" + connectorWithoutSchema.getName(),
                     "default",
                     showSchema(connectorWithoutSchema)));
         }
@@ -247,10 +242,10 @@ public class ElementParameterCreator {
             parameters.add(parameter);
         }
     }
-    
+
     /**
      * Checks whether this component is startable, i.e. whether this component is StandAlone or Input
-     * 
+     *
      * @return true if component is startable
      */
     private boolean isStartable() {

@@ -32,7 +32,7 @@ import org.talend.core.model.process.IElement;
  * serialize
  * parameter value in repository.
  */
-public class TableElementParameter extends ValueChangedParameter {
+public class TableElementParameter extends TaCoKitElementParameter {
 
     public TableElementParameter(final IElement element) {
         super(element);
@@ -40,13 +40,13 @@ public class TableElementParameter extends ValueChangedParameter {
 
     /**
      * Retrieves stored value and converts it to String using List.toString() method
-     * 
+     *
      * @return string representation of stored value
      */
     @Override
     public String getStringValue() {
-        @SuppressWarnings("unchecked")
-        final List<Map<String, Object>> tableValue = (List<Map<String, Object>>) super.getValue();
+        @SuppressWarnings("unchecked") final List<Map<String, Object>> tableValue =
+                (List<Map<String, Object>>) super.getValue();
         return tableValue.toString();
     }
 
@@ -57,10 +57,10 @@ public class TableElementParameter extends ValueChangedParameter {
      * A Map instance in the List represents Table row. Rows are separated by ", " (comma with a whitespace).
      * Entries in the Map are also should be separated by ", ".
      * Generally, string argument should be equal to the result of a call to List.toString().
-     * 
+     *
      * If incoming argument is of type List, then sets it without conversion.
      * Else it throws exception.
-     * 
+     *
      * @param newValue value to be set
      */
     @Override
@@ -74,16 +74,16 @@ public class TableElementParameter extends ValueChangedParameter {
             throw new IllegalArgumentException("wrong type on new value: " + newValue.getClass().getName());
         }
     }
-    
+
     /**
      * Checks whether incoming {@code table} retrieved from repository and converts
      * it to correct parameter value by replacing repository key with this
      * parameter's name. Note this method doesn't validate incoming {@code value}
      * correctness
-     * 
+     *
      * @param table table value from repository
      * @return converted table value, if incoming value retrieved from repository;
-     *         If it is not from repository, then returns incoming value unchanged
+     * If it is not from repository, then returns incoming value unchanged
      */
     private List<Map<String, Object>> fromRepository(List<Map<String, Object>> table) {
         final Optional<String> repositoryKey = getRepositoryKey(table);
@@ -101,10 +101,10 @@ public class TableElementParameter extends ValueChangedParameter {
         }
         return converted;
     }
-    
+
     /**
      * Returns repository key, if it was used in table value, or Optional.empty() if it was not user
-     * 
+     *
      * @param tableValue table value
      * @return repository key
      */

@@ -35,12 +35,11 @@ public class DebouncedParameter extends TaCoKitElementParameter {
     @Override
     public void setValue(final Object newValue) {
         final Object oldValue = getValue();
-        super.setValue(newValue);
+        super.updateValueOnly(newValue);
         debounced.debounce(() -> {
             firePropertyChange(getName(), oldValue, newValue);
             fireValueChange(oldValue, newValue);
             redraw();
         }, TIMEOUT);
     }
-
 }

@@ -46,7 +46,8 @@ public class PatternValidator extends PropertyValidator {
         if (newValue == null) {
             return false;
         }
-        return pattern.test(newValue.toString());
+        // validate the value by removing surrounding quotes if they exist
+        return pattern.test(newValue.toString().replaceAll("^\"|\"$", ""));
     }
 
     @Override
@@ -55,6 +56,7 @@ public class PatternValidator extends PropertyValidator {
     }
 
     private static class JsRegex implements Predicate<CharSequence> {
+
         private static final ScriptEngine ENGINE;
 
         static {
@@ -62,6 +64,7 @@ public class PatternValidator extends PropertyValidator {
         }
 
         private final String regex;
+
         private final String indicators;
 
         private JsRegex(final String regex) {

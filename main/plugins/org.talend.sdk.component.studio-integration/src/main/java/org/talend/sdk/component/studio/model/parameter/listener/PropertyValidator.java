@@ -44,16 +44,14 @@ public abstract class PropertyValidator implements PropertyChangeListener {
 
     /**
      * Validates new value, if it is raw value. Skips validation for contextual value
-     * 
+     *
      * @param event property change event, which provides new value to validate
      */
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
         if (isContextualValue(event.getNewValue())) {
             label.hideConstraint(validationMessage);
-            return;
-        }
-        if (!validate(event.getNewValue())) {
+        } else if (!validate(event.getNewValue())) {
             label.showConstraint(validationMessage);
         } else {
             label.hideConstraint(validationMessage);
@@ -64,7 +62,7 @@ public abstract class PropertyValidator implements PropertyChangeListener {
      * Checks whether {@code value} is raw data or contains {@code context} variable.
      * It is assumed that any not String value is raw data.
      * The {@code value} contains {@code context} if some of words in it starts with "context."
-     * 
+     *
      * @param value value to check
      * @return true, if value contains {@code context} variables
      */
@@ -84,7 +82,7 @@ public abstract class PropertyValidator implements PropertyChangeListener {
 
     /**
      * Checks whether incoming token is context variable.
-     * 
+     *
      * @param token token to check
      * @return true, it the token is context variable
      */

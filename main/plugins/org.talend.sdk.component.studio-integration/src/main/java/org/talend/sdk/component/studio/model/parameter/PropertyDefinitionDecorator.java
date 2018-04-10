@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
@@ -29,6 +30,7 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDL
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.VALUE_SEPARATOR;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,9 +38,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 
@@ -46,7 +49,7 @@ import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
  * Extends functionality of {@link SimplePropertyDefinition}
  * It doesn't allow to change <code>delegate</code> state
  */
-class PropertyDefinitionDecorator extends SimplePropertyDefinition {
+public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     /**
      * Separator in property path
@@ -77,7 +80,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Creates instance by wrapping existing {@link SimplePropertyDefinition} instance
      * All calls to {@link SimplePropertyDefinition} API will be delegated to wrapped instance
-     * 
+     *
      * @param property {@link SimplePropertyDefinition} to wrap
      */
     PropertyDefinitionDecorator(final SimplePropertyDefinition property) {
@@ -87,12 +90,14 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Wraps {@link Collection} or {@link SimplePropertyDefinition} to {@link Collection} of
      * {@link PropertyDefinitionDecorator}
-     * 
+     *
      * @param properties original properties collection
      * @return wrapped properties
      */
     static Collection<PropertyDefinitionDecorator> wrap(final Collection<SimplePropertyDefinition> properties) {
-        return properties.stream().map(property -> new PropertyDefinitionDecorator(property)).collect(Collectors.toList());
+        return properties.stream()
+                .map(property -> new PropertyDefinitionDecorator(property))
+                .collect(toList());
     }
 
     /**
@@ -131,7 +136,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * has Main form by default. Such Main form contains either Properties
      * specified in ui::optionsorder metadata value or all Properties, when
      * ui::optionsorder is also absent
-     * 
+     *
      * @param form Name of UI form
      * @return children names specified in ui::gridlayout metadata value
      */
@@ -146,7 +151,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
     /**
      * Returns children names specified in ui:optionsorder metadata value.
-     * 
+     *
      * @return children names specified in ui:optionsorder metadata value
      */
     Set<String> getOptionsOrderNames() {
@@ -161,7 +166,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Computes order in which children should appear on UI
      * Order is represented as a map, which key is child name and value is child order
-     * 
+     *
      * @param form Name of UI form
      * @return order map or null, if there is no order for specified form
      */
@@ -178,7 +183,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * If both metadata is absent, then there is no order for Main form and
      * null is returned. </br>
      * Order is represented as a map, which key is child name and value is child order
-     * 
+     *
      * @return order map or null, if there is no order for Main form
      */
     private HashMap<String, Integer> getMainChildrenOrder() {
@@ -214,7 +219,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Computes order in which children should appear on UI according ui:optionsorder metadata value
      * Order is represented as a map, which key is child name and value is child order
-     * 
+     *
      * @return order map or null, if there is no grid layout for specified form
      */
     private HashMap<String, Integer> getOptionsOrder() {
@@ -248,7 +253,9 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      */
     boolean hasGridLayouts() {
         final Set<String> keys = delegate.getMetadata().keySet();
-        return keys.stream().filter(key -> key.startsWith(UI_GRIDLAYOUT_PREFIX)).map(key -> delegate.getMetadata().get(key))
+        return keys.stream()
+                .filter(key -> key.startsWith(UI_GRIDLAYOUT_PREFIX))
+                .map(key -> delegate.getMetadata().get(key))
                 .anyMatch(gridLayout -> gridLayout != null && !gridLayout.isEmpty());
     }
 
@@ -305,7 +312,7 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * p1 and p2 are not columns and p3, p4 are columns.
      *
      * @param child Child Property name
-     * @param form Name of form
+     * @param form  Name of form
      * @return true, if it is column; false - otherwise
      */
     boolean isColumn(final String child, final String form) {
@@ -332,17 +339,24 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return delegate.getMetadata().get(buildGridLayoutKey(form));
     }
 
-    Stream<Condition> getConditions() {
-        return delegate.getMetadata().entrySet().stream().filter(e -> e.getKey().startsWith(CONDITION_IF_TARGET)).map(e -> {
-            final String[] split = e.getKey().split("::");
-            final String valueKey = CONDITION_IF_VALUE + (split.length == 4 ? "::" + split[split.length - 1] : "");
-            return new Condition(e.getValue(), delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR));
-        });
+    List<Condition> getCondition() {
+        return delegate.getMetadata()
+                .entrySet()
+                .stream()
+                .filter(meta -> meta.getKey().startsWith(CONDITION_IF_TARGET))
+                .map(meta -> {
+                    final String[] split = meta.getKey().split("::");
+                    final String valueKey =
+                            CONDITION_IF_VALUE + (split.length == 4 ? "::" + split[split.length - 1] : "");
+                    return new Condition(meta.getValue(),
+                            delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
+                            delegate.getPath());
+                }).collect(toList());
     }
 
     /**
      * Checks whether it has one of constraints
-     * 
+     *
      * @return true, if it has constraint; false - otherwise
      */
     boolean hasConstraint() {
@@ -538,8 +552,13 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         private final String[] values;
 
-        public Condition(final String target, final String[] values) {
+        private String targetPath;
+
+        private String sourcePath;
+
+        public Condition(final String target, final String[] values, final String sourcePath) {
             this.target = target;
+            this.sourcePath = sourcePath;
             this.values = values;
         }
 
@@ -551,42 +570,45 @@ class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return this.values;
         }
 
-        @Override
-        public boolean equals(final Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof Condition))
-                return false;
-            final Condition other = (Condition) o;
-            if (!other.canEqual(this))
-                return false;
-            final Object this$target = this.getTarget();
-            final Object other$target = other.getTarget();
-            if (this$target == null ? other$target != null : !this$target.equals(other$target))
-                return false;
-            if (!Arrays.deepEquals(this.getValues(), other.getValues()))
-                return false;
-            return true;
+        public void setTargetPath(final String targetPath) {
+            this.targetPath = targetPath;
         }
 
-        protected boolean canEqual(final Object other) {
-            return other instanceof Condition;
+        public String getTargetPath() {
+            return targetPath;
         }
 
-        @Override
-        public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $target = this.getTarget();
-            result = result * PRIME + ($target == null ? 43 : $target.hashCode());
-            result = result * PRIME + Arrays.deepHashCode(this.getValues());
-            return result;
+        public String getSourcePath() {
+            return sourcePath;
+        }
+
+        public void setSourcePath(final String sourcePath) {
+            this.sourcePath = sourcePath;
         }
 
         @Override
         public String toString() {
             return "PropertyDefinitionDecorator.Condition(target=" + this.getTarget() + ", values="
                     + Arrays.deepToString(this.getValues()) + ")";
+        }
+
+        @Override public boolean equals(final Object o) {
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
+            final Condition condition = (Condition) o;
+            return Objects.equals(target, condition.target) &&
+                    Arrays.equals(values, condition.values) &&
+                    Objects.equals(targetPath, condition.targetPath) &&
+                    Objects.equals(sourcePath, condition.sourcePath);
+        }
+
+        @Override public int hashCode() {
+
+            int result = Objects.hash(target, targetPath, sourcePath);
+            result = 31 * result + Arrays.hashCode(values);
+            return result;
         }
     }
 
