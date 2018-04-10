@@ -1688,7 +1688,7 @@ public class DataProcess implements IGeneratingProcess {
                 buildDataNodeFromNode(node);
             }
         }
-        // synchronize outgoing target node
+        // synchronize outgoing connection's target node, some target node may be changed in replaceNodeFromProviders
         for (INode node : newGraphicalNodeList) {
             if (node.isSubProcessStart() && node.isActivate() && node.isELTComponent()) {
                 synchronizeOutgoingConnectionTarget(node);
