@@ -1688,6 +1688,12 @@ public class DataProcess implements IGeneratingProcess {
                 buildDataNodeFromNode(node);
             }
         }
+        // synchronize outgoing target node
+        for (INode node : newGraphicalNodeList) {
+            if (node.isSubProcessStart() && node.isActivate() && node.isELTComponent()) {
+                synchronizeOutgoingConnectionTarget(node);
+            }
+        }
 
         // make sure the new tUnite incomingConnections order is the same as the old one. @see
         // Connection.setInputId(int id)
@@ -1699,7 +1705,6 @@ public class DataProcess implements IGeneratingProcess {
                         break;
                     }
                 }
-
             }
         }
 
@@ -3372,6 +3377,15 @@ public class DataProcess implements IGeneratingProcess {
         }
         return dataNode;
     }
+    
+    private INode findDataNode(String uniqueName) {
+        for (INode node : dataNodeList) {
+            if (node.getUniqueName().equals(uniqueName)) {
+                return node;
+            }
+        }
+        return null;
+    }
 
     @Override
     public List<INode> getNodeList() {
@@ -3387,6 +3401,22 @@ public class DataProcess implements IGeneratingProcess {
         return this.duplicatedProcess;
     }
 
+    private void synchronizeOutgoingConnectionTarget(INode newGraphicalNode) {
+        INode generatedDataNode = findDataNode(newGraphicalNode.getUniqueName());
+        List<IConnection> genOutgoingConnections = (List<IConnection>) generatedDataNode.getOutgoingConnections();
+        List<IConnection> newOutgoingConnections = (List<IConnection>) newGraphicalNode.getOutgoingConnections();
+        for (IConnection genConnection : genOutgoingConnections) {
+            for (IConnection newConnection : newOutgoingConnections) {
+                if (genConnection.getUniqueName().equals(newConnection.getUniqueName())) {
+                    if (!genConnection.getTarget().getUniqueName().equals(newConnection.getTarget().getUniqueName())) {
+                        INode newTargetDataNode = findDataNode(newConnection.getTarget().getUniqueName());
+                        ((AbstractConnection) genConnection).setTarget(newTargetDataNode);
+                    }
+                    break;
+                }
+            }
+        }
+    }
     /**
      * xtan make sure the new tUnite incomingConnections order is the same as the old one.(bug:3417).
      *
