@@ -139,6 +139,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 			}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>, java.sql.Statement.RETURN_GENERATED_KEYS);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("UPDATE").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -155,6 +156,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -179,8 +181,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 			}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM " + <%=table%> + " WHERE <%=updateWhereStmt.toString()%>");
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+		resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    <%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -206,12 +211,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	    %>
 	    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+		resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    <%
 	} else if (("DELETE").equals(dataAction)) {
 	    %>
 	    String delete_<%=cid%> = "DELETE FROM " + <%=table%> + " WHERE <%=deleteWhereStmt.toString()%>";
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	}
     if(isEnableDebug) {
