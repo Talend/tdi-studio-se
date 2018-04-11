@@ -311,10 +311,11 @@ skeleton="../templates/db_output_bulk.skeleton"
             }
             %>
 
-            java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery();
             int checkCount_<%=cid%> = -1;
-            while(rs_<%=cid%>.next()) {
-                checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
+            try (java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery()) {
+                while(rs_<%=cid%>.next()) {
+                    checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
+                }
             }
             if(checkCount_<%=cid%> > 0) {
                 <%
