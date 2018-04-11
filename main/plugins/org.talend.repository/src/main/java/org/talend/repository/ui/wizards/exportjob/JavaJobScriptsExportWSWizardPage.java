@@ -329,8 +329,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // this.getDestinationValue()
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
-            IBrandingService brandingService =
-                    (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
+            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                    .getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
@@ -397,14 +397,15 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 } else {
                     exportTypeCombo.add(exportType.label);
                 }
+
             }
         }
         String label2 = getCurrentExportType1().label;
         // if the build type was set, try to select by default
         if (nodes != null && nodes.length == 1) { // deal with one node only.
             ProcessItem item = getProcessItem();
-            final Object buildType =
-                    item.getProperty().getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            final Object buildType = item.getProperty().getAdditionalProperties()
+                    .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
             if (buildType != null) {
                 Map<JobExportType, String> map = BuildJobFactory.oldBuildTypeMap;
                 for (JobExportType t : map.keySet()) {
@@ -486,8 +487,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         Map<ExportChoice, Object> exportChoiceMap = getExportChoiceMap();
         String log4jLevel = "";
         String launcher = (getCurrentExportType1() == JobExportType.POJO) ? launcherCombo.getText() : "all";
-        String context =
-                (contextCombo == null || contextCombo.isDisposed()) ? IContext.DEFAULT : contextCombo.getText();
+        String context = (contextCombo == null || contextCombo.isDisposed()) ? IContext.DEFAULT : contextCombo.getText();
 
         JobScriptsManager manager = JobScriptsManagerFactory.createManagerInstance(exportChoiceMap, context, launcher,
                 IProcessor.NO_STATISTICS, IProcessor.NO_TRACES, getCurrentExportType1());
@@ -580,8 +580,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
             if (str.equals(s)) {
                 if (getDefaultFileName().get(1) != null && !"".equals(getDefaultFileName().get(1))) {
-                    selectedFileName = b + ((JobExportType.OSGI.equals(jobExportType)) ? "-" : "_")
-                            + getDefaultFileName().get(1) + idealSuffix;
+                    selectedFileName = b + ((JobExportType.OSGI.equals(jobExportType)) ? "-" : "_") + getDefaultFileName().get(1)
+                            + idealSuffix;
                 } else {
                     selectedFileName = b + idealSuffix;
                 }
@@ -636,8 +636,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 // destination
                 for (int i = 0; i < directoryNames.length; i++) {
                     if (directoryNames[i].toLowerCase().endsWith(FileConstants.ZIP_FILE_SUFFIX)) {
-                        directoryNames[i] =
-                                (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
+                        directoryNames[i] = (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
                         addDestinationItem(directoryNames[i]);
                     }
                 }
@@ -672,8 +671,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 // destination
                 for (int i = 0; i < directoryNames.length; i++) {
                     if (directoryNames[i].toLowerCase().endsWith(FileConstants.ESB_FILE_SUFFIX)) {
-                        directoryNames[i] =
-                                (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
+                        directoryNames[i] = (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
                         addDestinationItem(directoryNames[i]);
                     }
                 }
@@ -716,10 +714,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         if (getProcessItem() != null && contextCombo != null) {
             try {
-                setProcessItem((ProcessItem) ProxyRepositoryFactory
-                        .getInstance()
-                        .getUptodateProperty(getProcessItem().getProperty())
-                        .getItem());
+                setProcessItem((ProcessItem) ProxyRepositoryFactory.getInstance()
+                        .getUptodateProperty(getProcessItem().getProperty()).getItem());
             } catch (PersistenceException e) {
                 e.printStackTrace();
             }
@@ -739,8 +735,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 String fileName = getDefaultFileNameWithType();
                 for (int i = 0; i < directoryNames.length; i++) {
                     if (directoryNames[i].toLowerCase().endsWith(FileConstants.JAR_FILE_SUFFIX)) {
-                        directoryNames[i] =
-                                (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
+                        directoryNames[i] = (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
                         addDestinationItem(directoryNames[i]);
                     }
                 }
@@ -774,13 +769,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     // destination = dirPath.append(fileName).toOSString();
                     // }
                     if (directoryNames[i].toLowerCase().endsWith(FileConstants.ZIP_FILE_SUFFIX)) {
-                        directoryNames[i] =
-                                (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
+                        directoryNames[i] = (directoryNames[i].charAt(0) + "").toUpperCase() + directoryNames[i].substring(1);//$NON-NLS-1$
                         addDestinationItem(directoryNames[i]);
                     }
                 }
-                setDestinationValue(
-                        directoryNames[0].substring(0, (directoryNames[0].lastIndexOf("\\") + 1)) + fileName);//$NON-NLS-1$
+                setDestinationValue(directoryNames[0].substring(0, (directoryNames[0].lastIndexOf("\\") + 1)) + fileName);//$NON-NLS-1$
             } else {
                 setDefaultDestination();
             }
