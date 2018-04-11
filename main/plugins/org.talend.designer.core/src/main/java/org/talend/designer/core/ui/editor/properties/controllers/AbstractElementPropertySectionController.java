@@ -2181,13 +2181,13 @@ public abstract class AbstractElementPropertySectionController implements Proper
                         }
                     }
                 }
-                if (isUserExistionConnectionType) {
-                    IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
-                    if (ele != null) {
-                        type = (String) ele.getValue();
-                    }
-                }
                 if (connectionNode != null) {
+                    if (isUserExistionConnectionType) {
+                        IElementParameter ele = connectionNode.getElementParameter("CONNECTION_TYPE");
+                        if (ele != null) {
+                            type = (String) ele.getValue();
+                        }
+                    }
                     setAllConnectionParameters(type, connectionNode);
                 }
             }
