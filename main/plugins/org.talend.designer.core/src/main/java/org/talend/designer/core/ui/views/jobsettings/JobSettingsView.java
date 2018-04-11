@@ -95,7 +95,8 @@ import org.talend.repository.ui.views.IRepositoryView;
 /**
  * DOC ggu class global comment. Detailled comment
  */
-public class JobSettingsView extends ViewPart implements IJobSettingsView, ISelectionChangedListener, PropertyChangeListener {
+public class JobSettingsView extends ViewPart
+        implements IJobSettingsView, ISelectionChangedListener, PropertyChangeListener {
 
     /**
      *
@@ -141,8 +142,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     public JobSettingsView() {
         tabFactory = new HorizontalTabFactory();
         CorePlugin.getDefault().getRepositoryService().addRepositoryTreeViewListener(this);
-        IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
-                .getService(IBrandingService.class);
+        IBrandingService brandingService =
+                (IBrandingService) GlobalServiceRegister.getDefault().getService(IBrandingService.class);
         allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
         initProviderServices();
         ProxyRepositoryFactory.getInstance().addPropertyChangeListener(this);
@@ -152,11 +153,13 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
         if (PluginChecker.isSVNProviderPluginLoaded()) {
             svnService = (ISVNProviderService) GlobalServiceRegister.getDefault().getService(ISVNProviderService.class);
-            svnUIService = (ISVNUiProviderService) GlobalServiceRegister.getDefault().getService(ISVNUiProviderService.class);
+            svnUIService =
+                    (ISVNUiProviderService) GlobalServiceRegister.getDefault().getService(ISVNUiProviderService.class);
         }
         if (PluginChecker.isGITProviderPluginLoaded()) {
             gitService = (IGITProviderService) GlobalServiceRegister.getDefault().getService(IGITProviderService.class);
-            gitUIService = (IGitUIProviderService) GlobalServiceRegister.getDefault().getService(IGitUIProviderService.class);
+            gitUIService =
+                    (IGitUIProviderService) GlobalServiceRegister.getDefault().getService(IGitUIProviderService.class);
         }
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
@@ -213,8 +216,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     if (data instanceof Element) {
                         element = (Element) data;
                         currentSelectedTab = descriptor;
-                        IDynamicProperty propertyComposite = createTabComposite(tabFactory.getTabComposite(), element,
-                                descriptor.getCategory());
+                        IDynamicProperty propertyComposite =
+                                createTabComposite(tabFactory.getTabComposite(), element, descriptor.getCategory());
 
                     } else if (data instanceof IRepositoryViewObject) {
                         IRepositoryViewObject viewObject = (IRepositoryViewObject) data;
@@ -224,21 +227,21 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                             data = process;
                         }
                         currentSelectedTab = descriptor;
-                        IDynamicProperty propertyComposite = createTabComposite(tabFactory.getTabComposite(), data,
-                                descriptor.getCategory());
+                        IDynamicProperty propertyComposite =
+                                createTabComposite(tabFactory.getTabComposite(), data, descriptor.getCategory());
 
                     } else if (data instanceof IEditorPart) {
                         currentSelectedTab = descriptor;
                         IRepositoryViewObject repObj = retrieveBusiness((IEditorPart) data);
                         if (repObj != null) {
-                            IDynamicProperty propertyComposite = createTabComposite(tabFactory.getTabComposite(), repObj,
-                                    descriptor.getCategory());
+                            IDynamicProperty propertyComposite =
+                                    createTabComposite(tabFactory.getTabComposite(), repObj, descriptor.getCategory());
                         }
 
                     } else {
                         currentSelectedTab = descriptor;
-                        IDynamicProperty propertyComposite = createTabComposite(tabFactory.getTabComposite(), null,
-                                descriptor.getCategory());
+                        IDynamicProperty propertyComposite =
+                                createTabComposite(tabFactory.getTabComposite(), null, descriptor.getCategory());
                     }
                     selectedPrimary = false;
                 }
@@ -256,16 +259,16 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
             try {
 
-                IRepositoryEditorInput input = CorePlugin.getDefault().getDiagramModelService()
-                        .getBusinessDiagramEditorInput(businessPart);
+                IRepositoryEditorInput input =
+                        CorePlugin.getDefault().getDiagramModelService().getBusinessDiagramEditorInput(businessPart);
 
                 if (input != null) {
                     RepositoryNode node = input.getRepositoryNode();
                     if (node != null) {
                         lastVersion = node.getObject();
                     } else {
-                        lastVersion = CorePlugin.getDefault().getProxyRepositoryFactory()
-                                .getLastVersion(input.getItem().getProperty().getId());
+                        lastVersion = CorePlugin.getDefault().getProxyRepositoryFactory().getLastVersion(
+                                input.getItem().getProperty().getId());
                     }
                 }
                 return lastVersion;
@@ -309,8 +312,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             }
         } else if (EComponentCategory.HEADERFOOTER.equals(category)) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {
-                IHeaderFooterProviderService headerFooterService = (IHeaderFooterProviderService) GlobalServiceRegister
-                        .getDefault().getService(IHeaderFooterProviderService.class);
+                IHeaderFooterProviderService headerFooterService =
+                        (IHeaderFooterProviderService) GlobalServiceRegister.getDefault().getService(
+                                IHeaderFooterProviderService.class);
                 if (headerFooterService.isVisible()) {
                     dynamicComposite = new HeaderFooterComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(),
                             (IRepositoryViewObject) data);
@@ -320,17 +324,21 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             dynamicComposite = svnUIService.createProcessSVNHistoryComposite(parent, tabFactory.getWidgetFactory(),
                     (IRepositoryViewObject) data);
         } else if (EComponentCategory.GITHISTORY.equals(category) && gitUIService != null) {
-            dynamicComposite = gitUIService.createProcessGitHistoryComposite(parent, this, tabFactory.getWidgetFactory(),
-                    (IRepositoryViewObject) data);
+            dynamicComposite = gitUIService.createProcessGitHistoryComposite(parent, this,
+                    tabFactory.getWidgetFactory(), (IRepositoryViewObject) data);
         } else if (EComponentCategory.APPEARANCE.equals(category)) {
-            dynamicComposite = (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService()
-                    .getBusinessAppearanceComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(), selectedModel);
+            dynamicComposite =
+                    (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService().getBusinessAppearanceComposite(
+                            parent, SWT.NONE, tabFactory.getWidgetFactory(), selectedModel);
         } else if (EComponentCategory.RULERS_AND_GRID.equals(category)) {
-            dynamicComposite = (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService()
+            dynamicComposite = (IDynamicProperty) CorePlugin
+                    .getDefault()
+                    .getDiagramModelService()
                     .getBusinessRulersAndGridComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(), null);
         } else if (EComponentCategory.ASSIGNMENT.equals(category)) {
-            dynamicComposite = (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService()
-                    .getBusinessAssignmentComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(), selectedModel);
+            dynamicComposite =
+                    (IDynamicProperty) CorePlugin.getDefault().getDiagramModelService().getBusinessAssignmentComposite(
+                            parent, SWT.NONE, tabFactory.getWidgetFactory(), selectedModel);
         } else if (EComponentCategory.DEPLOYMENT.equals(category)) {
             dynamicComposite = new DeploymentComposite(parent, SWT.NONE, tabFactory.getWidgetFactory(),
                     (IRepositoryViewObject) data);
@@ -380,7 +388,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
             }
         } else {
             BusinessType type = CorePlugin.getDefault().getDiagramModelService().getBusinessModelType(obj);
-            if (BusinessType.NOTE.equals(type) || BusinessType.SHAP.equals(type) || BusinessType.CONNECTION.equals(type)) {
+            if (BusinessType.NOTE.equals(type) || BusinessType.SHAP.equals(type)
+                    || BusinessType.CONNECTION.equals(type)) {
                 categories = getCategories(obj);
             } else {
                 cleanDisplay();
@@ -580,8 +589,9 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 category.add(EComponentCategory.DEPLOYMENT);
             }
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IHeaderFooterProviderService.class)) {
-                IHeaderFooterProviderService headerFooterService = (IHeaderFooterProviderService) GlobalServiceRegister
-                        .getDefault().getService(IHeaderFooterProviderService.class);
+                IHeaderFooterProviderService headerFooterService =
+                        (IHeaderFooterProviderService) GlobalServiceRegister.getDefault().getService(
+                                IHeaderFooterProviderService.class);
                 if (headerFooterService.isVisible()) {
                     category.add(EComponentCategory.HEADERFOOTER);
                 }
@@ -604,17 +614,20 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
 
             if (svnService != null && svnService.isProjectInSvnMode() && !isOfflineMode
                     && (((IRepositoryViewObject) obj).getRepositoryObjectType() == ERepositoryObjectType.JOBLET
-                            || ERepositoryObjectType.getAllTypesOfProcess()
-                                    .contains(((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
+                            || ERepositoryObjectType.getAllTypesOfProcess().contains(
+                                    ((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
                 category.add(EComponentCategory.SVNHISTORY);
             } else if (gitService != null && gitService.isProjectInGitMode() && !isOfflineMode
                     && (((IRepositoryViewObject) obj).getRepositoryObjectType() == ERepositoryObjectType.JOBLET
-                            || ERepositoryObjectType.getAllTypesOfProcess()
-                                    .contains(((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
+                            || ERepositoryObjectType.getAllTypesOfProcess().contains(
+                                    ((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
                 category.add(EComponentCategory.GITHISTORY);
             }
-            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) ||
-            		((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)) {
+            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)
+                    || (ERepositoryObjectType.PROCESS_ROUTE != null
+                            && ((IRepositoryViewObject) obj).getRepositoryObjectType().equals(
+                                    ERepositoryObjectType.PROCESS_ROUTE))
+                    || ((IRepositoryViewObject) obj).getRepositoryObjectType().getType().equals("SERVICES")) {
                 category.add(EComponentCategory.DEPLOYMENT);
             }
         } else if (obj instanceof IEditorPart) {
@@ -830,7 +843,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 }
                 Image jobSettingImage = null;
                 ERepositoryObjectType repositoryObjectType = repositoryNode.getContentType();
-                if(repositoryObjectType == null){
+                if (repositoryObjectType == null) {
                     repositoryObjectType = repositoryNode.getObjectType();
                 }
                 if (repositoryObjectType == ERepositoryObjectType.PROCESS_MR
@@ -844,7 +857,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                     jobSettingImage = ImageProvider.getImage(repositoryNode.getIcon());
                 }
                 if (esbService != null && esbService.getServicesType() == repositoryObjectType) {
-                    IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+                    IEditorPart editor =
+                            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
                     if (esbService.isWSDLEditor(editor)) {
                         Item item = esbService.getWSDLEditorItem(editor);
                         if (repositoryObject.getId().equals(item.getProperty().getId())) {
@@ -862,7 +876,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     private Image getImageFromFramework(ERepositoryObjectType itemType) {
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-            wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
+            wizardService =
+                    (IGenericWizardService) GlobalServiceRegister.getDefault().getService(IGenericWizardService.class);
         }
         if (wizardService != null && wizardService.isGenericType(itemType)) {
             return wizardService.getNodeImage(itemType.getType());
@@ -893,7 +908,8 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
     public ISelection getSelection() {
         ISVNUiProviderService service = null;
         if (PluginChecker.isSVNProviderPluginLoaded()) {
-            service = (ISVNUiProviderService) GlobalServiceRegister.getDefault().getService(ISVNUiProviderService.class);
+            service =
+                    (ISVNUiProviderService) GlobalServiceRegister.getDefault().getService(ISVNUiProviderService.class);
         }
         if (currentSelectedTab == null) {
             return null;

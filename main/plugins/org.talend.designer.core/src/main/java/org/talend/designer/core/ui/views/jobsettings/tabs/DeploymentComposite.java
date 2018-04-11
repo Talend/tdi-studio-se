@@ -12,7 +12,11 @@
 // ============================================================================
 package org.talend.designer.core.ui.views.jobsettings.tabs;
 
-import static org.talend.repository.utils.MavenVersionUtils.*;
+import static org.talend.repository.utils.MavenVersionUtils.containsKey;
+import static org.talend.repository.utils.MavenVersionUtils.get;
+import static org.talend.repository.utils.MavenVersionUtils.getDefaultVersion;
+import static org.talend.repository.utils.MavenVersionUtils.isAdditionalPropertiesNull;
+import static org.talend.repository.utils.MavenVersionUtils.isValidMavenVersion;
 
 import java.util.HashMap;
 import java.util.List;
@@ -106,22 +110,24 @@ public class DeploymentComposite extends AbstractTabComposite {
     private boolean isService;
 
     private boolean isProcessItem;
-    
+
     private boolean isDataServiceJob; // Is ESB SOAP Service Job
 
     public DeploymentComposite(Composite parent, int style, TabbedPropertySheetWidgetFactory widgetFactory,
             IRepositoryViewObject repositoryViewObject) {
         super(parent, style, widgetFactory, repositoryViewObject);
         if (repositoryViewObject instanceof Process) {
-        	process = (Process) repositoryViewObject;
-        } else if (repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS) ||
-        		repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) || 
-    			repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE)) {
-        	isProcessItem = true;
-        	ProcessItem i = (ProcessItem) repositoryViewObject.getProperty().getItem();
-        	try {
-        		process = (Process)(new ProcessEditorInput(i, true, null, false).getLoadedProcess());
-			} catch (PersistenceException e) {}
+            process = (Process) repositoryViewObject;
+        } else if (repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)
+                || repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE)
+                || repositoryViewObject.getRepositoryObjectType().equals(
+                        ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE)) {
+            isProcessItem = true;
+            ProcessItem i = (ProcessItem) repositoryViewObject.getProperty().getItem();
+            try {
+                process = (new ProcessEditorInput(i, true, null, false).getLoadedProcess());
+            } catch (PersistenceException e) {
+            }
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
             esbService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
@@ -149,7 +155,12 @@ public class DeploymentComposite extends AbstractTabComposite {
                 commandStack = (CommandStack) editor.getAdapter(CommandStack.class);
                 defaultVersion = getDefaultVersion(serviceItem.getProperty().getVersion());
                 isService = true;
+            } else if (repositoryViewObject.getRepositoryObjectType().getType().equals("SERVICES")) {
+                isService = true;
+                serviceItem = repositoryViewObject.getProperty().getItem();
+                defaultVersion = getDefaultVersion(serviceItem.getProperty().getVersion());
             }
+
         }
         createControl();
         initialize();
@@ -174,7 +185,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     buildTypeCombo.getCCombo().setEnabled(false);
                 }
                 if (buildTypeLabel != null) {
-                	buildTypeLabel.setEnabled(false);
+                    buildTypeLabel.setEnabled(false);
                 }
             }
         } catch (PersistenceException e) {
@@ -221,8 +232,9 @@ public class DeploymentComposite extends AbstractTabComposite {
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);
 
-        snapshotCheckbox = widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.snapshotLabel"), //$NON-NLS-1$
-                SWT.CHECK);
+        snapshotCheckbox =
+                widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.snapshotLabel"), //$NON-NLS-1$
+                        SWT.CHECK);
         GridData snapshotCheckboxData = new GridData(GridData.FILL_HORIZONTAL);
         snapshotCheckboxData.horizontalSpan = 2;
         snapshotCheckbox.setLayoutData(snapshotCheckboxData);
@@ -264,7 +276,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             groupIdText.setText(groupId);
             groupIdCheckbox.setSelection(isCustomGroupId);
             groupIdText.setEnabled(isCustomGroupId);
-            
+
             version = (String) get(getObject(), MavenConstants.NAME_USER_VERSION);
             boolean isCustomVersion = version != null;
             if (!isCustomVersion) {
@@ -353,7 +365,8 @@ public class DeploymentComposite extends AbstractTabComposite {
                         }
                     }
                     // if empty, remove it from job, else will set the new value
-                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID, currentGroupId);
+                    Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_GROUP_ID,
+                            currentGroupId);
                     getCommandStack().execute(cmd);
                 } else {
                     groupIdText.setBackground(COLOR_RED);
@@ -382,7 +395,8 @@ public class DeploymentComposite extends AbstractTabComposite {
             @Override
             public void modifyText(ModifyEvent e) {
                 String currentVersion = versionText.getText();
-                if (StringUtils.isBlank(currentVersion) || !isValidMavenVersion(currentVersion, snapshotCheckbox.getSelection())) {
+                if (StringUtils.isBlank(currentVersion)
+                        || !isValidMavenVersion(currentVersion, snapshotCheckbox.getSelection())) {
                     versionText.setToolTipText(Messages.getString("DeploymentComposite.valueWarning")); //$NON-NLS-1$
                     versionText.setBackground(COLOR_RED);
                 } else {
@@ -410,8 +424,8 @@ public class DeploymentComposite extends AbstractTabComposite {
             public void widgetSelected(SelectionEvent e) {
                 // if unchecked then remove key.
                 String useSnapshot = snapshotCheckbox.getSelection() ? String.valueOf(true) : null;
-                Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT,
-                        useSnapshot);
+                Command cmd = new MavenDeploymentValueChangeCommand(getObject(),
+                        MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, useSnapshot);
                 getCommandStack().execute(cmd);
             }
 
