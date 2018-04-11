@@ -301,7 +301,7 @@ if(columnList != null && columnList.size()>0) {
 	    %>
 	    java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
 	    stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ tableName_<%=cid%> +" ON");
-	    <%
+<%
 	}
 }
 } //end isDynamic

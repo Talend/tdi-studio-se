@@ -148,10 +148,11 @@ if(!useExistingConn.equals("true")) {
 <%
 // Clear table
 if (clearTable.equals("true")) {
-	%>
-	java.sql.Statement statementClear_<%=cid%> = connection_<%=cid%>.createStatement();
-	deletedCount_<%=cid%> = deletedCount_<%=cid%> + statementClear_<%=cid%>.executeUpdate("delete from " + <%=tableName%>);
-	<%
+%>
+    try (java.sql.Statement statementClear_<%=cid%> = connection_<%=cid%>.createStatement()) {
+        deletedCount_<%=cid%> = deletedCount_<%=cid%> + statementClear_<%=cid%>.executeUpdate("delete from " + <%=tableName%>);
+    }
+<%
 }
 
 if (columnList != null && columnList.size() > 0) {

@@ -260,9 +260,9 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
 					}
 				}
 			%>
-				java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement();
-				stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr.toString()%>) AS SELECT <%=columnListStr.toString()%> FROM " + tableName_<%=cid%>);
-				stmtCreateProjection_<%=cid%>.close();
+				try (java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement()) {
+					stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr.toString()%>) AS SELECT <%=columnListStr.toString()%> FROM " + tableName_<%=cid%>);
+				}
 			<%
 			}
 		}
