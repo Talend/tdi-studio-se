@@ -53,6 +53,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.runprocess.IProcessor;
@@ -72,11 +73,12 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     /**
      * type of job exports.
-     * */
+     */
     public static enum JobExportType {
         POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
         OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
         MSESB(Messages.getString("JavaJobScriptsExportWSWizardPage.MSESB"), false);//$NON-NLS-1$
+
         public final String label;
 
         public final boolean deprecate;
@@ -88,7 +90,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the label or the POJO type if no match.
-         * */
+         */
         public static JobExportType getTypeFromLabel(String label) {
             for (JobExportType type : JobExportType.values()) {
                 if (type.label.equals(label)) {
@@ -100,7 +102,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the type string, then try the label string or the POJO type if no match
-         * */
+         */
         public static JobExportType getTypeFromString(String str) {
             if (str == null) {
                 return POJO;
@@ -205,10 +207,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             // set default export type according to system properties
             String exportType = dialogSettings.get(STORE_EXPORTTYPE_ID);
             String defaultExportType = System.getProperty("talend.export.job.default.type"); //$NON-NLS-1$
-            if ((exportType == null || exportType.equals("")) && defaultExportType != null && !defaultExportType.equals("")) { //$NON-NLS-1$ //$NON-NLS-2$
+            if ((exportType == null || exportType.equals("")) && defaultExportType != null //$NON-NLS-1$
+                    && !defaultExportType.equals("")) { //$NON-NLS-1$
                 dialogSettings.put(STORE_EXPORTTYPE_ID, defaultExportType);
             }
-        }// else ignors it
+        } // else ignors it
     }
 
     /**
@@ -297,7 +300,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         SashForm sash = createExportTree(parent);
         // Added a scrolled composite by Marvin Wang on Feb. 27, 2012 for bug TDI-19198.
-        scrolledComposite = new ScrolledComposite(sash, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+        scrolledComposite = new ScrolledComposite(sash, SWT.H_SCROLL | SWT.V_SCROLL);
         scrolledComposite.setExpandHorizontal(true);
         scrolledComposite.setExpandVertical(true);
         scrolledComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -326,8 +329,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // this.getDestinationValue()
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
+            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                    .getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
@@ -386,7 +389,15 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     }
                     continue;
                 }
-                exportTypeCombo.add(exportType.label);
+
+                if (exportType.equals(JobExportType.MSESB)) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
+                        exportTypeCombo.add(exportType.label);
+                    }
+                } else {
+                    exportTypeCombo.add(exportType.label);
+                }
+
             }
         }
         String label2 = getCurrentExportType1().label;
@@ -893,9 +904,9 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
-            if(exportMSAsZipButton!=null) {
-            	exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
-            	exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());	
+            if (exportMSAsZipButton != null) {
+                exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
+                exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());
             }
             if (addBSButton != null) {
                 exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
