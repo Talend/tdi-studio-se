@@ -37,11 +37,11 @@ try {
     if(("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
         java.sql.PreparedStatement pstmtUpdateToClose_<%=cid %> = null;
-        if ((pstmtUpdateToClose_<%=cid %> = resourceMap.get("pstmtUpdate_<%=cid%>")) != null) {
+        if ((pstmtUpdateToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmtUpdate_<%=cid%>")) != null) {
             pstmtUpdateToClose_<%=cid %>.close();
         }
         java.sql.PreparedStatement pstmtInsertToClose_<%=cid %> = null;
-        if ((pstmtInsertToClose_<%=cid %> = resourceMap.get("pstmtInsert_<%=cid%>")) != null) {
+        if ((pstmtInsertToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmtInsert_<%=cid%>")) != null) {
             pstmtInsertToClose_<%=cid %>.close();
         }
 <%
@@ -49,7 +49,7 @@ try {
     if (!("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
         java.sql.PreparedStatement pstmtToClose_<%=cid %> = null;
-        if ((pstmtToClose_<%=cid %> = resourceMap.get("pstmt_<%=cid%>")) != null) {
+        if ((pstmtToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmt_<%=cid%>")) != null) {
             pstmtToClose_<%=cid %>.close();
         }
     <%
