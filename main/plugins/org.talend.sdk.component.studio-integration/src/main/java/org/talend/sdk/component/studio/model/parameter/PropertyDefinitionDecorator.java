@@ -537,6 +537,11 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     }
 
     @Override
+    public Map<String, String> getProposalDisplayNames() {
+        return delegate.getProposalDisplayNames();
+    }
+
+    @Override
     public int hashCode() {
         return delegate.hashCode();
     }

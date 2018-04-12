@@ -28,11 +28,13 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EConnectionType;
@@ -121,10 +123,6 @@ public class SettingVisitor implements PropertyVisitor {
 
         this.actions = ofNullable(actions).orElseGet(Collections::emptyList);
         this.actions.stream().findFirst().ifPresent(a -> this.family = a.getFamily());
-    }
-
-    SettingVisitor(final IElement iNode, final ElementParameter redrawParameter) {
-        this(iNode, redrawParameter, Collections.emptyList());
     }
 
     public SettingVisitor withCategory(final EComponentCategory category) {
@@ -283,7 +281,10 @@ public class SettingVisitor implements PropertyVisitor {
 
             final String[] valuesArray = possibleValues.toArray(new String[valuesCount]);
             parameter.setListItemsValue(valuesArray);
-            parameter.setListItemsDisplayName(valuesArray);
+            parameter.setListItemsDisplayName(
+                    new TreeMap<String, String>(Comparator.comparingInt(possibleValues::indexOf)) {{
+                        putAll(node.getProperty().getProposalDisplayNames());
+                    }}.values().toArray(new String[0]));
             parameter.setListItemsDisplayCodeName(valuesArray);
         }
 
@@ -509,7 +510,7 @@ public class SettingVisitor implements PropertyVisitor {
             c.addLayout(form, layout);
         });
         final SettingVisitor creator =
-                new SettingVisitor(new FakeElement("table"), redrawParameter).withCategory(category);
+                new SettingVisitor(new FakeElement("table"), redrawParameter, actions).withCategory(category);
         columns.forEach(creator::visit);
         return unmodifiableList(new ArrayList<>(creator.settings.values()));
     }
