@@ -23,14 +23,14 @@ import java.util.Objects;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.sdk.component.studio.lang.Strings;
-
 
 /**
  * DOC cmeng class global comment. Detailled comment
  */
-public class TaCoKitNodeConnector extends NodeConnector {
+public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalInfo {
     
     static final String DEFAULT = "__default__";
 
@@ -143,5 +143,25 @@ public class TaCoKitNodeConnector extends NodeConnector {
 
     void setHasOutput(final boolean output) {
         hasOutput = output;
+    }
+
+    @Override
+    public Object getInfo(String key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void putInfo(String key, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void onEvent(String event, Object... parameters) {
+        throw new UnsupportedOperationException();        
+    }
+
+    @Override
+    public void cloneAddionalInfoTo(IAdditionalInfo targetAdditionalInfo) {
+        throw new UnsupportedOperationException();        
     }
 }
