@@ -8,6 +8,7 @@ imports="
 "
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
+} finally {
 <%
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
@@ -19,48 +20,22 @@ imports="
 	String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
 	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
-    if(("INSERT_OR_UPDATE").equals(dataAction)) {
+    if(("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
         %>
         if(pstmtUpdate_<%=cid%> != null){
-
             pstmtUpdate_<%=cid %>.close();
-            
-        } 
-        if(pstmtInsert_<%=cid %> != null){
-
-            pstmtInsert_<%=cid %>.close();
-            
         }
-        if(pstmt_<%=cid %> != null) {
-
-            pstmt_<%=cid %>.close();
-            
-        }        
-        <%
-    } else if(("UPDATE_OR_INSERT").equals(dataAction)) {
-        %>
-        if(pstmtUpdate_<%=cid%> != null){
-
-            pstmtUpdate_<%=cid %>.close();
-            
-        } 
         if(pstmtInsert_<%=cid %> != null){
-
             pstmtInsert_<%=cid %>.close();
-            
-        }        
+        }
         <%
-    } else {
-        %>
+    }
+    if (!("UPDATE_OR_INSERT").equals(dataAction)) {
+%>
         if(pstmt_<%=cid %> != null) {
-
             pstmt_<%=cid %>.close();
-            
-        }        
-        <%
-    }	
-    %>
-    <%
+        }
+<%
 	if(!useExistingConnection)
 	{
         if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
@@ -78,6 +53,7 @@ imports="
 	<%
 	}
     %>
+}
     int rejectedCount_<%=cid%> = 0;
     <%
     String rejectConnName = null;
@@ -88,4 +64,3 @@ imports="
     }
     %>
 <%@ include file="../templates/DB/Output/DBOutputEndGlobalVars.javajet"%>
-	
