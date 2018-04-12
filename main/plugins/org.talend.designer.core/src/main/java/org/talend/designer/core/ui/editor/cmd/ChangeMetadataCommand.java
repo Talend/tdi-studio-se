@@ -642,9 +642,20 @@ public class ChangeMetadataCommand extends Command {
      */
     private boolean hasSameSchema(final INodeConnector connector) {
         return (!connector.getName().equals(currentConnector)) && connector.getBaseSchema().equals(currentConnector)
-                && !(connector instanceof IAdditionalInfo);
+                && !isTacokit(connector);
     }
-
+    
+    /**
+     * Checks whethere specified INodeConnector is Tacokit connector
+     * 
+     * @param connector node connecto to check
+     * @return true if it is Tacokit connector
+     */
+    private boolean isTacokit(final INodeConnector connector) {
+        return (IAdditionalInfo.class.isInstance(connector))
+                && "tacokit".equals(IAdditionalInfo.class.cast(connector).getInfo("CONNECTOR_TYPE"));
+    }
+    
     private void updateComponentSchema(INode selectedNode, IMetadataTable table) {
         IGenericWizardService wizardService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
