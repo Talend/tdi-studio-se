@@ -36,6 +36,8 @@ public class ToolbarOutputZone extends ToolbarZone {
 
     private ToolItem guessItem;
 
+    private ToolItem delimitedIdentifiersItem;
+
     public static final String MINIMIZE_TOOLTIP = Messages.getString("ToolbarOutputZone.minimizeTooltip"); //$NON-NLS-1$
 
     public static final String RESTORE_TOOLTIP = Messages.getString("ToolbarOutputZone.restorTooltip"); //$NON-NLS-1$
@@ -82,6 +84,11 @@ public class ToolbarOutputZone extends ToolbarZone {
         guessItem.setToolTipText(Messages.getString("ToolbarOutputZone.widgetTooltip.mapInputAndOutput")); //$NON-NLS-1$
         guessItem.setText(Messages.getString("ToolbarOutputZone.widgetText.autoMap")); //$NON-NLS-1$
 
+        delimitedIdentifiersItem = new ToolItem(getToolBarActions(), SWT.CHECK);
+        delimitedIdentifiersItem.setToolTipText(Messages.getString("ToolbarOutputZone.widgetTooltip.delimitedIdentifiers")); //$NON-NLS-1$
+        delimitedIdentifiersItem.setText(Messages.getString("ToolbarOutputZone.widgetText.delimitedIdentifiers")); //$NON-NLS-1$
+        delimitedIdentifiersItem
+                .setSelection(getMapperManager().getComponent().getGenerationManager().isUseDelimitedIdentifiers());
     }
 
     /**
@@ -91,6 +98,7 @@ public class ToolbarOutputZone extends ToolbarZone {
         // final UIManager uiManager = getMapperManager().getUiManager();
         addOutputItem.addListener(SWT.Selection, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 getMapperManager().addOutput();
             }
@@ -99,6 +107,7 @@ public class ToolbarOutputZone extends ToolbarZone {
 
         removeOutputItem.addListener(SWT.Selection, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 getMapperManager().removeSelectedOutputTable();
             }
@@ -107,26 +116,40 @@ public class ToolbarOutputZone extends ToolbarZone {
 
         guessItem.addListener(SWT.Selection, new Listener() {
 
+            @Override
             public void handleEvent(Event event) {
                 getMapperManager().mapAutomaticallly();
             }
 
         });
 
+        delimitedIdentifiersItem.addListener(SWT.Selection, new Listener() {
+
+            @Override
+            public void handleEvent(Event event) {
+                getMapperManager().useDelimitedIdentifiers(delimitedIdentifiersItem.getSelection());
+            }
+
+        });
+
     }
 
+    @Override
     public String getMinimizeTooltipText() {
         return MINIMIZE_TOOLTIP;
     }
 
+    @Override
     public String getRestoreTooltipText() {
         return RESTORE_TOOLTIP;
     }
 
+    @Override
     public String getMoveUpTooltipText() {
         return MOVE_UP_TOOLTIP;
     }
 
+    @Override
     public String getMoveDownTooltipText() {
         return MOVE_DOWN_TOOLTIP;
     }

@@ -1360,6 +1360,27 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             }
                         }
                         loadElementParameters(elemParam, pType, param, pType.getName(), paraValue, false);
+                    } else {
+                        param = new ElementParameter(elemParam);
+                        param.setValue(pType.getValue());
+                        param.setName(pType.getName());
+                        param.setCategory(EComponentCategory.TECHNICAL);
+                        String fieldName = pType.getField();
+                        EParameterFieldType fieldType = null;
+                        if (StringUtils.isNotBlank(fieldName)) {
+                            fieldType = EParameterFieldType.valueOf(fieldName);
+                        }
+                        if (fieldType == null) {
+                            ExceptionHandler.process(new Exception("Can't find filed of " + fieldName));
+                            continue;
+                        }
+                        param.setFieldType(fieldType);
+                        param.setNumRow(99);
+                        param.setShow(false);
+                        param.setReadOnly(false);
+                        elemParam.addElementParameter(param);
+                        param = null;
+                        continue;
                     }
                 }
             }
