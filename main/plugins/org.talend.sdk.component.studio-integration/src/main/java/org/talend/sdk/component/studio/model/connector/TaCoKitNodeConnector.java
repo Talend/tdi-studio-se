@@ -18,6 +18,8 @@ package org.talend.sdk.component.studio.model.connector;
 import static org.talend.core.model.process.EConnectionType.FLOW_MAIN;
 import static org.talend.core.model.process.EConnectionType.REJECT;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.talend.core.CorePlugin;
@@ -33,6 +35,12 @@ import org.talend.sdk.component.studio.lang.Strings;
 public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalInfo {
     
     static final String DEFAULT = "__default__";
+    
+    private static final String TYPE = "CONNECTOR_TYPE";
+    
+    private static final String TACOKIT_TYPE = "tacokit";
+    
+    private final Map<String, Object> info = new HashMap<>();
 
     private boolean hasInput = false;
     
@@ -77,6 +85,7 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
         setDefaultConnectionType(defaultConnectionType);
         addConnectionProperty(CorePlugin.getDefault() == null ? null : type, type.getRGB(),
                 type.getDefaultLineStyle());
+        putInfo(TYPE, TACOKIT_TYPE);
     }
     
     /**
@@ -147,12 +156,14 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
 
     @Override
     public Object getInfo(String key) {
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(key);
+        return info.get(key);
     }
 
     @Override
     public void putInfo(String key, Object value) {
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(key);
+        info.put(key, value);
     }
 
     @Override
@@ -161,7 +172,9 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
     }
 
     @Override
-    public void cloneAddionalInfoTo(IAdditionalInfo targetAdditionalInfo) {
-        throw new UnsupportedOperationException();        
+    public void cloneAddionalInfoTo(IAdditionalInfo target) {
+        Objects.requireNonNull(target);
+        info.entrySet().stream().forEach(e -> target.putInfo(e.getKey(), e.getValue()));
     }
+    
 }
