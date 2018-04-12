@@ -42,6 +42,7 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.core.runtime.services.IGenericWizardService;
 import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
@@ -597,7 +598,7 @@ public class ChangeMetadataCommand extends Command {
         }
 
         for (INodeConnector connector : node.getListConnector()) {
-            if ((!connector.getName().equals(currentConnector)) && connector.getBaseSchema().equals(currentConnector)) {
+            if (hasSameSchema(connector)) {
                 // if there is some other schema dependant of this one, modify them
                 MetadataToolHelper.copyTable(newOutputMetadata, node.getMetadataFromConnector(connector.getName()));
                 updateComponentSchema(node, node.getMetadataFromConnector(connector.getName()));
@@ -627,6 +628,21 @@ public class ChangeMetadataCommand extends Command {
             ((Process) node.getProcess()).checkProcess();
         }
         refreshMetadataChanged();
+    }
+    
+    /**
+     * Checks whether {@code connector} has the same base schema as {@link #currentConnector}.
+     * This is the case for FLOW and REJECT connectors as REJECT schema depends on FLOW schema.
+     * It contains all columns of FLOW schema and additional error columns. However, this is
+     * true only for javaject and TCOMP components, but not for Tacokit. FLOW and REJECT schemas
+     * are independent for Tacokit component. Thus, method always return false for Tacokit components.
+     * 
+     * @param connector node connector to check
+     * @return true, if connector has the same base schema as current connector
+     */
+    private boolean hasSameSchema(final INodeConnector connector) {
+        return (!connector.getName().equals(currentConnector)) && connector.getBaseSchema().equals(currentConnector)
+                && !(connector instanceof IAdditionalInfo);
     }
 
     private void updateComponentSchema(INode selectedNode, IMetadataTable table) {
