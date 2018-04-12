@@ -808,6 +808,7 @@ public final class TalendEditorPaletteFactory {
             favoriteComponentNames = getFavoritesList();
         }
 
+        IComponent matchComponent = null;
         Iterator<IComponent> componentIter = componentList.iterator();
         while (componentIter.hasNext()) {
             IComponent xmlComponent = componentIter.next();
@@ -817,6 +818,11 @@ public final class TalendEditorPaletteFactory {
             oraFamily = xmlComponent.getOriginalFamilyName();
             family = xmlComponent.getTranslatedFamilyName();
             if (xmlComponent.isLoaded()) {
+                if (StringUtils.isNotBlank(filter)) {
+                    if (xmlComponent.getName().toLowerCase().trim().equals(filter.toLowerCase().trim())) {
+                        matchComponent = xmlComponent;
+                    }
+                }
                 String[] strings = family.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 String[] oraStrings = oraFamily.split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
                 for (int j = 0; j < strings.length; j++) {
@@ -868,6 +874,18 @@ public final class TalendEditorPaletteFactory {
 
             families.add(1, RECENTLY_USED);
             familyMap.put(RECENTLY_USED, RECENTLY_USED);
+            
+            //for TUP-19604 upper the priority of full matched component family
+            if (matchComponent != null) {
+                String[] matchFamily = matchComponent.getTranslatedFamilyName()
+                        .split(ComponentsFactoryProvider.FAMILY_SEPARATOR_REGEX);
+                for (String familyObj : matchFamily) {
+                    if (families.contains(familyObj)) {
+                        families.remove(familyObj);
+                        families.add(2, familyObj);
+                    }
+                }
+            }
 
             for (Object element : families) {
                 family = (String) element;
