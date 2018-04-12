@@ -151,6 +151,7 @@ class="MomConnection"
 		boolean needSSLCipher = ("true").equals(ElementParameterParser.getValue(node,"__SET_MQ_SSL_CIPHER__"));
 		String sslCipher = ElementParameterParser.getValue(node, "__MQ_SSL_CIPHER__");
 		%>
+		System.setProperty("com.ibm.mq.cfg.MessageProperties.PropctlToFORCE_RFH2","Yes");
 		java.util.Hashtable properties<%=cid%>=new java.util.Hashtable();
 		properties<%=cid%>.put("hostname", <%=host%>);
 		properties<%=cid%>.put("port", Integer.valueOf(<%=port%>));
