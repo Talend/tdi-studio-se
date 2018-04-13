@@ -129,7 +129,8 @@ public class XmlMapConnectionBuilder {
         if (srouceTree == targetTree) {
             return false;
         }
-        if (srouceTree.eContainer() instanceof XmlMapData && target instanceof InputXmlTree) {
+        if (srouceTree.eContainer() instanceof XmlMapData && srouceTree instanceof InputXmlTree
+                && target instanceof InputXmlTree) {
             XmlMapData mapdata = ((XmlMapData) srouceTree.eContainer());
             int indexSource = mapdata.getInputTrees().indexOf(srouceTree);
             int indexTarget = mapdata.getInputTrees().indexOf(targetTree);
