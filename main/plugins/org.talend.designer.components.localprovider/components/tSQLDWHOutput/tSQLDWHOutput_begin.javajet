@@ -485,23 +485,20 @@ if(usingStatsLogs){ %>
  	}
     if(identityInsert ) {
         %>
-        try (java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement()) {
+        java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
         <%
-            if (useExistingConnection) {
-                String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
+        if (useExistingConnection) {
+            String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
         %>
-                if ( !isShareIdentity_<%=cid%> ) {
-                    stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
-                }
-        <%
-            } else {
-    %>
+            if ( !isShareIdentity_<%=cid%> ) {
                 stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
-    <%
             }
-%>
+        <%
+        } else {
+    %>
+            stmt_<%=cid %>.execute("SET IDENTITY_INSERT ["+ tableName_<%=cid%> +"] ON");
+    <%
         }
-<%
     }
 }
 if(isDynamic) {
