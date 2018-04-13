@@ -3359,15 +3359,6 @@ public class DataProcess implements IGeneratingProcess {
         }
         return dataNode;
     }
-    
-    private INode findDataNode(String uniqueName) {
-        for (INode node : dataNodeList) {
-            if (node.getUniqueName().equals(uniqueName)) {
-                return node;
-            }
-        }
-        return null;
-    }
 
     @Override
     public List<INode> getNodeList() {
