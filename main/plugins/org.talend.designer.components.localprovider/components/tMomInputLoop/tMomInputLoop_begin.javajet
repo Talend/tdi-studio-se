@@ -720,8 +720,12 @@ imports="
 			        }
 			        %>
 			        int remainingMaxNum_<%=cid %> = <%=maxiumMessages %>;
-			        boolean hasWaitAndRetry_<%=cid %> = false;
-			    <%
+			        <%
+			        if(useMaxTimeout){
+			        %>
+			            boolean hasWaitAndRetry_<%=cid %> = false;
+			        <%
+			        }
 			    }
 			    %>
 				while(flag<%=cid%>){
@@ -769,8 +773,18 @@ imports="
 			%>		
 				try{
 					remoteQ_<%=cid%>.get(inMessage<%=cid%>,gmo<%=cid%>);
-					remainingMaxNum_<%=cid %> --;
-					hasWaitAndRetry_<%=cid %> = false;
+					<%
+					if (useMax) {
+					%>
+					    remainingMaxNum_<%=cid %> --;
+					    <%
+			          if(useMaxTimeout){
+			          %>
+					        hasWaitAndRetry_<%=cid %> = false;
+					    <%
+					    }
+					}
+					%>
 				}catch (com.ibm.mq.MQException me_<%=cid%>) {   
 		            if (me_<%=cid%>.reasonCode == com.ibm.mq.MQException.MQRC_NO_MSG_AVAILABLE) {
 		                <%
