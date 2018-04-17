@@ -12,6 +12,8 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
+import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -81,43 +83,26 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     @Override
     public Object getComponentValue(final Connection connection, final String repositoryKey, final IMetadataTable table,
             final String targetComponent, Map<Object, Object> contextMap) {
+        if (connection == null || isEmpty(repositoryKey)) {
+            return null;
+        }
         try {
-            if (connection == null) {
-                return null;
-            }
-            if (TaCoKitUtil.isEmpty(repositoryKey)) {
-                return null;
-            }
             final TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
             for (final String key : repositoryKey.split("\\|")) {
                 ValueModel valueModel = model.getValue(key);
-                if (valueModel != null) {
-                    Object result = valueModel.getValue();
-                    if (result == null) {
-                        return null;
-                    } else {
-                        String type = null;
-                        try {
-                            List<SimplePropertyDefinition> properties =
-                                    valueModel.getConfigurationModel().getConfigTypeNode().getProperties();
-                            if (properties != null) {
-                                for (SimplePropertyDefinition property : properties) {
-                                    if (key.equals(property.getPath())) {
-                                        type = property.getType();
-                                        break;
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            ExceptionHandler.process(e);
-                        }
-                        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(type)) {
-                            return RepositoryToComponentProperty.addQuotesIfNecessary(connection,
-                                    String.class.cast(result));
-                        } else {
-                            return valueModel.getValue();
-                        }
-                    }
+                if (valueModel == null || valueModel.getValue() == null) {
+                    return null;
+                }
+                final String type = valueModel.getConfigurationModel().getConfigTypeNode().getProperties()
+                        .stream()
+                        .map(SimplePropertyDefinition::getPath)
+                        .filter(key::equals)
+                        .findFirst()
+                        .get();
+                if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(type)) {
+                    return RepositoryToComponentProperty.addQuotesIfNecessary(connection, String.class.cast(valueModel.getValue()));
+                } else {
+                    return valueModel.getValue();
                 }
             }
         } catch (Exception e) {
