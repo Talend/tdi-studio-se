@@ -78,7 +78,7 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
 
     public static final String OUTPUT = "Output"; //$NON-NLS-1$
     
-    private static final String CACHED_VALUE_KEY=".cachedValue";
+    private static final String CACHED_DATA_KEY=".cachedData";
 
     @Override
     public boolean canHandle(Connection connection) {
@@ -96,13 +96,13 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
                         .getService(IGenericWizardService.class);
                 if (wizardService != null && wizardService.isGenericConnection(connection)) {
                     List<ComponentProperties> componentPropertiesList = null;
-                    if (contextMap != null && contextMap.get(CACHED_VALUE_KEY) != null) {
-                        componentPropertiesList = (List<ComponentProperties>) contextMap.get(CACHED_VALUE_KEY);
+                    if (contextMap != null && contextMap.get(CACHED_DATA_KEY) != null) {
+                        componentPropertiesList = (List<ComponentProperties>) contextMap.get(CACHED_DATA_KEY);
                     } else {
                         componentPropertiesList = wizardService.getAllComponentProperties(connection,
                                 getSeletetedMetadataTableName(table));
                         if (contextMap != null) {
-                            contextMap.put(CACHED_VALUE_KEY, componentPropertiesList);
+                            contextMap.put(CACHED_DATA_KEY, componentPropertiesList);
                         }
                     }
                     return getGenericRepositoryValue(connection, componentPropertiesList, value, table);
