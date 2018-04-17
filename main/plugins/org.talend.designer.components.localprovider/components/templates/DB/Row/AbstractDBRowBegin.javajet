@@ -27,17 +27,22 @@ imports="
 	String query_<%=cid %> = "";
 	boolean whetherReject_<%=cid%> = false;
 <%
-	dbRowBeginUtil.createConnection(node);
-	dbRowBeginUtil.setCommit(node);
+    dbRowBeginUtil.createConnection(node);
+%>
+    resourceMap.put("conn_<%=cid%>", conn_<%=cid%>);
+<%
+    dbRowBeginUtil.setCommit(node);
 
-	if (usePrepareStatement ) {
-	%>
-		java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(<%=dbRowBeginUtil.getQueryString(node)%>);	
-	<%
-	} else {
-	%>
-		java.sql.Statement stmt_<%=cid %> = conn_<%=cid %>.createStatement();
-	<%
-	}
+    if (usePrepareStatement ) {
+%>
+        java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(<%=dbRowBeginUtil.getQueryString(node)%>);
+        resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
+<%
+    } else {
+%>
+        java.sql.Statement stmt_<%=cid %> = conn_<%=cid %>.createStatement();
+        resourceMap.put("stmt_<%=cid %>", stmt_<%=cid %>);
+<%
+    }
 	dbRowBeginUtil.afterConnection(node);
 	%>
