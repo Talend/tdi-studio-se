@@ -1,48 +1,53 @@
 <%@ jet 
 imports="
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.metadata.IMetadataTable
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.metadata.MappingTypeRetriever
         org.talend.core.model.metadata.MetadataTalendType
         org.talend.core.model.metadata.types.JavaTypesManager
         org.talend.core.model.process.IConnectionCategory
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.utils.NodeUtil
-		java.util.List
-		java.util.ArrayList
-		java.util.Map
-		java.util.HashMap
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.utils.NodeUtil
+        java.util.List
+        java.util.ArrayList
+        java.util.Map
+        java.util.HashMap
 "
 skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	dbLog = new DBLogUtil(node);
-	String cid = node.getUniqueName();
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    dbLog = new DBLogUtil(node);
+    String cid = node.getUniqueName();
     String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
-	if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
-	     cid = cid.substring(0,cid.length()-4);
-	}
-	
-	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
-	
-	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+         cid = cid.substring(0,cid.length()-4);
+    }
+
+    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+
+if(!useExistingConnection) {
 %>
-if(resourceMap.get("finish_<%=cid%>")==null){
     try {
+<%
+}
+%>
+    if (resourceMap.get("statementClosed_<%=cid%>") == null) {
 <%
         if(("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
             java.sql.PreparedStatement pstmtUpdateToClose_<%=cid %> = null;
-            if ((pstmtUpdateToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmtUpdate_<%=cid%>")) != null) {
+            if ((pstmtUpdateToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmtUpdate_<%=cid%>")) != null) {
                 pstmtUpdateToClose_<%=cid %>.close();
             }
             java.sql.PreparedStatement pstmtInsertToClose_<%=cid %> = null;
-            if ((pstmtInsertToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmtInsert_<%=cid%>")) != null) {
+            if ((pstmtInsertToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmtInsert_<%=cid%>")) != null) {
                 pstmtInsertToClose_<%=cid %>.close();
             }
 <%
@@ -50,16 +55,18 @@ if(resourceMap.get("finish_<%=cid%>")==null){
         if (!("UPDATE_OR_INSERT").equals(dataAction)) {
 %>
             java.sql.PreparedStatement pstmtToClose_<%=cid %> = null;
-            if ((pstmtToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.get("pstmt_<%=cid%>")) != null) {
+            if ((pstmtToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmt_<%=cid%>")) != null) {
                 pstmtToClose_<%=cid %>.close();
             }
     <%
         }
 %>
-    } finally {
+    }
 <%
-        if(!useExistingConnection) {
+if(!useExistingConnection) {
 %>
+    } finally {
+        if(resourceMap.get("finish_<%=cid%>") == null){
             java.sql.Connection ctn_<%=cid%> = null;
             if((ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>")) != null){
                 try {
@@ -83,8 +90,8 @@ if(resourceMap.get("finish_<%=cid%>")==null){
                     System.err.println(errorMessage_<%=cid%>);
                 }
             }
-<%
         }
-%>
     }
+<%
 }
+%>

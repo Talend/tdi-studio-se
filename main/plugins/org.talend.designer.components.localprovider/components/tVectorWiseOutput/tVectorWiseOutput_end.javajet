@@ -35,36 +35,31 @@ imports="
     String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
 
     if(("INSERT_OR_UPDATE").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
-
             pstmtUpdate_<%=cid %>.close();
-
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
-
             pstmtInsert_<%=cid %>.close();
-
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
         if(pstmt_<%=cid %> != null) {
-
             pstmt_<%=cid %>.close();
-
+            resourceMap.remove("pstmt_<%=cid %>");
         }
-        <%
+<%
     } else if(("UPDATE_OR_INSERT").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
-
             pstmtUpdate_<%=cid %>.close();
-
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
-
             pstmtInsert_<%=cid %>.close();
-
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
-        <%
+<%
     } else {
         if (useBatch) {
             %>
@@ -101,14 +96,14 @@ imports="
         	}
             <%
             }%>
-
-            if(pstmt_<%=cid %> != null) {
-    			pstmt_<%=cid %>.close();
-            }
-        	<%
+        if(pstmt_<%=cid %> != null) {
+            pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
+        }
+<%
     }
-    %>
-
+%>
+    resourceMap.put("statementClosed_<%=cid%>", true);
 <%
 	if(!("true").equals(useExistingConn)) {
 		if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){
