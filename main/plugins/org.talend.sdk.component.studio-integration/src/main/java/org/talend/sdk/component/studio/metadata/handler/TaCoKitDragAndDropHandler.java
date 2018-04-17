@@ -12,6 +12,7 @@
  */
 package org.talend.sdk.component.studio.metadata.handler;
 
+import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ import org.talend.core.model.components.IComponent;
 import org.talend.core.model.components.IComponentsService;
 import org.talend.core.model.metadata.IMetadataTable;
 import org.talend.core.model.metadata.builder.connection.Connection;
-import org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty;
 import org.talend.core.model.process.IElement;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
@@ -37,7 +37,6 @@ import org.talend.core.model.utils.IComponentName;
 import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
-import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
@@ -50,10 +49,6 @@ import org.talend.sdk.component.studio.util.TaCoKitUtil;
 public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler {
 
     private static final String TACOKIT = TaCoKitConst.METADATA_TACOKIT.name();
-
-    public TaCoKitDragAndDropHandler() {
-        // nothing to do
-    }
 
     @Override
     public boolean canHandle(final Connection connection) {
@@ -94,7 +89,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
                     return null;
                 }
                 if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
-                    return RepositoryToComponentProperty.addQuotesIfNecessary(connection, String.class.cast(valueModel.getValue()));
+                    return addQuotesIfNecessary(connection, valueModel.getValue());
                 } else {
                     return valueModel.getValue();
                 }
