@@ -15,6 +15,7 @@ package org.talend.repository.generic.service;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +50,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.repository.generic.action.GenericAction;
 import org.talend.repository.generic.internal.IGenericWizardInternalService;
 import org.talend.repository.generic.internal.service.GenericWizardInternalService;
-import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackage;
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.DynamicComposite;
 import org.talend.repository.generic.util.GenericConnectionUtil;
@@ -233,6 +233,7 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
+        Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
             ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection, false);
@@ -253,9 +254,10 @@ public class GenericWizardService implements IGenericWizardService {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils
                                 .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, false);
-                        if (compPros != null && !componentProperties.contains(compPros)) {
+                        if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);
+                            componentPropertiesSet.add(compPros);
                         }
                     }
                 }
