@@ -142,7 +142,7 @@ public class TaCoKitConfigurationModel {
             ValueModel modelValue = parentModel.getValue(key);
             if (modelValue == null) {
                 if (parentModel.containsKey(key)) {
-                    return new ValueModel(parentModel, null);
+                    return new ValueModel(parentModel, null, getValueType(key));
                 }
             } else {
                 return modelValue;
@@ -150,9 +150,17 @@ public class TaCoKitConfigurationModel {
         }
         String value = getValueOfSelf(key);
         if (value != null || containsKey(key)) {
-            return new ValueModel(this, value);
+            return new ValueModel(this, value, getValueType(key));
         }
         return null;
+    }
+    
+    private String getValueType(final String key) throws Exception {
+        return getConfigTypeNode().getProperties().stream()
+            .map(SimplePropertyDefinition::getPath)
+            .filter(key::equals)
+            .findFirst()
+            .get();
     }
 
     public ConfigTypeNode getFirstConfigTypeNodeContains(final String key) throws Exception {
@@ -271,14 +279,17 @@ public class TaCoKitConfigurationModel {
 
     public static class ValueModel {
         
-        public ValueModel(final TaCoKitConfigurationModel configurationModel, final String value) {
+        private final TaCoKitConfigurationModel configurationModel;
+
+        private final String value;
+        
+        private final String type;
+        
+        public ValueModel(final TaCoKitConfigurationModel configurationModel, final String value, final String type) {
             this.configurationModel = configurationModel;
             this.value = value;
+            this.type = type;
         }
-
-        private TaCoKitConfigurationModel configurationModel;
-
-        private String value;
 
         public TaCoKitConfigurationModel getConfigurationModel() {
             return this.configurationModel;
@@ -287,55 +298,15 @@ public class TaCoKitConfigurationModel {
         public String getValue() {
             return this.value;
         }
-
-        public void setConfigurationModel(final TaCoKitConfigurationModel configurationModel) {
-            this.configurationModel = configurationModel;
-        }
-
-        public void setValue(final String value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (o == this)
-                return true;
-            if (!(o instanceof ValueModel))
-                return false;
-            final ValueModel other = (ValueModel) o;
-            if (!other.canEqual(this))
-                return false;
-            final Object this$configurationModel = this.getConfigurationModel();
-            final Object other$configurationModel = other.getConfigurationModel();
-            if (this$configurationModel == null ? other$configurationModel != null
-                    : !this$configurationModel.equals(other$configurationModel))
-                return false;
-            final Object this$value = this.getValue();
-            final Object other$value = other.getValue();
-            if (this$value == null ? other$value != null : !this$value.equals(other$value))
-                return false;
-            return true;
-        }
-
-        protected boolean canEqual(final Object other) {
-            return other instanceof ValueModel;
-        }
-
-        @Override
-        public int hashCode() {
-            final int PRIME = 59;
-            int result = 1;
-            final Object $configurationModel = this.getConfigurationModel();
-            result = result * PRIME + ($configurationModel == null ? 43 : $configurationModel.hashCode());
-            final Object $value = this.getValue();
-            result = result * PRIME + ($value == null ? 43 : $value.hashCode());
-            return result;
+        
+        public String getType() {
+            return type;
         }
 
         @Override
         public String toString() {
             return "TaCoKitConfigurationModel.ValueModel(configurationModel=" + this.getConfigurationModel() + ", value="
-                    + this.getValue() + ")";
+                    + this.getValue() + ", type=" + this.getType() + ")";
         }
 
     }

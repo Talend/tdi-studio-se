@@ -93,13 +93,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
                 if (valueModel == null || valueModel.getValue() == null) {
                     return null;
                 }
-                final String type = valueModel.getConfigurationModel().getConfigTypeNode().getProperties()
-                        .stream()
-                        .map(SimplePropertyDefinition::getPath)
-                        .filter(key::equals)
-                        .findFirst()
-                        .get();
-                if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(type)) {
+                if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
                     return RepositoryToComponentProperty.addQuotesIfNecessary(connection, String.class.cast(valueModel.getValue()));
                 } else {
                     return valueModel.getValue();
