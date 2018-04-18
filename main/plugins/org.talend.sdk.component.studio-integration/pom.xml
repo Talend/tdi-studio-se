@@ -17,7 +17,7 @@
     <!--
     deps: don't forget GAV.java, .classpath and MANIFEST.MF if you update it
     -->
-    <component-runtime.version>0.0.6</component-runtime.version>
+    <component-runtime.version>0.0.9</component-runtime.version>
     <tomcat.version>9.0.6</tomcat.version>
     <jsonb-api.version>1.0</jsonb-api.version>
     <jsonp-api.version>1.0</jsonp-api.version>
