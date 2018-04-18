@@ -395,7 +395,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                                 .cast(Map.class.cast(transitiveDeps.get("dependencies")).values().iterator().next())
                                 .get("dependencies"));
                         if (coordinates != null && coordinates.stream().anyMatch(
-                                d -> d.contains("org.apache.beam") || d.contains(":beam-sdks-java-io"))) {
+                                d -> d.contains("org.talend.sdk.component:component-runtime-beam"))) {
                             modulesNeeded.addAll(dependencies
                                     .getBeam()
                                     .stream()
