@@ -48,13 +48,6 @@ if(!useExistingConnection) {
             java.sql.Connection ctn_<%=cid%> = null;
             if((ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>")) != null){
                 try {
-<%
-                    if(useTransaction && !("").equals(commitEvery)&&!("0").equals(commitEvery)){
-%>
-                        ctn_<%=cid%>.commit();
-<%
-                    }
-%>
                     <%log4jCodeGenerateUtil.beforeComponentProcess(node);%>
                     <%log4jCodeGenerateUtil.close_begin();%>
                     ctn_<%=cid%>.close();
