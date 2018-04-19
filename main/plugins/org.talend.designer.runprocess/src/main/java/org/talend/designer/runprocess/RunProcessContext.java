@@ -191,7 +191,7 @@ public class RunProcessContext {
 
     private List<PerformanceMonitor> perMonitorList = new ArrayList<PerformanceMonitor>();
 
-    protected IProcessor processor;
+//    protected IProcessor processor;
 
     /** trace mananger */
     private TraceConnectionsManager traceConnectionsManager;
@@ -735,10 +735,7 @@ public class RunProcessContext {
      * @return
      */
     protected IProcessor getProcessor(IProcess process, Property property) {
-        if (processor == null) {
-            processor = ProcessorUtilities.getProcessor(process, property);
-        }
-        return processor;
+        return ProcessorUtilities.getProcessor(process, property);
     }
 
     public synchronized int kill() {
@@ -859,7 +856,7 @@ public class RunProcessContext {
     }
 
     private boolean isESBRuntimeProcessor() {
-        return "runtimeProcessor".equals(processor.getProcessorType()); //$NON-NLS-1$
+        return "runtimeProcessor".equals(getProcessor(process, process.getProperty()).getProcessorType()); //$NON-NLS-1$
     }
 
     // private int getWatchPort() {

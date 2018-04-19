@@ -24,8 +24,6 @@ import org.talend.designer.runprocess.java.JavaProcessor;
  */
 public interface IESBRunContainerService extends IService {
 
-    void enableRuntime(boolean valueOf);
-
     boolean isRuntimeEnable();
 
     JavaProcessor createJavaProcessor(IProcess process, Property property, boolean filenameFromLabel);
