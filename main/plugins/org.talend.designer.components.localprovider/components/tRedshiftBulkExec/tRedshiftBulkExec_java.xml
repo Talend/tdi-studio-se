@@ -162,8 +162,7 @@
           GROUP="S3_CONFIG"
         >
           <ITEMS>
-            <ITEM NAME="ACCOUNT_ID" VALUE="" />
-            <ITEM NAME="ROLE_NAME" VALUE=""/>
+            <ITEM NAME="ROLE_ARN" VALUE=""/>
           </ITEMS>
         </PARAMETER>
         

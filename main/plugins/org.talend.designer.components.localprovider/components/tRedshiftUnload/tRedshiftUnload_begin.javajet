@@ -122,15 +122,14 @@ imports="
 <%
 			for(int roleIndex = 0;roleIndex<roleListSize;roleIndex++){
 				Map<String, String> role = roles.get(roleIndex);
-				String awsAccountId = role.get("ACCOUNT_ID");
-				String roleName = role.get("ROLE_NAME");
+				String roleARN = role.get("ROLE_ARN");
 				if(roleIndex != 0){
 %>
 				    .append(",")	
 <%					
 				}
 %>
-			.append("arn:aws:iam::").append(<%=awsAccountId%>).append(":role/").append(<%=roleName%>)
+			.append(<%=roleARN%>)
 <%		
 			}
 		}

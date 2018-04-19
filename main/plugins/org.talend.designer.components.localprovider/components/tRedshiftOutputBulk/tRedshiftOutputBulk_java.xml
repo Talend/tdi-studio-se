@@ -62,22 +62,132 @@
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+	    <PARAMETER
+	      NAME="ACCESS_KEY"
+	      FIELD="TEXT"
+	      NUM_ROW="50"
+	      REQUIRED="true"
+	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	
+	    <PARAMETER
+	      NAME="SECRET_KEY"
+	      FIELD="PASSWORD"
+	      NUM_ROW="50"
+	      REQUIRED="true"
+	      SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
 
-		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+	 <PARAMETER
+	      NAME="INHERIT_CREDENTIALS"
+	      FIELD="CHECK"
+	      NUM_ROW="55"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ASSUME_ROLE"
+	      FIELD="CHECK"
+	      NUM_ROW="60"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ARN"
+	      FIELD="TEXT"
+	      NUM_ROW="65"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="ROLE_SESSION_NAME"
+	      FIELD="TEXT"
+	      NUM_ROW="70"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="SESSION_DURATION"
+	      FIELD="TEXT"
+	      NUM_ROW="75"
+	      REQUIRED="true"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>15</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER 
+	        NAME="REGION" 
+	        FIELD="OPENED_LIST" 
+	        RAW="true" 
+	        NUM_ROW="80" 
+	        REQUIRED="true"
+	        GROUP="S3_CONFIG">
+	        
+	        <ITEMS DEFAULT="DEFAULT">
+	            <ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+	            <ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+	            <ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+	            <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+	            <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+	            <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+	            <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+	            <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+	            <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+	            <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+	            <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+	            <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+	            <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+	        </ITEMS>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+	      NAME="SET_STS_ENDPOINT"
+	      FIELD="CHECK"
+	      NUM_ROW="85"
+	      NB_LINES="5"
+	      SHOW_IF="ASSUME_ROLE == 'true'"
+	      GROUP="S3_CONFIG"
+	    >
+	    </PARAMETER>
+	    <PARAMETER
+	      NAME="STS_ENDPOINT"
+	      FIELD="TEXT"
+	      NUM_ROW="90"
+	      REQUIRED="true"
+	      SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>""</DEFAULT>
+	    </PARAMETER>   
 
-		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="60" REQUIRED="true"
+		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="100" REQUIRED="true"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="60" REQUIRED="false"
+		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="100" REQUIRED="false"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
