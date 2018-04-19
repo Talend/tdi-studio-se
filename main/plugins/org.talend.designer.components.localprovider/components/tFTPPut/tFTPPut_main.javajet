@@ -93,6 +93,7 @@ try{
                         <%}else if(("resume").equals(sftpoverwrite)){%>
                         int mode<%=cid%> = com.jcraft.jsch.ChannelSftp.RESUME;
                         <%}%>
+                        boolean putSuccess_<%=cid%> = false;
                         try{
                             c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), <%=remotedir%>, monitor<%=cid%>, mode<%=cid%>);
 
@@ -103,7 +104,10 @@ try{
                                 log.debug("<%=cid%> - Uploaded file '" + listings<%=cid %>[m<%=cid %>].getName() + "' successfully.");
                             <%}%>
                             globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer OK.");
-                            if(c_<%=cid%>.stat(<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName()).getAtimeString() != null){
+                            
+                            putSuccess_<%=cid%> = true;
+                            
+                            if(sc_<%=cid%>.statOK(c_<%=cid%>, <%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName())){
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                             }
                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>) {
@@ -111,8 +115,11 @@ try{
                                 log.error("<%=cid%> - File transfer fail."+e_<%= cid %>.getMessage());
                             <%}%>
                             globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
-                            if(c_<%=cid%>.stat(<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName()).getAtimeString() != null){
-                                globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
+                            
+                            if(!putSuccess_<%=cid%>) {
+                                if(sc_<%=cid%>.statOK(c_<%=cid%>, <%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName())){
+                                    globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
+                                }
                             }
                     <%
                         if(("true").equals(dieOnError)){

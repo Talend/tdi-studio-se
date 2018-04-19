@@ -34,7 +34,11 @@ imports="
 	boolean staticdiscovery =  ("true").equals(ElementParameterParser.getValue(node, "__STATIC__"));
 	String connectParamFailover = ElementParameterParser.getValue(node, "__CONNECTION_PARAM_FAILOVER__");
 	String connectParamStatic = ElementParameterParser.getValue(node, "__CONNECTION_PARAM_STATIC__");
+	
+	boolean useMax = ("true").equals(ElementParameterParser.getValue(node,"__USEMAX__"));
 	boolean useMaxTimeout = ("true").equals(ElementParameterParser.getValue(node,"__USEMAX_WITH_TIMEOUT__"));
+	String receiveTimeOut = ElementParameterParser.getValue(node,"__TIMEOUT__");
+	String maxiumMessages = ElementParameterParser.getValue(node,"__MAXMSG__");
 	
 	List<Map<String,String>> servers = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__SERVERS__");
 	List<Map<String,String>> additionalOpts = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADDITIONAL_OPTIONS__");
@@ -186,9 +190,7 @@ imports="
 			globalMap.put("connection_<%=cid %>",connection_<%=cid %>);
 		
 			// Receive message
-			<% boolean useMax = ("true").equals(ElementParameterParser.getValue(node,"__USEMAX__"));
-			String maxiumMessages = ElementParameterParser.getValue(node,"__MAXMSG__");
-			String receiveTimeOut = ElementParameterParser.getValue(node,"__TIMEOUT__");
+			<% 
 			if(("true").equals(kListen)){
 			%>
 				System.out.println("We will consume messages while they continue to be delivered ");
@@ -447,9 +449,6 @@ imports="
 	
 			<%		
 			}else if(("ActiveMQ").equals(serverType)){
-				boolean useMax = ("true").equals(ElementParameterParser.getValue(node,"__USEMAX__"));
-				String maxiumMessages = ElementParameterParser.getValue(node,"__MAXMSG__");
-				String receiveTimeOut = ElementParameterParser.getValue(node,"__TIMEOUT__");
 				if(("true").equals(kListen)){
 					if(isLog4jEnabled){
 					%>	
@@ -696,7 +695,7 @@ imports="
 				%>
 	
 			<%
-			if(("false").equals(kListen)) {
+			if(("false").equals(kListen) && !useMax) {
 			%>
 				if(Integer.valueOf(remoteQ_<%=cid%>.getCurrentDepth()).equals(0))
 				{
@@ -713,6 +712,23 @@ imports="
 			%>	
 				System.out.println("Ready to receive message");
 				System.out.println("Waiting...");	
+			    <%
+			    if (useMax) {
+				     if(isLog4jEnabled){
+			        %>	
+			            log.info("<%=cid%> - Consume max message number:  " + <%=maxiumMessages %>);
+			        <%
+			        }
+			        %>
+			        int remainingMaxNum_<%=cid %> = <%=maxiumMessages %>;
+			        <%
+			        if(useMaxTimeout){
+			        %>
+			            boolean hasWaitAndRetry_<%=cid %> = false;
+			        <%
+			        }
+			    }
+			    %>
 				while(flag<%=cid%>){
 			<%
 			if(isAutoBackout){
@@ -722,12 +738,19 @@ imports="
 			}
 			
 			if(("false").equals(kListen)){
-			%>
-				if(Integer.valueOf(remoteQ_<%=cid%>.getCurrentDepth()).equals(1))
-				{
-					flag<%=cid%>= false;
-				} 			
-			<%
+		       if (useMax) {
+			   %>
+				     if(remainingMaxNum_<%=cid %> <= 1){
+				         flag<%=cid%>= false;
+				     }
+				 <%
+				 }else{
+				 %>
+				    if(Integer.valueOf(remoteQ_<%=cid%>.getCurrentDepth()).equals(1)) {
+				         flag<%=cid%>= false;
+				    }
+			   <%
+			    }
 			}
 			if(isBrowse){
 			%>
@@ -747,13 +770,56 @@ imports="
 				inMessage<%=cid%>.messageId = msgId_<%=cid%>.getBytes("ISO-8859-15");
 			<%
 			}
-			if(("false").equals(kListen) && ("true").equals(useMsgId) && !"Map".equals(msgBobyType) ){
+			if((("false").equals(kListen) && ("true").equals(useMsgId) && !"Map".equals(msgBobyType)) || useMax){
 			%>		
 				try{
 					remoteQ_<%=cid%>.get(inMessage<%=cid%>,gmo<%=cid%>);
+					<%
+					if (useMax) {
+					%>
+					    remainingMaxNum_<%=cid %> --;
+					    <%
+			          if(useMaxTimeout){
+			          %>
+					        hasWaitAndRetry_<%=cid %> = false;
+					    <%
+					    }
+					}
+					%>
 				}catch (com.ibm.mq.MQException me_<%=cid%>) {   
 		            if (me_<%=cid%>.reasonCode == com.ibm.mq.MQException.MQRC_NO_MSG_AVAILABLE) {
-		            	break;   
+		                <%
+				         if (useMax && useMaxTimeout) {
+				         %>
+				             if(!hasWaitAndRetry_<%=cid %>){
+				                 <%
+				                 if(isLog4jEnabled){
+			                    %>	
+			                        log.info("<%=cid%> - No message available, would retry after " + <%=receiveTimeOut %>+"s");
+			                    <%
+			                    }
+				                 %>
+				                 Thread.sleep(<%=receiveTimeOut%>*1000);
+				                 hasWaitAndRetry_<%=cid %> = true;
+				                 flag<%=cid%>= true;
+				                 continue;
+				             }else{
+				                 <%
+				                 if(isLog4jEnabled){
+			                    %>	
+			                        log.info("<%=cid%> - No message available after retry, stop to receive message !");
+			                    <%
+			                    }
+				                 %>
+				                 break;
+				             }
+				         <%
+				         }else{
+				         %>
+		            	    break;
+		            	<%
+				         }
+				         %>   
 		            }else{
 		            	throw me_<%=cid%>;
 		            }   
