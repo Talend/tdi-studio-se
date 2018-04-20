@@ -191,7 +191,6 @@ public class RunProcessContext {
 
     private List<PerformanceMonitor> perMonitorList = new ArrayList<PerformanceMonitor>();
 
-//    protected IProcessor processor;
 
     /** trace mananger */
     private TraceConnectionsManager traceConnectionsManager;
