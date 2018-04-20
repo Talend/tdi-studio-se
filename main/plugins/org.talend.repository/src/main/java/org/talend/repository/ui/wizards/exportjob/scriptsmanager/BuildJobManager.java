@@ -19,12 +19,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.Profile;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
+import org.eclipse.m2e.core.MavenPlugin;
 import org.osgi.framework.FrameworkUtil;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
@@ -44,8 +45,6 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.process.JobInfo;
-import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
@@ -55,6 +54,8 @@ import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
+import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -266,6 +267,38 @@ public class BuildJobManager {
                     creator.deleteTempFiles();
                     TimeMeasure.step(timeMeasureId, "Recreate job jar for classpath");
                 }
+
+                // tup-19705 refresh export root pom to support use mvn package directly
+                ExportJobUtil.deleteTempFiles();
+                String temUnzipPath = ExportJobUtil.getTmpFolder() + File.separator + label + "_" + version;
+                FilesUtils.unzip(jobZip, temUnzipPath);
+                File rootPom = new File(temUnzipPath + File.separator + TalendMavenConstants.POM_FILE_NAME);
+                if (rootPom.exists()) {
+                    Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(rootPom);
+                    List<Profile> profiles = pomModel.getProfiles();
+                    Iterator<Profile> profileIte = profiles.iterator();
+                    while (profileIte.hasNext()) {
+                        Profile profile = profileIte.next();
+                        if ("ci-builder".equals(profile.getId())) {
+                            profileIte.remove();
+                        }
+                    }
+                    List<String> modules = pomModel.getModules();
+                    Iterator<String> modulesIte = modules.iterator();
+                    while (modulesIte.hasNext()) {
+                        String module = modulesIte.next();
+                        File sourcefile = new File(temUnzipPath + File.separator + module);
+                        if (!sourcefile.exists() && !sourcefile.isDirectory()) {
+                            modulesIte.remove();
+                        }
+                    }
+                    if (!modules.contains(label)) {
+                        modules.add(label);
+                    }
+                    PomUtil.savePom(null, pomModel, rootPom);
+                }
+                ZipToFile.zipFile(ExportJobUtil.getTmpFolder(), jobZip);
+                ExportJobUtil.deleteTempFiles();
 
                 File jobFileTarget = new File(destinationPath);
                 if (jobFileTarget.isDirectory()) {
