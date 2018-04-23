@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -137,6 +138,7 @@ public class BuildJobManager {
             }
             File tempProFolder = new File(tempFolder, topName);
             tempProFolder.mkdirs();
+            List<String> itemLabels = new ArrayList<String>();
             for (int i = 0; i < processes.size(); i++) {
                 ProcessItem processItem = processes.get(i);
                 pMonitor.setTaskName(Messages.getString("BuildJobManager.building", processItem.getProperty().getLabel()));//$NON-NLS-1$
@@ -153,17 +155,20 @@ public class BuildJobManager {
                 IFile jobTargetFile = buildJobHandler.getJobTargetFile();
                 if (jobTargetFile != null && jobTargetFile.exists()) {
                     // unzip to temp folder
+                    FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
+                    String zipPath = jobTargetFile.getLocation().toPortableString();
                     if (needClasspathJar(exportChoiceMap)) {
-                        FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
-                        String zipPath = jobTargetFile.getLocation().toPortableString();
                         JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipPath, processItem
                                 .getProperty().getLabel());
                         creator.setTempFolder(tempFolder.getAbsolutePath());
                         creator.buildNewJar();
                     }
                 }
+                itemLabels.add(processItem.getProperty().getLabel());
                 pMonitor.worked(scale);
             }
+            // tup-19705 refresh export root pom to support use mvn package directly
+            refreshExportRootPom(tempProFolder.getAbsolutePath(), itemLabels);
 
             FilesUtils.zip(tempFolder.getAbsolutePath(), destinationPath);
             FilesUtils.deleteFile(tempFolder, true);
@@ -272,31 +277,7 @@ public class BuildJobManager {
                 ExportJobUtil.deleteTempFiles();
                 String temUnzipPath = ExportJobUtil.getTmpFolder() + File.separator + label + "_" + version;
                 FilesUtils.unzip(jobZip, temUnzipPath);
-                File rootPom = new File(temUnzipPath + File.separator + TalendMavenConstants.POM_FILE_NAME);
-                if (rootPom.exists()) {
-                    Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(rootPom);
-                    List<Profile> profiles = pomModel.getProfiles();
-                    Iterator<Profile> profileIte = profiles.iterator();
-                    while (profileIte.hasNext()) {
-                        Profile profile = profileIte.next();
-                        if ("ci-builder".equals(profile.getId())) {
-                            profileIte.remove();
-                        }
-                    }
-                    List<String> modules = pomModel.getModules();
-                    Iterator<String> modulesIte = modules.iterator();
-                    while (modulesIte.hasNext()) {
-                        String module = modulesIte.next();
-                        File sourcefile = new File(temUnzipPath + File.separator + module);
-                        if (!sourcefile.exists() && !sourcefile.isDirectory()) {
-                            modulesIte.remove();
-                        }
-                    }
-                    if (!modules.contains(label)) {
-                        modules.add(label);
-                    }
-                    PomUtil.savePom(null, pomModel, rootPom);
-                }
+                refreshExportRootPom(temUnzipPath, Arrays.asList(new String[] { label }));
                 ZipToFile.zipFile(ExportJobUtil.getTmpFolder(), jobZip);
                 ExportJobUtil.deleteTempFiles();
 
@@ -336,6 +317,36 @@ public class BuildJobManager {
         }
     }
     
+    private void refreshExportRootPom(String pomLocation, List<String> itemLabels) throws Exception {
+        File rootPom = new File(pomLocation + File.separator + TalendMavenConstants.POM_FILE_NAME);
+        if (rootPom.exists()) {
+            Model pomModel = MavenPlugin.getMavenModelManager().readMavenModel(rootPom);
+            List<Profile> profiles = pomModel.getProfiles();
+            Iterator<Profile> profileIte = profiles.iterator();
+            while (profileIte.hasNext()) {
+                Profile profile = profileIte.next();
+                if ("ci-builder".equals(profile.getId())) {
+                    profileIte.remove();
+                }
+            }
+            List<String> modules = pomModel.getModules();
+            Iterator<String> modulesIte = modules.iterator();
+            while (modulesIte.hasNext()) {
+                String module = modulesIte.next();
+                File sourcefile = new File(pomLocation + File.separator + module);
+                if (!sourcefile.exists() && !sourcefile.isDirectory()) {
+                    modulesIte.remove();
+                }
+            }
+            for (String label : itemLabels) {
+                if (!modules.contains(label)) {
+                    modules.add(label);
+                }
+            }
+            PomUtil.savePom(null, pomModel, rootPom);
+        }
+    }
+
     private String getLogErrorMsg(String filepath) throws IOException{
     	BufferedReader reader = null;
     	StringBuffer errorbuffer = new StringBuffer();
