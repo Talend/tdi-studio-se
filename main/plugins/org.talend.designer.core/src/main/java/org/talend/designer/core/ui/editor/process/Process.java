@@ -1624,6 +1624,8 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         EList cList = processType.getConnection();
         MetadataEmfFactory factory = new MetadataEmfFactory();
         JobletUtil jutil = new JobletUtil();
+        // fix for TUP-19820:avoid to save the same node several times
+        List<Node> savedNodes = new ArrayList<Node>();
         // save according to elem order to keep zorder (children insertion) in
         // diagram
         for (Element element : elem) {
@@ -1635,10 +1637,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                             AbstractJobletContainer jobletCon = (AbstractJobletContainer) container;
                             saveJobletNode(jobletCon);
                         }
-
-                        saveNode(fileFact, processType, nList, cList, container.getNode(), factory);
+                        if (!savedNodes.contains(container.getNode())) {
+                            saveNode(fileFact, processType, nList, cList, container.getNode(), factory);
+                            savedNodes.add(container.getNode());
+                        }
                     } else {
-                        saveNode(fileFact, processType, nList, cList, container.getNode(), factory);
+                        if (!savedNodes.contains(container.getNode())) {
+                            saveNode(fileFact, processType, nList, cList, container.getNode(), factory);
+                            savedNodes.add(container.getNode());
+                        }
                     }
                 }
             } else if (element instanceof AbstractJobletContainer) {
@@ -1646,10 +1653,15 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                     AbstractJobletContainer jobletCon = (AbstractJobletContainer) element;
                     saveJobletNode(jobletCon);
                 }
-
-                saveNode(fileFact, processType, nList, cList, ((NodeContainer) element).getNode(), factory);
+                if (!savedNodes.contains(((NodeContainer) element).getNode())) {
+                    saveNode(fileFact, processType, nList, cList, ((NodeContainer) element).getNode(), factory);
+                    savedNodes.add(((NodeContainer) element).getNode());
+                }
             } else if (element instanceof NodeContainer) {
-                saveNode(fileFact, processType, nList, cList, ((NodeContainer) element).getNode(), factory);
+                if (!savedNodes.contains(((NodeContainer) element).getNode())) {
+                    saveNode(fileFact, processType, nList, cList, ((NodeContainer) element).getNode(), factory);
+                    savedNodes.add(((NodeContainer) element).getNode());
+                }
             } else if (element instanceof Note) {
                 saveNote(fileFact, processType, (Note) element);
             }
