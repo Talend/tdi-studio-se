@@ -108,14 +108,14 @@
 			</includes>
 		</fileSet>
 		<fileSet><!--routins code -->
-			<directory>${routinscode.dir}</directory>
+			<directory>${routinescode.dir}</directory>
 			<outputDirectory>code/routines/src/main/java/</outputDirectory>
 			<includes>
 				<include>**/*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet><!--routins pom -->
-			<directory>${routinspom.dir}</directory>
+			<directory>${routinespom.dir}</directory>
 			<outputDirectory>code/routines/</outputDirectory>
 			<includes>
 				<include>pom.xml</include>

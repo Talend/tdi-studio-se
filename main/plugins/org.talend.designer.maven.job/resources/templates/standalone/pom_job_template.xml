@@ -16,7 +16,6 @@
 
 	<properties>
 		<talend.job.path>@JobPath@</talend.job.path>
-		<talend.job.pompath>@ProjectRelativePath@</talend.job.pompath>
 		<!-- for jobInfo.properties -->
 		<maven.build.timestamp.format>@JobDateFormat@</maven.build.timestamp.format>
 		<talend.project.name>@ProjectName@</talend.project.name>
@@ -114,9 +113,9 @@
 				<templates.dir>${basedir}/src/main/templates/</templates.dir>
 				<assemblies.dir>${basedir}/src/main/assemblies/</assemblies.dir>
 				<poms.dir>${basedir}</poms.dir>
-				<parentpom.dir>${talend.job.pompath}</parentpom.dir>
-				<routinspom.dir>${talend.job.pompath}code/routines/</routinspom.dir>
-				<routinscode.dir>${talend.job.pompath}code/routines/src/main/java/</routinscode.dir>
+				<parentpom.dir>../../../</parentpom.dir>
+				<routinespom.dir>../../../code/routines/</routinespom.dir>
+				<routinescode.dir>../../../code/routines/src/main/java/</routinescode.dir>
 			</properties>
 		</profile>
 		<profile>
