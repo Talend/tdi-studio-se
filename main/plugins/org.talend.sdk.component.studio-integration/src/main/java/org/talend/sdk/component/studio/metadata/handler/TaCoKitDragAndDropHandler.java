@@ -15,6 +15,7 @@ package org.talend.sdk.component.studio.metadata.handler;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
@@ -79,7 +80,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
      */
     @Override
     public Object getComponentValue(final Connection connection, final String repositoryKey, final IMetadataTable table,
-            final String targetComponent) {
+            final String targetComponent, Map<Object, Object> contextMap) {
         try {
             if (connection == null) {
                 return null;
