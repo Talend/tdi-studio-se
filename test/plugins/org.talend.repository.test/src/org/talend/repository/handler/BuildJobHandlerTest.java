@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,31 +17,27 @@ import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.maven.model.Model;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.emf.common.util.EMap;
-import org.eclipse.m2e.core.MavenPlugin;
-import org.eclipse.m2e.core.embedder.MavenModelManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.talend.commons.utils.VersionUtils;
+import org.talend.commons.exception.PersistenceException;
+import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Project;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.runtime.maven.MavenConstants;
-import org.talend.core.runtime.projectsetting.ProjectPreferenceManager;
-import org.talend.core.service.ITransformService;
-import org.talend.designer.maven.DesignerMavenPlugin;
-import org.talend.designer.maven.model.TalendMavenConstants;
+import org.talend.designer.core.IDesignerCoreService;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.model.bridge.ReponsitoryContextBridge;
 import org.talend.repository.ProjectManager;
@@ -58,9 +54,21 @@ import org.talend.repository.ui.wizards.exportjob.util.ExportJobUtil;
 
 public class BuildJobHandlerTest {
 
-    private ProcessItem processItem;
+    private ProcessItem jobWithTdqItem;
 
-    private String destinationPath;
+    private ProcessItem jobWithTdmItem;
+
+    private ProcessItem jobWithChildrenItem;
+
+    private ProcessItem jobWithJobletItem;
+
+    private ProcessItem childJobItem;
+
+    private Item jobletItem;
+
+    private List<Item> testItems;
+
+    private List<String> destinationPaths;
 
     private Project bridgeProject;
 
@@ -68,25 +76,33 @@ public class BuildJobHandlerTest {
 
     private IRunProcessService runProcessService;
 
-    private ProjectPreferenceManager projectPreferenceManager;
+    private static final String JOB_WITH_TDQ_ID = "_3TtbgD7OEeiHhJsSj16U_A";
+
+    private static final String JOB_WITH_TDM_ID = "_bWyBUAYbEeapTZ0aKwL_YA";
+
+    private static final String JOB_WITH_CHILDREN_ID = "_HGAFAD7OEeiNfpYj4K_XrA";
+
+    private static final String JOB_WITH_JOBLET_ID = "_FKbJID7OEeiNfpYj4K_XrA";
+
+    private static final String JOB_CHILD_ID = "_JJsbED7OEeiNfpYj4K_XrA";
+
+    private static final String JOBLET_ID = "_V92qED7OEeiNfpYj4K_XrA";
 
     @Before
     public void setUp() throws Exception {
-
-        projectPreferenceManager = DesignerMavenPlugin.getPlugin().getProjectPreferenceManager();
-
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IRunProcessService.class)) {
             runProcessService = (IRunProcessService) GlobalServiceRegister.getDefault().getService(IRunProcessService.class);
         }
+        assertNotNull(runProcessService);
 
         // Fix the NPE for org.talend.designer.core.ui.editor.process.Process.createMainParameters(Process.java:401)
         bridgeProject = ReponsitoryContextBridge.getProject();
         ReponsitoryContextBridge.setProject(ProjectManager.getInstance().getCurrentProject().getEmfProject());
 
         ImportExportHandlersManager importManager = new ImportExportHandlersManager();
-        // job with tdm and tdq component.
-        URL testJobURL = FileLocator.find(Platform.getBundle("org.talend.repository.test"), new Path(
-                "/resources/testBuildJob.zip"), null);
+
+        URL testJobURL = FileLocator.find(Platform.getBundle("org.talend.repository.test"),
+                new Path("/resources/testBuildJob.zip"), null);
         if (testJobURL != null) {
             testJobURL = FileLocator.toFileURL(testJobURL);
         }
@@ -98,80 +114,60 @@ public class BuildJobHandlerTest {
         importManager.importItemRecords(new NullProgressMonitor(), resManager, projectRecords, true,
                 projectRecords.toArray(new ImportItem[0]), null);
 
-        IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion("_bWyBUAYbEeapTZ0aKwL_YA");
-        Item item = obj.getProperty().getItem();
-        assertTrue(item instanceof ProcessItem);
-        processItem = (ProcessItem) item;
+        jobWithTdqItem = (ProcessItem) getItemById(JOB_WITH_TDQ_ID);
+        jobWithTdmItem = (ProcessItem) getItemById(JOB_WITH_TDM_ID);
+        jobWithChildrenItem = (ProcessItem) getItemById(JOB_WITH_CHILDREN_ID);
+        jobWithJobletItem = (ProcessItem) getItemById(JOB_WITH_JOBLET_ID);
+        childJobItem = (ProcessItem) getItemById(JOB_CHILD_ID);
+        jobletItem = getItemById(JOBLET_ID);
+
+        testItems = new ArrayList<>();
+        testItems.add(jobWithTdqItem);
+        testItems.add(jobWithTdmItem);
+        testItems.add(jobWithChildrenItem);
+        testItems.add(jobWithJobletItem);
+        testItems.add(childJobItem);
+        testItems.add(jobletItem);
 
         initExportChoice();
+
+        destinationPaths = new ArrayList<>();
     }
 
     @Test
-    public void testBuildJob() throws Exception {
-        destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
-        BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
+    public void testBuildJobWithTDQ() throws Exception {
+        String destinationPath = getDestinationPath(jobWithTdqItem);
+        destinationPaths.add(destinationPath);
+        BuildJobManager.getInstance().buildJob(destinationPath, jobWithTdqItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-        validateBuildResult();
+        validateBuildResult(jobWithTdqItem, destinationPath);
     }
 
     @Test
-    public void testDefaultVersioningSettings() throws Exception {
-        destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
-        BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
+    public void testBuildJobWithTDM() throws Exception {
+        String destinationPath = getDestinationPath(jobWithTdmItem);
+        destinationPaths.add(destinationPath);
+        BuildJobManager.getInstance().buildJob(destinationPath, jobWithTdmItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-        String projectDefaultVersion = projectPreferenceManager.getPreferenceStore().getDefaultString(
-                MavenConstants.PROJECT_VERSION);
-        String itemDefaultVersion = VersionUtils.getPublishVersion(processItem.getProperty().getVersion());
-        // check project pom.
-        validateVersioningResult(TalendMavenConstants.POM_FILE_NAME, projectDefaultVersion, null);
-        // check routine pom.
-        validateVersioningResult("pom_routines.xml", projectDefaultVersion, projectDefaultVersion);
-        // check job pom.
-        validateVersioningResult("pom_testBuildJob_0.1.xml", itemDefaultVersion, projectDefaultVersion);
+        validateBuildResult(jobWithTdmItem, destinationPath);
     }
 
     @Test
-    public void testCustomVersioningSettings() throws Exception {
-        EMap additionalProperties = processItem.getProperty().getAdditionalProperties();
-        String customItemVersion = "8.8.0";
-        additionalProperties.put(MavenConstants.NAME_USER_VERSION, customItemVersion);
-
-        String customProjectVersion = "8.7.0";
-        projectPreferenceManager.setValue(MavenConstants.PROJECT_VERSION, customProjectVersion);
-
-        destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
-        BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
+    public void testBuildJobWithChildren() throws Exception {
+        String destinationPath = getDestinationPath(jobWithChildrenItem);
+        destinationPaths.add(destinationPath);
+        BuildJobManager.getInstance().buildJob(destinationPath, jobWithChildrenItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-
-        // check project pom.
-        validateVersioningResult(TalendMavenConstants.POM_FILE_NAME, customProjectVersion, null);
-        // check routine pom.
-        validateVersioningResult("pom_routines.xml", customProjectVersion, customProjectVersion);
-        // check job pom.
-        validateVersioningResult("pom_testBuildJob_0.1.xml", customItemVersion, customProjectVersion);
+        validateBuildResult(jobWithChildrenItem, destinationPath);
     }
 
     @Test
-    public void testCustomVersioningSettingsWithSnapshot() throws Exception {
-        EMap additionalProperties = processItem.getProperty().getAdditionalProperties();
-        additionalProperties.put(MavenConstants.NAME_USER_VERSION, "8.8.0");
-        additionalProperties.put(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, "true");
-
-        projectPreferenceManager.setValue(MavenConstants.PROJECT_VERSION, "8.7.0");
-        projectPreferenceManager.setValue(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, true);
-
-        destinationPath = ExportJobUtil.getTmpFolderPath() + "/testBuildJob.zip";
-        BuildJobManager.getInstance().buildJob(destinationPath, processItem, "0.1", "Default", exportChoiceMap,
+    public void testBuildJobWithJoblet() throws Exception {
+        String destinationPath = getDestinationPath(jobWithJobletItem);
+        destinationPaths.add(destinationPath);
+        BuildJobManager.getInstance().buildJob(destinationPath, jobWithJobletItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
-
-        String customProjectVersion = "8.7.0-SNAPSHOT";
-        String customItemVersion = "8.8.0-SNAPSHOT";
-        // check project pom.
-        validateVersioningResult(TalendMavenConstants.POM_FILE_NAME, customProjectVersion, null);
-        // check routine pom.
-        validateVersioningResult("pom_routines.xml", customProjectVersion, customProjectVersion);
-        // check job pom.
-        validateVersioningResult("pom_testBuildJob_0.1.xml", customItemVersion, customProjectVersion);
+        validateBuildResult(jobWithJobletItem, destinationPath);
     }
 
     private Map<ExportChoice, Object> initExportChoice() {
@@ -197,92 +193,128 @@ public class BuildJobHandlerTest {
         return exportChoiceMap;
     }
 
-    private void validateBuildResult() throws IOException {
+    private Item getItemById(String jobId) throws PersistenceException {
+        IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(jobId);
+        return obj.getProperty().getItem();
+    }
+
+    private String getDestinationPath(Item item) {
+        return ExportJobUtil.getTmpFolderPath() + "/" + item.getProperty().getLabel() + ".zip";
+    }
+
+    private void validateBuildResult(ProcessItem jobItem, String destinationPath) throws Exception {
         assertTrue(new File(destinationPath).exists());
         ZipFile zip = null;
         try {
             zip = new ZipFile(destinationPath);
-
             // jobInfo
             ZipEntry jobInfoEntry = zip.getEntry("jobInfo.properties");
             assertNotNull("Can't find the jobInfo.properties", jobInfoEntry);
             final InputStream jobInfoStream = zip.getInputStream(jobInfoEntry);
+
+            Property property = jobItem.getProperty();
+            String jobName = property.getLabel();
+            String jobVersion = property.getVersion();
+
             Properties jobInfoProp = new Properties();
             jobInfoProp.load(jobInfoStream);
-            assertEquals("testBuildJob", jobInfoProp.getProperty("job"));
-            assertEquals("0.1", jobInfoProp.getProperty("jobVersion"));
-            assertEquals("Default", jobInfoProp.getProperty("contextName"));
-            assertEquals("_bWyBUAYbEeapTZ0aKwL_YA", jobInfoProp.getProperty("jobId"));
-            assertEquals("Standard", jobInfoProp.getProperty("jobType"));
+            assertEquals(property.getId(), jobInfoProp.getProperty("jobId"));
+            assertEquals(jobName, jobInfoProp.getProperty("job"));
+            assertEquals(jobVersion, jobInfoProp.getProperty("jobVersion"));
+            assertEquals(jobItem.getProcess().getJobType(), jobInfoProp.getProperty("jobType"));
+            assertEquals(jobItem.getProcess().getDefaultContext(), jobInfoProp.getProperty("contextName"));
+
             final String technicalLabel = ProjectManager.getInstance().getCurrentProject().getTechnicalLabel();
             assertEquals(technicalLabel, jobInfoProp.getProperty("project"));
 
             ZipEntry libEntry = zip.getEntry("lib");
             assertNotNull("No lib folder", libEntry);
+            if (jobItem == jobWithJobletItem) {
+                String dependencyFromJoblet = "commons-beanutils-1.9.2.jar";
+                ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromJoblet);
+                assertNotNull("No joblet dependency in lib folder", dependencyEntry);
+            }
 
             // log4j
-            ZipEntry log4jXmlEntry = zip.getEntry("testBuildJob/log4j.xml");
+            ZipEntry log4jXmlEntry = zip.getEntry(jobName + "/log4j.xml");
             assertNotNull("No log4j.xml", log4jXmlEntry);
 
-            // shell+bat
-            ZipEntry batEntry = zip.getEntry("testBuildJob/testBuildJob_run.bat");
+            // shell, ps1, bat
+            ZipEntry batEntry = zip.getEntry(jobName + "/" + jobName + "_run.bat");
             assertNotNull("No bat file", batEntry);
 
-            ZipEntry shEntry = zip.getEntry("testBuildJob/testBuildJob_run.sh");
+            ZipEntry ps1Entry = zip.getEntry(jobName + "/" + jobName + "_run.ps1");
+            assertNotNull("No ps1 file", ps1Entry);
+
+            ZipEntry shEntry = zip.getEntry(jobName + "/" + jobName + "_run.sh");
             assertNotNull("No shell file", shEntry);
 
-            ZipEntry jarEntry = zip.getEntry("testBuildJob/testbuildjob_0_1.jar");
-            assertNotNull("No shell file", jarEntry);
+            String jobJarName = JavaResourcesHelper.getJobJarName(jobName, jobVersion);
+            ZipEntry jarEntry = zip.getEntry(jobName + "/" + jobJarName + ".jar");
+            assertNotNull("No job jar file", jarEntry);
+            if (jobItem == jobWithChildrenItem) {
+                String subJobJarName = JavaResourcesHelper.getJobJarName(childJobItem.getProperty().getLabel(),
+                        childJobItem.getProperty().getVersion());
+                ZipEntry subjobJarEntry = zip.getEntry(jobName + "/" + subJobJarName + ".jar");
+                assertNotNull("No sub job jar file", subjobJarEntry);
+            }
 
             // src
-            ZipEntry javaEntry = zip.getEntry("testBuildJob/src/main/java/" + technicalLabel.toLowerCase()
-                    + "/testbuildjob_0_1/testBuildJob.java");
+            String jobFolderName = JavaResourcesHelper.getJobFolderName(jobName, jobVersion);
+            ZipEntry javaEntry = zip.getEntry(
+                    jobName + "/src/main/java/" + technicalLabel.toLowerCase() + "/" + jobFolderName + "/" + jobName + ".java");
             assertNotNull("No job source code file", javaEntry);
 
-            ZipEntry routinesEntry = zip.getEntry("testBuildJob/src/main/java/routines/");
-            assertNotNull("No routines source code files", routinesEntry);
-            assertTrue(routinesEntry.isDirectory());
-
-            ZipEntry contextEntry = zip.getEntry("testBuildJob/src/main/resources/" + technicalLabel.toLowerCase()
-                    + "/testbuildjob_0_1/contexts/Default.properties");
+            ZipEntry contextEntry = zip.getEntry(jobName + "/src/main/resources/" + technicalLabel.toLowerCase()
+                    + "/" + jobFolderName + "/contexts/Default.properties");
             assertNotNull("No context file", contextEntry);
 
-            // dq
-            ZipEntry tdq = zip.getEntry("testBuildJob/items/reports/");
-            assertNotNull("Can't find the dq reports items", tdq);
-            assertTrue(tdq.isDirectory());
+            if (jobItem == jobWithTdqItem) {
+                // dq
+                ZipEntry tdq = zip.getEntry(jobName + "/items/reports/");
+                assertNotNull("Can't find the dq reports items", tdq);
+                assertTrue(tdq.isDirectory());
+            }
 
-            // if the tdm is load
-            if (GlobalServiceRegister.getDefault().isServiceRegistered(ITransformService.class)) {
-                ITransformService tdmService = (ITransformService) GlobalServiceRegister.getDefault().getService(
-                        ITransformService.class);
-                if (tdmService.isTransformItem(processItem)) {
-                    ZipEntry tdmSettingEntry = zip.getEntry("testBuildJob/items/" + technicalLabel.toLowerCase()
-                            + "/.settings/com.oaklandsw.base.projectProps");
-                    assertNotNull("Can't export tdm rightly", tdmSettingEntry);
+            if (jobItem == jobWithTdmItem) {
+                // if the tdm is load
+                boolean isTDM = false;
+                IDesignerCoreService coreService = CorePlugin.getDefault().getDesignerCoreService();
+                if (coreService != null) {
+                    IProcess process = coreService.getProcessFromProcessItem(jobItem);
+                    for (INode node : process.getGeneratingNodes()) {
+                        IElementParameter param = node.getElementParameter("COMPONENT_NAME");
+                        if ("tHMap".equals(param.getName())) {
+                            isTDM = true;
+                            break;
+                        }
+                    }
+                }
+                assertTrue("Not TDM item", isTDM);
 
-                    /*
-                     * the __tdm has been moved into job jar. so need test it in jar.
-                     */
-                    // ZipEntry tdmEntry = zip.getEntry("testBuildJob/__tdm/");
-                    // assertNotNull("Can't export tdm rightly", tdmEntry);
-                    // assertTrue("build job with tdm failure", tdmEntry.isDirectory());
-
-                    // testbuildjob_0_1.jar!/__tdm/TEST_NOLOGIN.zip
-                    final JarInputStream jarStream = new JarInputStream(zip.getInputStream(jarEntry));
+                ZipEntry tdmSettingEntry = zip.getEntry(
+                        jobName + "/items/" + technicalLabel.toLowerCase() + "/.settings/com.oaklandsw.base.projectProps");
+                assertNotNull("Can't export tdm rightly", tdmSettingEntry);
+                // the __tdm has been moved into job jar. so need test it in jar.
+                // testbuildWithXXX_0_1.jar!/__tdm/...
+                JarInputStream jarStream = null;
+                try {
+                    jarStream = new JarInputStream(zip.getInputStream(jarEntry));
                     boolean found = false;
                     JarEntry entry;
                     while ((entry = jarStream.getNextJarEntry()) != null) {
-                        final String name = entry.getName();
-                        if (name.contains("__tdm") && name.endsWith(technicalLabel + ".zip")) {
+                        if (entry.getName().equals("__tdm") && entry.isDirectory()) {
                             found = true;
+                            break;
                         }
                     }
-                    jarStream.close();
-                    assertTrue("Can't find the __tdm in job jar after build", found);
+                    assertTrue("Can't find __tdm folder in job jar after build", found);
+                } finally {
+                    if (jarStream != null) {
+                        jarStream.close();
+                    }
                 }
             }
-
         } finally {
             if (zip != null) {
                 zip.close();
@@ -290,38 +322,32 @@ public class BuildJobHandlerTest {
         }
     }
 
-    private void validateVersioningResult(String pomFileName, String version, String parentVersion) throws CoreException {
-        assertNotNull(runProcessService);
-        MavenModelManager manager = MavenPlugin.getMavenModelManager();
-        IFile pomFile = runProcessService.getTalendProcessJavaProject().getProject().getFile(pomFileName);
-        Model model = manager.readMavenModel(pomFile);
-        assertEquals(version, model.getVersion());
-        if (parentVersion != null) {
-            assertEquals(parentVersion, model.getParent().getVersion());
-        }
-    }
-
     @After
     public void tearDown() throws Exception {
         ReponsitoryContextBridge.setProject(bridgeProject);
 
-        projectPreferenceManager.getPreferenceStore().setToDefault(MavenConstants.PROJECT_VERSION);
-        projectPreferenceManager.getPreferenceStore().setToDefault(MavenConstants.NAME_PUBLISH_AS_SNAPSHOT);
-
-        if (processItem != null) {
-            IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-            IRepositoryViewObject repObj = factory.getLastVersion(processItem.getProperty().getId());
-            if (repObj != null) {
-                factory.deleteObjectPhysical(repObj);
+        if (!testItems.isEmpty()) {
+            for (Item item : testItems) {
+                IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+                IRepositoryViewObject repObj = factory.getLastVersion(item.getProperty().getId());
+                if (repObj != null) {
+                    factory.deleteObjectPhysical(repObj);
+                }
             }
+            testItems.clear();
         }
 
         ExportJobUtil.deleteTempFiles();
-        if (destinationPath != null) {
-            File file = new File(destinationPath);
-            if (file.exists()) {
-                file.delete();
+
+        if (!destinationPaths.isEmpty()) {
+            for (String destinationPath : destinationPaths) {
+                File file = new File(destinationPath);
+                if (file.exists()) {
+                    file.delete();
+                }
             }
+            destinationPaths.clear();
         }
     }
+
 }

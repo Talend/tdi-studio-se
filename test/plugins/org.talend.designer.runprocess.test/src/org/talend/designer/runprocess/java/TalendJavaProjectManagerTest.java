@@ -12,7 +12,10 @@
 // ============================================================================
 package org.talend.designer.runprocess.java;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -90,6 +93,19 @@ public class TalendJavaProjectManagerTest {
         IFolder processFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS);
         assertTrue(processFolder.exists());
 
+        if (PluginChecker.isJobLetPluginLoaded()) {
+            IFolder jobletsFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_JOBLETS);
+            assertTrue(jobletsFolder.exists());
+        }
+        if (PluginChecker.isSparkJobLetPluginLoaded()) {
+            IFolder sparkKobletsFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_JOBLETS_SPARK);
+            assertTrue(sparkKobletsFolder.exists());
+        }
+        if (PluginChecker.isSparkStreamingJobLetPluginLoaded()) {
+            IFolder sparkstrJobletsFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_JOBLETS_SPARK_STREAMING);
+            assertTrue(sparkstrJobletsFolder.exists());
+        }
+
         if (PluginChecker.isMapReducePluginLoader()) {
             IFolder processMRFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS_MR);
             assertTrue(processMRFolder.exists());
@@ -105,6 +121,10 @@ public class TalendJavaProjectManagerTest {
         if (PluginChecker.isServiceLoaded()) {
             IFolder processServiceFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_PROCESS_SERVICES);
             assertTrue(processServiceFolder.exists());
+        }
+        if (PluginChecker.isRouteletLoaded()) {
+            IFolder routeletsFolder = jobsFolder.getFolder(TalendJavaProjectConstants.DIR_ROUTELETS);
+            assertTrue(routeletsFolder.exists());
         }
     }
 
