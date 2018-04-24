@@ -122,13 +122,13 @@ public class DeploymentComposite extends AbstractTabComposite {
             process = (Process) repositoryViewObject;
         } else if (repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)
                 || repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE)
-                || repositoryViewObject.getRepositoryObjectType().equals(
-                        ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE)) {
+                || repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE_MICROSERVICE)) {
             isProcessItem = true;
             ProcessItem i = (ProcessItem) repositoryViewObject.getProperty().getItem();
             try {
                 process = (new ProcessEditorInput(i, true, null, false).getLoadedProcess());
             } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
             }
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
@@ -158,8 +158,7 @@ public class DeploymentComposite extends AbstractTabComposite {
                     commandStack = (CommandStack) editor.getAdapter(CommandStack.class);
                 } else if (repositoryViewObject.getRepositoryObjectType().getType().equals("SERVICES")
                         || repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.SERVICESPORT)
-                        || repositoryViewObject.getRepositoryObjectType().equals(
-                                ERepositoryObjectType.SERVICESOPERATION)) {
+                        || repositoryViewObject.getRepositoryObjectType().equals(ERepositoryObjectType.SERVICESOPERATION)) {
                     serviceItem = repositoryViewObject.getProperty().getItem();
                     isServiceItem = true;
                 }
@@ -176,8 +175,8 @@ public class DeploymentComposite extends AbstractTabComposite {
     private void checkReadOnly() {
         try {
             String currentVersion = isService ? serviceItem.getProperty().getVersion() : process.getVersion();
-            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance().getLastVersion(
-                    isService ? serviceItem.getProperty().getId() : process.getId());
+            IRepositoryViewObject obj = ProxyRepositoryFactory.getInstance()
+                    .getLastVersion(isService ? serviceItem.getProperty().getId() : process.getId());
             String latestVersion = obj.getVersion();
 
             if (!currentVersion.equals(latestVersion) || isDataServiceJob || isProcessItem || isServiceItem) {
@@ -237,9 +236,8 @@ public class DeploymentComposite extends AbstractTabComposite {
         versionTextData.widthHint = 200;
         versionText.setLayoutData(versionTextData);
 
-        snapshotCheckbox =
-                widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.snapshotLabel"), //$NON-NLS-1$
-                        SWT.CHECK);
+        snapshotCheckbox = widgetFactory.createButton(composite, Messages.getString("DeploymentComposite.snapshotLabel"), //$NON-NLS-1$
+                SWT.CHECK);
         GridData snapshotCheckboxData = new GridData(GridData.FILL_HORIZONTAL);
         snapshotCheckboxData.horizontalSpan = 2;
         snapshotCheckbox.setLayoutData(snapshotCheckboxData);
@@ -429,8 +427,8 @@ public class DeploymentComposite extends AbstractTabComposite {
             public void widgetSelected(SelectionEvent e) {
                 // if unchecked then remove key.
                 String useSnapshot = snapshotCheckbox.getSelection() ? String.valueOf(true) : null;
-                Command cmd = new MavenDeploymentValueChangeCommand(getObject(),
-                        MavenConstants.NAME_PUBLISH_AS_SNAPSHOT, useSnapshot);
+                Command cmd = new MavenDeploymentValueChangeCommand(getObject(), MavenConstants.NAME_PUBLISH_AS_SNAPSHOT,
+                        useSnapshot);
                 getCommandStack().execute(cmd);
             }
 
