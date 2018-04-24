@@ -233,6 +233,7 @@ public class GenericWizardService implements IGenericWizardService {
     @Override
     public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
+        Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
             ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
@@ -254,9 +255,10 @@ public class GenericWizardService implements IGenericWizardService {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils
                                 .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
-                        if (compPros != null && !componentProperties.contains(compPros)) {
+                        if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);
+                            componentPropertiesSet.add(compPros);
                         }
                     }
                 }

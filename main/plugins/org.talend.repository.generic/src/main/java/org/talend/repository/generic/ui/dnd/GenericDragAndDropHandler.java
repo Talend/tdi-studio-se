@@ -77,6 +77,8 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     public static final String INPUT = "Input"; //$NON-NLS-1$
 
     public static final String OUTPUT = "Output"; //$NON-NLS-1$
+    
+    private static final String CACHED_DATA_KEY=".cachedData";
 
     @Override
     public boolean canHandle(Connection connection) {
@@ -87,15 +89,24 @@ public class GenericDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
 
     @Override
-    public Object getComponentValue(Connection connection, String value, IMetadataTable table, String targetComponent) {
+    public Object getComponentValue(Connection connection, String value, IMetadataTable table, String targetComponent,
+            Map<Object, Object> contextMap) {
         if (value != null && canHandle(connection)) {
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericWizardService.class)) {
-                IGenericWizardService wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault().getService(
-                        IGenericWizardService.class);
+                IGenericWizardService wizardService = (IGenericWizardService) GlobalServiceRegister.getDefault()
+                        .getService(IGenericWizardService.class);
                 if (wizardService != null && wizardService.isGenericConnection(connection)) {
-                    return getGenericRepositoryValue(connection,
-                            wizardService.getAllComponentProperties(connection, getSeletetedMetadataTableName(table), true),
-                            value, table);
+                    List<ComponentProperties> componentPropertiesList = null;
+                    if (contextMap != null && contextMap.get(CACHED_DATA_KEY) != null) {
+                        componentPropertiesList = (List<ComponentProperties>) contextMap.get(CACHED_DATA_KEY);
+                    } else {
+                        componentPropertiesList = wizardService.getAllComponentProperties(connection,
+                                getSeletetedMetadataTableName(table), true);
+                        if (contextMap != null) {
+                            contextMap.put(CACHED_DATA_KEY, componentPropertiesList);
+                        }
+                    }
+                    return getGenericRepositoryValue(connection, componentPropertiesList, value, table);
                 }
             }
         }
