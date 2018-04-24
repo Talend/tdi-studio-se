@@ -128,6 +128,7 @@ public class DeploymentComposite extends AbstractTabComposite {
             try {
                 process = (new ProcessEditorInput(i, true, null, false).getLoadedProcess());
             } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
             }
         }
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
