@@ -201,12 +201,17 @@ int nb_file_<%=cid%> = 0;
 		com.jcraft.jsch.SftpATTRS attrs_<%=cid %> = null;
 		try {
 			attrs_<%=cid %> = c_<%=cid%>.stat(remotedir_<%=cid %>);
-		} catch (Exception e) {
+		} catch (com.jcraft.jsch.SftpException ignored) {
+<%
+			if (isLog4jEnabled) {
+%>
+				log.debug("Can't find directory " + remotedir_<%=cid %> + ". Component will create it");
+<%
+			}
+%>
 		}
 
-		if (attrs_<%=cid %> != null && attrs_<%=cid %>.isDir()) {
-			dirExist_<%=cid %> = true;
-		}
+		dirExist_<%=cid %> = attrs_<%=cid %> != null && attrs_<%=cid %>.isDir();
 
 		if (!dirExist_<%=cid %>) {
 			c_<%=cid%>.mkdir(remotedir_<%=cid %>);
