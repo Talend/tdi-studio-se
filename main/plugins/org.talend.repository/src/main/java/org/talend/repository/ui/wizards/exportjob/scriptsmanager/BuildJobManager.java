@@ -18,7 +18,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,10 +45,13 @@ import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
@@ -156,6 +158,10 @@ public class BuildJobManager {
                 if (jobTargetFile != null && jobTargetFile.exists()) {
                     // unzip to temp folder
                     FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), tempProFolder.getAbsolutePath());
+                    // build subjob and package them to zip
+                    buildSubJob(tempProFolder.getAbsolutePath(), processItem, processes, itemLabels, context, exportChoiceMap,
+                            jobExportType, pMonitor);
+
                     String zipPath = jobTargetFile.getLocation().toPortableString();
                     if (needClasspathJar(exportChoiceMap)) {
                         JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipPath, processItem
@@ -274,10 +280,14 @@ public class BuildJobManager {
                 }
 
                 // tup-19705 refresh export root pom to support use mvn package directly
+                List<String> itemLabels = new ArrayList<String>();
+                itemLabels.add(label);
                 ExportJobUtil.deleteTempFiles();
                 String temUnzipPath = ExportJobUtil.getTmpFolder() + File.separator + label + "_" + version;
                 FilesUtils.unzip(jobZip, temUnzipPath);
-                refreshExportRootPom(temUnzipPath, Arrays.asList(new String[] { label }));
+                // build subjob and package them to zip
+                buildSubJob(temUnzipPath, processItem, null, itemLabels, context, exportChoiceMap, jobExportType, pMonitor);
+                refreshExportRootPom(temUnzipPath, itemLabels);
                 ZipToFile.zipFile(ExportJobUtil.getTmpFolder(), jobZip);
                 ExportJobUtil.deleteTempFiles();
 
@@ -317,6 +327,71 @@ public class BuildJobManager {
         }
     }
     
+    private void buildSubJob(String zipLocation, ProcessItem item, final List<ProcessItem> checkedProcesses,
+            List<String> itemLabels, String context, Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType,
+            IProgressMonitor monitor) throws Exception {
+        IProgressMonitor pMonitor = new NullProgressMonitor();
+        if (monitor != null) {
+            pMonitor = monitor;
+        }
+        int scale = 1000;
+        int steps = 3;
+        pMonitor.beginTask(Messages.getString("JobScriptsExportWizardPage.newExportJobScript", jobExportType), scale * steps); //$NON-NLS-1$
+        List<ProcessItem> dependenciesItems = new ArrayList<ProcessItem>();
+        List<IRepositoryViewObject> allProcessDependencies = new ArrayList<IRepositoryViewObject>();
+        // get job related
+        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
+        RelationshipItemBuilder builder = RelationshipItemBuilder.getInstance();
+        List<Relation> relations = builder.getItemsRelatedTo(item.getProperty().getId(), item.getProperty().getVersion(),
+                RelationshipItemBuilder.JOB_RELATION);
+        for (Relation relation : relations) {
+            IRepositoryViewObject obj = factory.getLastVersion(relation.getId());
+            if (obj != null) {
+                allProcessDependencies.add(obj);
+            }
+        }
+        // check if already in build list
+        if (!allProcessDependencies.isEmpty()) {
+            for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
+                Item repoItem = repositoryObject.getProperty().getItem();
+                if (checkedProcesses == null || !checkedProcesses.contains((ProcessItem) repoItem)) {
+                    dependenciesItems.add((ProcessItem) repoItem);
+                }
+            }
+        }
+
+        // build job related and package to zip
+        for (int i = 0; i < dependenciesItems.size(); i++) {
+            ProcessItem processItem = dependenciesItems.get(i);
+            pMonitor.setTaskName(Messages.getString("BuildJobManager.building", processItem.getProperty().getLabel()));//$NON-NLS-1$
+
+            IBuildJobHandler buildJobHandler = BuildJobFactory.createBuildJobHandler(processItem, context,
+                    processItem.getProperty().getVersion(), exportChoiceMap, jobExportType);
+
+            Map<String, Object> prepareParams = new HashMap<String, Object>();
+            prepareParams.put(IBuildResourceParametes.OPTION_ITEMS, true);
+            prepareParams.put(IBuildResourceParametes.OPTION_ITEMS_DEPENDENCIES, true);
+            buildJobHandler.prepare(new SubProgressMonitor(pMonitor, scale), prepareParams);
+
+            buildJobHandler.build(new SubProgressMonitor(pMonitor, scale));
+            IFile jobTargetFile = buildJobHandler.getJobTargetFile();
+            if (jobTargetFile != null && jobTargetFile.exists()) {
+                FilesUtils.unzip(jobTargetFile.getLocation().toPortableString(), zipLocation);
+                String zipPath = jobTargetFile.getLocation().toPortableString();
+                if (needClasspathJar(exportChoiceMap)) {
+                    JavaJobExportReArchieveCreator creator = new JavaJobExportReArchieveCreator(zipPath,
+                            processItem.getProperty().getLabel());
+                    creator.setTempFolder(zipLocation);
+                    creator.buildNewJar();
+                }
+            }
+            itemLabels.add(processItem.getProperty().getLabel());
+            pMonitor.worked(scale);
+            pMonitor.done();
+        }
+
+    }
+
     private void refreshExportRootPom(String pomLocation, List<String> itemLabels) throws Exception {
         File rootPom = new File(pomLocation + File.separator + TalendMavenConstants.POM_FILE_NAME);
         if (rootPom.exists()) {
@@ -325,7 +400,7 @@ public class BuildJobManager {
             Iterator<Profile> profileIte = profiles.iterator();
             while (profileIte.hasNext()) {
                 Profile profile = profileIte.next();
-                if ("ci-builder".equals(profile.getId())) {
+                if (TalendMavenConstants.PROFILE_CI_BUILDER.equals(profile.getId())) {
                     profileIte.remove();
                 }
             }

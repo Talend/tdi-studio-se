@@ -107,18 +107,39 @@
 				<include>pom.xml</include>
 			</includes>
 		</fileSet>
-		<fileSet><!--routins code -->
+		<fileSet><!--routines code -->
 			<directory>${routinescode.dir}</directory>
-			<outputDirectory>code/routines/src/main/java/</outputDirectory>
+			<outputDirectory>code/routines/src/main</outputDirectory>
 			<includes>
-				<include>**/*.*</include>
+				<include>**/**/*.*</include>
 			</includes>
 		</fileSet>
-		<fileSet><!--routins pom -->
+		<fileSet><!--routines pom -->
 			<directory>${routinespom.dir}</directory>
 			<outputDirectory>code/routines/</outputDirectory>
 			<includes>
 				<include>pom.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--pigudf code -->
+			<directory>${pigudfcode.dir}</directory>
+			<outputDirectory>code/pigudf/src/main</outputDirectory>
+			<includes>
+				<include>**/**/*.*</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--pifudf pom -->
+			<directory>${pigudfpom.dir}</directory>
+			<outputDirectory>code/pigudf/</outputDirectory>
+			<includes>
+				<include>pom.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--joblet -->
+			<directory>${joblet.dir}</directory>
+			<outputDirectory>jobs/joblets/</outputDirectory>
+			<includes>
+				<include>**/*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet> <!-- add items -->
