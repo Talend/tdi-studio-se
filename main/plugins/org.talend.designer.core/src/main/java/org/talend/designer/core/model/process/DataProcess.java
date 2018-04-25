@@ -1669,18 +1669,6 @@ public class DataProcess implements IGeneratingProcess {
             }
         }
 
-        for (INode node : graphicalNodeList) {
-            boolean exist = false;
-            for (INode newNode : newGraphicalNodeList) {
-                if (node.getUniqueName().equals(newNode.getUniqueName())) {
-                    exist = true;
-                }
-            }
-            if (!exist && node.isELTComponent()) {
-                buildDataNodeFromNode(node);
-            }
-        }
-
         // build data nodes from graphical nodes.
         // DataNode are the real objects used by code generation (we don't use Node class)
         for (INode node : newGraphicalNodeList) {
@@ -1699,7 +1687,6 @@ public class DataProcess implements IGeneratingProcess {
                         break;
                     }
                 }
-
             }
         }
 
