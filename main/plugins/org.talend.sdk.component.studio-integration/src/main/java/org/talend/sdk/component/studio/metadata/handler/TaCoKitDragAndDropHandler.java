@@ -13,12 +13,17 @@
 package org.talend.sdk.component.studio.metadata.handler;
 
 import static org.talend.core.model.metadata.designerproperties.RepositoryToComponentProperty.addQuotesIfNecessary;
+import static org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator.PATH_SEPARATOR;
 import static org.talend.sdk.component.studio.util.TaCoKitUtil.isEmpty;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
@@ -36,6 +41,11 @@ import org.talend.core.model.utils.AbstractDragAndDropServiceHandler;
 import org.talend.core.model.utils.IComponentName;
 import org.talend.core.repository.RepositoryComponentSetting;
 import org.talend.repository.model.RepositoryNode;
+import org.talend.sdk.component.server.front.model.ComponentDetail;
+import org.talend.sdk.component.server.front.model.ComponentDetailList;
+import org.talend.sdk.component.server.front.model.ComponentId;
+import org.talend.sdk.component.server.front.model.ComponentIndex;
+import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
@@ -43,8 +53,10 @@ import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemMo
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
 
 public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler {
 
@@ -81,23 +93,108 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         if (connection == null || isEmpty(repositoryKey)) {
             return null;
         }
+        ValueModel valueModel = null;
         try {
-            final TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-            for (final String key : repositoryKey.split("\\|")) {
-                ValueModel valueModel = model.getValue(key);
-                if (valueModel == null || valueModel.getValue() == null) {
-                    return null;
-                }
-                if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
-                    return addQuotesIfNecessary(connection, valueModel.getValue());
-                } else {
-                    return valueModel.getValue();
-                }
-            }
+            final TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);           
+            final String key = computeKey(model, repositoryKey, targetComponent);
+            valueModel = model.getValue(key);
         } catch (Exception e) {
             ExceptionHandler.process(e);
         }
-        return null;
+        if (valueModel == null || valueModel.getValue() == null) {
+            return null;
+        }
+        if (TaCoKitConst.TYPE_STRING.equalsIgnoreCase(valueModel.getType())) {
+            return addQuotesIfNecessary(connection, valueModel.getValue());
+        } else {
+            return valueModel.getValue();
+        }
+    }
+
+    /**
+     * Computes stored key (a key which is used to store specific parameter value) from {@code parameterId} of specified {@code component}
+     * 
+     * @param model object which stores persisted values
+     * @param parameterId parameter id
+     * @param component component name
+     * @return stored value key
+     * @throws Exception Exception should be handled by ExceptionHandler
+     */
+    private String computeKey(final TaCoKitConfigurationModel model, String parameterId,
+            String component) throws Exception {
+        final Map<String, PropertyDefinitionDecorator> tree = retrieveProperties(component);
+        final Optional<String> configPath = findConfigPath(tree, model, parameterId);
+        final String modelRoot = findModelRoot(model);
+        
+        if (configPath.isPresent()) {
+            return parameterId.replace(configPath.get(), modelRoot);
+        } else {
+            return null;
+        }
+    }
+    
+    private String findModelRoot(final TaCoKitConfigurationModel model) {
+        @SuppressWarnings("unchecked")
+        final Map<String, String> values = model.getProperties();
+        List<String> possibleRoots = values.keySet().stream()
+            .filter(key -> key.contains(PATH_SEPARATOR))
+            .map(key -> key.substring(0, key.indexOf(PATH_SEPARATOR)))
+            .distinct()
+            .collect(Collectors.toList());
+        
+        if (possibleRoots.size() != 1) {
+            throw new IllegalStateException("Multiple roots found. Can't guess correct one: " + possibleRoots);
+        }
+        return possibleRoots.get(0);
+    }
+    
+    private Map<String, PropertyDefinitionDecorator> retrieveProperties(final String component) {
+        final ComponentDetail detail = retrieveDetail(component);
+        return buildPropertyTree(detail);
+    }
+    
+    private Optional<String> findConfigPath(final Map<String, PropertyDefinitionDecorator> tree, final TaCoKitConfigurationModel model, final String parameterId) throws Exception {
+        final ConfigTypeNode configTypeNode = model.getConfigTypeNode();
+        final String configType = configTypeNode.getConfigurationType();
+        final String configName = configTypeNode.getName();
+        
+        for (PropertyDefinitionDecorator current = tree.get(parameterId); current != null; current = tree.get(current.getParentPath())) {
+            if (configType.equals(current.getConfigurationType())
+                    && configName.equals(current.getConfigurationTypeName())) {
+                return Optional.of(current.getPath());
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private ComponentDetail retrieveDetail(final String component) {
+        final ComponentIndices indices = client().getIndex(language());
+        final ComponentId id = indices.getComponents().stream().map(ComponentIndex::getId)
+                .filter(i -> component.equals(TaCoKitUtil.getFullComponentName(i.getFamily(), i.getName())))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(component + " not found"));
+        
+        final ComponentDetailList detailList = client()
+                .getDetail(language(), new String[] { id.getId() });
+        if (detailList.getDetails().size() != 1) {
+            throw new IllegalArgumentException("No single detail for " + component);
+        }
+        return detailList.getDetails().get(0);
+    }
+    
+    private Map<String, PropertyDefinitionDecorator> buildPropertyTree(final ComponentDetail detail) {
+        final Map<String, PropertyDefinitionDecorator> tree = new HashMap<>();
+        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator.wrap(detail.getProperties());
+        properties.forEach(p -> tree.put(p.getPath(), p));
+        return tree;
+    }
+    
+    private V1Component client() {
+        return Lookups.client().v1().component();
+    }
+    
+    private String language() {
+        return Locale.getDefault().getLanguage();
     }
 
     @Override

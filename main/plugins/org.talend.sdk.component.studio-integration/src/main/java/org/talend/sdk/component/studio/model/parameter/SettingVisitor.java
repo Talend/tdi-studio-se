@@ -454,7 +454,7 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setDisplayName(node.getProperty().getDisplayName());
         parameter.setFieldType(node.getFieldType());
         parameter.setName(node.getProperty().getPath());
-        node.getRepositoryKeys().ifPresent(parameter::setRepositoryValue);
+        parameter.setRepositoryValue(node.getProperty().getPath());
         parameter.setNumRow(node.getLayout(form).getPosition());
         parameter.setShow(true);
         String defaultValue = node.getProperty().getDefaultValue();
