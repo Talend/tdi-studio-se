@@ -137,9 +137,9 @@
 		</fileSet>
 		<fileSet><!--joblet -->
 			<directory>${joblet.dir}</directory>
-			<outputDirectory>jobs/joblets/</outputDirectory>
+			<outputDirectory>jobs/</outputDirectory>
 			<includes>
-				<include>**/*.*</include>
+				<include>joblets*/**/*.*</include>
 			</includes>
 		</fileSet>
 		<fileSet> <!-- add items -->

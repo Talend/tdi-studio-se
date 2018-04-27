@@ -119,7 +119,7 @@
 				<routinescode.dir>${talend.rootpom.path}code/routines/src/main/</routinescode.dir>
 				<pigudfpom.dir>${talend.rootpom.path}code/pigudf/</pigudfpom.dir>
 				<pigudfcode.dir>${talend.rootpom.path}code/pigudf/src/main/</pigudfcode.dir>
-				<joblet.dir>${talend.rootpom.path}jobs/joblets/</joblet.dir>
+				<joblet.dir>${talend.rootpom.path}jobs/</joblet.dir>
 			</properties>
 		</profile>
 		<profile>
