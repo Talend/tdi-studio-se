@@ -274,6 +274,9 @@ public class ProcessChangeListener implements PropertyChangeListener {
                 try {
                     removeFromParentSourceFolder(sourceFolder);
                     IFolder targetFolder = processTypeFolder.getFolder(targetPath);
+                    if (!targetFolder.exists()) {
+                        targetFolder.create(true, true, null);
+                    }
                     MoveResourceChange change = new MoveResourceChange(sourceFolder, targetFolder);
                     change.perform(new NullProgressMonitor());
                     updatePomsInNewFolder(targetFolder.getFolder(sourceFolder.getName()));

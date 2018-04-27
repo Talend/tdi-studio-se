@@ -458,8 +458,8 @@ public class RunProcessService implements IRunProcessService {
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
-    public void initializeRootPoms() {
-        delegateService.initializeRootPoms();
+    public void initializeRootPoms(IProgressMonitor monitor) {
+        delegateService.initializeRootPoms(monitor);
     }
 
     @Override

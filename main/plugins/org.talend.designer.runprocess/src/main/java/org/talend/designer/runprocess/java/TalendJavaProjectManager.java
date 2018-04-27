@@ -74,7 +74,6 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
-import org.talend.repository.utils.DeploymentConfsUtils;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -99,15 +98,6 @@ public class TalendJavaProjectManager {
                     AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
                     // create poms folder.
                     IFolder poms = createFolderIfNotExist(helper.getProjectPomsFolder(), monitor);
-
-                    // // deployments
-                    // if (PluginChecker.isTIS()) {
-                    // IFolder aggregators = createFolderIfNotExist(poms.getFolder(DIR_AGGREGATORS), monitor);
-                    // IFile ciPomFile = aggregators.getFile(TalendJavaProjectConstants.FILE_POM_CI_BUILDER);
-                    // if (!ciPomFile.exists()) {
-                    // helper.createCIPom(ciPomFile, monitor);
-                    // }
-                    // }
 
                     // codes
                     IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
@@ -158,7 +148,7 @@ public class TalendJavaProjectManager {
                     if (PluginChecker.isRouteletLoaded()) {
                         createFolderIfNotExist(jobs.getFolder(DIR_ROUTELETS), monitor);
                     }
-                    helper.createRootPom(poms, monitor);
+                    helper.createRootPom(monitor);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -361,10 +351,9 @@ public class TalendJavaProjectManager {
                             if (oldName != null) {
                                 property.setLabel(oldName);
                             }
-                            IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
-                            IFile file = ResourcesPlugin.getWorkspace().getRoot()
-                                    .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
-                            AggregatorPomsHelper.removeFromParentModules(file);
+                            IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
+                                    .getFile(TalendMavenConstants.POM_FILE_NAME);
+                            AggregatorPomsHelper.removeFromParentModules(pomFile);
                         } finally {
                             if (oldName != null) {
                                 property.setLabel(currentName);
@@ -395,7 +384,7 @@ public class TalendJavaProjectManager {
                                 if (oldName != null) {
                                     property.setLabel(oldName);
                                 }
-                                IPath jobPath = AggregatorPomsHelper.getJobProjectPath(property, realVersion);
+                                IPath jobPath = AggregatorPomsHelper.getItemPomFolder(property, realVersion).getLocation();
                                 if (!removedVersions.contains(realVersion)) {
                                     File projectFolder = jobPath.toFile();
                                     if (projectFolder.exists()) {
@@ -496,6 +485,9 @@ public class TalendJavaProjectManager {
                         project.delete(false, true, monitor);
                     }
                 }
+                talendCodeJavaProjects.clear();
+                talendJobJavaProjects.clear();
+                tempJavaProject = null;
             };
 
         };

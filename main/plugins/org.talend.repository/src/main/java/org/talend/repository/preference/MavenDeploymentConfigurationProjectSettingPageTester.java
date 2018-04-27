@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.preference.IPreferenceNode;
 import org.talend.core.runtime.preference.IProjectSettingPageTester;
 
+@Deprecated
 public class MavenDeploymentConfigurationProjectSettingPageTester implements IProjectSettingPageTester {
 
     @Override

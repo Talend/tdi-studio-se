@@ -66,7 +66,6 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.runprocess.data.PerformanceData;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.core.repository.seeker.RepositorySeekerManager;
 import org.talend.core.repository.utils.Log4jUtil;
 import org.talend.core.runtime.maven.MavenUrlHelper;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -721,17 +720,16 @@ public class DefaultRunProcessService implements IRunProcessService {
      * @see org.talend.designer.runprocess.IRunProcessService#initializeRootPoms()
      */
     @Override
-    public void initializeRootPoms() {
-        IProgressMonitor monitor = new NullProgressMonitor();
+    public void initializeRootPoms(IProgressMonitor monitor) {
         try {
             AggregatorPomsHelper helper = new AggregatorPomsHelper();
-            helper.installRootPom(true);
+            helper.installRootPom(false);
             AggregatorPomsHelper.updateAllCodesProjectNeededModules(monitor);
             List<ProjectReference> references = ProjectManager.getInstance().getCurrentProject().getProjectReferenceList(true);
             for (ProjectReference ref : references) {
                 initRefPoms(new Project(ref.getReferencedProject()));
             }
-            AggregatorPomsHelper.updateRefProjectModules(references);
+            helper.updateRefProjectModules(references);
             helper.updateCodeProjects(monitor, true);
         } catch (Exception e) {
             ExceptionHandler.process(e);
@@ -766,7 +764,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
     private void installRefCodeProject(ERepositoryObjectType codeType, Project refProject, AggregatorPomsHelper refHelper,
             Map<String, Object> argumentsMap, IProgressMonitor monitor) throws Exception, CoreException {
-        if (!refHelper.getProjectPomsFolder().getFile(TalendMavenConstants.POM_FILE_NAME).exists()) {
+        if (!refHelper.getProjectRootPom().exists()) {
             return;
         }
         ITalendProcessJavaProject codeProject = TalendJavaProjectManager.getExistingTalendCodeProject(codeType, refProject);
