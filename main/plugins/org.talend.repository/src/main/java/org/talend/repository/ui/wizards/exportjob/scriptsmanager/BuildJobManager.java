@@ -25,9 +25,7 @@ import java.util.Map;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Profile;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -37,6 +35,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.m2e.core.MavenPlugin;
@@ -48,15 +47,14 @@ import org.talend.commons.runtime.utils.io.FileCopyUtils;
 import org.talend.commons.utils.time.TimeMeasure;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
-import org.talend.core.model.properties.Item;
+import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.properties.ProcessItem;
-import org.talend.core.model.relationship.Relation;
 import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.IRepositoryPrefConstants;
 import org.talend.core.model.repository.IRepositoryViewObject;
-import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
+import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.ui.CoreUIPlugin;
 import org.talend.core.ui.services.IDesignerCoreUIService;
@@ -335,26 +333,12 @@ public class BuildJobManager {
     private void packageSubJob(String zipLocation, ProcessItem item, final List<ProcessItem> checkedProcesses,
             List<String> itemLabels) throws Exception {
         List<ProcessItem> dependenciesItems = new ArrayList<ProcessItem>();
-        List<IRepositoryViewObject> allProcessDependencies = new ArrayList<IRepositoryViewObject>();
-        // get job related
-        ProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        RelationshipItemBuilder builder = RelationshipItemBuilder.getInstance();
-        List<Relation> relations = builder.getItemsRelatedTo(item.getProperty().getId(), item.getProperty().getVersion(),
-                RelationshipItemBuilder.JOB_RELATION);
-        for (Relation relation : relations) {
-            IRepositoryViewObject obj = factory.getLastVersion(relation.getId());
-            if (obj != null) {
-                allProcessDependencies.add(obj);
+        JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
+        for (JobInfo jobInfo : mainJobInfo.getProcessor().getBuildChildrenJobs()) {
+            if (checkedProcesses != null && checkedProcesses.contains(jobInfo.getProcessItem())) {
+                continue;
             }
-        }
-        // check if already in package list
-        if (!allProcessDependencies.isEmpty()) {
-            for (IRepositoryViewObject repositoryObject : allProcessDependencies) {
-                Item repoItem = repositoryObject.getProperty().getItem();
-                if (checkedProcesses == null || !checkedProcesses.contains((ProcessItem) repoItem)) {
-                    dependenciesItems.add((ProcessItem) repoItem);
-                }
-            }
+            dependenciesItems.add(jobInfo.getProcessItem());
         }
 
         for (ProcessItem processItem : dependenciesItems) {
@@ -363,11 +347,9 @@ public class BuildJobManager {
             if (!destFile.exists()) {
                 destFile.mkdirs();
             }
-            IContainer targetFolder = getRunProcessService().getTalendJobJavaProject(processItem.getProperty()).getTargetFolder()
-                    .getParent();
-            targetFolder.refreshLocal(IResource.DEPTH_ONE, null);
-            File srcfile = targetFolder.findMember("src").getLocation().toFile();
-            File pomfile = targetFolder.findMember(TalendMavenConstants.POM_FILE_NAME).getLocation().toFile();
+            ITalendProcessJavaProject project = getRunProcessService().getTalendJobJavaProject(processItem.getProperty());
+            File srcfile = project.getProject().getFolder(new Path("src")).getLocation().toFile();
+            File pomfile = project.getProjectPom().getLocation().toFile();
             FileCopyUtils.syncFolder(srcfile, new File(destpath + File.separator + "src"), false);
             FilesUtils.copyFile(pomfile, new File(destpath + File.separator + TalendMavenConstants.POM_FILE_NAME));
             itemLabels.add(processItem.getProperty().getLabel());

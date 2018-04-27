@@ -42,7 +42,6 @@ import org.talend.core.runtime.process.TalendProcessArgumentConstant;
 import org.talend.designer.maven.launch.MavenPomCommandLauncher;
 import org.talend.designer.maven.model.MavenSystemFolders;
 import org.talend.designer.maven.model.TalendMavenConstants;
-import org.talend.designer.maven.tools.AggregatorPomsHelper;
 import org.talend.designer.maven.tools.MavenPomSynchronizer;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.repository.ProjectManager;
@@ -341,8 +340,6 @@ public class TalendProcessJavaProject implements ITalendProcessJavaProject {
 
         }
         if (childModulePomFile.getLocation().toFile().exists()) { // existed
-            // in case of talend.rootpom.path didn't get real value
-            AggregatorPomsHelper.updateGroupIdAndRelativePath(childModulePomFile);
             MavenPomCommandLauncher mavenLauncher = null;
             try {
                 // by default is compile
