@@ -15,6 +15,7 @@ package org.talend.designer.core.model.process;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -277,8 +278,207 @@ public class DataProcess implements IGeneratingProcess {
             return buildCheckMap.get(graphicalNode);
         }
 
-        AbstractNode dataNode;
+        AbstractNode dataNode = createDataNode(graphicalNode, prefix);
 
+        INode addedNode = addDataNode(dataNode);
+        buildCheckMap.put(graphicalNode, addedNode);
+
+        List<IConnection> outgoingConnections = new ArrayList<IConnection>();
+        List<IConnection> incomingConnections = new ArrayList<IConnection>();
+        dataNode.setIncomingConnections(incomingConnections);
+        dataNode.setOutgoingConnections(outgoingConnections);
+
+        // if the component is a hash, and that there is a lookup connection just after, don't generate the node.
+        // if (graphicalNode.getComponent().isHashComponent()) {
+        // if (graphicalNode.getOutgoingConnections(EConnectionType.FLOW_REF).size() != 0) {
+        // dataNode.setSubProcessStart(false);
+        // }
+        // }
+
+        for (IConnection connection : graphicalNode.getOutgoingConnections()) {
+            if (!connection.isActivate()) {
+                continue;
+            }
+            IElementParameter monitorParam = connection.getElementParameter(EParameterName.MONITOR_CONNECTION.getName());
+            if (monitorParam != null && (!connection.getLineStyle().equals(EConnectionType.FLOW_REF))
+                    && ((Boolean) monitorParam.getValue())) {
+                addvFlowMeterBetween(dataNode, buildDataNodeFromNode(connection.getTarget(), prefix), connection,
+                        graphicalNode.getProcess(), connection.getElementParameters());
+            } else {
+                INode target = buildDataNodeFromNode(connection.getTarget(), prefix);
+                createDataConnection(dataNode, (AbstractNode) target, connection, prefix);
+            }
+        }
+
+        dataNode.setRealGraphicalNode(graphicalNode);
+
+        return dataNode;
+    }
+
+    private DataConnection createDataConnection(AbstractNode sourceDataNode, AbstractNode targetDataNode, IConnection connection,
+            String prefix) {
+        DataConnection dataConnec = new DataConnection();
+        dataConnec.setActivate(connection.isActivate());
+        dataConnec.setLineStyle(connection.getLineStyle());
+        dataConnec.setTraceConnection(connection.isTraceConnection());
+        dataConnec.setTracesCondition(connection.getTracesCondition());
+        dataConnec.setMonitorConnection(connection.isMonitorConnection());
+        dataConnec.setEnabledTraceColumns(connection.getEnabledTraceColumns());
+        if ((connection.getLineStyle().hasConnectionCategory(IConnectionCategory.EXECUTION_ORDER))
+                && (connection.getTarget().getMetadataList().size() > 0)) {
+            dataConnec.setMetadataTable(connection.getTarget().getMetadataList().get(0));
+        } else {
+            dataConnec.setMetadataTable(connection.getMetadataTable());
+        }
+        String name = connection.getName();
+        if (prefix != null) {
+            name = prefix + name;
+        }
+        dataConnec.setName(name);
+        String uniqueName2 = connection.getUniqueName();
+        if (prefix != null) {
+            uniqueName2 = prefix + uniqueName2;
+        }
+        dataConnec.setUniqueName(uniqueName2);
+        dataConnec.setSource(sourceDataNode);
+        dataConnec.setCondition(connection.getCondition());
+        dataConnec.setRouteConnectionType(connection.getRouteConnectionType());
+        dataConnec.setEndChoice(connection.getEndChoice());// TESB-8043
+        dataConnec.setExceptionList(connection.getExceptionList());
+        dataConnec.setConnectorName(connection.getConnectorName());
+        dataConnec.setInputId(connection.getInputId());
+        dataConnec.setOutputId(connection.getOutputId());
+        if (connection.getLineStyle().equals(EConnectionType.ITERATE)) {
+            IElementParameter param = new ElementParameter(dataConnec);
+            param.setFieldType(EParameterFieldType.CHECK);
+            param.setCategory(EComponentCategory.BASIC);
+            param.setValue(Boolean.FALSE);
+            param.setName("ENABLE_PARALLEL"); //$NON-NLS-1$
+            param.setDisplayName(Messages.getString("DataProcess.enableParallel")); //$NON-NLS-1$
+            param.setShow(true);
+            param.setNumRow(1);
+            ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
+
+            param = new ElementParameter(dataConnec);
+            param.setFieldType(EParameterFieldType.TEXT);
+            param.setCategory(EComponentCategory.BASIC);
+            // param.setListItemsDisplayName(new String[] { "2", "3", "4" });
+            // param.setListItemsDisplayCodeName(new String[] { "2", "3", "4" });
+            // param.setListItemsValue(new String[] { "2", "3", "4" });
+            param.setValue("2"); //$NON-NLS-1$
+            param.setName("NUMBER_PARALLEL"); //$NON-NLS-1$
+            param.setDisplayName(Messages.getString("DataProcess.numberParallel")); //$NON-NLS-1$
+            param.setShow(true);
+            param.setShowIf("ENABLE_PARALLEL == 'true'"); //$NON-NLS-1$
+            param.setNumRow(1);
+            ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
+        }
+        if (dataConnec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
+            IElementParameter param = new ElementParameter(dataConnec);
+            param.setName(EParameterName.TRACES_CONNECTION_ENABLE.getName());
+            param.setDisplayName(EParameterName.TRACES_CONNECTION_ENABLE.getDisplayName());
+            param.setFieldType(EParameterFieldType.CHECK);
+            param.setValue(Boolean.FALSE);
+            param.setCategory(EComponentCategory.ADVANCED);
+            param.setShow(false);
+            param.setNumRow(1);
+            ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
+        }
+        if (PluginChecker.isTeamEdition()) {
+
+            if ((connection.getLineStyle() == EConnectionType.ON_SUBJOB_OK
+                    || connection.getLineStyle() == EConnectionType.ON_SUBJOB_ERROR
+                    || connection.getLineStyle() == EConnectionType.RUN_IF
+                    || connection.getLineStyle() == EConnectionType.ROUTE_WHEN
+                    || connection.getLineStyle() == EConnectionType.ROUTE_CATCH
+                    || connection.getLineStyle() == EConnectionType.ON_COMPONENT_OK
+                    || connection.getLineStyle() == EConnectionType.ON_COMPONENT_ERROR)) {
+                IElementParameter param = new ElementParameter(dataConnec);
+                param.setName(EParameterName.RESUMING_CHECKPOINT.getName());
+                param.setValue(Boolean.FALSE);
+                param.setDisplayName(EParameterName.RESUMING_CHECKPOINT.getDisplayName());
+                param.setFieldType(EParameterFieldType.CHECK);
+                param.setCategory(EComponentCategory.RESUMING);
+                param.setNumRow(2);
+                param.setShow(true);
+                ((List<IElementParameter>) dataConnec.getElementParameters()).add(param); // breakpoint
+            }
+
+            if (dataConnec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
+                IElementParameter param = new ElementParameter(dataConnec);
+                param.setName(EParameterName.ACTIVEBREAKPOINT.getName());
+                param.setDisplayName(EParameterName.ACTIVEBREAKPOINT.getDisplayName());
+                param.setFieldType(EParameterFieldType.CHECK);
+                param.setCategory(EComponentCategory.BREAKPOINT);
+                param.setNumRow(13);
+                param.setValue(false);
+                param.setContextMode(false);
+                param.setShow(true);
+
+                ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
+                IComponent component = ComponentsFactoryProvider.getInstance().get("tFilterRow",
+                        ComponentCategory.CATEGORY_4_DI.getName());
+                DataNode tmpNode = new DataNode(component, "breakpointNode");
+                IElementParameter tmpParam = tmpNode.getElementParameter("LOGICAL_OP");
+                if (tmpParam != null) {
+                    tmpParam.setCategory(EComponentCategory.BREAKPOINT);
+                    tmpParam.setNumRow(14);
+                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
+                }
+                tmpParam = tmpNode.getElementParameter("CONDITIONS");
+                if (tmpParam != null) {
+                    tmpParam.setCategory(EComponentCategory.BREAKPOINT);
+                    tmpParam.setNumRow(15);
+                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
+                }
+
+                tmpParam = tmpNode.getElementParameter("USE_ADVANCED");
+                if (tmpParam != null) {
+                    tmpParam.setCategory(EComponentCategory.BREAKPOINT);
+                    tmpParam.setNumRow(16);
+                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
+                }
+                tmpParam = tmpNode.getElementParameter("ADVANCED_COND");
+                if (tmpParam != null) {
+                    tmpParam.setCategory(EComponentCategory.BREAKPOINT);
+                    tmpParam.setNumRow(17);
+                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
+                }
+            }
+        }
+        copyElementParametersValue(connection, dataConnec);
+
+        dataConnec.setTarget(targetDataNode);
+        List<IConnection> incomingConnections = (List<IConnection>) targetDataNode.getIncomingConnections();
+        if (incomingConnections == null) {
+            incomingConnections = new ArrayList<IConnection>();
+            targetDataNode.setIncomingConnections(incomingConnections);
+        }
+        List<IConnection> outgoingConnections = (List<IConnection>) sourceDataNode.getOutgoingConnections();
+        if (outgoingConnections == null) {
+            outgoingConnections = new ArrayList<IConnection>();
+            sourceDataNode.setOutgoingConnections(outgoingConnections);
+        }
+
+        outgoingConnections.add(dataConnec);
+        incomingConnections.add(dataConnec);
+
+        if (!connection.getName().equals(name)) {
+            if (targetDataNode instanceof AbstractExternalNode) {
+                // System.out.println("dataProcess: rename input:" + connection.getName() + " to " + name);
+                ((AbstractExternalNode) targetDataNode).renameInputConnection(connection.getName(), name);
+            }
+            if (sourceDataNode instanceof AbstractExternalNode) {
+                // System.out.println("dataProcess: rename output:" + connection.getName() + " to " + name);
+                ((AbstractExternalNode) sourceDataNode).renameOutputConnection(connection.getName(), name);
+            }
+        }
+
+        return dataConnec;
+    }
+
+    private AbstractNode createDataNode(final INode graphicalNode, String prefix) {
+        AbstractNode dataNode;
         if (graphicalNode.getExternalNode() == null) {
             dataNode = new DataNode();
         } else {
@@ -353,184 +553,6 @@ public class DataProcess implements IGeneratingProcess {
             }
         }
         dataNode.setDesignSubjobStartNode(graphicalNode.getDesignSubjobStartNode());
-
-        INode addedNode = addDataNode(dataNode);
-        buildCheckMap.put(graphicalNode, addedNode);
-
-        List<IConnection> outgoingConnections = new ArrayList<IConnection>();
-        List<IConnection> incomingConnections = new ArrayList<IConnection>();
-        dataNode.setIncomingConnections(incomingConnections);
-        dataNode.setOutgoingConnections(outgoingConnections);
-
-        // if the component is a hash, and that there is a lookup connection just after, don't generate the node.
-        // if (graphicalNode.getComponent().isHashComponent()) {
-        // if (graphicalNode.getOutgoingConnections(EConnectionType.FLOW_REF).size() != 0) {
-        // dataNode.setSubProcessStart(false);
-        // }
-        // }
-
-        DataConnection dataConnec;
-        for (IConnection connection : graphicalNode.getOutgoingConnections()) {
-            if (!connection.isActivate()) {
-                continue;
-            }
-            IElementParameter monitorParam = connection.getElementParameter(EParameterName.MONITOR_CONNECTION.getName());
-            if (monitorParam != null && (!connection.getLineStyle().equals(EConnectionType.FLOW_REF))
-                    && ((Boolean) monitorParam.getValue())) {
-                addvFlowMeterBetween(dataNode, buildDataNodeFromNode(connection.getTarget(), prefix), connection,
-                        graphicalNode.getProcess(), connection.getElementParameters());
-            } else {
-                dataConnec = new DataConnection();
-                dataConnec.setActivate(connection.isActivate());
-                dataConnec.setLineStyle(connection.getLineStyle());
-                dataConnec.setTraceConnection(connection.isTraceConnection());
-                dataConnec.setTracesCondition(connection.getTracesCondition());
-                dataConnec.setMonitorConnection(connection.isMonitorConnection());
-                dataConnec.setEnabledTraceColumns(connection.getEnabledTraceColumns());
-                if ((connection.getLineStyle().hasConnectionCategory(IConnectionCategory.EXECUTION_ORDER))
-                        && (connection.getTarget().getMetadataList().size() > 0)) {
-                    dataConnec.setMetadataTable(connection.getTarget().getMetadataList().get(0));
-                } else {
-                    dataConnec.setMetadataTable(connection.getMetadataTable());
-                }
-                String name = connection.getName();
-                if (prefix != null) {
-                    name = prefix + name;
-                }
-                dataConnec.setName(name);
-                String uniqueName2 = connection.getUniqueName();
-                if (prefix != null) {
-                    uniqueName2 = prefix + uniqueName2;
-                }
-                dataConnec.setUniqueName(uniqueName2);
-                dataConnec.setSource(dataNode);
-                dataConnec.setCondition(connection.getCondition());
-                dataConnec.setRouteConnectionType(connection.getRouteConnectionType());
-                dataConnec.setEndChoice(connection.getEndChoice());// TESB-8043
-                dataConnec.setExceptionList(connection.getExceptionList());
-                dataConnec.setConnectorName(connection.getConnectorName());
-                dataConnec.setInputId(connection.getInputId());
-                dataConnec.setOutputId(connection.getOutputId());
-                if (connection.getLineStyle().equals(EConnectionType.ITERATE)) {
-                    IElementParameter param = new ElementParameter(dataConnec);
-                    param.setFieldType(EParameterFieldType.CHECK);
-                    param.setCategory(EComponentCategory.BASIC);
-                    param.setValue(Boolean.FALSE);
-                    param.setName("ENABLE_PARALLEL"); //$NON-NLS-1$
-                    param.setDisplayName(Messages.getString("DataProcess.enableParallel")); //$NON-NLS-1$
-                    param.setShow(true);
-                    param.setNumRow(1);
-                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
-
-                    param = new ElementParameter(dataConnec);
-                    param.setFieldType(EParameterFieldType.TEXT);
-                    param.setCategory(EComponentCategory.BASIC);
-                    // param.setListItemsDisplayName(new String[] { "2", "3", "4" });
-                    // param.setListItemsDisplayCodeName(new String[] { "2", "3", "4" });
-                    // param.setListItemsValue(new String[] { "2", "3", "4" });
-                    param.setValue("2"); //$NON-NLS-1$
-                    param.setName("NUMBER_PARALLEL"); //$NON-NLS-1$
-                    param.setDisplayName(Messages.getString("DataProcess.numberParallel")); //$NON-NLS-1$
-                    param.setShow(true);
-                    param.setShowIf("ENABLE_PARALLEL == 'true'"); //$NON-NLS-1$
-                    param.setNumRow(1);
-                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
-                }
-                if (dataConnec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
-                    IElementParameter param = new ElementParameter(dataConnec);
-                    param.setName(EParameterName.TRACES_CONNECTION_ENABLE.getName());
-                    param.setDisplayName(EParameterName.TRACES_CONNECTION_ENABLE.getDisplayName());
-                    param.setFieldType(EParameterFieldType.CHECK);
-                    param.setValue(Boolean.FALSE);
-                    param.setCategory(EComponentCategory.ADVANCED);
-                    param.setShow(false);
-                    param.setNumRow(1);
-                    ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
-                }
-                if (PluginChecker.isTeamEdition()) {
-
-                    if ((connection.getLineStyle() == EConnectionType.ON_SUBJOB_OK
-                            || connection.getLineStyle() == EConnectionType.ON_SUBJOB_ERROR
-                            || connection.getLineStyle() == EConnectionType.RUN_IF
-                            || connection.getLineStyle() == EConnectionType.ROUTE_WHEN
-                            || connection.getLineStyle() == EConnectionType.ROUTE_CATCH
-                            || connection.getLineStyle() == EConnectionType.ON_COMPONENT_OK || connection.getLineStyle() == EConnectionType.ON_COMPONENT_ERROR)) {
-                        IElementParameter param = new ElementParameter(dataConnec);
-                        param.setName(EParameterName.RESUMING_CHECKPOINT.getName());
-                        param.setValue(Boolean.FALSE);
-                        param.setDisplayName(EParameterName.RESUMING_CHECKPOINT.getDisplayName());
-                        param.setFieldType(EParameterFieldType.CHECK);
-                        param.setCategory(EComponentCategory.RESUMING);
-                        param.setNumRow(2);
-                        param.setShow(true);
-                        ((List<IElementParameter>) dataConnec.getElementParameters()).add(param); // breakpoint
-                    }
-
-                    if (dataConnec.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
-                        IElementParameter param = new ElementParameter(dataConnec);
-                        param.setName(EParameterName.ACTIVEBREAKPOINT.getName());
-                        param.setDisplayName(EParameterName.ACTIVEBREAKPOINT.getDisplayName());
-                        param.setFieldType(EParameterFieldType.CHECK);
-                        param.setCategory(EComponentCategory.BREAKPOINT);
-                        param.setNumRow(13);
-                        param.setValue(false);
-                        param.setContextMode(false);
-                        param.setShow(true);
-
-                        ((List<IElementParameter>) dataConnec.getElementParameters()).add(param);
-                        IComponent component = ComponentsFactoryProvider.getInstance().get("tFilterRow",
-                                ComponentCategory.CATEGORY_4_DI.getName());
-                        DataNode tmpNode = new DataNode(component, "breakpointNode");
-                        IElementParameter tmpParam = tmpNode.getElementParameter("LOGICAL_OP");
-                        if (tmpParam != null) {
-                            tmpParam.setCategory(EComponentCategory.BREAKPOINT);
-                            tmpParam.setNumRow(14);
-                            ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
-                        }
-                        tmpParam = tmpNode.getElementParameter("CONDITIONS");
-                        if (tmpParam != null) {
-                            tmpParam.setCategory(EComponentCategory.BREAKPOINT);
-                            tmpParam.setNumRow(15);
-                            ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
-                        }
-
-                        tmpParam = tmpNode.getElementParameter("USE_ADVANCED");
-                        if (tmpParam != null) {
-                            tmpParam.setCategory(EComponentCategory.BREAKPOINT);
-                            tmpParam.setNumRow(16);
-                            ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
-                        }
-                        tmpParam = tmpNode.getElementParameter("ADVANCED_COND");
-                        if (tmpParam != null) {
-                            tmpParam.setCategory(EComponentCategory.BREAKPOINT);
-                            tmpParam.setNumRow(17);
-                            ((List<IElementParameter>) dataConnec.getElementParameters()).add(tmpParam);
-                        }
-                    }
-                }
-                copyElementParametersValue(connection, dataConnec);
-                INode target = buildDataNodeFromNode(connection.getTarget(), prefix);
-                dataConnec.setTarget(target);
-                incomingConnections = (List<IConnection>) target.getIncomingConnections();
-                if (incomingConnections == null) {
-                    incomingConnections = new ArrayList<IConnection>();
-                }
-                outgoingConnections.add(dataConnec);
-                incomingConnections.add(dataConnec);
-
-                if (!connection.getName().equals(name)) {
-                    if (target instanceof AbstractExternalNode) {
-                        // System.out.println("dataProcess: rename input:" + connection.getName() + " to " + name);
-                        ((AbstractExternalNode) target).renameInputConnection(connection.getName(), name);
-                    }
-                    if (dataNode instanceof AbstractExternalNode) {
-                        // System.out.println("dataProcess: rename output:" + connection.getName() + " to " + name);
-                        ((AbstractExternalNode) dataNode).renameOutputConnection(connection.getName(), name);
-                    }
-                }
-            }
-        }
-
         return dataNode;
     }
 
@@ -3150,6 +3172,40 @@ public class DataProcess implements IGeneratingProcess {
         return null;
     }
 
+    private Node cloneGraphicalNode(IProcess process, INode node) {
+        IComponent component = node.getComponent();
+        Node newGraphicalNode = null;
+        if (EComponentType.GENERIC.equals(component.getComponentType())) {
+            newGraphicalNode = new Node(node, (IProcess2) process);
+        } else {
+            newGraphicalNode = new Node(node.getComponent(), (IProcess2) process);
+        }
+        newGraphicalNode.setMetadataList(node.getMetadataList());
+
+        IExternalNode externalNode = node.getExternalNode();
+        if (externalNode != null) {
+            AbstractExternalData externalEmfData = externalNode.getExternalEmfData();
+            newGraphicalNode.getExternalNode().setExternalEmfData(externalEmfData);
+            newGraphicalNode.getExternalNode().setInternalMapperModel(externalNode.getInternalMapperModel());
+        }
+        // fwang fixed bug TDI-8027
+        IExternalData externalData = node.getExternalData();
+        if (externalData != null) {
+            try {
+                newGraphicalNode.setExternalData(externalData.clone());
+            } catch (CloneNotSupportedException e) {
+                newGraphicalNode.setExternalData(externalData);
+            }
+        }
+
+        copyElementParametersValue(node, newGraphicalNode);
+        newGraphicalNode.setDummy(node.isDummy());
+
+        ValidationRulesUtil.createRejectConnector(newGraphicalNode);
+        ValidationRulesUtil.updateRejectMetatable(newGraphicalNode, node);
+        return newGraphicalNode;
+    }
+
     @SuppressWarnings("unchecked")
     public INode buildNodeFromNode(final INode graphicalNode, final IProcess process) {
         if (buildCheckMap == null) {
@@ -3159,54 +3215,17 @@ public class DataProcess implements IGeneratingProcess {
             return (INode) buildGraphicalMap.get(graphicalNode);
         }
 
-        IComponent component = graphicalNode.getComponent();
-        Node newGraphicalNode = null;
-        if (EComponentType.GENERIC.equals(component.getComponentType())) {
-            newGraphicalNode = new Node(graphicalNode, (IProcess2) process);
-        } else {
-            newGraphicalNode = new Node(graphicalNode.getComponent(), (IProcess2) process);
-        }
-        newGraphicalNode.setMetadataList(graphicalNode.getMetadataList());
-
-        // // for bug 11771
-        // IExternalData externalData = graphicalNode.getExternalData();
-        // if (externalData != null) {
-        // newGraphicalNode.setExternalData(externalData);
-        // }
-
-        // IExternalData externalData = graphicalNode.getExternalData();
-
-        IExternalNode externalNode = graphicalNode.getExternalNode();
-        if (externalNode != null) {
-            AbstractExternalData externalEmfData = externalNode.getExternalEmfData();
-            newGraphicalNode.getExternalNode().setExternalEmfData(externalEmfData);
-            newGraphicalNode.getExternalNode().setInternalMapperModel(externalNode.getInternalMapperModel());
-        }
-        // fwang fixed bug TDI-8027
-        IExternalData externalData = graphicalNode.getExternalData();
-        if (externalData != null) {
-            try {
-                newGraphicalNode.setExternalData(externalData.clone());
-            } catch (CloneNotSupportedException e) {
-                newGraphicalNode.setExternalData(externalData);
-            }
-        }
-
-        copyElementParametersValue(graphicalNode, newGraphicalNode);
-        newGraphicalNode.setDummy(graphicalNode.isDummy());
-
-        ValidationRulesUtil.createRejectConnector(newGraphicalNode);
-        ValidationRulesUtil.updateRejectMetatable(newGraphicalNode, graphicalNode);
-
+        Node newGraphicalNode = cloneGraphicalNode(process, graphicalNode);
         NodeContainer nc = ((Process) process).loadNodeContainer(newGraphicalNode, false);
-
         ((Process) process).addNodeContainer(nc);
+
         if(buildGraphicalMap == null){
             initialize();
         }
         buildGraphicalMap.put(graphicalNode, newGraphicalNode);
 
-        IConnection dataConnec;
+        buildGraphicalNodeForInputConnections(process, graphicalNode, newGraphicalNode, new HashSet<INode>());
+
         for (IConnection connection : (List<IConnection>) graphicalNode.getOutgoingConnections()) {
             if (!connection.isActivate()) {
                 continue;
@@ -3217,8 +3236,9 @@ public class DataProcess implements IGeneratingProcess {
             }
             INode target = buildNodeFromNode(connTarget, process);
 
-            dataConnec = new Connection(newGraphicalNode, target, connection.getLineStyle(), connection.getConnectorName(),
-                    connection.getMetaName(), connection.getName(), connection.getUniqueName(), connection.isMonitorConnection());
+            IConnection dataConnec = new Connection(newGraphicalNode, target, connection.getLineStyle(),
+                    connection.getConnectorName(), connection.getMetaName(), connection.getName(), connection.getUniqueName(),
+                    connection.isMonitorConnection());
             if (IAdditionalInfo.class.isInstance(connection) && IAdditionalInfo.class.isInstance(dataConnec)) {
                 IAdditionalInfo.class.cast(connection).cloneAddionalInfoTo((IAdditionalInfo) dataConnec);
             }
@@ -3231,10 +3251,49 @@ public class DataProcess implements IGeneratingProcess {
             copyElementParametersValue(connection, dataConnec);
             dataConnec.setTraceConnection(connection.isTraceConnection());
         }
+
         newGraphicalNode.setActivate(graphicalNode.isActivate());
         newGraphicalNode.setStart(graphicalNode.isStart());
 
         return newGraphicalNode;
+    }
+
+    private void buildGraphicalNodeForInputConnections(IProcess process, INode graphicalNode, INode newGraphicalNode,
+            Set<INode> visitedNodes) {
+        if (visitedNodes.contains(graphicalNode)) {
+            return;
+        } else {
+            visitedNodes.add(graphicalNode);
+        }
+        List<IConnection> connections = (List<IConnection>) graphicalNode.getIncomingConnections();
+        if (connections == null || connections.isEmpty()) {
+            return;
+        }
+        for (IConnection connection : connections) {
+            if (!connection.isActivate()) {
+                continue;
+            }
+            INode sourceNode = connection.getSource();
+            // if it exists in the essential nodes, means the input and output are already both created, then no need to
+            // create it again
+            INode newSourceNode = (INode) buildGraphicalMap.get(sourceNode);
+            if (newSourceNode == null) {
+                // if it not exists in the essential nodes, create a new one, and don't put it into the Map!
+                newSourceNode = cloneGraphicalNode(process, sourceNode);
+                NodeContainer nc = ((Process) process).loadNodeContainer((Node) newGraphicalNode, false);
+                ((Process) process).addNodeContainer(nc);
+                IConnection dataConnec = new Connection(newSourceNode, newGraphicalNode, connection.getLineStyle(),
+                        connection.getConnectorName(), connection.getMetaName(), connection.getName(), connection.getUniqueName(),
+                        connection.isMonitorConnection());
+                if (IAdditionalInfo.class.isInstance(connection) && IAdditionalInfo.class.isInstance(dataConnec)) {
+                    IAdditionalInfo.class.cast(connection).cloneAddionalInfoTo((IAdditionalInfo) dataConnec);
+                }
+                copyElementParametersValue(connection, dataConnec);
+                dataConnec.setTraceConnection(connection.isTraceConnection());
+                buildGraphicalMap.put(sourceNode, newSourceNode);
+                buildGraphicalNodeForInputConnections(process, sourceNode, newSourceNode, visitedNodes);
+            }
+        }
     }
 
     /**
