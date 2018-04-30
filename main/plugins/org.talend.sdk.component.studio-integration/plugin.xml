@@ -202,6 +202,36 @@
          </includes>
       </viewerContentBinding>
   </extension>
+  <extension point="org.eclipse.ui.menus">
+    <menuContribution locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+      <toolbar
+          id="org.talend.testproject.toolbars.sampleToolbar">
+        <command commandId="org.talend.sdk.component.studio.toolbar.ReloadAction"
+                 icon="icon/reload-component-server_16x16.png"
+                 label="Reload Server"
+                 tooltip="Reload Component Kit Server">
+          <visibleWhen>
+            <systemTest property="component.environment" value="dev"/>
+          </visibleWhen>
+        </command>
+      </toolbar>
+    </menuContribution>
+  </extension>
+  <extension point="org.eclipse.ui.handlers">
+    <handler
+        commandId="org.talend.sdk.component.studio.toolbar.ReloadAction"
+        class="org.talend.sdk.component.studio.toolbar.ReloadAction" />
+  </extension>
+  <extension point="org.eclipse.ui.commands">
+    <category
+        name="Component Kit"
+        id="org.talend.sdk.component.toolbar">
+    </category>
+    <command
+        id="org.talend.sdk.component.studio.toolbar.ReloadAction"
+        name="Reload Component Kit Server">
+    </command>
+  </extension>
 
   <!-- don't use it since there is already one which is integrated and studio doesnt support composition here
   <extension point="org.talend.core.runtime.service">

@@ -148,6 +148,15 @@ public class TaCoKitCache {
         return this.migrationManager;
     }
 
+    public void reset() {
+        configTypeNodesCache = null;
+        migrationManager = null;
+        familyConfigTypes = null;
+        if (configTypeNodeMapCache != null) {
+            configTypeNodeMapCache.clear();
+        }
+    }
+
     public void clearCache() {
         configTypeNodesCache = null;
         if (configTypeNodeMapCache != null) {
@@ -155,7 +164,7 @@ public class TaCoKitCache {
         }
         try {
             getMigrationManager().runMigrationJob();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ExceptionHandler.process(e);
         }
     }
