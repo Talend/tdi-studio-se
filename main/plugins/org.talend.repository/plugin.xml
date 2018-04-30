@@ -3052,6 +3052,14 @@
               name="FileInputPositionalByteLengthMigrationTask"
               version="7.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              id="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              name="KeepChangeRemoteDirFalseForFTPFileExist"
+              version="7.1.0">
+        </projecttask>
    </extension>
 
    <extension
