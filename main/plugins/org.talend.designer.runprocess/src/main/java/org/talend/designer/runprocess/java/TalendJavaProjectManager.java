@@ -15,7 +15,6 @@ package org.talend.designer.runprocess.java;
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -282,19 +281,6 @@ public class TalendJavaProjectManager {
         return tempJavaProject;
     }
 
-    public static ITalendProcessJavaProject getExistingTalendProject(IProject project) {
-        List<ITalendProcessJavaProject> talendProjects = new ArrayList<>();
-        talendProjects.addAll(talendCodeJavaProjects.values());
-        talendProjects.addAll(talendJobJavaProjects.values());
-        talendProjects.add(tempJavaProject);
-        for (ITalendProcessJavaProject talendProject : talendProjects) {
-            if (project == talendProject.getProject()) {
-                return talendProject;
-            }
-        }
-        return null;
-    }
-
     public static ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
         return talendJobJavaProjects.get(AggregatorPomsHelper.getJobProjectId(property));
     }
@@ -527,6 +513,7 @@ public class TalendJavaProjectManager {
                 IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty(), context);
                 if (processor instanceof MavenJavaProcessor) {
                     LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().clear();
                     ((MavenJavaProcessor) processor).generatePom(option);
                 }
                 AggregatorPomsHelper.addToParentModules(

@@ -284,7 +284,7 @@ public class BuildJobHandlerTest {
                     IProcess process = coreService.getProcessFromProcessItem(jobItem);
                     for (INode node : process.getGeneratingNodes()) {
                         IElementParameter param = node.getElementParameter("COMPONENT_NAME");
-                        if ("tHMap".equals(param.getName())) {
+                        if ("tHMap".equals(param.getValue())) {
                             isTDM = true;
                             break;
                         }
@@ -303,7 +303,7 @@ public class BuildJobHandlerTest {
                     boolean found = false;
                     JarEntry entry;
                     while ((entry = jarStream.getNextJarEntry()) != null) {
-                        if (entry.getName().equals("__tdm") && entry.isDirectory()) {
+                        if (entry.getName().equals("__tdm/") && entry.isDirectory()) {
                             found = true;
                             break;
                         }

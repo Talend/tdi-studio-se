@@ -171,9 +171,9 @@ public class TalendJavaProjectManagerTest {
 
         TalendJavaProjectManager.deleteEclipseProjectByNatureId(TalendJobNature.ID);
 
-        assertFalse(TalendJavaProjectManager.getExistingTalendProject(routinesProject.getProject()).getProject().exists());
-        assertFalse(TalendJavaProjectManager.getExistingTalendProject(jobProject.getProject()).getProject().exists());
-        assertFalse(TalendJavaProjectManager.getExistingTalendProject(tempProject.getProject()).getProject().exists());
+        assertFalse(routinesProject.getProject().exists());
+        assertFalse(jobProject.getProject().exists());
+        assertFalse(tempProject.getProject().exists());
     }
 
     private void validateProject(ITalendProcessJavaProject talendJavaProject, boolean enbleMavenNature) throws Exception {
