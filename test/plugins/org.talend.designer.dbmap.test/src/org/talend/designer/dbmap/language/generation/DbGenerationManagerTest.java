@@ -58,7 +58,9 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         incomingConnections.add(createConnection("t1", "t1", "id", columns));
         dbMapComponent.setIncomingConnections(incomingConnections);
 
-        dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
 
         dbManager = new GenericDbGenerationManager();
 

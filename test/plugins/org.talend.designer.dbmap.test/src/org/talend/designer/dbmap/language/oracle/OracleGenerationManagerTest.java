@@ -53,7 +53,9 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
         incomingConnections.add(conn);
         dbMapComponent.setIncomingConnections(incomingConnections);
 
-        dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
 
         oracleManager = new OracleGenerationManager();
 

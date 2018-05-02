@@ -31,7 +31,9 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
     @Before
     public void setUp() throws Exception {
         dbMapComponent = new DbMapComponent();
-        dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
     }
 
     @After
