@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -35,6 +36,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
     @Before
     public void setUp() throws Exception {
         dbMapComponent = new DbMapComponent();
+        dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
     }
 
     @After

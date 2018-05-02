@@ -12,7 +12,9 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.mysql;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +31,7 @@ public class MysqlGenerationManagerTest extends DbGenerationManagerTestHelper {
     @Before
     public void setUp() throws Exception {
         dbMapComponent = new DbMapComponent();
-
+        dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
     }
 
     @After
