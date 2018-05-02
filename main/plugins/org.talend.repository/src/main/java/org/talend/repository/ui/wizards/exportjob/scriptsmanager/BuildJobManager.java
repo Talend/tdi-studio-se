@@ -67,6 +67,7 @@ import org.talend.repository.ProjectManager;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.IRepositoryNode.ENodeType;
+import org.talend.repository.model.RepositoryConstants;
 import org.talend.repository.ui.utils.ZipToFile;
 import org.talend.repository.ui.wizards.exportjob.JavaJobExportReArchieveCreator;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
@@ -176,7 +177,7 @@ public class BuildJobManager {
                             FileCopyUtils.syncFolder(itemFile, newItemFile, false);
                             FilesUtils.deleteFolder(itemFile, true);
                         }
-                        packageSubJob(tempProFolder.getAbsolutePath(), processItem, processes);
+                        packageSubJob(tempProFolder.getAbsolutePath(), pomModel, rootPom, processItem, processes);
                     }
 
                     String zipPath = jobTargetFile.getLocation().toPortableString();
@@ -318,7 +319,7 @@ public class BuildJobManager {
                         FileCopyUtils.syncFolder(itemFile, newItemFile, false);
                         FilesUtils.deleteFolder(itemFile, true);
                     }
-                    packageSubJob(temUnzipPath, processItem, null);
+                    packageSubJob(temUnzipPath, pomModel, rootPom, processItem, null);
                     refreshExportRootPom(temUnzipPath, rootPom);
 
                     ZipToFile.zipFile(ExportJobUtil.getTmpFolder(), jobZip);
@@ -361,7 +362,9 @@ public class BuildJobManager {
         }
     }
     
-    private void packageSubJob(String zipLocation, ProcessItem item, final List<ProcessItem> checkedProcesses) throws Exception {
+    private void packageSubJob(String zipLocation, Model pomModel, File rootPom, ProcessItem item,
+            final List<ProcessItem> checkedProcesses)
+            throws Exception {
         List<ProcessItem> dependenciesItems = new ArrayList<ProcessItem>();
         JobInfo mainJobInfo = LastGenerationInfo.getInstance().getLastMainJob();
         for (JobInfo jobInfo : mainJobInfo.getProcessor().getBuildChildrenJobs()) {
@@ -371,18 +374,62 @@ public class BuildJobManager {
             dependenciesItems.add(jobInfo.getProcessItem());
         }
 
+        ITalendProcessJavaProject mainProject = getRunProcessService().getTalendJobJavaProject(item.getProperty());
+        String mainTechLabel = ProjectManager.getInstance().getProject(mainProject.getPropery()).getTechnicalLabel();
+        File file = new File(zipLocation);
+
         for (ProcessItem processItem : dependenciesItems) {
-            String destpath = zipLocation + File.separator + "jobs" + File.separator + "process" + File.separator
-                    + processItem.getProperty().getLabel() + "_" + processItem.getProperty().getVersion();
+            ITalendProcessJavaProject project = getRunProcessService().getTalendJobJavaProject(processItem.getProperty());
+            String techLabel = ProjectManager.getInstance().getProject(project.getPropery()).getTechnicalLabel();
+            File srcfile = project.getProject().getFolder(new Path("src")).getLocation().toFile();
+            File pomfile = project.getProjectPom().getLocation().toFile();
+            String destpath = null;
+            File refRootPom = null;
+            if (!mainTechLabel.equals(techLabel)) {
+                String techpath = file.getParent() + File.separator + techLabel;
+                refRootPom = new File(techpath + File.separator + TalendMavenConstants.POM_FILE_NAME);
+                File parentPomFolder = pomfile.getParentFile();
+                int nb = 10;
+                while (parentPomFolder != null && !parentPomFolder.getName().equals(RepositoryConstants.POMS_DIRECTORY)) {
+                    parentPomFolder = parentPomFolder.getParentFile();
+                    nb--;
+                    if (nb < 0) {
+                        break;
+                    }
+                }
+                if (parentPomFolder != null && parentPomFolder.exists()) {
+                    File refPomFile = new File(
+                            parentPomFolder.getAbsolutePath() + File.separator + TalendMavenConstants.POM_FILE_NAME);
+                    if (refPomFile.exists()) {
+                        // copy reference project pom to export zip
+                        FilesUtils.copyFile(refPomFile, refRootPom);
+                        Model refPomModel = MavenPlugin.getMavenModelManager().readMavenModel(refPomFile);
+                        destpath = techpath + File.separator + getArrangedJobPath(refPomModel,
+                                processItem.getProperty().getLabel(), processItem.getProperty().getVersion());
+                    }
+                }
+            } else {
+                destpath = zipLocation + File.separator + getArrangedJobPath(pomModel, processItem.getProperty().getLabel(),
+                        processItem.getProperty().getVersion());
+            }
+
             File destFile = new File(destpath);
             if (!destFile.exists()) {
                 destFile.mkdirs();
             }
-            ITalendProcessJavaProject project = getRunProcessService().getTalendJobJavaProject(processItem.getProperty());
-            File srcfile = project.getProject().getFolder(new Path("src")).getLocation().toFile();
-            File pomfile = project.getProjectPom().getLocation().toFile();
+
             FileCopyUtils.syncFolder(srcfile, new File(destpath + File.separator + "src"), false);
             FilesUtils.copyFile(pomfile, new File(destpath + File.separator + TalendMavenConstants.POM_FILE_NAME));
+            if (!mainTechLabel.equals(techLabel) && refRootPom != null && refRootPom.exists()) {
+                refreshExportRootPom(refRootPom.getParent(), refRootPom);
+            }
+        }
+        // add reference project pom to main exported pom
+        for (String fileLabel : rootPom.getParentFile().getParentFile().list()) {
+            if (!file.getName().equals(fileLabel)) {
+                pomModel.addModule("../" + fileLabel);
+                PomUtil.savePom(null, pomModel, rootPom);
+            }
         }
 
     }
@@ -401,9 +448,15 @@ public class BuildJobManager {
             List<String> modules = pomModel.getModules();
             Iterator<String> modulesIte = modules.iterator();
             while (modulesIte.hasNext()) {
+                File sourcefile = null;
                 String module = modulesIte.next();
-                File sourcefile = new File(pomLocation + File.separator + module);
-                if (!sourcefile.exists() && !sourcefile.isDirectory()) {
+                if (module.contains("../")) {
+                    sourcefile = new File(pomLocation).getParentFile();
+                    sourcefile = new File(sourcefile.getAbsolutePath() + File.separator + module.replaceAll("../", ""));
+                } else {
+                    sourcefile = new File(pomLocation + File.separator + module);
+                }
+                if (sourcefile != null && !sourcefile.exists() && !sourcefile.isDirectory()) {
                     modulesIte.remove();
                 }
             }
