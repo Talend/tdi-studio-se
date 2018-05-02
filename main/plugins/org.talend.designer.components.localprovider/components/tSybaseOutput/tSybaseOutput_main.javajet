@@ -223,7 +223,7 @@ skeleton="../templates/db_output_bulk.skeleton"
     }
     if(("true").equals(identityInsert)) {
         %>
-        java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
+        stmt_<%=cid %> = conn_<%=cid%>.createStatement();
         stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ tableName_<%=cid%> +" ON");
         <%
     }

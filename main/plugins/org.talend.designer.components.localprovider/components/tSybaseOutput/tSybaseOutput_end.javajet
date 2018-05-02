@@ -134,8 +134,10 @@ imports="
 
     if(("true").equals(identityInsert)){
         %>
-        stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ <%=tableName%> +" OFF");
-        stmt_<%=cid %>.close();
+        if(stmt_<%=cid %> != null){
+            stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ <%=tableName%> +" OFF");
+            stmt_<%=cid %>.close();
+        }
         <%
     }
 
