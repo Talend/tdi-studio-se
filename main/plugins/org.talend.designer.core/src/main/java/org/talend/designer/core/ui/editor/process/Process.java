@@ -141,6 +141,7 @@ import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.designer.core.model.components.EmfComponent;
 import org.talend.designer.core.model.metadata.MetadataEmfFactory;
+import org.talend.designer.core.model.process.ConnectionManager;
 import org.talend.designer.core.model.process.DataProcess;
 import org.talend.designer.core.model.process.IGeneratingProcess;
 import org.talend.designer.core.model.process.jobsettings.JobSettingsConstants;
@@ -2701,7 +2702,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         EList connecList;
         ConnectionType cType;
         connecList = process.getConnection();
-        Connection connec;
+        Connection connec = null;
         Node source, target;
 
         List<String> connectionsProblems = new ArrayList<String>();
@@ -2755,8 +2756,12 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
 
             boolean monitorConnection = getConnectionMonitorProperty(cType);
             if (connectionTypeFound) {
-                connec = new Connection(source, target, EConnectionType.getTypeFromId(lineStyleId), connectorName, metaname,
-                        cType.getLabel(), cType.getMetaname(), monitorConnection);
+                if (!ConnectionManager.checkCircle(source, target)) {
+                    connec = new Connection(source, target, EConnectionType.getTypeFromId(lineStyleId), connectorName, metaname,
+                            cType.getLabel(), cType.getMetaname(), monitorConnection);
+                } else {
+                    ExceptionHandler.process(new Exception(Messages.getString("Process.errorCircleConnectionDetected", cType.getLabel(), source.getLabel(), target.getLabel()))); //$NON-NLS-1$
+                }
             } else {
                 if (PluginChecker.isJobLetPluginLoaded()) { // bug 12764
                     IJobletProviderService service = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
@@ -2768,6 +2773,9 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
                 EConnectionType type = EConnectionType.getTypeFromId(lineStyleId);
                 connec = new Connection(source, target, type, source.getConnectorFromType(type).getName(), metaname,
                         cType.getLabel(), cType.getMetaname(), monitorConnection);
+            }
+            if (connec == null) {
+                continue;
             }
             connectionsHashtable.put(cType, connec);
             listParamType = cType.getElementParameter();

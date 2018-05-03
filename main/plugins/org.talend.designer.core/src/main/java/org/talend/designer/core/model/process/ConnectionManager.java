@@ -800,7 +800,7 @@ public class ConnectionManager {
      * @param source
      * @return
      */
-    private static boolean checkCircle(INode source, INode newTarget) {
+    public static boolean checkCircle(INode source, INode newTarget) {
         // get All the source nodes of the source
         List<INode> list = new ArrayList<INode>();
         getAllSourceNode(source, list);
