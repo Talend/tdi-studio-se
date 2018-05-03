@@ -90,11 +90,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
 	                } else { 
 	            		if(isDiscardTrailingEmptyStr){
 	                    %>
-	                    	normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(<%=delim %>);
+	                    	normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(String.valueOf(<%=delim %>));
 	                    <%
 	            		}else{
 	                    %>
-	                		normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(<%=delim %>,-1);
+	                		normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(String.valueOf(<%=delim %>),-1);
 	                    <%
 	            		}
 	            	}
