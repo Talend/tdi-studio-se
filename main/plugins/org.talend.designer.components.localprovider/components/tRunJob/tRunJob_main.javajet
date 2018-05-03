@@ -384,7 +384,6 @@ String inputConnName = null;
 	if (!useIndependentProcess){//AAAAAAAAAAAA
 	%>
 		<%=childJob %> childJob_<%=cid %> = new <%=childJob %>();
-                childJob_<%=cid %>.setEndpointRegistry(registry);
 	    // pass DataSources
 	    java.util.Map<String, routines.system.TalendDataSource> talendDataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap
 	            .get(KEY_DB_DATASOURCES);
