@@ -359,6 +359,7 @@ if(!isDynamic && columnList != null && columnList.size() > 0) {
 	    %>
 		StringBuilder stmtBuilder_<%=cid%> = new StringBuilder();
         java.sql.Statement stmt_<%=cid%> = conn_<%=cid%>.createStatement();
+        resourceMap.put("stmt_<%=cid %>", stmt_<%=cid %>);
         String template_<%=cid%> = "COPY " + tableName_<%=cid%> +" (<%=insertColName.toString()%>)"
 						          + " FROM STDIN UNCOMPRESSED WITH DELIMITER ';' RECORD TERMINATOR '\n' ENCLOSED BY '|' NULL AS '' <%=rejectMax%><%=exceptionString%><%=rejectString%><%=abort%>DIRECT<%=noComm%>";
 		<%

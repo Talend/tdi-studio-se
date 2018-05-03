@@ -144,9 +144,6 @@ imports="
 		<%
 		}
 	}
-%>
-	resourceMap.put("statementClosed_<%=cid%>", true);
-<%
 	//////////////// Copy Action //////////////////////
 	if ("COPY".equals(dataAction)) { // COPY
 		String db_version = ElementParameterParser.getValue(node,"__DB_VERSION__");
@@ -168,6 +165,7 @@ imports="
         			copiedCount_<%=cid%> +=stmt_<%=cid %>.getUpdateCount(); 
         			if (stmt_<%=cid%> != null) {
         				stmt_<%=cid%>.close();
+                        resourceMap.remove("stmt_<%=cid%>");
         				stmt_<%=cid%> = null;
         			}
 				<%}else{%>
@@ -201,6 +199,9 @@ imports="
 	}
 <%
 	}
+%>
+    resourceMap.put("statementClosed_<%=cid%>", true);
+<%
 	/////// commit end/////////////
 	if(!useExistingConnection) {
 		if(!("").equals(commitEvery)&&!("0").equals(commitEvery)){

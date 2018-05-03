@@ -238,6 +238,7 @@ skeleton="../templates/db_output_bulk.skeleton"
                 %>
                 stmtBuilder_<%=cid%> = new StringBuilder();
                 stmt_<%=cid%> = conn_<%=cid%>.createStatement();
+                resourceMap.put("stmt_<%=cid%>", stmt_<%=cid%>);
                 template_<%=cid%> = "COPY " + tableName_<%=cid%> +" (<%=getColumnsSql(this.stmtStructure,true)%>)" + " FROM STDIN UNCOMPRESSED WITH DELIMITER ';' RECORD TERMINATOR '\n' ENCLOSED BY '|' NULL AS '' <%=rejectMax%><%=exceptionString%><%=rejectString%><%=abort%>DIRECT<%=noComm%>";
             <%
             }
