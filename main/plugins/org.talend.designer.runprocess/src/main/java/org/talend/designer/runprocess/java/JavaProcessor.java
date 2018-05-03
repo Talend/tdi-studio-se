@@ -25,7 +25,6 @@ import java.io.LineNumberReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -90,6 +89,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.CommonsPlugin;
 import org.talend.commons.exception.ExceptionHandler;
+import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.exception.SystemException;
 import org.talend.commons.ui.runtime.exception.RuntimeExceptionHandler;
 import org.talend.commons.utils.generation.JavaUtils;
@@ -115,9 +115,11 @@ import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.runprocess.IJavaProcessorStates;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
 import org.talend.core.runtime.process.LastGenerationInfo;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
@@ -322,8 +324,20 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         String jobClassPackageFolder = null;
         String jobClassFilePath = null;
         // only for "standard" job
+        Item item = property.getItem();
+        if (item != null && item.getParent() == null) {
+            try {
+                IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
+                        property.getVersion(), false);
+                if (object != null) {
+                    property = object.getProperty();
+                    item = property.getItem();
+                }
+            } catch (PersistenceException e) {
+                throw new ProcessorException(e);
+            }
+        }
         if (isStandardJob()) {
-            Item item = property.getItem();
             // test/testjob_0_1
             jobClassPackageFolder = JavaResourcesHelper.getJobClassPackageFolder(item, isTestJob);
             // test/testjob_0_1/TestJob.java
