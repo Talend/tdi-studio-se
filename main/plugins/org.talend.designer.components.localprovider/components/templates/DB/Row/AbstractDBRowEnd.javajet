@@ -55,3 +55,4 @@ imports="
 		log4jCodeGenerateUtil.close(node);
     }
 %>
+    resourceMap.put("finish_<%=cid%>", true);
