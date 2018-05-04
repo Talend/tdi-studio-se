@@ -317,14 +317,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 	.append("FIXEDWIDTH '").append(<%=mapping%>).append("' ")
 <%
 	}
-	if(s3Mode){
-	    String region = ElementParameterParser.getValue(node,"__REGION__");
-	    if(region!=null && !region.isEmpty() && !"DEFAULT".equalsIgnoreCase(region)){
-%>
-            .append("REGION '").append(<%=region%>).append("' ")
-<%
-        }
-	}
 %>
 	;
 <%
