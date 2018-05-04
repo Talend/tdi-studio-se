@@ -56,7 +56,7 @@ public class ActiveIfListener implements PropertyChangeListener {
                 .allMatch(condition -> Arrays.stream(condition.getValues())
                         .anyMatch(conditionValue -> condition.getTargetPath().equals(event.getPropertyName()) ?
                                 conditionValue.equals(String.valueOf(event.getNewValue())) :
-                                conditionValue.equals(targetParams.get(condition.getTargetPath()).getValue())));
+                                conditionValue.equals(String.valueOf(targetParams.get(condition.getTargetPath()).getValue()))));
         sourceParameter.setShow(show);
         sourceParameter.redraw();//request source parameter redraw
     }

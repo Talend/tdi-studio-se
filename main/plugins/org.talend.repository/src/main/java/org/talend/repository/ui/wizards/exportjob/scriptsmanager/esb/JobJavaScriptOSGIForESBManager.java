@@ -715,6 +715,10 @@ public class JobJavaScriptOSGIForESBManager extends JobJavaScriptsManager {
         for (String path : relativePathList) {
             Set<URL> resources = libResource.getResourcesByRelativePath(path);
             for (URL url : resources) {
+                // TESB-21804:Fail to deploy cMessagingEndpoint with quartz component in runtime for ClassCastException
+                if (url.getPath().matches("(.*)camel-(.*)-alldep-(.*)$")) {
+                    continue;
+                }
                 File dependencyFile = new File(FilesUtils.getFileRealPath(url.getPath()));
                 String relativePath = libResource.getDirectoryName() + PATH_SEPARATOR + dependencyFile.getName();
                 bundleClasspath.append(MANIFEST_ITEM_SEPARATOR).append(relativePath);

@@ -93,7 +93,7 @@ int rejectedCount_<%=cid%>=0;
 String tableName_<%=cid%> = <%=table%>;
 boolean whetherReject_<%=cid%> = false;
 String dbschema_<%=cid%>= <%=dbschema%>;
-
+java.sql.Statement stmt_<%=cid %> = null;
 
 <%
 
@@ -291,7 +291,7 @@ if(columnList != null && columnList.size()>0) {
     }
 	if(("true").equals(identityInsert)) {
 	    %>
-	    java.sql.Statement stmt_<%=cid %> = conn_<%=cid%>.createStatement();
+	    stmt_<%=cid %> = conn_<%=cid%>.createStatement();
 	    stmt_<%=cid %>.execute("SET IDENTITY_INSERT "+ tableName_<%=cid%> +" ON");
 	    <%
 	}

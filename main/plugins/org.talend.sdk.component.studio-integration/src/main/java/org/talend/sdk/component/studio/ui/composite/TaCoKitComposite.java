@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.bidimap.DualHashBidiMap;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
@@ -154,6 +155,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
                 disposeChildren();
             }
         }
+        hashCurControls = new DualHashBidiMap();
         parameters = elem.getElementParametersWithChildrens();
         generator.initController(this);
         final Composite previousComposite = addCommonWidgets(composite);

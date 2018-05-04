@@ -210,6 +210,25 @@ int nb_file_<%=cid%> = 0;
 	<%if(isLog4jEnabled){%>
 		log.info("<%=cid%> - Putting file to the server.");
 	<%}%>
+	
+	class StatCheck_<%=cid%> {
+			
+			boolean statOK(com.jcraft.jsch.ChannelSftp client, String path) {
+					try {
+							return client.stat(path).getAtimeString() != null;
+					} catch (Exception e) {
+							<%if(isLog4jEnabled){%>
+							log.warn("<%=cid%> - Directory or file permission denied for checking the status of the path : " + path);
+							<%}%>
+					}
+					
+					return false;
+			}
+			
+	}
+	
+	StatCheck_<%=cid%> sc_<%=cid%> = new StatCheck_<%=cid%>();
+	
 	for (java.util.Map<String, String> map<%=cid %> : list<%=cid %>) {
 
 <%} else if (!ftps) {%> // *** ftp *** //

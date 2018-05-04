@@ -1,9 +1,12 @@
 package org.talend.designer.dbmap.language.postgres;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -35,6 +38,9 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
     @Before
     public void setUp() throws Exception {
         dbMapComponent = new DbMapComponent();
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
     }
 
     @After
@@ -279,7 +285,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String[] dbColumns = new String[] { "String", "void", "age" };
         String[] expressions = new String[] { schema + "." + tableName + "._String", schema + "." + tableName + "._void" };
         initForExpression(schema, tableName, columns, dbColumns, "grade", columns, dbColumns, expressions);
-        ExternalDbMapTable externalData = (ExternalDbMapTable) dbMapComponent.getExternalData().getOutputTables().get(0);
+        ExternalDbMapTable externalData = dbMapComponent.getExternalData().getOutputTables().get(0);
         ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
         whereEntity.setName("where_entity");
         whereEntity.setExpression("\\\"eltinput\\\".\\\"String\\\">10");
@@ -317,7 +323,7 @@ public class PostgresGenerationManagerTest extends DbGenerationManagerTestHelper
         String[] expressions = new String[] { "context.schema.bugtdi32594_src.name",
                 "UPPER(context.schema.bugtdi32594_src.name)", "to_date(context.schema.bugtdi32594_src.register, 'yyyy-MM-dd')" };
         initForExpression(schema, tableName, inputColumns, inputColumns, outputTable, outputColumns, outputColumns, expressions);
-        ExternalDbMapTable externalData = (ExternalDbMapTable) dbMapComponent.getExternalData().getOutputTables().get(0);
+        ExternalDbMapTable externalData = dbMapComponent.getExternalData().getOutputTables().get(0);
         ExternalDbMapEntry whereEntity = new ExternalDbMapEntry();
         whereEntity.setName("where_entity");
         whereEntity.setExpression("bugtdi32594_src.id=bugtdi32594_dest.id");

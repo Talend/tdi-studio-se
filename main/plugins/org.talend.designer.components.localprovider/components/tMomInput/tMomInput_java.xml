@@ -36,7 +36,7 @@
   <PARAMETERS>
 
     <PARAMETER NAME="KEEPLISTENING" FIELD="CHECK" SHOW="true" NUM_ROW="10"
-        NOT_SHOW_IF="((((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'ACTIVEMQ')) OR ((USE_CONNECTION == 'false') and (SERVER == 'ACTIVEMQ'))) AND USEMAX == 'true')">
+        NOT_SHOW_IF="(((((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'ACTIVEMQ')) OR ((USE_CONNECTION == 'false') and (SERVER == 'ACTIVEMQ'))) OR (((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'WEBSPHERE')) OR ((USE_CONNECTION == 'false') and (SERVER == 'WEBSPHERE')))) AND USEMAX == 'true')">
       <DEFAULT IF="(SERVER == 'JBOSS')">true</DEFAULT>
       <DEFAULT IF="(SERVER == 'WEBSPHERE')">false</DEFAULT>
       <DEFAULT IF="(SERVER == 'ACTIVEMQ')">false</DEFAULT>
@@ -48,7 +48,7 @@
     </PARAMETER>
 
     <PARAMETER NAME="USEMAX" FIELD="CHECK" NUM_ROW="15"
-        SHOW_IF="(((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'ACTIVEMQ')) OR ((USE_CONNECTION == 'false') and (SERVER == 'ACTIVEMQ'))) AND (KEEPLISTENING == 'false')">
+        NOT_SHOW_IF="(((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'JBOSS')) OR ((USE_CONNECTION == 'false') and (SERVER == 'JBOSS'))) OR (KEEPLISTENING == 'true')">
       <DEFAULT >false</DEFAULT>
     </PARAMETER>
 
@@ -88,8 +88,7 @@
     </PARAMETER>
 	<!--npruss end: changes for static discovery and custom connection parameters and timeout in max message operation-->
 
-    <PARAMETER NAME="MAXMSG" FIELD="TEXT" NUM_ROW="18"
-        SHOW_IF="((((USE_CONNECTION == 'true') and (#LINK@NODE.CONNECTION.SERVER== 'ACTIVEMQ')) OR ((USE_CONNECTION == 'false') and (SERVER == 'ACTIVEMQ'))) and KEEPLISTENING == 'false' and USEMAX == 'true')">
+    <PARAMETER NAME="MAXMSG" FIELD="TEXT" NUM_ROW="18" SHOW_IF="(isShow[USEMAX]) AND (USEMAX == 'true')">
       <DEFAULT>1000</DEFAULT>
     </PARAMETER>
 

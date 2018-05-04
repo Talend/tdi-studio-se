@@ -104,6 +104,10 @@ public final class Lookups {
         return lookup(TaCoKitCache.class);
     }
 
+    public static ProcessManager manager() {
+        return lookup(ProcessManager.class);
+    }
+
     private static <T> T lookup(final Class<T> type) {
         final BundleContext context = Platform.getBundle("org.talend.sdk.component.studio-integration").getBundleContext();
         final ServiceReference<T> clientRef = context.getServiceReference(type);

@@ -1773,7 +1773,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 }
                             }
                         }
-
+                        Map<Object, Object> contextData = new HashMap<Object, Object>();
                         // if the repository connection exists then test the values
                         for (IElementParameter param : node.getElementParameters()) {
                             if (needBuildIn) {
@@ -1807,7 +1807,7 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                     table = node.getMetadataList().get(0);
                                 }
                                 Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnection,
-                                        repositoryValue, table, relatedComponent);
+                                        repositoryValue, table, relatedComponent, contextData);
                                 if (objectValue == null || "".equals(objectValue)) {
                                     if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
                                         IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(

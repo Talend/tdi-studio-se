@@ -53,6 +53,7 @@ import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.constants.FileConstants;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
+import org.talend.core.service.IESBMicroService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.designer.core.ICamelDesignerCoreService;
 import org.talend.designer.runprocess.IProcessor;
@@ -72,7 +73,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     /**
      * type of job exports.
-     * */
+     */
     public static enum JobExportType {
         POJO(Messages.getString("JavaJobScriptsExportWSWizardPage.POJO"), false), //$NON-NLS-1$
         OSGI(Messages.getString("JavaJobScriptsExportWSWizardPage.OSGI"), false), //$NON-NLS-1$
@@ -88,7 +89,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the label or the POJO type if no match.
-         * */
+         */
         public static JobExportType getTypeFromLabel(String label) {
             for (JobExportType type : JobExportType.values()) {
                 if (type.label.equals(label)) {
@@ -100,7 +101,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         /**
          * return the type according to the type string, then try the label string or the POJO type if no match
-         * */
+         */
         public static JobExportType getTypeFromString(String str) {
             if (str == null) {
                 return POJO;
@@ -326,8 +327,8 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         // this.getDestinationValue()
         // createExportTree(pageComposite);
         if (!isMultiNodes()) {
-            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
-                    IBrandingService.class);
+            IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
+                    .getService(IBrandingService.class);
             boolean allowVerchange = brandingService.getBrandingConfiguration().isAllowChengeVersion();
             if (allowVerchange) {
                 createJobVersionGroup(pageComposite);
@@ -386,7 +387,14 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                     }
                     continue;
                 }
+
+                if (exportType.equals(JobExportType.MSESB)) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
                 exportTypeCombo.add(exportType.label);
+            }
+                } else {
+                    exportTypeCombo.add(exportType.label);
+                }
             }
         }
         String label2 = getCurrentExportType1().label;

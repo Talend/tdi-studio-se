@@ -19,6 +19,8 @@ import java.util.Set;
 
 /**
  * DOC zwxue class global comment. Detailled comment
+ * 
+ * @deprecated
  */
 public class DeploymentConfsModel {
 

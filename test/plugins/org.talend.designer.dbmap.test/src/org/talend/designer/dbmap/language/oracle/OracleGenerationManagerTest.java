@@ -12,10 +12,12 @@
 // ============================================================================
 package org.talend.designer.dbmap.language.oracle;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -50,6 +52,10 @@ public class OracleGenerationManagerTest extends DbGenerationManagerTestHelper {
         conn = mock(IConnection.class);
         incomingConnections.add(conn);
         dbMapComponent.setIncomingConnections(incomingConnections);
+
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
 
         oracleManager = new OracleGenerationManager();
 

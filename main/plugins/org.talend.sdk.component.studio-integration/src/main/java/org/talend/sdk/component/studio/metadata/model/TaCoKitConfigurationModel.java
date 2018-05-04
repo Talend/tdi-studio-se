@@ -41,6 +41,8 @@ public class TaCoKitConfigurationModel {
 
     private static final String TACOKIT_CONFIG_ID = "__TACOKIT_CONFIG_ID"; //$NON-NLS-1$
 
+    private static final String TACOKIT_CONFIG_VERSION = "__TACOKIT_CONFIG_VERSION"; //$NON-NLS-1$
+
     private static final String TACOKIT_CONFIG_PARENT_ID = "__TACOKIT_CONFIG_PARENT_ID"; //$NON-NLS-1$
 
     private static final String TACOKIT_PARENT_ITEM_ID = "__TACOKIT_PARENT_ITEM_ID"; //$NON-NLS-1$
@@ -91,11 +93,12 @@ public class TaCoKitConfigurationModel {
     }
 
     public String getStoredVersion() {
-        return this.connection.getVersion();
+        return (String) getProperties().get(TACOKIT_CONFIG_VERSION);
     }
 
+    @SuppressWarnings("unchecked")
     public void storeVersion(final String newVersion) {
-        this.connection.setVersion(newVersion);
+        getProperties().put(TACOKIT_CONFIG_VERSION, newVersion);
     }
 
     public int getConfigTypeNodeVersion() throws Exception {

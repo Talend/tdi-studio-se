@@ -100,6 +100,48 @@
 				<include>pom.xml</include>
 			</includes>
 		</fileSet>
+		<fileSet><!--parent pom.xml -->
+			<directory>${parentpom.dir}</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>pom.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--routines code -->
+			<directory>${routinescode.dir}</directory>
+			<outputDirectory>code/routines/src/main</outputDirectory>
+			<includes>
+				<include>**/**/*.*</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--routines pom -->
+			<directory>${routinespom.dir}</directory>
+			<outputDirectory>code/routines/</outputDirectory>
+			<includes>
+				<include>pom.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--pigudf code -->
+			<directory>${pigudfcode.dir}</directory>
+			<outputDirectory>code/pigudf/src/main</outputDirectory>
+			<includes>
+				<include>**/**/*.*</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--pifudf pom -->
+			<directory>${pigudfpom.dir}</directory>
+			<outputDirectory>code/pigudf/</outputDirectory>
+			<includes>
+				<include>pom.xml</include>
+			</includes>
+		</fileSet>
+		<fileSet><!--joblet -->
+			<directory>${joblet.dir}</directory>
+			<outputDirectory>jobs/</outputDirectory>
+			<includes>
+				<include>joblets*/**/*.*</include>
+			</includes>
+		</fileSet>
 		<fileSet> <!-- add items -->
 			<directory>${items.dir}</directory>
 			<outputDirectory>${talend.job.name}</outputDirectory>

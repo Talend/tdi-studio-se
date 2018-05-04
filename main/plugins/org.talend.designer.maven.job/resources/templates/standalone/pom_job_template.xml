@@ -113,6 +113,12 @@
 				<templates.dir>${basedir}/src/main/templates/</templates.dir>
 				<assemblies.dir>${basedir}/src/main/assemblies/</assemblies.dir>
 				<poms.dir>${basedir}</poms.dir>
+				<parentpom.dir>${project.parent.relativePath}</parentpom.dir>
+				<routinespom.dir>${parentpom.dir}code/routines/</routinespom.dir>
+				<routinescode.dir>${parentpom.dir}code/routines/src/main/</routinescode.dir>
+				<pigudfpom.dir>${parentpom.dir}code/pigudf/</pigudfpom.dir>
+				<pigudfcode.dir>${parentpom.dir}code/pigudf/src/main/</pigudfcode.dir>
+				<joblet.dir>${parentpom.dir}jobs/</joblet.dir>
 			</properties>
 		</profile>
 		<profile>
