@@ -247,7 +247,6 @@ class NestXMLTool_<%=cid%>{
 	
 	public String objectToString(Object value){
 		if(value.getClass().isArray()){
-			Class componentType = value.getClass().getComponentType();
 			StringBuilder sb = new StringBuilder();
 
 			int length = java.lang.reflect.Array.getLength(value);
