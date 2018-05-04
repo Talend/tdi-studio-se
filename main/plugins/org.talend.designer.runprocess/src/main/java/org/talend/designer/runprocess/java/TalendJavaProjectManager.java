@@ -285,12 +285,12 @@ public class TalendJavaProjectManager {
         return talendJobJavaProjects.get(AggregatorPomsHelper.getJobProjectId(property));
     }
 
-    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, Project project) {
-        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, String projectTechName) {
+        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
     }
 
-    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, Project project) {
-        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
+        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,

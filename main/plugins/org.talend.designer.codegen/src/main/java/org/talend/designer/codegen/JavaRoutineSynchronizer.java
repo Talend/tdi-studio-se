@@ -72,7 +72,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     @Override
     public void syncAllRoutinesForLogOn() throws SystemException {
-        syncRoutineItems(getRoutines(true), true);
+        syncRoutineItems(getRoutines(needSyncRefProject()), true);
     }
 
     /*
@@ -87,7 +87,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     @Override
     public void syncAllPigudfForLogOn() throws SystemException {
-        syncRoutineItems(getAllPigudf(true), true);
+        syncRoutineItems(getAllPigudf(needSyncRefProject()), true);
     }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
