@@ -3290,7 +3290,6 @@ public class DataProcess implements IGeneratingProcess {
                 }
                 copyElementParametersValue(connection, dataConnec);
                 dataConnec.setTraceConnection(connection.isTraceConnection());
-                buildGraphicalMap.put(sourceNode, newSourceNode);
                 buildGraphicalNodeForInputConnections(process, sourceNode, newSourceNode, visitedNodes);
             }
         }
