@@ -13,6 +13,8 @@
 package org.talend.sdk.component.studio.metadata.model;
 
 import org.talend.core.model.properties.ConnectionItem;
+import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.Lookups;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -42,5 +44,13 @@ public class TaCoKitConfigurationItemModel {
 
     public TaCoKitConfigurationModel getConfigurationModel() {
         return this.configurationModel;
+    }
+    
+    public ConfigTypeNode getConfigTypeNode() {
+        return Lookups.taCoKitCache().getConfigTypeNodeMap().get(getConfigId());
+    }
+    
+    private String getConfigId() {
+        return connectionItem.getTypeName();
     }
 }

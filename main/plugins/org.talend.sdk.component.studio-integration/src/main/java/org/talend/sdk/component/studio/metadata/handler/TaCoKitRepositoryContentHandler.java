@@ -153,7 +153,7 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
             try {
                 TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel((ConnectionItem) item);
                 type = TaCoKitUtil
-                        .getOrCreateERepositoryObjectType(itemModel.getConfigurationModel().getConfigTypeNode());
+                        .getOrCreateERepositoryObjectType(itemModel.getConfigTypeNode());
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
