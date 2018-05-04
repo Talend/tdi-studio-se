@@ -118,6 +118,7 @@ public class CreateTaCoKitConfigurationAction extends TaCoKitMetadataContextualA
         ConnectionItem connectionItem = PropertiesFactory.eINSTANCE.createConnectionItem();
         connectionItem.setConnection(connection);
         connectionItem.setProperty(property);
+        connectionItem.setTypeName(configTypeNode.getId());
 
         TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(connectionItem);
         TaCoKitConfigurationModel configurationModel = itemModel.getConfigurationModel();
