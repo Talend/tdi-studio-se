@@ -251,6 +251,7 @@
                   org.talend.repository,
                   org.talend.repository.metadata,
                   org.talend.repository.view,
+                  org.talend.repository.items.importexport,
                   org.talend.metadata.managment.ui,
                   org.talend.repository.view.di,
                   org.apache.commons.collections,

@@ -67,6 +67,17 @@
      </RepositoryHandler>
   </extension>
   <extension
+         point="org.talend.repository.items.importexport.handler">
+      <importItemsProvider
+            id="org.talend.sdk.component.studio.metadata.handler.tacokit"
+            name="Tacokit Import"
+            priority="LOW">
+         <importItemsHandler
+               class="org.talend.sdk.component.studio.metadata.handler.TaCoKitImportHandler">
+         </importItemsHandler>
+      </importItemsProvider>
+  </extension>
+  <extension
         point="org.talend.core.repository.repositorySeeker">
      <seeker
            class="org.talend.sdk.component.studio.metadata.seeker.TaCoKitMetadataRepoViewSeeker"

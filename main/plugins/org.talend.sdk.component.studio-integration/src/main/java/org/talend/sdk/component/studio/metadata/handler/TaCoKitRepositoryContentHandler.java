@@ -74,7 +74,7 @@ public class TaCoKitRepositoryContentHandler extends AbstractRepositoryContentHa
             try {
                 TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel((ConnectionItem) item);
                 ERepositoryObjectType type = TaCoKitUtil
-                        .getOrCreateERepositoryObjectType(itemModel.getConfigurationModel().getConfigTypeNode());
+                        .getOrCreateERepositoryObjectType(itemModel.getConfigTypeNode());
                 itemResource = create(project, (ConnectionItem) item, path, type);
             } catch (Exception e) {
                 throw new PersistenceException(e);
