@@ -4418,18 +4418,23 @@ public class Node extends Element implements IGraphicalNode {
         if (getComponent() != null && "tRunJob".equals(getComponent().getName())) {
             List<? extends INode> allNodes = process.getGraphicalNodes();
             IElementParameter thisElement = this.getElementParameter(EParameterName.PROCESS.getName());
-            Object thisVersion = thisElement.getChildParameters().get(EParameterName.PROCESS_TYPE_VERSION.getName()).getValue();
+            Map<String, IElementParameter> childParameters = thisElement.getChildParameters();
+            Object thisVersion = childParameters.get(EParameterName.PROCESS_TYPE_VERSION.getName()).getValue();
             String lastVersion = null;
             try {
-                List<IRepositoryViewObject> all = ProxyRepositoryFactory.getInstance().getAll(ERepositoryObjectType.PROCESS);
-                for (IRepositoryViewObject obj : all) {
-                    if (obj.getLabel().equals(thisElement.getValue())) {
-                        lastVersion = obj.getVersion();
+                IRepositoryViewObject subprocess = null;
+                for (ERepositoryObjectType type : ERepositoryObjectType.getAllTypesOfProcess()) {
+                    subprocess = ProxyRepositoryFactory.getInstance()
+                            .getLastVersion(childParameters.get(EParameterName.PROCESS_TYPE_PROCESS.getName()).getValue().toString(),"",type);
+                    if(subprocess!=null) {
+                        break;
                     }
                 }
+                lastVersion = subprocess.getProperty().getVersion();
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);
             }
+
             if ("Latest".equals(thisVersion)) {
                 thisVersion = lastVersion;
             }
