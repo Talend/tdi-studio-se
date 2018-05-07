@@ -4418,6 +4418,10 @@ public class Node extends Element implements IGraphicalNode {
         if (getComponent() != null && "tRunJob".equals(getComponent().getName())) {
             List<? extends INode> allNodes = process.getGraphicalNodes();
             IElementParameter thisElement = this.getElementParameter(EParameterName.PROCESS.getName());
+            // at first, when create a new tRunJob, this process is empty,it will have value after second call
+            if (StringUtils.isBlank(thisElement.getValue().toString())) {
+                return;
+            }
             Map<String, IElementParameter> childParameters = thisElement.getChildParameters();
             Object thisVersion = childParameters.get(EParameterName.PROCESS_TYPE_VERSION.getName()).getValue();
             String lastVersion = null;
