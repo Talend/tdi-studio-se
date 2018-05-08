@@ -253,10 +253,10 @@ if(("UPDATE").equals(dataAction)) {
 			stmtBulk_<%=cid %>.execute(bulkSQL_<%=cid%>);
 			stmtBulk_<%=cid %>.close(); 
 		<%}else{%>
-			java.io.FileReader fileReader = new java.io.FileReader(<%=file%>);
-			org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
-			copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
-			fileReader.close();
+			try (java.io.FileReader fileReader = new java.io.FileReader(<%=file%>)){
+				org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
+				copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
+			} 			
 		<%}%>
 		<%if(isLog4jEnabled){%>
 			log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
@@ -304,10 +304,10 @@ if(("UPDATE").equals(dataAction)) {
 		stmtBulk_<%=cid %>.execute(bulkSQL_<%=cid%>);
 		stmtBulk_<%=cid %>.close(); 
 	<%}else{%>
-		java.io.FileReader fileReader = new java.io.FileReader(<%=file%>);
-		org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
-		copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
-		fileReader.close();
+		try (java.io.FileReader fileReader = new java.io.FileReader(<%=file%>)){
+			org.postgresql.copy.CopyManager copyManager = new org.postgresql.copy.CopyManager((org.postgresql.core.BaseConnection) conn_<%=cid %>);
+			copyManager.copyIn(bulkSQL_<%=cid%>, fileReader );
+		}
 	<%}%>
 	<%if(isLog4jEnabled){%>
 		log.debug("<%=cid%> - Bulk SQL:"+bulkSQL_<%=cid%>+".");
