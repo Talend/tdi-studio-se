@@ -69,6 +69,7 @@ public class TaCoKitWizardComposite extends TaCoKitComposite {
                 .stream()
                 .filter(p -> p instanceof TaCoKitElementParameter)
                 .map(p -> (TaCoKitElementParameter) p)
+                .filter(TaCoKitElementParameter::isPersisted)
                 .forEach(parameter -> {
                     parameter.addValueChangeListener(configurationUpdater);
                     try {

@@ -72,4 +72,14 @@ public class ButtonParameter extends TaCoKitElementParameter {
     public String toString() {
         return "ButtonParameter(command=" + this.getCommand() + ")";
     }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isPersisted() {
+        return false;
+    }
 }

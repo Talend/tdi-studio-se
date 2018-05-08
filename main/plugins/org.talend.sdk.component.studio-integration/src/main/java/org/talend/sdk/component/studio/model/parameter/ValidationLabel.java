@@ -87,5 +87,15 @@ public class ValidationLabel extends TaCoKitElementParameter {
                 .filter(Objects::nonNull)
                 .collect(Collectors.joining(DELIMITER));
     }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * @return false
+     */
+    @Override
+    public boolean isPersisted() {
+        return false;
+    }
 
 }
