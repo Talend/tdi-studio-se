@@ -160,7 +160,7 @@ public class TaCoKitConfigurationModel {
             .map(SimplePropertyDefinition::getPath)
             .filter(key::equals)
             .findFirst()
-            .get();
+            .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
     }
 
     public ConfigTypeNode getFirstConfigTypeNodeContains(final String key) throws Exception {

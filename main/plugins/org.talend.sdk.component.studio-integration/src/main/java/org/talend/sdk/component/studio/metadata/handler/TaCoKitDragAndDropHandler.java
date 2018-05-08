@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -90,6 +91,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     @Override
     public Object getComponentValue(final Connection connection, final String repositoryKey, final IMetadataTable table,
             final String targetComponent, Map<Object, Object> contextMap) {
+        Objects.requireNonNull(targetComponent, "targetComponent should not be null");
         if (connection == null || isEmpty(repositoryKey)) {
             return null;
         }
