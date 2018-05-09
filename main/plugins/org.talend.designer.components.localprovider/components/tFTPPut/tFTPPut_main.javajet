@@ -94,9 +94,22 @@ try{
                         int mode<%=cid%> = com.jcraft.jsch.ChannelSftp.RESUME;
                         <%}%>
                         boolean putSuccess_<%=cid%> = false;
+                        
+                        String remoteDir_<%=cid%> = <%=remotedir%>;
+                        if(remoteDir_<%=cid%>==null) {
+                        		remoteDir_<%=cid%> = ".";
+                        }
+                        remoteDir_<%=cid%> = remoteDir_<%=cid%>.trim();
+                        if(remoteDir_<%=cid%>.endsWith("/")) {
+                        		remoteDir_<%=cid%> = remoteDir_<%=cid%>.substring(0, remoteDir_<%=cid%>.length()-1);
+                        }
+                        if(remoteDir_<%=cid%>.isEmpty()) {
+                        		remoteDir_<%=cid%> = ".";
+                        }
+                        String dest_<%=cid%> = remoteDir_<%=cid%>+"/"+listings<%=cid %>[m<%=cid %>].getName();
+                        
                         try{
-                            c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), <%=remotedir%>, monitor<%=cid%>, mode<%=cid%>);
-
+                            c_<%=cid%>.put(listings<%=cid %>[m<%=cid %>].getAbsolutePath(), dest_<%=cid%>, monitor<%=cid%>, mode<%=cid%>);
                             // add info to list will return
                             msg_<%=cid%>.add("file: " + listings<%=cid %>[m<%=cid %>].getAbsolutePath() + ", size: "
                                 + listings<%=cid %>[m<%=cid %>].length() + " bytes upload successfully");
@@ -107,7 +120,7 @@ try{
                             
                             putSuccess_<%=cid%> = true;
                             
-                            if(sc_<%=cid%>.statOK(c_<%=cid%>, <%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName())){
+                            if(sc_<%=cid%>.statOK(c_<%=cid%>, dest_<%=cid%>)){
                                 globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                             }
                         }catch(com.jcraft.jsch.SftpException e_<%=cid%>) {
@@ -117,7 +130,7 @@ try{
                             globalMap.put("<%=cid %>_CURRENT_STATUS", "File transfer fail.");
                             
                             if(!putSuccess_<%=cid%>) {
-                                if(sc_<%=cid%>.statOK(c_<%=cid%>, <%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName())){
+                                if(sc_<%=cid%>.statOK(c_<%=cid%>, dest_<%=cid%>)){
                                     globalMap.put("<%=cid %>_CURRENT_FILE_EXISTS",true);
                                 }
                             }
@@ -129,9 +142,9 @@ try{
                         }else{
                     %>
                             <%if(isLog4jEnabled){%>
-                                log.error("<%=cid%> - File permission denied: "+<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName());
+                                log.error("<%=cid%> - File permission denied: "+dest_<%=cid%>);
                             <%}%>
-                            System.err.println("File permission denied: "+<%=remotedir%>+"/"+listings<%=cid %>[m<%=cid %>].getName());
+                            System.err.println("File permission denied: "+dest_<%=cid%>);
                     <%
                         }
                     %>
