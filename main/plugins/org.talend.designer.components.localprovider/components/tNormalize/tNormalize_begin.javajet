@@ -14,6 +14,8 @@ imports="
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 	String deduplicate = ElementParameterParser.getValue(node, "__DEDUPLICATE__");
+	String delim = ElementParameterParser.getValue(node, "__ITEMSEPARATOR__");
+	String textEnclosure = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");   
 	List<IMetadataColumn> metadataColumns = null;
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if (metadatas != null && metadatas.size() > 0) {
@@ -30,7 +32,14 @@ imports="
         String tmp_<%=cid%> = null;
         StringBuilder currentRecord_<%=cid%> = null;
         String [] normalizeRecord_<%=cid%> = null;
-        java.util.Set<String> recordSet_<%=cid%> = new java.util.HashSet<String>();    
+        java.util.Set<String> recordSet_<%=cid%> = new java.util.HashSet<String>();
+        
+				if ( ((String)<%=delim%>).length() == 0 ){
+					throw new IllegalArgumentException("Field Separator must be assigned a char."); 
+				}
+				if ( ((String)<%=textEnclosure%>).length() == 0 ){
+					throw new IllegalArgumentException("Text enclosure must be assigned a char."); 
+				}
         <%
     }
 %>
