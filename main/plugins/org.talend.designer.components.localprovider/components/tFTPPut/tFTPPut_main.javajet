@@ -97,14 +97,11 @@ try{
                         
                         String remoteDir_<%=cid%> = <%=remotedir%>;
                         if(remoteDir_<%=cid%>==null) {
-                        		remoteDir_<%=cid%> = ".";
+                        		remoteDir_<%=cid%> = "";
                         }
                         remoteDir_<%=cid%> = remoteDir_<%=cid%>.trim();
                         if(remoteDir_<%=cid%>.endsWith("/")) {
                         		remoteDir_<%=cid%> = remoteDir_<%=cid%>.substring(0, remoteDir_<%=cid%>.length()-1);
-                        }
-                        if(remoteDir_<%=cid%>.isEmpty()) {
-                        		remoteDir_<%=cid%> = ".";
                         }
                         String dest_<%=cid%> = remoteDir_<%=cid%>+"/"+listings<%=cid %>[m<%=cid %>].getName();
                         
