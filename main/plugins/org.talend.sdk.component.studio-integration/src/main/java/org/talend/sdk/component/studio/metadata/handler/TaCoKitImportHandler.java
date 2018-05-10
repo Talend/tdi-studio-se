@@ -10,8 +10,15 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
+/**
+ * Connection Import Handler for Tacokit components. It is used during metadata import
+ */
 public class TaCoKitImportHandler extends MetadataConnectionImportHandler {
     
+    /**
+     * Constructor fills up Tacokit item types present in the product.
+     * Metadata for non-existent Component won't be imported
+     */
     public TaCoKitImportHandler() {
         final Map<String, ConfigTypeNode> configTypeNodes = Lookups.taCoKitCache().getConfigTypeNodeMap();
         try {
