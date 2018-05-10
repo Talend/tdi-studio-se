@@ -4434,6 +4434,9 @@ public class Node extends Element implements IGraphicalNode {
                         break;
                     }
                 }
+                if (subprocess == null) {
+                    return;
+                }
                 lastVersion = subprocess.getProperty().getVersion();
             } catch (PersistenceException e) {
                 CommonExceptionHandler.process(e);
