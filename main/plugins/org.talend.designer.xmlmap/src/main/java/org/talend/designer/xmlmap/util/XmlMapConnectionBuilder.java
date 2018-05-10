@@ -73,7 +73,9 @@ public class XmlMapConnectionBuilder {
                     if (hasMaptchedLocation(expressionManager, sourceLocation, treeTarget, ExpressionType.EXPRESSION_FILTER)) {
                         createFilterConnection(treeNode, treeTarget, mapData);
                     }
-                    checkTargetChildren(expressionManager, treeTarget.getNodes(), treeNode, sourceLocation, mapData);
+                    if (checkRebuildLinkValid(treeNode, treeTarget)) {
+                        checkTargetChildren(expressionManager, treeTarget.getNodes(), treeNode, sourceLocation, mapData);
+                    }
                 }
                 // VAR
                 for (VarNode varNode : mapData.getVarTables().get(0).getNodes()) {
@@ -87,7 +89,9 @@ public class XmlMapConnectionBuilder {
                     if (hasMaptchedLocation(expressionManager, sourceLocation, outputTree, ExpressionType.EXPRESSION_FILTER)) {
                         createFilterConnection(treeNode, outputTree, mapData);
                     }
-                    checkTargetChildren(expressionManager, outputTree.getNodes(), treeNode, sourceLocation, mapData);
+                    if (checkRebuildLinkValid(treeNode, outputTree)) {
+                        checkTargetChildren(expressionManager, outputTree.getNodes(), treeNode, sourceLocation, mapData);
+                    }
                 }
             }
             if (!treeNode.getChildren().isEmpty()) {
@@ -112,6 +116,29 @@ public class XmlMapConnectionBuilder {
                 checkTargetChildren(expressionManager, targetNode.getChildren(), sourceNode, sourceLocation, mapData);
             }
         }
+    }
+
+    private boolean checkRebuildLinkValid(TreeNode srouceNode, AbstractInOutTree target) {
+        AbstractInOutTree srouceTree = XmlMapUtil.getAbstractInOutTree(srouceNode);
+        AbstractInOutTree targetTree = null;
+        if (target instanceof InputXmlTree || target instanceof OutputXmlTree) {
+            targetTree = target;
+        } else {
+            targetTree = XmlMapUtil.getAbstractInOutTree((TreeNode) target);
+        }
+        if (srouceTree == targetTree) {
+            return false;
+        }
+        if (srouceTree.eContainer() instanceof XmlMapData && srouceTree instanceof InputXmlTree
+                && target instanceof InputXmlTree) {
+            XmlMapData mapdata = ((XmlMapData) srouceTree.eContainer());
+            int indexSource = mapdata.getInputTrees().indexOf(srouceTree);
+            int indexTarget = mapdata.getInputTrees().indexOf(targetTree);
+            if (indexTarget < indexSource) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean hasMaptchedLocation(XmlMapExpressionManager expressionManager, TableEntryLocation sourceLocation,
