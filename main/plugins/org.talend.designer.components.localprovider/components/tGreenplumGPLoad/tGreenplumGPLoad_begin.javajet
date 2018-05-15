@@ -56,7 +56,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String gploadExePath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 	boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
-	
+	String sourceLocalHostname = ElementParameterParser.getValue(node,"__SOURCE_LOCALHOSTNAME__");
+	String sourcePort = ElementParameterParser.getValue(node,"__SOURCE_PORT__");
+
 	String tableName = dbtable;
 	List<IMetadataColumn> columnList = getColumnList(node);
 	List<Column> stmtStructure = null;
@@ -375,6 +377,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 		gpctrl_<%=cid%>.println("GPLOAD:");
 		gpctrl_<%=cid%>.println("  INPUT:");
 		gpctrl_<%=cid%>.println("    - SOURCE:");
+			gpctrl_<%=cid%>.println("        LOCAL_HOSTNAME: ");
+			gpctrl_<%=cid%>.println("          - "+<%=sourceLocalHostname%>);
+			gpctrl_<%=cid%>.println("        PORT: "+<%=sourcePort%>);
 		gpctrl_<%=cid%>.println("        FILE:");
 		<% if (useNamedPiped) { %>
 		gpctrl_<%=cid%>.println("          - " + (new com.infobright.io.NamedPipeFactory()).getNativePipeName(<%=namedPipeName%>));
