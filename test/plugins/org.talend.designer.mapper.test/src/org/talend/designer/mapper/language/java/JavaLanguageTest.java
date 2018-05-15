@@ -98,15 +98,15 @@ public class JavaLanguageTest {
         matcher = locationPattern.matcher(expression);
         assertTrue(matcher.matches());
         
-        expression = "row1._¸üÐÂ_ÈÕ•r£ß£É£Ä";
+        expression = "row1._validï¼¿endï¼¿dtime";
         matcher = locationPattern.matcher(expression);
         assertTrue(matcher.matches());
 
-        expression = "row1._ÖÐÎÄ_";
+        expression = "row1._ä¸­æ–‡_";
         matcher = locationPattern.matcher(expression);
         assertTrue(matcher.matches());
 
-        expression = "row1.¥Æ¥¹¥È£ß¥Õ¥é¥°";
+        expression = "row1.ãƒ†ã‚¹ãƒˆï¼¿ãƒ•ãƒ©ã‚°";
         matcher = locationPattern.matcher(expression);
         assertTrue(matcher.matches());
 
