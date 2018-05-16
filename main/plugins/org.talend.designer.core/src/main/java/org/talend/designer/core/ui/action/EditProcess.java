@@ -136,7 +136,13 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
         Property property = node.getObject().getProperty();
         if (property != null) {
             Assert.isTrue(property.getItem() instanceof ProcessItem);
-
+            if (property.eResource() == null || property.eResource().getResourceSet() == null) {
+                try {
+                    ProxyRepositoryFactory.getInstance().reload(property);
+                } catch (PersistenceException e) {
+                    ExceptionHandler.process(e);
+                }
+            }
             ProcessItem processItem = (ProcessItem) property.getItem();
 
             IWorkbenchPage page = getActivePage();
