@@ -201,7 +201,6 @@ int nb_file_<%=cid%> = 0;
 		String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
 		for (String dir: dirsTree_<%=cid %>) {
 			if (dir.isEmpty()) continue;
-			boolean dirExist_<%=cid %> = false;
 
 			try {
 				c_<%=cid %>.cd(dir);
