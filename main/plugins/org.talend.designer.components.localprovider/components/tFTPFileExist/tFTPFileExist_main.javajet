@@ -146,10 +146,13 @@ if (sftp) { // *** sftp *** //
 <%
 	}
 %>
+
+	ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%
-	if (!moveToCurrentDir) {
+	if (moveToCurrentDir) {
+		//remote path could be relative, so need to change to root (absolute) one
 %>
-		ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
+		ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
 <%
 	}
 } else { // *** ftp *** //
