@@ -723,13 +723,14 @@ public abstract class DbGenerationManager {
         if (operatorIsSet) {
 
             if (writeCr) {
-                sbWhere.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
-                sbWhere.append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sbWhere, tabSpaceString);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             }
             if (!isFirstClause) {
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.AND);
-                sbWhere.append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.AND);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             }
             String entryName = dbMapEntry.getName();
             entryName = getOriginalColumnName(entryName, component, table);
@@ -741,30 +742,31 @@ public abstract class DbGenerationManager {
             }
             entryName = getColumnName(null, entryName);
             String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
-            sbWhere.append(DbMapSqlConstants.SPACE);
-            sbWhere.append(locationInputEntry);
-            sbWhere.append(getSpecialRightJoin(table));
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+            appendSqlQuery(sbWhere, locationInputEntry);
+            appendSqlQuery(sbWhere, getSpecialRightJoin(table));
 
-            sbWhere.append(DbMapSqlConstants.SPACE);
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             if (operatorIsSet) {
-                sbWhere.append(dbOperator.getOperator()).append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, dbOperator.getOperator());
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             } else if (!operatorIsSet && expressionIsSet) {
-                sbWhere.append(DbMapSqlConstants.LEFT_COMMENT);
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName)); //$NON-NLS-1$
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName));
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
             }
             if (operatorIsSet && !expressionIsSet && !dbOperator.isMonoOperand()) {
                 String str = table.getName() + DbMapSqlConstants.DOT + entryName;
-                sbWhere.append(DbMapSqlConstants.LEFT_COMMENT);
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(Messages.getString("DbGenerationManager.InputExpSetMessage", str)); //$NON-NLS-1$
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputExpSetMessage", str));
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
             } else if (expressionIsSet) {
-                sbWhere.append(expression);
-                sbWhere.append(getSpecialLeftJoin(table));
+                appendSqlQuery(sbWhere, expression);
+                appendSqlQuery(sbWhere, getSpecialLeftJoin(table));
             }
             conditionWritten = true;
 
