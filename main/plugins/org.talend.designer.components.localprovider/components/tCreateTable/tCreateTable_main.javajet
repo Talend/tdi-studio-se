@@ -153,16 +153,19 @@ abstract class  Manager {
                     } else {
                         comma = ",";
                     }
-                    createTableSQL.append(comma + precision);
+                    if (!isPostgresishDB || metadataColumn.getLength() != null) {
+                        createTableSQL.append(comma + precision);
+                    }
                 }
 
-                if ((!lengthIgnored && (!isPostgresishDB || metadataColumn.getLength() != null)) || !precisionIgnored) {
+                if (isPostgresishDB && metadataColumn.getLength() == null) {
+                } else {
                     createTableSQL.append(suffix);
                 }
                 
                 if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                     createTableSQL.append("UNSIGNED");
-                }                
+                }
             }
             createTableSQL.append(getDefaultValueSQL(metadataColumn.getDefault()));            
             createTableSQL.append(setNullable(metadataColumn.isNullable()));            
