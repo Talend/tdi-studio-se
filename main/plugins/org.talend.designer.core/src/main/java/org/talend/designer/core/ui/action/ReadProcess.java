@@ -18,12 +18,14 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.runtime.model.repository.ERepositoryStatus;
 import org.talend.commons.ui.runtime.exception.MessageBoxExceptionHandler;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
@@ -61,7 +63,15 @@ public class ReadProcess extends AbstractProcessAction {
         Object obj = ((IStructuredSelection) selection).getFirstElement();
 
         RepositoryNode node = (RepositoryNode) obj;
-        ProcessItem processItem = (ProcessItem) node.getObject().getProperty().getItem();
+        Property property = node.getObject().getProperty();
+        if (property != null && (property.eResource() == null || property.eResource().getResourceSet() == null)) {
+            try {
+                ProxyRepositoryFactory.getInstance().reload(property);
+            } catch (PersistenceException e) {
+                ExceptionHandler.process(e);
+            }
+        }
+        ProcessItem processItem = (ProcessItem) property.getItem();
 
         IWorkbenchPage page = getActivePage();
 
