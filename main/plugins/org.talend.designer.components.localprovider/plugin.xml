@@ -2945,6 +2945,12 @@
             context="plugin:org.talend.libraries.apache.kafka"
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/zkclient-0.3.jar">
         </libraryNeeded>
+    	<libraryNeeded
+            id="log4j-1.2.16.jar"
+            name="log4j-1.2.16.jar" mvn_uri="mvn:log4j/log4j/1.2.16"
+            context="plugin:org.talend.libraries.apache.kafka"
+            uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/log4j-1.2.16.jar">
+        </libraryNeeded>
         <libraryNeeded
             id="slf4j-api-1.7.6.jar"
             name="slf4j-api-1.7.6.jar" mvn_uri="mvn:org.talend.libraries/slf4j-api-1.7.6/6.0.0"
