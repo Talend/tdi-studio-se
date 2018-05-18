@@ -1820,9 +1820,9 @@
 				MVN="mvn:org.talend.libraries/jdo2-api-2.3-ec/6.0.0"
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.mapr2/lib/jdo2-api-2.3-ec.jar"
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR') AND (DISTRIBUTION!='CUSTOM')" />
-			<IMPORT NAME="log4j-1.2.15.jar" MODULE="log4j-1.2.15.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.15/6.0.0"
-				UrlPath="platform:/base/plugins/org.apache.log4j_1.2.15.v201012070815.jar"
+			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
+				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR') AND (DISTRIBUTION!='CUSTOM')"
 				BundleID="" />
 			<IMPORT NAME="slf4j-api-1.6.1.jar" MODULE="slf4j-api-1.6.1.jar"

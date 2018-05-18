@@ -315,7 +315,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="log4j"                MODULE="log4j-1.2.15.jar" MVN="mvn:org.talend.libraries/log4j-1.2.15/6.0.0"  UrlPath="platform:/base/plugins/org.apache.log4j_1.2.15.v201012070815.jar" REQUIRED="true" BundleID="" />
+		<IMPORT NAME="log4j"                MODULE="log4j-1.2.17.jar" MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
 		<IMPORT NAME="eigenbase-xom"        MODULE="eigenbase-xom.jar" MVN="mvn:org.talend.libraries/eigenbase-xom/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-xom.jar" REQUIRED="true" />
 		<IMPORT NAME="eigenbase-resgen"     MODULE="eigenbase-resgen.jar" MVN="mvn:org.talend.libraries/eigenbase-resgen/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-resgen.jar" REQUIRED="true" />
 		<IMPORT NAME="eigenbase-properties" MODULE="eigenbase-properties.jar" MVN="mvn:org.talend.libraries/eigenbase-properties/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-properties.jar" REQUIRED="true" />
