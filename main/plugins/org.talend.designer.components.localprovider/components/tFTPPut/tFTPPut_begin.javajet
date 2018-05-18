@@ -196,26 +196,29 @@ int nb_file_<%=cid%> = 0;
 <%
 	if (createDirIfNotExist) {
 %>
-		boolean dirExist_<%=cid %> = false;
-		String remotedir_<%=cid %> = <%=remotedir %>;
-		com.jcraft.jsch.SftpATTRS attrs_<%=cid %> = null;
-		try {
-			attrs_<%=cid %> = c_<%=cid%>.stat(remotedir_<%=cid %>);
-		} catch (com.jcraft.jsch.SftpException ignored) {
+		String rootDir_<%=cid %> = c_<%=cid %>.pwd();
+		String remotedir_<%=cid %> = (<%=remotedir %>).replaceAll("\\\\", "/");
+		String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+		for (String dir: dirsTree_<%=cid %>) {
+			if (dir.isEmpty()) continue;
+
+			try {
+				c_<%=cid %>.cd(dir);
+			} catch (com.jcraft.jsch.SftpException ignored) {
 <%
-			if (isLog4jEnabled) {
+				if (isLog4jEnabled) {
 %>
-				log.debug("Can't find directory " + remotedir_<%=cid %> + ". Component will create it");
+					log.debug("Can't find directory " + dir + ". Component will create it");
 <%
+				}
+%>
+				c_<%=cid%>.mkdir(dir);
+				c_<%=cid %>.cd(dir);
 			}
-%>
 		}
+		//back to the root
+		c_<%=cid %>.cd(rootDir_<%=cid %>);
 
-		dirExist_<%=cid %> = attrs_<%=cid %> != null && attrs_<%=cid %>.isDir();
-
-		if (!dirExist_<%=cid %>) {
-			c_<%=cid%>.mkdir(remotedir_<%=cid %>);
-		}
 <%
 	}
 %>
