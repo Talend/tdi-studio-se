@@ -1878,7 +1878,7 @@
         <libraryNeeded
             context="plugin:org.talend.libraries.apache"
             id="log4j-1.2.17.jar"
-            name="log4j-1.2.17.jar" mvn_uri="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+            name="log4j-1.2.17.jar" mvn_uri="mvn:log4j/log4j/1.2.17"
             uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
             bundleID="" />
 
@@ -2565,7 +2565,7 @@
         </libraryNeeded>
         <libraryNeeded
             id="log4j-1.2.17.jar"
-            name="log4j-1.2.17.jar" mvn_uri="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+            name="log4j-1.2.17.jar" mvn_uri="mvn:log4j/log4j/1.2.17"
             context="plugin:org.talend.libraries.apache"
             uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar">
         </libraryNeeded>

@@ -1597,7 +1597,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar"
 				REQUIRED_IF="(DISTRIBUTION!='CUSTOM') AND (HIVE_VERSION=='APACHE_2_4_0_EMR_0_13_1') AND (USE_EXISTING_CONNECTION == 'false')" />
 			<IMPORT NAME="log4j-1.2.17" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(DISTRIBUTION!='CUSTOM') AND (HIVE_VERSION=='APACHE_2_4_0_EMR_0_13_1') AND (USE_EXISTING_CONNECTION == 'false')" />
 
@@ -1751,7 +1751,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.slf4j/lib/slf4j-log4j12-1.7.5.jar"
 				REQUIRED_IF="(DISTRIBUTION!='CUSTOM') AND (USE_EXISTING_CONNECTION == 'false') AND (HIVE_VERSION=='APACHE_2_4_0_EMR')" />
 			<IMPORT NAME="log4j-1.2.17" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(DISTRIBUTION!='CUSTOM') AND (USE_EXISTING_CONNECTION == 'false') AND (HIVE_VERSION=='APACHE_2_4_0_EMR')" />
 
@@ -1872,7 +1872,7 @@
 
 			<!-- APACHE 1.0 && HDP 1.0 -->
 			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='APACHE_1_0_0' OR HIVE_VERSION=='APACHE_1_0_3_EMR') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'"
 				BundleID="" />
@@ -2523,7 +2523,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.cloudera.cdh5/lib/libthrift-0.9.0.cloudera.2.jar"
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH5') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'" />
 			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='Cloudera_CDH5') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'"
 				BundleID="" />
@@ -2972,7 +2972,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.hdp.1.2/lib/libthrift-0.9.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_2_0') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'" />
 			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='PIVOTAL_HD_2_0') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'"
 				BundleID="" />
@@ -3185,7 +3185,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.hdp.1.2/lib/libthrift-0.9.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_0') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'" />
 			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_0') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'"
 				BundleID="" />
@@ -3396,7 +3396,7 @@
 				UrlPath="platform:/plugin/org.talend.libraries.hadoop.hdp.1.2/lib/libthrift-0.9.0.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_1') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'" />
 			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar"
-				MVN="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+				MVN="mvn:log4j/log4j/1.2.17"
 				UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
 				REQUIRED_IF="(HIVE_VERSION=='HDP_2_1') and (USE_EXISTING_CONNECTION == 'false') AND DISTRIBUTION!='CUSTOM'"
 				BundleID="" />
