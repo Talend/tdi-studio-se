@@ -46,6 +46,7 @@ import org.osgi.framework.Bundle;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.CorePlugin;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.IESBService;
 import org.talend.core.ILibraryManagerService;
 import org.talend.core.language.ECodeLanguage;
 import org.talend.core.language.ICodeProblemsChecker;
@@ -244,6 +245,14 @@ public class DefaultRunProcessService implements IRunProcessService {
 
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBRouteService.class)) {
             routeService = (IESBRouteService) GlobalServiceRegister.getDefault().getService(IESBRouteService.class);
+        }
+
+        // Create maven processer for SOAP service, @see org.talend.designer.runprocess.java.TalendJavaProjectManager
+        if (process == null && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+            IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            if (property.getItem() != null && soapService.isServiceItem(property.getItem().eClass().getClassifierID())) {
+                return (IProcessor) soapService.createJavaProcessor(process, property, filenameFromLabel);
+            }
         }
 
         if (ComponentCategory.CATEGORY_4_MAPREDUCE.getName().equals(process.getComponentsType())) {
