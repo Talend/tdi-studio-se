@@ -13,6 +13,7 @@
 package org.talend.codegen.enforcer;
 
 import static org.talend.codegen.enforcer.IndexMapper.DYNAMIC;
+import static org.talend.codegen.enforcer.IndexMapper.MISSING_DESIGN_FIELD;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -103,7 +104,7 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
     @Override
     public Object get(int pojoIndex) {
         int runtimeIndex = indexMap[pojoIndex];
-        if (indexMap[pojoIndex] == -2) {
+        if (runtimeIndex == MISSING_DESIGN_FIELD) {
             return null;
         }
         if (runtimeIndex == DYNAMIC) {

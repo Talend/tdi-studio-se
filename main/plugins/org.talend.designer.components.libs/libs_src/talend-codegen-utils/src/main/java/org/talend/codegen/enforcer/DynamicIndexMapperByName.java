@@ -81,9 +81,9 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
             String fieldName = designField.name();
             Field runtimeField = runtimeSchema.getField(fieldName);
             if (i < dynamicFieldPosition) {
-                indexMap[i] = runtimeField != null ? runtimeField.pos() : -2;
+                indexMap[i] = runtimeField != null ? runtimeField.pos() : MISSING_DESIGN_FIELD;
             } else {
-                indexMap[i + 1] = runtimeField != null ? runtimeField.pos() : -2;
+                indexMap[i + 1] = runtimeField != null ? runtimeField.pos() : MISSING_DESIGN_FIELD;
             }
 
         }

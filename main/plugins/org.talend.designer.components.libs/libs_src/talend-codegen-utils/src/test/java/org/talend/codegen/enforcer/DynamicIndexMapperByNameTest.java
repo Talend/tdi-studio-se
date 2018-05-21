@@ -288,7 +288,8 @@ public class DynamicIndexMapperByNameTest {
 
     @Test
     public void testComputeFieldsIndexesForMissingFields() {
-        List<Integer> expectedIndexes = Arrays.asList(0, -2, -2, -1);
+        List<Integer> expectedIndexes = Arrays.asList(0, IndexMapper.MISSING_DESIGN_FIELD, IndexMapper.MISSING_DESIGN_FIELD,
+                IndexMapper.DYNAMIC);
 
         Schema designSchema = SchemaBuilder.builder().record("Record") //
                 .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
