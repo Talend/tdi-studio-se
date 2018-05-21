@@ -8,11 +8,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.ui.runtime.image.ECoreImage;
 import org.talend.commons.ui.runtime.image.IImage;
+import org.talend.components.api.wizard.ComponentWizard;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.metadata.MetadataManager;
 import org.talend.core.model.metadata.builder.connection.Connection;
@@ -38,8 +40,10 @@ import org.talend.repository.generic.model.genericMetadata.GenericMetadataPackag
 import org.talend.repository.generic.model.genericMetadata.SubContainer;
 import org.talend.repository.generic.ui.GenericConnWizard;
 import org.talend.repository.generic.ui.GenericSchemaWizard;
+import org.talend.repository.generic.ui.common.GenericWizardDialog;
 import org.talend.repository.generic.util.GenericConnectionUtil;
 import org.talend.repository.generic.util.GenericWizardServiceFactory;
+import org.talend.repository.model.IRepositoryNode;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.StableRepositoryNode;
 
@@ -248,7 +252,12 @@ public class GenericRepositoryContentHandler extends AbstractRepositoryContentHa
             wb = PlatformUI.getWorkbench();
         }
 
-        return new GenericConnWizard(wb, creation, node, existingNames);
+        ComponentWizard componentWizard = null;
+        if (!creation) {
+            componentWizard = GenericConnectionUtil.getEditWizard(node);
+        }
+
+        return new GenericConnWizard(wb, creation, componentWizard, node, existingNames);
     }
 
     @Override
@@ -274,4 +283,12 @@ public class GenericRepositoryContentHandler extends AbstractRepositoryContentHa
         return new GenericSchemaWizard(wb, creation, object, connectionItem, table, forceReadOnly);
     }
 
+    @Override
+    public int openWizardDialog(IRepositoryNode repoNode, IWizard wizard) {
+        WizardDialog wizardDialog = new GenericWizardDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                wizard, GenericWizardServiceFactory.getGenericWizardInternalService().getComponentService());
+        wizardDialog.setPageSize(780, 540);
+        wizardDialog.create();
+        return wizardDialog.open();
+    }
 }

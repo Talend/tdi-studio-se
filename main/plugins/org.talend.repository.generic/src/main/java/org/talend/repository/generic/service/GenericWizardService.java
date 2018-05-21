@@ -286,17 +286,9 @@ public class GenericWizardService implements IGenericWizardService {
             return null;
         }
         ITreeContextualAction defaultAction = null;
-        List<ComponentWizard> wizards = GenericConnectionUtil.getAllWizards(node);
-        for (ComponentWizard wizard : wizards) {
-            ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
-            if (wizardDefinition.isTopLevel()) {
-                continue;
-            }
-            String wizardName = wizardDefinition.getName();
-            if (wizardName.toLowerCase().contains("edit")) { //$NON-NLS-1$
-                defaultAction = new GenericAction(wizard);
-                break;
-            }
+        ComponentWizard editWizard = GenericConnectionUtil.getEditWizard(node);
+        if (editWizard != null) {
+            defaultAction = new GenericAction(editWizard);
         }
         return defaultAction;
     }
