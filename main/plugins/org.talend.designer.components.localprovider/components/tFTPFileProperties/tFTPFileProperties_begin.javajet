@@ -308,7 +308,7 @@ if (sftp) {  // *** sftp *** //
 	org.apache.commons.net.ftp.FTPFile expectedFile_<%=cid %> = null;
 
 	for (org.apache.commons.net.ftp.FTPFile file_<%=cid %> : allFiles_<%=cid %>) {
-		if (<%=filename%>.equals(file_<%=cid %>.getName())) {
+		if ((<%=filename%>).equals(file_<%=cid %>.getName())) {
 			expectedFile_<%=cid %> = file_<%=cid %>;
 			break;
 		}
