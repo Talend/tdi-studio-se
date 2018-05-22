@@ -329,14 +329,9 @@ int nb_file_<%=cid%> = 0;
 <%
 		if (createDirIfNotExist) {
 %>
-			boolean isDirectoryExist_<%=cid %> = false;
-			try {
-				ftp_<%=cid %>.dir(remotedir<%=cid %>);
-			} catch (com.enterprisedt.net.ftp.FTPException e) {
-				isDirectoryExist_<%=cid %> = true;
-			}
+			boolean isDirectoryExist_<%=cid %> = ftp_<%=cid %>.existsDirectory(remotedir<%=cid %>);
 
-			if (isDirectoryExist_<%=cid %>) {
+			if (!isDirectoryExist_<%=cid %>) {
 				ftp_<%=cid %>.mkdir(remotedir<%=cid %>);
 			}
 <%
