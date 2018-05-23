@@ -82,9 +82,9 @@ This component only support Websphere MQ currently!
 
   <CODEGENERATION>
    <IMPORTS>
-       <IMPORT NAME="MQ" MODULE="com.ibm.mq-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mq-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
-       <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq.allclient-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mq.allclient-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
-       <IMPORT NAME="MQJMS" MODULE="com.ibm.mqjms-8.0.0.4.jar" MVN="mvn:org.talend.libraries/com.ibm.mqjms-8.0.0.4/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
+       <IMPORT NAME="MQ" MODULE="com.ibm.mq-8.0.0.9.jar" MVN="mvn:com.ibm.mq/com.ibm.mq/8.0.0.9"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
+       <IMPORT NAME="WEBSPHERE MQ LIB" MODULE="com.ibm.mq.allclient-8.0.0.9.jar" MVN="mvn:com.ibm.mq/com.ibm.mq.allclient/8.0.0.9"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
+       <IMPORT NAME="MQJMS" MODULE="com.ibm.mqjms-8.0.0.9.jar" MVN="mvn:com.ibm.mq/com.ibm.mqjms/8.0.0.9"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
         <IMPORT NAME="WEBSPHERE CONNECTOR" MODULE="websphere-connector-1_5.jar" MVN="mvn:org.talend.libraries/websphere-connector-1_5/6.0.0"  REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
        <IMPORT NAME="Java Message Service" MODULE="jms.jar" MVN="mvn:org.talend.libraries/jms/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.esb.ext/lib/jms.jar" REQUIRED_IF="(USE_CONNECTION=='false' AND SERVER == 'WEBSPHERE')" />
      </IMPORTS>
