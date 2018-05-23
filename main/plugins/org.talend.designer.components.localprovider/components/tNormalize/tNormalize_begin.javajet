@@ -16,6 +16,7 @@ imports="
 	String deduplicate = ElementParameterParser.getValue(node, "__DEDUPLICATE__");
 	String delim = ElementParameterParser.getValue(node, "__ITEMSEPARATOR__");
 	String textEnclosure = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");   
+	boolean useCSV = ("true").equals(ElementParameterParser.getValue(node, "__CSV_OPTION__"));
 	List<IMetadataColumn> metadataColumns = null;
 	List<IMetadataTable> metadatas = node.getMetadataList();
 	if (metadatas != null && metadatas.size() > 0) {
@@ -37,9 +38,11 @@ imports="
 				if ( ((String)<%=delim%>).length() == 0 ){
 					throw new IllegalArgumentException("Field Separator must be assigned a char."); 
 				}
+				<%if(useCSV){%>
 				if ( ((String)<%=textEnclosure%>).length() == 0 ){
 					throw new IllegalArgumentException("Text enclosure must be assigned a char."); 
 				}
+				<%}%>
         <%
     }
 %>
