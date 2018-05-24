@@ -191,9 +191,9 @@ skeleton="../templates/db_output_bulk.skeleton"
             if(createProjection){
                 String columnListStr = getColumnsSql(stmtStructure);
             %>
-                java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement();
-                stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr%>) AS SELECT <%=columnListStr%> FROM " + tableName_<%=cid%>);
-                stmtCreateProjection_<%=cid%>.close();
+                try (java.sql.Statement stmtCreateProjection_<%=cid%> = conn_<%=cid%>.createStatement()) {
+                    stmtCreateProjection_<%=cid%>.execute("CREATE PROJECTION " + tableName_<%=cid%> + "_proj (<%=columnListStr%>) AS SELECT <%=columnListStr%> FROM " + tableName_<%=cid%>);
+                }
             <%
             }
         }

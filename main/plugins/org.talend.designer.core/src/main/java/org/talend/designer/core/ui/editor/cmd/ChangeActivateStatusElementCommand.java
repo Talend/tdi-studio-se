@@ -32,7 +32,6 @@ import org.talend.designer.core.i18n.Messages;
 import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.core.ui.editor.connections.Connection;
 import org.talend.designer.core.ui.editor.jobletcontainer.AbstractJobletContainer;
-import org.talend.designer.core.ui.editor.jobletcontainer.JobletContainer;
 import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
@@ -50,18 +49,6 @@ public class ChangeActivateStatusElementCommand extends Command {
     private List<Connection> connectionList;
 
     private boolean value;
-
-    private int connIndex = 0;
-
-    private List<IConnection> listNm = null;
-
-    private Object object = null;
-
-    private Connection curConn = null;
-
-    private int deactiveNum = 0;
-
-    private List<Connection> outputs = null;
 
     /**
      * Gives the node where the status will be set or removed.
@@ -95,8 +82,8 @@ public class ChangeActivateStatusElementCommand extends Command {
 
     private void refreshMRStatus() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
-                    IMRProcessService.class);
+            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IMRProcessService.class);
             if (mrService != null) {
                 List<INode> mrNodeList = new ArrayList<INode>();
                 for (Node node : nodeList) {
@@ -113,52 +100,11 @@ public class ChangeActivateStatusElementCommand extends Command {
     @Override
     public void execute() {
 
-        if (connectionList != null && connectionList.size() != 0) {
-            curConn = connectionList.get(0);
-            listNm = (List<IConnection>) curConn.getSource().getOutgoingConnections(curConn.getLineStyle());
-            outputs = (List<Connection>) curConn.getSource().getOutgoingConnections();
-            connIndex = outputs.indexOf(curConn);
-            deactiveNum = 0;
-            object = outputs.get(connIndex);
-            if (listNm.size() > 1) {
-                for (int i = 0; i < listNm.size(); i++) {
-                    if (!listNm.get(i).isActivate()) {
-                        deactiveNum = deactiveNum + 1;
-                    }
-                }
-                outputs.remove(curConn);
-                if (value) {
-                    outputs.add(outputs.size() - deactiveNum, (Connection) object);
-                } else {
-                    outputs.add(curConn);
-                }
-                curConn.updateAllId();
-            }
-        }
+        Process process = null;
         if (nodeList != null && nodeList.size() > 0) {
-            List<Connection> connIn = null;
-            List<Connection> allConn = null;
-            connIn = (List<Connection>) nodeList.get(0).getIncomingConnections();
-            if (nodeList.get(0).getIncomingConnections() != null && nodeList.get(0).getIncomingConnections().size() > 0) {
-                allConn = (List<Connection>) nodeList.get(0).getIncomingConnections().get(0).getSource().getOutgoingConnections();
-                if (allConn.containsAll(connIn)) {
-                    if (connIn != null && connIn.size() >= 1) {
-                        for (int i = 0; i < connIn.size(); i++) {
-                            Connection con = connIn.get(i);
-                            allConn.remove(con);
-                            allConn.add(con);
-                        }
-                    }
-                }
-                allConn.get(0).updateAllId();
-            }
-        }
-
-        Process process;
-        if (nodeList.size() > 0) {
             process = (Process) nodeList.get(0).getProcess();
-        } else {
-            process = (Process) curConn.getSource().getProcess();
+        } else if (connectionList != null && connectionList.size() != 0) {
+            process = (Process) connectionList.get(0).getSource().getProcess();
         }
         process.setActivate(false);
         for (Connection connection : connectionList) {
@@ -171,6 +117,23 @@ public class ChangeActivateStatusElementCommand extends Command {
                 node.setPropertyValue(EParameterName.DUMMY.getName(), !value);
             }
             node.setPropertyValue(EParameterName.ACTIVATE.getName(), value);
+        }
+
+        for (Connection connection : connectionList) {
+            connection.updateAllId();
+        }
+
+        if (nodeList != null && nodeList.size() > 0) {
+            List<INode> updatedSourceNode = new ArrayList<INode>();
+            for (Node node : nodeList) {
+                for (IConnection connection : node.getIncomingConnections()) {
+                    INode source = connection.getSource();
+                    if (!updatedSourceNode.contains(source)) {
+                        updatedSourceNode.add(source);
+                        source.getOutgoingConnections().get(0).updateAllId();
+                    }
+                }
+            }
         }
 
         dummyMiddleElement(false);
@@ -205,10 +168,10 @@ public class ChangeActivateStatusElementCommand extends Command {
         for (Connection outputConnection : (List<Connection>) node.getOutgoingConnections()) {
             if (outputConnection.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
                 IMetadataTable outputMeta = outputConnection.getMetadataTable();
-                if (!inputMetadata.sameMetadataAs(outputMeta, IMetadataColumn.OPTIONS_IGNORE_KEY
-                        | IMetadataColumn.OPTIONS_IGNORE_NULLABLE | IMetadataColumn.OPTIONS_IGNORE_COMMENT
-                        | IMetadataColumn.OPTIONS_IGNORE_PATTERN | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME
-                        | IMetadataColumn.OPTIONS_IGNORE_DBTYPE)) {
+                if (!inputMetadata.sameMetadataAs(outputMeta,
+                        IMetadataColumn.OPTIONS_IGNORE_KEY | IMetadataColumn.OPTIONS_IGNORE_NULLABLE
+                                | IMetadataColumn.OPTIONS_IGNORE_COMMENT | IMetadataColumn.OPTIONS_IGNORE_PATTERN
+                                | IMetadataColumn.OPTIONS_IGNORE_DBCOLUMNNAME | IMetadataColumn.OPTIONS_IGNORE_DBTYPE)) {
                     // input and output schema is different, so don't accept dummy
                     return false;
                 }
@@ -228,7 +191,8 @@ public class ChangeActivateStatusElementCommand extends Command {
 
         boolean hasActivateOutput = false;
         for (Connection outputConnection : (List<Connection>) node.getOutgoingConnections()) {
-            if (outputConnection.isActivate() && outputConnection.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
+            if (outputConnection.isActivate()
+                    && outputConnection.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
                 hasActivateOutput = true;
             }
         }
@@ -237,10 +201,10 @@ public class ChangeActivateStatusElementCommand extends Command {
 
     @Override
     public void undo() {
-        Process process;
-        if (nodeList.size() > 0) {
+        Process process = null;
+        if (nodeList != null && nodeList.size() > 0) {
             process = (Process) nodeList.get(0).getProcess();
-        } else {
+        } else if (connectionList != null && connectionList.size() != 0) {
             process = (Process) connectionList.get(0).getSource().getProcess();
         }
         process.setActivate(false);
@@ -255,15 +219,22 @@ public class ChangeActivateStatusElementCommand extends Command {
         for (Connection connection : connectionList) {
             connection.setPropertyValue(EParameterName.ACTIVATE.getName(), !value);
         }
-        if (connectionList != null && connectionList.size() != 0) {
-            if (connIndex < outputs.size()) {
-                outputs.remove(this.curConn);
-                outputs.add(outputs.size() - deactiveNum, (Connection) object);
+
+        for (Connection connection : connectionList) {
+            connection.updateAllId();
+        }
+
+        if (nodeList != null && nodeList.size() > 0) {
+            List<INode> updatedSourceNode = new ArrayList<INode>();
+            for (Node node : nodeList) {
+                for (IConnection connection : node.getIncomingConnections()) {
+                    INode source = connection.getSource();
+                    if (!updatedSourceNode.contains(source)) {
+                        updatedSourceNode.add(source);
+                        source.getOutgoingConnections().get(0).updateAllId();
+                    }
+                }
             }
-            if (connIndex >= outputs.size()) {
-                outputs.add(curConn);
-            }
-            curConn.updateAllId();
         }
 
         process.setActivate(true);
@@ -306,7 +277,8 @@ public class ChangeActivateStatusElementCommand extends Command {
                         continue;
                     }
                     Node source = (Node) conn.getSource();
-                    if (source.getUniqueName() != firNode.getUniqueName() && (source.getUniqueName() != secNode.getUniqueName())) {
+                    if (source.getUniqueName() != firNode.getUniqueName()
+                            && (source.getUniqueName() != secNode.getUniqueName())) {
                         if (isSameSchemaInputOutput(source)) {
                             conn.setPropertyValue(EParameterName.ACTIVATE.getName(), true);
                             source.setPropertyValue(EParameterName.DUMMY.getName(), true);
@@ -316,7 +288,8 @@ public class ChangeActivateStatusElementCommand extends Command {
                     }
 
                     Node target = (Node) conn.getTarget();
-                    if (target.getUniqueName() != firNode.getUniqueName() && (target.getUniqueName() != secNode.getUniqueName())) {
+                    if (target.getUniqueName() != firNode.getUniqueName()
+                            && (target.getUniqueName() != secNode.getUniqueName())) {
                         if (isSameSchemaInputOutput(target)) {
                             conn.setPropertyValue(EParameterName.ACTIVATE.getName(), true);
                             target.setPropertyValue(EParameterName.DUMMY.getName(), true);

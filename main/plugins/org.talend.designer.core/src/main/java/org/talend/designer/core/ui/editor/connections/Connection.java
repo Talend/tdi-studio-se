@@ -198,8 +198,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         if (lineStyle.hasConnectionCategory(IConnectionCategory.FLOW)) {
             trace = new ConnectionTrace(this);
             createTraceParamters();
-            IComponent component = ComponentsFactoryProvider.getInstance().get(
-                    "tFlowMeter", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tFlowMeter", //$NON-NLS-1$
+                    ComponentCategory.CATEGORY_4_DI.getName());
             if (component != null) { // only if tFlowMeter is available and not M/R job
                 IProcess process = source.getProcess();
                 if (process instanceof IProcess2) {
@@ -218,8 +218,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             resuming.setOffset(label.getOffset());
         }
 
-        if (source.getProcess().getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName())
-                && ComponentsFactoryProvider.getInstance().get("tPartitioner", ComponentCategory.CATEGORY_4_DI.getName()) != null) {
+        if (source.getProcess().getComponentsType().equals(ComponentCategory.CATEGORY_4_DI.getName()) && ComponentsFactoryProvider
+                .getInstance().get("tPartitioner", ComponentCategory.CATEGORY_4_DI.getName()) != null) {
             this.source = source;
             createParallelizeParameters();
         }
@@ -320,7 +320,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                 param.setNumRow(18);
                 String[] columns = new String[] { EParameterName.PREFIX.getName(), EParameterName.URI.getName() };
                 param.setListItemsDisplayCodeName(columns);
-                param.setListItemsDisplayName(new String[] { EParameterName.PREFIX.getDisplayName(), EParameterName.URI.getName() });
+                param.setListItemsDisplayName(
+                        new String[] { EParameterName.PREFIX.getDisplayName(), EParameterName.URI.getName() });
                 ElementParameter p = new ElementParameter(this);
                 p.setFieldType(EParameterFieldType.TEXT);
                 p.setName(EParameterName.PREFIX.getName());
@@ -425,7 +426,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         }
 
         if (PluginChecker.isTeamEdition()) {
-            boolean isLocalRepository = (ProxyRepositoryFactory.getInstance().getRepositoryFactoryFromProvider() instanceof ILocalRepositoryFactory);
+            boolean isLocalRepository = (ProxyRepositoryFactory.getInstance()
+                    .getRepositoryFactoryFromProvider() instanceof ILocalRepositoryFactory);
             param = new ElementParameter(this);
             param.setName(EParameterName.RESUMING_CHECKPOINT.getName());
             param.setValue(Boolean.FALSE);
@@ -641,7 +643,10 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         tmpParam.setReadOnly(false);
         tmpParam.setRequired(false);
         tmpParam.setCategory(EComponentCategory.PARALLELIZATION);
-        tmpParam.setShowIf("(DEPARTITIONER == 'true' or REPARTITIONER=='true') and (PARTITIONER=='false')");// "(DEPARTITIONER == 'true' or REPARTITIONER=='true')"
+        tmpParam.setShowIf("(DEPARTITIONER == 'true' or REPARTITIONER=='true') and (PARTITIONER=='false')");// "(DEPARTITIONER
+                                                                                                            // == 'true'
+                                                                                                            // or
+                                                                                                            // REPARTITIONER=='true')"
         tmpParam.setDefaultValue(tmpParam.getValue());
         addElementParameter(tmpParam);
 
@@ -781,8 +786,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         // param.setDefaultValue(param.getValue());
         addElementParameter(param);
 
-        Node meterAttached = new Node(ComponentsFactoryProvider.getInstance().get(
-                "tFlowMeter", ComponentCategory.CATEGORY_4_DI.getName()), process); //$NON-NLS-1$
+        Node meterAttached = new Node(
+                ComponentsFactoryProvider.getInstance().get("tFlowMeter", ComponentCategory.CATEGORY_4_DI.getName()), process); //$NON-NLS-1$
         for (IElementParameter curParam : meterAttached.getElementParameters()) {
             if (curParam.getCategory() == EComponentCategory.BASIC
                     && !curParam.getName().equals(EParameterName.NOT_SYNCHRONIZED_SCHEMA.getName())) {
@@ -875,13 +880,13 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                     && !lineStyle.equals(EConnectionType.ITERATE)) {
                 if (isInTypes(lineStyle, EConnectionType.ON_COMPONENT_OK, EConnectionType.ON_COMPONENT_ERROR,
                         EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.RUN_IF,
-                        EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_CATCH, EConnectionType.STARTS)
-                        && source != null && source.getComponent().getName().equals(source.getLabel())) {
+                        EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_CATCH, EConnectionType.STARTS) && source != null
+                        && source.getComponent().getName().equals(source.getLabel())) {
                     uniqueName = connectorName;
                 } else if (!isInTypes(lineStyle, EConnectionType.ON_COMPONENT_OK, EConnectionType.ON_COMPONENT_ERROR,
                         EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.RUN_IF,
-                        EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_CATCH, EConnectionType.STARTS)
-                        || uniqueName == null || !uniqueName.startsWith(lineStyle.getDefaultLinkName())) {
+                        EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_CATCH, EConnectionType.STARTS) || uniqueName == null
+                        || !uniqueName.startsWith(lineStyle.getDefaultLinkName())) {
                     if (Pattern.matches("^[A-Za-z_][A-Za-z0-9_]*$", name)) {
                         uniqueName = name;
                     } else {
@@ -940,7 +945,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             updateName = true;
         }
         // else if (getLineStyle().equals(EConnectionType.TABLE_REF)) {
-        //            labelText += " (" + EConnectionType.TABLE_REF.getDefaultLinkName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+        // labelText += " (" + EConnectionType.TABLE_REF.getDefaultLinkName() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
         // updateName = true;
         // }
         else if (getLineStyle().equals(EConnectionType.FLOW_MAIN) || getLineStyle().equals(EConnectionType.FLOW_REF)) {
@@ -993,46 +998,45 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                 labelText += " (order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             updateName = true;
-        } else if (getLineStyle().equals(EConnectionType.ROUTE_WHEN)/*
-                                                                     * &&
-                                                                     * (!sourceNodeConnector.getLinkName().equals(name))
-                                                                     */) {
+        } else if (getLineStyle()
+                .equals(EConnectionType.ROUTE_WHEN)/*
+                                                    * && (!sourceNodeConnector.getLinkName().equals(name))
+                                                    */) {
             if (getUniqueName() != null) {
                 String linkName = getUniqueName();
                 labelText = linkName;
                 this.setName(linkName);
             }
-            //labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            // labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             if (outputId >= 0) {
                 labelText += " (order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             updateName = true;
-        } else if (getLineStyle().equals(EConnectionType.ROUTE_CATCH)/*
-                                                                      * &&
-                                                                      * (!sourceNodeConnector.getLinkName().equals(name
-                                                                      * ))
-                                                                      */) {
+        } else if (getLineStyle()
+                .equals(EConnectionType.ROUTE_CATCH)/*
+                                                     * && (!sourceNodeConnector.getLinkName().equals(name ))
+                                                     */) {
             if (getUniqueName() != null) {
                 String linkName = getUniqueName();
                 labelText = linkName;
                 this.setName(linkName);
             }
-            //labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            // labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             if (outputId >= 0) {
                 labelText += " (order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
             updateName = true;
-        } else if (getLineStyle().equals(EConnectionType.ROUTE)/*
-                                                                * if there are more than one ROUTE connections exist
-                                                                * then show the orders of them &&
-                                                                * (!sourceNodeConnector.getLinkName().equals(name ))
-                                                                */) {
+        } else if (getLineStyle()
+                .equals(EConnectionType.ROUTE)/*
+                                               * if there are more than one ROUTE connections exist then show the orders
+                                               * of them && (!sourceNodeConnector.getLinkName().equals(name ))
+                                               */) {
             if (getUniqueName() != null) {
                 String linkName = getUniqueName();
                 labelText = linkName;
                 this.setName(linkName);
             }
-            //labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+            // labelText = labelText + " (" + name + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             if (outputId >= 0) {
                 labelText += " (order:" + outputId + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             }
@@ -1178,14 +1182,16 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                     uniqueName = ConnectionUtil.generateUniqueConnectionName(lineStyle, source.getProcess());
                 }
             } else if (isInTypes(lineStyle, EConnectionType.ON_COMPONENT_OK, EConnectionType.ON_COMPONENT_ERROR,
-                    EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.RUN_IF, EConnectionType.STARTS)) {
+                    EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_ERROR, EConnectionType.RUN_IF,
+                    EConnectionType.STARTS)) {
                 // see 3443, these links should have unique name
                 if (uniqueName == null || uniqueName.equals(lineStyle.getDefaultLinkName())) {
                     uniqueName = source.getProcess().generateUniqueConnectionName(lineStyle.getDefaultLinkName());
                 }
             }
-            if (((lineStyle == EConnectionType.TABLE || lineStyle == EConnectionType.TABLE_REF) && getSourceNodeConnector()
-                    .isMultiSchema()) || lineStyle.hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
+            if (((lineStyle == EConnectionType.TABLE || lineStyle == EConnectionType.TABLE_REF)
+                    && getSourceNodeConnector().isMultiSchema())
+                    || lineStyle.hasConnectionCategory(IConnectionCategory.UNIQUE_NAME)) {
                 if (target.getJobletNode() == null && target.getProcess().checkValidConnectionName(uniqueName)) {
                     target.getProcess().addUniqueConnectionName(uniqueName);
                 } else if (source.getJobletNode() == null && source.getProcess().checkValidConnectionName(uniqueName)) {
@@ -1242,11 +1248,10 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             if (source.getJobletNode() == null && sourceNodeConnector != null && !sourceNodeConnector.isMultiSchema()) {
                 if (lineStyle.hasConnectionCategory(IConnectionCategory.CUSTOM_NAME)
                         || isInTypes(lineStyle, EConnectionType.ITERATE, EConnectionType.ON_COMPONENT_OK,
-                                EConnectionType.ON_COMPONENT_ERROR, EConnectionType.ON_SUBJOB_OK,
-                                EConnectionType.ON_SUBJOB_ERROR, EConnectionType.RUN_IF, EConnectionType.ROUTE,
-                                EConnectionType.ROUTE_TRY, EConnectionType.ROUTE_CATCH, EConnectionType.ROUTE_FINALLY,
-                                EConnectionType.ROUTE_ENDBLOCK, EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_OTHER,
-                                EConnectionType.STARTS)) {
+                                EConnectionType.ON_COMPONENT_ERROR, EConnectionType.ON_SUBJOB_OK, EConnectionType.ON_SUBJOB_ERROR,
+                                EConnectionType.RUN_IF, EConnectionType.ROUTE, EConnectionType.ROUTE_TRY,
+                                EConnectionType.ROUTE_CATCH, EConnectionType.ROUTE_FINALLY, EConnectionType.ROUTE_ENDBLOCK,
+                                EConnectionType.ROUTE_WHEN, EConnectionType.ROUTE_OTHER, EConnectionType.STARTS)) {
                     source.getProcess().removeUniqueConnectionName(uniqueName);
                 }
             }
@@ -1355,9 +1360,8 @@ public class Connection extends Element implements IConnection, IPerformance, IA
         }
         if ((EParameterName.TRACES_SHOW_ENABLE.getName().equals(id) || EParameterName.ACTIVEBREAKPOINT.getName().equals(id))
                 && value instanceof Boolean) {
-            if (PluginChecker.isTraceDebugPluginLoaded()
-                    && (lineStyle.hasConnectionCategory(IConnectionCategory.FLOW) || lineStyle
-                            .hasConnectionCategory(IConnectionCategory.MERGE))) {
+            if (PluginChecker.isTraceDebugPluginLoaded() && (lineStyle.hasConnectionCategory(IConnectionCategory.FLOW)
+                    || lineStyle.hasConnectionCategory(IConnectionCategory.MERGE))) {
                 if (EParameterName.ACTIVEBREAKPOINT.getName().equals(id)) {
                     this.getElementParameter(EParameterName.ACTIVEBREAKPOINT.getName()).setValue(value);
                 }
@@ -1580,8 +1584,7 @@ public class Connection extends Element implements IConnection, IPerformance, IA
             case FLOW_MAIN:
             case FLOW_REF:
             case FLOW_MERGE:
-                int total = 0,
-                currentId = -1;
+                int total = 0, currentId = -1;
                 for (Connection connection : (List<Connection>) source.getOutgoingConnections()) {
                     if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.FLOW)) {
                         total++;
@@ -1596,16 +1599,32 @@ public class Connection extends Element implements IConnection, IPerformance, IA
                 break;
             default:
                 List<Connection> connList = (List<Connection>) source.getOutgoingConnections(lineStyle);
-                if (connList.size() <= 1) {
-                    return -1;
-                }
-                for (int i = 0; i < connList.size(); i++) {
-                    IConnection connection = connList.get(i);
-                    if (connection.equals(this)) {
-
-                        return i + 1;
+                List<Connection> activeList = new ArrayList<>();
+                List<Connection> deactiveList = new ArrayList<>();
+                int displayIndex = -1;
+                int connIndex = connList.indexOf(this);
+                if (this.isActivate()) {
+                    for (int i = 0; i < connList.size(); i++) {
+                        Connection connection = connList.get(i);
+                        if (connection.equals(this)) {
+                            break;
+                        }
+                        if (!connection.isActivate()) {
+                            deactiveList.add(connection);
+                        }
                     }
+                    displayIndex = connIndex - deactiveList.size() + 1;
+                } else {
+                    for (int i = connIndex; i < connList.size(); i++) {
+                        Connection connection = connList.get(i);
+                        if (connection.isActivate()) {
+                            activeList.add(connection);
+                        }
+                    }
+                    displayIndex = connIndex + activeList.size() + 1;
                 }
+
+                return displayIndex;
             }
         }
         return -1;

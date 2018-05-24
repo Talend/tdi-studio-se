@@ -54,8 +54,9 @@ public class XmlMapConnectionBuilder {
 
         int index = mapData.getInputTrees().indexOf(inputTree);
         if (index == -1) {
-            index = mapData.getInputTrees().size();
+            index = 0;
         }
+        index = index + 1;
         List<TreeNode> nodes = new ArrayList<TreeNode>();
         nodes.add(docNode);
         rebuildLink(index, nodes, mapData);
@@ -163,12 +164,12 @@ public class XmlMapConnectionBuilder {
                         if (applyForAll) {
                             // reset the target expression with prefix
                             if (targetNode != null) {
-                                targetNode.setExpression(expressionManager.replaceExpression(targetExpression, target,
-                                        sourceLocation));
+                                targetNode.setExpression(
+                                        expressionManager.replaceExpression(targetExpression, target, sourceLocation));
                             }
                             if (targetTree != null) {
-                                targetTree.setExpressionFilter(expressionManager.replaceExpression(targetExpression, target,
-                                        sourceLocation));
+                                targetTree.setExpressionFilter(
+                                        expressionManager.replaceExpression(targetExpression, target, sourceLocation));
                             }
                             return true;
                         } else {
@@ -185,12 +186,12 @@ public class XmlMapConnectionBuilder {
                                 }
                                 // reset the target expression with prefix
                                 if (targetNode != null) {
-                                    targetNode.setExpression(expressionManager.replaceExpression(targetExpression, target,
-                                            sourceLocation));
+                                    targetNode.setExpression(
+                                            expressionManager.replaceExpression(targetExpression, target, sourceLocation));
                                 }
                                 if (targetTree != null) {
-                                    targetTree.setExpressionFilter(expressionManager.replaceExpression(targetExpression, target,
-                                            sourceLocation));
+                                    targetTree.setExpressionFilter(
+                                            expressionManager.replaceExpression(targetExpression, target, sourceLocation));
                                 }
                                 return true;
                             }

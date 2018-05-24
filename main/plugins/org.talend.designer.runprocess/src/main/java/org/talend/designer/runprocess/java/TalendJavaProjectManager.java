@@ -508,17 +508,18 @@ public class TalendJavaProjectManager {
             IProcess process = service.getProcessFromItem(item);
             if (process != null) {
                 // avoid non-process item
-                // for now services can't handle yet the pom generation only
                 IContext context = process.getContextManager().getDefaultContext();
                 IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty(), context);
-                if (processor instanceof MavenJavaProcessor) {
-                    LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().clear();
-                    ((MavenJavaProcessor) processor).generatePom(option);
+                generatePom(item, option, processor);
+            } else {
+                // SOAP service, when the process is null
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                    IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    if (item != null && soapService.isServiceItem(item.eClass().getClassifierID())) {
+                        IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty());
+                        generatePom(item, option, processor);
+                    }
                 }
-                AggregatorPomsHelper.addToParentModules(
-                        AggregatorPomsHelper.getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),
-                        item.getProperty());
             }
         } catch (Exception e) {
             String errorMsg = "Job [" + item.getProperty().getLabel() + "_" + item.getProperty().getVersion() //$NON-NLS-1$ //$NON-NLS-2$
@@ -528,6 +529,18 @@ public class TalendJavaProjectManager {
         } finally {
             ProcessorUtilities.setGeneratePomOnly(false);
         }
+    }
+
+    private static void generatePom(Item item, int option, IProcessor processor) throws Exception {
+        if (processor instanceof MavenJavaProcessor) {
+            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+            LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().clear();
+            // Gen poms only
+            ((MavenJavaProcessor) processor).generatePom(option);
+        }
+        AggregatorPomsHelper.addToParentModules(
+                AggregatorPomsHelper.getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),
+                item.getProperty());
     }
 
 }

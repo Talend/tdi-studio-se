@@ -11,7 +11,6 @@ imports="
     java.util.List
     org.talend.core.model.process.IConnectionCategory
     org.talend.core.model.utils.NodeUtil
-    org.talend.core.model.utils.TalendTextUtils
 " 
 %>
 
@@ -29,25 +28,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
         boolean useCSV = ("true").equals(ElementParameterParser.getValue(node, "__CSV_OPTION__"));
         String escapeMode = ElementParameterParser.getValue(node, "__ESCAPE_CHAR__");
         
-        String delim = TalendTextUtils.removeQuotes(ElementParameterParser.getValue(node, "__ITEMSEPARATOR__"));
+        String delim = ElementParameterParser.getValue(node, "__ITEMSEPARATOR__");
         
         boolean isDiscardTrailingEmptyStr=("true").equals(ElementParameterParser.getValue(node, "__DISCARD_TRAILING_EMPTY_STR__"));
         boolean isTrim=("true").equals(ElementParameterParser.getValue(node, "__TRIM__"));
-        	if(("'").equals(delim)){
-        		delim = "\\'";
-        	}else if (delim.length() == 1){
-    	        delim = "'" + delim + "'";
-    	    }
-        
-    	String textEnclosure = TalendTextUtils.removeQuotes(ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__"));
-    	if ("".equals(textEnclosure)){
-    	 textEnclosure = "\0";
-    	}else if(("'").equals(textEnclosure)){
-    		textEnclosure = "'\\''";
-    	}else if (textEnclosure.length() == 1){
-    	    textEnclosure = "'" + textEnclosure + "'";
-    	}
-        
+    	String textEnclosure = ElementParameterParser.getValue(node, "__TEXT_ENCLOSURE__");       
         String incomingConnName = null;
         String outgoingConnName = null;
 
@@ -73,16 +58,16 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
 		        	normalizeRecord_<%=cid%>[0] = "";
 		        }else{
 	                <%if(useCSV){%>
-	                    com.talend.csv.CSVReader reader_<%=cid%> = new com.talend.csv.CSVReader(new java.io.StringReader(<%=incomingConnName %>.<%=normalizeColumn%>), <%=delim %>);
+	                    com.talend.csv.CSVReader reader_<%=cid%> = new com.talend.csv.CSVReader(new java.io.StringReader(<%=incomingConnName %>.<%=normalizeColumn%>), <%=delim %>.charAt(0));
 	                    reader_<%=cid%>.setTrimWhitespace(false);
 	                    <%
 	                    if("ESCAPE_MODE_BACKSLASH".equals(escapeMode)) {
 	                    %>
 	                    	reader_<%=cid%>.setEscapeChar('\\');
 	                   	<%} else {%>
-	                 		reader_<%=cid%>.setEscapeChar(<%=textEnclosure %>);
+	                 		reader_<%=cid%>.setEscapeChar(<%=textEnclosure %>.charAt(0));
 	                   	<%} %>
-	                    reader_<%=cid%>.setQuoteChar(<%=textEnclosure %>);
+	                    reader_<%=cid%>.setQuoteChar(<%=textEnclosure %>.charAt(0));
 	                    if (reader_<%=cid%>.readNext()) {
 	                        normalizeRecord_<%=cid%> = reader_<%=cid%>.getValues();
 	                    }
@@ -90,11 +75,11 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {//1
 	                } else { 
 	            		if(isDiscardTrailingEmptyStr){
 	                    %>
-	                    	normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(String.valueOf(<%=delim %>));
+	                    	normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(<%=delim %>);
 	                    <%
 	            		}else{
 	                    %>
-	                		normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(String.valueOf(<%=delim %>),-1);
+	                		normalizeRecord_<%=cid%> = <%=incomingConnName %>.<%=normalizeColumn%>.split(<%=delim %>,-1);
 	                    <%
 	            		}
 	            	}

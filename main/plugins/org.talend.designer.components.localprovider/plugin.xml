@@ -1876,13 +1876,6 @@
     	</libraryNeeded>
 
         <libraryNeeded
-            context="plugin:org.talend.libraries.apache"
-            id="log4j-1.2.17.jar"
-            name="log4j-1.2.17.jar" mvn_uri="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
-            uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
-            bundleID="" />
-
-        <libraryNeeded
             context="plugin:org.talend.libraries.slf4j"
             id="slf4j-api-1.7.5.jar"
             name="slf4j-api-1.7.5.jar" mvn_uri="mvn:org.talend.libraries/slf4j-api-1.7.5/6.0.0"
@@ -2565,9 +2558,10 @@
         </libraryNeeded>
         <libraryNeeded
             id="log4j-1.2.17.jar"
-            name="log4j-1.2.17.jar" mvn_uri="mvn:org.talend.libraries/log4j-1.2.17/6.0.0"
+            name="log4j-1.2.17.jar" mvn_uri="mvn:log4j/log4j/1.2.17"
             context="plugin:org.talend.libraries.apache"
-            uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar">
+            uripath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar"
+            bundleID="">
         </libraryNeeded>
         <libraryNeeded
             id="protobuf-java-2.5.0.jar"
@@ -2951,9 +2945,9 @@
             context="plugin:org.talend.libraries.apache.kafka"
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/zkclient-0.3.jar">
         </libraryNeeded>
-        <libraryNeeded
+    	<libraryNeeded
             id="log4j-1.2.16.jar"
-            name="log4j-1.2.16.jar" mvn_uri="mvn:org.talend.libraries/log4j-1.2.16/6.0.0"
+            name="log4j-1.2.16.jar" mvn_uri="mvn:log4j/log4j/1.2.16"
             context="plugin:org.talend.libraries.apache.kafka"
             uripath="platform:/plugin/org.talend.libraries.apache.kafka/lib/log4j-1.2.16.jar">
         </libraryNeeded>
@@ -8174,7 +8168,7 @@
             <library id="snappy-java-1.1.1.6.jar"/>
             <library id="zkclient-0.3.jar"/>
             <library id="zookeeper-3.4.6.jar"/>
-            <library id="log4j-1.2.16.jar"/>
+            <library id="log4j-1.2.17.jar"/>
             <library id="slf4j-api-1.7.6.jar"/>
             <library id="slf4j-log4j12-1.6.1.jar"/>
         </libraryNeededGroup>

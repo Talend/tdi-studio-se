@@ -39,11 +39,13 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -208,9 +210,10 @@ public class MainComposite extends AbstractTabComposite {
         compositeData.bottom = new FormAttachment(100, 0);
         composite.setLayoutData(thisFormData);
 
+        final int labelWidth = getLabelWidth();
         nameText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
         FormData data = new FormData();
-        data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+        data.left = new FormAttachment(0, labelWidth);
         data.right = new FormAttachment(50, 0);
         data.top = new FormAttachment(0, ITabbedPropertyConstants.VSPACE);
         nameText.setLayoutData(data);
@@ -235,7 +238,7 @@ public class MainComposite extends AbstractTabComposite {
         Text authorText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
         authorText.setEnabled(false);
         data = new FormData();
-        data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+        data.left = new FormAttachment(0, labelWidth);
         data.right = new FormAttachment(50, 0);
         data.top = new FormAttachment(nameLabel, ITabbedPropertyConstants.VSPACE);
         authorText.setLayoutData(data);
@@ -273,7 +276,7 @@ public class MainComposite extends AbstractTabComposite {
 
             versionText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
             data = new FormData();
-            data.left = new FormAttachment(authorText, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(authorText, labelWidth);
             data.right = new FormAttachment(btnUp, -2);
             data.top = new FormAttachment(authorText, 0, SWT.CENTER);
             versionText.setLayoutData(data);
@@ -293,7 +296,7 @@ public class MainComposite extends AbstractTabComposite {
         Text creationDate = widgetFactory.createText(composite, ""); //$NON-NLS-1$
         data = new FormData();
 
-        data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+        data.left = new FormAttachment(0, labelWidth);
         data.right = new FormAttachment(50, 0);
         data.top = new FormAttachment(authorLabel, ITabbedPropertyConstants.VSPACE);
         creationDate.setLayoutData(data);
@@ -312,7 +315,7 @@ public class MainComposite extends AbstractTabComposite {
 
         Text modificationDate = widgetFactory.createText(composite, ""); //$NON-NLS-1$
         data = new FormData();
-        data.left = new FormAttachment(creationDate, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+        data.left = new FormAttachment(creationDate, labelWidth);
         data.right = new FormAttachment(100, 0);
         data.top = new FormAttachment(authorLabel, ITabbedPropertyConstants.VSPACE);
         modificationDate.setLayoutData(data);
@@ -334,7 +337,7 @@ public class MainComposite extends AbstractTabComposite {
             // Job Type
             jobTypeCCombo = widgetFactory.createCCombo(composite, SWT.READ_ONLY | SWT.DROP_DOWN);
             data = new FormData();
-            data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(0, labelWidth);
             data.right = new FormAttachment(50, 0);
             data.top = new FormAttachment(creationDate, ITabbedPropertyConstants.VSPACE);
             jobTypeCCombo.setLayoutData(data);
@@ -358,7 +361,7 @@ public class MainComposite extends AbstractTabComposite {
             // Job Framework
             jobFrameworkCCombo = widgetFactory.createCCombo(composite, SWT.READ_ONLY | SWT.DROP_DOWN);
             data = new FormData();
-            data.left = new FormAttachment(jobTypeCCombo, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(jobTypeCCombo, labelWidth);
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(creationDate, ITabbedPropertyConstants.VSPACE);
             jobFrameworkCCombo.setLayoutData(data);
@@ -378,7 +381,7 @@ public class MainComposite extends AbstractTabComposite {
 
             purposeText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
             data = new FormData();
-            data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(0, labelWidth);
             data.right = new FormAttachment(50, 0);
             data.top = new FormAttachment(jobTypeLabel, ITabbedPropertyConstants.VSPACE);
             purposeText.setLayoutData(data);
@@ -396,7 +399,7 @@ public class MainComposite extends AbstractTabComposite {
 
             statusText = widgetFactory.createCCombo(composite, SWT.READ_ONLY);
             data = new FormData();
-            data.left = new FormAttachment(purposeText, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(purposeText, labelWidth);
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(jobTypeLabel, ITabbedPropertyConstants.VSPACE);
             statusText.setLayoutData(data);
@@ -409,7 +412,7 @@ public class MainComposite extends AbstractTabComposite {
         } else {
             purposeText = widgetFactory.createText(composite, ""); //$NON-NLS-1$
             data = new FormData();
-            data.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(0, labelWidth);
             data.right = new FormAttachment(50, 0);
             data.top = new FormAttachment(creationDate, ITabbedPropertyConstants.VSPACE);
             purposeText.setLayoutData(data);
@@ -427,7 +430,7 @@ public class MainComposite extends AbstractTabComposite {
 
             statusText = widgetFactory.createCCombo(composite, SWT.READ_ONLY);
             data = new FormData();
-            data.left = new FormAttachment(purposeText, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+            data.left = new FormAttachment(purposeText, labelWidth);
             data.right = new FormAttachment(100, 0);
             data.top = new FormAttachment(creationDate, ITabbedPropertyConstants.VSPACE);
             statusText.setLayoutData(data);
@@ -452,7 +455,7 @@ public class MainComposite extends AbstractTabComposite {
 
         descriptionText = widgetFactory.createText(composite, "", SWT.MULTI | SWT.V_SCROLL | SWT.WRAP); //$NON-NLS-1$
         FormData descriptionData = new FormData();
-        descriptionData.left = new FormAttachment(0, AbstractPropertySection.STANDARD_LABEL_WIDTH);
+        descriptionData.left = new FormAttachment(0, labelWidth);
         descriptionData.right = new FormAttachment(100, 0);
         descriptionData.top = new FormAttachment(statusText, ITabbedPropertyConstants.VSPACE);
         descriptionData.height = NB_LINES * descriptionText.getLineHeight();
@@ -812,6 +815,45 @@ public class MainComposite extends AbstractTabComposite {
         } else {
             parent.setEnabled(true);
         }
+    }
+
+    private int getLabelWidth() {
+        Composite parent = getParent();
+        Label testFontLabel = null;
+        int maxWidth = AbstractPropertySection.STANDARD_LABEL_WIDTH;
+        try {
+            String[] labels = new String[] { Messages.getString("MainComposite.NameSection.Name"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.VersionAuthorSection.authorLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.VersionAuthorSection.versionLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.DateSection.creationLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.DateSection.ModificationLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.JobTypeSection.jobTypeLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.JobTypeSection.jobletTypeLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.JobFrameworkSection.jobFrameworkLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.PurposeStatusSection.purposeLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.PurposeStatusSection.statusLabel"), //$NON-NLS-1$
+                    Messages.getString("MainComposite.DescriptionSection.Label") //$NON-NLS-1$
+            };
+            testFontLabel = new Label(parent, SWT.NONE);
+            for (String label : labels) {
+                testFontLabel.setText(label);
+                Point testFontSize = testFontLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                if (maxWidth < testFontSize.x) {
+                    maxWidth = testFontSize.x;
+                }
+            }
+        } catch (Exception e) {
+            ExceptionHandler.process(e);
+        } finally {
+            if (testFontLabel != null) {
+                testFontLabel.dispose();
+            }
+        }
+        Point size = parent.getSize();
+        if (size.x / 4 < maxWidth) {
+            maxWidth = size.x / 4;
+        }
+        return maxWidth;
     }
 
     private void saveJobEditor(IRepositoryViewObject objToSave) {

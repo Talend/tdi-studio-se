@@ -11,6 +11,7 @@ CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 String remoteDir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
+boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 String ignoreFailureAtQuit= ElementParameterParser.getValue(node,"__IGNORE_FAILURE_AT_QUIT__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
@@ -32,23 +33,29 @@ if (("true").equals(useExistingConn)) {
   ftps = ("true").equals(ElementParameterParser.getValue(node, "__FTPS__"));
 }
 
-if (sftp && !("true").equals(useExistingConn)) {
+if (sftp) { // *** sftp *** //
+	if (!"true".equals(useExistingConn)) {
 %>
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Closing the connection to the server.");
-	<%}%>
-	session_<%=cid%>.disconnect(); 
-	<%if(isLog4jEnabled){%>
-		log.info("<%=cid%> - Connection to the server closed.");
-	<%}%>
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Closing the connection to the server.");
+		<%}%>
+		session_<%=cid%>.disconnect(); 
+		<%if(isLog4jEnabled){%>
+			log.info("<%=cid%> - Connection to the server closed.");
+		<%}%>
 <%
+	} else if (moveToCurrentDir){
+%>
+		c_<%=cid%>.cd(<%=remoteDir %>);
+<%
+	}
 } else if (ftps) { // *** ftps *** //
 	if (!("true").equals(useExistingConn)) {
 %>
 		ftp_<%=cid %>.disconnect();
 <%
 	}
-} else {
+} else { // *** ftp *** //
 	if (!("true").equals(useExistingConn)) {
 		if (("true").equals(ignoreFailureAtQuit)) {
     %>
@@ -77,6 +84,12 @@ if (sftp && !("true").equals(useExistingConn)) {
 				log.info("<%=cid%> - Connection to the server closed.");
 			<%}%>
     <%
+		}
+	} else {
+		if (moveToCurrentDir) {
+%>
+			ftp_<%=cid %>.chdir(<%=remoteDir %>);
+<%
 		}
 	}
 }

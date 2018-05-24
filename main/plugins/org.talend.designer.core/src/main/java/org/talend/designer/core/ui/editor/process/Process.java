@@ -4602,7 +4602,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
         List<IRepositoryViewObject> routines;
         try {
             routines = ProxyRepositoryFactory.getInstance().getAll(ProjectManager.getInstance().getCurrentProject(), itemType);
-            for (Project project : ProjectManager.getInstance().getAllReferencedProjects()) {
+            for (Project project : ProjectManager.getInstance().getAllReferencedProjects(true)) {
                 List<IRepositoryViewObject> routinesFromRef = ProxyRepositoryFactory.getInstance().getAll(project, itemType);
                 for (IRepositoryViewObject routine : routinesFromRef) {
                     if (!((RoutineItem) routine.getProperty().getItem()).isBuiltIn()) {

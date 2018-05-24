@@ -12,6 +12,7 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 boolean isFileType = "FILE".equals(ElementParameterParser.getValue(node, "__TARGETTYPE__"));
 String remoteDir = ElementParameterParser.getValue(node, "__REMOTEDIR__");
+boolean moveToCurrentDir = ("true").equals(ElementParameterParser.getValue(node, "__MOVE_TO_THE_CURRENT_DIRECTORY__"));
 String filename = ElementParameterParser.getValue(node, "__FILENAME__");
 String directoryname = ElementParameterParser.getValue(node, "__DIRECTORYNAME__");
 String connection = ElementParameterParser.getValue(node, "__CONNECTION__");
@@ -145,8 +146,15 @@ if (sftp) { // *** sftp *** //
 <%
 	}
 %>
+
 	ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%
+	if (moveToCurrentDir) {
+		//remote path could be relative, so need to change to root (absolute) one
+%>
+		ftp_<%=cid %>.changeWorkingDirectory(remoteDir_<%=cid %>);
+<%
+	}
 } else { // *** ftp *** //
 	if (isFileType){%>
 		String remoteDir_<%=cid %> = (<%=remoteDir %>).replaceAll("\\\\","/");

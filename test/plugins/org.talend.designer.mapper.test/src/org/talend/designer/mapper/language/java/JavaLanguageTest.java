@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.mapper.language.java;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -99,6 +98,18 @@ public class JavaLanguageTest {
         matcher = locationPattern.matcher(expression);
         assertTrue(matcher.matches());
         
+        expression = "row1._valid＿end＿dtime";
+        matcher = locationPattern.matcher(expression);
+        assertTrue(matcher.matches());
+
+        expression = "row1._中文_";
+        matcher = locationPattern.matcher(expression);
+        assertTrue(matcher.matches());
+
+        expression = "row1.テスト＿フラグ";
+        matcher = locationPattern.matcher(expression);
+        assertTrue(matcher.matches());
+
     }
 
 }

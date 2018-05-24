@@ -613,8 +613,12 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                                     .contains(((IRepositoryViewObject) obj).getRepositoryObjectType()))) {
                 category.add(EComponentCategory.GITHISTORY);
             }
-            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS_ROUTE) ||
-            		((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)) {
+            if (((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.PROCESS)
+                    || (ERepositoryObjectType.PROCESS_ROUTE != null && ((IRepositoryViewObject) obj).getRepositoryObjectType()
+                            .equals(ERepositoryObjectType.PROCESS_ROUTE))
+                    || ((IRepositoryViewObject) obj).getRepositoryObjectType().getType().equals("SERVICES")
+                    || ((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.SERVICESPORT)
+                    || ((IRepositoryViewObject) obj).getRepositoryObjectType().equals(ERepositoryObjectType.SERVICESOPERATION)) {
                 category.add(EComponentCategory.DEPLOYMENT);
             }
         } else if (obj instanceof IEditorPart) {
@@ -830,7 +834,7 @@ public class JobSettingsView extends ViewPart implements IJobSettingsView, ISele
                 }
                 Image jobSettingImage = null;
                 ERepositoryObjectType repositoryObjectType = repositoryNode.getContentType();
-                if(repositoryObjectType == null){
+                if (repositoryObjectType == null) {
                     repositoryObjectType = repositoryNode.getObjectType();
                 }
                 if (repositoryObjectType == ERepositoryObjectType.PROCESS_MR

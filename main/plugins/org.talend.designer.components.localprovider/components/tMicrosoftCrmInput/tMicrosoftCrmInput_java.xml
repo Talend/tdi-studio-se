@@ -19464,7 +19464,7 @@
                 <IMPORT NAME="httpcore-4.4.4" MODULE="httpcore-4.4.4.jar" MVN="mvn:org.talend.libraries/httpcore-4.4.4/6.3.0" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <IMPORT NAME="httpclient-4.5.2" MODULE="httpclient-4.5.2.jar" MVN="mvn:org.talend.libraries/httpclient-4.5.2/6.3.0" REQUIRED_IF="(AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2011')" />
                 <!-- log4j -->
-                <IMPORT NAME="Driver-Commons-Log4j-1.2.15" MODULE="log4j-1.2.15.jar" MVN="mvn:org.talend.libraries/log4j-1.2.15/6.0.0"  UrlPath="platform:/base/plugins/org.apache.log4j_1.2.15.v201012070815.jar" REQUIRED="true" BundleID="" />
+                <IMPORT NAME="Driver-Commons-log4j-1.2.17" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
                 <!-- Jars for CRM 2015 CXF begin -->
                 <IMPORT
                     NAME="commons-logging-1.1.1"

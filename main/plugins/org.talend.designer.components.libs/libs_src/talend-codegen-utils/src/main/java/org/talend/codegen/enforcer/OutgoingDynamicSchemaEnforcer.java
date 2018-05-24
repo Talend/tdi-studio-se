@@ -13,6 +13,7 @@
 package org.talend.codegen.enforcer;
 
 import static org.talend.codegen.enforcer.IndexMapper.DYNAMIC;
+import static org.talend.codegen.enforcer.IndexMapper.MISSING_DESIGN_FIELD;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -69,7 +70,7 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
 
     /**
      * Constructor sets design schema, its fields and size, runtime schema fields and values related to dynamic fields handling
-     * 
+     *
      * @param designSchema design schema (specified by user and provided by Di Studio)
      * @param indexMapper tool, which computes correspondence between design and runtime fields
      */
@@ -85,7 +86,7 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
     /**
      * Returns dynamic fields schema
      * This method could be called only after {@ling DiOutgoingDynamicSchemaEnforcer#setWrapped(IndexedRecord)} was called
-     * 
+     *
      * @return dynamic fields schema
      */
     public Schema getDynamicFieldsSchema() {
@@ -94,14 +95,18 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * Could be called only after first record was wrapped
-     * 
+     *
      * @param pojoIndex index of required value. Could be from 0 to designSchemaSize
      */
     // @Override
+    @Override
     public Object get(int pojoIndex) {
         int runtimeIndex = indexMap[pojoIndex];
+        if (runtimeIndex == MISSING_DESIGN_FIELD) {
+            return null;
+        }
         if (runtimeIndex == DYNAMIC) {
             return getDynamicValues();
         }
@@ -114,7 +119,7 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
     /**
      * Wraps {@link IndexedRecord},
      * creates map of correspondence between design and runtime fields, when first record is wrapped
-     * 
+     *
      * @param record {@link IndexedRecord} to be wrapped
      */
     @Override
@@ -136,7 +141,7 @@ public class OutgoingDynamicSchemaEnforcer extends OutgoingSchemaEnforcer {
      * Retrieves dynamic fields values and returns them as map.
      * Map key is dynamic field name
      * Map value is dynamic field value, transformed to Talend type
-     * 
+     *
      * @return map with dynamic values
      */
     private Map<String, Object> getDynamicValues() {

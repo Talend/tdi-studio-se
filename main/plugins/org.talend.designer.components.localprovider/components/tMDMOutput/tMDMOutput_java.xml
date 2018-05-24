@@ -400,7 +400,7 @@
 		<IMPORTS>
 			<IMPORT NAME="MDM-WEBSERVICE-TOMCAT" MODULE="mdm_webservice_tomcat.jar" MVN="mvn:org.talend.libraries/mdm_webservice_tomcat/6.1.0"  UrlPath="platform:/plugin/org.talend.libraries.mdm/lib/mdm_webservice_tomcat.jar" REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			
-			<IMPORT NAME="log4j-1.2.15.jar" MODULE="log4j-1.2.15.jar" MVN="mvn:org.talend.libraries/log4j-1.2.15/6.0.0"  UrlPath="platform:/base/plugins/org.apache.log4j_1.2.15.v201012070815.jar" BundleID="" REQUIRED_IF="IS_VIRTUAL_COMPONENT == 'false'" />
+			<IMPORT NAME="log4j-1.2.17.jar" MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" BundleID="" REQUIRED_IF="IS_VIRTUAL_COMPONENT == 'false'" />
 			<IMPORT NAME="SOAP-saaj" MODULE="saaj.jar" MVN="mvn:org.talend.libraries/saaj/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.saaj/lib/saaj.jar" BundleID="" REQUIRED_IF="IS_VIRTUAL_COMPONENT == 'false'" />
 			<IMPORT NAME="WSDL4J-1_6_3" MODULE="wsdl4j-1.6.3.jar" MVN="mvn:org.talend.libraries/wsdl4j-1.6.3/6.0.0"  BundleID="org.apache.servicemix.bundles.wsdl4j" REQUIRED_IF="IS_VIRTUAL_COMPONENT == 'false'" />
 			<IMPORT NAME="SOAP-discovery" MODULE="commons-discovery-0.2.jar" MVN="mvn:org.talend.libraries/commons-discovery-0.2/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-discovery-0.2.jar" REQUIRED_IF="IS_VIRTUAL_COMPONENT == 'false'" />
