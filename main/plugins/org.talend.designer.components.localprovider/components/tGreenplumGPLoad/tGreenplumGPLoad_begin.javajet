@@ -52,6 +52,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	//boolean hasAfterSQL = ElementParameterParser.getValue(node, "__HAS_AFTER_SQL__").equals("true");
 	//String afterSQL = ElementParameterParser.getValue(node, "__AFTER_SQL__");
 	String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
+	boolean useGPLoaderUtility = ElementParameterParser.getValue(node, "__USE_GPLOAD_UTILITY__").equals("true");
 	boolean gploadExePathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOAD_PATH__").equals("true");
 	String gploadExePath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
@@ -86,6 +87,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 		
 	if (!gploadExePathGiven) {
 		gploadExePath = "\"gpload\"";
+	}
+	if (useGPLoaderUtility) {
+		gploadExePath = "\"python /c start python gpload.py\"";
 	}
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
