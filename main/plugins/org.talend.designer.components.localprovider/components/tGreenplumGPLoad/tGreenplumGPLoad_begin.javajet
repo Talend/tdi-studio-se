@@ -419,7 +419,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 			if(value != null && !("".equals(value))) {
 				if (key.equals("NULL_AS")){
 					%>
-						gpctrl_<%=cid%>.println("    - NULL_AS: " + <%=value%>);
+						gpctrl_<%=cid%>.println("    - NULL_AS: '" + <%=value%> + "'");
 					<%
 				}
 				if (key.equals("FORCE_NOT_NULL")){
@@ -434,7 +434,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 				}
 				if (key.equals("ERROR_TABLE")){
 					%>
-						gpctrl_<%=cid%>.println("    - ERROR_TABLE: " + <%=value%>);
+						gpctrl_<%=cid%>.println("    - ERROR_TABLE: '" + <%=value%> + "'");
 					<%
 				}
 			}
