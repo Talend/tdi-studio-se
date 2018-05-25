@@ -70,20 +70,17 @@ imports="
     	%>
 	if (pstmt_<%=cid %> != null && batchSizeCounter_<%=cid%> >0) {
     try {
-    	<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
+    		<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
+        int countSum_<%=cid%> = 0;
+        for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
+            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
+        }
         <%
-        if (("INSERT").equals(dataAction)) {
+        		if(("INSERT").equals(dataAction)) {
         %>
-            pstmt_<%=cid %>.executeBatch();
+        				insertedCount_<%=cid%> += countSum_<%=cid%>;
         <%
-        }else{
-        %>
-            int countSum_<%=cid%> = 0;
-            for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-            }
-        <%
-            if (("UPDATE").equals(dataAction)) {
+            } else if (("UPDATE").equals(dataAction)) {
         %>
                 updatedCount_<%=cid%> += countSum_<%=cid%>;
         <%
@@ -92,7 +89,7 @@ imports="
                 deletedCount_<%=cid%> += countSum_<%=cid%>;
         <%
             }
-        }%>
+        %>
         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
     }catch (java.sql.BatchUpdateException e_<%=cid%>){
         <%if(("true").equals(dieOnError)) {
@@ -101,16 +98,16 @@ imports="
         <%
         }else {
         %>
-            <%
-            if (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)) {
-            %>
-                int countSum_<%=cid%> = 0;
-                for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                    countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                }
-            <%
+            int countSum_<%=cid%> = 0;
+            for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
+                countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
             }
-            if (("UPDATE").equals(dataAction)) {
+            <%
+            if(("INSERT").equals(dataAction)) {
+            %>
+            		insertedCount_<%=cid%> += countSum_<%=cid%>;
+            <%
+            } else if (("UPDATE").equals(dataAction)) {
             %>
                 updatedCount_<%=cid%> += countSum_<%=cid%>;
             <%
@@ -126,14 +123,6 @@ imports="
         }
         %>
     }
-    <%
-    if (("INSERT").equals(dataAction)) {
-    %>
-            tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
-            insertedCount_<%=cid%>+= (tmp_batchUpdateCount_<%=cid%> >0 ? tmp_batchUpdateCount_<%=cid%>:0);
-    <%
-    }
-    %>
     }
     <%
     }%>
