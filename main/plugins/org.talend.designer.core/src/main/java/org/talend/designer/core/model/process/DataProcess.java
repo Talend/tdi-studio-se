@@ -182,8 +182,8 @@ public class DataProcess implements IGeneratingProcess {
                 if (sourceParam.getName().equals(EParameterName.DB_TYPE.getName())
                         && sourceParam.getValue().toString().matches("^.*[a|A][c|C][c|C][e|E][s|S][s|S].*$")) {
 
-                    sourceElement.getElementParameter(EParameterName.DBNAME.getName()).setValue(
-                            sourceElement.getElementParameter(EParameterName.DBFILE.getName()).getValue());
+                    sourceElement.getElementParameter(EParameterName.DBNAME.getName())
+                            .setValue(sourceElement.getElementParameter(EParameterName.DBFILE.getName()).getValue());
                 }
 
                 targetParam.setContextMode(sourceParam.isContextMode());
@@ -491,7 +491,7 @@ public class DataProcess implements IGeneratingProcess {
             }
             // xmlmap
             if (externalNode != null) {
-                ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData()); 
+                ((IExternalNode) dataNode).setExternalEmfData(externalNode.getExternalEmfData());
                 ((IExternalNode) dataNode).setInternalMapperModel(externalNode.getInternalMapperModel());
             }
         }
@@ -538,8 +538,8 @@ public class DataProcess implements IGeneratingProcess {
         dataNode.setProcess(graphicalNode.getProcess());
 
         if (graphicalNode.isDummy() && !graphicalNode.isActivate()) {
-            IComponent component = ComponentsFactoryProvider.getInstance().get(
-                    "tDummyRow", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+            IComponent component = ComponentsFactoryProvider.getInstance().get("tDummyRow", //$NON-NLS-1$
+                    ComponentCategory.CATEGORY_4_DI.getName());
             if (component != null) { // only if component is available
                 dataNode = new DataNode(component, uniqueName);
                 dataNode.setActivate(true);
@@ -595,9 +595,10 @@ public class DataProcess implements IGeneratingProcess {
         dataConnec.setCondition(connection.getCondition());
         dataConnec.setConnectorName(connection.getConnectorName());
         dataConnec.setInputId(connection.getInputId());
-        DataNode meterNode = new DataNode(ComponentsFactoryProvider.getInstance().get(
-                "tFlowMeter", ComponentCategory.CATEGORY_4_DI.getName()), "vFlowMeter_" //$NON-NLS-1$ //$NON-NLS-2$
-                + connection.getUniqueName());
+        DataNode meterNode = new DataNode(
+                ComponentsFactoryProvider.getInstance().get("tFlowMeter", ComponentCategory.CATEGORY_4_DI.getName()), //$NON-NLS-1$
+                "vFlowMeter_" //$NON-NLS-1$
+                        + connection.getUniqueName());
         meterNode.getMetadataList().get(0).setListColumns(connection.getMetadataTable().getListColumns());
         meterNode.setActivate(connection.isActivate());
         meterNode.setProcess(process);
@@ -650,7 +651,8 @@ public class DataProcess implements IGeneratingProcess {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private void addMultipleNode(INode graphicalNode, List<IMultipleComponentManager> multipleComponentManagers) throws Exception {
+    private void addMultipleNode(INode graphicalNode, List<IMultipleComponentManager> multipleComponentManagers)
+            throws Exception {
         AbstractNode dataNode = null;
         // prepare all the nodes
 
@@ -671,6 +673,10 @@ public class DataProcess implements IGeneratingProcess {
             dataNode = itemsMap.get(multipleComponentManager.getInput());
             if (dataNode == null) {
                 continue;
+            }
+            if (!dataNode.isActivate()) {
+                dataNode = itemsMap.get(multipleComponentManager.getOutput());
+                itemsMap.put(multipleComponentManager.getInput(), null);
             }
             dataNode.setStart(graphicalNode.isStart());
             dataNode.setSubProcessStart(graphicalNode.isSubProcessStart());
@@ -906,6 +912,7 @@ public class DataProcess implements IGeneratingProcess {
             updateVirtualComponentProperties(graphicalNode.getComponentProperties(), curItem, curNode);
 
             curNode.setActivate(graphicalNode.isActivate());
+
             IMetadataTable newMetadata = null;
             if (multipleComponentManager.isSetConnector()) {
                 newMetadata = graphicalNode.getMetadataFromConnector(multipleComponentManager.getConnector()).clone();
@@ -974,6 +981,14 @@ public class DataProcess implements IGeneratingProcess {
             addDataNode(curNode);
             curNode.setRealGraphicalNode(graphicalNode);
             itemsMap.put(curItem, curNode);
+            boolean rowsEnd = false;
+            if (!curItem.getOutputConnections().isEmpty()) {
+                rowsEnd = curItem.getOutputConnections().get(0).getConnectionType().equals(EConnectionType.ON_ROWS_END.getName());
+            }
+            if (curNode.isDesignSubjobStartNode() && rowsEnd && curItem.getComponent().equals("tHMapOut")) {
+                curNode.setActivate(false);
+                curNode.setStart(false);
+            }
         }
     }
 
@@ -1004,11 +1019,14 @@ public class DataProcess implements IGeneratingProcess {
         INode targetNode = null;
         for (int i = 0; i < itemList.size(); i++) {
             targetNode = itemsMap.get(itemList.get(i));
+            if (targetNode == null) {
+                continue;
+            }
             // We set the type of the connection which linked two components in case of a virtual component. ONLY in
             // case of the first component
             if (itemList.get(i).getOutputConnections().size() > 0) {
-                targetNode.setVirtualLinkTo(EConnectionType.getTypeFromName(itemList.get(i).getOutputConnections().get(0)
-                        .getConnectionType()));
+                targetNode.setVirtualLinkTo(
+                        EConnectionType.getTypeFromName(itemList.get(i).getOutputConnections().get(0).getConnectionType()));
             }
             targetFound = false;
             if (targetNode != null) {
@@ -1357,8 +1375,8 @@ public class DataProcess implements IGeneratingProcess {
                 try {
                     addMultipleNode(graphicalNode, multipleComponentManagers);
                 } catch (Exception e) {
-                    Exception warpper = new Exception(
-                            Messages.getString("DataProcess.checkComponent", graphicalNode.getLabel()), e); //$NON-NLS-1$
+                    Exception warpper = new Exception(Messages.getString("DataProcess.checkComponent", graphicalNode.getLabel()), //$NON-NLS-1$
+                            e);
                     ExceptionHandler.process(warpper);
                 }
             }
@@ -1469,8 +1487,9 @@ public class DataProcess implements IGeneratingProcess {
                 needCreateTFSNode = true;
             }
             // else {
-            //                IElementParameter eltdbParam = eltNode.getElementParameter("COMPONENT_" + param.getValue()); //$NON-NLS-1$
-            //                IElementParameter dbParam = dataNode.getElementParameter("COMPONENT_" + param.getValue()); //$NON-NLS-1$
+            // IElementParameter eltdbParam = eltNode.getElementParameter("COMPONENT_" + param.getValue());
+            // //$NON-NLS-1$
+            // IElementParameter dbParam = dataNode.getElementParameter("COMPONENT_" + param.getValue()); //$NON-NLS-1$
             // if (dbParam != null) {
             // if (!dbParam.getValue().equals(eltdbParam.getValue())) {
             // needCreateTFSNode = true;
@@ -1478,15 +1497,15 @@ public class DataProcess implements IGeneratingProcess {
             // // new node
             // //
             // } else {
-            //                        IElementParameter eltSourcetableParam = eltNode.getElementParameter("TABLE_NAME"); //$NON-NLS-1$
+            // IElementParameter eltSourcetableParam = eltNode.getElementParameter("TABLE_NAME"); //$NON-NLS-1$
             // // for tELTMerge
             // if (eltSourcetableParam == null) {
-            //                            eltSourcetableParam = eltNode.getElementParameter("SOURCE_TABLE"); //$NON-NLS-1$
+            // eltSourcetableParam = eltNode.getElementParameter("SOURCE_TABLE"); //$NON-NLS-1$
             // }
-            //                        IElementParameter sourceTableParam = dataNode.getElementParameter("TABLE_NAME"); //$NON-NLS-1$
+            // IElementParameter sourceTableParam = dataNode.getElementParameter("TABLE_NAME"); //$NON-NLS-1$
             // // for tELTMerge
             // if (sourceTableParam == null) {
-            //                            sourceTableParam = dataNode.getElementParameter("SOURCE_TABLE"); //$NON-NLS-1$
+            // sourceTableParam = dataNode.getElementParameter("SOURCE_TABLE"); //$NON-NLS-1$
             // }
             //
             // if (sourceTableParam != null && eltSourcetableParam != null) {
@@ -1494,13 +1513,13 @@ public class DataProcess implements IGeneratingProcess {
             // needCreateTFSNode = true;
             // }
             // }
-            //                        IElementParameter eltTargetTableParam = eltNode.getElementParameter("TABLE_NAME_TARGET"); //$NON-NLS-1$
+            // IElementParameter eltTargetTableParam = eltNode.getElementParameter("TABLE_NAME_TARGET"); //$NON-NLS-1$
             // if (eltTargetTableParam == null) {
-            //                            eltTargetTableParam = eltNode.getElementParameter("TARGET_TABLE"); //$NON-NLS-1$
+            // eltTargetTableParam = eltNode.getElementParameter("TARGET_TABLE"); //$NON-NLS-1$
             // }
-            //                        IElementParameter targetTableParam = dataNode.getElementParameter("TABLE_NAME_TARGET"); //$NON-NLS-1$
+            // IElementParameter targetTableParam = dataNode.getElementParameter("TABLE_NAME_TARGET"); //$NON-NLS-1$
             // if (targetTableParam == null) {
-            //                            targetTableParam = dataNode.getElementParameter("TARGET_TABLE"); //$NON-NLS-1$
+            // targetTableParam = dataNode.getElementParameter("TARGET_TABLE"); //$NON-NLS-1$
             // }
             //
             // if (targetTableParam != null && eltTargetTableParam != null) {
@@ -1802,10 +1821,10 @@ public class DataProcess implements IGeneratingProcess {
         // job settings stats & logs
         if (JobSettingsManager.isStatsAndLogsActivated(duplicatedProcess)) {
             // will add the Stats & Logs managements
-            Boolean realTimeStats = ((Boolean) duplicatedProcess.getElementParameter(
-                    EParameterName.CATCH_REALTIME_STATS.getName()).getValue())
-                    && duplicatedProcess.getElementParameter(EParameterName.CATCH_REALTIME_STATS.getName()).isShow(
-                            duplicatedProcess.getElementParameters());
+            Boolean realTimeStats = ((Boolean) duplicatedProcess
+                    .getElementParameter(EParameterName.CATCH_REALTIME_STATS.getName()).getValue())
+                    && duplicatedProcess.getElementParameter(EParameterName.CATCH_REALTIME_STATS.getName())
+                            .isShow(duplicatedProcess.getElementParameters());
 
             if (!realTimeStats) {
                 for (INode node : dataNodeList) {
@@ -1819,38 +1838,38 @@ public class DataProcess implements IGeneratingProcess {
             List<DataNode> statsAndLogsNodeList = JobSettingsManager.createStatsAndLogsNodes(duplicatedProcess);
             DataNode connNode = null;
             for (DataNode node : statsAndLogsNodeList) {
-                if(node.getUniqueName().equals(StatsAndLogsManager.CONNECTION_UID)){
+                if (node.getUniqueName().equals(StatsAndLogsManager.CONNECTION_UID)) {
                     connNode = node;
                     IElementParameter parameter = connNode.getElementParameter("connection.driverTable");
-                    if(parameter != null){
+                    if (parameter != null) {
                         Object repValue = parameter.getValue();
                         ConnectionUtil.resetDriverValue(repValue);
                     }
                     break;
                 }
             }
-            
+
             for (DataNode node : statsAndLogsNodeList) {
                 buildCheckMap.put(node, node);
             }
-            
+
             for (DataNode node : statsAndLogsNodeList) {
                 addDataNode(node);
                 replaceMultipleComponents(node);
-                if(connNode == null){
+                if (connNode == null) {
                     continue;
                 }
-                for(INode dataNode : dataNodeList){
-                    if(dataNode.getUniqueName().equals(node.getUniqueName()+"_DB")){
+                for (INode dataNode : dataNodeList) {
+                    if (dataNode.getUniqueName().equals(node.getUniqueName() + "_DB")) {
                         IElementParameter refPara = dataNode.getElementParameter("referencedComponent");
-                        if(refPara != null){
+                        if (refPara != null) {
                             refPara.setValue(connNode.getUniqueName());
                             IGenericDBService dbService = null;
                             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-                                        IGenericDBService.class);
+                                dbService = (IGenericDBService) GlobalServiceRegister.getDefault()
+                                        .getService(IGenericDBService.class);
                             }
-                            if(dbService != null){
+                            if (dbService != null) {
                                 dbService.initReferencedComponent(refPara, connNode.getUniqueName());
                             }
                         }
@@ -1878,8 +1897,8 @@ public class DataProcess implements IGeneratingProcess {
                 preStaLogConNode = node;
                 break;
             }
-            ((AbstractNode) node).setUniqueShortName(UniqueNodeNameGenerator.generateUniqueNodeName(((AbstractNode) node)
-                    .getComponent().getShortName(), shortUniqueNameList));
+            ((AbstractNode) node).setUniqueShortName(UniqueNodeNameGenerator
+                    .generateUniqueNodeName(((AbstractNode) node).getComponent().getShortName(), shortUniqueNameList));
             shortUniqueNameList.add(node.getUniqueShortName());
         }
         if (preStaLogConNode != null) {
@@ -1899,23 +1918,22 @@ public class DataProcess implements IGeneratingProcess {
                 tagSubProcessAfterParallelIterator(node);
             }
         }
-        
-//        IGenericDBService dbService = null;
-//        if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-//            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-//                    IGenericDBService.class);
-//        }
-//        if(dbService != null){
-//            for (INode node : dataNodeList) {
-//                if(node.getComponent().getComponentType() == EComponentType.GENERIC){
-//                    
-//                    for(IMetadataTable iTable : node.getMetadataList()){
-//                       iTable = dbService.converTable(node, iTable);
-//                    }
-//                }
-//            }
-//        }
-        
+
+        // IGenericDBService dbService = null;
+        // if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
+        // dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
+        // IGenericDBService.class);
+        // }
+        // if(dbService != null){
+        // for (INode node : dataNodeList) {
+        // if(node.getComponent().getComponentType() == EComponentType.GENERIC){
+        //
+        // for(IMetadataTable iTable : node.getMetadataList()){
+        // iTable = dbService.converTable(node, iTable);
+        // }
+        // }
+        // }
+        // }
 
         checkRefList = null;
         checkMultipleMap = null;
@@ -1962,8 +1980,8 @@ public class DataProcess implements IGeneratingProcess {
                 if (connection.getLineStyle().hasConnectionCategory(IConnectionCategory.MAIN | IConnectionCategory.USE_ITERATE)) {
                     if (((AbstractNode) node).getParallelIterator() != null) {
                         ((AbstractNode) connection.getTarget()).setParallelIterator(((AbstractNode) node).getParallelIterator());
-                    } else if (connection.getLineStyle().equals(EConnectionType.ITERATE)
-                            && Boolean.TRUE.toString().equals(ElementParameterParser.getValue(connection, "__ENABLE_PARALLEL__"))) {
+                    } else if (connection.getLineStyle().equals(EConnectionType.ITERATE) && Boolean.TRUE.toString()
+                            .equals(ElementParameterParser.getValue(connection, "__ENABLE_PARALLEL__"))) {
                         ((AbstractNode) connection.getTarget()).setParallelIterator(connection.getTarget().getUniqueName());
                     }
                     tagComponentAfterParallelIterator(connection.getTarget());
@@ -2062,8 +2080,8 @@ public class DataProcess implements IGeneratingProcess {
      * @param isOutput
      * @param node
      */
-    private void replaceValidationRules(INode graphicalNode, ValidationRulesConnection rulesConnection,
-            DataConnection connection, boolean isOutput) {
+    private void replaceValidationRules(INode graphicalNode, ValidationRulesConnection rulesConnection, DataConnection connection,
+            boolean isOutput) {
         if (rulesConnection.getType() == RuleType.BASIC) {
             replaceBasicOrCustomValidationRules(graphicalNode, connection, rulesConnection, false, isOutput);
         } else if (rulesConnection.getType() == RuleType.REFERENCE) {
@@ -2389,7 +2407,8 @@ public class DataProcess implements IGeneratingProcess {
         hash_incomingConnections.add(dataConnec);
 
         // handle reject link.
-        if (endNode.getOutgoingConnections("VALIDATION_REJECT") != null && endNode.getOutgoingConnections("VALIDATION_REJECT").size() == 1) {//$NON-NLS-1$ //$NON-NLS-2$
+        if (endNode.getOutgoingConnections("VALIDATION_REJECT") != null //$NON-NLS-1$
+                && endNode.getOutgoingConnections("VALIDATION_REJECT").size() == 1) {//$NON-NLS-1$
             IConnection conn = endNode.getOutgoingConnections("VALIDATION_REJECT").get(0);//$NON-NLS-1$
             INode targetNode = conn.getTarget();
             List<IConnection> outputconns = (List<IConnection>) endNode.getOutgoingConnections();
@@ -2453,8 +2472,8 @@ public class DataProcess implements IGeneratingProcess {
         }
 
         // create tFilterRow
-        IComponent component = ComponentsFactoryProvider.getInstance().get(
-                "tFilterRow", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tFilterRow", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         String typeStr;
         if (isOutput) {
             typeStr = "output"; //$NON-NLS-1$
@@ -2514,7 +2533,8 @@ public class DataProcess implements IGeneratingProcess {
 
         List<IMetadataTable> metadataList = nodeUseValidationRule.getMetadataList();
         for (IMetadataTable metadataTable : metadataList) {
-            if ("VALIDATION_REJECT".equals(metadataTable.getTableName()) && !filterNode.getMetadataList().contains(metadataTable)) { //$NON-NLS-1$
+            if ("VALIDATION_REJECT".equals(metadataTable.getTableName()) //$NON-NLS-1$
+                    && !filterNode.getMetadataList().contains(metadataTable)) {
                 rejectMetadataTable = metadataTable;
                 filterNode.getMetadataList().add(metadataTable);
                 break;
@@ -2566,7 +2586,8 @@ public class DataProcess implements IGeneratingProcess {
         validRuleConnections.add(dataConnec);
 
         // handle reject link.
-        if (endNode.getOutgoingConnections("VALIDATION_REJECT") != null && endNode.getOutgoingConnections("VALIDATION_REJECT").size() == 1) {//$NON-NLS-1$ //$NON-NLS-2$
+        if (endNode.getOutgoingConnections("VALIDATION_REJECT") != null //$NON-NLS-1$
+                && endNode.getOutgoingConnections("VALIDATION_REJECT").size() == 1) {//$NON-NLS-1$
             IConnection conn = endNode.getOutgoingConnections("VALIDATION_REJECT").get(0);//$NON-NLS-1$
             INode targetNode = conn.getTarget();
             List<IConnection> outputconns = (List<IConnection>) endNode.getOutgoingConnections();
@@ -3030,8 +3051,8 @@ public class DataProcess implements IGeneratingProcess {
         String suffix = graphicalNode.getUniqueName();
 
         // create tAsyncOut component
-        IComponent component = ComponentsFactoryProvider.getInstance()
-                .get("tAsyncOut", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+        IComponent component = ComponentsFactoryProvider.getInstance().get("tAsyncOut", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         if (component == null) {
             return;
         }
@@ -3049,8 +3070,8 @@ public class DataProcess implements IGeneratingProcess {
         List incomingConnections = new ArrayList<IConnection>();
         asyncOutNode.setIncomingConnections(incomingConnections);
         asyncOutNode.setOutgoingConnections(outgoingConnections);
-        IElementParameter settingsParam = asyncOutNode.getProcess().getElementParameter(
-                EParameterName.PARALLELIZE_UNIT_SIZE.getName());
+        IElementParameter settingsParam = asyncOutNode.getProcess()
+                .getElementParameter(EParameterName.PARALLELIZE_UNIT_SIZE.getName());
         IElementParameter asyncParam = asyncOutNode.getElementParameter("UNIT_SIZE"); //$NON-NLS-1$
         if (settingsParam != null && asyncParam != null) {
             asyncParam.setValue(settingsParam.getValue());
@@ -3219,7 +3240,7 @@ public class DataProcess implements IGeneratingProcess {
         NodeContainer nc = ((Process) process).loadNodeContainer(newGraphicalNode, false);
         ((Process) process).addNodeContainer(nc);
 
-        if(buildGraphicalMap == null){
+        if (buildGraphicalMap == null) {
             initialize();
         }
         buildGraphicalMap.put(graphicalNode, newGraphicalNode);
@@ -3393,12 +3414,10 @@ public class DataProcess implements IGeneratingProcess {
         List<INode> orginalList = new ArrayList<INode>(graphicalNodeList);
         IJobletProviderService jobletService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IJobletProviderService.class)) {
-            jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(
-                IJobletProviderService.class);
+            jobletService = (IJobletProviderService) GlobalServiceRegister.getDefault().getService(IJobletProviderService.class);
         }
         for (INode node : orginalList) {
-            if (ProcessorUtilities.isGeneratePomOnly() && jobletService != null
-                    && jobletService.isJobletComponent(node)) {
+            if (ProcessorUtilities.isGeneratePomOnly() && jobletService != null && jobletService.isJobletComponent(node)) {
                 // skip any joblet contained during the pom generation
                 continue;
             }
@@ -3476,8 +3495,8 @@ public class DataProcess implements IGeneratingProcess {
     private INode addVParallelizeBetween(INode sourceNode, INode targetNode, IConnection connection, IProcess process,
             List<? extends IElementParameter> parameters) {
 
-        IComponent tempNode = ComponentsFactoryProvider.getInstance().get(
-                "tParallelize", ComponentCategory.CATEGORY_4_DI.getName());//$NON-NLS-1$
+        IComponent tempNode = ComponentsFactoryProvider.getInstance().get("tParallelize", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         if (tempNode == null) {
             return targetNode;
         }
@@ -3490,8 +3509,9 @@ public class DataProcess implements IGeneratingProcess {
             alreadyHave = true;
         } else {
             String uniqueName = "tParallelize_" + connection.getUniqueName();//$NON-NLS-1$
-            parallelizeNode = new DataNode(ComponentsFactoryProvider.getInstance().get(
-                    "tParallelize", ComponentCategory.CATEGORY_4_DI.getName()), uniqueName); //$NON-NLS-1$
+            parallelizeNode = new DataNode(
+                    ComponentsFactoryProvider.getInstance().get("tParallelize", ComponentCategory.CATEGORY_4_DI.getName()), //$NON-NLS-1$
+                    uniqueName);
 
             // DataNode hashNode = new DataNode(component, uniqueName);
             parallelizeNode.setActivate(connection.isActivate());
@@ -3618,7 +3638,9 @@ public class DataProcess implements IGeneratingProcess {
         }, null);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.talend.designer.core.model.process.IGeneratingProcess#generateAdditionalCode()
      */
     @Override

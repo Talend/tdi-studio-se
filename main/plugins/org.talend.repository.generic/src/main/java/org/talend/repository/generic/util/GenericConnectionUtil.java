@@ -19,6 +19,7 @@ import org.apache.commons.lang.StringUtils;
 import org.talend.components.api.properties.ComponentProperties;
 import org.talend.components.api.properties.ComponentReferenceProperties;
 import org.talend.components.api.wizard.ComponentWizard;
+import org.talend.components.api.wizard.ComponentWizardDefinition;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
@@ -122,6 +123,26 @@ public class GenericConnectionUtil {
         List<ComponentWizard> wizards = GenericWizardServiceFactory.getGenericWizardInternalService()
                 .getComponentWizardsForProperties(componentProperties, gitem.getProperty().getId());
         return wizards;
+    }
+
+    public static ComponentWizard getEditWizard(IRepositoryNode node) {
+        ComponentWizard editWizard = null;
+        List<ComponentWizard> allWizards = getAllWizards(node);
+        if (allWizards != null && !allWizards.isEmpty()) {
+            for (ComponentWizard wizard : allWizards) {
+                ComponentWizardDefinition wizardDefinition = wizard.getDefinition();
+                if (wizardDefinition.isTopLevel()) {
+                    continue;
+                }
+                String wizardName = wizardDefinition.getName();
+                if (wizardName.toLowerCase().contains("edit")) { //$NON-NLS-1$
+                    editWizard = wizard;
+                    break;
+                }
+            }
+        }
+        return editWizard;
+
     }
 
 }

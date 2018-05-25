@@ -343,6 +343,9 @@ class="MomInput"
 			String channel=ElementParameterParser.getValue(node, "__CHANNEL__");
 			String qm=ElementParameterParser.getValue(node, "__QM__");
 			boolean needSSLCipher = ("true").equals(ElementParameterParser.getValue(node,"__SET_MQ_SSL_CIPHER__"));
+		   boolean useIBMCipherMappings = ("true").equals(ElementParameterParser.getValue(node,"__USE_IBM_MAPPING__"));
+		   boolean useCustomCipherSuite = ("true").equals(ElementParameterParser.getValue(node,"__CUSTOM_CIPHER__"));
+		   String customCipherSuite = ElementParameterParser.getValue(node, "__CUSTOM_CIPHER_SUITE__");
 			String sslCipher = ElementParameterParser.getValue(node, "__MQ_SSL_CIPHER__");
 			%>
 			props_<%=cid%>.put("hostname", <%=host%>);
@@ -351,11 +354,18 @@ class="MomInput"
 			props_<%=cid%>.put("CCSID", new Integer(1208));
 			props_<%=cid%>.put("transport","MQSeries");
 			<%
-			if(needSSLCipher){
-			%>
-				com.ibm.mq.MQEnvironment.sslCipherSuite = "<%=sslCipher%>";
-			<%
-			}
+		   if(needSSLCipher){
+		       if(useCustomCipherSuite){
+		       %>
+		           System.setProperty("com.ibm.mq.cfg.useIBMCipherMappings","<%=useIBMCipherMappings%>");
+		           com.ibm.mq.MQEnvironment.sslCipherSuite = <%=customCipherSuite%>;
+		       <%
+		       }else{
+		       %>
+		           com.ibm.mq.MQEnvironment.sslCipherSuite = "<%=sslCipher%>";
+		       <%
+		       }
+		   }
 			if(!(dbuser == null) && !("\"\"").equals(dbuser) && !("").equals(dbuser)) {
 			%>
 				props_<%=cid%>.put("userID",<%=dbuser%>);

@@ -132,10 +132,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     protected Composite optionsGroupComposite;
 
-    protected Composite destinationNameFieldComposite;
-
-    protected Composite destinationNameFieldInnerComposite;
-
     protected Button webXMLButton;
 
     protected Button configFileButton;
@@ -298,8 +294,6 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         
         initializeDialogUnits(parent);
         SashForm sash = createExportTree(parent);
-        
-        GridLayout layout = new GridLayout();
 
         
         // Added a scrolled composite by Marvin Wang on Feb. 27, 2012 for bug TDI-19198.
@@ -309,9 +303,10 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         GridDataFactory.fillDefaults().grab(true, true).applyTo(scrolledComposite);
         
         pageComposite = new Composite(scrolledComposite, SWT.BORDER);
-        pageComposite.setLayout(layout);
-        
         GridDataFactory.fillDefaults().grab(true, true).applyTo(pageComposite);
+        
+        GridLayout gdlPageComposite = new GridLayout();
+        pageComposite.setLayout(gdlPageComposite);
         pageComposite.setFont(parent.getFont());
         
         createDestinationGroup(pageComposite);
@@ -363,15 +358,17 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
         Composite left = new Composite(optionsGroup, SWT.NONE);
         left.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false));
-        left.setLayout(new GridLayout(3, false));
+        
+        GridLayout gdlLeft = new GridLayout(3, false);
+        gdlLeft.marginHeight = 0;
+        gdlLeft.marginWidth = 0;
+        left.setLayout(gdlLeft);
 
         Label label = new Label(left, SWT.NONE);
         label.setText(Messages.getString("JavaJobScriptsExportWSWizardPage.BuildLabel")); //$NON-NLS-1$
 
         exportTypeCombo = new Combo(left, SWT.PUSH);
-        GridData gd = new GridData();
-        gd.horizontalSpan = 1;
-        exportTypeCombo.setLayoutData(gd);
+        exportTypeCombo.setLayoutData(new GridData());
 
         for (JobExportType exportType : extractExportJobTypes()) {
             if (!Boolean.getBoolean("talend.export.job.2." + exportType.toString() + ".hide")) { //$NON-NLS-1$//$NON-NLS-2$
@@ -428,6 +425,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             chkButton.setVisible(true);
             zipOption = String.valueOf(chkButton.getSelection());
         }
+        
         chkButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -436,24 +434,11 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
                 zipOption = String.valueOf(chkButton.getSelection());
             }
         });
-        exportTypeCombo.addSelectionListener(new SelectionListener() {
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-
-            }
+        
+        exportTypeCombo.addSelectionListener(new SelectionAdapter() {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                destinationNameFieldInnerComposite.dispose();
-                destinationNameFieldInnerComposite = new Composite(destinationNameFieldComposite, SWT.NONE);
-                GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-                destinationNameFieldInnerComposite.setLayoutData(gridData);
-                destinationNameFieldInnerComposite.setLayout(new GridLayout());
-                createDestinationGroup(destinationNameFieldInnerComposite);
-
-                destinationNameFieldComposite.layout();
-
                 optionsGroupComposite.dispose();
                 createOptionsGroupButtons(pageComposite);
                 pageComposite.setSize(pageComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -926,44 +911,36 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
 
     protected void createOptionsGroupButtons(Composite parent) {
         
-        // Commented by Marvin Wang on Feb.27, 2012 for bug TDI-19198, directly create components on Group.
-        GridLayout layout = new GridLayout();
-        layout.marginHeight = 0;
-        layout.marginWidth = 0;
         
         optionsGroupComposite = new Composite(parent, SWT.NONE);
-        GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL);
-        // fix the setParametersValue button can not see sometimes.
-        // gridData.minimumHeight = 200;
-        optionsGroupComposite.setLayoutData(gridData);
-        optionsGroupComposite.setLayout(layout);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(optionsGroupComposite);
+        
+        GridLayout gdlOptionsGroupComposite = new GridLayout();
+        gdlOptionsGroupComposite.marginHeight = 0;
+        gdlOptionsGroupComposite.marginWidth = 0;
+        optionsGroupComposite.setLayout(gdlOptionsGroupComposite);
         
         // options group
         Group optionsGroup = new Group(optionsGroupComposite, SWT.NONE);
-
-        optionsGroup.setLayout(layout);
-
-        optionsGroup.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.GRAB_HORIZONTAL));
-
-        // optionsGroup.setText(IDEWorkbenchMessages.WizardExportPage_options);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(optionsGroup);
+        
         optionsGroup.setText(Messages.getString("IDEWorkbenchMessages.WizardExportPage_options")); //$NON-NLS-1$
         optionsGroup.setFont(parent.getFont());
 
         Font font = optionsGroup.getFont();
-        optionsGroup.setLayout(new GridLayout(1, true));
+        optionsGroup.setLayout(new GridLayout());
 
         Composite left = new Composite(optionsGroup, SWT.NONE);
-        gridData = new GridData(SWT.LEFT, SWT.TOP, true, false);
-        left.setLayoutData(gridData);
-        left.setLayout(new GridLayout(3, true));
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
+
+        GridLayout gdlLeft = new GridLayout();
+        gdlLeft.marginHeight = 0;
+        gdlLeft.marginWidth = 0;
+        left.setLayout(gdlLeft);
 
         switch (getCurrentExportType1()) {
         case POJO:
-            layout = new GridLayout();
-            layout.verticalSpacing = 1;
-            layout.marginHeight = 0;
-            optionsGroup.setLayout(layout);
-            createOptions(optionsGroup, font);
+            createOptions(left, font);
             restoreWidgetValuesForPOJO();
             break;
         case OSGI:

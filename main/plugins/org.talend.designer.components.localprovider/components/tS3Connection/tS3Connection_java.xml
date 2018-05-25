@@ -291,7 +291,15 @@
       SHOW_IF="(ASSUME_ROLE == 'true') AND (SET_STS_ENDPOINT == 'true')"
     >
       <DEFAULT>""</DEFAULT>
-    </PARAMETER>    	
+    </PARAMETER> 
+    
+    <PARAMETER
+      NAME="CHECK_ACCESSIBILITY"
+      FIELD="CHECK"
+      NUM_ROW="40"
+    >   	
+    <DEFAULT>true</DEFAULT>
+    </PARAMETER>
 
     </ADVANCED_PARAMETERS>
 

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
+import org.apache.commons.lang3.ArrayUtils;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -282,6 +283,30 @@ public class DynamicIndexMapperByNameTest {
 
         DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
         List<Integer> actualIndexes = indexMapper.computeDynamicFieldsIndexes(runtimeSchema);
+        assertThat(actualIndexes, IsIterableContainingInOrder.contains(expectedIndexes.toArray()));
+    }
+
+    @Test
+    public void testComputeFieldsIndexesForMissingFields() {
+        List<Integer> expectedIndexes = Arrays.asList(0, IndexMapper.MISSING_DESIGN_FIELD, IndexMapper.MISSING_DESIGN_FIELD,
+                IndexMapper.DYNAMIC);
+
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3") //
+                .prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col1").type().stringType().noDefault() //
+                .name("col2").type().intType().noDefault() //
+                .endRecord(); //
+
+        Schema runtimeSchema = SchemaBuilder.builder().record("Record").fields() //
+                .name("col0").type().intType().noDefault() //
+                .name("col3_1").type().intType().noDefault() //
+                .name("col3_2").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapperByName indexMapper = new DynamicIndexMapperByName(designSchema);
+        List<Integer> actualIndexes = Arrays.asList(ArrayUtils.toObject(indexMapper.computeIndexMap(runtimeSchema)));
         assertThat(actualIndexes, IsIterableContainingInOrder.contains(expectedIndexes.toArray()));
     }
 }

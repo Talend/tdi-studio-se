@@ -48,7 +48,7 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
 
     /**
      * Constructor sets design schema, design schema fields and size and dynamic field position
-     * 
+     *
      * @param designSchema design schema
      */
     DynamicIndexMapperByName(Schema designSchema) {
@@ -65,10 +65,11 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * If there is dynamic field corresponding value has no sense, because there are several runtime fields which corresponds
      * dynamic field.
-     * That's why -1 value is set for dynamic field index.
+     * That's why <b>-1</b> value is set for dynamic field index.
+     * If design Schema contains fields that don't present in runtime schema set index to <b>-2</b>.
      */
     @Override
     public int[] computeIndexMap(Schema runtimeSchema) {
@@ -80,9 +81,9 @@ class DynamicIndexMapperByName implements DynamicIndexMapper {
             String fieldName = designField.name();
             Field runtimeField = runtimeSchema.getField(fieldName);
             if (i < dynamicFieldPosition) {
-                indexMap[i] = runtimeField.pos();
+                indexMap[i] = runtimeField != null ? runtimeField.pos() : MISSING_DESIGN_FIELD;
             } else {
-                indexMap[i + 1] = runtimeField.pos();
+                indexMap[i + 1] = runtimeField != null ? runtimeField.pos() : MISSING_DESIGN_FIELD;
             }
 
         }

@@ -22,10 +22,12 @@ interface IndexMapper {
 
     static final int DYNAMIC = -1;
 
+    static final int MISSING_DESIGN_FIELD = -2;
+
     /**
      * Computes map of correspondence between design fields (POJO fields) and runtime fields
      * (IndexedRecord fields)
-     * 
+     *
      * @param runtimeSchema runtime data schema, which goes along with {@link IndexedRecord}
      * @return map of correspondence
      */

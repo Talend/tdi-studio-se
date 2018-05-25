@@ -125,9 +125,6 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
             repObjType = (ERepositoryObjectType) repNode.getProperties(EProperties.CONTENT_TYPE);
         }
         wizardService = GenericWizardServiceFactory.getGenericWizardService();
-        if (wizard == null) {
-            wizard = getDefaultWizard(repObjType.getType());
-        }
         ENodeType nodeType = node.getType();
         switch (nodeType) {
         case SIMPLE_FOLDER:
@@ -168,6 +165,9 @@ public class GenericConnWizard extends CheckLastVersionRepositoryWizard {
             setRepositoryObject(node.getObject());
             initLockStrategy();
             break;
+        }
+        if (wizard == null) {
+            wizard = getDefaultWizard(repObjType.getType());
         }
         if (!creation) {
             this.originalLabel = this.connectionItem.getProperty().getDisplayName();
