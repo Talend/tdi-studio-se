@@ -13,8 +13,9 @@
 	<artifactId>@JobArtifactId@-bundle</artifactId>
 	<version>@JobVersion@</version>
 	<packaging>bundle</packaging>
-
-	<properties>
+    <name>@ProjectName@ @JobName@-@JobVersion@ (@TalendJobVersion@,@JobType@)</name>
+	
+    <properties>
 		<item.name>@ItemName@</item.name>
 		<item.project.name>@ItemProjectName@</item.project.name>
 		
@@ -68,7 +69,7 @@
         <profile>
             <id>packaging-and-assembly</id>
             <activation>
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <build>
                 <plugins>

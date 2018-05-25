@@ -26,6 +26,7 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.ERepositoryObjectType;
+import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.repository.build.BuildType;
@@ -46,8 +47,8 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
 
     private static final List<String> ESB_COMPONENTS;
     static {
-        final List<String> esbComponents = Arrays.asList("tESBProviderRequest", "tRESTClient", "tRESTRequest", "tRESTResponse",
-                "tESBConsumer", "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST");
+        final List<String> esbComponents = Arrays.asList("tRESTClient", "tRESTRequest", "tRESTResponse", "tESBConsumer",
+                "tESBProviderFault", "tESBProviderRequest", "tESBProviderResponse", "tRouteInput", "tREST");
         ESB_COMPONENTS = Collections.unmodifiableList(esbComponents);
     }
 
@@ -58,6 +59,8 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
         }
 
         ERepositoryObjectType type = null;
+        Property property = null;
+        boolean containsEsbComponent = false;
 
         Object object = parameters.get(PROCESS);
         if (object != null && object instanceof IProcess2) {
@@ -65,10 +68,11 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
             IProcess2 process = (IProcess2) object;
             for (INode node : process.getGraphicalNodes()) {
                 if (ESB_COMPONENTS.contains(node.getComponent().getName())) {
-                    return true;
+                    containsEsbComponent = true;
+                    break;
                 }
             }
-            Property property = ((IProcess2) object).getProperty();
+            property = ((IProcess2) object).getProperty();
             if (property != null) {
                 type = ERepositoryObjectType.getType(property);
             }
@@ -82,22 +86,28 @@ public class StandardJobOSGiBundleBuildProvider extends RepositoryObjectTypeBuil
                 for (Object node : process.getNode()) {
                     NodeType nodeType = (NodeType) node;
                     if (ESB_COMPONENTS.contains(nodeType.getComponentName())) {
-                        return true;
+                        containsEsbComponent = true;
+                        break;
                     }
                 }
 
-                Property property = ((Item) object).getProperty();
+                property = ((Item) object).getProperty();
                 if (property != null) {
                     type = ERepositoryObjectType.getType(property);
                 }
             }
         }
-        // if (type == null) {
-        // object = parameters.get(REPOSITORY_OBJECT);
-        // if (object != null && object instanceof IRepositoryViewObject) {
-        // type = ((IRepositoryViewObject) object).getRepositoryObjectType();
-        // }
-        // }
+        if (type == null) {
+            object = parameters.get(REPOSITORY_OBJECT);
+            if (object != null && object instanceof IRepositoryViewObject) {
+                type = ((IRepositoryViewObject) object).getRepositoryObjectType();
+                property = ((IRepositoryViewObject) object).getProperty();
+            }
+        }
+        // && !isServiceOperation(property)
+        if (containsEsbComponent) {
+            return true;
+        }
 
         return false;
     }
