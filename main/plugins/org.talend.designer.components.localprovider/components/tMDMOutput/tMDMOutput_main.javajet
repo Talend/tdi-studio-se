@@ -171,7 +171,10 @@ if (metadatas != null && metadatas.size()>0) {
             if (!isStaging && withReport) {%>
                 <% logUtil.debug("\"Put item with report to MDM server.\"");%>
                 
-                org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport(<%=needCheck %>, <%=sourceName %>, item_<%=cid %>);
+                org.talend.mdm.webservice.WSPutItemWithReport itemReport_<%=cid %> = new org.talend.mdm.webservice.WSPutItemWithReport();
+                itemReport_<%=cid %>.setInvokeBeforeSaving(<%=needCheck %>);
+                itemReport_<%=cid %>.setSource(<%=sourceName %>);
+                itemReport_<%=cid %>.setWsPutItem(item_<%=cid %>);
 
                 <%if (isMassInsert) {%>
                     <%if(addTaskID){%>
