@@ -871,7 +871,7 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
-            exportChoiceMap.put(ExportChoice.binaries, true);
+            exportChoiceMap.put(ExportChoice.binaries, !isAddMavenScript());
             if (addBSButton != null) {
                 exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
             }
@@ -879,13 +879,13 @@ public class JavaJobScriptsExportWSWizardPage extends JavaJobScriptsExportWizard
         }
 
         if (comboType.equals(JobExportType.MSESB)) {
-            exportChoiceMap.put(ExportChoice.needMetaInfo, true);
+            exportChoiceMap.put(ExportChoice.needMetaInfo, !isAddMavenScript());
             exportChoiceMap.put(ExportChoice.needContext, true);
             exportChoiceMap.put(ExportChoice.needJobItem, false);
             exportChoiceMap.put(ExportChoice.needSourceCode, false);
             if(exportMSAsZipButton!=null) {
-            	exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
-            	exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection());	
+                exportChoiceMap.put(ExportChoice.needAssembly, exportMSAsZipButton.getSelection());
+                exportChoiceMap.put(ExportChoice.needLauncher, exportMSAsZipButton.getSelection()); 
             }
             if (addBSButton != null) {
                 exportChoiceMap.put(ExportChoice.needMavenScript, addBSButton.getSelection());
