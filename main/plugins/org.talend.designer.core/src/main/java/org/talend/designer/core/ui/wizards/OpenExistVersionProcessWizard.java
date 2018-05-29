@@ -257,29 +257,6 @@ public class OpenExistVersionProcessWizard extends Wizard {
             getProperty().setVersion(mainPage.getNewVersion());
         }
         
-        List<ProcessItem> testcaseList = new ArrayList<ProcessItem>();
-        if(GlobalServiceRegister.getDefault().isServiceRegistered(ITestContainerProviderService.class)) {
-        	ITestContainerProviderService testContainer = (ITestContainerProviderService) GlobalServiceRegister.getDefault().getService(ITestContainerProviderService.class);
-        	List<ProcessItem> allTestCase = testContainer.getAllTestContainers((ProcessItem) processObject.getProperty().getItem());
-        	Map<String,List<ProcessItem>> testcaseMap = new HashMap<String, List<ProcessItem>>();
-    		for (ProcessItem testCaseItem : allTestCase) {
-    			String testId = testCaseItem.getProperty().getId();
-    			if(testcaseMap.get(testId)==null) {
-    				testcaseMap.put(testId, new ArrayList<ProcessItem>());
-    			}
-    			testcaseMap.get(testId).add(testCaseItem);
-    		}
-    		for (String id : testcaseMap.keySet()) {
-    			ProcessItem maxVersionTest = Collections.max(testcaseMap.get(id), new Comparator<ProcessItem>() {
-    				
-    				public int compare(ProcessItem o1, ProcessItem o2) {
-    					return VersionUtils.compareTo(o1.getProperty().getVersion(), o2.getProperty().getVersion());
-    				}
-    			});
-    			testcaseList.add(maxVersionTest);
-    		}
-        }
-        
         IProxyRepositoryFactory repositoryFactory = CorePlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
         try {
             repositoryFactory.save(getProperty(), this.originaleObjectLabel, this.originalVersion);
