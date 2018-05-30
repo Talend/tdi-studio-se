@@ -427,8 +427,10 @@
 				    if (conns.size()>0 && firstConnName != null && firstConnName.length()>0) {
 						if(hasDynamic){
 							rowUtil.prepareValueToConnWithD(node, metadata, "org.talend.fileprocess.FileInputDelimited", "fid_"+cid, firstConnName, "dynamic_"+cid, schemaOptNum);
+							if(Integer.parseInt(header)>0){
 							%>
 							boolean isFirstCheckDyn_<%=cid %> = true;
+							<%}%>
 							routines.system.Dynamic dynamic_<%=cid %> = new routines.system.Dynamic();
 						<%
 						}else{
@@ -1006,8 +1008,10 @@
 				    if (conns.size()>0 && firstConnName != null && firstConnName.length()>0) {
 						if(hasDynamic){
 							rowUtil.prepareValueToConnWithD(node, metadata, "String[]", "row"+cid, firstConnName, "dynamic_"+cid, schemaOptNum);
+							if(Integer.parseInt(header)>0){
 							%>
 							boolean isFirstCheckDyn_<%=cid %> = true;
+							<%}%>
 							routines.system.Dynamic dynamic_<%=cid %> = new routines.system.Dynamic();
 						<%
 						}else{
