@@ -208,6 +208,14 @@
           SHOW="false">
        		<DEFAULT>100</DEFAULT>
    		</PARAMETER>
+   		<PARAMETER
+		  NAME="SKIP_FIRST_DYNAMIC_ROW"
+		  FIELD="CHECK"
+		  NUM_ROW="101"
+		  SHOW="false"
+		  >
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>

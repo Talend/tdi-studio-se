@@ -370,6 +370,7 @@
 		    	if(("").equals(header)){
 		    		header="0";
 		    	}
+		    	boolean skipFirstDynamicRow = ("true").equals(ElementParameterParser.getValue(node,"__SKIP_FIRST_DYNAMIC_ROW__"));
 		    	String limit = ElementParameterParser.getValue(node, "__LIMIT__");
 				if(("").equals(limit)){
 					limit = "-1";
@@ -427,8 +428,10 @@
 				    if (conns.size()>0 && firstConnName != null && firstConnName.length()>0) {
 						if(hasDynamic){
 							rowUtil.prepareValueToConnWithD(node, metadata, "org.talend.fileprocess.FileInputDelimited", "fid_"+cid, firstConnName, "dynamic_"+cid, schemaOptNum);
+							if(skipFirstDynamicRow || Integer.parseInt(header)>0){
 							%>
 							boolean isFirstCheckDyn_<%=cid %> = true;
+							<%}%>
 							routines.system.Dynamic dynamic_<%=cid %> = new routines.system.Dynamic();
 						<%
 						}else{
@@ -940,6 +943,7 @@
 		        String filename = ElementParameterParser.getValueWithUIFieldKey(node,"__FILENAME__", "FILENAME");
 		    	String encoding = ElementParameterParser.getValue(node,"__ENCODING__");
 		    	String header = ElementParameterParser.getValue(node, "__HEADER__");
+		    	boolean skipFirstDynamicRow = ("true").equals(ElementParameterParser.getValue(node,"__SKIP_FIRST_DYNAMIC_ROW__"));
 		    	String footer = ElementParameterParser.getValue(node, "__FOOTER__");
 		    	String limit = ElementParameterParser.getValue(node, "__LIMIT__");
 		    	if(("").equals(limit)){
@@ -1006,8 +1010,10 @@
 				    if (conns.size()>0 && firstConnName != null && firstConnName.length()>0) {
 						if(hasDynamic){
 							rowUtil.prepareValueToConnWithD(node, metadata, "String[]", "row"+cid, firstConnName, "dynamic_"+cid, schemaOptNum);
+							if(skipFirstDynamicRow || Integer.parseInt(header)>0){
 							%>
 							boolean isFirstCheckDyn_<%=cid %> = true;
+							<%}%>
 							routines.system.Dynamic dynamic_<%=cid %> = new routines.system.Dynamic();
 						<%
 						}else{
