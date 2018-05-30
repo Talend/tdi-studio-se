@@ -10,6 +10,11 @@
    <version>2.4.1-talend</version>
    <name>json-lib</name>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<talend.nexus.url>https://artifacts-oss.talend.com</talend.nexus.url>
+	</properties>
+
    <url>http://json-lib.sourceforge.net</url>
 
    <description>
