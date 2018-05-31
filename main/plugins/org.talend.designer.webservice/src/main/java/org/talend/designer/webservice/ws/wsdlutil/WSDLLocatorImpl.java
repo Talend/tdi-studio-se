@@ -70,21 +70,16 @@ public class WSDLLocatorImpl implements WSDLLocator {
     }
 
     public static URL getURL(String parentLocation, String wsdlLocation) throws MalformedURLException {
-        URL contextURL = (parentLocation != null) ? getURL((String) null, parentLocation) : null;
-        return getURL(contextURL, wsdlLocation);
-    }
-
-    private static URL getURL(URL contextURL, String spec) throws MalformedURLException {
+        URL contextURL = (parentLocation != null) ? getURL(null, parentLocation) : null;
         try {
-            return new URL(contextURL, spec);
+            return new URL(contextURL, wsdlLocation);
         } catch (MalformedURLException e) {
-            File tempFile = new File(spec);
+            File tempFile = new File(wsdlLocation);
             if (contextURL == null || (contextURL != null && tempFile.isAbsolute())) {
                 return tempFile.toURI().toURL();
             }
-
-            // only reach here if the contextURL !null, spec is relative path and
-            // MalformedURLException thrown
+            // this line is reached if contextURL != null, wsdlLocation is a relative path,
+            // and a MalformedURLException has been thrown - so re-throw the Exception.
             throw e;
         }
     }
