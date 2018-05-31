@@ -4,17 +4,17 @@
 package org.talend.designer.webservice.ws.wsdlutil;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.wsdl.Definition;
+import javax.wsdl.Import;
 import javax.wsdl.WSDLException;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
-
-import com.ibm.wsdl.ImportImpl;
 
 /**
  * This helper allow easy discovery of services and types
@@ -61,45 +61,47 @@ public class ServiceDiscoveryHelper {
         } else {
             definition = newWSDLReader.readWSDL(configuration.createWSDLLocator(wsdlUri));
         }
-        definitions = findWsdlImport(definition, null, null, null);
+        List<Definition> defs = new LinkedList<Definition>();
+        defs.add(definition);
+        List<String> importKeys = new LinkedList<String>();
+        String parentLoc = absoluteLocation(null, wsdlUri);
+        importKeys.add(definition.getTargetNamespace() + " " + parentLoc);
+        definitions = findWsdlImport(definition, parentLoc, defs, importKeys);
     }
 
-    private List<Definition> findWsdlImport(Definition definition, List<Definition> definitions, List<String> locationURIs,
-            List<String> importNSs) {
-        if (definitions == null) {
-            definitions = new ArrayList<Definition>();
-            definitions.add(definition);
-        }
-
-        if (locationURIs == null) {
-            locationURIs = new ArrayList<String>();
-        }
-        if (importNSs == null) {
-            importNSs = new ArrayList<String>();
-        }
-
+    private List<Definition> findWsdlImport(Definition definition, String parentLocation,
+            List<Definition> definitions, List<String> importKeys) {
         if (definition.getImports() != null && !definition.getImports().isEmpty()) {
 
-            Map imports = definition.getImports();
-            for (Object key : imports.keySet()) {
+            Map<?, ?> imports = definition.getImports();
+            List<Import> importsToRemove = new LinkedList<Import>();
+            for (Map.Entry<?, ?> entry : imports.entrySet()) {
 
-                Vector importsImpl = (Vector) imports.get(key);
-                for (int i = 0; i < importsImpl.size(); i++) {
-
-                    ImportImpl importImpl = (ImportImpl) importsImpl.get(i);
-                    if (!locationURIs.contains(importImpl.getLocationURI()) || !importNSs.contains(importImpl.getNamespaceURI())) {
-                        locationURIs.add(importImpl.getLocationURI());
-                        importNSs.add(importImpl.getNamespaceURI());
+                String namespace = (String) entry.getKey();
+                Vector<?> importsVector = (Vector<?>) entry.getValue();
+                for (Object importObj : importsVector) {
+                    Import importDecl = (Import) importObj;
+                    String importLoc = absoluteLocation(parentLocation, importDecl.getLocationURI());
+                    String importKey = namespace + " " + importLoc;
+                    if (importKeys.contains(importKey)) {
+                        importsToRemove.add(importDecl);
+                    } else {
+                        importKeys.add(importKey);
 
                         String importWsdlFileName = "importWsdl" + definitions.size() + ".wsdl";
-                        importImpl.setLocationURI(importWsdlFileName);
-                        Definition importDef = importImpl.getDefinition();
+                        Definition importDef = importDecl.getDefinition();
 
                         if (importDef != null) {
                             definitions.add(importDef);
-                            findWsdlImport(importDef, definitions, locationURIs, importNSs);
+                            findWsdlImport(importDef, importLoc, definitions, importKeys);
                         }
+                        importDecl.setLocationURI(importWsdlFileName);
                     }
+                }
+            }
+            if (!importsToRemove.isEmpty()) {
+                for (Import importToRemove : importsToRemove) {
+                    definition.removeImport(importToRemove);
                 }
             }
         }
@@ -117,4 +119,11 @@ public class ServiceDiscoveryHelper {
         return definitions;
     }
 
+    private static String absoluteLocation(String parentLocation, String wsdlLocation) {
+        try {
+            return WSDLLocatorImpl.getURL(parentLocation, wsdlLocation).toExternalForm();
+        } catch (MalformedURLException e) {
+            return "NOLOCATION";
+        }
+    }
 }
