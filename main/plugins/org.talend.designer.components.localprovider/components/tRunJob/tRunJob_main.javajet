@@ -15,6 +15,7 @@ imports="
   org.talend.core.model.process.IContextParameter
   org.talend.core.model.process.IConnectionCategory
   org.talend.core.model.process.BlockCode
+  org.talend.core.model.process.ProcessUtils
   java.util.Map
   java.util.List
   java.util.Set
@@ -384,6 +385,13 @@ String inputConnName = null;
 	if (!useIndependentProcess){//AAAAAAAAAAAA
 	%>
 		<%=childJob %> childJob_<%=cid %> = new <%=childJob %>();
+        <%
+            if (ProcessUtils.isEsbJob(process, version)) {
+        %>
+        childJob_<%=cid %>.setEndpointRegistry(registry);
+        <%
+            }
+        %>
 	    // pass DataSources
 	    java.util.Map<String, routines.system.TalendDataSource> talendDataSources_<%=cid%> = (java.util.Map<String, routines.system.TalendDataSource>) globalMap
 	            .get(KEY_DB_DATASOURCES);
