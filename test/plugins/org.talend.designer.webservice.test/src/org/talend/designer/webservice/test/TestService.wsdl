@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="TestService"
+		xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+		xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:tns="http://www.talend.org/service/"
+		targetNamespace="http://www.talend.org/service/">
+
+    <wsdl:import namespace="http://www.talend.org/service/binding/" location="TestServiceBinding.wsdl" />
+
+    <wsdl:types>
+		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+			targetNamespace="http://www.talend.org/service/">
+			<xsd:element name="TestServiceOperationRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="in" type="xsd:string"></xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="TestServiceOperationResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="out" type="xsd:string"></xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+
+	<wsdl:message name="TestServiceOperationRequest">
+		<wsdl:part name="parameters" element="tns:TestServiceOperationRequest"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="TestServiceOperationResponse">
+		<wsdl:part name="parameters" element="tns:TestServiceOperationResponse"></wsdl:part>
+	</wsdl:message>
+
+	<wsdl:portType name="TestServicePortType">
+		<wsdl:operation name="TestServiceOperation">
+			<wsdl:input message="tns:TestServiceOperationRequest"></wsdl:input>
+			<wsdl:output message="tns:TestServiceOperationResponse"></wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:service name="TestService">
+		<wsdl:port name="TestServicePort" binding="tns:TestServiceBinding">
+			<soap:address location="http://localhost:8090/services/TestService" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

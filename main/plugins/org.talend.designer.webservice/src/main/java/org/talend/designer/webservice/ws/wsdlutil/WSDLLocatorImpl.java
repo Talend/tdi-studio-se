@@ -42,7 +42,7 @@ public class WSDLLocatorImpl implements WSDLLocator {
     }
 
     public InputSource getBaseInputSource() {
-        GetMethod get = createGedMethod(wsdlUri);
+        GetMethod get = createGetMethod(wsdlUri);
         try {
             httpClient.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
@@ -55,11 +55,9 @@ public class WSDLLocatorImpl implements WSDLLocator {
 
     public InputSource getImportInputSource(String parentLocation, String importLocation) {
         try {
-            String contextURI = parentLocation;
-            URL contextURL = (contextURI != null) ? getURL(null, contextURI) : null;
-            URL url = getURL(contextURL, importLocation);
+            URL url = getURL(parentLocation, importLocation);
             latestImportUri = url.toExternalForm();
-            GetMethod get = createGedMethod(latestImportUri);
+            GetMethod get = createGetMethod(latestImportUri);
             httpClient.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
             inputStreams.add(is);
@@ -69,6 +67,11 @@ public class WSDLLocatorImpl implements WSDLLocator {
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    public static URL getURL(String parentLocation, String wsdlLocation) throws MalformedURLException {
+        URL contextURL = (parentLocation != null) ? getURL((String) null, parentLocation) : null;
+        return getURL(contextURL, wsdlLocation);
     }
 
     private static URL getURL(URL contextURL, String spec) throws MalformedURLException {
@@ -105,7 +108,7 @@ public class WSDLLocatorImpl implements WSDLLocator {
         inputStreams.clear();
     }
 
-    private GetMethod createGedMethod(String uri) {
+    private GetMethod createGetMethod(String uri) {
         GetMethod get = new GetMethod(uri);
         if (configuration.getCookie() != null) {
             get.setRequestHeader(HTTP_HEADER_COOKIE, configuration.getCookie());
