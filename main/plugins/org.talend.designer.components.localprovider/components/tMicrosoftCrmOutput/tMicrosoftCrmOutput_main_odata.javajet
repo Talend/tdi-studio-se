@@ -50,6 +50,10 @@
                           if("Guid".equals(column.getType())){
                                 columnValue = "(("+columnValue+" == null) ? null : java.util.UUID.fromString("+columnValue+"))";
                           }
+
+			  if("String".equals(column.getType()) && "id_byte[]".equals(column.getTalendType())){
+			  	columnValue = "java.util.Base64.getEncoder().encodeToString("+columnValue+")";
+			  }
 	                           %>
                            		client_<%=cid%>.addEntityProperty(entity_<%=cid%>, "<%=column.getLabel()%>", org.apache.olingo.commons.api.edm.EdmPrimitiveTypeKind.<%=column.getType()%>, 	<%=columnValue%>);
 	                           <%
