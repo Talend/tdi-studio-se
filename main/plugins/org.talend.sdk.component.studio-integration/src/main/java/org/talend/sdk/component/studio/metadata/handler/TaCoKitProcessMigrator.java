@@ -1,32 +1,25 @@
 package org.talend.sdk.component.studio.metadata.handler;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EList;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
-import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
-import org.talend.designer.core.model.utils.emf.talendfile.impl.ProcessTypeImpl;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler;
-import org.talend.repository.items.importexport.handlers.imports.ImportCacheHelper;
 import org.talend.repository.items.importexport.handlers.model.ImportItem;
 import org.talend.repository.items.importexport.manager.ResourcesManager;
-import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
-import org.talend.sdk.studio.process.TaCoKitNode;
+import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 
 public class TaCoKitProcessMigrator implements IImportResourcesHandler {
     
-    private final V1Component client = Lookups.client().v1().component(); 
+    private final TaCoKitMigrationManager manager = Lookups.taCoKitCache().getMigrationManager();
 
     @Override
     public void prePopulate(IProgressMonitor monitor, ResourcesManager resManager) {
@@ -51,9 +44,10 @@ public class TaCoKitProcessMigrator implements IImportResourcesHandler {
         }
         for (final ImportItem importItem : importedItemRecords) {
             try {
-                getItem(importItem).ifPresent(processItem -> {
-                    migrateItem(processItem);
-                });
+                Optional<ProcessItem> processItem = getItem(importItem);
+                if (processItem.isPresent()) {
+                    manager.checkProcessItemMigration(processItem.get(), monitor);
+                }
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -82,49 +76,6 @@ public class TaCoKitProcessMigrator implements IImportResourcesHandler {
             }
         }
         return Optional.empty();
-    }
-    
-    private void migrateItem(final ProcessItem item) {
-        final ProcessTypeImpl processType = (ProcessTypeImpl) item.getProcess();
-        migrateProcess(processType);
-        save(item);
-    }
-    
-    private void migrateProcess(final ProcessTypeImpl process) {
-        migrateNodes(process.getNode());
-    }
-    
-    @SuppressWarnings("rawtypes")
-    private void migrateNodes(final EList nodes) {
-        for (final Object elem : nodes) {
-            NodeTypeImpl node = (NodeTypeImpl) elem;
-            if (TaCoKitNode.isTacokit(node)) {
-                final TaCoKitNode tacokitNode = new TaCoKitNode(node);
-                if (tacokitNode.needsMigration()) {
-                    migrateNode(tacokitNode);
-                }
-            }
-        }
-    }
-    
-    private void migrateNode(final TaCoKitNode node) {
-        final Map<String, String> migratedProperties = client.migrate(node.getId(), node.getPersistedVersion(),
-                node.getProperties());
-        node.migrate(migratedProperties);
-    }
-    
-    private void save(final Item item) {
-        final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
-        try {
-            factory.save(item);
-        } catch (PersistenceException e) {
-            logError(e);
-        }
-    }
-    
-    protected void logError(Exception e) {
-        ImportCacheHelper.getInstance().setImportingError(true);
-        ExceptionHandler.process(e);
     }
 
 }
