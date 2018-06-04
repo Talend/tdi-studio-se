@@ -10,10 +10,8 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.properties.Item;
-import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
-import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.items.importexport.handlers.imports.MetadataConnectionImportHandler;
@@ -74,8 +72,6 @@ public class TaCoKitImportHandler extends MetadataConnectionImportHandler {
                         importItem.setProperty(connectionItem.getProperty());
                         final IProxyRepositoryFactory factory = ProxyRepositoryFactory.getInstance();
                         factory.save(connectionItem);
-                        final String version = RelationshipItemBuilder.LATEST_VERSION;
-                        RepositoryUpdateManager.updateDBConnection(connectionItem, version, false, false);
                     } catch (Exception e) {
                         logError(e);
                     }
