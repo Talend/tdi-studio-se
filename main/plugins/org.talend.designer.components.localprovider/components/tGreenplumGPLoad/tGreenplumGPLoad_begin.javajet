@@ -513,11 +513,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	if (gploadExePathGiven) {
 		gpLoadPathForCMD = gploadExePath;
 	} else {
-		if (operatingSystem.equals("WINDOWS")){
-			gpLoadPathForCMD = "gpload.py";
-		} else {
-			gpLoadPathForCMD = "gpload";
-		}
+		gpLoadPathForCMD = "gpload.py";
 	}
 %>
 
@@ -526,34 +522,14 @@ skeleton="../templates/db_output_bulk.skeleton"
 		public void run() {
 			try {
 				String[] cmds = new String[] {
-					<%
-					if (operatingSystem.equals("WINDOWS")){
-						%>
 						"python", "<%=gpLoadPathForCMD.replaceAll("\"","")%>"
-						<%
-					} else {
-						%>
-						"<%=gpLoadPathForCMD.replaceAll("\"","")%>"
-						<%
-					}
+				<%
 					for (int i=0; i < parametersList.size(); i++) {
 						%>,<%=parametersList.get(i)%><%
 					}
-				%>};
+				%>
+				};
 				final Process ps = Runtime.getRuntime().exec(cmds);
-
-				//FOR DEBUG
-				java.io.BufferedReader output = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
-				java.io.BufferedReader error = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
-				String lg = "";
-				while ((lg = output.readLine()) != null) {
-					System.out.println(lg);
-				}
-				while ((lg = error.readLine()) != null) {
-					System.out.println(lg);
-				}
-				ps.waitFor();
-
 				
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
 				String line = "";
