@@ -372,6 +372,11 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                             }
                             return;
                         }
+                        MessageDialog.openInformation(getShell(), "Information", Messages.getString("Processor.memoryRun,jvmInfo",
+                                currentJvm.getMainClass(), currentJvm.getPid()));
+                        processContext.setTracPause(false);
+                        processContext.setMemoryRunning(false);
+
                         initMonitoringModel();
                         refreshMonitorComposite();
                         processContext.setMonitoring(true);
@@ -525,20 +530,18 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 				}
 	    	} 
 		} else {
-    		String jobClassName = JavaResourcesHelper.getJobClassName(processContext.getProcess());
-    		List<IActiveJvm> activateJvms = jvmModel.getHost(IHost.LOCALHOST).getActiveJvms();
-    		for (IActiveJvm jvm : activateJvms) {
-    			String activeJvmClassName = jvm.getMainClass();
-    			System.out.println("target:[" + jobClassName+ "],loop item["+ activeJvmClassName +"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    			if (activeJvmClassName != null) {
-    				activeJvmClassName = activeJvmClassName.trim();
-				}
-    			if (activeJvmClassName.equals(jobClassName)) {
-    				currentJvm = jvm;
-    				isJvmFound = true;
-    				break;
-    			}
-    		}
+            String jobClassName = JavaResourcesHelper.getJobClassName(processContext.getProcess());
+            IActiveJvm activeJvm = null;
+            try {
+                activeJvm = JvmModel.getInstance().getActiveJvmByMainClass(jobClassName, IHost.LOCALHOST);
+            } catch (JvmCoreException e) {
+                ExceptionHandler.process(e);
+            }
+            if (activeJvm != null) {
+                currentJvm = activeJvm;
+                isJvmFound = true;
+            }
+
     	}
         return isJvmFound;
     }
@@ -817,6 +820,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         }
         
         processContext.setSelectedContext(processManager.getSelectContext());
+        processContext.setMemoryRunning(true);
         processContext.exec(processManager.getProcessShell());
 
         ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
