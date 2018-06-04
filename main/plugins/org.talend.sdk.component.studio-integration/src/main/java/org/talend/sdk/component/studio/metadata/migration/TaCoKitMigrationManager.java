@@ -98,11 +98,11 @@ public class TaCoKitMigrationManager {
     }
     
     private void checkJobsMigration(final IProgressMonitor monitor) throws UserCancelledException {
-        monitor.subTask("TODO add migration message"); // TODO
+        monitor.subTask(Messages.getString("migration.check.process.checking")); //$NON-NLS-1$
         final ProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
         for (final Project project : getAllProjects()) {
             checkMonitor(monitor);
-            monitor.subTask("TODO add migration message");
+            monitor.subTask(Messages.getString("migration.check.process.project", project.getLabel()));
             try {
                 List<IRepositoryViewObject> processeViewObjects = repositoryFactory.getAll(project, ERepositoryObjectType.PROCESS, true, true);
                 for (final IRepositoryViewObject processViewObject : processeViewObjects) {
@@ -123,7 +123,13 @@ public class TaCoKitMigrationManager {
             monitor = new NullProgressMonitor();
         }
         checkMonitor(monitor);
-        monitor.subTask("TODO add migration message");
+        String label = "";
+        try {
+            label = processItem.getProperty().getLabel();
+        } catch (Exception e) {
+            // ignore exception as it happens only during label retrieval and is not critical
+        }
+        monitor.subTask(Messages.getString("migration.check.process.item", label));
         final ProcessTypeImpl processType = (ProcessTypeImpl) processItem.getProcess();
         final boolean migrated = migrateProcess(processType);
         if (migrated) {
