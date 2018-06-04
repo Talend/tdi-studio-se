@@ -152,6 +152,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                 String directory = dial.open();
                 if (StringUtils.isNotEmpty(directory)) {
                     generatePath = Path.fromOSString(directory).toPortableString();
+                    generatePath += "/"; //$NON-NLS-1$
                 } else {
                     MessageDialog.openError(getShell(), "Error", //$NON-NLS-1$
                             Messages.getString("AuditProjectSettingPage.selectAuditReportFolder")); //$NON-NLS-1$

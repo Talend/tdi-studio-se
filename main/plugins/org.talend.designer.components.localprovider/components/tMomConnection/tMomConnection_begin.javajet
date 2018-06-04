@@ -149,6 +149,9 @@ class="MomConnection"
 		String channel=ElementParameterParser.getValue(node, "__CHANNEL__");
 		String qm=ElementParameterParser.getValue(node, "__QM__");
 		boolean needSSLCipher = ("true").equals(ElementParameterParser.getValue(node,"__SET_MQ_SSL_CIPHER__"));
+		boolean useIBMCipherMappings = ("true").equals(ElementParameterParser.getValue(node,"__USE_IBM_MAPPING__"));
+		boolean useCustomCipherSuite = ("true").equals(ElementParameterParser.getValue(node,"__CUSTOM_CIPHER__"));
+		String customCipherSuite = ElementParameterParser.getValue(node, "__CUSTOM_CIPHER_SUITE__");
 		String sslCipher = ElementParameterParser.getValue(node, "__MQ_SSL_CIPHER__");
 		%>
 		System.setProperty("com.ibm.mq.cfg.MessageProperties.PropctlToFORCE_RFH2","Yes");
@@ -160,9 +163,16 @@ class="MomConnection"
 		properties<%=cid%>.put("transport","MQSeries");
 		<%
 		if(needSSLCipher){
-		%>
-			com.ibm.mq.MQEnvironment.sslCipherSuite = "<%=sslCipher%>";
-		<%
+		    if(useCustomCipherSuite){
+		    %>
+		        System.setProperty("com.ibm.mq.cfg.useIBMCipherMappings","<%=useIBMCipherMappings%>");
+		        com.ibm.mq.MQEnvironment.sslCipherSuite = <%=customCipherSuite%>;
+		    <%
+		    }else{
+		    %>
+		        com.ibm.mq.MQEnvironment.sslCipherSuite = "<%=sslCipher%>";
+		    <%
+		    }
 		}
 		if(!(dbuser == null) && !("\"\"").equals(dbuser) && !("").equals(dbuser)) {
 		%>

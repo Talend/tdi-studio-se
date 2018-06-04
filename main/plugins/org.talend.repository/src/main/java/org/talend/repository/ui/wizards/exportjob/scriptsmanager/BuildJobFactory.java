@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.runtime.process.IBuildJobHandler;
 import org.talend.core.runtime.process.TalendProcessArgumentConstant;
@@ -26,7 +27,6 @@ import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
-import org.talend.repository.ui.wizards.exportjob.handler.BuildOSGiBundleHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
 
 /**
@@ -53,7 +53,7 @@ public class BuildJobFactory {
      * @param jobExportType
      * @return
      */
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap, JobExportType jobExportType) {
 
         if (jobExportType != null) {
@@ -80,14 +80,14 @@ public class BuildJobFactory {
         }
 
         IBuildJobHandler buildJobHandler = createBuildJobHandler(processItem, contextName, version, exportChoiceMap, buildType);
-        if (buildJobHandler == null) {
+        if (buildJobHandler == null && processItem instanceof ProcessItem) {
             // default
-            buildJobHandler = new BuildJobHandler(processItem, version, contextName, exportChoiceMap);
+            buildJobHandler = new BuildJobHandler((ProcessItem)processItem, version, contextName, exportChoiceMap);
         }
         return buildJobHandler;
     }
 
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap, String buildType) {
 
         // if null, will try to find the type from item for build type.
@@ -120,7 +120,7 @@ public class BuildJobFactory {
         return null;
     }
 
-    public static IBuildJobHandler createBuildJobHandler(ProcessItem processItem, String contextName, String version,
+    public static IBuildJobHandler createBuildJobHandler(Item processItem, String contextName, String version,
             Map<ExportChoice, Object> exportChoiceMap) {
         // according to the export type from additional properties setting.
         return createBuildJobHandler(processItem, contextName, version, exportChoiceMap, (String) null);

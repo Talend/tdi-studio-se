@@ -313,7 +313,10 @@ public class TalendWizardProjectsImportPage extends WizardProjectsImportPage {
                 if (oldToNewSource.containsKey(sourcePath)) {
                     finalSource = oldToNewSource.get(sourcePath);
                 } else {
-                    finalSource = items2Projects(sourcePath);
+                    Button copyCheckbox = getCopyCheckbox();
+                    if (copyCheckbox != null && copyCheckbox.getSelection()) {
+                        finalSource = items2Projects(sourcePath);
+                    }
                     oldToNewSource.put(sourcePath, finalSource);
                 }
                 this.sourcePath = finalSource;

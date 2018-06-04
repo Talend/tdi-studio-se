@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
+   <Address>http://localhost:0/te stToString</Address>
+   <Metadata
+      xmlns:wsa-wsdl="http://www.w3.org/2006/01/wsdl-instance"
+      wsa-wsdl:wsdlLocation="file:///b.wsdl">
+      <ns3:ServiceName
+         xmlns:tns="http://com.iona.cxf/GreetMe"
+         xmlns:ns3="http://www.w3.org/2005/02/addressing/wsdl"
+         EndpointName="GreetMePort">
+         tns:GreetMeService
+      </ns3:ServiceName>
+      <ns3:InterfaceName
+         xmlns:tns="http://com.iona.cxf/GreetMe"
+         xmlns:ns3="http://www.w3.org/2005/02/addressing/wsdl">
+         tns:GreetMePortType
+      </ns3:InterfaceName>
+   </Metadata>
+</EndpointReference>

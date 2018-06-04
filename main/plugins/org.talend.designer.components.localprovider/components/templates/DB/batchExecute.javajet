@@ -10,26 +10,26 @@ try {
     for(int countEach_<%=cid%>: status_<%=cid%>) {
         countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
     }
-}catch (java.sql.BatchUpdateException e){
+}catch (java.sql.BatchUpdateException e_<%=cid%>){
     <%if(("true").equals(dieOnError)) {
     %>
-        throw(e);
+        throw(e_<%=cid%>);
     <%
     }else {
     %>
-    for(int countEach_<%=cid%>: e.getUpdateCounts()) {
+    for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
         countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
     }
-    <%dbLog.logPrintedException("e.getMessage()");%>
-    System.err.println(e.getMessage());
+    <%dbLog.logPrintedException("e_"+cid+".getMessage()");%>
+    System.err.println(e_<%=cid%>.getMessage());
     <%
     }%>
 }
 try {
     tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
-}catch (java.sql.SQLException e){
-    <%dbLog.logPrintedException("e.getMessage()");%>
-    System.err.println(e.getMessage());
+}catch (java.sql.SQLException e_<%=cid%>){
+    <%dbLog.logPrintedException("e_"+cid+".getMessage()");%>
+    System.err.println(e_<%=cid%>.getMessage());
 }
 tmp_batchUpdateCount_<%=cid%> = tmp_batchUpdateCount_<%=cid%> > countSum_<%=cid%> ? tmp_batchUpdateCount_<%=cid%> : countSum_<%=cid%>;
 <%if (("INSERT").equals(dataAction)) {

@@ -363,8 +363,13 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                         if (!acquireJVM()) {
                             isReadyToStart = false;
                             runtimeButton.setEnabled(true);
-                            MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
-                                    Messages.getString("ProcessView.connectToMonitorServerFailed")); //$NON-NLS-1$
+                            if (isRemoteRun) {
+                                MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
+                                        Messages.getString("ProcessView.connectToMonitorServerFailed")); //$NON-NLS-1$
+                            } else {
+                                MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
+                                        Messages.getString("ProcessView.noJobRunning")); //$NON-NLS-1$
+                            }
                             return;
                         }
                         initMonitoringModel();

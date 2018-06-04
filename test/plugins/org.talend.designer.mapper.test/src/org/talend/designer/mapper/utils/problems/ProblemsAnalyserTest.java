@@ -120,16 +120,16 @@ public class ProblemsAnalyserTest {
         property1.setLabel("test1");//$NON-NLS-1$
         Process process = new Process(property1);
         Node tMysqlInput_1 = new Node(tMysqlComponent, process);
-        IMetadataTable tMysqlInput_1_table = tMysqlInput_1.getMetadataTable("tMysqlInput_1");
+        IMetadataTable tMysqlInput_1_table = tMysqlInput_1.getMetadataTable("tDBInput_1");
         createMetadataColumns(tMysqlInput_1_table, 2);
         Node tMysqlInput_2 = new Node(tMysqlComponent, process);
-        IMetadataTable tMysqlInput_2_table = tMysqlInput_2.getMetadataTable("tMysqlInput_2");
+        IMetadataTable tMysqlInput_2_table = tMysqlInput_2.getMetadataTable("tDBInput_2");
         createMetadataColumns(tMysqlInput_2_table, 2);
         Node tMap_1 = new Node(tMapComponent, process);
         Connection row1 = new Connection(tMysqlInput_1, tMap_1, EConnectionType.FLOW_MAIN, EConnectionType.FLOW_MAIN.getName(),
-                "tMysqlInput_1", "row1", "row1", false);
+                "tDBInput_1", "row1", "row1", false);
         Connection row2 = new Connection(tMysqlInput_2, tMap_1, EConnectionType.FLOW_REF, EConnectionType.FLOW_MAIN.getName(),
-                "tMysqlInput_1", "row2", "row2", false);
+                "tDBInput_1", "row2", "row2", false);
         tMap_1.getExternalNode().initialize();
         MapperComponent mapperComponent = (MapperComponent) tMap_1.getExternalNode();
         ExternalMapperData externalData = (ExternalMapperData) mapperComponent.getExternalData();

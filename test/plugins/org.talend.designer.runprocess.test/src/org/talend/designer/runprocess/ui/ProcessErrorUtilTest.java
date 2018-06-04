@@ -51,12 +51,17 @@ public class ProcessErrorUtilTest {
                 ComponentCategory.CATEGORY_4_DI.getName());
         Node tOracleSP_1 = new Node(tOracleSPComponent, process);
         process.addNodeContainer(new NodeContainer(tOracleSP_1));
+        String key = tOracleSP_1.getUniqueName();
+        if (!tOracleSP_1.getUniqueName().startsWith(tOracleSPComponent.getName())
+                && tOracleSP_1.getUniqueName().startsWith("tDB")) {
+            key = tOracleSP_1.getUniqueName().replaceAll("DB", "Oracle");
+        }
 
         RunProcessContext context = new RunProcessContext(process);
         String errorMessage1 = "Exception in component tOracleSP_1 (ParentJob)\njava.sql.SQLException: ORA-20000: Failed to execute one or more sql statements";
         ProcessMessage message1 = new ProcessMessage(MsgType.STD_ERR, errorMessage1);
         HashMap<String, IProcessMessage> errorMessMap = ProcessErrorUtil.getAllErrorMess(message1, context);
-        Assert.assertEquals(errorMessMap.get(tOracleSP_1.getUniqueName()).getContent(), errorMessage1);
+        Assert.assertEquals(errorMessMap.get(key).getContent(), errorMessage1);
 
         String errorMessage2 = "Exception in component tOracleSP_1 (ChildJob)\njava.sql.SQLException: ORA-20000: Failed to execute one or more sql statements";
         ProcessMessage message2 = new ProcessMessage(MsgType.STD_ERR, errorMessage2);
