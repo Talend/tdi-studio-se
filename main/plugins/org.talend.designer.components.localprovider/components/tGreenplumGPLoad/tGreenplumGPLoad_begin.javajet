@@ -52,7 +52,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	//boolean hasAfterSQL = ElementParameterParser.getValue(node, "__HAS_AFTER_SQL__").equals("true");
 	//String afterSQL = ElementParameterParser.getValue(node, "__AFTER_SQL__");
 	String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
-	boolean useGPLoaderUtility = ElementParameterParser.getValue(node, "__USE_GPLOAD_UTILITY__").equals("true");
+	String operatingSystem = ElementParameterParser.getValue(node, "__OPERATING_SYSTEM__");
 	boolean gploadExePathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOAD_PATH__").equals("true");
 	String gploadExePath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
@@ -83,14 +83,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					hasOutputRow = true;
 		}
 	}
-
-		
-	if (!gploadExePathGiven) {
-		gploadExePath = "\"gpload\"";
-	}
-	if (useGPLoaderUtility) {
-		gploadExePath = "\"python /c start python gpload.py\"";
-	}
+	
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
 %>
@@ -515,18 +508,53 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 %>
 
+<%
+	String gpLoadPathForCMD = "";
+	if (gploadExePathGiven) {
+		gpLoadPathForCMD = gploadExePath;
+	} else {
+		if (operatingSystem.equals("WINDOWS")){
+			gpLoadPathForCMD = "gpload.py";
+		} else {
+			gpLoadPathForCMD = "gpload";
+		}
+	}
+%>
+
 	final StringBuilder gploadOutput_<%=cid%> = new StringBuilder(200);
 	Thread gploadThread_<%=cid%> = new Thread() {
 		public void run() {
 			try {
-				String[] envp = null;
-				String[] cmds = new String[] {<%=gploadExePath%><%
-						for (int i=0; i < parametersList.size(); i++) {
-							%>,<%=parametersList.get(i)%><%
-						}
-						%>};
-				Runtime rt = Runtime.getRuntime();
-				final Process ps = rt.exec(cmds, envp);
+				String[] cmds = new String[] {
+					<%
+					if (operatingSystem.equals("WINDOWS")){
+						%>
+						"python", "<%=gpLoadPathForCMD.replaceAll("\"","")%>"
+						<%
+					} else {
+						%>
+						"<%=gpLoadPathForCMD.replaceAll("\"","")%>"
+						<%
+					}
+					for (int i=0; i < parametersList.size(); i++) {
+						%>,<%=parametersList.get(i)%><%
+					}
+				%>};
+				final Process ps = Runtime.getRuntime().exec(cmds);
+
+				//FOR DEBUG
+				java.io.BufferedReader output = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
+				java.io.BufferedReader error = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getErrorStream()));
+				String lg = "";
+				while ((lg = output.readLine()) != null) {
+					System.out.println(lg);
+				}
+				while ((lg = error.readLine()) != null) {
+					System.out.println(lg);
+				}
+				ps.waitFor();
+
+				
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
 				String line = "";
 				while ((line = reader.readLine()) != null) {
