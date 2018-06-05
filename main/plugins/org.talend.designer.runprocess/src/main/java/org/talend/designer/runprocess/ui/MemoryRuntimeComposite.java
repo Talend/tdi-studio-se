@@ -372,7 +372,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                                 @Override
                                 public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
                                     final IProgressMonitor progressMonitor = new EventLoopProgressMonitor(monitor);
-                                    progressMonitor.beginTask(Messages.getString("Processor.memoryRun,searchJvmInfo"), 1);
+                                    progressMonitor.beginTask(Messages.getString("Processor.memoryRun.searchJvmInfo"), 1);
                                     if (!acquireJVM()) {
                                         isReadyToStart = false;
                                         runtimeButton.setEnabled(true);
@@ -385,7 +385,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                                         }
                                         return;
                                     }
-                                    progressMonitor.subTask(Messages.getString("Processor.memoryRun,jvmInfo"));
+                                    progressMonitor.subTask(Messages.getString("Processor.memoryRun.jvmInfo"));
                                     processContext.setTracPause(false);
                                     processContext.setMemoryRunning(false);
 
