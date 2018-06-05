@@ -1140,12 +1140,18 @@ public class CLASS {
             return setStmt.toString();
         }
 
-        protected String generateSetBooleanForNullableKeyStmt(String dynCol,Column column, int index, String incomingConnName, String cid,
+        protected String generateSetBooleanForNullableKeyStmt(String dynCol, Column column, int index, String incomingConnName, String cid,
                 int actionType) {
-            String dynamicIndex=""+index;
-            if(dynCol!=null){
-                dynamicIndex = incomingConnName+"."+dynCol+".getColumnCount()+"+index;
-            }
+            return generateSetBooleanForNullableKeyStmt(column, (incomingConnName+"."+dynCol+".getColumnCount()+"+index), incomingConnName, cid, actionType);
+        }
+
+        protected String generateSetBooleanForNullableKeyStmt(Column column, int index, String incomingConnName, String cid,
+                int actionType, String dynamic) {
+            return generateSetBooleanForNullableKeyStmt(column, (index + dynamic + cid), incomingConnName, cid, actionType);
+        }
+
+        protected String generateSetBooleanForNullableKeyStmt(Column column, String index, String incomingConnName, String cid,
+                int actionType) {
             String prefix = null;
             if (actionType == NORMAL_TYPE) {
                 prefix = "pstmt_";
@@ -1156,7 +1162,7 @@ public class CLASS {
             }
             StringBuilder setStmt = new StringBuilder();
             //TODO generate setXXXX code according to each db .
-            setStmt.append(prefix + cid + ".setInt(" + dynamicIndex + ",  ((" + incomingConnName + "." + column.getName() + "==null)?1:0));\r\n");
+            setStmt.append(prefix + cid + ".setInt(" + index + ",  ((" + incomingConnName + "." + column.getName() + "==null)?1:0));\r\n");
             return setStmt.toString();
         } 
         
@@ -1165,7 +1171,7 @@ public class CLASS {
         //need all db to implement.
         protected String generateSetBooleanForNullableKeyStmt(Column column, int index, String incomingConnName, String cid,
                 int actionType) {
-            return generateSetBooleanForNullableKeyStmt(null, column, index, incomingConnName, cid, actionType);
+            return generateSetBooleanForNullableKeyStmt(column, ""+index, incomingConnName, cid, actionType);
         }     
         
         public String getCopyFromCSVSQL(List<IMetadataColumn> columnList, 
@@ -1214,6 +1220,32 @@ public class CLASS {
             return false;
         }
         
+        protected String getInsertQueryForDynamicSchema(String connection, String tableName, String insertColumnNames, String insertValues) {
+            StringBuilder statementQuery = new StringBuilder();
+            String quote = "\"";
+            String dot = ".";
+            String plus = "+";
+            String comma = ",";
+            statementQuery.append("String insert_").append(cid).append(" = ").append(quote).append("INSERT INTO ").append(getLProtectedChar()).append(quote).append(plus).append(tableName).append(cid).append(plus).append(quote).append(getRProtectedChar()).append(" (").append(quote).append(plus)
+                .append("DynamicUtils.getInsertIntoStmtColumnsList(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(insertColumnNames).append(quote).append("))").append(plus)
+                .append(quote).append(") VALUES (").append(quote).append(plus)
+                .append("DynamicUtils.getInsertIntoStmtValuesList(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(insertValues).append(quote).append("))").append(plus)
+                .append(quote).append(")").append(quote);
+            return statementQuery.toString();
+        }
+
+        protected String getUpdateQueryForDynamicSchema(String connection, String tableName, String updateSetStmt, String updateWhereStmt, boolean supportNullWhere) {
+            StringBuilder statementQuery = new StringBuilder();
+            String quote = "\"";
+            String dot = ".";
+            String plus = "+";
+            String comma = ",";
+            statementQuery.append("String update_").append(cid).append(" = ").append(quote).append("UPDATE ").append(getLProtectedChar()).append(quote).append(plus).append(tableName).append(cid).append(plus).append(quote).append(getRProtectedChar()).append(" SET ").append(quote).append(plus)
+                .append("DynamicUtils.getUpdateSet(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(updateSetStmt).append(quote).append("))").append(plus)
+                .append(quote).append(" WHERE ").append(quote).append(plus)
+                .append("DynamicUtils.getUpdateWhere(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(updateWhereStmt).append(quote).append(")").append(comma).append(supportNullWhere).append(")");
+            return statementQuery.toString();
+        }
     }
     
     public class AS400Manager extends Manager {
