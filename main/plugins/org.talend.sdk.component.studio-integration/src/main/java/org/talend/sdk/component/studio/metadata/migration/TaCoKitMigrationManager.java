@@ -317,7 +317,7 @@ public class TaCoKitMigrationManager {
         migrationJob.join();
     }
 
-    private void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
+    public void updatedRelatedItems(final ConnectionItem item, final String version, final IProgressMonitor progressMonitor)
             throws Exception {
         IProgressMonitor monitor = progressMonitor;
         if (monitor == null) {

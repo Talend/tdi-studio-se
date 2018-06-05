@@ -11,31 +11,14 @@ import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.ProjectManager;
-import org.talend.repository.items.importexport.handlers.imports.IImportResourcesHandler;
 import org.talend.repository.items.importexport.handlers.model.ImportItem;
 import org.talend.repository.items.importexport.manager.ResourcesManager;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.metadata.migration.TaCoKitMigrationManager;
 
-public class TaCoKitProcessMigrator implements IImportResourcesHandler {
+public class TaCoKitProcessMigrator extends AbstractImportResourcesHandler {
     
     private final TaCoKitMigrationManager manager = Lookups.taCoKitCache().getMigrationManager();
-
-    @Override
-    public void prePopulate(IProgressMonitor monitor, ResourcesManager resManager) {
-        // no-op
-    }
-
-    @Override
-    public void postPopulate(IProgressMonitor monitor, ResourcesManager resManager, ImportItem[] populatedItemRecords) {
-        // no-op
-    }
-
-    @Override
-    public void preImport(IProgressMonitor monitor, ResourcesManager resManager, ImportItem[] checkedItemRecords,
-            ImportItem[] allImportItemRecords) {
-        // no-op
-    }
 
     @Override
     public void postImport(IProgressMonitor monitor, ResourcesManager resManager, ImportItem[] importedItemRecords) {
