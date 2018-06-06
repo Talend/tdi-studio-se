@@ -17,9 +17,11 @@ import java.util.List;
 
 import org.eclipse.gef.commands.Command;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.INode;
 import org.talend.core.service.IMRProcessService;
 import org.talend.designer.core.i18n.Messages;
+import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -90,8 +92,8 @@ public class ChangeActivateStatusSubjobCommand extends Command {
     private void refreshMRStatus() {
         Process process = (Process) node.getProcess();
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IMRProcessService.class)) {
-            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault().getService(
-                    IMRProcessService.class);
+            IMRProcessService mrService = (IMRProcessService) GlobalServiceRegister.getDefault()
+                    .getService(IMRProcessService.class);
             if (mrService != null) {
                 List<INode> mrNodeList = new ArrayList<INode>();
                 for (INode node : process.getGraphicalNodes()) {
@@ -109,6 +111,20 @@ public class ChangeActivateStatusSubjobCommand extends Command {
         Process process = (Process) node.getProcess();
         process.setActivateSubjob(node, value, oneComponent);
 
+        List<Node> nodeList = new ArrayList<Node>();
+        List<NodeContainer> nodeContainers = node.getNodeContainer().getSubjobContainer().getNodeContainers();
+        for (NodeContainer container : nodeContainers) {
+            nodeList.add(container.getNode());
+        }
+        for (Node nodeInSubjob : nodeList) {
+            for (IConnection connection : nodeInSubjob.getIncomingConnections()) {
+                INode source = connection.getSource();
+                if (!nodeList.contains(source)) {
+                    source.getOutgoingConnections().get(0).updateAllId();
+                }
+            }
+        }
+
         process.checkStartNodes();
         process.checkProcess();
         refreshPropertyView();
@@ -119,6 +135,20 @@ public class ChangeActivateStatusSubjobCommand extends Command {
     public void undo() {
         Process process = (Process) node.getProcess();
         process.setActivateSubjob(node, !value, oneComponent);
+
+        List<Node> nodeList = new ArrayList<Node>();
+        List<NodeContainer> nodeContainers = node.getNodeContainer().getSubjobContainer().getNodeContainers();
+        for (NodeContainer container : nodeContainers) {
+            nodeList.add(container.getNode());
+        }
+        for (Node nodeInSubjob : nodeList) {
+            for (IConnection connection : nodeInSubjob.getIncomingConnections()) {
+                INode source = connection.getSource();
+                if (!nodeList.contains(source)) {
+                    source.getOutgoingConnections().get(0).updateAllId();
+                }
+            }
+        }
 
         process.checkStartNodes();
         process.checkProcess();
