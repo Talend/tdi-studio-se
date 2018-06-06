@@ -224,6 +224,8 @@ public class TableEntriesManager {
         }
         TableItem tableItem = null;
         for (int i = 0; i < tableItems.length; i++) {
+            // call getText to trigger checkData for virtual table if needed
+            tableItems[i].getText();
             if (tableItems[i].getData() == dataMapTableEntry) {
                 tableItem = tableItems[i];
                 break;
