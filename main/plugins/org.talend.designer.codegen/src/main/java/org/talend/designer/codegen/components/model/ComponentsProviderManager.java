@@ -60,8 +60,8 @@ public final class ComponentsProviderManager {
                     String id = configurationElement.getAttribute("id"); //$NON-NLS-1$
                     String folderName = configurationElement.getAttribute("folderName"); //$NON-NLS-1$
                     String contributerName = configurationElement.getContributor().getName();
-                    IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault()
-                            .getService(IBrandingService.class);
+                    IBrandingService brandingService = (IBrandingService) GlobalServiceRegister.getDefault().getService(
+                            IBrandingService.class);
                     if (!brandingService.isPoweredOnlyCamel()
                             && id.equals("org.talend.designer.camel.components.localprovider.CamelLocalComponentsProvider")) {
                         folderName = "camel";
@@ -79,15 +79,6 @@ public final class ComponentsProviderManager {
                 }
             }
         }
-    }
-
-    public AbstractComponentsProvider getProviderById(String id) {
-        for (AbstractComponentsProvider provider : getProviders()) {
-            if (provider.getId().equals(id)) {
-                return provider;
-            }
-        }
-        return null;
     }
 
     public AbstractComponentsProvider loadUserComponentsProvidersFromExtension() {

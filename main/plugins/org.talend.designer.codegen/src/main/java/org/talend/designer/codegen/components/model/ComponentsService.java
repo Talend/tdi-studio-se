@@ -12,7 +12,6 @@
 // ============================================================================
 package org.talend.designer.codegen.components.model;
 
-import org.talend.core.model.components.AbstractComponentsProvider;
 import org.talend.core.model.components.IComponentFileNaming;
 import org.talend.core.model.components.IComponentsFactory;
 import org.talend.core.model.components.IComponentsService;
@@ -30,7 +29,6 @@ public class ComponentsService implements IComponentsService {
 
     IComponentFileNaming componentsFileNaming = null;
 
-    @Override
     public IComponentFileNaming getComponentFileNaming() {
         if (componentsFileNaming == null) {
             componentsFileNaming = ComponentFilesNaming.getInstance();
@@ -43,20 +41,11 @@ public class ComponentsService implements IComponentsService {
      * 
      * @see org.talend.core.model.components.IComponentsService#getComponentsFactory()
      */
-    @Override
     public IComponentsFactory getComponentsFactory() {
         if (componentsFactory == null) {
             componentsFactory = new ComponentsFactory();
         }
         return componentsFactory;
-    }
-
-    public String getPaletteByProvider(String componentProviderId) {
-        AbstractComponentsProvider provider = ComponentsProviderManager.getInstance().getProviderById(componentProviderId);
-        if (provider != null) {
-            return provider.getPaletteType();
-        }
-        return null;
     }
 
 }

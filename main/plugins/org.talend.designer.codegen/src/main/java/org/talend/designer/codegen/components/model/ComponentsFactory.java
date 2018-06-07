@@ -560,10 +560,6 @@ public class ComponentsFactory implements IComponentsFactory {
                             currentComp.setPaletteType(currentComp.getType());
                         }
 
-                        if (provider.getPaletteType() == null) {
-                            provider.setPaletteType(currentComp.getPaletteType());
-                        }
-
                         if (componentList.contains(currentComp)) {
                             log.warn("Component " + currentComp.getName() + " already exists. Cannot load user version."); //$NON-NLS-1$ //$NON-NLS-2$
                         } else {
