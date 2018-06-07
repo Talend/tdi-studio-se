@@ -123,9 +123,9 @@ if(useExistingConnection) {
 	log4jCodeGenerateUtil.useExistConnection(node);
 } else {
 %>
-	String driverClass_<%=cid%> = "org.postgresql.Driver";
+	String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
 	java.lang.Class.forName(driverClass_<%=cid%>).newInstance();
-	String url_<%=cid%> = "jdbc:postgresql://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
+	String url_<%=cid%> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
 	String dbUser_<%=cid%> = <%=userName%>;
 	<%
 	String passwordFieldName = "__PASS__";

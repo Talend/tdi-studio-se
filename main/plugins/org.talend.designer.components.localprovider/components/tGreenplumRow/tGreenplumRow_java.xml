@@ -112,7 +112,7 @@
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
-      <DEFAULT>PostgreSQL</DEFAULT>
+      <DEFAULT>Greenplum</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -275,7 +275,7 @@
 
   <CODEGENERATION>
     <IMPORTS>
-    	<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
+    	<IMPORT NAME="Greenplum-driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED="true"/>
     </IMPORTS>
   </CODEGENERATION>
 

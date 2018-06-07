@@ -48,7 +48,7 @@
             SHOW="false"
             REPOSITORY_VALUE="TYPE"
     >
-            <DEFAULT>PostgreSQL</DEFAULT>
+            <DEFAULT>Greenplum</DEFAULT>
     </PARAMETER>
 
     <PARAMETER

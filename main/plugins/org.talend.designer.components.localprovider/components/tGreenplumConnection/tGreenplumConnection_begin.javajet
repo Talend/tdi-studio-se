@@ -12,12 +12,12 @@ imports="
 		public void createURL(INode node) {
 			super.createURL(node);
 %>
-		String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+		String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
 <%	
 		}
 		
 		public String getDirverClassName(INode node){
-			return "org.postgresql.Driver";
+			return "com.pivotal.jdbc.GreenplumDriver";
 		}
 		
 	}//end class

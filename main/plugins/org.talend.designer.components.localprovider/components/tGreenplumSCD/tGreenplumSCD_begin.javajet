@@ -71,8 +71,8 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     } else {
         %>
         String dbSchema_<%=cid%> = <%=ElementParameterParser.getValue(node, "__SCHEMA_DB__")%>;
-        java.lang.Class.forName("org.postgresql.Driver");
-        String connectionString_<%=cid%> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+        java.lang.Class.forName("com.pivotal.jdbc.GreenplumDriver");
+        String connectionString_<%=cid%> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
 	        
 		<%
 		String passwordFieldName = "__PASS__";
