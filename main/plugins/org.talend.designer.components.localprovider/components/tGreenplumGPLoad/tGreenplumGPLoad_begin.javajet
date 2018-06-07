@@ -133,9 +133,9 @@ skeleton="../templates/db_output_bulk.skeleton"
         Manager manager = getManager(dbmsId, cid);
 		%>
 
-		String driverClass_<%=cid%> = "org.postgresql.Driver";
+		String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
 		java.lang.Class.forName(driverClass_<%=cid%>);    
-		String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+		String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
 		String dbUser_<%=cid %> = <%=dbuser%>;
 	        
 		<%
