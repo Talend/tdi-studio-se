@@ -180,7 +180,7 @@ java.sql.Connection conn_<%=cid%> = null;
 
 		<%if(isGreenplum){%>
 			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
-			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=host%>+":"+<%=port%>+";DatabaseName="+<%=dbname%>;
+			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=host%>+":"+<%=port%>+";DatabaseName="+<%=dbName%>;
 		<%} else {%>
 			String driverClass_<%=cid%> = "org.postgresql.Driver";
 			String url_<%=cid%> = "jdbc:postgresql://" + <%=host%> + ":" + <%=port%> + "/" + <%=dbName%>;
