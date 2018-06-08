@@ -1297,9 +1297,15 @@ if(columnList != null && columnList.size() > 0) {
 <%
                         }
                         if(isEnableDebug) {
+                            if(isDynamic){
 %>
-                            query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_", "(("+incomingConnName+"."+columnUpdate.getName()+"==null)?1:0)")%>;
+                                query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(talendDynCol.getLabel(),typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_", "(("+incomingConnName+"."+columnUpdate.getName()+"==null)?1:0)")%>;
 <%
+                            } else {
+%>
+                                query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_", "(("+incomingConnName+"."+columnUpdate.getName()+"==null)?1:0)")%>;
+<%
+                            }
                         }
 
                         counterColUpdate++;
@@ -1308,11 +1314,17 @@ if(columnList != null && columnList.size() > 0) {
 %>
 
                     <%=getManager(dbmsId, cid).generateSetStmt(typeToGenerate, columnUpdate, counterColUpdate, incomingConnName, cid, UPDATE_TYPE, " + count_")%>
-                    <%
+<%
                     if(isEnableDebug) {
-                    %>
-                        query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_")%>;
-                    <%
+                        if(isDynamic){
+%>
+                            query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(talendDynCol.getLabel(),typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_")%>;
+<%
+                        } else {
+%>
+                            query_<%=cid%> = <%=getManager(dbmsId, cid).retrieveSQL(typeToGenerate, columnUpdate, incomingConnName, cid, "query_" , counterColUpdate, "updateSQLSplits_")%>;
+<%
+                        }
                     }
                     counterColUpdate++;
                 }
