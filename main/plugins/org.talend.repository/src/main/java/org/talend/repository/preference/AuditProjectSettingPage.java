@@ -15,6 +15,7 @@ package org.talend.repository.preference;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -39,6 +40,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.ui.PlatformUI;
 import org.talend.commons.ui.runtime.exception.ExceptionHandler;
+import org.talend.commons.ui.runtime.image.EImage;
+import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.commons.ui.swt.formtools.LabelledCombo;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.commons.utils.io.FilesUtils;
@@ -81,6 +84,12 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private String generatePath;
 
     private ProjectPreferenceManager prefManager;
+
+    private LabelledCombo historyCombo;
+
+    private Button refreshButton;
+
+    private Button historyGenerateButton;
 
     /*
      * (non-Javadoc)
@@ -140,6 +149,19 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         checkComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.RIGHT, true, true));
         checkButton = new Button(checkComposite, SWT.RIGHT_TO_LEFT);
         checkButton.setText(Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText")); //$NON-NLS-1$
+
+        Composite historyComposite = new Composite(dbConfigGroup, SWT.NULL);
+        GridLayout historyCompLayout = new GridLayout(5, false);
+        historyCompLayout.marginHeight = 0;
+        historyComposite.setLayout(historyCompLayout);
+        historyComposite.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, true));
+        historyCombo = new LabelledCombo(historyComposite, Messages.getString("AuditProjectSettingPage.history.label"), //$NON-NLS-1$
+                Messages.getString("AuditProjectSettingPage.history.labelTip"), new String[0], 2, true); //$NON-NLS-1$
+        refreshButton = new Button(historyComposite, SWT.NULL);
+        refreshButton.setImage(ImageProvider.getImage(EImage.REFRESH_ICON));
+        refreshButton.setToolTipText(Messages.getString("AuditProjectSettingPage.history.refreshButton")); //$NON-NLS-1$
+        historyGenerateButton = new Button(historyComposite, SWT.NULL);
+        historyGenerateButton.setText(Messages.getString("AuditProjectSettingPage.history.historyGenerateButton")); //$NON-NLS-1$
         return dbConfigGroup;
     }
 
@@ -148,16 +170,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                DirectoryDialog dial = new DirectoryDialog(getShell(), SWT.NONE);
-                String directory = dial.open();
-                if (StringUtils.isNotEmpty(directory)) {
-                    generatePath = Path.fromOSString(directory).toPortableString();
-                    generatePath += "/"; //$NON-NLS-1$
-                } else {
-                    MessageDialog.openError(getShell(), "Error", //$NON-NLS-1$
-                            Messages.getString("AuditProjectSettingPage.selectAuditReportFolder")); //$NON-NLS-1$
-                    return;
-                }
+                // select a foder as the generate path
+                selectGeneratePath();
 
                 ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
                         PlatformUI.getWorkbench().getDisplay().getActiveShell().getShell());
@@ -251,6 +265,99 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             }
 
         });
+
+        historyCombo.addModifyListener(new ModifyListener() {
+
+            @Override
+            public void modifyText(final ModifyEvent e) {
+                String selectedItem = ((Combo) e.getSource()).getText();
+            }
+        });
+
+        refreshButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
+                    ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
+                            .getService(ICommandLineService.class);
+                    if (savedInDBButton.getSelection()) {
+                        Map<Integer, String> parameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
+                                usernameText.getText(), passwordText.getText());
+                        String[] items = getHistoryDisplayNames(parameters);
+                        if (items.length > 0) {
+                            historyCombo.add(items[0]);
+                        }
+                    }
+                }
+            }
+
+        });
+
+        historyGenerateButton.addSelectionListener(new SelectionAdapter() {
+
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                // select a foder as the generate path
+                selectGeneratePath();
+
+                ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(
+                        PlatformUI.getWorkbench().getDisplay().getActiveShell().getShell());
+                IRunnableWithProgress runnable = new IRunnableWithProgress() {
+
+                    @Override
+                    public void run(IProgressMonitor monitor) {
+                        monitor.beginTask(Messages.getString("AuditProjectSettingPage.generateAuditReportProgressBar"), //$NON-NLS-1$
+                                IProgressMonitor.UNKNOWN);
+                        Display.getDefault().syncExec(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
+                                    ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
+                                            .getService(ICommandLineService.class);
+                                    if (savedInDBButton.getSelection()) {
+                                        service.populateAudit(urlText.getText(), driverText.getText(), usernameText.getText(),
+                                                passwordText.getText());
+                                        service.generateAuditReport(generatePath);
+                                    } else {
+                                        String path = "";//$NON-NLS-1$
+                                        File tempFolder = null;
+                                        try {
+                                            File createTempFile = File.createTempFile("AuditReport", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                                            path = createTempFile.getPath();
+                                            createTempFile.delete();
+                                            tempFolder = new File(path);
+                                            tempFolder.mkdir();
+                                            path = path.replace("\\", "/");//$NON-NLS-1$//$NON-NLS-2$
+
+                                            // Just use the h2 as default if no check
+                                            service.populateAudit(
+                                                    "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
+                                                    "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            service.generateAuditReport(generatePath);
+                                        } catch (IOException e) {
+                                            // nothing
+                                        } finally {
+                                            FilesUtils.deleteFile(tempFolder, true);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        monitor.done();
+                    }
+                };
+                try {
+                    progressDialog.run(true, true, runnable);
+                } catch (InvocationTargetException e1) {
+                    ExceptionHandler.process(e1);
+                } catch (InterruptedException e1) {
+                    ExceptionHandler.process(e1);
+                }
+            }
+
+        });
     }
 
     private void init() {
@@ -295,6 +402,25 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         usernameText.setText("");//$NON-NLS-1$
         passwordText.setText("");//$NON-NLS-1$
         hideControl(true);
+    }
+
+    private void selectGeneratePath() {
+        DirectoryDialog dial = new DirectoryDialog(getShell(), SWT.NONE);
+        String directory = dial.open();
+        if (StringUtils.isNotEmpty(directory)) {
+            generatePath = Path.fromOSString(directory).toPortableString();
+            generatePath += "/"; //$NON-NLS-1$
+        } else {
+            MessageDialog.openError(getShell(), "Error", //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.selectAuditReportFolder")); //$NON-NLS-1$
+            return;
+        }
+    }
+
+    private String[] getHistoryDisplayNames(Map<Integer, String> parameters) {
+        String[] items = new String[parameters.size()];
+        parameters.values().toArray(items);
+        return items;
     }
 
     /*
