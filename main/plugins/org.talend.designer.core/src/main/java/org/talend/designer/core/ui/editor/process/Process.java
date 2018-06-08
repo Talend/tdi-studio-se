@@ -3288,6 +3288,7 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     }
 
     public String generateUniqueNodeName(INode node) {
+        refreshUniqueNodeList();
         IComponent component = node.getComponent();
         if (node instanceof Node) {
             component = ((Node) node).getDelegateComponent();
@@ -3313,6 +3314,29 @@ public class Process extends Element implements IProcess2, IGEFProcess, ILastVer
     public void removeUniqueNodeName(final String uniqueName) {
         if (uniqueName != null && !uniqueName.equals("")) { //$NON-NLS-1$
             uniqueNodeNameList.remove(uniqueName);
+        }
+    }
+
+    /**
+     * 
+     * DOC jding Comment method "refreshUniqueNodeList".for TUP-19603 ,when drag db connection to job, will list
+     * component let user choose that will add all the component to the uniqueNodeNameList(cause call
+     * Node(component)),should remove
+     */
+    public void refreshUniqueNodeList() {
+        if (uniqueNodeNameList.size() > nodes.size()) {
+            List<String> nodeNameList = new ArrayList<String>();
+            for (INode node : nodes) {
+                nodeNameList.add(node.getUniqueName());
+            }
+            Iterator<String> iterator = uniqueNodeNameList.iterator();
+            while (iterator.hasNext()) {
+                String uniqueName = iterator.next();
+                if (!nodeNameList.contains(uniqueName)) {
+                    iterator.remove();
+                }
+            }
+
         }
     }
 
