@@ -157,6 +157,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         historyComposite.setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, true, true));
         historyCombo = new LabelledCombo(historyComposite, Messages.getString("AuditProjectSettingPage.history.label"), //$NON-NLS-1$
                 Messages.getString("AuditProjectSettingPage.history.labelTip"), new String[0], 2, true); //$NON-NLS-1$
+        ((GridData) historyCombo.getCombo().getLayoutData()).widthHint = 150;
         refreshButton = new Button(historyComposite, SWT.NULL);
         refreshButton.setImage(ImageProvider.getImage(EImage.REFRESH_ICON));
         refreshButton.setToolTipText(Messages.getString("AuditProjectSettingPage.history.refreshButton")); //$NON-NLS-1$
@@ -271,6 +272,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             @Override
             public void modifyText(final ModifyEvent e) {
                 String selectedItem = ((Combo) e.getSource()).getText();
+                if (StringUtils.isNotEmpty(selectedItem)) {
+                    historyGenerateButton.setEnabled(true);
+                }
             }
         });
 
@@ -285,8 +289,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                         Map<Integer, String> parameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
                                 usernameText.getText(), passwordText.getText());
                         String[] items = getHistoryDisplayNames(parameters);
+                        historyCombo.getCombo().setItems(items);
                         if (items.length > 0) {
-                            historyCombo.add(items[0]);
+                            historyCombo.getCombo().select(0);
                         }
                     }
                 }
@@ -317,30 +322,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
                                             .getService(ICommandLineService.class);
                                     if (savedInDBButton.getSelection()) {
-                                        service.populateAudit(urlText.getText(), driverText.getText(), usernameText.getText(),
+                                        service.populateHistoryAudit(1, urlText.getText(), driverText.getText(),
+                                                usernameText.getText(),
                                                 passwordText.getText());
                                         service.generateAuditReport(generatePath);
-                                    } else {
-                                        String path = "";//$NON-NLS-1$
-                                        File tempFolder = null;
-                                        try {
-                                            File createTempFile = File.createTempFile("AuditReport", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                                            path = createTempFile.getPath();
-                                            createTempFile.delete();
-                                            tempFolder = new File(path);
-                                            tempFolder.mkdir();
-                                            path = path.replace("\\", "/");//$NON-NLS-1$//$NON-NLS-2$
-
-                                            // Just use the h2 as default if no check
-                                            service.populateAudit(
-                                                    "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
-                                                    "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                            service.generateAuditReport(generatePath);
-                                        } catch (IOException e) {
-                                            // nothing
-                                        } finally {
-                                            FilesUtils.deleteFile(tempFolder, true);
-                                        }
                                     }
                                 }
                             }
@@ -382,6 +367,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         usernameText.setReadOnly(hide);
         passwordText.setReadOnly(hide);
         checkButton.setEnabled(!hide);
+
+        historyCombo.setEnabled(!hide);
+        refreshButton.setEnabled(!hide);
+        historyGenerateButton.setEnabled(!hide && historyCombo.getSelectionIndex() > -1);
     }
 
     private void save() {
