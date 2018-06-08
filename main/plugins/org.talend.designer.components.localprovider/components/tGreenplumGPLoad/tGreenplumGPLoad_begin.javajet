@@ -56,7 +56,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String gploadExePath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 	boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
-	
+
 	String tableName = dbtable;
 	List<IMetadataColumn> columnList = getColumnList(node);
 	List<Column> stmtStructure = null;
@@ -375,6 +375,33 @@ skeleton="../templates/db_output_bulk.skeleton"
 		gpctrl_<%=cid%>.println("GPLOAD:");
 		gpctrl_<%=cid%>.println("  INPUT:");
 		gpctrl_<%=cid%>.println("    - SOURCE:");
+		
+		<%
+		for (Map<String, String> option : options) {
+			String key = option.get("KEY");
+			String value = option.get("VALUE");
+			
+			if(value != null && !("".equals(value))) {
+				if (key.equals("LOCAL_HOSTNAME")){
+					%>
+						gpctrl_<%=cid%>.println("        LOCAL_HOSTNAME:");
+						gpctrl_<%=cid%>.println("          - " + <%=value%>);
+					<%
+				}
+				if (key.equals("PORT")){
+					%>
+						gpctrl_<%=cid%>.println("        PORT: " + <%=value%>);
+					<%
+				}
+				if (key.equals("PORT_RANGE")){
+					%>
+						gpctrl_<%=cid%>.println("        PORT_RANGE: [" + <%=value%> + "]");
+					<%
+				}
+			}
+		}
+		%>
+		
 		gpctrl_<%=cid%>.println("        FILE:");
 		<% if (useNamedPiped) { %>
 		gpctrl_<%=cid%>.println("          - " + (new com.infobright.io.NamedPipeFactory()).getNativePipeName(<%=namedPipeName%>));
@@ -383,6 +410,37 @@ skeleton="../templates/db_output_bulk.skeleton"
 		<% } %>
 		gpctrl_<%=cid%>.println("    - DELIMITER: '" + delim_<%=cid%> + "'");
 		gpctrl_<%=cid%>.println("    - ESCAPE: '" + escape_<%=cid%> + "'");
+		
+		<%
+		for (Map<String, String> option : options) {
+			String key = option.get("KEY");
+			String value = option.get("VALUE");
+			
+			if(value != null && !("".equals(value))) {
+				if (key.equals("NULL_AS")){
+					%>
+						gpctrl_<%=cid%>.println("    - NULL_AS: '" + <%=value%> + "'");
+					<%
+				}
+				if (key.equals("FORCE_NOT_NULL")){
+					%>
+						gpctrl_<%=cid%>.println("    - FORCE_NOT_NULL: " + <%=value%>);
+					<%
+				}
+				if (key.equals("ERROR_LIMIT")){
+					%>
+						gpctrl_<%=cid%>.println("    - ERROR_LIMIT: " + <%=value%>);
+					<%
+				}
+				if (key.equals("ERROR_TABLE")){
+					%>
+						gpctrl_<%=cid%>.println("    - ERROR_TABLE: '" + <%=value%> + "'");
+					<%
+				}
+			}
+		}
+		%>
+		
 		<% if (csvOption) { %>
 		gpctrl_<%=cid%>.println("    - FORMAT: csv");
 		gpctrl_<%=cid%>.println("    - QUOTE: '" + quote_<%=cid%> + "'");
@@ -393,18 +451,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 		gpctrl_<%=cid%>.println("    - HEADER: true");
 		<% } %>
 		gpctrl_<%=cid%>.println("    - ENCODING: " + <%=encoding%>);
-		<%
-		// parsing the addiotional options
-		for(Map<String, String> option : options) {
-			String key = option.get("KEY");
-			String value = option.get("VALUE");
-			if(value != null && !("".equals(value))) {
-				%>
-				gpctrl_<%=cid%>.println("    - <%=key%>: " + <%=value%>);
-				<%
-			}
-		}
-		%>
 		gpctrl_<%=cid%>.println("  OUTPUT: ");
 		gpctrl_<%=cid%>.println("    - TABLE: '" + tableName4Load_<%=cid%>+"'");
 		gpctrl_<%=cid%>.println("    - MODE: <%=dataAction.toLowerCase()%>");

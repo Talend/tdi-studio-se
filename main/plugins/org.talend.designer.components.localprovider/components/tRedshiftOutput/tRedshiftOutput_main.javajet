@@ -1119,7 +1119,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         if (useBatch) {
             %>
                 if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
-            		<%@ include file="./batchExecute.javajet"%>
+        						<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                 }
             <%
             }
@@ -1136,7 +1136,7 @@ skeleton="../templates/db_output_bulk.skeleton"
               	if(useBatch){//execute the batch before commit, if not that, the batch may not be executed at last and make the data lost
                 %>
                     if((batchSize_<%=cid%> > 0) && (batchSizeCounter_<%=cid%> > 0)){
-                    	<%@ include file="./batchExecute.javajet"%>
+                    		<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                     }
                 <%
                 }

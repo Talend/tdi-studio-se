@@ -105,8 +105,7 @@ public class TaCoKitUtil {
     public static TaCoKitConfigurationModel getTaCoKitConfigurationModel(final String itemId) throws Exception {
         ConnectionItem item = getLatestTaCoKitConnectionItem(itemId);
         if (item != null) {
-            TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(item);
-            return itemModel.getConfigurationModel();
+            return new TaCoKitConfigurationModel(item.getConnection());
         }
         return null;
     }

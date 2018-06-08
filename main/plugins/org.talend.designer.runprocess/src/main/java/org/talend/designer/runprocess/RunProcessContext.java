@@ -183,6 +183,8 @@ public class RunProcessContext {
 
     private boolean isBasicRun = false;
 
+    private boolean isMemoryRunning = false;
+
     private boolean startingMessageWritten;
 
     private boolean useCustomLevel = false;
@@ -558,6 +560,10 @@ public class RunProcessContext {
                         if (monitorTrace) {
                             traceMonitor = new TraceMonitor();
                             new Thread(traceMonitor, "TraceMonitor_" + process.getLabel()).start(); //$NON-NLS-1$
+                            // for memory pause until get connect active jvm info
+                            if (isMemoryRunning) {
+                                setTracPause(true);
+                            }
                         }
 
                         final String watchParam = RunProcessContext.this.isWatchAllowed()
@@ -579,7 +585,9 @@ public class RunProcessContext {
                             ProcessorUtilities.resetExportConfig();
                             ProcessorUtilities.generateCode(processor, process, context,
                                     getStatisticsPort() != IProcessor.NO_STATISTICS,
-                                    getTracesPort() != IProcessor.NO_TRACES && hasConnectionTrace(), true, progressMonitor);
+                                    getTracesPort() != IProcessor.NO_TRACES && (isMemoryRunning ? true : hasConnectionTrace()),
+                                    true,
+                                    progressMonitor);
                         } catch (Throwable e) {
                             BuildCacheManager.getInstance().performBuildFailure();
                             PomUtil.restorePomFile(processor.getTalendJavaProject());
@@ -1841,6 +1849,17 @@ public class RunProcessContext {
 
     public void setBasicRun(boolean isBasicRun) {
         this.isBasicRun = isBasicRun;
+    }
+
+    public boolean isMemoryRunning() {
+        return this.isMemoryRunning;
+    }
+
+    public void setMemoryRunning(boolean isMemoryRunning) {
+        this.isMemoryRunning = isMemoryRunning;
+        if (isMemoryRunning) {
+            setMonitorTrace(true);
+        }
     }
 
     private void showSparkStreamingData(String data) {

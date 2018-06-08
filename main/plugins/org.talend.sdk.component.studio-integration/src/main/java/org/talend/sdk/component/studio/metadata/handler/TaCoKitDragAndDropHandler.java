@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
@@ -70,7 +71,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         }
         try {
             TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-            if (!TaCoKitUtil.isEmpty(model.getConfigurationId())) {
+            if (!StringUtils.isEmpty(model.getConfigurationId())) {
                 return true;
             }
         } catch (Exception e) {
@@ -136,7 +137,6 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
     
     private String findModelRoot(final TaCoKitConfigurationModel model) {
-        @SuppressWarnings("unchecked")
         final Map<String, String> values = model.getProperties();
         List<String> possibleRoots = values.keySet().stream()
             .filter(key -> key.contains(PATH_SEPARATOR))
@@ -238,8 +238,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         RepositoryComponentSetting setting = null;
         if (item instanceof ConnectionItem) {
             try {
-                TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel((ConnectionItem) item);
-                TaCoKitConfigurationModel configurationModel = itemModel.getConfigurationModel();
+                TaCoKitConfigurationModel configurationModel = new TaCoKitConfigurationModel(((ConnectionItem) item).getConnection());
                 if (configurationModel == null || TaCoKitUtil.isEmpty(configurationModel.getConfigurationId())) {
                     return setting;
                 }

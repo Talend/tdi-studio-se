@@ -5267,7 +5267,7 @@
             <library id="slf4j-log4j12-1.7.10.jar"/>
             <library id="snappy-java-1.1.0.1.jar"/>
         </libraryNeededGroup>
-
+ 
         <!-- Pig libraries for HDP 2.2 -->
         <libraryNeededGroup
                 description="The lastest Pig libraries of HDP 2.2"

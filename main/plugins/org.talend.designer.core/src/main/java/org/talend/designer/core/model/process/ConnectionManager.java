@@ -803,7 +803,7 @@ public class ConnectionManager {
     public static boolean checkCircle(INode source, INode newTarget) {
         // get All the source nodes of the source
         List<INode> list = new ArrayList<INode>();
-        getAllSourceNode(source, list);
+        getAllSourceNode(source, list, new HashSet<String>());
 
         if (list.contains(newTarget)) {
             return true;
@@ -816,13 +816,18 @@ public class ConnectionManager {
      * 
      * @param source
      * @param list
+     * @param processedSet
      */
-    private static void getAllSourceNode(INode source, List<INode> list) {
+    private static void getAllSourceNode(INode source, List<INode> list, Set<String> processedSet) {
+        if (processedSet.contains(source.getUniqueName())) {
+            return;
+        }
+        processedSet.add(source.getUniqueName());
         List<? extends IConnection> connections = source.getIncomingConnections();
         for (IConnection connection : connections) {
             INode node = connection.getSource();
             list.add(node);
-            getAllSourceNode(node, list);
+            getAllSourceNode(node, list, processedSet);
         }
     }
 }

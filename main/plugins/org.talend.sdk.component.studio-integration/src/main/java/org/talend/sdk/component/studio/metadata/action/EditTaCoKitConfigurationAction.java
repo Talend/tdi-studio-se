@@ -109,9 +109,9 @@ public class EditTaCoKitConfigurationAction extends TaCoKitMetadataContextualAct
         if (!runtimeData.isReadonly()) {
             try {
                 TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(runtimeData.getConnectionItem());
-                TaCoKitConfigurationModel configurationModel = itemModel.getConfigurationModel();
+                TaCoKitConfigurationModel configurationModel = new TaCoKitConfigurationModel(runtimeData.getConnectionItem().getConnection());
                 TaCoKitMigrationManager migrationManager = Lookups.taCoKitCache().getMigrationManager();
-                if (migrationManager.isNeedMigration(configurationModel)) {
+                if (configurationModel.needsMigration()) {
                     String label = ""; //$NON-NLS-1$
                     try {
                         label = itemModel.getDisplayLabel();
