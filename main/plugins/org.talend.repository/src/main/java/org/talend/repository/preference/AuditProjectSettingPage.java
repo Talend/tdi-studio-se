@@ -91,6 +91,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private Button historyGenerateButton;
 
+    private Integer selectedAuditId;
+
     /*
      * (non-Javadoc)
      * 
@@ -273,6 +275,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             public void modifyText(final ModifyEvent e) {
                 String selectedItem = ((Combo) e.getSource()).getText();
                 if (StringUtils.isNotEmpty(selectedItem)) {
+                    String selectedId = selectedItem.substring(0, selectedItem.indexOf("_")); //$NON-NLS-1$
+                    selectedAuditId = Integer.parseInt(selectedId);
                     historyGenerateButton.setEnabled(true);
                 }
             }
@@ -322,9 +326,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
                                             .getService(ICommandLineService.class);
                                     if (savedInDBButton.getSelection()) {
-                                        service.populateHistoryAudit(1, urlText.getText(), driverText.getText(),
-                                                usernameText.getText(),
-                                                passwordText.getText());
+                                        service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
+                                                usernameText.getText(), passwordText.getText());
                                         service.generateAuditReport(generatePath);
                                     }
                                 }
