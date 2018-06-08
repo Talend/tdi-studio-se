@@ -3068,6 +3068,14 @@
               name="EscapeQuoterForTNormalize"
               version="7.1.0">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.AddTypeNameInConnection"
+              id="org.talend.repository.model.migration.AddTypeNameInConnection"
+              name="AddTypeNameInConnection"
+              version="7.0.2">
+        </projecttask>
    </extension>
 
    <extension
