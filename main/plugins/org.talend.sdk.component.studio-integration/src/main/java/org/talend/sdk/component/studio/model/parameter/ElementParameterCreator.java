@@ -44,6 +44,7 @@ import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.studio.process.TaCoKitNode;
 
 /**
  * Creates {@link ComponentModel} {@link ElementParameter} list
@@ -187,6 +188,7 @@ public class ElementParameterCreator {
     private void addCommonParameters() {
         addUniqueNameParameter();
         addComponentNameParameter();
+        addTacokitComponentIdParameter();
         addVersionParameter();
         addFamilyParameter();
         addStartParameter();
@@ -582,6 +584,24 @@ public class ElementParameterCreator {
         parameter.setDisplayName(EParameterName.COMPONENT_NAME.getDisplayName());
         parameter.setFieldType(EParameterFieldType.TEXT);
         parameter.setCategory(EComponentCategory.TECHNICAL);
+        parameter.setNumRow(1);
+        parameter.setReadOnly(true);
+        parameter.setShow(false);
+        parameters.add(parameter);
+    }
+    
+    /**
+     * Creates and adds TACOKIT_COMPONENT_ID parameter.
+     * It is used in serialization/deserialization to know whether it is Tacokit component and
+     * to find ComponentDetail quickly
+     */
+    private void addTacokitComponentIdParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName(TaCoKitNode.TACOKIT_COMPONENT_ID);
+        parameter.setValue(detail.getId().getId());
+        parameter.setDisplayName(TaCoKitNode.TACOKIT_COMPONENT_ID);
+        parameter.setFieldType(EParameterFieldType.TECHNICAL);
+        parameter.setCategory(EComponentCategory.BASIC);
         parameter.setNumRow(1);
         parameter.setReadOnly(true);
         parameter.setShow(false);

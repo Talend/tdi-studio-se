@@ -23,7 +23,6 @@
 		<talend.routine.groupid>@RoutineGroupId@</talend.routine.groupid>
 		<talend.pigudf.groupid>@PigudfGroupId@</talend.pigudf.groupid>
 		<talend.project.id>@ProjectId@</talend.project.id>
-		<talend.project.branch>@ProjectBranch@</talend.project.branch>
 		<talend.job.name>@JobName@</talend.job.name>
 		<talend.job.version>@TalendJobVersion@</talend.job.version>
 		<talend.job.date>${maven.build.timestamp}</talend.job.date>

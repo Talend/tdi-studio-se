@@ -660,9 +660,16 @@ if(execStat) {
     try {
         runTrace.openSocket(!isChildJob);
         runTrace.startThreadTrace(clientHost, portTraces);
+        if (runTrace.isPause()) {
+			while (runTrace.isPause()) {
+				Thread.sleep(100);
+			}
+		}
     } catch (java.io.IOException ioException) {
         ioException.printStackTrace();
-    }
+    } catch (InterruptedException e) {
+			e.printStackTrace();
+	}
 <%
     }
 %>

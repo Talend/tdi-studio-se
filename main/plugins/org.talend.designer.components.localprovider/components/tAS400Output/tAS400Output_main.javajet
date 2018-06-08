@@ -986,62 +986,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     	if (useBatch) {
                 %>
     			if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
-    			    try {
-    			    					<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
-                        int countSum_<%=cid%> = 0;
-                        for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                        }
-                        <%
-                        		if(("INSERT").equals(dataAction)) {
-                        %>
-                        				insertedCount_<%=cid%> += countSum_<%=cid%>;
-                        <%
-                            } else if (("UPDATE").equals(dataAction)) {
-                        %>
-                                updatedCount_<%=cid%> += countSum_<%=cid%>;
-                        <%
-                            }else if (("DELETE").equals(dataAction)) {
-                        %>
-                                deletedCount_<%=cid%> += countSum_<%=cid%>;
-                        <%
-                            }
-                        %>
-                        <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                    }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                        <%if(("true").equals(dieOnError)) {
-                        %>
-                            throw(e_<%=cid%>);
-                        <%
-                        }else {
-                        %>
-                            int countSum_<%=cid%> = 0;
-                            for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                                countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                            }
-                            <%
-                            if(("INSERT").equals(dataAction)) {
-                            %>
-                        				insertedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                            } else if (("UPDATE").equals(dataAction)) {
-                            %>
-                                updatedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                            }else if (("DELETE").equals(dataAction)) {
-                            %>
-                                deletedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                            }
-                            dbLog.logPrintedException("e_"+cid+".getMessage()");
-                            %>
-                            System.err.println(e_<%=cid%>.getMessage());
-                        <%
-                        }
-                        %>
-                    }
-                    batchSizeCounter_<%=cid%> = 0;
-				}
+    			    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
+					}
 	    		<%
     	}
         if(!useExistingConnection) {
@@ -1054,61 +1000,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                if (useBatch) {
 	                %>
 	                if(batchSizeCounter_<%=cid%> > 0){
-    	                try {
-    	                	<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
-                            int countSum_<%=cid%> = 0;
-                            for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                                countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                            }
-                            <%
-                            		if(("INSERT").equals(dataAction)) {
-                            %>
-                            				insertedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                                } else if (("UPDATE").equals(dataAction)) {
-                            %>
-                                    updatedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                                }else if (("DELETE").equals(dataAction)) {
-                            %>
-                                    deletedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                                }
-                        	dbLog.batch().executeDone(dbLog.str(dataAction));
-                            %>
-                        }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                            <%if(("true").equals(dieOnError)) {
-                            %>
-                                throw(e_<%=cid%>);
-                            <%
-                            }else {
-                            %>
-                                int countSum_<%=cid%> = 0;
-                                for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                                    countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                                }
-                                <%
-                                if(("INSERT").equals(dataAction)) {
-                                %>
-                                		insertedCount_<%=cid%> += countSum_<%=cid%>;
-                                <%
-                                } else if (("UPDATE").equals(dataAction)) {
-                                %>
-                                    updatedCount_<%=cid%> += countSum_<%=cid%>;
-                                <%
-                                }else if (("DELETE").equals(dataAction)) {
-                                %>
-                                    deletedCount_<%=cid%> += countSum_<%=cid%>;
-                                <%
-                                }
-                                dbLog.logPrintedException("e_"+cid+".getMessage()");
-                                %>
-                                System.err.println(e_<%=cid%>.getMessage());
-                            <%
-                            }
-                            %>
-                        }
-                        batchSizeCounter_<%=cid%> = 0;
+  	                	 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                     }
 	                <%
 	                }%>

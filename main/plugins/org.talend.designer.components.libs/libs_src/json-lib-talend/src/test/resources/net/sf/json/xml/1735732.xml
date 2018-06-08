@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:empList xmlns:ns2="http://schemas.foo.com/HelloWorld">
+   <item>
+      <name>emp1</name>
+      <age>2 5</age>
+   </item>
+   <item>
+      <name>emp2</name>
+      <age>2</age>
+   </item>
+</ns2:empList>
