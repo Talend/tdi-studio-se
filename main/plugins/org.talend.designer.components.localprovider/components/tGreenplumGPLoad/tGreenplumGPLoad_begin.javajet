@@ -28,6 +28,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
 	String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 	String dbuser = ElementParameterParser.getValue(node, "__USER__");
+	String additionalParameters = ElementParameterParser.getValue(node, "__ADDITIONAL_PARAMETERS__");
 
 	String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
 	String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
@@ -135,7 +136,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 		String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
 		java.lang.Class.forName(driverClass_<%=cid%>);    
-		String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+		String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>+";";
+		<%if (additionalParameters != null && !(additionalParameters.replaceAll("\"", "")).isEmpty()){%>
+			url_<%=cid %> = url_<%=cid %> + <%=additionalParameters%>;
+		<%}%>
 		String dbUser_<%=cid %> = <%=dbuser%>;
 	        
 		<%
@@ -395,6 +399,16 @@ skeleton="../templates/db_output_bulk.skeleton"
 				if (key.equals("PORT_RANGE")){
 					%>
 						gpctrl_<%=cid%>.println("        PORT_RANGE: [" + <%=value%> + "]");
+					<%
+				}
+				if (key.equals("SSL")){
+					%>
+						gpctrl_<%=cid%>.println("        SSL: " + <%=value%> );
+					<%
+				}
+				if (key.equals("CERTIFICATES_PATH")){
+					%>
+						gpctrl_<%=cid%>.println("        CERTIFICATES_PATH: " + <%=value%> );
 					<%
 				}
 			}
