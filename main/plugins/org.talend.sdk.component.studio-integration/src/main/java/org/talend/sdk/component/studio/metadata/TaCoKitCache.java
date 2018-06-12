@@ -78,6 +78,23 @@ public class TaCoKitCache {
         }
         return findConfigTypeNode(familyConfigTypes.get(familyName), nodeName, configurationType);
     }
+    
+    /**
+     * Retrieves ConfigTypeNode from cache for specified {@code id}
+     * 
+     * @param id ConfigTypeNode id
+     * @return ConfigTypeNode for specified id
+     */
+    public ConfigTypeNode getConfigTypeNode(final String id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id should not be null");
+        }
+        ConfigTypeNode configTypeNode = getConfigTypeNodeMap().get(id);
+        if (configTypeNode == null) {
+            throw new IllegalArgumentException("Config type not found for id: " + id);
+        }
+        return configTypeNode;
+    }
 
     /**
      * Finds only family ConfigTypeNode and puts them to {@link #familyConfigTypes}

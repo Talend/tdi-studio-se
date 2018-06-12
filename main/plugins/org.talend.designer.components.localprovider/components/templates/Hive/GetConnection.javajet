@@ -6,6 +6,8 @@ imports="
 "
 %>
 
+<% // Connect to Hive Server 2 using JDBC %>
+
 java.sql.Connection conn_<%=cid%> = null;
 <%
 	boolean setTempPath = "true".equals(ElementParameterParser.getValue(node, "__SET_TEMP_PATH__"));

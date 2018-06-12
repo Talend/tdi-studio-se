@@ -23,15 +23,19 @@ imports="
 	}
 	boolean isCustom = hiveDistrib instanceof org.talend.hadoop.distribution.custom.CustomDistribution;
 
-    if(hiveDistrib.isExecutedThroughWebHCat()) { // Execution through WebHCat
+    if (hiveDistrib.isExecutedThroughWebHCat()) { // Connection through WebHCat api
 %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_azure.javajet"%>
 <%
-    } else  if(hiveDistrib.isGoogleDataprocDistribution()) { // Execution through Dataproc
+    } else if (hiveDistrib.isGoogleDataprocDistribution()) { // Connection through Dataproc api
 %>
         <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_dataproc.javajet"%>
 <%
-    } else { // JDBC execution
+    } else if (hiveDistrib.isQuboleDistribution()) { // Connection through Qubole api
+%>
+        <%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_qubole.javajet"%>
+<%
+    } else { // JDBC connection
 %>
 		<%@ include file="@{org.talend.designer.components.localprovider}/components/tHiveConnection/tHiveConnection_jdbc.javajet"%>
 <%

@@ -245,15 +245,6 @@
                 <microservice.running.configs.dir>${current.resources.dir}/</microservice.running.configs.dir>
             </properties>
         </profile>
-        <profile>
-            <id>include-survivorship-rules</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <survivorship.rules.dir>${current.resources.dir}/metadata/survivorship/</survivorship.rules.dir>
-            </properties>
-        </profile>
 
     </profiles>
 </project>

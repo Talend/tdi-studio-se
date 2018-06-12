@@ -7,6 +7,7 @@
 		targetNamespace="http://www.talend.org/service/">
 
     <wsdl:import namespace="http://www.talend.org/service/binding/" location="TestServiceBinding.wsdl" />
+    <wsdl:import namespace="http://www.talend.org/service/binding/" location="TestServiceJmsBinding.wsdl" />
 
     <wsdl:types>
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -47,4 +48,11 @@
 			<soap:address location="http://localhost:8090/services/TestService" />
 		</wsdl:port>
 	</wsdl:service>
+
+    <wsdl:service name="TestServiceJms">
+        <wsdl:port name="TestServiceJmsPort" binding="tns:TestServiceJmsBinding">
+            <soap:address
+                location="jms:jndi:dynamicQueues/testservice.queue?jndiInitialContextFactory=org.apache.activemq.jndi.ActiveMQInitialContextFactory&amp;jndiConnectionFactoryName=ConnectionFactory&amp;jndiURL=tcp://localhost:61616" />
+        </wsdl:port>
+    </wsdl:service>
 </wsdl:definitions>

@@ -27,4 +27,11 @@ public interface IJvmAttachHandler {
      * @return <tt>true</tt> if valid JDK is available
      */
     boolean hasValidJdk();
+
+    /**
+     * update current active JVMs DOC jding Comment method "updatesActiveJvms".
+     * 
+     * @throws JvmCoreException
+     */
+    public void updatesActiveJvms() throws JvmCoreException;
 }

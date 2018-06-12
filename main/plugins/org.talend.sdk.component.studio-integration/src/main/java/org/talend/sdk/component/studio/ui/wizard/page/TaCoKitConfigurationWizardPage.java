@@ -66,18 +66,18 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
     public TaCoKitConfigurationWizardPage(final TaCoKitConfigurationRuntimeData runtimeData, final String form) {
         super(Messages.getString("WizardPage.TaCoKitConfiguration"), runtimeData); //$NON-NLS-1$
         final ConfigTypeNode configTypeNode = runtimeData.getConfigTypeNode();
-        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(),
-                //$NON-NLS-1$
+        setTitle(Messages.getString("TaCoKitConfiguration.wizard.title", configTypeNode.getConfigurationType(), // $NON-NLS-1$
                 configTypeNode.getDisplayName()));
         setDescription(Messages.getString("TaCoKitConfiguration.wizard.description.edit",
-                configTypeNode.getConfigurationType(), //$NON-NLS-1$
+                configTypeNode.getConfigurationType(), // $NON-NLS-1$
                 configTypeNode.getDisplayName()));
         this.form = form;
         this.category = Metadatas.MAIN_FORM.equals(form) ? EComponentCategory.BASIC : EComponentCategory.ADVANCED;
         if (!runtimeData.isReadonly()) {
             try {
-                TaCoKitConfigurationModel configurationItemModel = getConfigurationItemModel();
-                configurationItemModel.storeVersion(String.valueOf(configurationItemModel.getConfigTypeNodeVersion()));
+                // do not remove. It initializes connection instance
+                TaCoKitConfigurationModel configurationItemModel = new TaCoKitConfigurationModel(
+                        runtimeData.getConnectionItem().getConnection(), runtimeData.getConfigTypeNode());
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
@@ -136,9 +136,7 @@ public class TaCoKitConfigurationWizardPage extends AbsTaCoKitWizardPage {
         if (this.configurationModel == null) {
             try {
                 final TaCoKitConfigurationRuntimeData runtimeData = getTaCoKitConfigurationRuntimeData();
-                final TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(
-                        runtimeData.getConnectionItem());
-                configurationModel = itemModel.getConfigurationModel();
+                configurationModel = new TaCoKitConfigurationModel(runtimeData.getConnectionItem().getConnection());
             } catch (Exception e) {
                 ExceptionHandler.process(e);
             }
