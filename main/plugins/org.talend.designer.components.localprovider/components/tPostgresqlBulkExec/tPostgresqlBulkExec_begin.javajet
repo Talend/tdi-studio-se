@@ -21,7 +21,7 @@ String cid = node.getUniqueName();
 String table = ElementParameterParser.getValue(node, "__TABLE__");
 String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
-boolean isGreenplum = ("true").equals(ElementParameterParser.getValue(node,"__IS_GREENPLUM_DRIVER__"));
+String driverIfGreenplum = ElementParameterParser.getValue(node,"__DRIVER_IF_GREENPLUM__");
 boolean standardConformingString= ("true").equals(ElementParameterParser.getValue(node,"__STANDARD_CONFORMING_STRING__"));
 boolean convertToUppercase = false; // not active this function
 boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
@@ -178,7 +178,7 @@ java.sql.Connection conn_<%=cid%> = null;
 	 } else {
 	 %>
 
-		<%if(isGreenplum){%>
+		<%if(driverIfGreenplum.equals("GREENPLUM")){%>
 			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
 			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=host%>+":"+<%=port%>+";DatabaseName="+<%=dbName%>;
 		<%} else {%>
