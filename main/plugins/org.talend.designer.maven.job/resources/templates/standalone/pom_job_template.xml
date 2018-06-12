@@ -245,6 +245,25 @@
 				<survivorship.rules.dir>${current.resources.dir}/metadata/survivorship/</survivorship.rules.dir>
 			</properties>
 		</profile>
-
+		<profile>
+			<id>cloud-publisher</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.talend</groupId>
+						<artifactId>cloud.publisher</artifactId>
+						<version>${talend.version}</version>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>publish</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>
