@@ -29,8 +29,25 @@ class BigQueryUtil_<%=cid%> {
 		}
 	}
 	
+	private String getLocation(com.google.api.services.bigquery.model.JobConfigurationQuery queryConfig) throws Exception {
+		String location = null;
+		com.google.api.services.bigquery.model.JobConfiguration config = new com.google.api.services.bigquery.model.JobConfiguration();
+		config.setQuery(queryConfig);
+		config.setDryRun(true);
+		com.google.api.services.bigquery.model.Job job = new com.google.api.services.bigquery.model.Job();
+		job.setConfiguration(config);
+		List<com.google.api.services.bigquery.model.TableReference> referencedTables = bigqueryclient.jobs().insert(projectId, job).execute().getStatistics().getQuery().getReferencedTables();
+		if(referencedTables != null && !referencedTables.isEmpty()) {
+			location = bigqueryclient.tables().get(projectId, referencedTables.get(0).getDatasetId(), referencedTables.get(0).getTableId()).execute().getLocation();
+		}
+		return location;
+	}
+	
 	private void createDataset(String location) throws Exception {
 		com.google.api.services.bigquery.model.Dataset dataset = new com.google.api.services.bigquery.model.Dataset().setDatasetReference(new com.google.api.services.bigquery.model.DatasetReference().setProjectId(projectId).setDatasetId(tempDataset));
+		if(location != null) {
+			dataset.setLocation(location);
+		}
 		String description = "Dataset for BigQuery query job temporary table";
 		dataset.setFriendlyName(description);
     	dataset.setDescription(description);
@@ -44,7 +61,7 @@ class BigQueryUtil_<%=cid%> {
 			this.useLargeResult = true;
 			tempDataset = genTempName("dataset");
 			tempTable = genTempName("table");
-			createDataset(null);
+			createDataset(getLocation(queryConfig));
 			queryConfig.setAllowLargeResults(true);
 			queryConfig.setDestinationTable(new com.google.api.services.bigquery.model.TableReference()
 											.setProjectId(projectId)
