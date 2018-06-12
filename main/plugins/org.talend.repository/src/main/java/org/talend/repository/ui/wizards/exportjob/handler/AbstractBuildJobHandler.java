@@ -30,8 +30,6 @@ import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.exception.PersistenceException;
 import org.talend.commons.utils.workbench.resources.ResourceUtils;
 import org.talend.core.CorePlugin;
-import org.talend.core.GlobalServiceRegister;
-import org.talend.core.ITDQSurvivorshipService;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -45,7 +43,6 @@ import org.talend.core.runtime.repository.build.IBuildParametes;
 import org.talend.core.runtime.repository.build.IBuildResourceParametes;
 import org.talend.core.runtime.repository.build.IBuildResourcesProvider;
 import org.talend.core.runtime.util.ParametersUtil;
-import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.designer.maven.model.TalendMavenConstants;
 import org.talend.designer.runprocess.IRunProcessService;
 import org.talend.designer.runprocess.ProcessorUtilities;
@@ -162,25 +159,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         return LastGenerationInfo.getInstance().isUsePigUDFs(processItem.getProperty().getId(), this.version);
     }
 
-    protected boolean needDQSurvivorshipRules() {
-        // when needJobItem or itemDependencies is true, the survivorship rules will be included.so return false here.
-        if (isOptionChoosed(ExportChoice.needJobItem) || itemDependencies) {
-            return false;
-        }
-
-        Collection<NodeType> survivorshipNodes = null;
-        if (GlobalServiceRegister.getDefault().isServiceRegistered(ITDQSurvivorshipService.class)) {
-            ITDQSurvivorshipService tdqSurvShipService = (ITDQSurvivorshipService) GlobalServiceRegister.getDefault().getService(
-                    ITDQSurvivorshipService.class);
-            if (tdqSurvShipService != null) {
-                survivorshipNodes = tdqSurvShipService.getSurvivorshipNodesOfProcess(processItem);
-            }
-        }
-        if (survivorshipNodes != null && !survivorshipNodes.isEmpty()) {
-            return true;
-        }
-        return false;
-    }
 
     protected String getProgramArgs() {
         StringBuffer programArgs = new StringBuffer();
@@ -215,10 +193,6 @@ public abstract class AbstractBuildJobHandler implements IBuildJobHandler, IBuil
         // if not binaries, need add maven resources
         boolean isBinaries = isOptionChoosed(ExportChoice.binaries);
         addArg(profileBuffer, !isBinaries, TalendMavenConstants.PROFILE_INCLUDE_MAVEN_RESOURCES);
-        // DQ survivorship rules when items not exported.
-        if (needDQSurvivorshipRules()) {
-            addArg(profileBuffer, true, TalendMavenConstants.PROFILE_INCLUDE_SURVIVORSHIP_RULES);
-        }
         addArg(profileBuffer, isOptionChoosed(ExportChoice.needJobItem) || itemDependencies,
                 TalendMavenConstants.PROFILE_INCLUDE_ITEMS);
 
