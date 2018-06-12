@@ -18,7 +18,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import org.talend.core.model.process.IElement;
 
 /**
- * Represents Check parameter. Table parameter is ElementParameter, which EParameterFieldType is CHECK.
+ * Represents Check parameter. Check parameter is ElementParameter, which EParameterFieldType is CHECK.
  * Value of Table parameter should have Boolean type.
  * This class provides correct conversion from/to String of parameter value
  */
