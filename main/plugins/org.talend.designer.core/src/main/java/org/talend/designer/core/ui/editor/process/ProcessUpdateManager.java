@@ -2286,6 +2286,8 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                 if (!ComponentCategory.CATEGORY_4_DI.getName().equals(component.getPaletteType())
                         && component.getName().startsWith("tJDBC")) {
                     isOldJDBC = true;
+                } else if (component.getName().startsWith("tSqoop")) {
+                    isOldJDBC = true;
                 }
             }
         }
