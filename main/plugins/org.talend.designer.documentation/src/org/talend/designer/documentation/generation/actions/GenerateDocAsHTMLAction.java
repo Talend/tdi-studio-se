@@ -52,24 +52,23 @@ public class GenerateDocAsHTMLAction extends AContextualAction {
         ProjectManager instance = ProjectManager.getInstance();
         boolean canWork = false;
         List<RepositoryNode> nodes = selection.toList();
-        
+
         for (RepositoryNode node : nodes) {
-            if (ERepositoryObjectType.PROCESS_MR != null) {
-                if (node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_MR) {
+            if (ERepositoryObjectType.PROCESS_MR != null || ERepositoryObjectType.PROCESS_STORM != null) {
+                if (node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_MR
+                        || node.getProperties(EProperties.CONTENT_TYPE) == ERepositoryObjectType.PROCESS_STORM) {
                     if (node.getObject() != null && instance.isInCurrentMainProject(node)) {
                         canWork = true;
                     }
                 }
             }
-            
+
             Object contentType = node.getProperties(EProperties.CONTENT_TYPE);
-			if (contentType == ERepositoryObjectType.PROCESS
-					|| contentType == ERepositoryObjectType.PROCESS_ROUTE) {
-				if (node.getObject() != null
-						&& instance.isInCurrentMainProject(node)) {
-					canWork = true;
-				}
-			}
+            if (contentType == ERepositoryObjectType.PROCESS || contentType == ERepositoryObjectType.PROCESS_ROUTE) {
+                if (node.getObject() != null && instance.isInCurrentMainProject(node)) {
+                    canWork = true;
+                }
+            }
             if (canWork && node.getObject() != null
                     && ProxyRepositoryFactory.getInstance().getStatus(node.getObject()) == ERepositoryStatus.DELETED) {
                 canWork = false;
