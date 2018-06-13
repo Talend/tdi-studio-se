@@ -34,14 +34,8 @@ public class SuggestionValues {
      */
     private Collection<Item> items;
     
-    //TODO check whether it is required
     public SuggestionValues() {
         // no-op
-    }
-    
-    public SuggestionValues(final boolean cacheable, final Collection<Item> items) {
-        this.cacheable = cacheable;
-        this.items = items;
     }
     
     public boolean isCacheable() {
@@ -71,14 +65,8 @@ public class SuggestionValues {
 
         private String label;
         
-        //TODO check whether it is required        
         public Item() {
             // no-op
-        }
-
-        public Item(String id, String label) {
-            this.id = id;
-            this.label = label;
         }
 
         public String getId() {
