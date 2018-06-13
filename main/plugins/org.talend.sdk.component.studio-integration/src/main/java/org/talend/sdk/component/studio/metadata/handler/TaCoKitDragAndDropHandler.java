@@ -26,7 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.components.IComponent;
@@ -51,7 +50,6 @@ import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -70,8 +68,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return false;
         }
         try {
-            TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-            if (!StringUtils.isEmpty(model.getConfigurationId())) {
+            if (TaCoKitConfigurationModel.isTacokit(connection)) {
                 return true;
             }
         } catch (Exception e) {

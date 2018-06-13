@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.talend.core.model.metadata.builder.connection.Connection;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
@@ -77,6 +78,10 @@ public class TaCoKitConfigurationModel {
     @SuppressWarnings("deprecation")
     private static String getConfigId(final Connection connection) {
         return (String) connection.getProperties().get(TACOKIT_CONFIG_ID);
+    }
+    
+    public static boolean isTacokit(final Connection connection) {
+        return !StringUtils.isEmpty(getConfigId(connection));
     }
     
     private boolean isVersionSet() {
