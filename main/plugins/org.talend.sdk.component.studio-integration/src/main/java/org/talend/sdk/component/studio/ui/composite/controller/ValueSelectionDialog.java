@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.commons.ui.swt.formtools.LabelledText;
 import org.talend.core.ui.composite.ElementsSelectionComposite;
+import org.talend.sdk.component.studio.i18n.Messages;
 
 public class ValueSelectionDialog extends Dialog {
     
@@ -93,7 +94,7 @@ public class ValueSelectionDialog extends Dialog {
         customValueComposite.setLayout(new GridLayout());
         customValueComposite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
         Button useCustomButton = new Button(customValueComposite, SWT.CHECK);
-        useCustomButton.setText("Button"); //$NON-NLS-1$
+        useCustomButton.setText(Messages.getString("suggestion.dialog.custom.button")); //$NON-NLS-1$
         useCustomButton.addSelectionListener(new SelectionAdapter() {
 
             @Override
@@ -101,7 +102,7 @@ public class ValueSelectionDialog extends Dialog {
                 updateFieldsStatus(useCustomButton.getSelection());
             }
         });
-        customValueText = new LabelledText(customValueComposite, "Custom"); //$NON-NLS-1$
+        customValueText = new LabelledText(customValueComposite, Messages.getString("suggestion.dialog.custom.text")); //$NON-NLS-1$
         updateFieldsStatus(useCustomButton.getSelection());
         return dialogArea;
     }
