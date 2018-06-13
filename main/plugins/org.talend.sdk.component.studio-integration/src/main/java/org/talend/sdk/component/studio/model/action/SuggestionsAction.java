@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.talend.sdk.component.studio.Lookups;
@@ -34,8 +35,13 @@ public class SuggestionsAction extends Action {
     
     @Override
     public Map<String, String> callback() {
-        // TODO fix it by wrapping callback result in Map
-        throw new UnsupportedOperationException("use callSuggestions instead");
+        final SuggestionValues response = callSuggestions();
+        final Map<String, String> result = new HashMap<>();
+        result.put("cacheble", String.valueOf(response.isCacheable()));
+        response.getItems().forEach(item -> {
+            result.put(item.getId(), item.getLabel());
+        });
+        return result;
     }
 
 }
