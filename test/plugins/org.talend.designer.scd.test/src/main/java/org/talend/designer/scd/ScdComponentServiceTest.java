@@ -30,6 +30,7 @@ import org.talend.core.model.properties.Property;
 import org.talend.core.model.repository.FakePropertyImpl;
 import org.talend.core.service.IScdComponentService;
 import org.talend.core.ui.component.ComponentsFactoryProvider;
+import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 
@@ -46,8 +47,10 @@ public class ScdComponentServiceTest {
         IComponent tPostgresqlSCD = ComponentsFactoryProvider.getInstance().get("tPostgresqlSCD",
                 ComponentCategory.CATEGORY_4_DI.getName());
         Node tPostgresqlSCDNode = new Node(tPostgresqlSCD, process);
+        process.addNodeContainer(new NodeContainer(tPostgresqlSCDNode));
 
-        IMetadataTable metadataTable = tPostgresqlSCDNode.getMetadataTable("tPostgresqlSCD_1");
+        // tDBSCD_1
+        IMetadataTable metadataTable = tPostgresqlSCDNode.getMetadataTable("tDBSCD_1");
         metadataTable.getListColumns().add(createColumn("newColumn", "id_String"));
         IMetadataColumn idColumn = createColumn("id", "id_String");
         metadataTable.getListColumns().add(idColumn);
