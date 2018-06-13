@@ -140,21 +140,21 @@ public class StatsAndLogsManager {
         }
 
         boolean useStats = ((Boolean) process.getElementParameter(EParameterName.ON_STATCATCHER_FLAG.getName()).getValue())
-                && process.getElementParameter(EParameterName.ON_STATCATCHER_FLAG.getName()).isShow(
-                        process.getElementParameters());
+                && process.getElementParameter(EParameterName.ON_STATCATCHER_FLAG.getName())
+                        .isShow(process.getElementParameters());
 
         boolean useLogs = ((Boolean) process.getElementParameter(EParameterName.ON_LOGCATCHER_FLAG.getName()).getValue())
                 && process.getElementParameter(EParameterName.ON_LOGCATCHER_FLAG.getName())
                         .isShow(process.getElementParameters());
 
         boolean useMetter = ((Boolean) process.getElementParameter(EParameterName.ON_METERCATCHER_FLAG.getName()).getValue())
-                && process.getElementParameter(EParameterName.ON_METERCATCHER_FLAG.getName()).isShow(
-                        process.getElementParameters());
+                && process.getElementParameter(EParameterName.ON_METERCATCHER_FLAG.getName())
+                        .isShow(process.getElementParameters());
 
         String basePath = (String) process.getElementParameter(EParameterName.FILE_PATH.getName()).getValue();
         basePath = basePath.replace("\\", "/") + "+ \"/\" +"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         DataNode connectionNode = null;
-        //        String connectionUID = "connectionStatsLogs";//$NON-NLS-1$
+        // String connectionUID = "connectionStatsLogs";//$NON-NLS-1$
 
         DataNode commitNode = null;
         String connectionUID2;
@@ -171,8 +171,10 @@ public class StatsAndLogsManager {
             String[] javaDbComponents = StatsAndLogsConstants.DB_OUTPUT_COMPONENTS;
             for (String dbComponent : javaDbComponents) {
                 String commitComponentName = null;
-                if (OracleComponentHelper.filterOracleConnectionType(
-                        (String) process.getElementParameter(EParameterName.DB_TYPE.getName()).getValue()).equals(dbComponent)) {
+                if (OracleComponentHelper
+                        .filterOracleConnectionType(
+                                (String) process.getElementParameter(EParameterName.DB_TYPE.getName()).getValue())
+                        .equals(dbComponent)) {
                     if (dbComponent.endsWith("Output")) {//$NON-NLS-1$
                         subString = dbComponent.substring(0, dbComponent.lastIndexOf("Output"));//$NON-NLS-1$
                         commitComponentName = subString + "Commit";//$NON-NLS-1$
@@ -191,14 +193,14 @@ public class StatsAndLogsManager {
                         commitNode.setActivate(true);
                         boolean isGeneric = commitNode.getComponent().getComponentType() == EComponentType.GENERIC;
                         IElementParameter param = commitNode.getElementParameter(EParameterName.CONNECTION.getName());
-                        if(param == null && isGeneric){
+                        if (param == null && isGeneric) {
                             param = commitNode.getElementParameter("referencedComponent"); //$NON-NLS-1$
                         }
                         if (param != null) {
                             param.setValue(CONNECTION_UID);
                         }
                         IElementParameter elementParameter = commitNode.getElementParameter("CLOSE");//$NON-NLS-1$
-                        if(elementParameter == null && isGeneric){
+                        if (elementParameter == null && isGeneric) {
                             elementParameter = commitNode.getElementParameter("closeConnection");//$NON-NLS-1$
                         }
                         if (elementParameter != null) {
@@ -211,13 +213,17 @@ public class StatsAndLogsManager {
                 }
             }
         }
-        
+
         if (useStats) {
-            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
-            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
-            if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, STAT_UNIQUE_NAME, "tStatCatcher" ,"STATS", EParameterName.TABLE_STATS.getName());
-            }else{
+            IComponent dbOutputComponent = dbOutput != null
+                    ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType())
+                    : null;
+            boolean tcomp_jdbcoutput = (dbOutputComponent != null)
+                    && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if (tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent,
+                        "tStatCatcher", basePath, file, console);
+            } else {
                 DataNode statsNode = createStatsNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                     statsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -259,11 +265,15 @@ public class StatsAndLogsManager {
         }
 
         if (useLogs) {
-            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
-            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
-            if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, LOG_UNIQUE_NAME, "tLogCatcher" ,"LOGS", EParameterName.TABLE_LOGS.getName());
-            }else{
+            IComponent dbOutputComponent = dbOutput != null
+                    ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType())
+                    : null;
+            boolean tcomp_jdbcoutput = (dbOutputComponent != null)
+                    && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if (tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent,
+                        "tLogCatcher", basePath, file, console);
+            } else {
                 DataNode logsNode = createLogsNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                     logsNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -299,30 +309,34 @@ public class StatsAndLogsManager {
                     }
                 }
 
-                if(logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null){
-                    logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+                if (logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()) != null) {
+                    logsNode.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName())
+                            .setValue(process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
                 }
-                if(logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null){
-                    logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+                if (logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()) != null) {
+                    logsNode.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName())
+                            .setValue(process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
                 }
-                if(logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null){
-                    logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).setValue(
-                            process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+                if (logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()) != null) {
+                    logsNode.getElementParameter(EParameterName.CATCH_USER_WARNING.getName())
+                            .setValue(process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
                 }
 
                 logsNode.setProcess(process);
-                nodeList.add(logsNode); 
+                nodeList.add(logsNode);
             }
         }
 
         if (useMetter) {
-            IComponent dbOutputComponent = dbOutput!=null ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType()) : null;
-            boolean tcomp_jdbcoutput = !file && !console && (dbOutputComponent!=null) && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
-            if(tcomp_jdbcoutput) {
-                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent, METER_UNIQUE_NAME, "tFlowMeterCatcher" ,"METTER", EParameterName.TABLE_METER.getName());
-            }else{
+            IComponent dbOutputComponent = dbOutput != null
+                    ? ComponentsFactoryProvider.getInstance().get(dbOutput, process.getComponentsType())
+                    : null;
+            boolean tcomp_jdbcoutput = (dbOutputComponent != null)
+                    && (dbOutputComponent.getComponentType() == EComponentType.GENERIC);
+            if (tcomp_jdbcoutput) {
+                connectionNode = addGenericDataNodes(process, nodeList, connectionNode, commitNode, dbOutputComponent,
+                        "tFlowMeterCatcher", basePath, file, console);
+            } else {
                 DataNode meterNode = createMetterNode(file, console, dbOutput);
                 if (LanguageManager.getCurrentLanguage().equals(ECodeLanguage.PERL)) {
                     meterNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
@@ -358,67 +372,106 @@ public class StatsAndLogsManager {
                         }
                     }
                 }
-                
+
                 meterNode.setProcess(process);
-                nodeList.add(meterNode); 
+                nodeList.add(meterNode);
             }
         }
-        
+
         return nodeList;
     }
 
-    private static DataNode addGenericDataNodes(IProcess process, List<DataNode> nodeList, DataNode connectionNode, DataNode commitNode, IComponent dbOutputComponent, String prefixName, String inputComponentName, String inputComponentId, String dbTableParameterName) {
-        IComponent inputComponent = ComponentsFactoryProvider.getInstance().get(
-            inputComponentName, ComponentCategory.CATEGORY_4_DI.getName());
-        String inputComponentUniqueName = prefixName + "_" + inputComponentId;
-        DataNode inputNode = new DataNode(inputComponent, inputComponentUniqueName);
-        inputNode.setStart(true);
-        inputNode.setSubProcessStart(true);
-        inputNode.setActivate(true);
-        inputNode.setProcess(process);
-        
-        //please see JobLogsComponent class
-        if("tLogCatcher".equals(inputComponentName)) {
-            if(inputNode.getElementParameter("CATCH_JAVA_EXCEPTION")!=null) {
-                inputNode.getElementParameter("CATCH_JAVA_EXCEPTION").setValue(process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
-            }
-            
-            if(inputNode.getElementParameter("CATCH_TDIE")!=null) {
-                inputNode.getElementParameter("CATCH_TDIE").setValue(process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
-            }
-            
-            if(inputNode.getElementParameter("CATCH_TWARN")!=null) {
-                inputNode.getElementParameter("CATCH_TWARN").setValue(process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
-            }
+    private static DataNode addGenericDataNodes(IProcess process, List<DataNode> nodeList, DataNode connectionNode,
+            DataNode commitNode, IComponent dbOutputComponent, String inputComponentName, String basePath, boolean file,
+            boolean console) {
+        String prefixName = null;
+        String inputComponentId = null;
+        String dbTableParameterName = null;
+        boolean catchStats = false;
+        boolean catchLogs = false;
+        boolean catchMetters = false;
+        if ("tStatCatcher".equals(inputComponentName)) {
+            prefixName = STAT_UNIQUE_NAME;
+            inputComponentId = "STATS";
+            dbTableParameterName = EParameterName.TABLE_STATS.getName();
+            catchStats = true;
+        } else if ("tLogCatcher".equals(inputComponentName)) {
+            prefixName = LOG_UNIQUE_NAME;
+            inputComponentId = "LOGS";
+            dbTableParameterName = EParameterName.TABLE_LOGS.getName();
+            catchLogs = true;
+        } else if ("tFlowMeterCatcher".equals(inputComponentName)) {
+            prefixName = METER_UNIQUE_NAME;
+            inputComponentId = "METTER";
+            dbTableParameterName = EParameterName.TABLE_METER.getName();
+            catchMetters = true;
         }
-        
-        nodeList.add(inputNode);
-        
-        boolean found = false;
-        IMetadataTable sourceMetadataValue = null;
-        for (int k = 0; k < inputNode.getElementParameters().size() && !found; k++) {
-            IElementParameter currentParam = inputNode.getElementParameters().get(k);
+
+        DataNode catcherNode = createGenericInputNode(inputComponentName, prefixName, inputComponentId, process);
+        catcherNode.getMetadataList().clear();
+        IMetadataTable sourceMetadataTable = null;
+        for (int k = 0; k < catcherNode.getElementParameters().size(); k++) {
+            IElementParameter currentParam = catcherNode.getElementParameters().get(k);
             if (currentParam.getFieldType().equals(EParameterFieldType.SCHEMA_TYPE)
                     || currentParam.getFieldType().equals(EParameterFieldType.SCHEMA_REFERENCE)) {
                 Object value = currentParam.getValue();
                 if (value instanceof IMetadataTable) {
-                    sourceMetadataValue = ((IMetadataTable) value).clone();
-                    sourceMetadataValue.setTableName(prefixName);
-                    sourceMetadataValue.setAttachedConnector(currentParam.getContext());
+                    sourceMetadataTable = ((IMetadataTable) value).clone();
+                    sourceMetadataTable.setTableName(catcherNode.getUniqueName());
+                    sourceMetadataTable.setAttachedConnector(currentParam.getContext());
+                    catcherNode.getMetadataList().add(sourceMetadataTable);
+                    break;
                 }
-                found = true;
             }
         }
-        
-        DataNode outputNode = new DataNode(dbOutputComponent, prefixName + "_" + "DB");
-        outputNode.setStart(false);
-        outputNode.setSubProcessStart(false);
-        outputNode.setActivate(true);
-        outputNode.setProcess(process);
-        nodeList.add(outputNode);
-        
-        ComponentProperties tcomp_properties = outputNode.getComponentProperties();
-        outputNode.getElementParameter("tableSelection.tablename").setValue(process.getElementParameter(dbTableParameterName).getValue());
+        nodeList.add(catcherNode);
+        DataNode inputNode = catcherNode;
+        if (catchLogs) {
+            // please see JobLogsComponent class
+            if (inputNode.getElementParameter("CATCH_JAVA_EXCEPTION") != null) {
+                inputNode.getElementParameter("CATCH_JAVA_EXCEPTION")
+                        .setValue(process.getElementParameter(EParameterName.CATCH_RUNTIME_ERRORS.getName()).getValue());
+            }
+            if (inputNode.getElementParameter("CATCH_TDIE") != null) {
+                inputNode.getElementParameter("CATCH_TDIE")
+                        .setValue(process.getElementParameter(EParameterName.CATCH_USER_ERRORS.getName()).getValue());
+            }
+            if (inputNode.getElementParameter("CATCH_TWARN") != null) {
+                inputNode.getElementParameter("CATCH_TWARN")
+                        .setValue(process.getElementParameter(EParameterName.CATCH_USER_WARNING.getName()).getValue());
+            }
+        }
+
+        if (file) {
+            DataNode fileNode = createGenericFileNode(inputNode, sourceMetadataTable, prefixName, process);
+            if (catchStats) {
+                fileNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                        basePath + process.getElementParameter(EParameterName.FILENAME_STATS.getName()).getValue());
+            } else if (catchLogs) {
+                fileNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                        basePath + process.getElementParameter(EParameterName.FILENAME_LOGS.getName()).getValue());
+            } else if (catchMetters) {
+                fileNode.getElementParameter("FILENAME").setValue(//$NON-NLS-1$
+                        basePath + process.getElementParameter(EParameterName.FILENAME_METTER.getName()).getValue());
+            }
+            nodeList.add(fileNode);
+            inputNode = fileNode;
+        }
+
+        DataConnection dataConnec = new DataConnection();
+        dataConnec.setMetadataTable(sourceMetadataTable);
+
+        DataNode dbOutputNode = new DataNode(dbOutputComponent, prefixName + "_" + "DB");
+        dbOutputNode.setStart(false);
+        dbOutputNode.setSubProcessStart(false);
+        dbOutputNode.setActivate(true);
+        dbOutputNode.setProcess(process);
+        nodeList.add(dbOutputNode);
+
+        ComponentProperties tcomp_properties = dbOutputNode.getComponentProperties();
+        dbOutputNode.getElementParameter("tableSelection.tablename")
+                .setValue(process.getElementParameter(dbTableParameterName).getValue());
+
         NamedThing referencedComponent = tcomp_properties.getProperty("referencedComponent");
         if (referencedComponent instanceof ComponentReferenceProperties) {
             ComponentReferenceProperties refProps = (ComponentReferenceProperties) referencedComponent;
@@ -426,73 +479,180 @@ public class StatsAndLogsManager {
             refProps.componentInstanceId.setStoredValue(CONNECTION_UID);
             refProps.componentInstanceId.setTaggedValue("ADD_QUOTES", true);
         }
-        
-        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, inputNode, nodeList, commitNode, true);
-        
-        DataConnection dataConnec = new DataConnection();
+        sourceMetadataTable = sourceMetadataTable.clone();
+        sourceMetadataTable.setTableName(dbOutputNode.getUniqueName());
+        sourceMetadataTable.setAttachedConnector("MAIN");
+        List<IMetadataTable> tables = new ArrayList<>();
+        tables.add(sourceMetadataTable);
+        dbOutputNode.setMetadataList(tables);
+
+        Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(sourceMetadataTable));
+        tcomp_properties.setValue("main.schema", schema);
+        tcomp_properties.setValue("schemaFlow.schema", schema);
+
         dataConnec.setActivate(true);
         dataConnec.setLineStyle(EConnectionType.FLOW_MAIN);
         dataConnec.setConnectorName("FLOW");
-        dataConnec.setMetadataTable(sourceMetadataValue);
-        dataConnec.setName("row_" + inputComponentUniqueName);
+        dataConnec.setName("row_" + inputNode.getUniqueName());
         dataConnec.setSource(inputNode);
-        dataConnec.setTarget(outputNode);
+        dataConnec.setTarget(dbOutputNode);
         ((List<IConnection>) inputNode.getOutgoingConnections()).add(dataConnec);
-        ((List<IConnection>) outputNode.getIncomingConnections()).add(dataConnec);
-        
-        List<IMetadataTable> tables = new ArrayList<>();
-        IMetadataTable outputMetadata = sourceMetadataValue.clone();
-        tables.add(outputMetadata);
-        outputNode.setMetadataList(tables);
-        
-        Schema schema = MetadataToolAvroHelper.convertToAvro(ConvertionHelper.convert(outputMetadata));
-        tcomp_properties.setValue("main.schema", schema);
-        tcomp_properties.setValue("schemaFlow.schema", schema);
-        
-        resetShowIf(outputNode);
-        
+        ((List<IConnection>) dbOutputNode.getIncomingConnections()).add(dataConnec);
+        inputNode = dbOutputNode;
+
+        resetShowIf(dbOutputNode);
+
+        connectionNode = addConnection(connectionNode, process, CONNECTION_UID, catcherNode, nodeList, commitNode, true);
         IElementParameter refPara = commitNode.getElementParameter("referencedComponent");
-        if(refPara != null){
+        if (refPara != null) {
             refPara.setValue(connectionNode.getUniqueName());
             IGenericDBService dbService = null;
             if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-                        IGenericDBService.class);
+                dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
             }
-            if(dbService != null){
+            if (dbService != null) {
                 dbService.initReferencedComponent(refPara, connectionNode.getUniqueName());
             }
         }
+
+        if (console) {
+            DataNode consoleNode = createGenericConsoleNode(inputNode, sourceMetadataTable, prefixName, process);
+            nodeList.add(consoleNode);
+            inputNode = consoleNode;
+        }
+
         return connectionNode;
+    }
+
+    private static DataNode createGenericInputNode(final String inputComponentName, String prefixName, String inputComponentId,
+            IProcess process) {
+        IComponent inputComponent = ComponentsFactoryProvider.getInstance().get(inputComponentName,
+                ComponentCategory.CATEGORY_4_DI.getName());
+        String inputComponentUniqueName = prefixName + "_" + inputComponentId;
+        DataNode inputNode = new DataNode(inputComponent, inputComponentUniqueName);
+        inputNode.setStart(true);
+        inputNode.setSubProcessStart(true);
+        inputNode.setActivate(true);
+        inputNode.setProcess(process);
+        return inputNode;
+    }
+
+    private static DataNode createGenericConsoleNode(DataNode inputNode, IMetadataTable sourceMetadataTable, String prefixName,
+            IProcess process) {
+        DataConnection dataConnec = new DataConnection();
+        dataConnec.setMetadataTable(sourceMetadataTable);
+        dataConnec.setConnectorName(sourceMetadataTable.getAttachedConnector());
+
+        IComponent inputComponent = ComponentsFactoryProvider.getInstance().get("tLogRow",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        DataNode consoleNode = new DataNode(inputComponent, prefixName + "_" + "CONSOLE");
+        consoleNode.setStart(false);
+        consoleNode.setSubProcessStart(false);
+        consoleNode.setActivate(true);
+        consoleNode.setProcess(process);
+        sourceMetadataTable = sourceMetadataTable.clone();
+        sourceMetadataTable.setTableName(consoleNode.getUniqueName());
+        sourceMetadataTable.setAttachedConnector("FLOW");
+        consoleNode.getMetadataList().clear();
+        consoleNode.getMetadataList().add(sourceMetadataTable);
+
+        dataConnec.setActivate(true);
+        dataConnec.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnec.setName("row_" + inputNode.getUniqueName());
+        dataConnec.setSource(inputNode);
+        dataConnec.setTarget(consoleNode);
+        ((List<IConnection>) inputNode.getOutgoingConnections()).add(dataConnec);
+        ((List<IConnection>) consoleNode.getIncomingConnections()).add(dataConnec);
+        return consoleNode;
+    }
+
+    private static DataNode createGenericFileNode(DataNode inputNode, IMetadataTable sourceMetadataTable, String prefixName,
+            IProcess process) {
+        DataConnection dataConnec = new DataConnection();
+        dataConnec.setMetadataTable(sourceMetadataTable);
+
+        IComponent inputComponent = ComponentsFactoryProvider.getInstance().get("tFileOutputDelimited",
+                ComponentCategory.CATEGORY_4_DI.getName());
+        DataNode fileNode = new DataNode(inputComponent, prefixName + "_" + "FILE");
+        fileNode.setStart(false);
+        fileNode.setSubProcessStart(false);
+        fileNode.setActivate(true);
+        fileNode.setProcess(process);
+        sourceMetadataTable = sourceMetadataTable.clone();
+        sourceMetadataTable.setTableName(fileNode.getUniqueName());
+        sourceMetadataTable.setAttachedConnector("FLOW");
+        fileNode.getMetadataList().clear();
+        fileNode.getMetadataList().add(sourceMetadataTable);
+        IElementParameter rowSeparatorParam = fileNode.getElementParameter("ROWSEPARATOR");
+        if (rowSeparatorParam != null) {
+            rowSeparatorParam.setValue(TalendTextUtils.addQuotes("\\n", TalendTextUtils.QUOTATION_MARK));
+        }
+        IElementParameter fieldSeparatorParam = fileNode.getElementParameter("FIELDSEPARATOR");
+        if (fieldSeparatorParam != null) {
+            fieldSeparatorParam.setValue(TalendTextUtils.addQuotes(";"));
+        }
+        IElementParameter appendParam = fileNode.getElementParameter("APPEND");
+        if (appendParam != null) {
+            appendParam.setValue(Boolean.TRUE);
+        }
+        IElementParameter headerParam = fileNode.getElementParameter("INCLUDEHEADER");
+        if (headerParam != null) {
+            headerParam.setValue(Boolean.FALSE);
+        }
+
+        IElementParameter encodingParameter = process.getElementParameter(EParameterName.ENCODING.getName());
+        if (encodingParameter != null) {
+            Object value = encodingParameter.getValue();
+            if (value != null && !"".equals(value)) {
+                IElementParameter elementParameter = fileNode.getElementParameter(EParameterName.ENCODING.getName());
+                if (elementParameter != null) {
+                    String encoding = value.toString();
+                    if (!value.toString().startsWith(TalendTextUtils.getQuoteChar())) {
+                        encoding = TalendTextUtils.addQuotes(encoding);
+                    }
+                    elementParameter.setValue(encoding);
+                }
+            }
+        }
+
+        dataConnec.setActivate(true);
+        dataConnec.setLineStyle(EConnectionType.FLOW_MAIN);
+        dataConnec.setConnectorName("FLOW");
+        dataConnec.setName("row_" + inputNode.getUniqueName());
+        dataConnec.setSource(inputNode);
+        dataConnec.setTarget(fileNode);
+        ((List<IConnection>) inputNode.getOutgoingConnections()).add(dataConnec);
+        ((List<IConnection>) fileNode.getIncomingConnections()).add(dataConnec);
+        return fileNode;
     }
 
     private static void useNoConnectionComponentDB(DataNode dataNode, IProcess process, String connectionUID) {
 
-        dataNode.getElementParameter(EParameterName.HOST.getName()).setValue(
-                process.getElementParameter(EParameterName.HOST.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.PORT.getName()).setValue(
-                process.getElementParameter(EParameterName.PORT.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.SCHEMA_DB.getName()).setValue(
-                process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.DBNAME.getName()).setValue(
-                process.getElementParameter(EParameterName.DBNAME.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.DB_VERSION.getName()).setValue(
-                process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.PROPERTIES.getName()).setValue(
-                process.getElementParameter(EParameterName.PROPERTIES.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.USER.getName()).setValue(
-                process.getElementParameter(EParameterName.USER.getName()).getValue());
-        dataNode.getElementParameter(EParameterName.PASS.getName()).setValue(
-                process.getElementParameter(EParameterName.PASS.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.HOST.getName())
+                .setValue(process.getElementParameter(EParameterName.HOST.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.PORT.getName())
+                .setValue(process.getElementParameter(EParameterName.PORT.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.SCHEMA_DB.getName())
+                .setValue(process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.DBNAME.getName())
+                .setValue(process.getElementParameter(EParameterName.DBNAME.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.DB_VERSION.getName())
+                .setValue(process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.PROPERTIES.getName())
+                .setValue(process.getElementParameter(EParameterName.PROPERTIES.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.USER.getName())
+                .setValue(process.getElementParameter(EParameterName.USER.getName()).getValue());
+        dataNode.getElementParameter(EParameterName.PASS.getName())
+                .setValue(process.getElementParameter(EParameterName.PASS.getName()).getValue());
 
         Object dbType = process.getElementParameter(EParameterName.DB_TYPE.getName()).getValue();
         if (dbType != null) {
             String dbStr = dbType.toString();
-            dataNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName()).setValue(
-                    OracleComponentHelper.filterOracleConnectionType(dbStr));
+            dataNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName())
+                    .setValue(OracleComponentHelper.filterOracleConnectionType(dbStr));
             if (dbStr.indexOf("Access") != -1) {//$NON-NLS-1$
-                dataNode.getElementParameter(EParameterName.DBNAME.getName()).setValue(
-                        process.getElementParameter(EParameterName.DBFILE.getName()).getValue());
+                dataNode.getElementParameter(EParameterName.DBNAME.getName())
+                        .setValue(process.getElementParameter(EParameterName.DBFILE.getName()).getValue());
             } else if (dbStr.indexOf("Informix") != -1) {//$NON-NLS-1$
                 dataNode.getElementParameter(EParameterName.USE_TRANSACTION.getName()).setValue(Boolean.FALSE);
             }
@@ -507,13 +667,13 @@ public class StatsAndLogsManager {
     }
 
     private static DataNode addConnection(DataNode connectionNode, IProcess process, String connectionUID, DataNode dataNode,
-        List<DataNode> nodeList, DataNode commitNode) {
-        return addConnection(connectionNode, process, connectionUID, dataNode, nodeList,commitNode, false);
+            List<DataNode> nodeList, DataNode commitNode) {
+        return addConnection(connectionNode, process, connectionUID, dataNode, nodeList, commitNode, false);
     }
-    
+
     private static DataNode addConnection(DataNode connectionNode, IProcess process, String connectionUID, DataNode dataNode,
             List<DataNode> nodeList, DataNode commitNode, boolean tcomp) {
-        if(!tcomp) {
+        if (!tcomp) {
             IElementParameter param = dataNode.getElementParameter(EParameterName.USE_EXISTING_CONNECTION.getName());
             if (param != null) {
                 param.setValue(Boolean.TRUE);
@@ -528,8 +688,10 @@ public class StatsAndLogsManager {
             String[] javaDbComponents = StatsAndLogsConstants.DB_OUTPUT_COMPONENTS;
             for (String dbComponent : javaDbComponents) {
                 String connectionComponentName = null;
-                if (OracleComponentHelper.filterOracleConnectionType(
-                        (String) process.getElementParameter(EParameterName.DB_TYPE.getName()).getValue()).equals(dbComponent)) {
+                if (OracleComponentHelper
+                        .filterOracleConnectionType(
+                                (String) process.getElementParameter(EParameterName.DB_TYPE.getName()).getValue())
+                        .equals(dbComponent)) {
                     if (dbComponent.endsWith("Output")) { //$NON-NLS-1$
                         String substring = dbComponent.substring(0, dbComponent.lastIndexOf("Output")); //$NON-NLS-1$
                         connectionComponentName = substring + "Connection"; //$NON-NLS-1$
@@ -548,40 +710,35 @@ public class StatsAndLogsManager {
                         // activated.
                         IElementParameter elementParameter = connectionNode
                                 .getElementParameter(EParameterName.USE_SHARED_CONNECTION.getName());
-                        if(elementParameter == null && isGeneric){
-                            elementParameter = connectionNode
-                                    .getElementParameter("shareConnection"); //$NON-NLS-1$
+                        if (elementParameter == null && isGeneric) {
+                            elementParameter = connectionNode.getElementParameter("shareConnection"); //$NON-NLS-1$
                         }
                         if (elementParameter != null && elementParameter.getName() != null) {
                             elementParameter.setValue(Boolean.TRUE);
                             final String sharedConnName = "StatsAndLog_Shared_Connection"; //$NON-NLS-1$
-                            IElementParameter sharedElementParameter = connectionNode.
-                                    getElementParameter(EParameterName.SHARED_CONNECTION_NAME.getName());
-                            if(sharedElementParameter == null && isGeneric){
-                                sharedElementParameter = connectionNode.
-                                        getElementParameter("sharedConnectionName"); //$NON-NLS-1$
+                            IElementParameter sharedElementParameter = connectionNode
+                                    .getElementParameter(EParameterName.SHARED_CONNECTION_NAME.getName());
+                            if (sharedElementParameter == null && isGeneric) {
+                                sharedElementParameter = connectionNode.getElementParameter("sharedConnectionName"); //$NON-NLS-1$
                             }
                             if ((Boolean) process.getElementParameter(EParameterName.STATANDLOG_USE_PROJECT_SETTINGS.getName())
                                     .getValue()) {
-                                sharedElementParameter.setValue(
-                                        TalendTextUtils.addQuotes(sharedConnName));
+                                sharedElementParameter.setValue(TalendTextUtils.addQuotes(sharedConnName));
                             } else {
                                 String url = getUrl(process);
                                 if (url == null || url.equals("")) { // fix bug of stats/logs found for sybase
-                                    sharedElementParameter.setValue(
-                                            TalendTextUtils.addQuotes(sharedConnName));
+                                    sharedElementParameter.setValue(TalendTextUtils.addQuotes(sharedConnName));
                                 } else {
-                                    sharedElementParameter.setValue(
-                                            url + "+" + TalendTextUtils.addQuotes("_" + sharedConnName)); //$NON-NLS-1$ //$NON-NLS-2$
+                                    sharedElementParameter.setValue(url + "+" + TalendTextUtils.addQuotes("_" + sharedConnName)); //$NON-NLS-1$ //$NON-NLS-2$
                                 }
                             }
                         }
                         setConnectionParameter(connectionNode, process, connectionUID, dataNode, nodeList);
-                        
-                        if(isGeneric) {//reset the show if
+
+                        if (isGeneric) {// reset the show if
                             resetShowIf(connectionNode);
                         }
-                        
+
                         if (connectionComponentName.contains("Oracle")) {//$NON-NLS-1$
                             if (connectionNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName()) != null) {
                                 connectionNode.getElementParameter(EParameterName.CONNECTION_TYPE.getName())
@@ -610,24 +767,24 @@ public class StatsAndLogsManager {
         DataConnection dataConnec = createDataConnectionForSubJobOK(dataNode, commitNode);
         ((List<IConnection>) dataNode.getOutgoingConnections()).add(dataConnec);
         ((List<IConnection>) commitNode.getIncomingConnections()).add(dataConnec);
-        
+
         return connectionNode;
     }
 
     private static void resetShowIf(DataNode connectionNode) {
-      ComponentProperties tcomp_properties = connectionNode.getComponentProperties();
-      if(tcomp_properties!=null) {
-          List<Form> forms = tcomp_properties.getForms();
-          if(forms!=null) {
-              for(Form form : forms) {
-                tcomp_properties.refreshLayout(form);
-              }
-          }
-      }
-      //we set it for avoiding to depend on the getComponentProperties implement
-      connectionNode.setComponentProperties(tcomp_properties);
+        ComponentProperties tcomp_properties = connectionNode.getComponentProperties();
+        if (tcomp_properties != null) {
+            List<Form> forms = tcomp_properties.getForms();
+            if (forms != null) {
+                for (Form form : forms) {
+                    tcomp_properties.refreshLayout(form);
+                }
+            }
+        }
+        // we set it for avoiding to depend on the getComponentProperties implement
+        connectionNode.setComponentProperties(tcomp_properties);
     }
-    
+
     /**
      * DOC zli Comment method "getUrl".
      *
@@ -643,8 +800,8 @@ public class StatsAndLogsManager {
             }
         }
 
-        int indexOfItemFromList = process.getElementParameter(EParameterName.DB_TYPE.getName()).getIndexOfItemFromList(
-                processDBType);
+        int indexOfItemFromList = process.getElementParameter(EParameterName.DB_TYPE.getName())
+                .getIndexOfItemFromList(processDBType);
         String[] listItemsDisplayName = process.getElementParameter(EParameterName.DB_TYPE.getName()).getListItemsDisplayName();
         processDBType = listItemsDisplayName[indexOfItemFromList];
 
@@ -736,8 +893,8 @@ public class StatsAndLogsManager {
         return dataConnec;
     }
 
-    private static void setConnectionParameter(DataNode connectionNode, IProcess process, String connectionUID,
-            DataNode dataNode, List<DataNode> nodeList) {
+    private static void setConnectionParameter(DataNode connectionNode, IProcess process, String connectionUID, DataNode dataNode,
+            List<DataNode> nodeList) {
         // db type
         String dbType = null;
         IElementParameter dbTypeParameter = connectionNode.getElementParameter("TYPE");//$NON-NLS-1$
@@ -748,72 +905,73 @@ public class StatsAndLogsManager {
             }
         }
         if (connectionNode.getElementParameter(EParameterName.HOST.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.HOST.getName()).setValue(
-                    process.getElementParameter(EParameterName.HOST.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.HOST.getName())
+                    .setValue(process.getElementParameter(EParameterName.HOST.getName()).getValue());
         }
         if (connectionNode.getElementParameter(EParameterName.PORT.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.PORT.getName()).setValue(
-                    process.getElementParameter(EParameterName.PORT.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.PORT.getName())
+                    .setValue(process.getElementParameter(EParameterName.PORT.getName()).getValue());
         }
         // schema for common database component
         if (connectionNode.getElementParameter(EParameterName.SCHEMA_DB.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.SCHEMA_DB.getName()).setValue(
-                    process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.SCHEMA_DB.getName())
+                    .setValue(process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
         }
         // schema for Oracle,PostGre,Vertica,Greenplum
         if (connectionNode.getElementParameter(EParameterName.SCHEMA_DB_ORACLE.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_ORACLE.getName()).setValue(
-                    process.getElementParameter(EParameterName.SCHEMA_JOB.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_ORACLE.getName())
+                    .setValue(process.getElementParameter(EParameterName.SCHEMA_JOB.getName()).getValue());
         }
         // schema for DB2
         if (connectionNode.getElementParameter(EParameterName.SCHEMA_DB_DB2.getDisplayName()) != null) {
-            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_DB2.getDisplayName()).setValue(
-                    process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_DB2.getDisplayName())
+                    .setValue(process.getElementParameter(EParameterName.SCHEMA_DB.getName()).getValue());
         }
         // schema for MSSQL
         if (connectionNode.getElementParameter(EParameterName.SCHEMA_DB_MSSQL.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_MSSQL.getName()).setValue(
-                    process.getElementParameter(EParameterName.SCHEMA_JOB.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.SCHEMA_DB_MSSQL.getName())
+                    .setValue(process.getElementParameter(EParameterName.SCHEMA_JOB.getName()).getValue());
         }
         if (connectionNode.getElementParameter(EParameterName.DBNAME.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.DBNAME.getName()).setValue(
-                    process.getElementParameter(EParameterName.DBNAME.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.DBNAME.getName())
+                    .setValue(process.getElementParameter(EParameterName.DBNAME.getName()).getValue());
         }
         if (connectionNode.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName()).setValue(
-                    process.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName())
+                    .setValue(process.getElementParameter(EParameterName.LOCAL_SERVICE_NAME.getName()).getValue());
         }
 
         if (connectionNode.getElementParameter(EParameterName.URL.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.URL.getName()).setValue(
-                    process.getElementParameter(EParameterName.URL.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.URL.getName())
+                    .setValue(process.getElementParameter(EParameterName.URL.getName()).getValue());
         }
 
         if (connectionNode.getElementParameter(EConnectionParameterName.GENERIC_URL.getDisplayName()) != null) {
-            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_URL.getDisplayName()).setValue(
-                    process.getElementParameter(EParameterName.URL.getName()).getValue());
+            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_URL.getDisplayName())
+                    .setValue(process.getElementParameter(EParameterName.URL.getName()).getValue());
         }
 
         if (connectionNode.getElementParameter(EParameterName.DRIVER_JAR.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.DRIVER_JAR.getName()).setValue(
-                    process.getElementParameter(EParameterName.DRIVER_JAR.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.DRIVER_JAR.getName())
+                    .setValue(process.getElementParameter(EParameterName.DRIVER_JAR.getName()).getValue());
         }
-        
+
         if (connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()) != null) {
-            IElementParameter elePara = connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName());
+            IElementParameter elePara = connectionNode
+                    .getElementParameter(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName());
             Object value = process.getElementParameter(EParameterName.DRIVER_JAR.getName()).getValue();
             getMVNDriverJar(elePara, value);
             elePara.setValue(value);
         }
 
         if (connectionNode.getElementParameter(EParameterName.DRIVER_CLASS.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.DRIVER_CLASS.getName()).setValue(
-                    process.getElementParameter(EParameterName.DRIVER_CLASS.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.DRIVER_CLASS.getName())
+                    .setValue(process.getElementParameter(EParameterName.DRIVER_CLASS.getName()).getValue());
         }
-        
+
         if (connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()) != null) {
-            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()).setValue(
-                    process.getElementParameter(EParameterName.DRIVER_CLASS.getName()).getValue());
+            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName())
+                    .setValue(process.getElementParameter(EParameterName.DRIVER_CLASS.getName()).getValue());
         }
 
         // 7253
@@ -822,15 +980,15 @@ public class StatsAndLogsManager {
             String repositoryValue = elementParameter.getRepositoryValue();
             if ("DATABASE:SQLITE".equals(repositoryValue)) {
                 if (connectionNode.getElementParameter(EParameterName.DBNAME.getName()) != null) {
-                    connectionNode.getElementParameter(EParameterName.DBNAME.getName()).setValue(
-                            process.getElementParameter(EParameterName.DBFILE.getName()).getValue());
+                    connectionNode.getElementParameter(EParameterName.DBNAME.getName())
+                            .setValue(process.getElementParameter(EParameterName.DBFILE.getName()).getValue());
                 }
             }
         }
 
         if (connectionNode.getElementParameter(EParameterName.DB_VERSION.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.DB_VERSION.getName()).setValue(
-                    process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.DB_VERSION.getName())
+                    .setValue(process.getElementParameter(EParameterName.DB_VERSION.getName()).getValue());
         }
         if (StringUtils.isNotEmpty(dbType) && EDatabaseTypeName.MSSQL.getXmlName().equalsIgnoreCase(dbType)) {
             if (connectionNode.getElementParameter("DRIVER") != null) {//$NON-NLS-1$
@@ -839,48 +997,47 @@ public class StatsAndLogsManager {
             }
         }
         if (connectionNode.getElementParameter(EParameterName.PROPERTIES.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.PROPERTIES.getName()).setValue(
-                    process.getElementParameter(EParameterName.PROPERTIES.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.PROPERTIES.getName())
+                    .setValue(process.getElementParameter(EParameterName.PROPERTIES.getName()).getValue());
         }
         if (connectionNode.getElementParameter(EParameterName.USER.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.USER.getName()).setValue(
-                    process.getElementParameter(EParameterName.USER.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.USER.getName())
+                    .setValue(process.getElementParameter(EParameterName.USER.getName()).getValue());
         }
-        
+
         if (connectionNode.getElementParameter(EConnectionParameterName.GENERIC_USERNAME.getDisplayName()) != null) {
-            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_USERNAME.getDisplayName()).setValue(
-                    process.getElementParameter(EParameterName.USER.getName()).getValue());
+            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_USERNAME.getDisplayName())
+                    .setValue(process.getElementParameter(EParameterName.USER.getName()).getValue());
         }
 
         if (connectionNode.getElementParameter(EParameterName.PASS.getName()) != null) {
-            connectionNode.getElementParameter(EParameterName.PASS.getName()).setValue(
-                    process.getElementParameter(EParameterName.PASS.getName()).getValue());
+            connectionNode.getElementParameter(EParameterName.PASS.getName())
+                    .setValue(process.getElementParameter(EParameterName.PASS.getName()).getValue());
         }
-        
+
         if (connectionNode.getElementParameter(EConnectionParameterName.GENERIC_PASSWORD.getDisplayName()) != null) {
-            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_PASSWORD.getDisplayName()).setValue(
-                    process.getElementParameter(EParameterName.PASS.getName()).getValue());
+            connectionNode.getElementParameter(EConnectionParameterName.GENERIC_PASSWORD.getDisplayName())
+                    .setValue(process.getElementParameter(EParameterName.PASS.getName()).getValue());
         }
 
     }
-    
-    private static void getMVNDriverJar(IElementParameter elePara, Object value){
+
+    private static void getMVNDriverJar(IElementParameter elePara, Object value) {
         IGenericDBService dbService = null;
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IGenericDBService.class)) {
-            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(
-                    IGenericDBService.class);
+            dbService = (IGenericDBService) GlobalServiceRegister.getDefault().getService(IGenericDBService.class);
         }
-        if(dbService == null){
+        if (dbService == null) {
             return;
         }
-        
-        if(value instanceof List){
+
+        if (value instanceof List) {
             List objs = (List) value;
-            for(Object obj : objs){
-                if(obj instanceof Map){
+            for (Object obj : objs) {
+                if (obj instanceof Map) {
                     Map map = (Map) obj;
                     String driver = (String) map.get("drivers");
-                    if(elePara.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())){
+                    if (elePara.getName().equals(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName())) {
                         driver = dbService.getMVNPath(driver);
                     }
                     map.put("drivers", driver);
@@ -898,8 +1055,8 @@ public class StatsAndLogsManager {
         logsNode.getMetadataList().clear();
 
         // load the tLogCatcher to get the schema.
-        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get(
-                "tLogCatcher", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get("tLogCatcher", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         DataNode tmpNode = new DataNode(tmpComponent, "tmp"); //$NON-NLS-1$
         boolean found = false;
         for (int k = 0; k < tmpNode.getElementParameters().size() && !found; k++) {
@@ -929,8 +1086,8 @@ public class StatsAndLogsManager {
         statsNode.getMetadataList().clear();
 
         // load the tStatCatcher to get the schema.
-        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get(
-                "tStatCatcher", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get("tStatCatcher", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         DataNode tmpNode = new DataNode(tmpComponent, "tmp"); //$NON-NLS-1$
         boolean found = false;
         for (int k = 0; k < tmpNode.getElementParameters().size() && !found; k++) {
@@ -960,8 +1117,8 @@ public class StatsAndLogsManager {
         statsNode.getMetadataList().clear();
 
         // load the tFlowMeterCatcher to get the schema.
-        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get(
-                "tFlowMeterCatcher", ComponentCategory.CATEGORY_4_DI.getName()); //$NON-NLS-1$
+        IComponent tmpComponent = ComponentsFactoryProvider.getInstance().get("tFlowMeterCatcher", //$NON-NLS-1$
+                ComponentCategory.CATEGORY_4_DI.getName());
         DataNode tmpNode = new DataNode(tmpComponent, "tmp"); //$NON-NLS-1$
         boolean found = false;
         for (int k = 0; k < tmpNode.getElementParameters().size() && !found; k++) {
@@ -1053,7 +1210,8 @@ public class StatsAndLogsManager {
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(2);
-        param.setShowIf("((ON_CONSOLE_FLAG == 'true' or ON_CONSOLE_FLAG == 'false') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
+        param.setShowIf(
+                "((ON_CONSOLE_FLAG == 'true' or ON_CONSOLE_FLAG == 'false') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
         paramList.add(param);
 
         return paramList;
@@ -1084,7 +1242,8 @@ public class StatsAndLogsManager {
         param.setDisplayName(EParameterName.FILE_PATH.getDisplayName());
         param.setFieldType(EParameterFieldType.DIRECTORY);
         param.setCategory(EComponentCategory.STATSANDLOGS);
-        param.setShowIf("(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         param.setNumRow(11);
         paramList.add(param);
 
@@ -1129,8 +1288,8 @@ public class StatsAndLogsManager {
         encodingParam.setDisplayName(EParameterName.ENCODING.getDisplayName());
         encodingParam.setCategory(EComponentCategory.STATSANDLOGS);
         encodingParam.setFieldType(EParameterFieldType.ENCODING_TYPE);
-        encodingParam
-                .setShowIf("(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        encodingParam.setShowIf(
+                "(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         encodingParam.setValue(ENCODING_TYPE_ISO_8859_15);
         encodingParam.setNumRow(15);
         paramList.add(encodingParam);
@@ -1141,13 +1300,13 @@ public class StatsAndLogsManager {
         childPram.setFieldType(EParameterFieldType.TECHNICAL);
         childPram.setCategory(EComponentCategory.STATSANDLOGS);
         childPram.setListItemsDisplayName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
-        childPram
-                .setListItemsDisplayCodeName(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
+        childPram.setListItemsDisplayCodeName(
+                new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
         childPram.setListItemsValue(new String[] { ENCODING_TYPE_ISO_8859_15, ENCODING_TYPE_UTF_8, ENCODING_TYPE_CUSTOM });
         childPram.setValue(ENCODING_TYPE_ISO_8859_15);
         childPram.setNumRow(15);
-        childPram
-                .setShowIf("(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        childPram.setShowIf(
+                "(ON_FILES_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         childPram.setParentParameter(encodingParam);
 
         return paramList;
@@ -1180,8 +1339,8 @@ public class StatsAndLogsManager {
         parentPropertyType.setFieldType(EParameterFieldType.PROPERTY_TYPE);
         parentPropertyType.setRepositoryValue(ERepositoryCategoryType.DATABASE.getName());
         parentPropertyType.setNumRow(51);
-        parentPropertyType
-                .setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        parentPropertyType.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         paramList.add(parentPropertyType);
 
         param = new ElementParameter(process);
@@ -1195,7 +1354,8 @@ public class StatsAndLogsManager {
         param.setNumRow(51);
         param.setFieldType(EParameterFieldType.TECHNICAL);
         param.setRepositoryValue(ERepositoryCategoryType.DATABASE.getName());
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
 
         param.setParentParameter(parentPropertyType);
         // paramList.add(param);
@@ -1232,7 +1392,8 @@ public class StatsAndLogsManager {
         param.setNumRow(52);
         param.setRepositoryValue("TYPE"); //$NON-NLS-1$
         param.setRequired(true);
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         paramList.add(param);
 
         // dbVersion
@@ -1249,7 +1410,8 @@ public class StatsAndLogsManager {
             param.setNumRow(52);
             param.setRepositoryValue("DB_VERSION"); //$NON-NLS-1$
             param.setRequired(true);
-            param.setShowIf("(ON_DATABASE_FLAG == 'true') and (DB_TYPE == 'POSTGRESQL' or DB_TYPE == 'OCLE' or DB_TYPE == 'ACCESS' or DB_TYPE == 'OCLE_OCI' or DB_TYPE == 'MSSQL' or  DB_TYPE == 'MYSQL') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+            param.setShowIf(
+                    "(ON_DATABASE_FLAG == 'true') and (DB_TYPE == 'POSTGRESQL' or DB_TYPE == 'OCLE' or DB_TYPE == 'ACCESS' or DB_TYPE == 'OCLE_OCI' or DB_TYPE == 'MSSQL' or  DB_TYPE == 'MYSQL') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
             paramList.add(param);
         }
 
@@ -1261,8 +1423,9 @@ public class StatsAndLogsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_URL.getDisplayName()); // $NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
         // jdbc child param
@@ -1305,8 +1468,9 @@ public class StatsAndLogsManager {
         param.setValue(new ArrayList<Map<String, Object>>());
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_JAR.getDisplayName()); // $NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
         // class name for jdbc
@@ -1317,8 +1481,9 @@ public class StatsAndLogsManager {
         param.setFieldType(EParameterFieldType.TEXT);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(57);
-        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
+        param.setRepositoryValue(EConnectionParameterName.GENERIC_DRIVER_CLASS.getDisplayName()); // $NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE=='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
         // host
@@ -1330,7 +1495,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
         param.setRepositoryValue("SERVER_NAME"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='OCLE_OCI' and DB_TYPE!='JDBC') "); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='OCLE_OCI' and DB_TYPE!='JDBC') "); //$NON-NLS-1$
         paramList.add(param);
 
         // port
@@ -1342,7 +1508,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(53);
         param.setRepositoryValue("PORT"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC') "); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE!='OCLE_OCI'  and DB_TYPE!='JDBC') "); //$NON-NLS-1$
         paramList.add(param);
 
         // databaseSource
@@ -1355,7 +1522,8 @@ public class StatsAndLogsManager {
         param.setValue(addQuotes(preferenceStore.getString(languagePrefix + EParameterName.DATASOURCE.getName())));
         param.setNumRow(53);
         param.setRepositoryValue("DATASOURCE"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')and (DB_TYPE =='INFORMIX' or DB_TYPE =='GODBC' or DB_TYPE =='MSODBC') "); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')and (DB_TYPE =='INFORMIX' or DB_TYPE =='GODBC' or DB_TYPE =='MSODBC') "); //$NON-NLS-1$
         paramList.add(param);
 
         // dbName
@@ -1367,7 +1535,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE != 'OCLE_OCI'  and DB_TYPE!='JDBC')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE' and DB_TYPE!='ACCESS' and DB_TYPE!='FIREBIRD' and DB_TYPE != 'OCLE_OCI'  and DB_TYPE!='JDBC')"); //$NON-NLS-1$
         paramList.add(param);
 
         // local service name
@@ -1379,7 +1548,11 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
         param.setRepositoryValue("SID"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and DB_TYPE =='OCLE_OCI'"); //$NON-NLS-1$ //and (DB_TYPE == 'OCLE_OCI'
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and DB_TYPE =='OCLE_OCI'"); //$NON-NLS-1$ //and
+                                                                                                                                                                                // (DB_TYPE
+                                                                                                                                                                                // ==
+                                                                                                                                                                                // 'OCLE_OCI'
         paramList.add(param);
 
         // additional parameters
@@ -1391,7 +1564,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
         param.setRepositoryValue("PROPERTIES_STRING"); //$NON-NLS-1$
-        param.setShowIf("(DB_TYPE=='MSSQL' or DB_TYPE=='MYSQL' or DB_TYPE=='INFORMIX' or DB_TYPE=='OCLE' or DB_TYPE=='OCLE_OCI' or DB_TYPE=='SYBASE') and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(DB_TYPE=='MSSQL' or DB_TYPE=='MYSQL' or DB_TYPE=='INFORMIX' or DB_TYPE=='OCLE' or DB_TYPE=='OCLE_OCI' or DB_TYPE=='SYBASE') and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         paramList.add(param);
 
         // schema
@@ -1403,7 +1577,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(54);
         param.setRepositoryValue("SCHEMA"); //$NON-NLS-1$
-        param.setShowIf("(DB_TYPE=='OCLE' or DB_TYPE=='POSTGRESQL' or DB_TYPE=='POSTGRESPLUS' or DB_TYPE=='OCLE_OCI' or DB_TYPE=='MSSQL' or DB_TYPE=='INFORMIX' or DB_TYPE=='IBM_DB2' or DB_TYPE=='SYBASE' ) and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(DB_TYPE=='OCLE' or DB_TYPE=='POSTGRESQL' or DB_TYPE=='POSTGRESPLUS' or DB_TYPE=='OCLE_OCI' or DB_TYPE=='MSSQL' or DB_TYPE=='INFORMIX' or DB_TYPE=='IBM_DB2' or DB_TYPE=='SYBASE' ) and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         paramList.add(param);
 
         // username
@@ -1416,7 +1591,8 @@ public class StatsAndLogsManager {
         param.setNumRow(55);
         param.setRequired(true);
         param.setRepositoryValue("USERNAME"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')and (DB_TYPE!='SQLITE')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')and (DB_TYPE!='SQLITE')"); //$NON-NLS-1$
         paramList.add(param);
 
         // password
@@ -1429,7 +1605,8 @@ public class StatsAndLogsManager {
         param.setNumRow(55);
         param.setRequired(true);
         param.setRepositoryValue("PASSWORD"); //$NON-NLS-1$
-        param.setShowIf("(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true') and (DB_TYPE!='SQLITE')"); //$NON-NLS-1$
         paramList.add(param);
         // databse file path
         param = new ElementParameter(process);
@@ -1440,7 +1617,8 @@ public class StatsAndLogsManager {
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(56);
         param.setRepositoryValue("FILE"); //$NON-NLS-1$
-        param.setShowIf("(DB_TYPE=='SQLITE' or DB_TYPE=='ACCESS' or DB_TYPE=='FIREBIRD') and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
+        param.setShowIf(
+                "(DB_TYPE=='SQLITE' or DB_TYPE=='ACCESS' or DB_TYPE=='FIREBIRD') and (ON_DATABASE_FLAG == 'true') and (ON_STATCATCHER_FLAG == 'true' or ON_LOGCATCHER_FLAG == 'true' or ON_METERCATCHER_FLAG == 'true')"); //$NON-NLS-1$
         paramList.add(param);
         // Stats table
         param = new ElementParameter(process);
@@ -1505,7 +1683,8 @@ public class StatsAndLogsManager {
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(90);
-        param.setShowIf("((CATCH_RUNTIME_ERRORS == 'true' or CATCH_RUNTIME_ERRORS == 'false') and (ON_LOGCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
+        param.setShowIf(
+                "((CATCH_RUNTIME_ERRORS == 'true' or CATCH_RUNTIME_ERRORS == 'false') and (ON_LOGCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
         paramList.add(param);
 
         // Catch user errors
@@ -1539,7 +1718,8 @@ public class StatsAndLogsManager {
         param.setFieldType(EParameterFieldType.CHECK);
         param.setCategory(EComponentCategory.STATSANDLOGS);
         param.setNumRow(91);
-        param.setShowIf("((CATCH_REALTIME_STATS == 'true' or CATCH_REALTIME_STATS == 'false') and (ON_STATCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
+        param.setShowIf(
+                "((CATCH_REALTIME_STATS == 'true' or CATCH_REALTIME_STATS == 'false') and (ON_STATCATCHER_FLAG == 'true'))"); //$NON-NLS-1$
         paramList.add(param);
 
         return paramList;
