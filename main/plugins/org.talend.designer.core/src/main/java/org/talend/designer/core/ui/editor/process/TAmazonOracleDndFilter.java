@@ -21,6 +21,7 @@ import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.DefaultRepositoryComponentDndFilter;
+import org.talend.designer.core.ui.editor.nodecontainer.NodeContainer;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.metadata.managment.utils.MetadataConnectionUtils;
 import org.talend.repository.model.RepositoryNode;
@@ -46,7 +47,8 @@ public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter 
                         dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
                     }
                 }
-                Node node = new Node(component, true);
+                Node node = new Node(component);
+                Process process = (Process) node.getProcess();
                 if (node != null) {
                     IElementParameter param = node.getElementParameter("CONNECTION_TYPE");//$NON-NLS-1$
                     if (param != null) {
@@ -54,11 +56,13 @@ public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter 
                         for (Object element : valuesList) {
                             String conType = EDatabaseTypeName.getTypeFromDbType(element.toString()).getDisplayName();
                             if (conType != null && dbType != null && conType.equals(dbType)) {
+                                process.removeNodeContainer(new NodeContainer(node));
                                 return false;
                             }
                         }
                     }
                 }
+                process.removeNodeContainer(new NodeContainer(node));
                 return true;
             } else if (("tOracleCDCOutput").equals(component.getName())) { //$NON-NLS-1$
                 if (item != null && item instanceof DatabaseConnectionItem) {
