@@ -101,6 +101,16 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 .map(property -> new PropertyDefinitionDecorator(property))
                 .collect(toList());
     }
+    
+    /**
+     * Wraps {@link SimplePropertyDefinition} in {@link PropertyDefinitionDecorator}
+     * 
+     * @param property original property
+     * @return wrapped property
+     */
+    public static PropertyDefinitionDecorator wrap(final SimplePropertyDefinition property) {
+        return new PropertyDefinitionDecorator(property);
+    }
 
     /**
      * Returns path for parent {@link SimplePropertyDefinition}

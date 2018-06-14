@@ -20,6 +20,7 @@ import org.talend.designer.core.model.utils.emf.talendfile.impl.NodeTypeImpl;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 
 /**
@@ -113,7 +114,7 @@ public final class TaCoKitNode {
     }
     
     private String getPropertyType(final String name) {
-        final SimplePropertyDefinition property = getProperty(name);
+        final PropertyDefinitionDecorator property = PropertyDefinitionDecorator.wrap(getProperty(name));
         final String type = new WidgetTypeMapper().getFieldType(property).getName();
         return type;
     }
