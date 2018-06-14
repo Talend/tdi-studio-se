@@ -318,6 +318,8 @@ public class Node extends Element implements IGraphicalNode {
 
     private List<String> previousCustomLibs = null;
 
+    private boolean isTemporaryNode = false;
+
     /**
      * Getter for index.
      *
@@ -427,6 +429,23 @@ public class Node extends Element implements IGraphicalNode {
         this.oldcomponent = component;
         this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
         this.process = ActiveProcessTracker.getCurrentProcess();
+        currentStatus = 0;
+
+        init(component);
+        initDefaultElementParameters();
+        IElementParameter param = getElementParameter(EParameterName.REPOSITORY_ALLOW_AUTO_SWITCH.getName());
+        if (param != null) {
+            param.setValue(Boolean.TRUE);
+        }
+
+        updateComponentStatusIfNeeded(true);
+    }
+
+    public Node(IComponent component, boolean isTemporary) {
+        this.oldcomponent = component;
+        this.delegateComponent = UnifiedComponentUtil.getDelegateComponent(component);
+        this.process = ActiveProcessTracker.getCurrentProcess();
+        this.isTemporaryNode = true;
         currentStatus = 0;
 
         init(component);
@@ -582,7 +601,7 @@ public class Node extends Element implements IGraphicalNode {
         // }
         listReturn = this.component.createReturns(this);
 
-        if (!reloadingComponent && (uniqueName2 == null || "".equals(uniqueName2))) { //$NON-NLS-1$
+        if (!reloadingComponent && (uniqueName2 == null || "".equals(uniqueName2)) && !isTemporaryNode) { //$NON-NLS-1$
             if (this.inOutUniqueName != null) {
                 uniqueName2 = inOutUniqueName;
             } else {

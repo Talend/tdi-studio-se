@@ -46,7 +46,7 @@ public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter 
                         dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
                     }
                 }
-                Node node = new Node(component);
+                Node node = new Node(component, true);
                 if (node != null) {
                     IElementParameter param = node.getElementParameter("CONNECTION_TYPE");//$NON-NLS-1$
                     if (param != null) {
