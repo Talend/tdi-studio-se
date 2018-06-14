@@ -18,8 +18,6 @@ package org.talend.sdk.component.studio.model.parameter;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_TARGET;
@@ -542,21 +540,6 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     public Map<String, String> getProposalDisplayNames() {
         return delegate.getProposalDisplayNames();
     }
-    
-    boolean hasSuggestions() {
-        return delegate.getMetadata().containsKey(ACTION_SUGGESTIONS_NAME)
-                && delegate.getMetadata().containsKey(ACTION_SUGGESTIONS_PARAMETERS);
-    }
-    
-    Suggestions getSuggestions() {
-        if (!hasSuggestions()) {
-            throw new IllegalStateException("Property has no suggestions");
-        }
-        final String name = delegate.getMetadata().get(ACTION_SUGGESTIONS_NAME);
-        final String parametersValue = delegate.getMetadata().get(ACTION_SUGGESTIONS_PARAMETERS);
-        final List<String> parameters = Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
-        return new Suggestions(name, parameters);
-    }
 
     @Override
     public int hashCode() {
@@ -696,31 +679,6 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         @Override
         public String toString() {
             return "PropertyDefinitionDecorator.Connection(type=" + this.getType() + ", value=" + this.getValue() + ")";
-        }
-    }
-    
-    public static class Suggestions {
-        
-        private final String name;
-        
-        private final List<String> parameters;
-        
-        Suggestions(final String name, final List<String> parameters) {
-            this.name = name;
-            this.parameters = parameters;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public List<String> getParameters() {
-            return parameters;
-        }
-        
-        @Override
-        public String toString() {
-            return "Suggestions(name=" + this.getName() + ", parameters=" + this.getParameters() + ")";
         }
     }
 }

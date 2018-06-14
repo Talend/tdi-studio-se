@@ -20,6 +20,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
+import static org.talend.sdk.component.studio.model.action.Action.HEALTH_CHECK;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
 import java.beans.PropertyChangeEvent;
@@ -51,9 +52,6 @@ import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.SuggestionsAction;
-import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 import org.talend.sdk.component.studio.model.parameter.listener.ActiveIfListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidatorFactory;
@@ -106,7 +104,7 @@ public class SettingVisitor implements PropertyVisitor {
     private final Map<String, Map<Integer, List<PropertyDefinitionDecorator.Condition>>> activations =
             new LinkedHashMap<>();
 
-    private final List<ParameterResolver> actionResolvers = new ArrayList<>();
+    private final List<ValidationResolver> actionResolvers = new ArrayList<>();
 
     public SettingVisitor(final IElement iNode,
             final ElementParameter redrawParameter, final ConfigTypeNode config) {
@@ -192,10 +190,6 @@ public class SettingVisitor implements PropertyVisitor {
                 final TaCoKitElementParameter schema = visitSchema(node);
                 settings.put(schema.getName(), schema);
                 break;
-            case TACOKIT_VALUE_SELECTION:
-                final TaCoKitElementParameter valueSelection = visitValueSelection(node);
-                settings.put(valueSelection.getName(), valueSelection);
-                break;
             default:
                 final IElementParameter text;
                 if (node.getProperty().getPlaceholder() == null) {
@@ -213,7 +207,7 @@ public class SettingVisitor implements PropertyVisitor {
         } else if (node.getProperty().isCheckable() && !node.getChildren(form).isEmpty()) {
             final ActionReference action = actions
                     .stream()
-                    .filter(a -> Action.Type.HEALTHCHECK.toString().equals(a.getType()))
+                    .filter(a -> HEALTH_CHECK.equals(a.getType()))
                     .filter(a -> a.getName().equals(node.getProperty().getHealthCheckName()))
                     .findFirst()
                     .get();
@@ -346,22 +340,7 @@ public class SettingVisitor implements PropertyVisitor {
 
         return createSchemaParameter(connectionName, schemaName, discoverSchemaAction, true);
     }
-    
-    private ValueSelectionParameter visitValueSelection(final PropertyNode node) {
-        final SuggestionsAction action = createSuggestionsAction(node);
-        final ValueSelectionParameter parameter = new ValueSelectionParameter(element, action);
-        commonSetup(parameter, node);
-        return parameter;
-    }
 
-    private SuggestionsAction createSuggestionsAction(final PropertyNode node) {
-        final SuggestionsAction action = new SuggestionsAction(node.getProperty().getSuggestions().getName(), family);
-        final ActionParametersUpdater updater = new ActionParametersUpdater(action);
-        final SuggestionsResolver resolver = new SuggestionsResolver(node, actions, updater);
-        actionResolvers.add(resolver);
-        return action;
-    }
-    
     // TODO i18n it
     private String schemaDisplayName(final String connectionName, final String schemaName) {
         final String connectorName = connectionName.equalsIgnoreCase(EConnectionType.FLOW_MAIN.getName())
@@ -503,7 +482,7 @@ public class SettingVisitor implements PropertyVisitor {
 
         node.getProperty().getCondition()
                 .forEach(c -> {
-                    c.setTargetPath(AbstractParameterResolver.resolve(node, c.getTarget()));
+                    c.setTargetPath(PathResolver.resolve(node, c.getTarget()));
                     activations.computeIfAbsent(origin.getProperty().getPath(), (key) -> new HashMap<>());
                     activations.get(origin.getProperty().getPath()).computeIfAbsent(level, (k) -> new ArrayList<>());
                     activations.get(origin.getProperty().getPath()).get(level).add(c);

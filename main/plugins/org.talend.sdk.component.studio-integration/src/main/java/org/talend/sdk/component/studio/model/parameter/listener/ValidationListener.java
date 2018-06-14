@@ -29,7 +29,7 @@ public class ValidationListener extends Action implements PropertyChangeListener
     private final ValidationLabel label;
 
     public ValidationListener(final ValidationLabel label, final String family, final String actionName) {
-        super(actionName, family, Action.Type.VALIDATION);
+        super(actionName, family, VALIDATION);
         this.label = label;
     }
 

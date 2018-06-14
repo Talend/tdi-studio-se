@@ -47,10 +47,6 @@ public class ActionParameters {
     }
 
     public Map<String, String> payload() {
-        final Map<String, String> payload = new HashMap<>();
-        parameters.values().forEach(actionParameter -> {
-            payload.put(actionParameter.getParameter(), actionParameter.getValue());
-        });
-        return payload;
+        return parameters.values().stream().collect(Collectors.toMap(ActionParameter::getParameter, ActionParameter::getValue));
     }
 }

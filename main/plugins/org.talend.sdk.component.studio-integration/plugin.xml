@@ -131,11 +131,6 @@
            mapping="TACOKIT_BUTTON"
            name="TaCoKit Button Generator">
      </generator>
-     <generator
-           class="org.talend.sdk.component.studio.ui.composite.generator.TaCoKitValueSelectionGenerator"
-           mapping="TACOKIT_VALUE_SELECTION"
-           name="Value Selection Generator">
-     </generator>
   </extension>
   <extension
         point="org.talend.designer.core.process_provider">
