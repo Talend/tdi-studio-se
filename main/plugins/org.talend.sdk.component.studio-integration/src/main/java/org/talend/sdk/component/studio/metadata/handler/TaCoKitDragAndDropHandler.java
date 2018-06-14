@@ -50,7 +50,6 @@ import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel.ValueModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
@@ -69,8 +68,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
             return false;
         }
         try {
-            TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connection);
-            if (!TaCoKitUtil.isEmpty(model.getConfigurationId())) {
+            if (TaCoKitConfigurationModel.isTacokit(connection)) {
                 return true;
             }
         } catch (Exception e) {
@@ -136,7 +134,6 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
     }
     
     private String findModelRoot(final TaCoKitConfigurationModel model) {
-        @SuppressWarnings("unchecked")
         final Map<String, String> values = model.getProperties();
         List<String> possibleRoots = values.keySet().stream()
             .filter(key -> key.contains(PATH_SEPARATOR))
@@ -238,8 +235,7 @@ public class TaCoKitDragAndDropHandler extends AbstractDragAndDropServiceHandler
         RepositoryComponentSetting setting = null;
         if (item instanceof ConnectionItem) {
             try {
-                TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel((ConnectionItem) item);
-                TaCoKitConfigurationModel configurationModel = itemModel.getConfigurationModel();
+                TaCoKitConfigurationModel configurationModel = new TaCoKitConfigurationModel(((ConnectionItem) item).getConnection());
                 if (configurationModel == null || TaCoKitUtil.isEmpty(configurationModel.getConfigurationId())) {
                     return setting;
                 }

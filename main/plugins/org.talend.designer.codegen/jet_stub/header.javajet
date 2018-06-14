@@ -22,6 +22,7 @@
 		org.talend.core.model.utils.NodeUtil
 		org.talend.core.model.utils.JavaResourcesHelper
 		org.talend.core.model.process.ProcessUtils
+        org.talend.designer.runprocess.ProcessorUtilities
 	"
 	class="Header"
 %>
@@ -137,7 +138,7 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
     }
 }
 
-boolean talendEsbJob = actAsProvider || actAsConsumer || !process.getNodesOfType("tRouteInput").isEmpty();
+boolean talendEsbJob = ProcessorUtilities.isEsbJob(process.getId(), process.getVersion());
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
 
 boolean talendStepTemplate = !process.getNodesOfType("tActionInput").isEmpty() || !process.getNodesOfType("tActionOutput").isEmpty() || !process.getNodesOfType("tJobReject").isEmpty();

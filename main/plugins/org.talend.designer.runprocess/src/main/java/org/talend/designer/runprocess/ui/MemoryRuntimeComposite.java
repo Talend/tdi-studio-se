@@ -14,6 +14,7 @@ package org.talend.designer.runprocess.ui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelection;
@@ -54,8 +56,11 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.progress.IProgressService;
 import org.talend.commons.exception.ExceptionHandler;
 import org.talend.commons.ui.runtime.image.ImageProvider;
+import org.talend.commons.ui.swt.dialogs.EventLoopProgressMonitor;
 import org.talend.core.CorePlugin;
 import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.Element;
@@ -360,33 +365,53 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
                 }
                 if (processContext != null && (processContext.isRunning() || isReadyToStart)) {
                     if (isRunButtonPressed) {
-                        if (!acquireJVM()) {
-                            isReadyToStart = false;
-                            runtimeButton.setEnabled(true);
-                            if (isRemoteRun) {
-                                MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
-                                        Messages.getString("ProcessView.connectToMonitorServerFailed")); //$NON-NLS-1$
-                            } else {
-                                MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
-                                        Messages.getString("ProcessView.noJobRunning")); //$NON-NLS-1$
-                            }
-                            return;
-                        }
-                        initMonitoringModel();
-                        refreshMonitorComposite();
-                        processContext.setMonitoring(true);
-                        AbstractRuntimeGraphcsComposite.setMonitoring(true);
-                        setRuntimeButtonByStatus(false);
-                        isReadyToStart = false;
+                        IProgressService progressService = PlatformUI.getWorkbench().getProgressService();
+                        try {
+                            progressService.run(false, true, new IRunnableWithProgress() {
 
-                        if (periodCombo.isEnabled() && periodCombo.getSelectionIndex() != 0) {
-                            startCustomerGCSchedule();
+                                @Override
+                                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                                    final IProgressMonitor progressMonitor = new EventLoopProgressMonitor(monitor);
+                                    progressMonitor.beginTask(Messages.getString("Processor.memoryRun.searchJvmInfo"), 1);
+                                    if (!acquireJVM()) {
+                                        isReadyToStart = false;
+                                        runtimeButton.setEnabled(true);
+                                        if (isRemoteRun) {
+                                            MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
+                                                    Messages.getString("ProcessView.connectToMonitorServerFailed")); //$NON-NLS-1$
+                                        } else {
+                                            MessageDialog.openWarning(getShell(), "Warning", //$NON-NLS-1$
+                                                    Messages.getString("ProcessView.noJobRunning")); //$NON-NLS-1$
+                                        }
+                                        return;
+                                    }
+                                    progressMonitor.subTask(Messages.getString("Processor.memoryRun.jvmInfo"));
+                                    processContext.setTracPause(false);
+                                    processContext.setMemoryRunning(false);
+
+                                    initMonitoringModel();
+                                    refreshMonitorComposite();
+                                    processContext.setMonitoring(true);
+                                    AbstractRuntimeGraphcsComposite.setMonitoring(true);
+                                    setRuntimeButtonByStatus(false);
+                                    isReadyToStart = false;
+
+                                    if (periodCombo.isEnabled() && periodCombo.getSelectionIndex() != 0) {
+                                        startCustomerGCSchedule();
+                                    }
+                                    String content = getExecutionInfo("Start"); //$NON-NLS-1$
+                                    messageManager.setStartMessage(content, getDisplay().getSystemColor(SWT.COLOR_BLUE),
+                                            getDisplay().getSystemColor(SWT.COLOR_WHITE));
+                                    ((RuntimeGraphcsComposite) chartComposite).displayReportField();
+                                    lock = true;
+                                    Thread.sleep(1000);
+                                    progressMonitor.done();
+                                }
+
+                            });
+                        } catch (InvocationTargetException | InterruptedException e) {
+                            ExceptionHandler.process(e);
                         }
-                        String content = getExecutionInfo("Start"); //$NON-NLS-1$
-                        messageManager.setStartMessage(content, getDisplay().getSystemColor(SWT.COLOR_BLUE),
-                                getDisplay().getSystemColor(SWT.COLOR_WHITE));
-                        ((RuntimeGraphcsComposite) chartComposite).displayReportField();
-                        lock = true;
                     } else if (isKillButtonPressed) { // $NON-NLS-1$
                         processContext.kill();
                     }
@@ -525,20 +550,18 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
 				}
 	    	} 
 		} else {
-    		String jobClassName = JavaResourcesHelper.getJobClassName(processContext.getProcess());
-    		List<IActiveJvm> activateJvms = jvmModel.getHost(IHost.LOCALHOST).getActiveJvms();
-    		for (IActiveJvm jvm : activateJvms) {
-    			String activeJvmClassName = jvm.getMainClass();
-    			System.out.println("target:[" + jobClassName+ "],loop item["+ activeJvmClassName +"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    			if (activeJvmClassName != null) {
-    				activeJvmClassName = activeJvmClassName.trim();
-				}
-    			if (activeJvmClassName.equals(jobClassName)) {
-    				currentJvm = jvm;
-    				isJvmFound = true;
-    				break;
-    			}
-    		}
+            String jobClassName = JavaResourcesHelper.getJobClassName(processContext.getProcess());
+            IActiveJvm activeJvm = null;
+            try {
+                activeJvm = JvmModel.getInstance().getActiveJvmByMainClass(jobClassName, IHost.LOCALHOST);
+            } catch (JvmCoreException e) {
+                ExceptionHandler.process(e);
+            }
+            if (activeJvm != null) {
+                currentJvm = activeJvm;
+                isJvmFound = true;
+            }
+
     	}
         return isJvmFound;
     }
@@ -817,6 +840,7 @@ public class MemoryRuntimeComposite extends ScrolledComposite implements IDynami
         }
         
         processContext.setSelectedContext(processManager.getSelectContext());
+        processContext.setMemoryRunning(true);
         processContext.exec(processManager.getProcessShell());
 
         ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();

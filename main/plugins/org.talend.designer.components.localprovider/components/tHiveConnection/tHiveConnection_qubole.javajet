@@ -1,0 +1,67 @@
+<%@ jet %>
+
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid = node.getUniqueName();
+String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
+
+String encryptedToken = ElementParameterParser.getEncryptedValue(node, "__QUBOLE_API_TOKEN__");
+String quboleEndpoint = null;
+if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_ENDPOINT__")) {
+	quboleEndpoint = ElementParameterParser.getValue(node, "__QUBOLE_ENDPOINT_URL__");
+}
+%>
+
+java.util.List<String> connectionCommandList_<%=cid%> = new java.util.ArrayList<String>();
+<%
+    boolean setMemory = "true".equals(ElementParameterParser.getValue(node, "__SET_MEMORY__"));
+    if(setMemory) {
+        String mapMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_MAP_MEMORY_MB__");
+        String reduceMemory = ElementParameterParser.getValue(node,"__MAPREDUCE_REDUCE_MEMORY_MB__");
+        String amMemory = ElementParameterParser.getValue(node,"__YARN_APP_MAPREDUCE_AM_RESOURCE_MB__");
+%>
+        connectionCommandList_<%=cid%>.add("SET mapreduce.map.memory.mb=" + <%=mapMemory%> + ";");
+        connectionCommandList_<%=cid%>.add("SET mapreduce.reduce.memory.mb=" + <%=reduceMemory%> + ";");
+        connectionCommandList_<%=cid%>.add("SET yarn.app.mapreduce.am.resource.mb=" + <%=amMemory%> + ";");
+<%
+    }
+
+    List<Map<String, String>> advProps = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ADVANCED_PROPERTIES__");
+    if(advProps!=null) {
+        for(Map<String, String> item : advProps){
+%>
+            connectionCommandList_<%=cid%>.add("SET "+<%=item.get("PROPERTY")%>+"="+<%=item.get("VALUE")%> + ";");
+<%
+        }
+    }
+%>
+
+    String dbname_<%=cid%> = <%=dbname%>;
+    if(dbname_<%=cid%>!=null && !"".equals(dbname_<%=cid%>.trim()) && !"default".equals(dbname_<%=cid%>.trim())) {
+        connectionCommandList_<%=cid%>.add("use " + dbname_<%=cid%> + ";");
+    }
+
+	String api_token_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=encryptedToken%>);
+
+	org.talend.bigdata.launcher.qubole.QuboleHiveClient instance_<%=cid%> =
+		new org.talend.bigdata.launcher.qubole.QuboleHiveClient.Builder()
+			.setApiKey(api_token_<%=cid%>)
+			<% if (quboleEndpoint != null) {%> .setApiEndpoint(<%=quboleEndpoint%>) <%} %>
+			.build();
+
+<%
+    if(isLog4jEnabled) {
+%>
+		log.info("<%=cid%> - connection created.");
+        for (String command: connectionCommandList_<%=cid%> ) {
+            log.debug("Initialization command from <%=cid%>: " + command);
+        }
+<%
+    }
+%>
+
+    globalMap.put("conn_<%=cid%>", instance_<%=cid%>);
+    if (!connectionCommandList_<%=cid%>.isEmpty()) {
+    	globalMap.put("conn_init_statements_<%=cid%>", connectionCommandList_<%=cid%>);
+    }

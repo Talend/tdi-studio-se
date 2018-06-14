@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -35,12 +37,20 @@ import org.eclipse.swt.graphics.ImageData;
 import org.talend.commons.ui.runtime.image.EImage;
 import org.talend.commons.ui.runtime.image.ImageProvider;
 import org.talend.core.runtime.maven.MavenConstants;
+import org.talend.sdk.component.server.front.model.ComponentDetail;
+import org.talend.sdk.component.server.front.model.ComponentDetailList;
+import org.talend.sdk.component.server.front.model.ComponentId;
+import org.talend.sdk.component.server.front.model.ComponentIndex;
+import org.talend.sdk.component.server.front.model.ComponentIndices;
 import org.talend.sdk.component.server.front.model.Icon;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.GAV;
+import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.Metadatas;
 import org.talend.sdk.component.studio.mvn.Mvn;
+import org.talend.sdk.component.studio.util.TaCoKitUtil;
+import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Component;
 
 public class ComponentService {
 
@@ -51,6 +61,11 @@ public class ComponentService {
     private final Function<String, File> mvnResolver;
 
     private volatile Dependencies dependencies;
+    
+    /**
+     * Component Indices cache
+     */
+    private ComponentIndices index;
 
     public ComponentService(final Function<String, File> mvnResolver) {
         this.mvnResolver = mvnResolver;
@@ -188,5 +203,50 @@ public class ComponentService {
             return "ComponentService.Dependencies(common=" + this.getCommon() + ", beam=" + this.getBeam() + ")";
         }
 
+    }
+    
+    /**
+     * Returns ComponentDetail by name
+     * 
+     * @param componentName full component name
+     * @return ComponentDetail
+     */
+    public Optional<ComponentDetail> getDetail(final String componentName) {
+        final ComponentIndices indices = getComponentIndex();
+        final Optional<ComponentId> id = indices.getComponents().stream()
+                .map(ComponentIndex::getId)
+                .filter(i -> componentName.equals(TaCoKitUtil.getFullComponentName(i.getFamily(), i.getName())))
+                .findFirst();
+        if (!id.isPresent()) {
+            return Optional.empty();
+        }
+        final ComponentDetailList detailList = client().getDetail(language(), new String[] { id.get().getId() });
+        if (detailList.getDetails().size() != 1) {
+            throw new IllegalArgumentException("No single detail for " + componentName);
+        }
+        return Optional.of(detailList.getDetails().get(0));
+    }
+    
+    public ComponentDetail getDetailById(final String id) {
+        final ComponentDetailList detailList = client().getDetail(language(), new String[] { id });
+        if (detailList.getDetails().size() != 1) {
+            throw new IllegalArgumentException("No single detail for id: " + id);
+        }
+        return detailList.getDetails().get(0);
+    }
+
+    private ComponentIndices getComponentIndex() {
+        if (index == null) {
+            index = client().getIndex(language());
+        }
+        return index;
+    }
+
+    private V1Component client() {
+        return Lookups.client().v1().component();
+    }
+
+    private String language() {
+        return Locale.getDefault().getLanguage();
     }
 }

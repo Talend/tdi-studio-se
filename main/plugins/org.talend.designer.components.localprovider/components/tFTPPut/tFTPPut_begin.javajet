@@ -270,9 +270,8 @@ int nb_file_<%=cid%> = 0;
 			String conn= "conn_" + connection;
     %>
 			ftp_<%=cid %> = (com.enterprisedt.net.ftp.FTPClient)globalMap.get("<%=conn %>");
-	  		<%if(!moveToCurrentDir){%>
-		  		String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
-	  		<%}%>
+
+			String rootDir_<%=cid %> = ftp_<%=cid %>.pwd();
 			<%if(isLog4jEnabled){%>
 				if(ftp_<%=cid %>!=null) {
 					log.info("<%=cid%> - Uses an existing connection. Connection hostname: " + ftp_<%=cid %>.getRemoteHost() + ", Connection port: " + ftp_<%=cid %>.getRemotePort() + "."); 
@@ -321,18 +320,27 @@ int nb_file_<%=cid%> = 0;
     %>    
 			java.util.Map<String,String> map<%=cid %><%=i %> = new java.util.HashMap<String,String>();
 			map<%=cid %><%=i %>.put(<%= line.get("FILEMASK") %>,<%= line.get("NEWNAME") %>);  
-			list<%=cid %>.add(map<%=cid %><%=i %>);       
+			list<%=cid %>.add(map<%=cid %><%=i %>);
   <%
 		}
   %>  
-		String remotedir<%=cid %> = <%=remotedir%>;
+		String remotedir<%=cid %> = (<%=remotedir%>).replaceAll("\\\\", "/");
 <%
 		if (createDirIfNotExist) {
 %>
 			boolean isDirectoryExist_<%=cid %> = ftp_<%=cid %>.existsDirectory(remotedir<%=cid %>);
 
 			if (!isDirectoryExist_<%=cid %>) {
-				ftp_<%=cid %>.mkdir(remotedir<%=cid %>);
+				String rootDir = null;
+				String[] dirsTree_<%=cid %> = remotedir<%=cid %>.split("/");
+				for (String dir: dirsTree_<%=cid %>) {
+					if (!ftp_<%=cid %>.existsDirectory(dir)) {
+						ftp_<%=cid %>.mkdir(dir);
+					}
+					ftp_<%=cid %>.chdir(dir);
+				}
+
+				ftp_<%=cid %>.chdir(rootDir_<%=cid %>);
 			}
 <%
 		}
@@ -440,22 +448,22 @@ int nb_file_<%=cid%> = 0;
 				}
 			<%}%>
 			
-			<%
-				if(!moveToCurrentDir){
-%>
-					rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
+			rootDir_<%=cid %> = ftp_<%=cid %>.printWorkingDirectory();
 <%
-				}
 		}
 %>
-		String remotedir_<%=cid%> = null;
-		remotedir_<%=cid%> = <%=remotedir%>;
+		String remotedir_<%=cid%> = (<%=remotedir%>).replaceAll("\\\\", "/");
 
 <%
 		if(createDirIfNotExist) {
 %>
-			//makeDirectory() won't create anything if directory already exists
-			ftp_<%=cid %>.makeDirectory(remotedir_<%=cid %>);
+			String[] dirsTree_<%=cid %> = remotedir_<%=cid %>.split("/");
+			for (String dir: dirsTree_<%=cid %>) {
+				ftp_<%=cid %>.makeDirectory(dir);
+				ftp_<%=cid %>.changeWorkingDirectory(dir);
+			}
+
+			ftp_<%=cid %>.changeWorkingDirectory(rootDir_<%=cid %>);
 <%
 		}
 %>
