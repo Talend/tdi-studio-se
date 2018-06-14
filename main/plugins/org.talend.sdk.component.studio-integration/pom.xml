@@ -31,6 +31,19 @@
     <junit-platform-surefire-provider.version>1.1.0-RC1</junit-platform-surefire-provider.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>SonatypeSnapshotsOSS</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -48,9 +61,8 @@
 
     <dependency>
       <groupId>org.talend.sdk.component</groupId>
-      <artifactId>component-server</artifactId>
+      <artifactId>component-server-model</artifactId>
       <version>${component-runtime.version}</version>
-      <classifier>model</classifier>
       <exclusions>
         <exclusion>
           <groupId>commons-cli</groupId>
