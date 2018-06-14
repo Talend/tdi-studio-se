@@ -17,6 +17,7 @@ import org.talend.core.database.conn.version.EDatabaseVersion4Drivers;
 import org.talend.core.model.components.IComponent;
 import org.talend.core.model.metadata.builder.connection.DatabaseConnection;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IProcess;
 import org.talend.core.model.properties.DatabaseConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
@@ -41,29 +42,35 @@ public class TAmazonOracleDndFilter extends DefaultRepositoryComponentDndFilter 
         if (component != null) {
             // for tAmazonOracleInput/Output/Connection/Row
             if (component.getName().startsWith("tAmazonOracle")) { //$NON-NLS-1$
-                String dbType = null;
-                if (item != null && item instanceof DatabaseConnectionItem) {
-                    if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {
-                        dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
+                IProcess process = null;
+                Node node = null;
+                try {
+                    String dbType = null;
+                    if (item != null && item instanceof DatabaseConnectionItem) {
+                        if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {
+                            dbType = ((DatabaseConnection) ((DatabaseConnectionItem) item).getConnection()).getDatabaseType();
+                        }
                     }
-                }
-                Node node = new Node(component);
-                Process process = (Process) node.getProcess();
-                if (node != null) {
-                    IElementParameter param = node.getElementParameter("CONNECTION_TYPE");//$NON-NLS-1$
-                    if (param != null) {
-                        Object[] valuesList = param.getListItemsValue();
-                        for (Object element : valuesList) {
-                            String conType = EDatabaseTypeName.getTypeFromDbType(element.toString()).getDisplayName();
-                            if (conType != null && dbType != null && conType.equals(dbType)) {
-                                process.removeNodeContainer(new NodeContainer(node));
-                                return false;
+                    node = new Node(component);
+                    process = node.getProcess();
+                    if (node != null) {
+                        IElementParameter param = node.getElementParameter("CONNECTION_TYPE");//$NON-NLS-1$
+                        if (param != null) {
+                            Object[] valuesList = param.getListItemsValue();
+                            for (Object element : valuesList) {
+                                String conType = EDatabaseTypeName.getTypeFromDbType(element.toString()).getDisplayName();
+                                if (conType != null && dbType != null && conType.equals(dbType)) {
+                                    return false;
+                                }
                             }
                         }
                     }
+                    return true;
+                } finally {
+                    if (node != null && process instanceof Process) {
+                        ((Process) process).removeNodeContainer(new NodeContainer(node));
+                    }
                 }
-                process.removeNodeContainer(new NodeContainer(node));
-                return true;
             } else if (("tOracleCDCOutput").equals(component.getName())) { //$NON-NLS-1$
                 if (item != null && item instanceof DatabaseConnectionItem) {
                     if (((DatabaseConnectionItem) item).getConnection() instanceof DatabaseConnection) {
