@@ -78,19 +78,13 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
         String nextId = factory.getNextId();
         ITaCoKitRepositoryNode taCoKitRepositoryNode = getRuntimeData().getTaCoKitRepositoryNode();
         ConfigTypeNode configTypeNode = getRuntimeData().getConfigTypeNode();
-        String id = configTypeNode.getId();
-        String parentId = configTypeNode.getParentId();
         ConnectionItem connectionItem = getRuntimeData().getConnectionItem();
 
         connectionItem.getProperty().setId(nextId);
-        TaCoKitConfigurationItemModel itemModel = new TaCoKitConfigurationItemModel(connectionItem);
-        TaCoKitConfigurationModel model = itemModel.getConfigurationModel();
-        model.setConfigurationId(id);
-        model.setParentConfigurationId(parentId);
+        TaCoKitConfigurationModel model = new TaCoKitConfigurationModel(connectionItem.getConnection(), configTypeNode);
         if (taCoKitRepositoryNode.isLeafNode()) {
             model.setParentItemId(taCoKitRepositoryNode.getObject().getId());
         }
-        model.initVersion();
         factory.create(connectionItem, getWizardPropertiesPage().getDestinationPath());
         RepositoryManager.refreshCreatedNode(TaCoKitConst.METADATA_TACOKIT);
         // RepositoryUpdateManager.updateFileConnection(connectionItem);

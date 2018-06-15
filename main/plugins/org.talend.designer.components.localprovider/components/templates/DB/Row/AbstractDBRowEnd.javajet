@@ -25,16 +25,21 @@ imports="
     }
 	%>
 	
-<%		
-	if (usePrepareStatement) {
-%>
-	pstmt_<%=cid %>.close();	
 <%
-	} else {
+    if (usePrepareStatement) {
 %>
-	stmt_<%=cid %>.close();	
+        pstmt_<%=cid %>.close();
+        resourceMap.remove("pstmt_<%=cid %>");
 <%
-	}
+    } else {
+%>
+        stmt_<%=cid %>.close();
+        resourceMap.remove("stmt_<%=cid %>");
+<%
+    }
+%>
+    resourceMap.put("statementClosed_<%=cid%>", true);
+<%
 	if(!("true").equals(useExistingConn)) {
 		if(useTransaction && !("").equals(commitEvery)&&!("0").equals(commitEvery)){
 %>
@@ -50,3 +55,4 @@ imports="
 		log4jCodeGenerateUtil.close(node);
     }
 %>
+    resourceMap.put("finish_<%=cid%>", true);

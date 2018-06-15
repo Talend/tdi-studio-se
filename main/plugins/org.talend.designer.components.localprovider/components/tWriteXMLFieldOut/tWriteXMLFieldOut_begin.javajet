@@ -188,8 +188,13 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
 java.util.List<java.util.List<String>> groupbyList_<%=cid%> = new java.util.ArrayList<java.util.List<String>>();
 java.util.Map<String,String> valueMap_<%=cid%> = new java.util.HashMap<String,String>();
-
 <%
+if(istWriteJSONField){
+%>
+java.util.Map<String,String> arraysValueMap_<%=cid%> = new java.util.HashMap<String,String>();
+<%
+}
+
 				// *** generation mode init ***
 				if(("Dom4j").equals(mode)){
 %>
@@ -237,6 +242,23 @@ class NestXMLTool_<%=cid%>{
                 	root.getParent().remove(root);
                 }
             }
+		}
+	}
+	
+	public String objectToString(Object value){
+		if(value.getClass().isArray()){
+			StringBuilder sb = new StringBuilder();
+
+			int length = java.lang.reflect.Array.getLength(value);
+			for (int i = 0; i < length; i++) {
+				Object obj = java.lang.reflect.Array.get(value, i);
+				sb.append("<element>");
+				sb.append(obj);
+				sb.append("</element>");
+			}
+			return sb.toString();
+		}else{
+			return value.toString();
 		}
 	}
 }

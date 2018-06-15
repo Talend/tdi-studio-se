@@ -375,44 +375,52 @@ if(columnList != null && columnList.size()>0) {
     StringBuilder deleteWhereStmt = actionSQLMap.get(DELETE_WHERE_STMT);
 
 	if(("INSERT").equals(dataAction)) {
-	    %>
+%>
 	    String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
 	   	<%@ include file="../templates/_hintInsert.javajet" %>
 
         java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 
-	    <%
+<%
 	} else if (("UPDATE").equals(dataAction)) {
-	    %>
+%>
 	    String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
     	<%@ include file="../templates/_hintUpdate.javajet" %>
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
-	    <%
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
+<%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
-	    %>
+%>
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM " + tableName_<%=cid%> + " WHERE <%=updateWhereStmt.toString()%>");
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
-	   	<%@ include file="../templates/_hintInsert.javajet" %>
+	    <%@ include file="../templates/_hintInsert.javajet" %>
 	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
 	    <%@ include file="../templates/_hintUpdate.javajet" %>
 	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
-	    <%
+	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
+<%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
-	    %>
+%>
 	    String update_<%=cid%> = "UPDATE " + tableName_<%=cid%> + " SET <%=updateSetStmt.toString()%> WHERE <%=updateWhereStmt.toString()%>";
-	   	<%@ include file="../templates/_hintUpdate.javajet" %>
+	    <%@ include file="../templates/_hintUpdate.javajet" %>
 	    java.sql.PreparedStatement pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+	    resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    String insert_<%=cid%> = "INSERT INTO " + tableName_<%=cid%> + " (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
-	   	<%@ include file="../templates/_hintInsert.javajet" %>
+	    <%@ include file="../templates/_hintInsert.javajet" %>
 	    java.sql.PreparedStatement pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
-	    <%
+	    resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
+<%
 	} else if (("DELETE").equals(dataAction)) {
-	    %>
+%>
 	    String delete_<%=cid%> = "DELETE FROM " + tableName_<%=cid%> + " WHERE <%=deleteWhereStmt.toString()%>";
 	    <%@ include file="../templates/_hintDelete.javajet" %>
 	    java.sql.PreparedStatement pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
-	    <%
+	    resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
+<%
 	}
     if(isEnableDebug) {
         %>

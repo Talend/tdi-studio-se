@@ -607,7 +607,7 @@ class GenerateToolByDom4j{
 %>
 valueMap.put("<%=currEleName%>",<%generateMethodUtil.generateExprCode(node.getExpression() ); %>);
 if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
-<%=currEleName%>.addNamespace("<%=node.getName() %>", TalendString.replaceSpecialCharForXML(FormatterUtils.format(<%generateMethodUtil.generateExprCode(node.getExpression() ); %>,<%=node.getPattern()%>)));
+<%=currEleName%>.addNamespace("<%=node.getName() %>", TalendString.replaceSpecialCharForXML(FormatterUtils.fm(valueMap.get("<%=currEleName%>"),<%=node.getPattern()%>)));
 <%
 		} else {
 %>
@@ -619,7 +619,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 			if(node.getName()==null || ("").equals(node.getName().trim()) || "(default)".equals(node.getName().trim())) { // it is the default namespace
 				if(node.getDefaultValue()==null || ("").equals(node.getDefaultValue())) { // get the expression
 %>
-        	routines.system.DocumentHelper.applyNamespace1(<%=currEleName %>,"",FormatterUtils.format(<%generateMethodUtil.generateExprCode(node.getExpression()); %>,<%=node.getPattern()%>));
+        	routines.system.DocumentHelper.applyNamespace1(<%=currEleName %>,"",FormatterUtils.fm(valueMap.get("<%=currEleName%>"),<%=node.getPattern()%>));
 }//close if 8080
 <%
 				} else { // get the static value as the url
@@ -633,7 +633,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 			if(node.getName().equals(parent.getName().substring(0, index))) { // the prefix of element is the same with the namespace
 				if(node.getDefaultValue()==null || ("").equals(node.getDefaultValue())) { // get the expression
 %>
-        	routines.system.DocumentHelper.applyNamespace2(<%=currEleName %>,"<%=parent.getName().substring(index+1 ) %>","<%=node.getName() %>",FormatterUtils.format(<%generateMethodUtil.generateExprCode(node.getExpression() ); %>,<%=node.getPattern()%>));
+        	routines.system.DocumentHelper.applyNamespace2(<%=currEleName %>,"<%=parent.getName().substring(index+1 ) %>","<%=node.getName() %>",FormatterUtils.fm(valueMap.get("<%=currEleName%>"),<%=node.getPattern()%>));
 }//close if 8080
 <%
 				} else {
@@ -706,7 +706,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 %>
     			valueMap.put("<%=currEleName%>",<%generateMethodUtil.generateExprCode(tmpNode.getExpression()); %>);
     			if(valueMap.get("<%=currEleName%>")!=null) {
-    				currentValue = FormatterUtils.format(<%generateMethodUtil.generateExprCode(tmpNode.getExpression()); %>,<%=tmpNode.getPattern()%>);
+    				currentValue = FormatterUtils.fm(valueMap.get("<%=currEleName%>"),<%=tmpNode.getPattern()%>);
     			}<% if(allowEmpty) { %> else {
     				currentValue = "";
     			}
@@ -742,7 +742,7 @@ if(valueMap.get("<%=currEleName%>")!=null) {//open if 8080
 %>
 		valueMap.put("<%=currEleName%>",<%generateMethodUtil.generateExprCode(node.getExpression()); %>);
 		if(valueMap.get("<%=currEleName%>")!=null) {
-			routines.system.NestXMLTool.setText(<%=currEleName%>,FormatterUtils.format(<%generateMethodUtil.generateExprCode(node.getExpression()); %>,<%=node.getPattern()%>));
+			routines.system.NestXMLTool.setText(<%=currEleName%>,FormatterUtils.fm(valueMap.get("<%=currEleName%>"),<%=node.getPattern()%>));
 		}
 <%
 		}

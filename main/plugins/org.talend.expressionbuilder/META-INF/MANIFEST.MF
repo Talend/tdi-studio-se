@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Expression Builder Plug-in
 Bundle-SymbolicName: org.talend.expressionbuilder; singleton:=true
-Bundle-Version: 7.1.0.qualifier
+Bundle-Version: 7.1.1.qualifier
 Bundle-Activator: org.talend.expressionbuilder.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.talend.commons.runtime,

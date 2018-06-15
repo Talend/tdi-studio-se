@@ -315,7 +315,7 @@
 
    <CODEGENERATION>
      <IMPORTS>
-		<IMPORT NAME="log4j"                MODULE="log4j-1.2.15.jar" MVN="mvn:org.talend.libraries/log4j-1.2.15/6.0.0"  UrlPath="platform:/base/plugins/org.apache.log4j_1.2.15.v201012070815.jar" REQUIRED="true" BundleID="" />
+		<IMPORT NAME="log4j"                MODULE="log4j-1.2.17.jar" MVN="mvn:log4j/log4j/1.2.17"  UrlPath="platform:/plugin/org.talend.libraries.apache/lib/log4j-1.2.17.jar" REQUIRED="true" BundleID="" />
 		<IMPORT NAME="eigenbase-xom"        MODULE="eigenbase-xom.jar" MVN="mvn:org.talend.libraries/eigenbase-xom/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-xom.jar" REQUIRED="true" />
 		<IMPORT NAME="eigenbase-resgen"     MODULE="eigenbase-resgen.jar" MVN="mvn:org.talend.libraries/eigenbase-resgen/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-resgen.jar" REQUIRED="true" />
 		<IMPORT NAME="eigenbase-properties" MODULE="eigenbase-properties.jar" MVN="mvn:org.talend.libraries/eigenbase-properties/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.mondrian/lib/eigenbase-properties.jar" REQUIRED="true" />
@@ -338,7 +338,7 @@
 		<IMPORT NAME="Driver_MaxDB" 		MODULE="sapdbc.jar" MVN="mvn:org.talend.libraries/sapdbc/6.0.0"  REQUIRED="true" />
 		<IMPORT NAME="Driver-MSSQL" 		MODULE="jtds-1.3.1-patch.jar" MVN="mvn:org.talend.libraries/jtds-1.3.1-patch/6.1.1"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.jtds/lib/jtds-1.3.1-patch.jar" REQUIRED="true" />
         <IMPORT NAME="Driver-Oracle11g-2" 	MODULE="ojdbc6.jar" MVN="mvn:org.talend.libraries/ojdbc6/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.oracle/lib/ojdbc6.jar" REQUIRED="true" />
-		<IMPORT NAME="Driver-POSTGRESQL" 	MODULE="postgresql-8.3-603.jdbc3.jar" MVN="mvn:org.talend.libraries/postgresql-8.3-603.jdbc3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
+		<IMPORT NAME="Driver-POSTGRESQL" 	MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
 		<IMPORT NAME="Driver-FIREBIRD" 		MODULE="jaybird-full-2.1.1.jar" MVN="mvn:org.talend.libraries/jaybird-full-2.1.1/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.firebird/lib/jaybird-full-2.1.1.jar" REQUIRED="true" />
 		<IMPORT NAME="Driver-HSQLDb" 		MODULE="hsqldb.jar" MVN="mvn:org.talend.libraries/hsqldb/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.hsql/lib/hsqldb.jar" REQUIRED="true"/>
 		<IMPORT NAME="Driver-INFORMIX-JDBC" MODULE="ifxjdbc.jar" MVN="mvn:org.talend.libraries/ifxjdbc/6.0.0"  REQUIRED="true" />

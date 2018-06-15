@@ -78,6 +78,7 @@ import org.talend.repository.utils.DeploymentConfsUtils;
 import org.talend.repository.viewer.ui.provider.RepoCommonViewerProvider;
 import org.talend.repository.viewer.ui.viewer.CheckboxRepoCommonViewer;
 
+@Deprecated
 public class MavenDeploymentConfigurationProjectSettingPage extends ProjectSettingPage {
 
     private static final String DEFAULT_CONF_NAME = "conf1"; //$NON-NLS-1$

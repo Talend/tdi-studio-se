@@ -114,23 +114,67 @@
 			<DEFAULT>redshift_id</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
+		<PARAMETER
+			NAME="ACCESS_KEY"
+			FIELD="TEXT"
+			NUM_ROW="50"
+			REQUIRED="true"
+			NOT_SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+			GROUP="S3_CONFIG"
+		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-
-		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
+	
+		<PARAMETER
+			NAME="SECRET_KEY"
+			FIELD="PASSWORD"
+			NUM_ROW="50"
+			REQUIRED="true"
+			NOT_SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+			GROUP="S3_CONFIG"
+		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-
-		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="60" REQUIRED="true"
-			GROUP="S3_CONFIG">
+		
+	    <PARAMETER
+	      NAME="ASSUME_ROLE"
+	      FIELD="CHECK"
+	      NUM_ROW="60"
+	      REQUIRED="true"
+	      GROUP="S3_CONFIG"
+	    >
+	      <DEFAULT>false</DEFAULT>
+	    </PARAMETER>
+	    
+	    <PARAMETER
+          NAME="ROLE_TABLE"
+          FIELD="TABLE"
+          NUM_ROW="65"
+          SHOW_IF="isShow[ASSUME_ROLE] AND (ASSUME_ROLE == 'true')"
+          GROUP="S3_CONFIG"
+        >
+          <ITEMS>
+            <ITEM NAME="ROLE_ARN" VALUE=""/>
+          </ITEMS>
+        </PARAMETER>
+	    
+		<PARAMETER
+			NAME="BUCKET"
+			FIELD="TEXT"
+			NUM_ROW="100"
+			REQUIRED="true"
+			GROUP="S3_CONFIG"
+		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-
-		<PARAMETER NAME="OBJECTS_PREFIX" FIELD="TEXT" NUM_ROW="60" REQUIRED="false"
-			GROUP="S3_CONFIG">
+	
+		<PARAMETER
+			NAME="OBJECTS_PREFIX"
+			FIELD="TEXT"
+			NUM_ROW="100"
+			REQUIRED="false"
+			GROUP="S3_CONFIG"
+		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 

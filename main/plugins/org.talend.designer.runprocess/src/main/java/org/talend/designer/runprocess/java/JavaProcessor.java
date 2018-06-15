@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -134,6 +137,7 @@ import org.talend.designer.core.ui.editor.CodeEditorFactory;
 import org.talend.designer.core.ui.editor.nodes.Node;
 import org.talend.designer.core.ui.editor.process.Process;
 import org.talend.designer.maven.utils.ClasspathsJarGenerator;
+import org.talend.designer.maven.utils.MavenVersionHelper;
 import org.talend.designer.maven.utils.PomUtil;
 import org.talend.designer.runprocess.ItemCacheManager;
 import org.talend.designer.runprocess.ProcessorConstants;
@@ -1375,7 +1379,17 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         } else {
             for (ModuleNeeded neededModule : neededModules) {
                 MavenArtifact artifact = MavenUrlHelper.parseMvnUrl(neededModule.getMavenUri());
-                libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                if ("sapjco3".equals(artifact.getArtifactId())) { //$NON-NLS-1$
+                    String jarPath = JavaProcessorUtilities.getJavaProjectLibFolder2().getFile("sapjco3.jar").getLocation() //$NON-NLS-1$
+                            .toPortableString();
+                    if (compareSapjco3Version(jarPath) > 0) {
+                        libPath.append(jarPath).append(classPathSeparator);
+                    } else {
+                        libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                    }
+                } else {
+                    libPath.append(PomUtil.getAbsArtifactPathAsCP(artifact)).append(classPathSeparator);
+                }
             }
         }
 
@@ -1384,6 +1398,31 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             libPath.deleteCharAt(lastSep);
         }
         return libPath.toString();
+    }
+
+    private int compareSapjco3Version(String jarPath) {
+        JarFile jar = null;
+        String version = null;
+        try {
+            jar = new JarFile(jarPath);
+            Manifest manifest = jar.getManifest();
+            version = manifest.getMainAttributes().getValue(Attributes.Name.SPECIFICATION_VERSION);
+        } catch (IOException e) {
+            ExceptionHandler.process(e);
+        } finally {
+            if (jar != null) {
+                try {
+                    jar.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
+        }
+        if (version != null) {
+            return MavenVersionHelper.compareTo(version, "3.0.10"); //$NON-NLS-1$
+        }
+
+        return 0;
     }
 
     protected String getBaseLibPath() {

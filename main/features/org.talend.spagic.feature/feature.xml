@@ -2,7 +2,7 @@
 <feature
       id="org.talend.spagic.feature"
       label="SPAGIC Feature"
-      version="7.1.0.qualifier"
+      version="7.1.1.qualifier"
       provider-name=".Talend SA.">
 
    <description url="http://www.talend.com/online/featuresdescription.html#spagic-feature">

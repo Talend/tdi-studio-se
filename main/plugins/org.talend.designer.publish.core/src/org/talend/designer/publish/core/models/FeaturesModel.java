@@ -73,6 +73,10 @@ public class FeaturesModel extends BaseModel {
         return subBundles.add(model);
     }
 
+    public Collection<FeatureModel> getFeatures() {
+        return subFeatures;
+    }
+
     public Collection<BundleModel> getBundles() {
         return subBundles;
     }

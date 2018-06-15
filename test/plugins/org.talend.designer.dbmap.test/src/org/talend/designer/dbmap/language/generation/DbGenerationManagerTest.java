@@ -1,8 +1,10 @@
 package org.talend.designer.dbmap.language.generation;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -55,6 +57,10 @@ public class DbGenerationManagerTest extends DbGenerationManagerTestHelper {
         String[] columns = new String[] { "\\\"id\\\"" };
         incomingConnections.add(createConnection("t1", "t1", "id", columns));
         dbMapComponent.setIncomingConnections(incomingConnections);
+
+        if (dbMapComponent.getElementParameters() == null) {
+            dbMapComponent.setElementParameters(Collections.EMPTY_LIST);
+        }
 
         dbManager = new GenericDbGenerationManager();
 

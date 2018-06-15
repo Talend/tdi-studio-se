@@ -3052,6 +3052,30 @@
               name="FileInputPositionalByteLengthMigrationTask"
               version="7.0.1">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              id="org.talend.repository.model.migration.KeepChangeRemoteDirFalseForFTPFileExist"
+              name="KeepChangeRemoteDirFalseForFTPFileExist"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.EscapeQuoterForTNormalize"
+              id="org.talend.repository.model.migration.EscapeQuoterForTNormalize"
+              name="EscapeQuoterForTNormalize"
+              version="7.1.0">
+        </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.0.1"
+              class="org.talend.repository.model.migration.AddTypeNameInConnection"
+              id="org.talend.repository.model.migration.AddTypeNameInConnection"
+              name="AddTypeNameInConnection"
+              version="7.0.2">
+        </projecttask>
    </extension>
 
    <extension
@@ -3144,6 +3168,14 @@
    </extension>
    <extension
          point="org.talend.repository.projectsetting_page">
+      <page
+            class="org.talend.repository.preference.AuditProjectSettingPage"
+            id="org.talend.repository.auditPage"
+            title="%projectsetting.Audit">
+         <tester
+               class="org.talend.repository.preference.AuditProjectSettingPageTester">
+         </tester>
+      </page>
       <page
             class="org.talend.repository.preference.GeneralProjectSettingPage"
             id="general"

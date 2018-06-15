@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Version: 7.1.0.qualifier
+Bundle-Version: 7.1.1.qualifier
 Bundle-Vendor: .Talend SA.
 Bundle-Name: org.talend.sdk.component.studio-integration
 Bundle-SymbolicName: org.talend.sdk.component.studio-integration;singleton=true
@@ -38,7 +38,8 @@ Export-Package: org.talend.sdk.component.studio.metadata.provider,
   org.talend.sdk.component.studio.model,
   org.talend.sdk.component.studio.service,
   org.talend.sdk.component.studio.i18n,
-  org.talend.sdk.component.studio.mvn
+  org.talend.sdk.component.studio.mvn,
+  org.talend.sdk.component.studio.toolbar
 Bundle-ClassPath: .,
   lib/component-server-model.jar,
   lib/tomcat-api.jar,
@@ -59,6 +60,7 @@ Require-Bundle: org.eclipse.core.runtime,
   org.eclipse.emf.common,
   org.eclipse.gef,
   org.eclipse.help,
+  org.eclipse.ui,
   org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
   org.eclipse.m2e.core,
   org.eclipse.m2e.maven.runtime,
@@ -75,6 +77,7 @@ Require-Bundle: org.eclipse.core.runtime,
   org.talend.repository,
   org.talend.repository.metadata,
   org.talend.repository.view,
+  org.talend.repository.items.importexport,
   org.talend.metadata.managment.ui,
   org.talend.repository.view.di,
   org.apache.commons.collections,

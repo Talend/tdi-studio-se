@@ -421,7 +421,7 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT MODULE="namedpipe-1.0.jar" MVN="mvn:org.talend.libraries/namedpipe-1.0/6.0.0"  NAME="namedpipe-1.0.jar" REQUIRED="true"/>
-			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.3-603.jdbc3.jar" MVN="mvn:org.talend.libraries/postgresql-8.3-603.jdbc3/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-8.3-603.jdbc3.jar" REQUIRED="true" />
+			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
 			<IMPORT MODULE="namedpipe_jni_64bit.dll" MVN="mvn:org.talend.libraries/namedpipe_jni_64bit/6.0.0/dll"  NAME="namedpipe_jni_64bit.dll" REQUIRED="false"/>
 			<IMPORT MODULE="namedpipe_jni.dll" MVN="mvn:org.talend.libraries/namedpipe_jni/6.0.0/dll"  NAME="namedpipe_jni.dll" REQUIRED="false"/>
 		</IMPORTS>

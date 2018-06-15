@@ -63,7 +63,7 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
         if (parameters == null || parameters.isEmpty()) {
             return false;
         }
-
+        
         ERepositoryObjectType type = null;
         Property property = null;
 

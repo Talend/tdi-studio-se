@@ -17,8 +17,12 @@ imports="
 
 	}
 }finally{
-	stmt_<%=cid %>.close();
-
+	if (rs_<%=cid%> != null) {
+		rs_<%=cid%>.close();
+	}
+	if (stmt_<%=cid%> != null) {
+		stmt_<%=cid%>.close();
+	}
 <%
 	if(!useExistingConn){
 %>

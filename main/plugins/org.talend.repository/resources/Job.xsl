@@ -82,7 +82,7 @@
 					cellspacing="0" style="border-collapse: collapse"
 					bordercolor="#111111" class="FONTSTYLE" summary="">
 					<tr valign="top">
-						<td align="center" width="25%"
+						<td align="left" width="25%"
 							class="TABLECOLUMNSTYLE">
 							<xsl:value-of select="/project/@i18n.job.project.name" />
 						</td>
@@ -90,7 +90,7 @@
 							class="FONTSTYLE">
 							<xsl:value-of select="/project/@name" />
 						</td>
-						<td align="center" width="25%"
+						<td align="left" width="25%"
 							class="TABLECOLUMNSTYLE">
 							<xsl:value-of select="/project/@i18n.job.generated.date" />
 						</td>
@@ -100,14 +100,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td align="center" width="25%"
+						<td align="left" width="25%"
 							class="TABLECOLUMNSTYLE">
 							<xsl:value-of select="/project/@i18n.job.author" />
 						</td>
 						<td align="center" width="25%">
 							<xsl:value-of select="/project/job/@author" />
 						</td>
-						<td align="center" width="25%"
+						<td align="left" width="25%"
 							class="TABLECOLUMNSTYLE">
 							<xsl:value-of
 								select="/project/@versionName" />
@@ -780,7 +780,7 @@
 					<br />
 					<table class="cols" width="90%" border="1"
 						cellpadding="0" cellspacing="0"
-						style="border-collapse: collapse; padding-left:10mm;"
+						style="border-collapse: collapse; padding-left:10mm;table-layout:fixed;"
 						bordercolor="#111111" frame="box" summary="">
 						<tr>
 							<th align="left" width="30%"
@@ -794,10 +794,10 @@
 						</tr>
 						<xsl:for-each select="parameters/column">
 							<tr>
-								<td class="FONTSTYLE" align="left">
+								<td style="word-break: break-all;word-wrap:break-word;font-size:12px;" class="FONTSTYLE" align="left">
 									<xsl:value-of select="@name" />
 								</td>
-								<td class="FONTSTYLE" align="left">
+								<td style="word-break: break-all;word-wrap:break-word;font-size:12px;" class="FONTSTYLE" align="left">
 									<xsl:value-of select="@value" />
 								</td>
 							</tr>

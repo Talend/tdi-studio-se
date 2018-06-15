@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,8 +31,6 @@ import org.talend.core.model.process.EParameterFieldType;
 
 public class PropertyNode {
 	
-	private static final String CONFIG_ROOT_PREFIX = "configuration";
-
     static final String CONNECTION_BUTTON = ".testConnection";
 
     static final String VALIDATION = "Validation";
@@ -239,41 +236,6 @@ public class PropertyNode {
 
     void addLayout(final String name, final Layout layout) {
         layouts.putIfAbsent(name, layout);
-    }
-    
-    /**
-     * Returns repository keys joined with '|'. Repository key is a key by which value is stored in Metadata Repository.
-     * It is available only for nodes, which have one or several Configuration Type nodes in their ancestors.
-     * Method may return Optional.empty(), if current node is not sub-node of Configuration Type nodes.
-     * Repository key is computed by replacing Configuration Type node path part with "configuration" in this node path
-     * 
-     * @return repository key if available; otherwise Optional.empty()
-     */
-    Optional<String> getRepositoryKeys() {
-        final String path = getId();
-        final String repositoryKeys = getConfigurationNodes().stream()
-                .map(PropertyNode::getId)
-                .map(p -> path.replace(p, CONFIG_ROOT_PREFIX))
-                .collect(Collectors.joining("|"));
-        return repositoryKeys.trim().isEmpty() ? Optional.empty() : Optional.of(repositoryKeys);
-    }
-    
-    /**
-     * Returns List of all Configuration Type nodes which are ancestors of current
-     * node or empty list if there are no such nodes
-     * 
-     * @return List of Configuration Type nodes
-     */
-    private List<PropertyNode> getConfigurationNodes() {
-        final List<PropertyNode> configurationNodes = new ArrayList<>();
-        PropertyNode current = this;
-        while (!current.isRoot()) {
-            current = current.getParent();
-            if (current.getProperty().hasConfigurationType()) {
-                configurationNodes.add(current);
-            }
-        }
-        return configurationNodes;
     }
 
     private static class LayoutHeightVisitor implements PropertyVisitor {

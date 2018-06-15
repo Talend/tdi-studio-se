@@ -6,6 +6,7 @@ imports="
 	org.talend.core.model.metadata.IMetadataTable
 	org.talend.core.model.metadata.MetadataTalendType
 	org.talend.core.model.metadata.MappingTypeRetriever
+	org.talend.core.model.utils.NodeUtil
 	java.util.List
 	java.util.ArrayList
 	java.util.Map
@@ -92,17 +93,51 @@ imports="
 <%
 	String bucket = ElementParameterParser.getValue(node,"__BUCKET__");
     String keyPrefix = ElementParameterParser.getValue(node,"__OBJECTS_PREFIX__");
-    String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
-    String passwordFieldKey = "__SECRET_KEY__";
+	
+	boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
+	String access_key = ElementParameterParser.getValue(node, "__ACCESS_KEY__");
+	if(!assumeRole){
+		String passwordFieldKey = "__SECRET_KEY__";
+
+		if (ElementParameterParser.canEncrypt(node, passwordFieldKey)) {
 %>
-	<%if (ElementParameterParser.canEncrypt(node, passwordFieldKey)) {%> 
-	final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldKey)%>);
-	<%} else {%>
-	final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldKey)%>; 
-	<%}%>
-	command_<%=cid%>.append("'s3://").append(<%=bucket%>).append("/").append(<%=keyPrefix%>).append("' ")
-	.append("credentials 'aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
+		    final String decryptedPwd_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, passwordFieldKey)%>);
 <%
+		} else {
+%>
+		    final String decryptedPwd_<%=cid%> = <%= ElementParameterParser.getValue(node, passwordFieldKey)%>;
+<%
+		}	
+	}
+%>
+	command_<%=cid%>.append("'s3://").append(<%=bucket%>).append("/").append(<%=keyPrefix%>).append("' ")
+	.append("credentials '")
+<%
+	if(assumeRole){
+		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
+		int roleListSize=roles.size();
+		if(roleListSize > 0){
+%>
+			.append("aws_iam_role=")
+<%
+			for(int roleIndex = 0;roleIndex<roleListSize;roleIndex++){
+				Map<String, String> role = roles.get(roleIndex);
+				String roleARN = role.get("ROLE_ARN");
+				if(roleIndex != 0){
+%>
+				    .append(",")	
+<%					
+				}
+%>
+			.append(<%=roleARN%>)
+<%		
+			}
+		}
+	}else{
+%>
+	    .append("aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
+<%
+	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
 	if(encrypt) {
 		String encryptedKey = ElementParameterParser.getValue(node,"__ENCRYPTED_KEY__");

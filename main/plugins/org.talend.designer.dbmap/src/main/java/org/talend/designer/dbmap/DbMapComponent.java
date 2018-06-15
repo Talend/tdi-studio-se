@@ -29,6 +29,7 @@ import org.talend.core.model.components.IODataComponentContainer;
 import org.talend.core.model.genhtml.HTMLDocUtils;
 import org.talend.core.model.metadata.ColumnNameChanged;
 import org.talend.core.model.metadata.IMetadataTable;
+import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IComponentDocumentation;
 import org.talend.core.model.process.IConnection;
@@ -172,6 +173,9 @@ public class DbMapComponent extends AbstractMapComponent {
                 activeDelimitedIdentifiersEP.setShow(false);
                 activeDelimitedIdentifiersEP.setFieldType(EParameterFieldType.TEXT);
                 activeDelimitedIdentifiersEP.setName(EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName());
+                activeDelimitedIdentifiersEP.setCategory(EComponentCategory.TECHNICAL);
+                activeDelimitedIdentifiersEP.setNumRow(99);
+                activeDelimitedIdentifiersEP.setReadOnly(false);
                 List<IElementParameter> elemParams = (List<IElementParameter>) origNode.getElementParameters();
                 elemParams.add(activeDelimitedIdentifiersEP);
             }

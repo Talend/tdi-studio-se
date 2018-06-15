@@ -194,4 +194,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void updateValueOnly(final Object newValue) {
         super.setValue(newValue);
     }
+    
+    /**
+     * Denotes whether parameter should be persisted in the repository.
+     * Default (this) implementation returns {@code true}, however it can be overridden
+     * 
+     * @return true
+     */
+    public boolean isPersisted() {
+       return true; 
+    }
 }

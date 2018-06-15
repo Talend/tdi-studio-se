@@ -48,6 +48,7 @@ if(columnList==null || columnList.isEmpty() || outgoingConns == null || outgoing
 IConnection outgoingConn = outgoingConns.get(0);
 %>
 
+
 nb_line_<%=cid%>++;
 <%=cid%>_result = (org.json.JSONObject) <%=cid%>_resultArray.get(<%=cid%>_i);
 <%
@@ -57,6 +58,9 @@ for (int i = 0; i < columnList.size(); i++) {
 	JavaType javaType = JavaTypesManager.getJavaTypeFromId(column.getTalendType());
 	String pattern = column.getPattern() == null || column.getPattern().trim().length() == 0 ? null : column.getPattern();
 	
+%>
+	<%=outgoingConn.getName()%>.<%=column.getLabel()%> = null; // reset row value
+<%	
 	if("id_Dynamic".equals(column.getTalendType())) {
 %>
 		dynamic_<%=cid %>.clearColumnValues();

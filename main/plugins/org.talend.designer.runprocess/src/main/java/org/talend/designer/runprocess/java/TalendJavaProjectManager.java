@@ -15,7 +15,6 @@ package org.talend.designer.runprocess.java;
 import static org.talend.designer.maven.model.TalendJavaProjectConstants.*;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -74,7 +73,6 @@ import org.talend.designer.runprocess.ProcessorUtilities;
 import org.talend.designer.runprocess.maven.MavenJavaProcessor;
 import org.talend.repository.ProjectManager;
 import org.talend.repository.RepositoryWorkUnit;
-import org.talend.repository.utils.DeploymentConfsUtils;
 import org.talend.utils.io.FilesUtils;
 
 /**
@@ -99,15 +97,6 @@ public class TalendJavaProjectManager {
                     AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
                     // create poms folder.
                     IFolder poms = createFolderIfNotExist(helper.getProjectPomsFolder(), monitor);
-
-                    // // deployments
-                    // if (PluginChecker.isTIS()) {
-                    // IFolder aggregators = createFolderIfNotExist(poms.getFolder(DIR_AGGREGATORS), monitor);
-                    // IFile ciPomFile = aggregators.getFile(TalendJavaProjectConstants.FILE_POM_CI_BUILDER);
-                    // if (!ciPomFile.exists()) {
-                    // helper.createCIPom(ciPomFile, monitor);
-                    // }
-                    // }
 
                     // codes
                     IFolder code = createFolderIfNotExist(poms.getFolder(DIR_CODES), monitor);
@@ -158,7 +147,7 @@ public class TalendJavaProjectManager {
                     if (PluginChecker.isRouteletLoaded()) {
                         createFolderIfNotExist(jobs.getFolder(DIR_ROUTELETS), monitor);
                     }
-                    helper.createRootPom(poms, monitor);
+                    helper.createRootPom(monitor);
                 } catch (Exception e) {
                     ExceptionHandler.process(e);
                 }
@@ -292,29 +281,16 @@ public class TalendJavaProjectManager {
         return tempJavaProject;
     }
 
-    public static ITalendProcessJavaProject getExistingTalendProject(IProject project) {
-        List<ITalendProcessJavaProject> talendProjects = new ArrayList<>();
-        talendProjects.addAll(talendCodeJavaProjects.values());
-        talendProjects.addAll(talendJobJavaProjects.values());
-        talendProjects.add(tempJavaProject);
-        for (ITalendProcessJavaProject talendProject : talendProjects) {
-            if (project == talendProject.getProject()) {
-                return talendProject;
-            }
-        }
-        return null;
-    }
-
     public static ITalendProcessJavaProject getExistingTalendJobProject(Property property) {
         return talendJobJavaProjects.get(AggregatorPomsHelper.getJobProjectId(property));
     }
 
-    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, Project project) {
-        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    public static ITalendProcessJavaProject getExistingTalendCodeProject(ERepositoryObjectType codeType, String projectTechName) {
+        return talendCodeJavaProjects.get(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
     }
 
-    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, Project project) {
-        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, project.getTechnicalLabel()));
+    public static void removeFromCodeJavaProjects(ERepositoryObjectType codeType, String projectTechName) {
+        talendCodeJavaProjects.remove(AggregatorPomsHelper.getCodeProjectId(codeType, projectTechName));
     }
 
     public static void deleteTalendJobProjectsUnderFolder(ERepositoryObjectType processType, IPath folderPath,
@@ -361,10 +337,9 @@ public class TalendJavaProjectManager {
                             if (oldName != null) {
                                 property.setLabel(oldName);
                             }
-                            IPath jobPath = DeploymentConfsUtils.getJobEclipseProjectPath(property, realVersion);
-                            IFile file = ResourcesPlugin.getWorkspace().getRoot()
-                                    .getFile(jobPath.append(TalendMavenConstants.POM_FILE_NAME));
-                            AggregatorPomsHelper.removeFromParentModules(file);
+                            IFile pomFile = AggregatorPomsHelper.getItemPomFolder(property, realVersion)
+                                    .getFile(TalendMavenConstants.POM_FILE_NAME);
+                            AggregatorPomsHelper.removeFromParentModules(pomFile);
                         } finally {
                             if (oldName != null) {
                                 property.setLabel(currentName);
@@ -395,7 +370,7 @@ public class TalendJavaProjectManager {
                                 if (oldName != null) {
                                     property.setLabel(oldName);
                                 }
-                                IPath jobPath = AggregatorPomsHelper.getJobProjectPath(property, realVersion);
+                                IPath jobPath = AggregatorPomsHelper.getItemPomFolder(property, realVersion).getLocation();
                                 if (!removedVersions.contains(realVersion)) {
                                     File projectFolder = jobPath.toFile();
                                     if (projectFolder.exists()) {
@@ -496,6 +471,9 @@ public class TalendJavaProjectManager {
                         project.delete(false, true, monitor);
                     }
                 }
+                talendCodeJavaProjects.clear();
+                talendJobJavaProjects.clear();
+                tempJavaProject = null;
             };
 
         };
@@ -530,16 +508,18 @@ public class TalendJavaProjectManager {
             IProcess process = service.getProcessFromItem(item);
             if (process != null) {
                 // avoid non-process item
-                // for now services can't handle yet the pom generation only
                 IContext context = process.getContextManager().getDefaultContext();
                 IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty(), context);
-                if (processor instanceof MavenJavaProcessor) {
-                    LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
-                    ((MavenJavaProcessor) processor).generatePom(option);
+                generatePom(item, option, processor);
+            } else {
+                // SOAP service, when the process is null
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                    IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    if (item != null && soapService.isServiceItem(item.eClass().getClassifierID())) {
+                        IProcessor processor = ProcessorUtilities.getProcessor(process, item.getProperty());
+                        generatePom(item, option, processor);
+                    }
                 }
-                AggregatorPomsHelper.addToParentModules(
-                        AggregatorPomsHelper.getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),
-                        item.getProperty());
             }
         } catch (Exception e) {
             String errorMsg = "Job [" + item.getProperty().getLabel() + "_" + item.getProperty().getVersion() //$NON-NLS-1$ //$NON-NLS-2$
@@ -549,6 +529,18 @@ public class TalendJavaProjectManager {
         } finally {
             ProcessorUtilities.setGeneratePomOnly(false);
         }
+    }
+
+    private static void generatePom(Item item, int option, IProcessor processor) throws Exception {
+        if (processor instanceof MavenJavaProcessor) {
+            LastGenerationInfo.getInstance().clearModulesNeededWithSubjobPerJob();
+            LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().clear();
+            // Gen poms only
+            ((MavenJavaProcessor) processor).generatePom(option);
+        }
+        AggregatorPomsHelper.addToParentModules(
+                AggregatorPomsHelper.getItemPomFolder(item.getProperty()).getFile(TalendMavenConstants.POM_FILE_NAME),
+                item.getProperty());
     }
 
 }

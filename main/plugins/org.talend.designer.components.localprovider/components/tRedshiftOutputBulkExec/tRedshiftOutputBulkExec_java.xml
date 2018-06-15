@@ -124,25 +124,157 @@
 			<DEFAULT>true</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="ACCESS_KEY" FIELD="TEXT" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+        <PARAMETER
+          NAME="ACCESS_KEY"
+          FIELD="TEXT"
+          NUM_ROW="50"
+          REQUIRED="true"
+          SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+    
+        <PARAMETER
+          NAME="SECRET_KEY"
+          FIELD="PASSWORD"
+          NUM_ROW="50"
+          REQUIRED="true"
+          SHOW_IF="INHERIT_CREDENTIALS == 'false'"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
 
-		<PARAMETER NAME="SECRET_KEY" FIELD="PASSWORD" NUM_ROW="50"
-			REQUIRED="true" GROUP="S3_CONFIG">
-			<DEFAULT>""</DEFAULT>
-		</PARAMETER>
+     <PARAMETER
+          NAME="INHERIT_CREDENTIALS"
+          FIELD="CHECK"
+          NUM_ROW="55"
+          REQUIRED="true"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="ASSUME_ROLE_S3"
+          FIELD="CHECK"
+          NUM_ROW="60"
+          REQUIRED="true"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="ARN"
+          FIELD="TEXT"
+          NUM_ROW="65"
+          REQUIRED="true"
+          SHOW_IF="ASSUME_ROLE_S3 == 'true'"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="ROLE_SESSION_NAME"
+          FIELD="TEXT"
+          NUM_ROW="70"
+          REQUIRED="true"
+          SHOW_IF="ASSUME_ROLE_S3 == 'true'"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="SESSION_DURATION"
+          FIELD="TEXT"
+          NUM_ROW="75"
+          REQUIRED="true"
+          SHOW_IF="ASSUME_ROLE_S3 == 'true'"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>15</DEFAULT>
+        </PARAMETER>
+        
+        <PARAMETER
+          NAME="SET_STS_ENDPOINT"
+          FIELD="CHECK"
+          NUM_ROW="80"
+          NB_LINES="5"
+          SHOW_IF="ASSUME_ROLE_S3 == 'true'"
+          GROUP="S3_CONFIG"
+        >
+        </PARAMETER>
+        <PARAMETER
+          NAME="STS_ENDPOINT"
+          FIELD="TEXT"
+          NUM_ROW="85"
+          REQUIRED="true"
+          SHOW_IF="(ASSUME_ROLE_S3 == 'true') AND (SET_STS_ENDPOINT == 'true')"
+          GROUP="S3_CONFIG"
+        >
+          <DEFAULT>""</DEFAULT>
+        </PARAMETER>  
+        
+        <PARAMETER 
+            NAME="REGION" 
+            FIELD="OPENED_LIST" 
+            RAW="true" 
+            NUM_ROW="90" 
+            REQUIRED="true"
+            GROUP="S3_CONFIG">
+            
+            <ITEMS DEFAULT="DEFAULT">
+                <ITEM NAME="DEFAULT" VALUE="DEFAULT" />
+                <ITEM NAME="AP_SOUTH_1" VALUE="&quot;ap-south-1&quot;" />
+                <ITEM NAME="AP_SOUTHEAST_1" VALUE="&quot;ap-southeast-1&quot;" />
+                <ITEM NAME="AP_SOUTHEAST_2" VALUE="&quot;ap-southeast-2&quot;" />
+                <ITEM NAME="AP_NORTHEAST_1" VALUE="&quot;ap-northeast-1&quot;" />
+                <ITEM NAME="CN_NORTH_1" VALUE="&quot;cn-north-1&quot;" />
+                <ITEM NAME="EU_WEST_1" VALUE="&quot;eu-west-1&quot;" />
+                <ITEM NAME="EU_CENTRAL_1" VALUE="&quot;eu-central-1&quot;" />
+                <ITEM NAME="GovCloud" VALUE="&quot;us-gov-west-1&quot;" />
+                <ITEM NAME="SA_EAST_1" VALUE="&quot;sa-east-1&quot;" />
+                <ITEM NAME="US_EAST_1" VALUE="&quot;us-east-1&quot;" />
+                <ITEM NAME="US_WEST_1" VALUE="&quot;us-west-1&quot;" />
+                <ITEM NAME="US_WEST_2" VALUE="&quot;us-west-2&quot;" />
+            </ITEMS>
+        </PARAMETER> 
 
-		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="60" REQUIRED="true"
+		<PARAMETER NAME="BUCKET" FIELD="TEXT" NUM_ROW="95" REQUIRED="true"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
 
-		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="60" REQUIRED="false"
+		<PARAMETER NAME="KEY" FIELD="TEXT" NUM_ROW="95" REQUIRED="false"
 			GROUP="S3_CONFIG">
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
+		
+		<PARAMETER
+          NAME="ASSUME_ROLE_REDSHIFT"
+          FIELD="CHECK"
+          NUM_ROW="100"
+          REQUIRED="true"
+          GROUP="REDSHIFT_IAM_CONFIG"
+        >
+          <DEFAULT>false</DEFAULT>
+        </PARAMETER>
+		
+		<PARAMETER
+          NAME="ROLE_TABLE"
+          FIELD="TABLE"
+          NUM_ROW="105"
+          SHOW_IF="isShow[ASSUME_ROLE_REDSHIFT] AND (ASSUME_ROLE_REDSHIFT == 'true')"
+          GROUP="REDSHIFT_IAM_CONFIG"
+        >
+          <ITEMS>
+            <ITEM NAME="ROLE_ARN" VALUE=""/>
+          </ITEMS>
+        </PARAMETER>
 
 	</PARAMETERS>
 
@@ -321,9 +453,21 @@
 			<TEMPLATE_PARAM SOURCE="self.DATE_PATTERN" TARGET="tRBE.DATE_PATTERN" />
 			<TEMPLATE_PARAM SOURCE="self.TIMEFORMAT" TARGET="tRBE.TIMEFORMAT" />
 			<TEMPLATE_PARAM SOURCE="self.TIME_PATTERN" TARGET="tRBE.TIME_PATTERN" />
+			<TEMPLATE_PARAM SOURCE="self.ASSUME_ROLE_REDSHIFT" TARGET="tRBE.ASSUME_ROLE" />
+			<TEMPLATE_PARAM SOURCE="self.ROLE_TABLE" TARGET="tRBE.ROLE_TABLE" />
 
 			<TEMPLATE_PARAM SOURCE="self.ACCESS_KEY" TARGET="tROB.ACCESS_KEY" />
 			<TEMPLATE_PARAM SOURCE="self.SECRET_KEY" TARGET="tROB.SECRET_KEY" />
+			
+			<TEMPLATE_PARAM SOURCE="self.REGION" TARGET="tROB.REGION" />
+			<TEMPLATE_PARAM SOURCE="self.INHERIT_CREDENTIALS" TARGET="tROB.INHERIT_CREDENTIALS" />
+			<TEMPLATE_PARAM SOURCE="self.ASSUME_ROLE_S3" TARGET="tROB.ASSUME_ROLE" />
+			<TEMPLATE_PARAM SOURCE="self.ARN" TARGET="tROB.ARN" />
+			<TEMPLATE_PARAM SOURCE="self.ROLE_SESSION_NAME" TARGET="tROB.ROLE_SESSION_NAME" />
+			<TEMPLATE_PARAM SOURCE="self.SESSION_DURATION" TARGET="tROB.SESSION_DURATION" />
+			<TEMPLATE_PARAM SOURCE="self.SET_STS_ENDPOINT" TARGET="tROB.SET_STS_ENDPOINT" />
+			<TEMPLATE_PARAM SOURCE="self.STS_ENDPOINT" TARGET="tROB.STS_ENDPOINT" />
+			
 			<TEMPLATE_PARAM SOURCE="self.BUCKET" TARGET="tROB.BUCKET" />
 			<TEMPLATE_PARAM SOURCE="self.KEY" TARGET="tROB.KEY" />
 			<TEMPLATE_PARAM SOURCE="self.COMPRESS" TARGET="tROB.COMPRESS" />

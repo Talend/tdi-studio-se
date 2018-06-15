@@ -325,8 +325,9 @@ public class UpdateNodeParameterCommand extends Command {
                             if (!node.getMetadataList().isEmpty()) {
                                 table = node.getMetadataList().get(0);
                             }
+                            final String componentName = node.getComponent().getName();
                             Object objectValue = RepositoryToComponentProperty.getValue(connectionItem.getConnection(),
-                                    repositoryValue, table);
+                                    repositoryValue, table, componentName, null);
                             if (objectValue == null || "".equals(objectValue)) {
                                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
                                     IESBService service = (IESBService) GlobalServiceRegister.getDefault().getService(

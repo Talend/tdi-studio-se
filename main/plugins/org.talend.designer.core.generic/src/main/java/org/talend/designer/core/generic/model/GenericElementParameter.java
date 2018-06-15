@@ -66,7 +66,7 @@ import org.talend.designer.core.ui.editor.cmd.ChangeMetadataCommand;
 import org.talend.designer.core.ui.editor.nodes.Node;
 
 /**
- * created by ycbai on 2015年9月24日 Detailled comment
+ * created by ycbai on 2015/9/24 Detailled comment
  *
  */
 public class GenericElementParameter extends ElementParameter implements IGenericElementParameter {
@@ -172,7 +172,7 @@ public class GenericElementParameter extends ElementParameter implements IGeneri
             List<?> propertyPossibleValues = ((Property<?>) widgetProperty).getPossibleValues();
             if (propertyPossibleValues != null) {
                 for (Object possibleValue : propertyPossibleValues) {
-                    if (possibleValue.toString().equals(newValue)) {
+                    if (possibleValue != null && possibleValue.toString().equals(newValue)) {
                         value = possibleValue;
                         break;
                     }

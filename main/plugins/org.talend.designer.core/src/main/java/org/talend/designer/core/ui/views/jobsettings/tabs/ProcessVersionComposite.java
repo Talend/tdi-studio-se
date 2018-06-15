@@ -114,7 +114,7 @@ public class ProcessVersionComposite extends AbstractTabComposite {
         thisFormData.bottom = new FormAttachment(100, 0);
         setLayoutData(thisFormData);
 
-        tableViewer = new TableViewer(this, SWT.BORDER | SWT.FULL_SELECTION);
+        tableViewer = new TableViewer(this, SWT.FULL_SELECTION);
         final Table table = tableViewer.getTable();
         TableLayout tableLayout = new TableLayout();
         table.setLayout(tableLayout);

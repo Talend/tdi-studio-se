@@ -245,10 +245,34 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
     }
 %>
-	.append("' ")
-	
-	.append("credentials 'aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
+	.append("' credentials '")
 <%
+    boolean assumeRole = "true".equalsIgnoreCase(ElementParameterParser.getValue(node,"__ASSUME_ROLE__"));
+	if(s3Mode && assumeRole){
+		List<Map<String,String>> roles = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__ROLE_TABLE__");
+		int roleListSize=roles.size();
+		if(roleListSize > 0){
+%>
+			.append("aws_iam_role=")
+<%
+			for(int roleIndex = 0;roleIndex<roleListSize;roleIndex++){
+				Map<String, String> role = roles.get(roleIndex);
+				String roleARN = role.get("ROLE_ARN");
+				if(roleIndex != 0){
+%>
+				    .append(",")	
+<%					
+				}
+%>
+			.append(<%=roleARN%>)
+<%		
+			}
+		}
+	}else{
+%>
+	    .append("aws_access_key_id=").append(<%=access_key%>).append(";aws_secret_access_key=").append(decryptedPwd_<%=cid%>)
+<%
+	}
 	boolean encrypt = "true".equals(ElementParameterParser.getValue(node, "__ENCRYPT__"));
 	encrypt = encrypt && s3Mode;
 	
@@ -408,7 +432,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 	}
 %>
-	
 	java.sql.Statement stmt_<%=cid %>=conn_<%=cid %>.createStatement();
 	stmt_<%=cid %>.execute(command_<%=cid%>.toString());
 <%

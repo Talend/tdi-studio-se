@@ -55,6 +55,7 @@ import org.apache.xbean.asm6.MethodVisitor;
 import org.apache.xbean.asm6.Type;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.talend.sdk.component.api.processor.ElementListener;
 import org.talend.sdk.component.api.processor.Processor;
@@ -84,6 +85,7 @@ class ServerManagerTest {
         System.clearProperty("talend.component.server.component.coordinates");
     }
 
+    @Disabled
     @Test
     void startServer() throws Exception {
         int port;

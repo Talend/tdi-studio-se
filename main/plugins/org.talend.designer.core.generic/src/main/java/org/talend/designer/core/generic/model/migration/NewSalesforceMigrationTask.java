@@ -23,6 +23,9 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.daikon.NamedThing;
+import org.talend.daikon.properties.property.Property;
+import org.talend.designer.core.generic.model.GenericElementParameter;
 import org.talend.designer.core.generic.utils.ParameterUtilTool;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementValueType;
@@ -125,4 +128,17 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
 		}
 		return tableValue;
 	}
+	
+    @Override
+    protected void processUnmappedElementParameter(Properties props, NodeType nodeType, GenericElementParameter param,
+            NamedThing currNamedThing) {
+
+        if ("tSalesforceInput".equals(nodeType.getComponentName()) && "returnNullValue".equals(param.getName())) {
+            if (currNamedThing instanceof Property) {
+                ((Property<?>) currNamedThing).setStoredValue(true);
+            }
+        } else {
+            super.processUnmappedElementParameter(props, nodeType, param, currNamedThing);
+        }
+    }
 }

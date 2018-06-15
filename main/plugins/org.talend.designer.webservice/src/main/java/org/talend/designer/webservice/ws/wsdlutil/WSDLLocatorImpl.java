@@ -42,7 +42,7 @@ public class WSDLLocatorImpl implements WSDLLocator {
     }
 
     public InputSource getBaseInputSource() {
-        GetMethod get = createGedMethod(wsdlUri);
+        GetMethod get = createGetMethod(wsdlUri);
         try {
             httpClient.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
@@ -55,11 +55,9 @@ public class WSDLLocatorImpl implements WSDLLocator {
 
     public InputSource getImportInputSource(String parentLocation, String importLocation) {
         try {
-            String contextURI = parentLocation;
-            URL contextURL = (contextURI != null) ? getURL(null, contextURI) : null;
-            URL url = getURL(contextURL, importLocation);
+            URL url = getURL(parentLocation, importLocation);
             latestImportUri = url.toExternalForm();
-            GetMethod get = createGedMethod(latestImportUri);
+            GetMethod get = createGetMethod(latestImportUri);
             httpClient.executeMethod(get);
             InputStream is = get.getResponseBodyAsStream();
             inputStreams.add(is);
@@ -71,17 +69,17 @@ public class WSDLLocatorImpl implements WSDLLocator {
         }
     }
 
-    private static URL getURL(URL contextURL, String spec) throws MalformedURLException {
+    public static URL getURL(String parentLocation, String wsdlLocation) throws MalformedURLException {
+        URL contextURL = (parentLocation != null) ? getURL(null, parentLocation) : null;
         try {
-            return new URL(contextURL, spec);
+            return new URL(contextURL, wsdlLocation);
         } catch (MalformedURLException e) {
-            File tempFile = new File(spec);
+            File tempFile = new File(wsdlLocation);
             if (contextURL == null || (contextURL != null && tempFile.isAbsolute())) {
                 return tempFile.toURI().toURL();
             }
-
-            // only reach here if the contextURL !null, spec is relative path and
-            // MalformedURLException thrown
+            // this line is reached if contextURL != null, wsdlLocation is a relative path,
+            // and a MalformedURLException has been thrown - so re-throw the Exception.
             throw e;
         }
     }
@@ -105,7 +103,7 @@ public class WSDLLocatorImpl implements WSDLLocator {
         inputStreams.clear();
     }
 
-    private GetMethod createGedMethod(String uri) {
+    private GetMethod createGetMethod(String uri) {
         GetMethod get = new GetMethod(uri);
         if (configuration.getCookie() != null) {
             get.setRequestHeader(HTTP_HEADER_COOKIE, configuration.getCookie());

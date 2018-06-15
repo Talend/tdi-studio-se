@@ -1,0 +1,65 @@
+<%@ jet
+imports="
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+"
+%>
+<%@ include file="../../Log4j/Log4jDBConnUtil.javajet"%>
+<%
+CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+INode node = (INode)codeGenArgument.getArgument();
+String cid =  node.getUniqueName();
+String dieOnError = ElementParameterParser.getValue(node, "__DIE_ON_ERROR__");
+boolean usePrepareStatement = "true".equals(ElementParameterParser.getValue(node,"__USE_PREPAREDSTATEMENT__"));
+boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+String commitEvery = ElementParameterParser.getValue(node, "__COMMIT_EVERY__");
+boolean useTransaction = !("false").equals(ElementParameterParser.getValue(node,"__USE_TRANSACTION__"));
+
+if(!useExistingConnection) {%>
+try {
+<%
+}
+%>
+    if (resourceMap.get("statementClosed_<%=cid%>") == null) {
+<%
+        if(usePrepareStatement) {
+%>
+            java.sql.PreparedStatement pstmtToClose_<%=cid %> = null;
+            if ((pstmtToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmt_<%=cid%>")) != null) {
+                pstmtToClose_<%=cid %>.close();
+            }
+<%
+        } else {
+%>
+            java.sql.Statement stmtToClose_<%=cid %> = null;
+            if ((stmtToClose_<%=cid %> = (java.sql.Statement) resourceMap.remove("stmt_<%=cid%>")) != null) {
+                stmtToClose_<%=cid %>.close();
+            }
+<%
+        }
+%>
+    }
+<%
+if(!useExistingConnection) {
+%>
+} finally {
+        if(resourceMap.get("finish_<%=cid%>") == null){
+            java.sql.Connection ctn_<%=cid%> = null;
+            if((ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>")) != null){
+                try {
+                    <%log4jCodeGenerateUtil.beforeComponentProcess(node);%>
+                    <%log4jCodeGenerateUtil.close_begin();%>
+                    ctn_<%=cid%>.close();
+                    <%log4jCodeGenerateUtil.close_end();%>
+                } catch (java.sql.SQLException sqlEx_<%=cid %>) {
+                    String errorMessage_<%=cid%> = "failed to close the connection in <%=cid %> :" + sqlEx_<%=cid %>.getMessage();
+                    <%log4jCodeGenerateUtil.logError(node,"error", "sqlEx_" + cid);%>
+                    System.err.println(errorMessage_<%=cid%>);
+                }
+            }
+        }
+    }
+<%
+}
+%>

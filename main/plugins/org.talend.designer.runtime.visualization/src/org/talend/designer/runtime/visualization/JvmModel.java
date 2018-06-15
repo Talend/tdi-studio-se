@@ -311,6 +311,27 @@ public class JvmModel {
         }
     }
 
+    public IActiveJvm getActiveJvmByMainClass(String mainClassName, String host) throws JvmCoreException {
+        int nb = 0;
+        while (true) {
+            List<IActiveJvm> activeJvms = getHost(host).getActiveJvms();
+            for (IActiveJvm activeJvm : activeJvms) {
+                String jvmName = activeJvm.getMainClass();
+                if (jvmName != null) {
+                    jvmName = jvmName.trim();
+                    if (mainClassName.equals(jvmName)) {
+                        return activeJvm;
+                    }
+                }
+            }
+            jvmAttachHandler.updatesActiveJvms();
+            if (nb > 3) {
+                break;
+            }
+        }
+        return null;
+    }
+
     /**
      * Loads the handler for the given extension point.
      * 

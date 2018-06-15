@@ -24,6 +24,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.IndexedRecord;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.talend.codegen.DiSchemaConstants;
@@ -265,6 +266,23 @@ public class OutgoingDynamicSchemaEnforcerTest {
         enforcer.setWrapped(record);
 
         enforcer.get(4);
+    }
+
+    @Test
+    public void testFieldsThatNotPresentInRuntime() {
+        Schema designSchema = SchemaBuilder.builder().record("Record") //
+                .prop(DiSchemaConstants.TALEND6_DYNAMIC_COLUMN_POSITION, "3").prop(SchemaConstants.INCLUDE_ALL_FIELDS, "true")
+                .fields() //
+                .name("id").type().intType().noDefault() //
+                .name("name").type().stringType().noDefault() //
+                .name("phoneNumber").type().intType().noDefault() //
+                .endRecord(); //
+
+        DynamicIndexMapper indexMapper = new DynamicIndexMapperByName(designSchema);
+        OutgoingDynamicSchemaEnforcer enforcer = new OutgoingDynamicSchemaEnforcer(designSchema, indexMapper);
+        enforcer.setWrapped(record);
+
+        Assert.assertNull(enforcer.get(2));
     }
 
 }

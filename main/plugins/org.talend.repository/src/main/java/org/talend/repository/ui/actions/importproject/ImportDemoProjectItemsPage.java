@@ -125,7 +125,7 @@ public class ImportDemoProjectItemsPage extends WizardFileSystemResourceExportPa
         gd.widthHint = 300;
         sashForm.setLayoutData(gd);
 
-        wizardSelectionViewer = CheckboxTableViewer.newCheckList(sashForm, SWT.CHECK | SWT.SINGLE);
+        wizardSelectionViewer = CheckboxTableViewer.newCheckList(sashForm, SWT.CHECK | SWT.SINGLE | SWT.BORDER);
         wizardSelectionViewer.getTable().setLayoutData(new GridData(GridData.FILL_BOTH));
 
         wizardSelectionViewer.addCheckStateListener(this);

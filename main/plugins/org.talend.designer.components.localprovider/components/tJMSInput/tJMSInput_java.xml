@@ -25,7 +25,7 @@
 	      NUM_ROW="1"
 	      REQUIRED="true"
 	    >
-	      <DEFAULT>activemq-all-5.10.0.jar</DEFAULT>
+	      <DEFAULT></DEFAULT>
 	    </PARAMETER>
 		<PARAMETER NAME="CONTEXT_PROVIDER" FIELD="TEXT" NUM_ROW="5">
 			<DEFAULT>"org.apache.activemq.jndi.ActiveMQInitialContextFactory"</DEFAULT>

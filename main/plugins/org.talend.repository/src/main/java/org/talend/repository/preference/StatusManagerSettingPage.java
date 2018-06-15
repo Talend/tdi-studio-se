@@ -385,8 +385,13 @@ public class StatusManagerSettingPage extends ProjectSettingPage {
     }
 
     private void addItemTableViewer(Composite rightComposite) {
+        
         Composite composite = new Composite(rightComposite, SWT.NONE);
-        composite.setLayout(new GridLayout());
+        GridLayout gdlComposite = new GridLayout();
+        gdlComposite.marginHeight = 0;
+        gdlComposite.marginWidth = 0;
+        composite.setLayout(gdlComposite);
+        
         GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 
         addItemsOption(composite);

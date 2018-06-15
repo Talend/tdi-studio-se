@@ -139,6 +139,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 			}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>, java.sql.Statement.RETURN_GENERATED_KEYS);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("UPDATE").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -155,6 +156,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	} else if (("INSERT_OR_UPDATE").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -179,8 +181,11 @@ skeleton="../templates/db_output_bulk.skeleton"
 			}
 	    %>
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement("SELECT COUNT(1) FROM " + <%=table%> + " WHERE <%=updateWhereStmt.toString()%>");
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+		resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    <%
 	} else if (("UPDATE_OR_INSERT").equals(dataAction)) {
 		List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
@@ -206,12 +211,15 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	    %>
 	    pstmtUpdate_<%=cid %> = conn_<%=cid%>.prepareStatement(update_<%=cid%>);
+		resourceMap.put("pstmtUpdate_<%=cid %>", pstmtUpdate_<%=cid %>);
 	    pstmtInsert_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
+		resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
 	    <%
 	} else if (("DELETE").equals(dataAction)) {
 	    %>
 	    String delete_<%=cid%> = "DELETE FROM " + <%=table%> + " WHERE <%=deleteWhereStmt.toString()%>";
 	    pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
+		resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
 	    <%
 	}
     if(isEnableDebug) {
@@ -484,11 +492,12 @@ skeleton="../templates/db_output_bulk.skeleton"
                 }
             }
     		%>
-    		java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery();
-    		int checkCount_<%=cid%> = -1;
-    		while(rs_<%=cid%>.next()) {
-    			checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
-    		}
+            int checkCount_<%=cid%> = -1;
+            try (java.sql.ResultSet rs_<%=cid%> = pstmt_<%=cid %>.executeQuery()) {
+                while(rs_<%=cid%>.next()) {
+                    checkCount_<%=cid%> = rs_<%=cid%>.getInt(1);
+                }
+            }
     		if(checkCount_<%=cid%> > 0) {
     			try {
     			<%
@@ -977,73 +986,8 @@ skeleton="../templates/db_output_bulk.skeleton"
     	if (useBatch) {
                 %>
     			if ((batchSize_<%=cid%> > 0) && (batchSize_<%=cid%> <= batchSizeCounter_<%=cid%>)) {
-    			    try {
-    			    	<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
-                        <%
-                        if (("INSERT").equals(dataAction)) {
-                        %>
-                            pstmt_<%=cid %>.executeBatch();
-                        <%
-                        }else{
-                        %>
-                            int countSum_<%=cid%> = 0;
-                            for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                                countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                            }
-                        <%
-                            if (("UPDATE").equals(dataAction)) {
-                        %>
-                                updatedCount_<%=cid%> += countSum_<%=cid%>;
-                        <%
-                            }else if (("DELETE").equals(dataAction)) {
-                        %>
-                                deletedCount_<%=cid%> += countSum_<%=cid%>;
-                        <%
-                            }
-                        }%>
-                        <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
-                    }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                        <%if(("true").equals(dieOnError)) {
-                        %>
-                            throw(e_<%=cid%>);
-                        <%
-                        }else {
-                        %>
-                            <%
-                            if (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)) {
-                            %>
-                                int countSum_<%=cid%> = 0;
-                                for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                                    countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                                }
-                            <%
-                            }
-                            if (("UPDATE").equals(dataAction)) {
-                            %>
-                                updatedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                            }else if (("DELETE").equals(dataAction)) {
-                            %>
-                                deletedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                            }
-                            dbLog.logPrintedException("e_"+cid+".getMessage()");
-                            %>
-                            System.err.println(e_<%=cid%>.getMessage());
-                        <%
-                        }
-                        %>
-                    }
-                    <%
-                    if (("INSERT").equals(dataAction)) {
-                    %>
-                        tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
-                        insertedCount_<%=cid%>+= (tmp_batchUpdateCount_<%=cid%> >0 ? tmp_batchUpdateCount_<%=cid%>:0);
-                    <%
-                    }
-                    %>
-                    batchSizeCounter_<%=cid%> = 0;
-				}
+    			    <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
+					}
 	    		<%
     	}
         if(!useExistingConnection) {
@@ -1056,73 +1000,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	                if (useBatch) {
 	                %>
 	                if(batchSizeCounter_<%=cid%> > 0){
-    	                try {
-    	                	<%dbLog.batch().executeTry(dbLog.str(dataAction));%>
-                            <%
-                            if (("INSERT").equals(dataAction)) {
-                            %>
-                                pstmt_<%=cid %>.executeBatch();
-                            <%
-                            }else{
-                            %>
-                                int countSum_<%=cid%> = 0;
-                                for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                                    countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                                }
-                            <%
-                                if (("UPDATE").equals(dataAction)) {
-                            %>
-                                    updatedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                                }else if (("DELETE").equals(dataAction)) {
-                            %>
-                                    deletedCount_<%=cid%> += countSum_<%=cid%>;
-                            <%
-                                }
-                            }
-                        	dbLog.batch().executeDone(dbLog.str(dataAction));
-                            %>
-                        }catch (java.sql.BatchUpdateException e_<%=cid%>){
-                            <%if(("true").equals(dieOnError)) {
-                            %>
-                                throw(e_<%=cid%>);
-                            <%
-                            }else {
-                            %>
-                                <%
-                                if (("UPDATE").equals(dataAction) || ("DELETE").equals(dataAction)) {
-                                %>
-                                    int countSum_<%=cid%> = 0;
-                                    for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                                        countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
-                                    }
-                                <%
-                                }
-                                if (("UPDATE").equals(dataAction)) {
-                                %>
-                                    updatedCount_<%=cid%> += countSum_<%=cid%>;
-                                <%
-                                }else if (("DELETE").equals(dataAction)) {
-                                %>
-                                    deletedCount_<%=cid%> += countSum_<%=cid%>;
-                                <%
-                                }
-                                dbLog.logPrintedException("e_"+cid+".getMessage()");
-                                %>
-                                System.err.println(e_<%=cid%>.getMessage());
-                            <%
-                            }
-                            %>
-                        }
-                        <%
-                        if (("INSERT").equals(dataAction)) {
-                        %>
-                            tmp_batchUpdateCount_<%=cid%> = pstmt_<%=cid %>.getUpdateCount();
-                            insertedCount_<%=cid%>+= (tmp_batchUpdateCount_<%=cid%> >0 ? tmp_batchUpdateCount_<%=cid%>:0);
-                        <%
-                        }
-                        %>
-                        batchSizeCounter_<%=cid%> = 0;
+  	                	 	<%@ include file="@{org.talend.designer.components.localprovider}/components/templates/DB/batchExecute.javajet"%>
                     }
 	                <%
 	                }%>

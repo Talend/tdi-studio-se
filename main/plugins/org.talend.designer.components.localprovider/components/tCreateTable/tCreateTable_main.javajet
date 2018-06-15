@@ -135,34 +135,37 @@ abstract class  Manager {
                 }
                 createTableSQL.append(suffix);
             } else {
-                if(!lengthIgnored) {                
-                	if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) || "greenplum_id".equalsIgnoreCase(getDBMSId()) ) && metadataColumn.getLength() == null) {
-                	}else {
-	                    prefix = "(";
-	                    suffix = ") ";
-	                    createTableSQL.append(prefix + length);                	                	
-                	}
+                boolean isPostgresishDB = ("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) || "greenplum_id".equalsIgnoreCase(getDBMSId()) );
+                if(!lengthIgnored) {
+                    if (isPostgresishDB && metadataColumn.getLength() == null) {
+                    }else {
+                        prefix = "(";
+                        suffix = ") ";
+                        createTableSQL.append(prefix + length);
+                    }
                 }
                 if(!precisionIgnored) {
                     prefix = (("").equals(prefix) ? "(" : prefix);
                     suffix = (("").equals(suffix) ? ") " : suffix);
                     if(lengthIgnored) {
                         createTableSQL.append(prefix);
-                        comma = "";                        
+                        comma = "";
                     } else {
                         comma = ",";
                     }
-                    createTableSQL.append(comma + precision);
+                    if (!isPostgresishDB || metadataColumn.getLength() != null) {
+                        createTableSQL.append(comma + precision);
+                    }
                 }
-                
-                if (("postgres_id".equalsIgnoreCase(getDBMSId()) || "postgresplus_id".equalsIgnoreCase(getDBMSId()) || "greenplum_id".equalsIgnoreCase(getDBMSId()) ) && metadataColumn.getLength() == null) {                	
+
+                if (isPostgresishDB && metadataColumn.getLength() == null) {
                 } else {
-                	createTableSQL.append(suffix);
+                    createTableSQL.append(suffix);
                 }
                 
                 if("mysql_id".equalsIgnoreCase(getDBMSId()) && dataType.endsWith("UNSIGNED")) {
                     createTableSQL.append("UNSIGNED");
-                }                
+                }
             }
             createTableSQL.append(getDefaultValueSQL(metadataColumn.getDefault()));            
             createTableSQL.append(setNullable(metadataColumn.isNullable()));            

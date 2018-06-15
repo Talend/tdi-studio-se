@@ -54,7 +54,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Separator in property path
      */
-    private static final String PATH_SEPARATOR = ".";
+    public static final String PATH_SEPARATOR = ".";
 
     /**
      * Denotes that some property has no parent property
@@ -94,7 +94,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      * @param properties original properties collection
      * @return wrapped properties
      */
-    static Collection<PropertyDefinitionDecorator> wrap(final Collection<SimplePropertyDefinition> properties) {
+    public static Collection<PropertyDefinitionDecorator> wrap(final Collection<SimplePropertyDefinition> properties) {
         return properties.stream()
                 .map(property -> new PropertyDefinitionDecorator(property))
                 .collect(toList());
@@ -105,7 +105,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return parent path
      */
-    String getParentPath() {
+    public String getParentPath() {
         if (parentPath != null) {
             return parentPath;
         }
@@ -282,7 +282,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return configuration type
      */
-    String getConfigurationType() {
+    public String getConfigurationType() {
         return delegate.getMetadata().get(CONFIG_TYPE);
     }
 
@@ -291,7 +291,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return configuration type name
      */
-    String getConfigurationTypeName() {
+    public String getConfigurationTypeName() {
         return delegate.getMetadata().get(CONFIG_NAME);
     }
 

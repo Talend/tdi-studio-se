@@ -173,11 +173,13 @@ public class ProblemsAnalyser {
         for (ExternalMapperTable table : lookupTables) {
             List<ExternalMapperTableEntry> columnEntries = table.getMetadataTableEntries();
             boolean atLeastOneExpressionFilled = false;
-            for (ExternalMapperTableEntry entry : columnEntries) {
-                if (!StringUtils.isEmpty(entry.getExpression())) {
-                    atLeastOneExpressionFilled = true;
-                    break;
-                }
+            if (columnEntries != null) {
+                for (ExternalMapperTableEntry entry : columnEntries) {
+                    if (!StringUtils.isEmpty(entry.getExpression())) {
+                        atLeastOneExpressionFilled = true;
+                        break;
+                    }
+                }  
             }
 
             if (!atLeastOneExpressionFilled) {

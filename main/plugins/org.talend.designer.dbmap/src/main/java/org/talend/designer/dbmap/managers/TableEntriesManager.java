@@ -298,22 +298,34 @@ public class TableEntriesManager {
     TableItem retrieveTableItem(ITableEntry dataMapTableEntry) {
         DataMapTableView dataMapTableView = this.mapperManager.retrieveIDataMapTableView(dataMapTableEntry.getParent());
         TableItem[] tableItems = new TableItem[0];
+        List inputList = null;
         if (dataMapTableEntry instanceof IColumnEntry) {
             tableItems = dataMapTableView.getTableViewerCreatorForColumns().getTable().getItems();
+            inputList = dataMapTableView.getTableViewerCreatorForColumns().getInputList();
         } else if (dataMapTableEntry instanceof FilterTableEntry) {
             if (FilterTableEntry.OTHER_FILTER.equals(((FilterTableEntry) dataMapTableEntry).getFilterKind())) {
                 tableItems = dataMapTableView.getTableViewerCreatorForOtherFilters().getTable().getItems();
+                inputList = dataMapTableView.getTableViewerCreatorForOtherFilters().getInputList();
             } else {
                 tableItems = dataMapTableView.getTableViewerCreatorForWhereFilters().getTable().getItems();
+                inputList = dataMapTableView.getTableViewerCreatorForWhereFilters().getInputList();
             }
         } else {
             throw new IllegalArgumentException(Messages.getString("TableEntriesManager.exceptionMessage.caseNotFound")); //$NON-NLS-1$
         }
         TableItem tableItem = null;
-        for (TableItem tableItem2 : tableItems) {
-            if (tableItem2.getData() == dataMapTableEntry) {
-                tableItem = tableItem2;
-                break;
+        if (inputList != null) {
+            int index = inputList.indexOf(dataMapTableEntry);
+            if (0 <= index && index < tableItems.length) {
+                tableItem = tableItems[index];
+            }
+        }
+        if (tableItem == null) {
+            for (TableItem tableItem2 : tableItems) {
+                if (tableItem2.getData() == dataMapTableEntry) {
+                    tableItem = tableItem2;
+                    break;
+                }
             }
         }
         getTableEntryProperties(dataMapTableEntry).setTableItem(tableItem);

@@ -92,11 +92,13 @@ import org.talend.core.model.process.Problem;
 import org.talend.core.model.process.Problem.ProblemStatus;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.ExternalNodesFactory;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.utils.NodeUtil;
 import org.talend.core.model.utils.TalendTextUtils;
 import org.talend.core.prefs.ITalendCorePrefConstants;
+import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.runtime.CoreRuntimePlugin;
 import org.talend.core.service.IMRProcessService;
@@ -4228,6 +4230,8 @@ public class Node extends Element implements IGraphicalNode {
             // TDI-25573
             checkTRunjobwithMRProcess();
 
+            checkMultipleTRunjobVersion();
+
             checkNodeProblems();
 
             checkDependencyLibraries();
@@ -4403,6 +4407,68 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
         }
+    }
+
+    /**
+     * 
+     * DOC jding Comment method "checkMultipleTRunjobVersion".For a job,can't exist multiple same subjob with different
+     * version
+     */
+    private void checkMultipleTRunjobVersion() {
+        if (getComponent() != null && "tRunJob".equals(getComponent().getName())) {
+            List<? extends INode> allNodes = process.getGraphicalNodes();
+            IElementParameter thisElement = this.getElementParameter(EParameterName.PROCESS.getName());
+            // at first, when create a new tRunJob, this process is empty,it will have value after second call
+            if (StringUtils.isBlank(thisElement.getValue().toString())) {
+                return;
+            }
+            Map<String, IElementParameter> childParameters = thisElement.getChildParameters();
+            Object thisVersion = childParameters.get(EParameterName.PROCESS_TYPE_VERSION.getName()).getValue();
+            String lastVersion = null;
+            try {
+                IRepositoryViewObject subprocess = null;
+                for (ERepositoryObjectType type : ERepositoryObjectType.getAllTypesOfProcess()) {
+                    subprocess = ProxyRepositoryFactory.getInstance()
+                            .getLastVersion(childParameters.get(EParameterName.PROCESS_TYPE_PROCESS.getName()).getValue().toString(),"",type);
+                    if(subprocess!=null) {
+                        break;
+                    }
+                }
+                if (subprocess == null) {
+                    return;
+                }
+                lastVersion = subprocess.getProperty().getVersion();
+            } catch (PersistenceException e) {
+                CommonExceptionHandler.process(e);
+            }
+
+            if ("Latest".equals(thisVersion)) {
+                thisVersion = lastVersion;
+            }
+            for (INode node : allNodes) {
+                if (node instanceof Node && "tRunJob".equals(node.getComponent().getName())) {
+                    if (this.getUniqueName().equals(node.getUniqueName())) {
+                        continue;
+                    }
+                    IElementParameter element = node.getElementParameter(EParameterName.PROCESS.getName());
+                    Object version = element.getChildParameters().get(EParameterName.PROCESS_TYPE_VERSION.getName()).getValue();
+                    if ("Latest".equals(version)) {
+                        version = lastVersion;
+                    }
+                    if (thisElement.getValue().equals(element.getValue())) {
+                        if (!thisVersion.equals(version)) {
+                            Problems.add(ProblemStatus.ERROR, this, Messages.getString("Node.checkMultipleTRunjobVersion"));
+                        } else {
+                            Problems.clearAll((Node) node);
+                            Problems.refreshOneNodeStatus(node);
+                            Problems.refreshProblemTreeView();
+                        }
+                    }
+
+                }
+            }
+        }
+
     }
 
     /**

@@ -72,30 +72,30 @@ imports="
 	     	e.printStackTrace();
 	    }
 		%>
-		java.sql.Statement stmtCreateGeoColumns_<%=cid%> = conn_<%=cid%>.createStatement();
+		try (java.sql.Statement stmtCreateGeoColumns_<%=cid%> = conn_<%=cid%>.createStatement()) {
 
-		// Delete geometry columns entry if already exists.
-		String deleteGeometryColumns_<%=cid %> = "DELETE FROM user_sdo_geom_metadata "
+			// Delete geometry columns entry if already exists.
+			String deleteGeometryColumns_<%=cid %> = "DELETE FROM user_sdo_geom_metadata "
 												+ "WHERE TABLE_NAME='" + <%=tableName.toUpperCase(java.util.Locale.US) %> + "'";
-		<%dbLog.data().sqlExecuteTry(dbLog.var("deleteGeometryColumns"));%>
-		stmtCreateGeoColumns_<%=cid%>.execute(deleteGeometryColumns_<%=cid %>);
-		<%dbLog.data().sqlExecuteDone(dbLog.var("deleteGeometryColumns"));%>
+			<%dbLog.data().sqlExecuteTry(dbLog.var("deleteGeometryColumns"));%>
+			stmtCreateGeoColumns_<%=cid%>.execute(deleteGeometryColumns_<%=cid %>);
+			<%dbLog.data().sqlExecuteDone(dbLog.var("deleteGeometryColumns"));%>
 
-		for (String column: geometryColumnToExtends.keySet()) {
-		    com.vividsolutions.jts.geom.Envelope extend = geometryColumnToExtends.get(column);
+			for (String column: geometryColumnToExtends.keySet()) {
+				com.vividsolutions.jts.geom.Envelope extend = geometryColumnToExtends.get(column);
 
-			// Create new entry in geometry columns table
-	        String insertGeometryColumns_<%=cid %> = "INSERT INTO user_sdo_geom_metadata (TABLE_NAME, COLUMN_NAME, DIMINFO, SRID) VALUES ('"
+				// Create new entry in geometry columns table
+				String insertGeometryColumns_<%=cid %> = "INSERT INTO user_sdo_geom_metadata (TABLE_NAME, COLUMN_NAME, DIMINFO, SRID) VALUES ('"
 	        										+ <%=tableName.toUpperCase(java.util.Locale.US) %> + "','" + column.toUpperCase(java.util.Locale.US) + "', "
 	        										+ "MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('x', " + extend.getMinX() + ", " + extend.getMaxX() + ", <%=indexAccuracy %>), "
 	        										+ "MDSYS.SDO_DIM_ELEMENT('y', " + extend.getMinY() + ", " + extend.getMaxY() + ", <%=indexAccuracy %>)), "
 	        										+ <%=targetSRID < 0 ? "\"NULL\"" : targetSRID %> +")";
-			<%dbLog.data().sqlExecuteTry(dbLog.var("insertGeometryColumns"));%>
-	    	stmtCreateGeoColumns_<%=cid%>.execute(insertGeometryColumns_<%=cid %>);
-	    	<%dbLog.data().sqlExecuteDone(dbLog.var("insertGeometryColumns"));%>
-    	}
+				<%dbLog.data().sqlExecuteTry(dbLog.var("insertGeometryColumns"));%>
+				stmtCreateGeoColumns_<%=cid%>.execute(insertGeometryColumns_<%=cid %>);
+				<%dbLog.data().sqlExecuteDone(dbLog.var("insertGeometryColumns"));%>
+			}
 
-        stmtCreateGeoColumns_<%=cid%>.close();
+        }
 		<%
 	}
 	if (createSpatialIndex && useSpatialOptions) {
@@ -107,63 +107,57 @@ imports="
 				index_name = index_name.substring(0, 29);
 			}
 
-	    	java.sql.Statement stmtCreateIndex_<%=cid%> = conn_<%=cid%>.createStatement();
-			// Drop spatial index if exists
-			String dropIndex_<%=cid %> = "DROP INDEX "+index_name;
-	        try {
-	        	<%dbLog.data().sqlExecuteTry(dbLog.var("dropIndex"));%>
-				stmtCreateIndex_<%=cid%>.execute(dropIndex_<%=cid %>);
-        		<%dbLog.data().sqlExecuteDone(dbLog.var("dropIndex"));%>
-			}
-			catch (java.sql.SQLException e) {
-				<%dbLog.logIgnoredException("e.getMessage()");%>
-			}
+			try (java.sql.Statement stmtCreateIndex_<%=cid%> = conn_<%=cid%>.createStatement()) {
+				// Drop spatial index if exists
+				String dropIndex_<%=cid %> = "DROP INDEX "+index_name;
+		        try {
+					<%dbLog.data().sqlExecuteTry(dbLog.var("dropIndex"));%>
+					stmtCreateIndex_<%=cid%>.execute(dropIndex_<%=cid %>);
+					<%dbLog.data().sqlExecuteDone(dbLog.var("dropIndex"));%>
+				} catch (java.sql.SQLException e) {
+					<%dbLog.logIgnoredException("e.getMessage()");%>
+				}
 
-			// Create spatial index using GIST on geometry columns
-			String createIndex_<%=cid %> = "CREATE INDEX "+index_name + " "
+				// Create spatial index using GIST on geometry columns
+				String createIndex_<%=cid %> = "CREATE INDEX "+index_name + " "
 						+ "ON " + <%=tableName %> + "(" + geometryColumnName + ") "
 						+ "INDEXTYPE IS MDSYS.SPATIAL_INDEX";
-			<%dbLog.data().sqlExecuteTry(dbLog.var("createIndex"));%>
-	        stmtCreateIndex_<%=cid%>.execute(createIndex_<%=cid %>);
-	        <%dbLog.data().sqlExecuteDone(dbLog.var("createIndex"));%>
-	        stmtCreateIndex_<%=cid%>.close();
+				<%dbLog.data().sqlExecuteTry(dbLog.var("createIndex"));%>
+		        stmtCreateIndex_<%=cid%>.execute(createIndex_<%=cid %>);
+		        <%dbLog.data().sqlExecuteDone(dbLog.var("createIndex"));%>
+	        }
 	    }
 		<%
 	}
 
     if(("INSERT_OR_UPDATE").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
-
             pstmtUpdate_<%=cid %>.close();
-
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
-
             pstmtInsert_<%=cid %>.close();
-
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
         if(pstmt_<%=cid %> != null) {
-
             pstmt_<%=cid %>.close();
-
+            resourceMap.remove("pstmt_<%=cid %>");
         }
-        <%
+<%
     } else if(("UPDATE_OR_INSERT").equals(dataAction)) {
-        %>
+%>
         if(pstmtUpdate_<%=cid%> != null){
-
             pstmtUpdate_<%=cid %>.close();
-
+            resourceMap.remove("pstmtUpdate_<%=cid %>");
         }
         if(pstmtInsert_<%=cid %> != null){
-
             pstmtInsert_<%=cid %>.close();
-
+            resourceMap.remove("pstmtInsert_<%=cid %>");
         }
-        <%
+<%
     } else { // dataAction equals "INSERT" or "UPDATE" or "DELETE"
-        %>
+%>
             <%
               if(useBatch){
             %>
@@ -205,14 +199,15 @@ imports="
                 }
             }
         <% } %>
-			        if(pstmt_<%=cid %> != null) {
-						pstmt_<%=cid %>.close();
-			        }
-    <%
+        if(pstmt_<%=cid %> != null) {
+            pstmt_<%=cid %>.close();
+            resourceMap.remove("pstmt_<%=cid %>");
         }
-    %>
-
-    <%
+<%
+        }
+%>
+    resourceMap.put("statementClosed_<%=cid%>", true);
+<%
 	if(!useExistingConnection)
 	{
 		if(!("").equals(commitEvery) && !("0").equals(commitEvery))

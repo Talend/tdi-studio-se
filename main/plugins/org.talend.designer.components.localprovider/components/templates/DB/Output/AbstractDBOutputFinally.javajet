@@ -1,67 +1,106 @@
 <%@ jet 
 imports="
-		org.talend.designer.codegen.config.CodeGeneratorArgument
-		org.talend.core.model.process.INode
-		org.talend.core.model.process.ElementParameterParser
-		org.talend.core.model.metadata.IMetadataTable
+        org.talend.designer.codegen.config.CodeGeneratorArgument
+        org.talend.core.model.process.INode
+        org.talend.core.model.process.ElementParameterParser
+        org.talend.core.model.metadata.IMetadataTable
         org.talend.core.model.metadata.MappingTypeRetriever
         org.talend.core.model.metadata.MetadataTalendType
         org.talend.core.model.metadata.types.JavaTypesManager
         org.talend.core.model.process.IConnectionCategory
-		org.talend.core.model.process.IConnection
-		org.talend.core.model.utils.NodeUtil
-		java.util.List
-		java.util.ArrayList
-		java.util.Map
-		java.util.HashMap
+        org.talend.core.model.process.IConnection
+        org.talend.core.model.utils.NodeUtil
+        java.util.List
+        java.util.ArrayList
+        java.util.Map
+        java.util.HashMap
 "
 skeleton="@{org.talend.designer.components.localprovider}/components/templates/db_output_bulk.skeleton"
 %>
 <%@ include file="@{org.talend.designer.components.localprovider}/components/templates/Log4j/DBLogUtil.javajet"%>
 <%
-	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
-	INode node = (INode)codeGenArgument.getArgument();
-	dbLog = new DBLogUtil(node);
-	String cid = node.getUniqueName();
+    CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+    INode node = (INode)codeGenArgument.getArgument();
+    dbLog = new DBLogUtil(node);
+    String cid = node.getUniqueName();
+    String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
+    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+         cid = cid.substring(0,cid.length()-4);
+    }
 
-	if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
-	     cid = cid.substring(0,cid.length()-4);
-	}
-	
-	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
-	
-	boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+
+    boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
+
+if(!useExistingConnection) {
 %>
-	<%
-	if(!useExistingConnection)
-	{
-	%>
-		if(resourceMap.get("finish_<%=cid%>")==null){
-			if(resourceMap.get("conn_<%=cid%>")!=null){
-				try {
-					<%dbLog.conn().closeTry(null);%>
-					
-					java.sql.Connection ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>");
-					
-					<%
-					//need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
-					//maybe we need to rollback it when expcetion appear, but like all other db output components, we may commit something before it, so use commit here.
-					if(DB2.equalsIgnoreCase(dbmsId)){
-					%>
-					if(!ctn_<%=cid%>.getAutoCommit() && !ctn_<%=cid%>.isClosed()) {
-                		ctn_<%=cid%>.commit();
-                	}
-            		<%}%>
-            		
-					ctn_<%=cid%>.close();
-					<%dbLog.conn().closeDone(null);%>
-				} catch (java.sql.SQLException sqlEx_<%=cid %>) {
-					String errorMessage_<%=cid%> = "failed to close the connection in <%=cid %> :" + sqlEx_<%=cid %>.getMessage();
-					<%dbLog.logPrintedException(dbLog.var("errorMessage"));%>
-					System.err.println(errorMessage_<%=cid%>);
-				}
-			}
-		}
-	<%
-	}
-    %>
+    try {
+<%
+}
+%>
+    if (resourceMap.get("statementClosed_<%=cid%>") == null) {
+<%
+        if ("COPY".equals(dataAction)) {
+%>
+            java.sql.Statement stmtToClose_<%=cid %> = null;
+            if ((stmtToClose_<%=cid %> = (java.sql.Statement) resourceMap.remove("stmt_<%=cid%>")) != null) {
+                stmtToClose_<%=cid %>.close();
+            }
+<%
+        } else {
+            if(("INSERT_OR_UPDATE").equals(dataAction) || ("UPDATE_OR_INSERT").equals(dataAction)) {
+%>
+                java.sql.PreparedStatement pstmtUpdateToClose_<%=cid %> = null;
+                if ((pstmtUpdateToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmtUpdate_<%=cid%>")) != null) {
+                    pstmtUpdateToClose_<%=cid %>.close();
+                }
+                java.sql.PreparedStatement pstmtInsertToClose_<%=cid %> = null;
+                if ((pstmtInsertToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmtInsert_<%=cid%>")) != null) {
+                    pstmtInsertToClose_<%=cid %>.close();
+                }
+<%
+            }
+            if (!("UPDATE_OR_INSERT").equals(dataAction)) {
+%>
+                java.sql.PreparedStatement pstmtToClose_<%=cid %> = null;
+                if ((pstmtToClose_<%=cid %> = (java.sql.PreparedStatement) resourceMap.remove("pstmt_<%=cid%>")) != null) {
+                    pstmtToClose_<%=cid %>.close();
+                }
+<%
+            }
+        }
+%>
+    }
+<%
+if(!useExistingConnection) {
+%>
+    } finally {
+        if(resourceMap.get("finish_<%=cid%>") == null){
+            java.sql.Connection ctn_<%=cid%> = null;
+            if((ctn_<%=cid%> = (java.sql.Connection)resourceMap.get("conn_<%=cid%>")) != null){
+                try {
+                    <%dbLog.conn().closeTry(null);%>
+<%
+                    //need to end the transaction for db2 by the commit method before closing the connection, DDL and DML both need it
+                    //maybe we need to rollback it when expcetion appear, but like all other db output components, we may commit something before it, so use commit here.
+                    if(DB2.equalsIgnoreCase(dbmsId)){
+%>
+                        if(!ctn_<%=cid%>.getAutoCommit() && !ctn_<%=cid%>.isClosed()) {
+                            ctn_<%=cid%>.commit();
+                        }
+<%
+                    }
+%>
+                    ctn_<%=cid%>.close();
+                    <%dbLog.conn().closeDone(null);%>
+                } catch (java.sql.SQLException sqlEx_<%=cid %>) {
+                    String errorMessage_<%=cid%> = "failed to close the connection in <%=cid %> :" + sqlEx_<%=cid %>.getMessage();
+                    <%dbLog.logPrintedException(dbLog.var("errorMessage"));%>
+                    System.err.println(errorMessage_<%=cid%>);
+                }
+            }
+        }
+    }
+<%
+}
+%>

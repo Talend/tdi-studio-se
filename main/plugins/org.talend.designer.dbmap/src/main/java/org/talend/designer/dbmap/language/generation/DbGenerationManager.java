@@ -35,10 +35,12 @@ import org.talend.core.model.process.IConnection;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.core.model.process.IExternalNode;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.core.model.utils.TalendTextUtils;
+import org.talend.designer.core.model.components.EParameterName;
 import org.talend.designer.dbmap.DbMapComponent;
 import org.talend.designer.dbmap.external.data.ExternalDbMapData;
 import org.talend.designer.dbmap.external.data.ExternalDbMapEntry;
@@ -80,7 +82,7 @@ public abstract class DbGenerationManager {
 
     protected DataMapExpressionParser parser;
 
-    private boolean useDelimitedIdentifiers = false;
+    private Boolean useDelimitedIdentifiers;
 
     /**
      * DOC amaumont GenerationManager constructor comment.
@@ -261,13 +263,14 @@ public abstract class DbGenerationManager {
      * @param tabSpaceString
      * @return
      */
-    public String buildSqlSelect(DbMapComponent component, String outputTableName, String tabString) {
+    public String buildSqlSelect(DbMapComponent dbMapComponent, String outputTableName, String tabString) {
         queryColumnsName = "\""; //$NON-NLS-1$
         aliasAlreadyDeclared.clear();
         queryColumnsSegments.clear();
         querySegments.clear();
 
         this.tabSpaceString = tabString;
+        DbMapComponent component = getDbMapComponent(dbMapComponent);
 
         List<IConnection> outputConnections = (List<IConnection>) component.getOutgoingConnections();
 
@@ -537,6 +540,42 @@ public abstract class DbGenerationManager {
         return sqlQuery;
     }
 
+    protected DbMapComponent getDbMapComponent(DbMapComponent dbMapComponent) {
+        DbMapComponent component = dbMapComponent;
+        INode realGraphicalNode = dbMapComponent.getRealGraphicalNode();
+        if (realGraphicalNode != null) {
+            IExternalNode externalNode = realGraphicalNode.getExternalNode();
+            if (externalNode instanceof DbMapComponent) {
+                component = (DbMapComponent) externalNode;
+            }
+        }
+        checkParameters(component);
+        return component;
+    }
+
+    protected void checkParameters(DbMapComponent component) {
+        checkUseDelimitedIdentifiers(component);
+    }
+
+    protected void checkUseDelimitedIdentifiers(DbMapComponent component) {
+        /**
+         * in elt related component javajets(like tELTMSSqlMap_main.javajet), they don't get DbGenerationManager by
+         * DbMapComponent#getGenerationManager() while they construct a new manager manually, so some parameters may not
+         * be initialised, then need to check these parameters here manually to make sure they are initialised.
+         */
+        if (this.useDelimitedIdentifiers == null) {
+            this.useDelimitedIdentifiers = false;
+            IElementParameter activeDelimitedIdentifiersEP = component
+                    .getElementParameter(EParameterName.ACTIVE_DATABASE_DELIMITED_IDENTIFIERS.getName());
+            if (activeDelimitedIdentifiersEP != null) {
+                Object value = activeDelimitedIdentifiersEP.getValue();
+                if (value != null) {
+                    setUseDelimitedIdentifiers(Boolean.valueOf(value.toString()));
+                }
+            }
+        }
+    }
+
     /**
      * 
      * DOC wchen Comment method "replaceExpression".
@@ -717,13 +756,14 @@ public abstract class DbGenerationManager {
         if (operatorIsSet) {
 
             if (writeCr) {
-                sbWhere.append(DbMapSqlConstants.NEW_LINE).append(tabSpaceString);
-                sbWhere.append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.NEW_LINE);
+                appendSqlQuery(sbWhere, tabSpaceString);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             }
             if (!isFirstClause) {
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.AND);
-                sbWhere.append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.AND);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             }
             String entryName = dbMapEntry.getName();
             entryName = getOriginalColumnName(entryName, component, table);
@@ -733,32 +773,34 @@ public abstract class DbGenerationManager {
             } else {
                 tableName = getHandledField(table.getAlias());
             }
+            entryName = getColumnName(null, entryName);
             String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
-            sbWhere.append(DbMapSqlConstants.SPACE);
-            sbWhere.append(locationInputEntry);
-            sbWhere.append(getSpecialRightJoin(table));
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+            appendSqlQuery(sbWhere, locationInputEntry);
+            appendSqlQuery(sbWhere, getSpecialRightJoin(table));
 
-            sbWhere.append(DbMapSqlConstants.SPACE);
+            appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             if (operatorIsSet) {
-                sbWhere.append(dbOperator.getOperator()).append(DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, dbOperator.getOperator());
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             } else if (!operatorIsSet && expressionIsSet) {
-                sbWhere.append(DbMapSqlConstants.LEFT_COMMENT);
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName)); //$NON-NLS-1$
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputOperationSetMessage", entryName));
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
             }
             if (operatorIsSet && !expressionIsSet && !dbOperator.isMonoOperand()) {
                 String str = table.getName() + DbMapSqlConstants.DOT + entryName;
-                sbWhere.append(DbMapSqlConstants.LEFT_COMMENT);
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(Messages.getString("DbGenerationManager.InputExpSetMessage", str)); //$NON-NLS-1$
-                sbWhere.append(DbMapSqlConstants.SPACE);
-                sbWhere.append(DbMapSqlConstants.RIGHT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.LEFT_COMMENT);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, Messages.getString("DbGenerationManager.InputExpSetMessage", str));
+                appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
+                appendSqlQuery(sbWhere, DbMapSqlConstants.RIGHT_COMMENT);
             } else if (expressionIsSet) {
                 String exp = replaceVariablesForExpression(component, expression);
-                sbWhere.append(exp);
-                sbWhere.append(getSpecialLeftJoin(table));
+                appendSqlQuery(sbWhere, exp);
+                appendSqlQuery(sbWhere, getSpecialLeftJoin(table));
             }
             conditionWritten = true;
 
@@ -1029,17 +1071,21 @@ public abstract class DbGenerationManager {
                                             continue;
                                         }
                                         if (expression.trim().equals(tableValue + "." + oriName)) {
+                                            expression = tableValue + "." + getColumnName(iconn, oriName);
+                                            expression = expression.replace("\"", "\\\"");
                                             continue;
                                         }
                                         if (expression.trim().equals(originaltableName + "." + oriName)) {
+                                            expression = originaltableName + "." + getColumnName(iconn, oriName);
+                                            expression = expression.replace("\"", "\\\"");
                                             continue;
                                         }
                                         // if it is temp delived table, use label to generate sql
                                         if (iconn.getLineStyle() == EConnectionType.TABLE_REF) {
                                             continue;
                                         }
-                                        if (isUseDelimitedIdentifiers()) {
-                                            oriName = getSchemaName(oriName);
+                                        if (!isRefTableConnection(iconn) && isUseDelimitedIdentifiers()) {
+                                            oriName = getColumnName(iconn, oriName);
                                         } else {
                                             oriName = oriName.replaceAll("\\$", "\\\\\\$"); //$NON-NLS-1$ //$NON-NLS-2$
                                         }
@@ -1160,12 +1206,16 @@ public abstract class DbGenerationManager {
 
     }
 
-    protected String getSchemaName(String name) {
-        if (isUseDelimitedIdentifiers()) {
+    protected String getColumnName(IConnection conn, String name) {
+        if (!isRefTableConnection(conn) && isUseDelimitedIdentifiers()) {
             return getNameWithDelimitedIdentifier(name);
         } else {
             return name;
         }
+    }
+
+    protected boolean isRefTableConnection(IConnection conn) {
+        return conn != null && conn.getLineStyle() == EConnectionType.TABLE_REF;
     }
 
     protected String getNameWithDelimitedIdentifier(String name) {
@@ -1181,20 +1231,14 @@ public abstract class DbGenerationManager {
     }
 
     protected String getHandledField(String field) {
-        String name = null;
         if (field != null) {
-            name = getSchemaName(field);
+            field = field.replace("\"", "\\\"");
         }
-        if (name != null) {
-            name = name.replace("\"", "\\\"");
-        } else {
-            name = field;
-        }
-        return name;
+        return field;
     }
 
     public boolean isUseDelimitedIdentifiers() {
-        return this.useDelimitedIdentifiers;
+        return Boolean.TRUE.equals(this.useDelimitedIdentifiers);
     }
 
     public void setUseDelimitedIdentifiers(boolean useDelimitedIdentifiers) {

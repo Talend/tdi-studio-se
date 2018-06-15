@@ -19,15 +19,20 @@ import static java.lang.ClassLoader.getSystemClassLoader;
 import static java.lang.Thread.sleep;
 import static java.util.Collections.emptyEnumeration;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
+
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -37,9 +42,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
+
 import org.eclipse.m2e.core.MavenPlugin;
 import org.talend.sdk.component.studio.lang.LocalLock;
 import org.talend.sdk.component.studio.lang.StringPropertiesTokenizer;
@@ -93,16 +100,64 @@ public class ProcessManager implements AutoCloseable {
                 }
                 sleep(steps);
             } catch (final InterruptedException e) {
-                Thread.interrupted();
+                Thread.currentThread().interrupt();
                 break;
             } catch (final RuntimeException re) {
                 try {
                     sleep(500); // wait and retry, the healthcheck failed
                 } catch (final InterruptedException e) {
-                    Thread.interrupted();
+                    Thread.currentThread().interrupt();
                     break;
                 }
             }
+        }
+    }
+
+    public String reload() {
+        final Thread thread = Thread.currentThread();
+        final ClassLoader old = thread.getContextClassLoader();
+        thread.setContextClassLoader(loader);
+        try {
+            final Class<?> containerClazz = loader.loadClass("org.talend.sdk.component.container.Container");
+            final Class<?> actionsClazz = loader.loadClass("org.talend.sdk.component.container.ContainerManager$Actions");
+            final Class<?> containerManagerClazz = loader.loadClass("org.talend.sdk.component.runtime.manager.ComponentManager");
+
+            final Object manager = containerManagerClazz.getMethod("instance").invoke(null);
+            final Field containerField = containerManagerClazz.getDeclaredField("container");
+            if (!containerField.isAccessible()) {
+                containerField.setAccessible(true);
+            }
+
+            final Object container = containerField.get(manager);
+            final Method findAll = container.getClass().getMethod("findAll");
+            final Method getData = containerClazz.getMethod("get", Class.class);
+
+            final Method reload = actionsClazz.getMethod("reload");
+            final Method getId = containerClazz.getMethod("getId");
+            final Collection<?> containers = new ArrayList<>(Collection.class.cast(findAll.invoke(container)));
+            return containers.stream().map(it -> {
+                try {
+                    final Object actions = getData.invoke(it, actionsClazz);
+                    if (actions != null) {
+                        reload.invoke(actions);
+                    }
+                    return String.valueOf(getId.invoke(it)) + ": OK";
+                } catch (final IllegalAccessException e) {
+                    throw new IllegalStateException(e);
+                } catch (final InvocationTargetException e) {
+                    try {
+                        return String.valueOf(getId.invoke(it)) + ": " + e.getMessage();
+                    } catch (final IllegalAccessException e1) {
+                        throw new IllegalStateException(e1);
+                    } catch (final InvocationTargetException e1) {
+                        throw new IllegalStateException(e1.getTargetException());
+                    }
+                }
+            }).collect(joining("\n"));
+        } catch (final Exception e) {
+            throw new IllegalStateException(e);
+        } finally {
+            thread.setContextClassLoader(old);
         }
     }
 
@@ -112,6 +167,7 @@ public class ProcessManager implements AutoCloseable {
             try {
                 Runtime.getRuntime().removeShutdownHook(hook);
             } catch (final IllegalStateException itse) {
+                // no-op
             }
             // shutting down already
             hook = null;
@@ -120,6 +176,7 @@ public class ProcessManager implements AutoCloseable {
             try {
                 i.close();
             } catch (final Exception e) {
+                // no-op
             } finally {
                 // no-op
                 instance = null;
@@ -147,6 +204,7 @@ public class ProcessManager implements AutoCloseable {
                 try {
                     loader.close();
                 } catch (final IOException e) {
+                    // no-op
                 } finally {
                     // no-op: not important at that time
                     loader = null;

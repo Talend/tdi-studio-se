@@ -233,7 +233,7 @@ public class DirectoryController extends AbstractElementPropertySectionControlle
     public void refresh(IElementParameter param, boolean checkErrorsWhenViewRefreshed) {
         Text labelText = (Text) hashCurControls.get(param.getName());
         Object value = param.getValue();
-        if (labelText == null || labelText.isDisposed()) {
+        if (labelText == null || labelText.isDisposed() || !param.isNoCheck()) {
             return;
         }
         boolean valueChanged = false;
