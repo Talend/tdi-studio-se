@@ -12,7 +12,8 @@
 // ============================================================================
 package org.talend.designer.core.model.process;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -100,4 +101,13 @@ public class DataProcessTest {
         return false;
     }
 
+    @Test
+    public void testOverwrite() {
+        org.junit.Assert.fail("Test junit");
+    }
+
+    @Test
+    public void testOverwrite1() {
+        org.junit.Assert.fail("Test junit1");
+    }
 }
