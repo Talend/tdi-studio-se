@@ -19793,7 +19793,7 @@
             <IMPORT
                 NAME="slf4j-api-1.7.12"
                 MODULE="slf4j-api-1.7.12.jar"
-                MVN="mvn:org.talend.libraries/slf4j-api-1.7.12/6.4.0"
+                MVN="mvn:org.talend.libraries/slf4j-api-1.7.12/6.0.0"
                 REQUIRED_IF="(((AUTH_TYPE=='ONLINE') AND (API_VERSION=='API_2016_ODATA')) OR ((AUTH_TYPE=='ON_PREMISE') AND (MS_CRM_VERSION == 'CRM_2016')))" />
 			<IMPORT
 				NAME="slf4j-simple-1.7.2"
