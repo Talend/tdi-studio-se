@@ -468,6 +468,15 @@
         <COLUMN NAME="errorMessage" TYPE="id_String" LENGTH="255" READONLY="false" CUSTOM="true"/>
       </TABLE>
     </PARAMETER>
+    
+    <PARAMETER
+      NAME="INSERT_BEFORE_UPDATE"
+      FIELD="CHECK"
+      NUM_ROW="125"
+      SHOW_IF="USE_L2 == 'true'"
+    >
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
 
     <PARAMETER
       NAME="DIE_ON_ERROR"
@@ -512,7 +521,7 @@
     >
       <DEFAULT>"ISO-8859-15"</DEFAULT>
     </PARAMETER>
-
+    
   	<PARAMETER
       NAME="DEBUG"
       FIELD="CHECK"
