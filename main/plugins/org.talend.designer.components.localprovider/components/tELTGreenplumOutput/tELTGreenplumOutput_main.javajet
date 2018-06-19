@@ -82,7 +82,7 @@ imports="
 	        dbname = ElementParameterParser.getValue(previousNode, "__DBNAME__");
 	        dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
 	    	useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
-			dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
+			dbDriver = ElementParameterParser.getValue(previousNode, "__DB_DRIVER__");
         }
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
 
