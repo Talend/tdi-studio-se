@@ -199,7 +199,7 @@ if(columnList != null && columnList.size() > 0) {
                 if(conns_dynamic!=null && conns_dynamic.size()>0){
                     IConnection conn = conns_dynamic.get(0);
 %>
-                    <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString())%>;
+                    <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
 <%
                 }
                 if (supportDuplicateUpdate) {
@@ -302,7 +302,7 @@ if(columnList != null && columnList.size() > 0) {
                 if(conns_dynamic!=null && conns_dynamic.size()>0){
                     IConnection conn = conns_dynamic.get(0);
 %>
-                    <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString())%>;
+                    <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
 <%
                 }
                 if (supportDuplicateUpdate) {
@@ -348,7 +348,7 @@ if(columnList != null && columnList.size() > 0) {
         if(conns_dynamic!=null && conns_dynamic.size()>0){
             IConnection conn = conns_dynamic.get(0);
 %>
-            <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString())%>;
+            <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
             <%=getManager(dbmsId, cid).getUpdateQueryForDynamicSchema(conn.getName(), "tableName_", updateSetStmt.toString(), updateWhereStmt.toString(), whereSupportNull)%>;
 <%
         }
@@ -367,7 +367,7 @@ if(columnList != null && columnList.size() > 0) {
             if(conns_dynamic!=null && conns_dynamic.size()>0){
                 IConnection conn = conns_dynamic.get(0);
 %>
-                <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString())%>;
+                <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
                 <%=getManager(dbmsId, cid).getUpdateQueryForDynamicSchema(conn.getName(), "tableName_", updateSetStmt.toString(), updateWhereStmt.toString(), whereSupportNull)%>;
 <%
             }
@@ -380,27 +380,52 @@ if(columnList != null && columnList.size() > 0) {
         resourceMap.put("pstmtInsert_<%=cid %>", pstmtInsert_<%=cid %>);
         <%
     } else if (("DELETE").equals(dataAction)) {
-        %>
-        String delete_<%=cid%> = "DELETE FROM `" + <%=table%> + "` WHERE <%=deleteWhereStmt.toString()%>";
+        List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
+        if(conns_dynamic!=null && conns_dynamic.size()>0){
+            IConnection conn = conns_dynamic.get(0);
+%>
+            String delete_<%=cid%> = "DELETE FROM `" + <%=table%> + "` WHERE " + DynamicUtils.getUpdateWhere(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>", new StringBuilder("<%=deleteWhereStmt.toString()%>"), <%=whereSupportNull%>);
+<%
+        }
+%>
         <%@ include file="../templates/_hintDelete.javajet" %>
         pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(delete_<%=cid%>);
         resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if(("REPLACE").equals(dataAction)) {
-        %>
-        String replace_<%=cid%> = "REPLACE INTO `" + <%=table%> + "` (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
+        List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
+        if(conns_dynamic!=null && conns_dynamic.size()>0){
+            IConnection conn = conns_dynamic.get(0);
+%>
+            <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
+<%
+        }
+%>
         pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(replace_<%=cid%>);
         resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
         <%
     } else if(("INSERT_ON_DUPLICATE_KEY_UPDATE").equals(dataAction)) {
-        %>
-        String insertIgnore_<%=cid%> = "INSERT IGNORE INTO `" + <%=table%> + "` (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>) ON DUPLICATE KEY UPDATE <%=updateSetStmt.toString()%>";
+        List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
+        if(conns_dynamic!=null && conns_dynamic.size()>0){
+            IConnection conn = conns_dynamic.get(0);
+%>
+            <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
+            insertIgnore_<%=cid%> = insertIgnore_<%=cid%> + " ON DUPLICATE KEY UPDATE " + DynamicUtils.getUpdateSet(<%=conn.getName()%>.<%=getDynamicColumn()%>, "<%=dbmsId %>", new StringBuilder("<%=updateSetStmt.toString()%>"));
+<%
+        }
+%>
         pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insertIgnore_<%=cid%>);
         resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
-        <%
+<%
     } else if(("INSERT_IGNORE").equals(dataAction)) {
-        %>
-        String insert_<%=cid%> = "INSERT IGNORE INTO `" + <%=table%> + "` (<%=insertColName.toString()%>) VALUES (<%=insertValueStmt.toString()%>)";
+        List< ? extends IConnection> conns_dynamic = node.getIncomingConnections();
+        if(conns_dynamic!=null && conns_dynamic.size()>0){
+            IConnection conn = conns_dynamic.get(0);
+%>
+            <%=getManager(dbmsId, cid).getInsertQueryForDynamicSchema(conn.getName(), "tableName_", insertColName.toString(), insertValueStmt.toString(), dataAction)%>;
+<%
+        }
+%>
         <%@ include file="../templates/_hintInsert.javajet" %>
         pstmt_<%=cid %> = conn_<%=cid%>.prepareStatement(insert_<%=cid%>);
         resourceMap.put("pstmt_<%=cid %>", pstmt_<%=cid %>);
@@ -1458,6 +1483,12 @@ if(columnList != null && columnList.size() > 0) {
                     keyCounter++;
                 }
             }
+
+            if(isDynamic) {
+%>
+                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=keyCounter%>, "<%=dbmsId%>");
+<%
+            }
             if(isEnableDebug) {
                 %>
                 globalMap.put("<%=cid %>_QUERY", query_<%=cid%>.toString().trim());
@@ -1540,6 +1571,11 @@ if(columnList != null && columnList.size() > 0) {
                 }
 
             }
+            if(isDynamic) {
+%>
+                DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
+<%
+            }
             if(isEnableDebug) {
                 %>
                 globalMap.put("<%=cid %>_QUERY", query_<%=cid%>.toString().trim());
@@ -1605,11 +1641,16 @@ if(columnList != null && columnList.size() > 0) {
                 }
 
             }
+            if(isDynamic) {
+%>
+                int count_<%=cid%> = DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
+<%
+            }
             for(Column column : colStruct) {
                 if(column.isUpdatable()) {
                     String typeToGenerate = JavaTypesManager.getTypeToGenerate(column.getColumn().getTalendType(), column.getColumn().isNullable());
                     %>
-                    <%=getManager(dbmsId, cid).generateSetStmt(typeToGenerate, column, counter, incomingConnName, cid, NORMAL_TYPE)%>
+                    <%=getManager(dbmsId, cid).generateSetStmt(typeToGenerate, column, counter, incomingConnName, cid, NORMAL_TYPE, " + count_")%>
                     <%
                     if(isEnableDebug) {
                         %>
@@ -1623,6 +1664,11 @@ if(columnList != null && columnList.size() > 0) {
                 %>
                 globalMap.put("<%=cid %>_QUERY", query_<%=cid%>.toString().trim());
                 <%
+            }
+            if(isDynamic) {
+%>
+                DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, (count_<%=cid%> + <%=counter-1%>), "<%=dbmsId%>");
+<%
             }
             %>
             int count_on_duplicate_key_<%=cid%> = 0;
@@ -1684,6 +1730,11 @@ if(columnList != null && columnList.size() > 0) {
                     }
 
                 }
+            if(isDynamic) {
+%>
+                DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
+<%
+            }
                 if(isEnableDebug) {
                     %>
                     globalMap.put("<%=cid %>_QUERY", query_<%=cid%>.toString().trim());
