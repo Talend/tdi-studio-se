@@ -594,6 +594,24 @@ public class MainComposite extends AbstractTabComposite {
                         String originalStatus = statusText.getText();
                         String originalDescription = descriptionText.getText();
 
+                        String newJobName = null;
+                        String oldName = StringUtils.trimToEmpty(repositoryObject.getLabel());
+                        if (!originalName.equals(StringUtils.trimToEmpty(repositoryObject.getLabel()))) {
+                            newJobName = originalName;
+                        }
+                        boolean jobletModified = false;
+                        if (newJobName != null) {
+                            if (repositoryObject.getProperty().getItem() instanceof JobletProcessItemImpl) {
+                                if (isRelatedJobsLocked()) {
+                                    MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                            Messages.getString("JobletPropertiesWizard.renameWarning.title"), //$NON-NLS-1$
+                                            Messages.getString("JobletPropertiesWizard.renameWarning.msg")); //$NON-NLS-1$
+                                    return;
+                                }
+                                jobletModified = true;
+                            }
+                        }
+
                         saveJobEditor(repositoryObject);
 
                         if (repositoryObject instanceof IProcess2) {
@@ -617,11 +635,7 @@ public class MainComposite extends AbstractTabComposite {
                                 MessageBoxExceptionHandler.process(e1.getCause());
                             }
                         }
-                        String newJobName = null;
-                        String oldName = StringUtils.trimToEmpty(repositoryObject.getLabel());
-                        if (!originalName.equals(StringUtils.trimToEmpty(repositoryObject.getLabel()))) {
-                            newJobName = originalName;
-                        }
+
                         if (!originalversion.equals(StringUtils.trimToEmpty(repositoryObject.getVersion()))) {
                             property.setVersion(originalversion);
                         }
@@ -743,19 +757,9 @@ public class MainComposite extends AbstractTabComposite {
                             }
                         } else {
                             // set the new value
-                            boolean jobletModified = false;
                             if (newJobName != null) {
                                 property.setLabel(newJobName);
                                 property.setDisplayName(newJobName);
-                                if (repositoryObject.getProperty().getItem() instanceof JobletProcessItemImpl) {
-                                    if (isRelatedJobsLocked()) {
-                                        MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                                                Messages.getString("JobletPropertiesWizard.renameWarning.title"), //$NON-NLS-1$
-                                                Messages.getString("JobletPropertiesWizard.renameWarning.msg")); //$NON-NLS-1$
-                                        return;
-                                    }
-                                    jobletModified = true;
-                                }
                             }
                             if (originalFramework != null) {
                                 if (property.getAdditionalProperties().containsKey(ConvertJobsUtil.FRAMEWORK)) {
