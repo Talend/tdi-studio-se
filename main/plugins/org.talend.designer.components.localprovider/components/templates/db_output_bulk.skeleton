@@ -1220,17 +1220,30 @@ public class CLASS {
             return false;
         }
         
-        protected String getInsertQueryForDynamicSchema(String connection, String tableName, String insertColumnNames, String insertValues) {
+        protected String getInsertQueryForDynamicSchema(String connection, String tableName, String insertColumnNames, String insertValues, String dataAction) {
             StringBuilder statementQuery = new StringBuilder();
             String quote = "\"";
             String dot = ".";
             String plus = "+";
             String comma = ",";
-            statementQuery.append("String insert_").append(cid).append(" = ").append(quote).append("INSERT INTO ").append(getLProtectedChar()).append(quote).append(plus).append(tableName).append(cid).append(plus).append(quote).append(getRProtectedChar()).append(" (").append(quote).append(plus)
+
+            StringBuilder queryPrefix = new StringBuilder("String ");
+
+            if ("INSERT_IGNORE".equals(dataAction)) {
+                queryPrefix.append("insert_").append(cid).append(" = ").append(quote).append("INSERT IGNORE INTO ");
+            } else if ("REPLACE".equals(dataAction)) {
+                queryPrefix.append("replace_").append(cid).append(" = ").append(quote).append("REPLACE INTO ");
+            } else if ("INSERT_ON_DUPLICATE_KEY_UPDATE".equals(dataAction)) {
+                queryPrefix.append("insertIgnore_").append(cid).append(" = ").append(quote).append("INSERT IGNORE INTO ");
+            } else {
+                queryPrefix.append("insert_").append(cid).append(" = ").append(quote).append("INSERT INTO ");
+            }
+            statementQuery.append(queryPrefix).append(getLProtectedChar()).append(quote).append(plus).append(tableName).append(cid).append(plus).append(quote).append(getRProtectedChar()).append(" (").append(quote).append(plus)
                 .append("DynamicUtils.getInsertIntoStmtColumnsList(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(insertColumnNames).append(quote).append("))").append(plus)
                 .append(quote).append(") VALUES (").append(quote).append(plus)
                 .append("DynamicUtils.getInsertIntoStmtValuesList(").append(connection).append(dot).append(getDynamicColumn()).append(comma).append(quote).append(getDBMSId()).append(quote).append(comma).append(" new StringBuilder(").append(quote).append(insertValues).append(quote).append("))").append(plus)
                 .append(quote).append(")").append(quote);
+
             return statementQuery.toString();
         }
 
