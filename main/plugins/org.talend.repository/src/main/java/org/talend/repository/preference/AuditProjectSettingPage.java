@@ -191,13 +191,14 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
                                 @Override
                                 public void run() {
-                                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
-                                        ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
-                                                .getService(ICommandLineService.class);
+                                    ICommandLineService service = getCommandLineService();
+                                    if (service != null) {
                                         if (savedInDBButton.getSelection()) {
-                                            service.populateAudit(urlText.getText(), driverText.getText(), usernameText.getText(),
-                                                    passwordText.getText());
-                                            service.generateAuditReport(generatePath);
+                                            if (checkConnection(false)) {
+                                                service.populateAudit(urlText.getText(), driverText.getText(),
+                                                        usernameText.getText(), passwordText.getText());
+                                                service.generateAuditReport(generatePath);
+                                            }
                                         } else {
                                             String path = "";//$NON-NLS-1$
                                             File tempFolder = null;
@@ -261,14 +262,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
-                    ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
-                            .getService(ICommandLineService.class);
-                    TypedReturnCode<java.sql.Connection> result = service.checkConnection(urlText.getText(), driverText.getText(),
-                            usernameText.getText(), passwordText.getText());
-                    MessageDialog.openInformation(getShell(),
-                            Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), result.getMessage()); //$NON-NLS-1$
-                }
+                checkConnection(true);
             }
 
         });
@@ -291,17 +285,14 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
             @Override
             public void widgetSelected(SelectionEvent e) {
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
-                    ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
-                            .getService(ICommandLineService.class);
-                    if (savedInDBButton.getSelection()) {
-                        currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
-                                usernameText.getText(), passwordText.getText());
-                        String[] items = initHistoryDisplayNames();
-                        historyCombo.getCombo().setItems(items);
-                        if (items.length > 0) {
-                            historyCombo.getCombo().select(0);
-                        }
+                ICommandLineService service = getCommandLineService();
+                if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
+                    currentParameters = service.listAllHistoryAudits(urlText.getText(), driverText.getText(),
+                            usernameText.getText(), passwordText.getText());
+                    String[] items = initHistoryDisplayNames();
+                    historyCombo.getCombo().setItems(items);
+                    if (items.length > 0) {
+                        historyCombo.getCombo().select(0);
                     }
                 }
             }
@@ -327,14 +318,11 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
                                 @Override
                                 public void run() {
-                                    if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
-                                        ICommandLineService service = (ICommandLineService) GlobalServiceRegister.getDefault()
-                                                .getService(ICommandLineService.class);
-                                        if (savedInDBButton.getSelection()) {
-                                            service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
-                                                    usernameText.getText(), passwordText.getText());
-                                            service.generateAuditReport(generatePath);
-                                        }
+                                    ICommandLineService service = getCommandLineService();
+                                    if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
+                                        service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
+                                                usernameText.getText(), passwordText.getText());
+                                        service.generateAuditReport(generatePath);
                                     }
                                 }
                             });
@@ -430,6 +418,28 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             }
         }
         return -1;
+    }
+
+    private boolean checkConnection(boolean show) {
+        ICommandLineService service = getCommandLineService();
+        if (service != null) {
+            TypedReturnCode<java.sql.Connection> result = service.checkConnection(urlText.getText(), driverText.getText(),
+                    usernameText.getText(), passwordText.getText());
+            boolean isShow = result.isOk() ? show : true;
+            if (isShow) {
+                MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
+                        result.getMessage());
+            }
+            return result.isOk();
+        }
+        return false;
+    }
+
+    private ICommandLineService getCommandLineService() {
+        if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
+            return (ICommandLineService) GlobalServiceRegister.getDefault().getService(ICommandLineService.class);
+        }
+        return null;
     }
 
     /*
