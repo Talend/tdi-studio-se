@@ -266,6 +266,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                 if (dbVersionCombo.getCombo().getItemCount() > 0) {
                     dbVersionCombo.getCombo().select(0);
                 }
+                //
+                usernameText.setText("");//$NON-NLS-1$
+                passwordText.setText("");//$NON-NLS-1$
             }
         });
 
