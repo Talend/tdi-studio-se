@@ -324,17 +324,20 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
         String jobClassPackageFolder = null;
         String jobClassFilePath = null;
         // only for "standard" job
-        Item item = property.getItem();
-        if (item != null && item.getParent() == null) {
-            try {
-                IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
-                        property.getVersion(), false);
-                if (object != null) {
-                    property = object.getProperty();
-                    item = property.getItem();
+        Item item = null;
+        if (property != null) {
+            item = property.getItem();
+            if (item != null && item.getParent() == null) {
+                try {
+                    IRepositoryViewObject object = ProxyRepositoryFactory.getInstance().getSpecificVersion(property.getId(),
+                            property.getVersion(), false);
+                    if (object != null) {
+                        property = object.getProperty();
+                        item = property.getItem();
+                    }
+                } catch (PersistenceException e) {
+                    throw new ProcessorException(e);
                 }
-            } catch (PersistenceException e) {
-                throw new ProcessorException(e);
             }
         }
         if (isStandardJob()) {
