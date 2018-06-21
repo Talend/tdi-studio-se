@@ -54,6 +54,8 @@ import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.repository.preference.audit.AuditManager;
 import org.talend.repository.preference.audit.SupportDBUrlStore;
+import org.talend.repository.preference.audit.SupportDBUrlType;
+import org.talend.repository.preference.audit.SupportDBVersions;
 import org.talend.utils.security.CryptoHelper;
 import org.talend.utils.sugars.TypedReturnCode;
 
@@ -71,6 +73,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private Group dbConfigGroup;
 
     private LabelledCombo dbTypeCombo;
+
+    private LabelledCombo dbVersionCombo;
 
     private LabelledText driverText;
 
@@ -140,6 +144,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         dbTypeCombo = new LabelledCombo(dbConfigComposite, Messages.getString("AuditProjectSettingPage.DBConfig.dbType"), //$NON-NLS-1$
                 Messages.getString("AuditProjectSettingPage.DBConfig.dbTypeTip"), //$NON-NLS-1$
                 SupportDBUrlStore.getInstance().getDBDisplayNames(), 2, true);
+        dbVersionCombo = new LabelledCombo(dbConfigComposite, Messages.getString("AuditProjectSettingPage.DBConfig.dbVersion"), //$NON-NLS-1$
+                Messages.getString("AuditProjectSettingPage.DBConfig.dbVersionTip"), //$NON-NLS-1$
+                new String[0], 2, true);
         driverText = new LabelledText(dbConfigComposite, Messages.getString("AuditProjectSettingPage.DBConfig.Driver"), 2); //$NON-NLS-1$
         driverText.setReadOnly(true);
         urlText = new LabelledText(dbConfigComposite, Messages.getString("AuditProjectSettingPage.DBConfig.Url"), 2); //$NON-NLS-1$
@@ -255,6 +262,10 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                 String dbType = SupportDBUrlStore.getInstance().getDBType(selectedItem);
                 driverText.setText(SupportDBUrlStore.getInstance().getDBUrlType(dbType).getDbDriver());
                 urlText.setText(SupportDBUrlStore.getInstance().getDefaultDBUrl(dbType));
+                dbVersionCombo.getCombo().setItems(SupportDBVersions.getDisplayedVersions(dbType));
+                if (dbVersionCombo.getCombo().getItemCount() > 0) {
+                    dbVersionCombo.getCombo().select(0);
+                }
             }
         });
 
@@ -350,6 +361,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private void reLoad() {
         if (savedInDBButton.getSelection()) {
             dbTypeCombo.setText(prefManager.getValue(AuditManager.AUDIT_DBTYPE));
+            dbVersionCombo.setText(prefManager.getValue(AuditManager.AUDIT_DBVERSION));
             driverText.setText(prefManager.getValue(AuditManager.AUDIT_DRIVER));
             urlText.setText(prefManager.getValue(AuditManager.AUDIT_URL));
             usernameText.setText(prefManager.getValue(AuditManager.AUDIT_USERNAME));
@@ -360,6 +372,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private void hideControl(boolean hide) {
         dbTypeCombo.setReadOnly(hide);
+        dbVersionCombo.setReadOnly(hide);
         urlText.setReadOnly(hide);
         usernameText.setReadOnly(hide);
         passwordText.setReadOnly(hide);
@@ -372,6 +385,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private void save() {
         prefManager.setValue(AuditManager.AUDIT_DBTYPE, dbTypeCombo.getText());
+        prefManager.setValue(AuditManager.AUDIT_DBVERSION, dbVersionCombo.getText());
         prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
         prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
         prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
@@ -383,6 +397,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private void performDefaultStatus() {
         savedInDBButton.setSelection(false);
         dbTypeCombo.deselectAll();
+        dbVersionCombo.deselectAll();
         driverText.setText(""); //$NON-NLS-1$
         urlText.setText("");//$NON-NLS-1$
         usernameText.setText("");//$NON-NLS-1$
@@ -423,8 +438,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private boolean checkConnection(boolean show) {
         ICommandLineService service = getCommandLineService();
         if (service != null) {
-            TypedReturnCode<java.sql.Connection> result = service.checkConnection(urlText.getText(), driverText.getText(),
-                    usernameText.getText(), passwordText.getText());
+            TypedReturnCode<java.sql.Connection> result = service.checkConnection(getCurrentDBVersion(), urlText.getText(),
+                    driverText.getText(), usernameText.getText(), passwordText.getText());
             boolean isShow = result.isOk() ? show : true;
             if (isShow) {
                 MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.DBConfig.CheckButtonText"), //$NON-NLS-1$
@@ -438,6 +453,14 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     private ICommandLineService getCommandLineService() {
         if (GlobalServiceRegister.getDefault().isServiceRegistered(ICommandLineService.class)) {
             return (ICommandLineService) GlobalServiceRegister.getDefault().getService(ICommandLineService.class);
+        }
+        return null;
+    }
+
+    private String getCurrentDBVersion() {
+        SupportDBUrlType urlType = SupportDBUrlStore.getInstance().getDBUrlType(dbTypeCombo.getText());
+        if (urlType != null) {
+            return SupportDBVersions.getVersionValue(urlType, dbVersionCombo.getText());
         }
         return null;
     }
