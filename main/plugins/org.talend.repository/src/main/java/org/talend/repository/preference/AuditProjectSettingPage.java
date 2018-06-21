@@ -204,7 +204,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                             if (checkConnection(false)) {
                                                 service.populateAudit(urlText.getText(), driverText.getText(),
                                                         usernameText.getText(), passwordText.getText());
-                                                service.generateAuditReport(generatePath);
+                                                boolean result = service.generateAuditReport(generatePath);
+                                                showGenerationInformation(result);
                                             }
                                         } else {
                                             String path = "";//$NON-NLS-1$
@@ -221,7 +222,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                                 service.populateAudit(
                                                         "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
                                                         "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                                service.generateAuditReport(generatePath);
+                                                boolean result = service.generateAuditReport(generatePath);
+                                                showGenerationInformation(result);
                                             } catch (IOException e) {
                                                 // nothing
                                             } finally {
@@ -336,7 +338,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
                                         service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
                                                 usernameText.getText(), passwordText.getText());
-                                        service.generateAuditReport(generatePath);
+                                        boolean result = service.generateAuditReport(generatePath);
+                                        showGenerationInformation(result);
                                     }
                                 }
                             });
@@ -466,6 +469,16 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
             return SupportDBVersions.getVersionValue(urlType, dbVersionCombo.getText());
         }
         return null;
+    }
+
+    private void showGenerationInformation(boolean result) {
+        if (result) {
+            MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.generate.successful", generatePath)); //$NON-NLS-1$
+        } else {
+            MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$
+        }
     }
 
     /*
