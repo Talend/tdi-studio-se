@@ -981,7 +981,7 @@ if(columnList != null && columnList.size() > 0) {
 
             if(isDynamic) {
 %>
-                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, (count_<%=cid%> + <%=counterCol%>), "<%=dbmsId%>");
+                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, (count_<%=cid%> + <%=counterCol%>), "<%=dbmsId%>", <%=whereSupportNull%>);
 <%
             }
             if(isEnableDebug) {
@@ -1068,7 +1068,7 @@ if(columnList != null && columnList.size() > 0) {
             }
             if (isDynamic) {
 %>
-                    DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getColumn(getDynamicColumn()).getName()%>, pstmt_<%=cid %>, <%=columnIndex%>, "<%=dbmsId%>");
+                    DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getColumn(getDynamicColumn()).getName()%>, pstmt_<%=cid %>, <%=columnIndex%>, "<%=dbmsId%>", <%=whereSupportNull%>);
 <%
             }
             %>
@@ -1156,7 +1156,7 @@ if(columnList != null && columnList.size() > 0) {
 
                 if(isDynamic) {
 %>
-                    routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmtUpdate_<%=cid%>, (count_<%=cid%> + <%=counterCol%>), "<%=dbmsId%>");
+                    routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmtUpdate_<%=cid%>, (count_<%=cid%> + <%=counterCol%>), "<%=dbmsId%>", <%=whereSupportNull%>);
 <%
                 }
                 if(isEnableDebug) {
@@ -1356,7 +1356,7 @@ if(columnList != null && columnList.size() > 0) {
             }
             if(isDynamic) {
 %>
-                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmtUpdate_<%=cid%>, (count_<%=cid%> + <%=counterColUpdate%>), "<%=dbmsId%>");
+                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmtUpdate_<%=cid%>, (count_<%=cid%> + <%=counterColUpdate%>), "<%=dbmsId%>", <%=whereSupportNull%>);
 <%
             }
             if(isEnableDebug) {
@@ -1486,7 +1486,7 @@ if(columnList != null && columnList.size() > 0) {
 
             if(isDynamic) {
 %>
-                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=keyCounter%>, "<%=dbmsId%>");
+                routines.system.DynamicUtils.insertKeyInWhereClause(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=keyCounter%>, "<%=dbmsId%>", <%=whereSupportNull%>);
 <%
             }
             if(isEnableDebug) {
@@ -1643,7 +1643,7 @@ if(columnList != null && columnList.size() > 0) {
             }
             if(isDynamic) {
 %>
-                int count_<%=cid%> = DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>");
+                int count_<%=cid%> = DynamicUtils.writeColumnsToDatabse(<%=incomingConnName%>.<%=getDynamicColumn()%>, pstmt_<%=cid%>, <%=counter-1%>, "<%=dbmsId%>", true);
 <%
             }
             for(Column column : colStruct) {
