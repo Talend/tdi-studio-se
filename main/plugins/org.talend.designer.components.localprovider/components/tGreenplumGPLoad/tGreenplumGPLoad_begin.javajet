@@ -145,7 +145,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		
 		java.lang.Class.forName(driverClass_<%=cid%>);
 		<%if (additionalParameters != null && !(additionalParameters.replaceAll("\"", "")).isEmpty()){
-			if (dbDriver.equals("PostgreSQL")){%>
+			if (dbDriver.equals("POSTGRESQL")){%>
 				url_<%=cid %> = "?" + url_<%=cid %> + <%=additionalParameters%>;
 			<%} else {%>
 				url_<%=cid %> = ";" + url_<%=cid %> + <%=additionalParameters%>;
