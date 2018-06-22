@@ -29,10 +29,6 @@ public class Action {
 
     public static final String MESSAGE = "comment";
 
-    public static final String VALIDATION = "validation";
-
-    public static final String HEALTH_CHECK = "healthcheck";
-
     private final String actionName;
 
     private final String family;
@@ -40,11 +36,11 @@ public class Action {
     private final String type;
 
     protected final ActionParameters parameters = new ActionParameters();
-
-    public Action(final String actionName, final String family, final String type) {
+    
+    public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
         this.family = family;
-        this.type = type;
+        this.type = type.toString();
     }
 
     public void addParameter(final ActionParameter parameter) {
@@ -71,6 +67,17 @@ public class Action {
 
     public ActionParameters getParameters() {
         return this.parameters;
+    }
+    
+    public enum Type {
+        HEALTHCHECK,
+        SUGGESTIONS,
+        VALIDATION;
+        
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
     }
 
 }

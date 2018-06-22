@@ -17,7 +17,7 @@
     <!--
     deps: don't forget GAV.java, .classpath and MANIFEST.MF if you update it
     -->
-    <component-runtime.version>0.0.9</component-runtime.version>
+    <component-runtime.version>1.0.1-SNAPSHOT</component-runtime.version>
     <tomcat.version>9.0.6</tomcat.version>
     <jsonb-api.version>1.0</jsonb-api.version>
     <jsonp-api.version>1.0</jsonp-api.version>
@@ -30,6 +30,19 @@
     <!-- plugins -->
     <junit-platform-surefire-provider.version>1.1.0-RC1</junit-platform-surefire-provider.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>SonatypeSnapshotsOSS</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencies>
     <dependency>
@@ -48,9 +61,8 @@
 
     <dependency>
       <groupId>org.talend.sdk.component</groupId>
-      <artifactId>component-server</artifactId>
+      <artifactId>component-server-model</artifactId>
       <version>${component-runtime.version}</version>
-      <classifier>model</classifier>
       <exclusions>
         <exclusion>
           <groupId>commons-cli</groupId>

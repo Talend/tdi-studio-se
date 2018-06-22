@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio;
+package org.talend.sdk.component.studio.ui.composite.generator;
 
-public interface GAV {
+import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
+import org.talend.sdk.component.studio.ui.composite.controller.TaCoKitValueSelectionController;
 
-    String GROUP_ID = "org.talend.sdk.component";
+public class TaCoKitValueSelectionGenerator extends AbstractTaCoKitGenerator {
 
-    String ARTIFACT_ID = "org.talend.sdk.component.studio-integration";
+    @Override
+    public AbstractElementPropertySectionController generate() {
+        return new TaCoKitValueSelectionController(getDynamicProperty());
+    }
 
-    String COMPONENT_RUNTIME_VERSION = "1.0.1-SNAPSHOT";
-
-    String CLI_VERSION = "1.4";
-
-    String SLF4J_VERSION = "1.7.25";
 }

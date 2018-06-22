@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.jdt.core.JavaConventions;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
@@ -71,6 +72,9 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.User;
+import org.talend.core.model.properties.impl.JobletProcessItemImpl;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryEditorInput;
 import org.talend.core.model.repository.IRepositoryViewObject;
@@ -84,6 +88,7 @@ import org.talend.core.repository.utils.ConvertJobsUtil;
 import org.talend.core.repository.utils.ConvertJobsUtil.JobType;
 import org.talend.core.repository.utils.RepositoryNodeDeleteManager;
 import org.talend.core.runtime.CoreRuntimePlugin;
+import org.talend.core.ui.IJobletProviderService;
 import org.talend.core.ui.branding.IBrandingService;
 import org.talend.core.ui.editor.IJobEditorHandler;
 import org.talend.core.ui.editor.JobEditorHandlerManager;
@@ -589,6 +594,24 @@ public class MainComposite extends AbstractTabComposite {
                         String originalStatus = statusText.getText();
                         String originalDescription = descriptionText.getText();
 
+                        String newJobName = null;
+                        String oldName = StringUtils.trimToEmpty(repositoryObject.getLabel());
+                        if (!originalName.equals(StringUtils.trimToEmpty(repositoryObject.getLabel()))) {
+                            newJobName = originalName;
+                        }
+                        boolean jobletModified = false;
+                        if (newJobName != null) {
+                            if (repositoryObject.getProperty().getItem() instanceof JobletProcessItemImpl) {
+                                if (isRelatedJobsLocked()) {
+                                    MessageDialog.openWarning(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+                                            Messages.getString("JobletPropertiesWizard.renameWarning.title"), //$NON-NLS-1$
+                                            Messages.getString("JobletPropertiesWizard.renameWarning.msg")); //$NON-NLS-1$
+                                    return;
+                                }
+                                jobletModified = true;
+                            }
+                        }
+
                         saveJobEditor(repositoryObject);
 
                         if (repositoryObject instanceof IProcess2) {
@@ -612,10 +635,7 @@ public class MainComposite extends AbstractTabComposite {
                                 MessageBoxExceptionHandler.process(e1.getCause());
                             }
                         }
-                        String newJobName = null;
-                        if (!originalName.equals(StringUtils.trimToEmpty(repositoryObject.getLabel()))) {
-                            newJobName = originalName;
-                        }
+
                         if (!originalversion.equals(StringUtils.trimToEmpty(repositoryObject.getVersion()))) {
                             property.setVersion(originalversion);
                         }
@@ -747,18 +767,27 @@ public class MainComposite extends AbstractTabComposite {
                                 }
                                 property.getAdditionalProperties().put(ConvertJobsUtil.FRAMEWORK, originalFramework);
                             }
+                            final String newName = newJobName;
+                            final boolean needjobletRelateUpdate = jobletModified;
                             RepositoryWorkUnit repositoryWorkUnit = new RepositoryWorkUnit("Convert job") { //$NON-NLS-1$
-
                                 @Override
                                 public void run() throws PersistenceException {
                                     IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-
                                         @Override
                                         public void run(final IProgressMonitor monitor) throws CoreException {
                                             try {
                                                 if (repositoryObject.getProperty() != null) {
                                                     proxyRepositoryFactory.save(ProjectManager.getInstance().getCurrentProject(),
                                                             repositoryObject.getProperty().getItem(), false);
+                                                    if (needjobletRelateUpdate && GlobalServiceRegister.getDefault()
+                                                            .isServiceRegistered(IJobletProviderService.class)) {
+                                                        IJobletProviderService jobletService = (IJobletProviderService) GlobalServiceRegister
+                                                                .getDefault().getService(IJobletProviderService.class);
+                                                        jobletService.updateJobleModifiedRelated(repositoryObject.getProperty().getItem(), oldName,
+                                                                newName);
+                                                        proxyRepositoryFactory
+                                                                .saveProject(ProjectManager.getInstance().getCurrentProject());
+                                                    }
                                                 }
                                             } catch (PersistenceException e1) {
                                                 ExceptionHandler.process(e1);
@@ -767,7 +796,7 @@ public class MainComposite extends AbstractTabComposite {
                                     };
                                     // unlockObject();
                                     // alreadyEditedByUser = true; // to avoid 2 calls of unlock
-
+                                    
                                     IWorkspace workspace = ResourcesPlugin.getWorkspace();
                                     try {
                                         ISchedulingRule schedulingRule = workspace.getRoot();
@@ -786,7 +815,18 @@ public class MainComposite extends AbstractTabComposite {
                             ProxyRepositoryFactory.getInstance().executeRepositoryWorkUnit(repositoryWorkUnit);
 
                             if (repositoryObject instanceof IProcess2) {
-                                openEditorOperation(property.getItem());
+                                Item item = property.getItem();
+                                if (needjobletRelateUpdate) {
+                                    try {
+                                        repositoryObject = proxyRepositoryFactory.getLastVersion(
+                                                ProjectManager.getInstance().getCurrentProject(),
+                                                repositoryObject.getProperty().getId());
+                                        item = repositoryObject.getProperty().getItem();
+                                    } catch (PersistenceException e1) {
+                                        ExceptionHandler.process(e1);
+                                    }
+                                }
+                                openEditorOperation(item);
                             }
                         }
 
@@ -815,6 +855,26 @@ public class MainComposite extends AbstractTabComposite {
         } else {
             parent.setEnabled(true);
         }
+    }
+
+    private boolean isRelatedJobsLocked() {
+        IProxyRepositoryFactory repositoryFactory = ProxyRepositoryFactory.getInstance();
+        List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(repositoryObject.getProperty().getId(),
+                RelationshipItemBuilder.LATEST_VERSION, RelationshipItemBuilder.JOBLET_RELATION);
+        try {
+            for (Relation relation : relations) {
+                for (IRepositoryViewObject repObj : ProxyRepositoryFactory.getInstance().getAllVersion(relation.getId())) {
+                    ERepositoryStatus status = repositoryFactory.getStatus(repObj);
+                    if (ERepositoryStatus.LOCK_BY_USER.equals(status) || ERepositoryStatus.LOCK_BY_OTHER.equals(status)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (PersistenceException e) {
+            ExceptionHandler.process(e);
+        }
+
+        return false;
     }
 
     private int getLabelWidth() {

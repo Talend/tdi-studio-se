@@ -27,6 +27,7 @@ import static org.talend.core.model.process.EParameterFieldType.OPENED_LIST;
 import static org.talend.core.model.process.EParameterFieldType.PASSWORD;
 import static org.talend.core.model.process.EParameterFieldType.SCHEMA_TYPE;
 import static org.talend.core.model.process.EParameterFieldType.TABLE;
+import static org.talend.core.model.process.EParameterFieldType.TACOKIT_VALUE_SELECTION;
 import static org.talend.core.model.process.EParameterFieldType.TEXT;
 import static org.talend.core.model.process.EParameterFieldType.TEXT_AREA;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_CODE;
@@ -43,12 +44,12 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 
 /**
- * Maps metadata retrieved from {@link SimplePropertyDefinition} to {@link EParameterFieldType}
+ * Maps metadata retrieved from {@link PropertyDefinitionDecorator} to {@link EParameterFieldType}
  */
 public class WidgetTypeMapper {
 
     /**
-     * Recognizes {@link EParameterFieldType} for given {@link SimplePropertyDefinition}
+     * Recognizes {@link EParameterFieldType} for given {@link PropertyDefinitionDecorator}
      * Implementation note: Most possible types are located first.
      * All checks are implemented in separate methods
      * Only one checker method returns {@code true} for particular Property Definition
@@ -56,7 +57,7 @@ public class WidgetTypeMapper {
      * @param property Property, which field type should be defined
      * @return widget type
      */
-    public EParameterFieldType getFieldType(final SimplePropertyDefinition property) {
+    public EParameterFieldType getFieldType(final PropertyDefinitionDecorator property) {
         if (property == null) {
             throw new IllegalArgumentException("property should not be null");
         }
@@ -68,6 +69,8 @@ public class WidgetTypeMapper {
             return getCredentialType();
         } else if (isTextArea(property)) {
             return getTextAreaType();
+        } else if (isValueSelection(property)) {
+            return getValueSelectionType();
         } else if (isCheck(property)) {
             return getCheckType();
         } else if (isClosedList(property)) {
@@ -226,5 +229,13 @@ public class WidgetTypeMapper {
 
     protected EParameterFieldType getTableType() {
         return TABLE;
+    }
+
+    private boolean isValueSelection(final PropertyDefinitionDecorator property) {
+        return property.hasSuggestions();
+    }
+
+    private EParameterFieldType getValueSelectionType() {
+        return TACOKIT_VALUE_SELECTION;
     }
 }

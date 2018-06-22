@@ -21,50 +21,43 @@ import java.util.List;
 import java.util.Map;
 
 import org.talend.core.model.process.IElementParameter;
-import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
-import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
+import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 
-class ValidationResolver extends AbstractParameterResolver {
-
+class SuggestionsResolver extends AbstractParameterResolver {
+    
     private final ActionReference action;
+    
+    private final ActionParametersUpdater updater;
 
-    private final ValidationListener listener;
-
-    private final ElementParameter redrawParameter;
-
-    ValidationResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions,
-            final ValidationListener listener, final ElementParameter redrawParameter) {
+    public SuggestionsResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions, final ActionParametersUpdater updater) {
         super(actionOwner);
-        if (!actionOwner.getProperty().hasValidation()) {
-            throw new IllegalArgumentException("property has no validation");
-        }
-        this.listener = listener;
-        this.redrawParameter = redrawParameter;
-        final String actionName = actionOwner.getProperty().getValidationName();
+        final String actionName = actionOwner.getProperty().getSuggestions().getName();
         this.action = actions
                 .stream()
-                .filter(a -> Action.Type.VALIDATION.toString().equals(a.getType()))
+                .filter(a -> Action.Type.SUGGESTIONS.toString().equals(a.getType()))
                 .filter(a -> a.getName().equals(actionName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
+        this.updater = updater;
     }
-
+    
     public void resolveParameters(final Map<String, IElementParameter> settings) {
         final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(action.getProperties());
-        final List<String> relativePaths = actionOwner.getProperty().getValidationParameters();
+        final List<String> relativePaths = actionOwner.getProperty().getSuggestions().getParameters();
 
         for (int i = 0; i < relativePaths.size(); i++) {
             final TaCoKitElementParameter parameter = resolveParameter(relativePaths.get(i), settings);
-            parameter.registerListener(parameter.getName(), listener);
-            parameter.setRedrawParameter(redrawParameter);
+            parameter.registerListener(parameter.getName(), updater);
             final String callbackParameter = callbackParameters.get(i).getName();
             final String initialValue = callbackParameters.get(i).getDefaultValue();
-            listener.addParameter(new ActionParameter(parameter.getName(), callbackParameter, initialValue));
+            final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackParameter, initialValue);
+            updater.getAction().addParameter(actionParameter);
         }
 
     }
+
 }
