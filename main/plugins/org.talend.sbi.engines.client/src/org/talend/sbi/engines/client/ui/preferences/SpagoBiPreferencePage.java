@@ -72,7 +72,7 @@ public class SpagoBiPreferencePage extends FieldEditorPreferencePage implements 
         spagoBiCheckButton = new CheckBoxFieldEditor(SpagoPreferenceInitializer.SPAGO_STATUS, Messages
                 .getString("SpagoBiPreferencePage.spagoBiCheckButton"), parent); //$NON-NLS-1$
         editor = new SpagoBiServerEditor(SpagoBiServer.SPAGOBI_SERVER, Messages
-                .getString("SpagoBiPreferencePage.technicalStatusLabel"), parent); //$NON-NLS-1$
+                .getString("SpagoBiPreferencePage.technicalStatusLabel.Deprecated"), parent); //$NON-NLS-1$
         addField(editor);
 
         updateEnableStateFromPreferences();
