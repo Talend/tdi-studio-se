@@ -390,14 +390,16 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     }
 
     private void save() {
-        prefManager.setValue(AuditManager.AUDIT_DBTYPE, dbTypeCombo.getText());
-        prefManager.setValue(AuditManager.AUDIT_DBVERSION, dbVersionCombo.getText());
-        prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
-        prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
-        prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
-        prefManager.setValue(AuditManager.AUDIT_PASSWORD, CryptoHelper.getDefault().encrypt(passwordText.getText()));
-        prefManager.setValue(AuditManager.AUDIT_SAVEDINDB, savedInDBButton.getSelection());
-        prefManager.save();
+        if (prefManager != null) {
+            prefManager.setValue(AuditManager.AUDIT_DBTYPE, dbTypeCombo.getText());
+            prefManager.setValue(AuditManager.AUDIT_DBVERSION, dbVersionCombo.getText());
+            prefManager.setValue(AuditManager.AUDIT_DRIVER, driverText.getText());
+            prefManager.setValue(AuditManager.AUDIT_URL, urlText.getText());
+            prefManager.setValue(AuditManager.AUDIT_USERNAME, usernameText.getText());
+            prefManager.setValue(AuditManager.AUDIT_PASSWORD, CryptoHelper.getDefault().encrypt(passwordText.getText()));
+            prefManager.setValue(AuditManager.AUDIT_SAVEDINDB, savedInDBButton.getSelection());
+            prefManager.save();
+        }
     }
 
     private void performDefaultStatus() {
