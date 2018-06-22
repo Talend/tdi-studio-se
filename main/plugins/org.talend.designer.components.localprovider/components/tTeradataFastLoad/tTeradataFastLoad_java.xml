@@ -139,6 +139,14 @@
     >
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
+    <PARAMETER
+      NAME="MAPPING"
+      FIELD="MAPPING_TYPE"
+      NUM_ROW="10"
+      SHOW="false"
+    >
+      <DEFAULT>teradata_id</DEFAULT>
+    </PARAMETER>
 
   </PARAMETERS>
 
