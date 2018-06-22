@@ -7,7 +7,7 @@
             category="org.talend.designer.core.ui.preferences.ImportExportPreferencePage"
             class="org.talend.sbi.engines.client.ui.preferences.SpagoBiPreferencePage"
             id="org.talend.repository.prefs.spagobi"
-            name="SpagoBi Server"/>
+            name="SpagoBi Server (Deprecated)"/>
    </extension>
    <extension
          point="org.talend.core.repositoryContextualsActions">
