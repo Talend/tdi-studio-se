@@ -570,7 +570,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 		public void run() {
 			try {
 				String[] cmds = new String[] {
-						<%if (!pythonPathForCMD.equals("")){%>
+						<%if (!"".equals(pythonPathForCMD)){%>
 							"<%=pythonPathForCMD.replaceAll("\"","")%>",
 						<%}%>
 						"<%=gpLoadPathForCMD.replaceAll("\"","")%>"
