@@ -570,9 +570,12 @@ skeleton="../templates/db_output_bulk.skeleton"
 		public void run() {
 			try {
 				String[] cmds = new String[] {
-						"<%=pythonPathForCMD.replaceAll("\"","")%>", "<%=gpLoadPathForCMD.replaceAll("\"","")%>"
+						<%if (!pythonPathForCMD.equals("")){%>
+							"<%=pythonPathForCMD.replaceAll("\"","")%>",
+						<%}%>
+						"<%=gpLoadPathForCMD.replaceAll("\"","")%>"
 				<%
-					for (int i=0; i < parametersList.size(); i++) {
+				for (int i=0; i < parametersList.size(); i++) {
 						%>,<%=parametersList.get(i)%><%
 					}
 				%>
