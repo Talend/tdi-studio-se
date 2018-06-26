@@ -549,18 +549,18 @@ skeleton="../templates/db_output_bulk.skeleton"
 		if (gploadPathGiven) {
 			gpLoadPathForCMD = gploadPath;
 		} else {
-			gpLoadPathForCMD = "gpload";
+			gpLoadPathForCMD = "\"gpload\"";
 		}
 	} else {
 		if (gploadpyPathGiven) {
 			gpLoadPathForCMD = gploadpyPath;
 		} else {
-			gpLoadPathForCMD = "gpload.py";
+			gpLoadPathForCMD = "\"gpload.py\"";
 		}
 		if (pythonPathGiven) {
 			pythonPathForCMD = pythonPath;
 		} else {
-			pythonPathForCMD = "python";
+			pythonPathForCMD = "\"python\"";
 		}
 	}
 %>
@@ -571,9 +571,9 @@ skeleton="../templates/db_output_bulk.skeleton"
 			try {
 				String[] cmds = new String[] {
 						<%if (!"".equals(pythonPathForCMD)){%>
-							"<%=pythonPathForCMD.replaceAll("\"","")%>",
+							<%=pythonPathForCMD%>,
 						<%}%>
-						"<%=gpLoadPathForCMD.replaceAll("\"","")%>"
+						<%=gpLoadPathForCMD%>
 				<%
 				for (int i=0; i < parametersList.size(); i++) {
 						%>,<%=parametersList.get(i)%><%
