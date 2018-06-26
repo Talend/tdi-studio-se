@@ -205,13 +205,23 @@
 				<ITEM NAME="FORCENOTNULL" FIELD="CHECK" VALUE="false" />
 			</ITEMS>
 		</PARAMETER>
+		
+		<PARAMETER
+			NAME="DRIVER_IF_GREENPLUM"
+			FIELD="TEXT"
+			NUM_ROW="40"
+			SHOW="false"
+			>
+				<DEFAULT>POSTGRESQL</DEFAULT>
+		</PARAMETER>
 	</ADVANCED_PARAMETERS>
 
 	<CODEGENERATION>
 		<IMPORTS>
-			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-9.4-1201.jdbc41.jar" MVN="mvn:org.talend.libraries/postgresql-9.4-1201.jdbc41/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-9.4-1201.jdbc41.jar" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false')" />
-			<IMPORT NAME="Postgres_Driver"
-			MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="(DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false')" />
+			<IMPORT NAME="Driver-Postgres9" MODULE="postgresql-9.4-1201.jdbc41.jar" MVN="mvn:org.talend.libraries/postgresql-9.4-1201.jdbc41/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.jdbc.postgresql/lib/postgresql-9.4-1201.jdbc41.jar" REQUIRED_IF="(DB_VERSION =='V9_X') AND (USE_EXISTING_CONNECTION == 'false') AND (DRIVER_IF_GREENPLUM == 'POSTGRESQL')" />
+			<IMPORT NAME="Postgres_Driver" 
+			MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="((DB_VERSION =='PRIOR_TO_V9') AND (USE_EXISTING_CONNECTION == 'false')) OR ((USE_EXISTING_CONNECTION == 'false') AND (DRIVER_IF_GREENPLUM == 'POSTGRESQL'))" />
+			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="(DRIVER_IF_GREENPLUM == 'GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
 		</IMPORTS>
 	</CODEGENERATION>
 

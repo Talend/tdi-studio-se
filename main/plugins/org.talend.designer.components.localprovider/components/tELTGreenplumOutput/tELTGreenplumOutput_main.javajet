@@ -30,7 +30,6 @@ imports="
 	String differenttable = ElementParameterParser.getValue(node, "__DIFFERENT_TABLE_NAME__");
 	boolean useDifferentTable = "true".equals(ElementParameterParser.getValue(node, "__USE_DIFFERENT_TABLE__"));
 	boolean isTableNameVariable="true".equals(ElementParameterParser.getValue(node, "__IS_TABLE_NAME_VARIABLE__"));
-	
 	%>
 	String select_query_<%=cid %> = null;	
 	String tableName_<%=cid%> = null;
@@ -76,12 +75,14 @@ imports="
         String dbname = null;
         String dbuser = null;
 	    boolean useExistingConn = false;
+		String dbDriver = "POSTGRESQL";
         if(previousNode != null) {
 	        dbhost = ElementParameterParser.getValue(previousNode, "__HOST__");
 	        dbport = ElementParameterParser.getValue(previousNode, "__PORT__");
 	        dbname = ElementParameterParser.getValue(previousNode, "__DBNAME__");
 	        dbuser = ElementParameterParser.getValue(previousNode, "__USER__");
 	    	useExistingConn = ("true").equals(ElementParameterParser.getValue(previousNode, "__USE_EXISTING_CONNECTION__"));
+			dbDriver = ElementParameterParser.getValue(previousNode, "__DB_DRIVER__");
         }
         String whereClause = ElementParameterParser.getValue(node, "__WHERE_CLAUSE__");
 
@@ -98,9 +99,14 @@ if(useExistingConn) {
     log4jCodeGenerateUtil.useExistConnection(node);
 } else {
     %>
-    String driverClass_<%=cid%> = "org.postgresql.Driver";
-    java.lang.Class.forName(driverClass_<%=cid%>);    
-    String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;    
+	<%if (dbDriver.equals("POSTGRESQL")){%>
+			String driverClass_<%=cid%> = "org.postgresql.Driver";
+			String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%} else {%>
+			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
+			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+	<%}%>
+    java.lang.Class.forName(driverClass_<%=cid%>);      
     String dbUser_<%=cid %> = <%=dbuser%>;
 
     <%

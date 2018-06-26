@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.talend.components.common.oauth.OAuth2FlowType;
 import org.talend.daikon.NamedThing;
 import org.talend.daikon.properties.property.Property;
 import org.talend.designer.core.generic.model.GenericElementParameter;
@@ -89,6 +90,7 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
             		paramType.setValue("Basic");
             	} else if("OAUTH".equals(value)) {
             		paramType.setValue("OAuth");
+            		
             	}
             }
     	}
@@ -136,6 +138,10 @@ public class NewSalesforceMigrationTask extends NewComponentFrameworkMigrationTa
         if ("tSalesforceInput".equals(nodeType.getComponentName()) && "returnNullValue".equals(param.getName())) {
             if (currNamedThing instanceof Property) {
                 ((Property<?>) currNamedThing).setStoredValue(true);
+            }
+        } else if ("oauth2FlowType".equals(param.getName()) || "connection.oauth2FlowType".equals(param.getName())) {
+            if (currNamedThing instanceof Property) {
+                ((Property<?>) currNamedThing).setStoredValue(OAuth2FlowType.Implicit_Flow);
             }
         } else {
             super.processUnmappedElementParameter(props, nodeType, param, currNamedThing);

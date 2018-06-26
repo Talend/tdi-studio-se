@@ -23,9 +23,10 @@ INode node = (INode) codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 List<IMetadataColumn> inputSchema = getInputSchema(node);
 List<IMetadataColumn> outputSchema = getOutputSchema(node);
+String dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
 
 String incomingConnName = null;
-List<? extends IConnection> incomingConnections = node.getIncomingConnections();
+List< ? extends IConnection> incomingConnections = node.getIncomingConnections();
 if(incomingConnections != null && incomingConnections.size() > 0) {
     for(IConnection incomingConnection : incomingConnections) {
         if(incomingConnection.getLineStyle().hasConnectionCategory(IConnectionCategory.DATA)) {
@@ -71,10 +72,14 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
     } else {
         %>
         String dbSchema_<%=cid%> = <%=ElementParameterParser.getValue(node, "__SCHEMA_DB__")%>;
-        java.lang.Class.forName("org.postgresql.Driver");
-        String connectionString_<%=cid%> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-	        
-		<%
+		
+		<%if (dbDriver.equals("POSTGRESQL")){%>
+			String driverClass_<%=cid%> = "org.postgresql.Driver";
+			String connectionString_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%} else {%>
+			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
+			String connectionString_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+		<%}
 		String passwordFieldName = "__PASS__";
 		%>
 		

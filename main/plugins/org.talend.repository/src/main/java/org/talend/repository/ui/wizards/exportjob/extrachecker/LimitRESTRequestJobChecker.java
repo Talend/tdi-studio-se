@@ -2,6 +2,7 @@ package org.talend.repository.ui.wizards.exportjob.extrachecker;
 
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.i18n.Messages;
 import org.talend.repository.model.RepositoryNode;
@@ -17,15 +18,23 @@ public class LimitRESTRequestJobChecker extends AbstractJobNodeChecker {
 
 	private static final String T_REST_REQUEST = "tRESTRequest";
 
+    private static final String[] ESB_COMPONENTS = { "tESBConsumer", "tRESTClient", T_REST_REQUEST };
+
     boolean tRESTRequestExist = false;
+
+    boolean containsESBComponents = false;
 
 	@Override
 	String checkNode(JobExportType exportType, NodeType nodeType) {
+        String componentName = nodeType.getComponentName();
+
         if (exportType == JobExportType.OSGI) {
+            if (ArrayUtils.contains(ESB_COMPONENTS, componentName)) {
+                containsESBComponents = true;
+            }
+
 			return null;
 		}
-
-        String componentName = nodeType.getComponentName();
 
         if (exportType == JobExportType.MSESB) {
             if (T_REST_REQUEST.equals(componentName)) {
@@ -57,8 +66,14 @@ public class LimitRESTRequestJobChecker extends AbstractJobNodeChecker {
             }
         }
 
-        if ((exportType == JobExportType.MSESB) && !tRESTRequestExist) {
-            return Messages.getString("LimitRESTRequestJobChecker.limit_ESBJobForMS", T_REST_REQUEST);
+        if (exportType == JobExportType.OSGI) {
+            if (!containsESBComponents) {
+                return Messages.getString("LimitRESTRequestJobChecker.limit_ESBJobForOSGI");
+            }
+        } else if (exportType == JobExportType.MSESB) {
+            if (!tRESTRequestExist) {
+                return Messages.getString("LimitRESTRequestJobChecker.limit_ESBJobForMS", T_REST_REQUEST);
+            }
         }
 
         return null;

@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IPath;
 import org.talend.core.GlobalServiceRegister;
+import org.talend.core.model.process.INode;
 import org.talend.core.model.process.IProcess2;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProcessItem;
@@ -69,6 +70,13 @@ public class StandardJobStandaloneBuildProvider extends RepositoryObjectTypeBuil
 
         Object object = parameters.get(PROCESS);
         if (object != null && object instanceof IProcess2) {
+
+            for (INode node : ((IProcess2) object).getGraphicalNodes()) {
+                if ("tRESTRequest".equals(node.getComponent().getName())) {
+                    return false;
+                }
+            }
+
             property = ((IProcess2) object).getProperty();
             if (property != null) {
                 type = ERepositoryObjectType.getType(property);

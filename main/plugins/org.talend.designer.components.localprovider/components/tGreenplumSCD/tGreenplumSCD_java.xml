@@ -111,7 +111,7 @@
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
     >
-      <DEFAULT>Postgresql</DEFAULT>
+      <DEFAULT>Greenplum</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
@@ -470,6 +470,18 @@
   </PARAMETERS>
 
   <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="DB_DRIVER"
+        FIELD="CLOSED_LIST"
+        NUM_ROW="5"
+        SHOW_IF="USE_EXISTING_CONNECTION == 'false'"
+    >
+      <ITEMS DEFAULT="POSTGRESQL">
+        <ITEM NAME="POSTGRESQL" VALUE="POSTGRESQL" />
+        <ITEM NAME="GREENPLUM" VALUE="GREENPLUM"/>
+      </ITEMS>
+	</PARAMETER>
+  
   		
 	<PARAMETER
       NAME="L2_ENDDATE_TIME_DETAILS"
@@ -500,7 +512,9 @@
 
   <CODEGENERATION>
     <IMPORTS>
-		<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
+		<IMPORT NAME="Postgres-Driver"
+		MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="(DB_DRIVER =='POSTGRESQL') AND (USE_EXISTING_CONNECTION == 'false')"/>
+		<IMPORT NAME="Greenplum-Driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="(DB_DRIVER =='GREENPLUM') AND (USE_EXISTING_CONNECTION == 'false')"/>
     </IMPORTS>
   </CODEGENERATION>
 

@@ -73,5 +73,20 @@
                 "MAIN":"FLOW"
             }
      }
+},
+{
+    "component_delegate":"tDBOutputBulkExec",
+    "component" : "tSnowflakeOutputBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
 }
 ]

@@ -25,6 +25,7 @@ import org.talend.core.runtime.repository.build.BuildExportManager;
 import org.talend.core.runtime.repository.build.IBuildExportHandler;
 import org.talend.core.runtime.repository.build.IBuildJobParameters;
 import org.talend.core.runtime.repository.build.IBuildParametes;
+import org.talend.designer.core.model.utils.emf.talendfile.NodeType;
 import org.talend.repository.ui.wizards.exportjob.JavaJobScriptsExportWSWizardPage.JobExportType;
 import org.talend.repository.ui.wizards.exportjob.handler.BuildJobHandler;
 import org.talend.repository.ui.wizards.exportjob.scriptsmanager.JobScriptsManager.ExportChoice;
@@ -94,8 +95,29 @@ public class BuildJobFactory {
         if (StringUtils.isEmpty(buildType)) {
             final Object type = processItem.getProperty().getAdditionalProperties()
                     .get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
+            boolean esb = false;
+
+            if (processItem instanceof ProcessItem) {
+                for (Object o : ((ProcessItem) processItem).getProcess().getNode()) {
+                    if (o instanceof NodeType) {
+                        NodeType currentNode = (NodeType) o;
+                        if ("tRESTRequest".equals(currentNode.getComponentName())
+                                || "tESBConsumer".equals(currentNode.getComponentName())
+                                || "tRESTClient".equals(currentNode.getComponentName())) {
+                            esb = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             if (type != null) {
-                buildType = type.toString();
+                if (!esb) {
+                    buildType = null;
+                } else {
+                    buildType = type.toString();
+                }
+
             } // else{ // if didn't set, should use default provider to create it.
         }
 
