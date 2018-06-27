@@ -280,6 +280,9 @@ imports="
 
 					// Add configurations from hdfs-site.xml
 					conf_<%=cid%>.addResource("hdfs-site.xml");
+					
+					// Add configurations from core-site.xml
+					conf_<%=cid%>.addResource("core-site.xml");
 <%
 					if(storeByHBase){
 %>
