@@ -2879,7 +2879,16 @@ public class Node extends Element implements IGraphicalNode {
                             break;
                         }
                         if (!NodeQueryCheckUtil.checkQueryOK(this, currentQuery)) {
-                            Problems.add(ProblemStatus.WARNING, this, errMessage);
+                            boolean show = true;
+                            // match the query and check again
+                            if (NodeQueryCheckUtil.isNeedMatchQuery()) {
+                                String matchSql = NodeQueryCheckUtil.matchQueryComments(this, currentQuery);
+                                NodeQueryCheckUtil.checkQueryOK(this, matchSql);
+                                show = NodeQueryCheckUtil.isNeedMatchQuery();
+                            }
+                            if (show) {
+                                Problems.add(ProblemStatus.WARNING, this, errMessage);
+                            }
                             break;
                         }
                     }
