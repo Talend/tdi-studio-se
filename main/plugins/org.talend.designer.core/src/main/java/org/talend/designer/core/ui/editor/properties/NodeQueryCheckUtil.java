@@ -13,6 +13,7 @@
 package org.talend.designer.core.ui.editor.properties;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.oro.text.regex.MalformedPatternException;
 import org.apache.oro.text.regex.PatternCompiler;
@@ -72,10 +73,10 @@ public final class NodeQueryCheckUtil {
         if (sql == null) {
             return false;
         }
-        if (sql.contains("--") || sql.contains("*")) {//$NON-NLS-1$ //$NON-NLS-2$
-            // match the query comments
-            sql = sql.replaceAll(COMMENT_REGX_PATTERN, ""); //$NON-NLS-1$
-        }
+        // match the query comments
+        Pattern commentRegex = Pattern.compile(COMMENT_REGX_PATTERN);
+        Matcher commentMatcher = commentRegex.matcher(sql);
+        sql = commentMatcher.replaceAll("");
 
         // replace the new line char
         sql = sql.replaceAll("\r", " "); //$NON-NLS-1$ //$NON-NLS-2$

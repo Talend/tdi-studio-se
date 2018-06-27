@@ -92,7 +92,7 @@ public class EditProcess extends AbstractProcessAction implements IIntroAction {
                     && node.getObjectType() == getProcessType()) {
                     final IProxyRepositoryFactory repFactory =
                         DesignerPlugin.getDefault().getRepositoryService().getProxyRepositoryFactory();
-                    this.setText(getLabel(repFactory.isPotentiallyEditable(node.getObject())) + " : " + node.getLabel()); //$NON-NLS-1$
+                    this.setText(getLabel(repFactory.isPotentiallyEditable(node.getObject())));
                 } else {
                     canWork = false;
                 }
