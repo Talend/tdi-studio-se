@@ -70,7 +70,7 @@ public class SpagicPreferencePage extends FieldEditorPreferencePage implements I
 
         spagicCheckButton = new CheckBoxFieldEditor(SpagicPreferenceInitializer.SPAGIC_STATUS,
                 "Enable/Disable Deploy on Spagic", parent); //$NON-NLS-1$
-        editor = new SpagicServerEditor(SpagoBiServer.SPAGOBI_SERVER, "Spagic server", parent); //$NON-NLS-1$
+        editor = new SpagicServerEditor(SpagoBiServer.SPAGOBI_SERVER, "Spagic Server (Deprecated)", parent); //$NON-NLS-1$
         addField(editor);
 
         updateEnableStateFromPreferences();

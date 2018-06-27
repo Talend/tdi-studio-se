@@ -353,7 +353,13 @@ public class JavaProcessor extends AbstractJavaProcessor implements IJavaBreakpo
             outputFolder = tProcessJavaProject.getTestOutputFolder();
         } else {
             srcFolder = tProcessJavaProject.getSrcFolder();
-            if (ProcessorUtilities.isExportConfig() && property != null && !new BigDataJobUtil((ProcessItem)property.getItem()).needsToHaveContextInsideJar()) {
+            boolean needsToHaveContextInsideJar = true;
+
+            if (property != null && property.getItem() instanceof ProcessItem) {
+                needsToHaveContextInsideJar = !new BigDataJobUtil((ProcessItem) property.getItem()).needsToHaveContextInsideJar();
+            }
+
+            if (ProcessorUtilities.isExportConfig() && property != null && needsToHaveContextInsideJar) {
                 resourcesFolder = tProcessJavaProject.getExternalResourcesFolder();
             } else {
                 resourcesFolder = tProcessJavaProject.getResourcesFolder();

@@ -507,7 +507,7 @@ public class ImportProjectAsWizardPage extends WizardPage {
                 Node node = document.getChildNodes().item(0).getChildNodes().item(1);
                 NamedNodeMap map = node.getAttributes();
                 for (int i = 0; i < map.getLength(); i++) {
-                    if ("label".equals(map.item(i).getNodeName())) {
+                    if ("technicalLabel".equals(map.item(i).getNodeName())) {
                         projectName = map.item(i).getNodeValue();
                     }
                 }

@@ -25,6 +25,8 @@ public class AuditManager {
 
     public static final String AUDIT_DBTYPE = "audit.dbType"; //$NON-NLS-1$
 
+    public static final String AUDIT_DBVERSION = "audit.dbVersion"; //$NON-NLS-1$
+
     public static final String AUDIT_DRIVER = "audit.Driver"; //$NON-NLS-1$
 
     public static final String AUDIT_URL = "audit.URL"; //$NON-NLS-1$

@@ -59,7 +59,7 @@
 			SHOW="false"
 			REPOSITORY_VALUE="TYPE"
 		>
-			<DEFAULT>PostgreSQL</DEFAULT>
+			<DEFAULT>Greenplum</DEFAULT>
 		</PARAMETER>
 
 		<PARAMETER
@@ -120,7 +120,7 @@
 		>
 			<DEFAULT>""</DEFAULT>
 		</PARAMETER>
-
+		
 		<PARAMETER
 			NAME="TABLE"
 			FIELD="DBTABLE"
@@ -235,6 +235,24 @@
 
 
 	<ADVANCED_PARAMETERS>
+		<PARAMETER
+			NAME="DB_DRIVER"
+			FIELD="CLOSED_LIST"
+			NUM_ROW="5"
+		>
+			<ITEMS DEFAULT="POSTGRESQL">
+				<ITEM NAME="POSTGRESQL" VALUE="POSTGRESQL" />
+				<ITEM NAME="GREENPLUM" VALUE="GREENPLUM"/>
+			</ITEMS>
+		</PARAMETER>
+		
+		<PARAMETER
+			NAME="ADDITIONAL_PARAMETERS"
+			FIELD="TEXT"
+			NUM_ROW="8"
+		>
+			<DEFAULT>""</DEFAULT>
+		</PARAMETER>
 
 		<PARAMETER
 			NAME="USE_EXISTING_CLT_FILE"
@@ -317,6 +335,8 @@
 						<ITEM NAME="LOCAL_HOSTNAME" VALUE="LOCAL_HOSTNAME"/>
 						<ITEM NAME="PORT" VALUE="PORT"/>
 						<ITEM NAME="PORT_RANGE" VALUE="PORT_RANGE"/>
+						<ITEM NAME="SSL" VALUE="SSL" />
+						<ITEM NAME="CERTIFICATES_PATH" VALUE="CERTIFICATES_PATH" />
 						<ITEM NAME="NULL_AS" VALUE="NULL_AS"/>
 						<ITEM NAME="FORCE_NOT_NULL" VALUE="FORCE_NOT_NULL"/>
 						<ITEM NAME="ERROR_LIMIT" VALUE="ERROR_LIMIT"/>
@@ -397,11 +417,27 @@
 		>
 			<DEFAULT>"SQL_ASCII"</DEFAULT>
 		</PARAMETER>
-
+		
+		
+		
+		<PARAMETER
+			NAME="GPLOAD_UTILITY"
+			FIELD="CLOSED_LIST"
+			NUM_ROW="55"
+			REQUIRED="true"
+		>
+			<ITEMS DEFAULT="GPLOAD">
+				<ITEM NAME="GPLOAD" VALUE="GPLOAD" />
+				<ITEM NAME="GPLOADPY" VALUE="GPLOADPY"/>
+			</ITEMS>
+		</PARAMETER>
+		
+		
 		<PARAMETER
 			NAME="SPECIFY_GPLOAD_PATH"
 			FIELD="CHECK"
 			NUM_ROW="60"
+			SHOW_IF="GPLOAD_UTILITY=='GPLOAD'"
 			REQUIRED="true"
 		>
 			<DEFAULT>false</DEFAULT>
@@ -410,10 +446,51 @@
 		<PARAMETER
 			NAME="GPLOAD_PATH"
 			FIELD="FILE"
-			NUM_ROW="70"
-			SHOW_IF="SPECIFY_GPLOAD_PATH == 'true'"
+			NUM_ROW="65"
+			SHOW_IF="(SPECIFY_GPLOAD_PATH == 'true') AND (GPLOAD_UTILITY=='GPLOAD')"
+			REQUIRED="true"
 		>
 			<DEFAULT>"gpload.exe"</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER
+			NAME="SPECIFY_PYTHON_PATH"
+			FIELD="CHECK"
+			NUM_ROW="70"
+			SHOW_IF="GPLOAD_UTILITY=='GPLOADPY'"
+			REQUIRED="true"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER
+			NAME="PYTHON_PATH"
+			FIELD="FILE"
+			NUM_ROW="75"
+			SHOW_IF="(SPECIFY_PYTHON_PATH == 'true') AND (GPLOAD_UTILITY=='GPLOADPY')"
+			REQUIRED="true"
+		>
+			<DEFAULT>"python"</DEFAULT>
+		</PARAMETER>
+		
+		<PARAMETER
+			NAME="SPECIFY_GPLOADPY_PATH"
+			FIELD="CHECK"
+			NUM_ROW="80"
+			SHOW_IF="GPLOAD_UTILITY=='GPLOADPY'"
+			REQUIRED="true"
+		>
+			<DEFAULT>false</DEFAULT>
+		</PARAMETER>
+
+		<PARAMETER
+			NAME="GPLOADPY_PATH"
+			FIELD="FILE"
+			NUM_ROW="85"
+			SHOW_IF="(SPECIFY_GPLOADPY_PATH == 'true') AND (GPLOAD_UTILITY=='GPLOADPY')"
+			REQUIRED="true"
+		>
+			<DEFAULT>"gpload.py"</DEFAULT>
 		</PARAMETER>
 
 	</ADVANCED_PARAMETERS>
@@ -421,7 +498,9 @@
 	<CODEGENERATION>
 		<IMPORTS>
 			<IMPORT MODULE="namedpipe-1.0.jar" MVN="mvn:org.talend.libraries/namedpipe-1.0/6.0.0"  NAME="namedpipe-1.0.jar" REQUIRED="true"/>
-			<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
+			<IMPORT NAME="Postgres-Driver"
+			MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4"  REQUIRED_IF="DB_DRIVER =='POSTGRESQL'" />
+			<IMPORT NAME="Greenplum-Driver" MODULE="greenplum.jar" MVN="mvn:com.pivotal/greenplum/5.8.1" REQUIRED_IF="DB_DRIVER =='GREENPLUM'"/>
 			<IMPORT MODULE="namedpipe_jni_64bit.dll" MVN="mvn:org.talend.libraries/namedpipe_jni_64bit/6.0.0/dll"  NAME="namedpipe_jni_64bit.dll" REQUIRED="false"/>
 			<IMPORT MODULE="namedpipe_jni.dll" MVN="mvn:org.talend.libraries/namedpipe_jni/6.0.0/dll"  NAME="namedpipe_jni.dll" REQUIRED="false"/>
 		</IMPORTS>

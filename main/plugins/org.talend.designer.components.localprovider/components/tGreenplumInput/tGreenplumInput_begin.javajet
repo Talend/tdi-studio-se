@@ -16,16 +16,24 @@ imports="
 <%
 
 	class DBInputBeginUtil extends DefaultDBInputUtil{
+		private String dbDriver = "";
 	    
 		public void setURL(INode node) {
-			
-%>
-			String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
-<%
+			dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
+			if (dbDriver.equals("POSTGRESQL")){%>
+				String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+			<%} else {%>
+				String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+			<%}
 		}
 		
 		public String getDirverClassName(INode node){
-			return "org.postgresql.Driver";
+			dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
+			if (dbDriver.equals("POSTGRESQL")){
+				return "org.postgresql.Driver";
+			} else {
+				return "com.pivotal.jdbc.GreenplumDriver";
+			}
 		}
 		
 		public void createConnection(INode node) {

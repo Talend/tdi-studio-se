@@ -7,17 +7,26 @@ imports="
 %>
 	<%@ include file="../templates/DB/HelpClass/HelpClass.javajet"%>
 <%
-	class ConnectionUtil extends DefaultConnectionUtil{
 	
+	class ConnectionUtil extends DefaultConnectionUtil{
+		private String dbDriver = "";
+		
 		public void createURL(INode node) {
 			super.createURL(node);
-%>
-		String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
-<%	
+			dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
+			if (dbDriver.equals("POSTGRESQL")){%>
+				String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+			<%} else {%>
+				String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+			<%}
 		}
 		
 		public String getDirverClassName(INode node){
-			return "org.postgresql.Driver";
+			if (dbDriver.equals("POSTGRESQL")){
+				return "org.postgresql.Driver";
+			} else {
+				return "com.pivotal.jdbc.GreenplumDriver";
+			}
 		}
 		
 	}//end class
