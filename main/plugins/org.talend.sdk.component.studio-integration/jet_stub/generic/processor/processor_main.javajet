@@ -45,7 +45,6 @@
     final boolean useLookup = component.useLookup();
 %>
 
-    inputsHandler_<%=cid%>.reset();
 <%
     if (useLookup) {
 %>
@@ -61,7 +60,9 @@
                 }
             }
 %>
-          inputsHandler_<%=cid%>.setInputValue("<%= connName %>", <%= connection.getName() %>);
+          if(<%= connection.getName() %> != null){
+            inputsHandler_<%=cid%>.setInputValue("<%= connName %>", <%= connection.getName() %>);
+          }
 <%
         }
     }
