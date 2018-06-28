@@ -23,6 +23,7 @@ INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
 
 boolean dieOnError = "true".equals(ElementParameterParser.getValue(node, "__DIE_ON_ERROR__"));
+boolean insertBeforeUpdate = "true".equals(ElementParameterParser.getValue(node, "__INSERT_BEFORE_UPDATE__"));
 
 String rejectConnName = null;
 List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -420,9 +421,6 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
 					  columnIndex++;
                   }
                 }
-                %>
-                nb_line_update_<%=cid%> += updateForType2_<%=cid%>.executeUpdate();
-                <%
                 paramIndex = 1;
                 for(Column insertionColumn : insertionColumnList) {
                   if(!isOptimizeCode){
@@ -477,9 +475,17 @@ if(inputSchema != null && inputSchema.size() > 0 && outputSchema != null && outp
                   }
                     paramIndex++;
                 }                
+                if(insertBeforeUpdate){
                 %>
-                nb_line_inserted_<%=cid%> += insertionStatement_<%=cid%>.executeUpdate();
+                    nb_line_inserted_<%=cid%> += insertionStatement_<%=cid%>.executeUpdate();
+                    nb_line_update_<%=cid%> += updateForType2_<%=cid%>.executeUpdate();
                 <%
+                }else{                
+                %>
+                    nb_line_update_<%=cid%> += updateForType2_<%=cid%>.executeUpdate();
+                    nb_line_inserted_<%=cid%> += insertionStatement_<%=cid%>.executeUpdate();
+                <%
+                }
                 if(debug) {
                     %>
                     System.out.println("[<%=cid%>] new history line");
