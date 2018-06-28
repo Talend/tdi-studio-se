@@ -207,7 +207,9 @@ public class ElementParameterCreator {
         addParallelizeParameter();
         addParallelizeNumberParameter();
         addParallelizeKeepEmptyParameter();
-        addChunkSizeParameter();
+        if(ETaCoKitComponentType.processor.equals(component.getTaCoKitComponentType())){
+            addChunkSizeParameter();
+        }
     }
 
     private void addChunkSizeParameter() {
