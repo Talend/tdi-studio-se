@@ -473,6 +473,43 @@ public class ExportItemUtil {
         IPath proTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(proRelativePath);
 
         copyAndAddResource(toExport, proSourcePath, proTargetPath, proRelativePath);
+        
+        IPath proSettingFolderPath = this.getProjectSettingLocationPath(project.getTechnicalLabel());
+        File proSettingFolder = new File(proSettingFolderPath.toPortableString());
+        if (proSettingFolder.exists()) {
+            IPath proSettingSourcePath = proSettingFolderPath.append(File.separator).append(FileConstants.PROJECTSETTING_FILE_NAME);
+            File proSettingSourcefile = new File(proSettingSourcePath.toPortableString());
+            if (proSettingSourcefile.exists()) {
+                IPath projectSettingFolderPath = getProjectSettingFolderPath();
+                
+                IPath proSettingRelativePath = projectSettingFolderPath.append(File.separator)
+                        .append(FileConstants.PROJECTSETTING_FILE_NAME);
+                IPath proSettingTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(proSettingRelativePath);
+                File projectSetttingTargetFolder = proSettingTargetPath.toFile().getParentFile();
+                if (!projectSetttingTargetFolder.exists()) {
+                    projectSetttingTargetFolder.mkdirs();
+                }
+                copyAndAddResource(toExport, proSettingSourcePath, proSettingTargetPath, proSettingRelativePath);
+                
+                IPath proRelationShipSourcePath = proSettingFolderPath.append(File.separator).append(FileConstants.RELATIONSHIP_FILE_NAME);
+                File proRelationShipSourceFile = new File(proRelationShipSourcePath.toPortableString());
+                if (proRelationShipSourceFile.exists()) {
+                    IPath proRelationShipRelativePath = projectSettingFolderPath.append(File.separator).append(FileConstants.RELATIONSHIP_FILE_NAME);
+                    IPath proRelationShipTargetPath = new Path(destinationDirectory.getAbsolutePath()).append(proRelationShipRelativePath);
+                    copyAndAddResource(toExport, proRelationShipSourcePath, proRelationShipTargetPath, proRelationShipRelativePath);
+                }
+
+                IPath proMigrationTaskSourcePath = proSettingFolderPath.append(File.separator).append(FileConstants.MIGRATION_TASK_FILE_NAME);
+                File proMigrationTaskSourceFile = new File(proMigrationTaskSourcePath.toPortableString());
+                if (proMigrationTaskSourceFile.exists()) {
+                    IPath proMigrationTaskRelativePath = projectSettingFolderPath.append(File.separator)
+                            .append(FileConstants.MIGRATION_TASK_FILE_NAME);
+                    IPath proMigrationTargetPath = new Path(destinationDirectory.getAbsolutePath())
+                            .append(proMigrationTaskRelativePath);
+                    copyAndAddResource(toExport, proMigrationTaskSourcePath, proMigrationTargetPath, proMigrationTaskRelativePath);
+                }
+            }
+        }
     }
 
     private void copyAndAddResource(Map<File, IPath> toExport, IPath sourcePath, IPath targetPath, IPath relativeItemPath)
@@ -525,6 +562,18 @@ public class ExportItemUtil {
 
     private IPath getProjectLocationPath(String technicalLabel) {
         return getEclipseProject(technicalLabel).getLocation();
+    }
+    
+    private IPath getProjectSettingLocationPath(String technicalLabel) {
+        IPath projectPath = getProjectLocationPath(technicalLabel);
+        IPath projectSettingFolderPath = projectPath.append(File.separator).append(FileConstants.SETTINGS_FOLDER_NAME);
+        return projectSettingFolderPath;
+    }
+    
+    private IPath getProjectSettingFolderPath () {
+        IPath projectOutPath = getProjectOutputPath();
+        IPath projectSettingFolderPath = projectOutPath.append(File.separator).append(FileConstants.SETTINGS_FOLDER_NAME);
+        return projectSettingFolderPath;
     }
 
     // For fix TDI-34281
