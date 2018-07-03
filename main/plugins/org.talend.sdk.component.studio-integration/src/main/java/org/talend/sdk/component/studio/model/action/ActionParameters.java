@@ -18,7 +18,7 @@ package org.talend.sdk.component.studio.model.action;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
+
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 
 /**

@@ -16,7 +16,6 @@
 package org.talend.sdk.component.studio.ui.composite.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
