@@ -30,7 +30,7 @@ public class SuggestionsAction extends Action {
     
     public SuggestionValues callSuggestions() {
         final V1Action action = Lookups.client().v1().action();
-        return action.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), parameters.payload());
+        return action.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
     }
     
     @Override
