@@ -37,7 +37,7 @@ public class ValueSelectionParameter extends TaCoKitElementParameter {
     }
     
     public List<String> getSuggestionValues() {
-        if (cachedSuggestions == null) {
+        if (cachedSuggestions == null || action.hasChangedParameters()) {
             SuggestionValues result = action.callSuggestions();
             final List<String> suggestions = new ArrayList<>();
             result.getItems().forEach(item -> {
