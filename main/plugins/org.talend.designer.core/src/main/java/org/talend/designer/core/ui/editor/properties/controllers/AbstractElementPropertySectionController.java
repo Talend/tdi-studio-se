@@ -1896,6 +1896,16 @@ public abstract class AbstractElementPropertySectionController implements Proper
             connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ADDITIONAL_JDBC_SETTINGS,
                     additionalJDBCSetting);
         }
+
+        String hiveEnableHa = getValueFromRepositoryName(elem, "ENABLE_HIVE_HA"); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_ENABLE_HA, hiveEnableHa);
+
+        String hiveMetastoreUris = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "HIVE_METASTORE_URIS")); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_METASTORE_URIS, hiveMetastoreUris);
+
+        String hiveThriftPort = TalendQuoteUtils.removeQuotes(getValueFromRepositoryName(elem, "THRIFTPORT")); //$NON-NLS-1$
+        connParameters.getParameters().put(ConnParameterKeys.CONN_PARA_KEY_HIVE_THRIFTPORT, hiveThriftPort);
+
     }
     
     /**
