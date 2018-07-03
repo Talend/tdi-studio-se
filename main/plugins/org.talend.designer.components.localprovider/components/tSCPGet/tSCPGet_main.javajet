@@ -15,6 +15,7 @@ imports="
     String replaceOption = ElementParameterParser.getValue(node,"__REPLACEOPTION__");
     List<Map<String, String>> filelist = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node,"__FILELIST__");
     boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+    boolean enforceUnixPath = ("true").equals(ElementParameterParser.getValue(node,"__FORCE_UNIX_PATH__"));
 %>
 	String[] sourceFileNames_<%=cid%> = new String[]{
 <%
@@ -28,10 +29,17 @@ imports="
 	java.io.File dir_<%=cid %> = null;
 	try{
 <%
-		if(("append").equals(replaceOption)){%>
+		if(("append").equals(replaceOption)){
+%>
 			for (String sourceFile_<%=cid %> : sourceFileNames_<%=cid %>) {
 				if (sourceFile_<%=cid %> != null&& sourceFile_<%=cid %>.length() != 0) {
-					sourceFile_<%=cid %>=sourceFile_<%=cid %>.replaceAll("\\\\","/"); 
+<%
+					if (!enforceUnixPath) {
+%>
+						sourceFile_<%=cid %> = sourceFile_<%=cid %>.replaceAll("\\\\","/");
+<%
+					}
+%>
 					int index_<%=cid %>=sourceFile_<%=cid %>.lastIndexOf("/");
 					if(index_<%=cid %> >0){
 						dir_<%=cid %> = new java.io.File(<%=localdir %>);
@@ -84,10 +92,11 @@ imports="
 			}else{
 				globalMap.put("<%=cid %>_STATUS", "No file transfered.");
 			}
-		<%
+<%
 		}else{
 			boolean isDefaultAction = !("overwrite").equals(replaceOption);
-			if(isDefaultAction) {%>        
+			if(isDefaultAction) {
+%>
 		    	String parentPath_<%=cid%> = new java.io.File(<%=localdir %>).getPath();
 				java.util.List<String> list_<%=cid%> = new java.util.ArrayList<String>();
 				for (int i_<%=cid%> = 0; i_<%=cid%> < sourceFileNames_<%=cid%>.length; i_<%=cid%>++) {
@@ -97,20 +106,26 @@ imports="
 		            }
 		        }
 		        sourceFileNames_<%=cid%> = (String[]) list_<%=cid%>.toArray(new String[0]);
-		<%
+<%
 			}
-		%>
+%>
 			if(sourceFileNames_<%=cid%>!=null && sourceFileNames_<%=cid%>.length!=0){
 				for (String sourceFile_<%=cid %> : sourceFileNames_<%=cid %>) {
 					if (sourceFile_<%=cid %> != null&& sourceFile_<%=cid %>.length() != 0) {
-						sourceFile_<%=cid %>=sourceFile_<%=cid %>.replaceAll("\\\\","/"); 
-					    int index_<%=cid %>=sourceFile_<%=cid %>.lastIndexOf("/");
-					    if(index_<%=cid %> >0){
+<%
+						if (!enforceUnixPath) {
+%>
+							sourceFile_<%=cid %> = sourceFile_<%=cid %>.replaceAll("\\\\","/");
+<%
+						}
+%>
+						int index_<%=cid %>=sourceFile_<%=cid %>.lastIndexOf("/");
+						if(index_<%=cid %> >0){
 							dir_<%=cid %> = new java.io.File(<%=localdir %>);
 							String extension_<%=cid %>=	sourceFile_<%=cid %>.substring(index_<%=cid %>,sourceFile_<%=cid %>.length());
 							java.io.File file_<%=cid %> = new java.io.File(dir_<%=cid %>, extension_<%=cid %>);
 							if(!file_<%=cid %>.exists()){
-						  		file_<%=cid %>.getParentFile().mkdirs();
+								file_<%=cid %>.getParentFile().mkdirs();
 							}
 							java.io.FileOutputStream out_<%=cid %> = null;
 		    				//copy action
@@ -162,9 +177,9 @@ imports="
 					globalMap.put("<%=cid %>_STATUS", "No file transfered.");
 				}
 			}
-		<%
+<%
 		}
-		%>
+%>
 	}catch(java.lang.Exception e_<%=cid%>){
 		globalMap.put("<%=cid %>_STATUS", "File get fail.");
 		throw e_<%=cid%>;
