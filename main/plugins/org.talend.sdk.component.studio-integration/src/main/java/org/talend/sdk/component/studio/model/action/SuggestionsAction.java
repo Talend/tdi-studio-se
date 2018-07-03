@@ -22,7 +22,12 @@ import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.SuggestionValues;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
-public class SuggestionsAction extends Action {
+public final class SuggestionsAction extends Action {
+    
+    /**
+     * Denotes whetere parameters were changed since last callback
+     */
+    private boolean parametersChanged = true;
 
     public SuggestionsAction(String actionName, String family) {
         super(actionName, family, Action.Type.SUGGESTIONS);
@@ -30,7 +35,9 @@ public class SuggestionsAction extends Action {
     
     public SuggestionValues callSuggestions() {
         final V1Action action = Lookups.client().v1().action();
-        return action.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
+        final SuggestionValues values = action.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
+        parametersChanged = false;
+        return values;
     }
     
     @Override
@@ -42,6 +49,19 @@ public class SuggestionsAction extends Action {
             result.put(item.getId(), item.getLabel());
         });
         return result;
+    }
+    
+    /**
+     * Extends {@link Action#setParameterValue(String, String)} to set {@link #parametersChanged} flag to true
+     */
+    @Override
+    public void setParameterValue(final String parameterName, final String parameterValue) {
+        super.setParameterValue(parameterName, parameterValue);
+        parametersChanged = true;
+    }
+    
+    public boolean hasChangedParameters() {
+        return parametersChanged;
     }
 
 }
