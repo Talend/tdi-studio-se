@@ -230,6 +230,8 @@ public class DefaultRunProcessService implements IRunProcessService {
 
         IESBRouteService routeService = null;
 
+        IESBService soapService = null;
+
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBMicroService.class)) {
             microService = (IESBMicroService) GlobalServiceRegister.getDefault().getService(IESBMicroService.class);
 
@@ -249,7 +251,7 @@ public class DefaultRunProcessService implements IRunProcessService {
 
         // Create maven processer for SOAP service, @see org.talend.designer.runprocess.java.TalendJavaProjectManager
         if (process == null && GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-            IESBService soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+            soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
             if (property.getItem() != null && soapService.isServiceItem(property.getItem().eClass().getClassifierID())) {
                 return (IProcessor) soapService.createJavaProcessor(process, property, filenameFromLabel);
             }
@@ -281,7 +283,20 @@ public class DefaultRunProcessService implements IRunProcessService {
             return new MavenJavaProcessor(process, property, filenameFromLabel);
         } else {
             // If OSGI contains new processor, need to add built type in args map
-            return new MavenJavaProcessor(process, property, filenameFromLabel);
+
+            if (property != null
+                    && "OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+                if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                    soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                    return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                }
+
+                return new MavenJavaProcessor(process, property, filenameFromLabel);
+
+            } else {
+                return new MavenJavaProcessor(process, property, filenameFromLabel);
+            }
+
         }
     }
 

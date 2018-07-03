@@ -118,9 +118,6 @@
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
-      <IMPORTS>
-    	<IMPORT NAME="Driver-Postgres" MODULE="postgresql-8.4-703.jdbc4.jar" MVN="mvn:postgresql/postgresql/8.4-703.jdbc4" REQUIRED="true" />
-    </IMPORTS>
   </CODEGENERATION>
 
   <RETURNS>

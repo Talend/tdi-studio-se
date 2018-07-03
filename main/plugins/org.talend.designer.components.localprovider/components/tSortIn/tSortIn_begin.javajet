@@ -47,7 +47,7 @@ String isExternalSort = ElementParameterParser.getValue(node, "__EXTERNAL__");
 <%
 if(("false").equals(isExternalSort)){
 %>
-<%=rowName %>Struct[] array_<%=cid %> = (<%=rowName %>Struct[]) globalMap.get("<%=origin %>");
+<%=rowName %>Struct[] array_<%=cid %> = (<%=rowName %>Struct[]) globalMap.remove("<%=origin %>");
 
 int nb_line_<%=cid %> = 0;
 
@@ -73,7 +73,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 }
 }else{
 %>
-java.util.Iterator<<%=rowName %>Struct> iterator_<%=cid %> = (java.util.Iterator<<%=rowName %>Struct>) globalMap.get("<%=origin %>");
+java.util.Iterator<<%=rowName %>Struct> iterator_<%=cid %> = (java.util.Iterator<<%=rowName %>Struct>) globalMap.remove("<%=origin %>");
 int nb_line_<%=cid %> = 0;
 <%=rowName %>Struct current_<%=cid %> = null;
 

@@ -1628,7 +1628,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                         if (isDisposed()) {
                             return;
                         }
-                        fillConsole(processContext.getMessages());
+                        if (processContext != null) {
+                            fillConsole(processContext.getMessages());
+                        }
                     }
                 });
             }
@@ -1681,7 +1683,9 @@ public class ProcessComposite extends ScrolledComposite implements IDynamicPrope
                     boolean running = ((Boolean) evt.getNewValue()).booleanValue();
                     setRunnable(!running);
                     killBtn.setEnabled(running);
-                    fillConsole(processContext.getMessages());
+                    if (processContext != null) {
+                        fillConsole(processContext.getMessages());
+                    }
                 }
             });
         }

@@ -58,7 +58,9 @@ public final class NodeQueryCheckUtil {
     // split the function
     private static final String FUNC_SPLIT = "(\\s)*(\\w*)\\((.*?)\\)(\\s+\\w*){0,1}"; //$NON-NLS-1$  
 
-    private static final String COMMENT_REGX_PATTERN = ("(?ms)('(?:''|[^'])*')|--.*?$|/\\*.*?\\*/"); //$NON-NLS-1$  
+    private static final String COMMENT_REGX_PATTERN = ("(?ms)('(?:''|[^'])*')|--.*?$|/\\*.*?\\*/"); //$NON-NLS-1$
+
+    private static boolean needMatchQuery;
 
     /**
      * 
@@ -69,14 +71,10 @@ public final class NodeQueryCheckUtil {
      * @return
      */
     public static boolean checkQueryOK(Node node, String sql) {
+        setNeedMatchQuery(false);
         if (sql == null) {
             return false;
         }
-        if (sql.contains("--") || sql.contains("*")) {//$NON-NLS-1$ //$NON-NLS-2$
-            // match the query comments
-            sql = sql.replaceAll(COMMENT_REGX_PATTERN, ""); //$NON-NLS-1$
-        }
-
         // replace the new line char
         sql = sql.replaceAll("\r", " "); //$NON-NLS-1$ //$NON-NLS-2$
         sql = sql.replaceAll("\n", " "); //$NON-NLS-1$ //$NON-NLS-2$
@@ -105,17 +103,11 @@ public final class NodeQueryCheckUtil {
         if ("*".equals(columns)) { //$NON-NLS-1$
             return true;
         }
-        /*
-         * add by wzhang
-         */
-        boolean match = apacheRegexMatch(SQL_FUNC_REGX, REGX_FLAG, columns);
-        if (!match) {
-            // no function
-            return compareNodeTableColumnsNoFunc(node, columns);
-        } else {
-            // contains function
-            return compareNodeTableColumnsWithFunc(node, columns);
+        boolean result = compareNodeTableColumns(node, columns);
+        if (!result) {
+            setNeedMatchQuery(!result);
         }
+        return result;
 
     }
 
@@ -213,4 +205,33 @@ public final class NodeQueryCheckUtil {
         }
     }
 
+    public static String matchQueryComments(Node node, String sql) {
+        if (sql == null) {
+            return null;
+        }
+        if (sql.contains("--") || sql.contains("/*")) {//$NON-NLS-1$ //$NON-NLS-2$
+            // match the query comments
+            return sql.replaceAll(COMMENT_REGX_PATTERN, ""); //$NON-NLS-1$
+        }
+        return sql;
+    }
+
+    private static boolean compareNodeTableColumns(Node node, String columns) {
+        boolean match = apacheRegexMatch(SQL_FUNC_REGX, REGX_FLAG, columns);
+        if (!match) {
+            // no function
+            return compareNodeTableColumnsNoFunc(node, columns);
+        } else {
+            // contains function
+            return compareNodeTableColumnsWithFunc(node, columns);
+        }
+    }
+
+    public static boolean isNeedMatchQuery() {
+        return needMatchQuery;
+    }
+
+    public static void setNeedMatchQuery(boolean matchQuery) {
+        needMatchQuery = matchQuery;
+    }
 }

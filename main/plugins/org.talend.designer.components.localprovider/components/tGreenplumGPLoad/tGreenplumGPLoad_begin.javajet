@@ -28,6 +28,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	String dbname = ElementParameterParser.getValue(node, "__DBNAME__");
 	String dbschema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
 	String dbuser = ElementParameterParser.getValue(node, "__USER__");
+	String additionalParameters = ElementParameterParser.getValue(node, "__ADDITIONAL_PARAMETERS__");
 
 	String dbtable = ElementParameterParser.getValue(node, "__TABLE__");
 	String tableAction = ElementParameterParser.getValue(node, "__TABLE_ACTION__");
@@ -38,6 +39,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	List<Map<String, String>> updateOptions = (List<Map<String,String>>)ElementParameterParser.getObjectValue(node, "__UPDATE_OPTIONS__");
 	String updateCondition = ElementParameterParser.getValue(node, "__UPDATE_CONDITION__");
 	
+	String dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
 	boolean useExistingCtrlFile = ElementParameterParser.getValue(node, "__USE_EXISTING_CLT_FILE__").equals("true");
 	String ctrlFile = ElementParameterParser.getValue(node, "__CLT_FILE__");
 	boolean csvOption = ElementParameterParser.getValue(node, "__CSV_OPTIONS__").equals("true");
@@ -52,8 +54,18 @@ skeleton="../templates/db_output_bulk.skeleton"
 	//boolean hasAfterSQL = ElementParameterParser.getValue(node, "__HAS_AFTER_SQL__").equals("true");
 	//String afterSQL = ElementParameterParser.getValue(node, "__AFTER_SQL__");
 	String encoding = ElementParameterParser.getValue(node, "__ENCODING__");
-	boolean gploadExePathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOAD_PATH__").equals("true");
-	String gploadExePath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
+
+	String gploadUtilityName = ElementParameterParser.getValue(node, "__GPLOAD_UTILITY__");
+	
+	boolean gploadPathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOAD_PATH__").equals("true");
+	String gploadPath = ElementParameterParser.getValue(node, "__GPLOAD_PATH__");
+	boolean pythonPathGiven = ElementParameterParser.getValue(node, "__SPECIFY_PYTHON_PATH__").equals("true");
+	String pythonPath = ElementParameterParser.getValue(node, "__PYTHON_PATH__");
+	boolean gploadpyPathGiven = ElementParameterParser.getValue(node, "__SPECIFY_GPLOADPY_PATH__").equals("true");
+	String gploadpyPath = ElementParameterParser.getValue(node, "__GPLOADPY_PATH__");
+	
+	
+	
 	String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
 	boolean dieOnError = ("true").equals(ElementParameterParser.getValue(node,"__DIE_ON_ERROR__"));
 
@@ -82,11 +94,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 					hasOutputRow = true;
 		}
 	}
-
-		
-	if (!gploadExePathGiven) {
-		gploadExePath = "\"gpload\"";
-	}
+	
 	boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 	
 %>
@@ -134,11 +142,23 @@ skeleton="../templates/db_output_bulk.skeleton"
         Manager manager = getManager(dbmsId, cid);
 		%>
 
-		String driverClass_<%=cid%> = "org.postgresql.Driver";
-		java.lang.Class.forName(driverClass_<%=cid%>);    
-		String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
+		<%if (dbDriver.equals("POSTGRESQL")){%>
+			String driverClass_<%=cid%> = "org.postgresql.Driver";
+			String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%} else {%>
+			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
+			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+<%=dbname%>;
+		<%}%>
+		
+		java.lang.Class.forName(driverClass_<%=cid%>);
+		<%if (additionalParameters != null && !(additionalParameters.replaceAll("\"", "")).isEmpty()){
+			if (dbDriver.equals("POSTGRESQL")){%>
+				url_<%=cid %> = url_<%=cid %> + "?" + <%=additionalParameters%>;
+			<%} else {%>
+				url_<%=cid %> = url_<%=cid %> + ";" + <%=additionalParameters%>;
+			<%}
+		}%>
 		String dbUser_<%=cid %> = <%=dbuser%>;
-	        
 		<%
 		String passwordFieldName = "__PASS__";
 		%>
@@ -398,6 +418,16 @@ skeleton="../templates/db_output_bulk.skeleton"
 						gpctrl_<%=cid%>.println("        PORT_RANGE: [" + <%=value%> + "]");
 					<%
 				}
+				if (key.equals("SSL")){
+					%>
+						gpctrl_<%=cid%>.println("        SSL: " + <%=value%> );
+					<%
+				}
+				if (key.equals("CERTIFICATES_PATH")){
+					%>
+						gpctrl_<%=cid%>.println("        CERTIFICATES_PATH: " + <%=value%> );
+					<%
+				}
 			}
 		}
 		%>
@@ -511,18 +541,47 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 %>
 
+<%
+	String pythonPathForCMD = "";
+	String gpLoadPathForCMD = "";
+	
+	if (gploadUtilityName.equals("GPLOAD")){
+		if (gploadPathGiven) {
+			gpLoadPathForCMD = gploadPath;
+		} else {
+			gpLoadPathForCMD = "\"gpload\"";
+		}
+	} else {
+		if (gploadpyPathGiven) {
+			gpLoadPathForCMD = gploadpyPath;
+		} else {
+			gpLoadPathForCMD = "\"gpload.py\"";
+		}
+		if (pythonPathGiven) {
+			pythonPathForCMD = pythonPath;
+		} else {
+			pythonPathForCMD = "\"python\"";
+		}
+	}
+%>
+
 	final StringBuilder gploadOutput_<%=cid%> = new StringBuilder(200);
 	Thread gploadThread_<%=cid%> = new Thread() {
 		public void run() {
 			try {
-				String[] envp = null;
-				String[] cmds = new String[] {<%=gploadExePath%><%
-						for (int i=0; i < parametersList.size(); i++) {
-							%>,<%=parametersList.get(i)%><%
-						}
-						%>};
-				Runtime rt = Runtime.getRuntime();
-				final Process ps = rt.exec(cmds, envp);
+				String[] cmds = new String[] {
+						<%if (!"".equals(pythonPathForCMD)){%>
+							<%=pythonPathForCMD%>,
+						<%}%>
+						<%=gpLoadPathForCMD%>
+				<%
+				for (int i=0; i < parametersList.size(); i++) {
+						%>,<%=parametersList.get(i)%><%
+					}
+				%>
+				};
+				final Process ps = Runtime.getRuntime().exec(cmds);
+				
 				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(ps.getInputStream()));
 				String line = "";
 				while ((line = reader.readLine()) != null) {
@@ -544,7 +603,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	// component is used in startable mode.
 	//-----------------------------------------------------------------
 	if(isLog4jEnabled){%>
-		StringBuffer command_<%=cid%> = new StringBuffer(<%=gploadExePath%>);
+		StringBuffer command_<%=cid%> = new StringBuffer(<%=gpLoadPathForCMD%>);
 		<%
 		for (int i=0; i < parametersList.size(); i++) {
 		%>

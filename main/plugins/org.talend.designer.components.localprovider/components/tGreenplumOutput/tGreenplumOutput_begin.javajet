@@ -55,6 +55,8 @@ skeleton="../templates/db_output_bulk.skeleton"
 
     boolean useBatch = "true".equals(ElementParameterParser.getValue(node, "__USE_BATCH__"));
     String batchSize = ElementParameterParser.getValue(node, "__BATCH_SIZE__");
+	
+	String dbDriver = ElementParameterParser.getValue(node, "__DB_DRIVER__");
 
     String rejectConnName = null;
     List<? extends IConnection> rejectConns = node.getOutgoingConnections("REJECT");
@@ -166,11 +168,16 @@ if(("true").equals(useExistingConn)) {
 	<%dbLog.conn().useExistConn("conn_"+cid+".getMetaData().getURL()", "conn_"+cid+".getMetaData().getUserName()");%>
 	<%
 } else {
-	%>
-	String driverClass_<%=cid%> = "org.postgresql.Driver";
-	<%dbLog.conn().logJDBCDriver(dbLog.var("driverClass"));%>
+	if (dbDriver.equals("POSTGRESQL")){%>
+			String driverClass_<%=cid%> = "org.postgresql.Driver";
+			String url_<%=cid %> = "jdbc:postgresql://" + <%=dbhost%> + ":" + <%=dbport%> + "/" + <%=dbname%>;
+		<%} else {%>
+			String driverClass_<%=cid%> = "com.pivotal.jdbc.GreenplumDriver";
+			String url_<%=cid %> = "jdbc:pivotal:greenplum://"+<%=dbhost%>+":"+<%=dbport%>+";DatabaseName="+ <%=dbname%>;
+	<%}
+		
+	dbLog.conn().logJDBCDriver(dbLog.var("driverClass"));%>
     java.lang.Class.forName(driverClass_<%=cid%>);
-    String url_<%=cid %> = "jdbc:postgresql://"+<%=dbhost%>+":"+<%=dbport%>+"/"+<%=dbname%>;
     String dbUser_<%=cid %> = <%=dbuser%>;
     <%
     String passwordFieldName = "__PASS__";

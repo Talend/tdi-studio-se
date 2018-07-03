@@ -42,6 +42,8 @@ import org.talend.sdk.component.server.front.model.ComponentDetail;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
 import org.talend.sdk.component.studio.ComponentModel;
 import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.enums.ETaCoKitComponentType;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.connector.ConnectorCreatorFactory;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 import org.talend.sdk.studio.process.TaCoKitNode;
@@ -205,6 +207,24 @@ public class ElementParameterCreator {
         addParallelizeParameter();
         addParallelizeNumberParameter();
         addParallelizeKeepEmptyParameter();
+        if(ETaCoKitComponentType.processor.equals(component.getTaCoKitComponentType())){
+            addChunkSizeParameter();
+        }
+    }
+
+    private void addChunkSizeParameter() {
+        final ElementParameter parameter = new ElementParameter(node);
+        parameter.setName("CHUNK_SIZE");
+        parameter.setValue(100);
+        parameter.setDisplayName(Messages.getString("batch.chunkSize"));
+        parameter.setFieldType(EParameterFieldType.TEXT);
+        parameter.setCategory(ADVANCED);
+        parameter.setNumRow(200);
+        parameter.setReadOnly(false);
+        parameter.setRequired(false);
+        parameter.setDefaultValue(parameter.getValue());
+        parameter.setShow(ETaCoKitComponentType.processor.equals(component.getTaCoKitComponentType()));
+        parameters.add(parameter);
     }
 
     /**
@@ -589,7 +609,7 @@ public class ElementParameterCreator {
         parameter.setShow(false);
         parameters.add(parameter);
     }
-    
+
     /**
      * Creates and adds TACOKIT_COMPONENT_ID parameter.
      * It is used in serialization/deserialization to know whether it is Tacokit component and
