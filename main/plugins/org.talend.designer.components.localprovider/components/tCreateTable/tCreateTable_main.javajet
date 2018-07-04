@@ -1941,7 +1941,7 @@ class SnowflaketManager extends Manager {
         if(!isPropertyValueEmpty(role) && !("\"\"").equals(role)){
             stringBuilder.append("+\"&\"+");
             stringBuilder.append("\"role=\"");
-            stringBuilder.append("+"+role+"+");
+            stringBuilder.append("+"+role);
         }
 
         return stringBuilder.toString();
