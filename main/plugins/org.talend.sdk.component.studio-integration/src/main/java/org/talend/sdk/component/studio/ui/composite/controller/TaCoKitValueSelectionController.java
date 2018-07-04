@@ -15,14 +15,23 @@
  */
 package org.talend.sdk.component.studio.ui.composite.controller;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.ui.properties.tab.IDynamicProperty;
 import org.talend.designer.core.ui.editor.cmd.PropertyChangeCommand;
+import org.talend.designer.core.ui.editor.properties.controllers.AbstractValueSelectionController;
+import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.parameter.ValueSelectionParameter;
 
 public class TaCoKitValueSelectionController extends AbstractValueSelectionController {
@@ -36,16 +45,42 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
         final ValueSelectionParameter valueSelectionParameter = (ValueSelectionParameter) parameter; 
         return new SelectionAdapter() {
             
+            private final Job job;
+            
+            {
+                job = new Job(Messages.getString("suggestion.job.title")) {
+
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor) {
+                        monitor.subTask(Messages.getString("suggestion.job.subtask.retrieveValues"));
+                        final List<String> suggestions = valueSelectionParameter.getSuggestionValues();
+                        if (monitor.isCanceled()) {
+                            return Status.CANCEL_STATUS;
+                        }
+                        monitor.subTask(Messages.getString("suggestion.job.subtask.openDialog"));
+                        Display.getDefault().asyncExec(new Runnable() {
+                            public void run() {
+                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), suggestions);
+                                if (dialog.open() == IDialogConstants.OK_ID) {
+                                    final String result = dialog.getResult();
+                                    Text text = (Text) hashCurControls.get(valueSelectionParameter.getName());
+                                    text.setText(result);
+                                    PropertyChangeCommand command = new PropertyChangeCommand(elem, valueSelectionParameter.getName(), result);
+                                    executeCommand(command);
+                                }
+                            }
+                        });
+                        monitor.done();
+                        return Status.OK_STATUS;
+                    }
+                    
+                };
+                job.setUser(true);
+            }
+            
             @Override
             public void widgetSelected(final SelectionEvent e) {
-                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), valueSelectionParameter.getSuggestionValues());
-                if (dialog.open() == IDialogConstants.OK_ID) {
-                    final String result = dialog.getResult();
-                    Text text = (Text) hashCurControls.get(valueSelectionParameter.getName());
-                    text.setText(result);
-                    PropertyChangeCommand command = new PropertyChangeCommand(elem, valueSelectionParameter.getName(), result);
-                    executeCommand(command);
-                }
+                job.schedule();
             }
         };
     }

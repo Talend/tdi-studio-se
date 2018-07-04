@@ -56,6 +56,8 @@
 <% if (!"input".equalsIgnoreCase(tacokitComponentType)) { %>
 
         <%@include file="../../jet_stub/generic/processor/processor_main.javajet"%>
+        processor_<%=cid%>.flush(outputs_<%=cid%>);
+
         Object rowObject_<%=guessSchemaCid%> = outputHandler_<%=guessSchemaCid%>.getValue("<%= outputConnectionName %>", Object.class);
         if (Object.class == rowObject_<%=guessSchemaCid%>.getClass()) {
             // means we will not find it through data

@@ -284,7 +284,8 @@ public class DefaultRunProcessService implements IRunProcessService {
         } else {
             // If OSGI contains new processor, need to add built type in args map
 
-            if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
+            if (property != null
+                    && "OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
                 if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
                     soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
                     return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);

@@ -1882,6 +1882,7 @@ public class Node extends Element implements IGraphicalNode {
 
         if (id.equals(EParameterName.CONNECTION_FORMAT.getName())) {
             connectionToParse = (String) value;
+            setConnectionName(ElementParameterParser.parse(this, connectionToParse));
             // to check
             // String newValue = ElementParameterParser.parse(this, connectionToParse);
             // setConnectionName(newValue);
@@ -2879,7 +2880,16 @@ public class Node extends Element implements IGraphicalNode {
                             break;
                         }
                         if (!NodeQueryCheckUtil.checkQueryOK(this, currentQuery)) {
-                            Problems.add(ProblemStatus.WARNING, this, errMessage);
+                            boolean show = true;
+                            // match the query and check again
+                            if (NodeQueryCheckUtil.isNeedMatchQuery()) {
+                                String matchSql = NodeQueryCheckUtil.matchQueryComments(this, currentQuery);
+                                NodeQueryCheckUtil.checkQueryOK(this, matchSql);
+                                show = NodeQueryCheckUtil.isNeedMatchQuery();
+                            }
+                            if (show) {
+                                Problems.add(ProblemStatus.WARNING, this, errMessage);
+                            }
                             break;
                         }
                     }

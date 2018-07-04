@@ -34,7 +34,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.talend.designer.runtime.visualization.internal.ui.JavaMonitorPreferencePage"
+            category="org.talend.core.prefs"
             class="org.talend.designer.runtime.visualization.internal.tools.ToolsPreferencePage"
             id="org.talend.designer.runtime.visualization.internal.tools.ToolsPreferencePage"
             name="Tools">
