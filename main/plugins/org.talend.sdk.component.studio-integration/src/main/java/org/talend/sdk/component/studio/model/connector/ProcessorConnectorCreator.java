@@ -26,15 +26,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.eclipse.swt.graphics.RGB;
+import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
 
 /**
@@ -53,7 +56,7 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
     protected List<INodeConnector> createMainConnectors() {
         AtomicInteger rowCount = new AtomicInteger(0);
         AtomicBoolean isDefaultConnectionPresent = new AtomicBoolean(false);
-        detail.getInputFlows().stream().forEach(input -> {
+        detail.getInputFlows().forEach(input -> {
             if (FLOW_MAIN.equals(getType(input))) {
                 rowCount.incrementAndGet();
                 if (FLOW_MAIN.getName().equals(getName(input))) {
@@ -84,10 +87,7 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                             if (!FLOW_MAIN.equals(getType(input))) {
                                 return false;
                             }
-                            if (mainConnectorName.equalsIgnoreCase(getName(input))) {
-                                return false;
-                            }
-                            return true;
+                            return !mainConnectorName.equalsIgnoreCase(getName(input));
                         }) //
                         .map(input -> { //
                             final TaCoKitNodeConnector inputConnector = TaCoKitNodeConnector.newFlow(node, input);
@@ -104,42 +104,43 @@ class ProcessorConnectorCreator extends AbstractConnectorCreator {
                             connectorMap.put(inputConnector.getName(), inputConnector);
                             return inputConnector;
                         }), detail
-                                .getOutputFlows()
-                                .stream() //
-                                .filter(output -> FLOW_MAIN.equals(getType(output))) //
-                                .map(output -> { //
-                                    TaCoKitNodeConnector outputConnector = null;
-                                    try {
-                                        outputConnector = TaCoKitNodeConnector.newFlow(node, output);
-                                        TaCoKitNodeConnector existingConnector = connectorMap.get(outputConnector.getName());
-                                        if (existingConnector != null) {
-                                            outputConnector = existingConnector;
-                                            int maxOutput = outputConnector.getMaxLinkOutput();
-                                            if (maxOutput < 0) {
-                                                maxOutput = 0;
-                                            }
-                                            outputConnector.setMaxLinkOutput(maxOutput + 1);
-                                            return null;
-                                        } else {
-                                            outputConnector.setMaxLinkInput(0);
-                                            outputConnector.setMaxLinkOutput(1);
-                                            outputConnector.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(),
-                                                    FLOW_REF.getDefaultLineStyle());
-                                            outputConnector.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(),
-                                                    FLOW_MERGE.getDefaultLineStyle());
-                                            existingTypes.add(getType(output));
-                                            connectorMap.put(outputConnector.getName(), outputConnector);
-                                        }
-                                        return outputConnector;
-                                    } finally {
-                                        outputConnector.setHasOutput(true);
+                        .getOutputFlows()
+                        .stream() //
+                        .filter(output -> FLOW_MAIN.equals(getType(output))) //
+                        .map(output -> { //
+                            TaCoKitNodeConnector outputConnector = null;
+                            try {
+                                outputConnector = TaCoKitNodeConnector.newFlow(node, output);
+                                TaCoKitNodeConnector existingConnector = connectorMap.get(outputConnector.getName());
+                                if (existingConnector != null) {
+                                    outputConnector = existingConnector;
+                                    int maxOutput = outputConnector.getMaxLinkOutput();
+                                    if (maxOutput < 0) {
+                                        maxOutput = 0;
                                     }
-                                }))
-                .filter(c -> c != null)
+                                    outputConnector.setMaxLinkOutput(maxOutput + 1);
+                                    return null;
+                                } else {
+                                    outputConnector.setMaxLinkInput(0);
+                                    outputConnector.setMaxLinkOutput(1);
+                                    outputConnector.addConnectionProperty(FLOW_REF, FLOW_REF.getRGB(),
+                                            FLOW_REF.getDefaultLineStyle());
+                                    outputConnector.addConnectionProperty(FLOW_MERGE, FLOW_MERGE.getRGB(),
+                                            FLOW_MERGE.getDefaultLineStyle());
+                                    existingTypes.add(getType(output));
+                                    connectorMap.put(outputConnector.getName(), outputConnector);
+                                }
+                                return outputConnector;
+                            } finally {
+                                if (outputConnector != null) {
+                                    outputConnector.setHasOutput(true);
+                                }
+                            }
+                        }))
+                .filter(Objects::nonNull)
                 .collect(toList());
 
         connectors.addAll(generatedConnectors);
-
         return connectors;
     }
 

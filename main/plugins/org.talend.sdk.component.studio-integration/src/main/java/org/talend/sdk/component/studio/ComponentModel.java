@@ -106,6 +106,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
 
     private Boolean useLookup = null;
 
+    private boolean hasConditionalOutput = false;
+
     private ETaCoKitComponentType tacokitComponentType;
 
     public ComponentModel(final ComponentIndex component, final ComponentDetail detail, final ImageDescriptor image32,
@@ -641,6 +643,11 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
             targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
         }
+    }
+
+    @Override
+    public boolean hasConditionalOutputs() {
+        return detail.getOutputFlows().size() > 1;
     }
 
     public List<ActionReference> getDiscoverSchemaActions() {
