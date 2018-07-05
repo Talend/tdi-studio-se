@@ -20,24 +20,42 @@ import java.util.Map;
 
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.model.parameter.SuggestionValues;
+import org.talend.sdk.component.studio.ui.composite.controller.TaCoKitValueSelectionController;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
+/**
+ * It should be Thread-safe as it is used in a Job launched by {@link TaCoKitValueSelectionController}
+ */
 public final class SuggestionsAction extends Action {
+    
+    private final V1Action actionService = Lookups.client().v1().action();
     
     /**
      * Denotes whetere parameters were changed since last callback
      */
     private boolean parametersChanged = true;
+    
+    /**
+     * Cached server response
+     */
+    private SuggestionValues cachedValue;
 
     public SuggestionsAction(String actionName, String family) {
         super(actionName, family, Action.Type.SUGGESTIONS);
     }
     
-    public SuggestionValues callSuggestions() {
-        final V1Action action = Lookups.client().v1().action();
-        final SuggestionValues values = action.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
+    public synchronized SuggestionValues callSuggestions() {
         parametersChanged = false;
-        return values;
+        if (cachedValue == null || parametersChanged) {
+            final SuggestionValues values = actionService.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
+            if (values.isCacheable()) {
+                cachedValue = values;
+                return cachedValue.clone();
+            }
+            return values;
+        } else {
+            return cachedValue.clone();
+        }
     }
     
     @Override
@@ -55,13 +73,9 @@ public final class SuggestionsAction extends Action {
      * Extends {@link Action#setParameterValue(String, String)} to set {@link #parametersChanged} flag to true
      */
     @Override
-    public void setParameterValue(final String parameterName, final String parameterValue) {
+    public synchronized void setParameterValue(final String parameterName, final String parameterValue) {
         super.setParameterValue(parameterName, parameterValue);
         parametersChanged = true;
-    }
-    
-    public boolean hasChangedParameters() {
-        return parametersChanged;
     }
 
 }
