@@ -375,7 +375,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	
 
 	
-	String gploadCtrlFile = "\"gp_ctrl.txt\"";
+	String gploadCtrlFile = "\"gp_ctrl_" + cid + ".txt\"";
 	if (useExistingCtrlFile) {
 		gploadCtrlFile = ctrlFile;
 	} else {
