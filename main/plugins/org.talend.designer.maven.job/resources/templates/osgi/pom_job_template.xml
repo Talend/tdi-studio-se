@@ -78,7 +78,7 @@
 						</goals>
 						<configuration>
 							<file>${basedir}/src/main/resources/feature/feature.xml</file>
-							<groupId>org.example.talend_dev.job</groupId>
+							<groupId>${project.groupId}</groupId>
 							<artifactId>${talend.job.name}-feature</artifactId>
 							<version>${project.version}</version>
 							<classifier>features</classifier>
