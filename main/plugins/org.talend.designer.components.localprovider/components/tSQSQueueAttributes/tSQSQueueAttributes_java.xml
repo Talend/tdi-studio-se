@@ -176,10 +176,10 @@
 				MVN="mvn:org.talend.libraries/commons-logging-1.1.1/6.0.0"
 				UrlPath="platform:/base/plugins/org.apache.commons.logging_1.1.1.v201101211721.jar"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" BundleID="" />
-			<IMPORT NAME="httpcore-4.4.3" MODULE="httpcore-4.4.3.jar"
-				MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"
+			<IMPORT NAME="httpcore-4.4.9" MODULE="httpcore-4.4.9.jar"
+				MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-			<IMPORT NAME="httpclient-4.5.1" MODULE="httpclient-4.5.1.jar"
+			<IMPORT NAME="httpclient-4.5.5" MODULE="httpclient-4.5.5.jar"
 				MVN="mvn:org.apache.httpcomponents/httpclient/4.5.1"
 				REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 			<IMPORT NAME="commons-codec-1.6.jar" MODULE="commons-codec-1.6.jar"

@@ -2,6 +2,7 @@ package org.talend.repository.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -62,6 +63,8 @@ public class BuildJobHandlerTest {
 
     private ProcessItem jobWithJobletItem;
 
+    private ProcessItem jobWithTestcaseItem;
+
     private ProcessItem childJobItem;
 
     private Item jobletItem;
@@ -83,6 +86,8 @@ public class BuildJobHandlerTest {
     private static final String JOB_WITH_CHILDREN_ID = "_HGAFAD7OEeiNfpYj4K_XrA";
 
     private static final String JOB_WITH_JOBLET_ID = "_FKbJID7OEeiNfpYj4K_XrA";
+
+    private static final String JOB_WITH_TESTCASE_ID = "_YmcxoHniEeiA8rKAx4YxMw";
 
     private static final String JOB_CHILD_ID = "_JJsbED7OEeiNfpYj4K_XrA";
 
@@ -118,6 +123,7 @@ public class BuildJobHandlerTest {
         jobWithTdmItem = (ProcessItem) getItemById(JOB_WITH_TDM_ID);
         jobWithChildrenItem = (ProcessItem) getItemById(JOB_WITH_CHILDREN_ID);
         jobWithJobletItem = (ProcessItem) getItemById(JOB_WITH_JOBLET_ID);
+        jobWithTestcaseItem = (ProcessItem) getItemById(JOB_WITH_TESTCASE_ID);
         childJobItem = (ProcessItem) getItemById(JOB_CHILD_ID);
         jobletItem = getItemById(JOBLET_ID);
 
@@ -126,6 +132,7 @@ public class BuildJobHandlerTest {
         testItems.add(jobWithTdmItem);
         testItems.add(jobWithChildrenItem);
         testItems.add(jobWithJobletItem);
+        testItems.add(jobWithTestcaseItem);
         testItems.add(childJobItem);
         testItems.add(jobletItem);
 
@@ -168,6 +175,15 @@ public class BuildJobHandlerTest {
         BuildJobManager.getInstance().buildJob(destinationPath, jobWithJobletItem, "0.1", "Default", exportChoiceMap,
                 JobExportType.POJO, new NullProgressMonitor());
         validateBuildResult(jobWithJobletItem, destinationPath);
+    }
+
+    @Test
+    public void testBuildJobWithTestcase() throws Exception {
+        String destinationPath = getDestinationPath(jobWithTestcaseItem);
+        destinationPaths.add(destinationPath);
+        BuildJobManager.getInstance().buildJob(destinationPath, jobWithTestcaseItem, "0.1", "Default", exportChoiceMap,
+                JobExportType.POJO, new NullProgressMonitor());
+        validateBuildResult(jobWithTestcaseItem, destinationPath);
     }
 
     private Map<ExportChoice, Object> initExportChoice() {
@@ -233,6 +249,14 @@ public class BuildJobHandlerTest {
                 String dependencyFromJoblet = "commons-beanutils-1.9.2.jar";
                 ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromJoblet);
                 assertNotNull("No joblet dependency in lib folder", dependencyEntry);
+            }
+            if (jobItem == jobWithTestcaseItem) {
+                String dependencyFromTestcase = "c3p0-0.9.1.2.jar";
+                ZipEntry dependencyEntry = zip.getEntry("lib/" + dependencyFromTestcase);
+                assertNull("Should not have testcase dependency in lib folder", dependencyEntry);
+                String dependencyFromJobAndTestcase = "commons-io-2.4.jar";
+                dependencyEntry = zip.getEntry("lib/" + dependencyFromJobAndTestcase);
+                assertNotNull("No job dependency in lib folder", dependencyEntry);
             }
 
             // log4j

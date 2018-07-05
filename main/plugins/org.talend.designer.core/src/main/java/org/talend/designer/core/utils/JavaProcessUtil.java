@@ -161,7 +161,8 @@ public class JavaProcessUtil {
             }
         }
 
-        if (ProcessUtils.isTestContainer(process)) {// if it is a test container, add junit jars.
+        boolean isTestcaseProcess = ProcessUtils.isTestContainer(process);
+        if (isTestcaseProcess) {// if it is a test container, add junit jars.
             addJunitNeededModules(modulesNeeded);
         }
 
@@ -183,7 +184,9 @@ public class JavaProcessUtil {
             if (nodeNeededModules != null) {
                 modulesNeeded.addAll(nodeNeededModules);
                 if (node.getComponent().getName().equals("tLibraryLoad")) { //$NON-NLS-1$
-                    LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
+                    if (!isTestcaseProcess) {
+                        LastGenerationInfo.getInstance().getHighPriorityModuleNeeded().addAll(nodeNeededModules);
+                    }
                 }
             }
         }

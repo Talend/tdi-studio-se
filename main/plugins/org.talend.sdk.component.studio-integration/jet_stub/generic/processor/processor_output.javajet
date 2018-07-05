@@ -30,19 +30,6 @@
     "
 %>
 
-    outputHandler_<%=cid%>.reset();
-    processor_<%=cid%>.onElement(inputs_<%=cid%>, outputs_<%=cid%>);
-<%
-    // once processed update all outputs
-    for (final IConnection connection : node.getOutgoingSortedConnections()) {
-        if (connection.getLineStyle() != EConnectionType.FLOW_MAIN) {
-            continue;
-        }
-%>
-        <%= connection.getName() %> = outputHandler_<%=cid%>.getValue("<%= connection.getConnectorName() %>", <%= connection.getName() %>.getClass());
-<%
-    }
-%>
-
-    nbLineInput_<%=cid%>++;
-    globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
+processor_<%=cid%>.onElement(inputs_<%=cid%>, outputs_<%=cid%>);
+nbLineInput_<%=cid%>++;
+globalMap.put("<%=cid %>_NB_LINE", nbLineInput_<%=cid%>);
