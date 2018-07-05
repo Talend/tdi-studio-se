@@ -48,9 +48,9 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 %>
 								<%=conn.getName() %>.<%=column.getLabel() %>
 <%				
-					} else if(javaType == JavaTypesManager.DOUBLE) {
+					} else if(javaType == JavaTypesManager.DOUBLE || javaType == JavaTypesManager.FLOAT) {
 %>
-								String.format("%1.<%=column.getPrecision() %>f",<%=conn.getName() %>.<%=column.getLabel() %>)
+								FormatterUtils.formatNumber(<%=conn.getName() %>.<%=column.getLabel() %>)
 <%				
 					} else {
 %>

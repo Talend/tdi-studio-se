@@ -239,11 +239,11 @@
 		<IMPORT NAME="jackson-annotations-2.9.4.jar" MODULE="jackson-annotations-2.9.4.jar"
 			MVN="mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.4"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpcore-4.4.3.jar" MODULE="httpcore-4.4.3.jar"
-			MVN="mvn:org.talend.libraries/httpcore-4.4.3/6.3.0"
+		<IMPORT NAME="httpcore-4.4.9.jar" MODULE="httpcore-4.4.9.jar"
+			MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
-		<IMPORT NAME="httpclient-4.5.1.jar" MODULE="httpclient-4.5.1.jar"
-			MVN="mvn:org.talend.libraries/httpclient-4.5.1/6.3.0"
+		<IMPORT NAME="httpclient-4.5.5.jar" MODULE="httpclient-4.5.5.jar"
+			MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5"
 			REQUIRED_IF="USE_EXISTING_CONNECTION == 'false'" />
 		<IMPORT NAME="joda-time-2.8.1.jar" MODULE="joda-time-2.8.1.jar"
 			MVN="mvn:org.talend.libraries/joda-time-2.8.1/6.0.0"
