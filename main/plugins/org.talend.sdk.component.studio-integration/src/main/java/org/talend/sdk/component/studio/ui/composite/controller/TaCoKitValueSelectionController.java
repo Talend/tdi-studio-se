@@ -15,7 +15,7 @@
  */
 package org.talend.sdk.component.studio.ui.composite.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -53,19 +53,19 @@ public class TaCoKitValueSelectionController extends AbstractValueSelectionContr
                     @Override
                     protected IStatus run(IProgressMonitor monitor) {
                         monitor.subTask(Messages.getString("suggestion.job.subtask.retrieveValues"));
-                        final List<String> suggestions = valueSelectionParameter.getSuggestionValues();
+                        final Map<String, String> possibleValues = valueSelectionParameter.getSuggestionValues();
                         if (monitor.isCanceled()) {
                             return Status.CANCEL_STATUS;
                         }
                         monitor.subTask(Messages.getString("suggestion.job.subtask.openDialog"));
                         Display.getDefault().asyncExec(new Runnable() {
                             public void run() {
-                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), suggestions);
+                                final ValueSelectionDialog dialog = new ValueSelectionDialog(composite.getShell(), possibleValues);
                                 if (dialog.open() == IDialogConstants.OK_ID) {
-                                    final String result = dialog.getResult();
+                                    final String selected = dialog.getSelectedValue();
                                     Text text = (Text) hashCurControls.get(valueSelectionParameter.getName());
-                                    text.setText(result);
-                                    PropertyChangeCommand command = new PropertyChangeCommand(elem, valueSelectionParameter.getName(), result);
+                                    text.setText(selected);
+                                    PropertyChangeCommand command = new PropertyChangeCommand(elem, valueSelectionParameter.getName(), selected);
                                     executeCommand(command);
                                 }
                             }

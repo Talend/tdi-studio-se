@@ -15,7 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.sdk.component.studio.Lookups;
@@ -44,27 +44,30 @@ public final class SuggestionsAction extends Action {
         super(actionName, family, Action.Type.SUGGESTIONS);
     }
     
-    public synchronized SuggestionValues callSuggestions() {
-        parametersChanged = false;
+    private synchronized SuggestionValues callSuggestions() {
+        SuggestionValues result;
         if (cachedValue == null || parametersChanged) {
             final SuggestionValues values = actionService.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
             if (values.isCacheable()) {
-                cachedValue = values;
-                return cachedValue.clone();
+                cachedValue = values.clone();
             }
-            return values;
+            result = values;
         } else {
-            return cachedValue.clone();
+            result = cachedValue.clone();
         }
+        parametersChanged = false;
+        return result;
     }
     
+    /**
+     * Retrieves suggestion values and return a map of them, where label is a key and id is value
+     */
     @Override
     public Map<String, String> callback() {
         final SuggestionValues response = callSuggestions();
-        final Map<String, String> result = new HashMap<>();
-        result.put("cacheble", String.valueOf(response.isCacheable()));
+        final Map<String, String> result = new LinkedHashMap<>();
         response.getItems().forEach(item -> {
-            result.put(item.getId(), item.getLabel());
+            result.put(item.getLabel(), item.getId());
         });
         return result;
     }
