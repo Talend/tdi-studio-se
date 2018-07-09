@@ -709,23 +709,15 @@
        <DEFAULT>""</DEFAULT>
     </PARAMETER>
     <PARAMETER
-      NAME="WAREHOUSE"
+      NAME="ROLE"
       FIELD="TEXT"
-      REQUIRED="true"
+      REQUIRED="false"
       NUM_ROW="84"
       SHOW_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')"
     >
        <DEFAULT>""</DEFAULT>
     </PARAMETER>
-    <PARAMETER
-      NAME="ROLE"
-      FIELD="TEXT"
-      REQUIRED="false"
-      NUM_ROW="86"
-      SHOW_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')"
-    >
-       <DEFAULT>""</DEFAULT>
-    </PARAMETER>
+    
     <!-- Snowflake configuration end -->
 
     <PARAMETER
@@ -792,6 +784,17 @@
 
   </PARAMETERS>
   <ADVANCED_PARAMETERS>
+  
+    <PARAMETER
+      NAME="ENFORCE_DELIMITED_IDENTIFIERS"
+      FIELD="CHECK"
+      REQUIRED="true"
+      NUM_ROW="30"
+      SHOW_IF="(DBTYPE=='SNOWFLAKE')"
+    >
+       <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+  
   	<PARAMETER NAME="PROPERTIES" FIELD="TEXT" NUM_ROW="40" REPOSITORY_VALUE="PROPERTIES_STRING"
   		SHOW_IF="((DBTYPE=='AS400')OR (DBTYPE=='MSSQL')) and (USE_EXISTING_CONNECTION == 'false')">
 		<DEFAULT>"prompt=false"</DEFAULT>

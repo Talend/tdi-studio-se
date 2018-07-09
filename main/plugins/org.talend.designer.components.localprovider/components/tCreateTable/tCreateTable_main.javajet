@@ -1899,14 +1899,15 @@ class SnowflaketManager extends Manager {
     private String dbSchema;
     private boolean useExistingConnection;
     private String connection;
-    public SnowflaketManager(String account, String warehouse,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid) {
-        super(dbName, tableName, userName ,cid);
+    boolean enforceDelimitedIdentifiers;
+    public SnowflaketManager(String account,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid, boolean enforceDelimitedIdentifiers) {
+        super(dbName, tableName, userName , cid);
         this.account=account;
-        this.warehouse=warehouse;
         this.role=role;
         this.dbSchema=dbSchema;
         this.connection=connection;
         this.useExistingConnection=useExistingConnection;
+        this.enforceDelimitedIdentifiers=enforceDelimitedIdentifiers;
     }
     protected String getDriver() {
         return "net.snowflake.client.jdbc.SnowflakeDriver";
@@ -1966,13 +1967,19 @@ class SnowflaketManager extends Manager {
         return "snowflake_id";
     }
     protected String getLProtectedChar() {
-        return "";
+        return enforceDelimitedIdentifiers ? "\\\"" : "";
     }
     protected String getRProtectedChar() {
-        return "";
+        return enforceDelimitedIdentifiers ? "\\\""  :"";
     }
     public String closeConnection() {
-        return "";
+        StringBuilder javaCode = new StringBuilder();
+        if(useExistingConnection) {
+            javaCode.append("");
+        } else {
+            javaCode.append(super.closeConnection());            
+        }
+        return javaCode.toString();
     } 
 }
 
@@ -2207,14 +2214,14 @@ class ManagerFactory {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
             String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
-            String warehouse = ElementParameterParser.getValue(node, "__WAREHOUSE__");
             String account = ElementParameterParser.getValue(node, "__ACCOUNT__");
             String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
             String userName = ElementParameterParser.getValue(node, "__USER__");
             String role = ElementParameterParser.getValue(node, "__ROLE__");
+            boolean enforceDelimitedIdentifiers = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DELIMITED_IDENTIFIERS__"));
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
-            manager = new SnowflaketManager(account, warehouse,dbName,dbSchema, userName,role,tableName, connection, useExistingConnection, cid);
+            manager = new SnowflaketManager(account,dbName,dbSchema, userName,role,tableName, connection, useExistingConnection, cid, enforceDelimitedIdentifiers);
         }
         return manager;
     }
@@ -2385,6 +2392,15 @@ if(columnList != null && columnList.size() > 0) {
 					}
 
 <%
+				} else if ("SNOWFLAKE".equalsIgnoreCase(dbType)) {
+				    boolean enforceDelimitedIdentifiers = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DELIMITED_IDENTIFIERS__"));
+%>
+	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+	            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(conn_<%=cid%>.getCatalog(), conn_<%=cid%>.getSchema(),<%=tableName%><%=enforceDelimitedIdentifiers?"":".toUpperCase()"%>, new String[] { "TABLE" });
+	            if(rsTable_<%=cid%>.next()) {
+	                whetherExist_<%=cid%> = true;
+	            }     
+            <%
             } else {
 %>
 	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
