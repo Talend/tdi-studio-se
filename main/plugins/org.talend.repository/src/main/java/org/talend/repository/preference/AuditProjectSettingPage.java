@@ -475,8 +475,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
 
     private void showGenerationInformation(boolean result) {
         if (result) {
+            String showPath = generatePath.substring(0, generatePath.length() - 1);
             MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
-                    Messages.getString("AuditProjectSettingPage.generate.successful", generatePath)); //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.generate.successful", showPath)); //$NON-NLS-1$
         } else {
             MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
                     Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$
