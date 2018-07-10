@@ -466,7 +466,8 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     }
 
     private String getCurrentDBVersion() {
-        SupportDBUrlType urlType = SupportDBUrlStore.getInstance().getDBUrlType(dbTypeCombo.getText());
+        String dbType = SupportDBUrlStore.getInstance().getDBType(dbTypeCombo.getText());
+        SupportDBUrlType urlType = SupportDBUrlStore.getInstance().getDBUrlType(dbType);
         if (urlType != null) {
             return SupportDBVersions.getVersionValue(urlType, dbVersionCombo.getText());
         }
