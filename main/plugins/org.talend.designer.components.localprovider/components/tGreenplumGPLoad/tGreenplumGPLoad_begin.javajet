@@ -373,19 +373,20 @@ skeleton="../templates/db_output_bulk.skeleton"
 	// and write the GPLOAD YAML configuration file.
 	//---------------------------------------------------------------
 	
-
-	
-	String gploadCtrlFile = "\"gp_ctrl_" + cid + ".txt\"";
 	if (useExistingCtrlFile) {
-		gploadCtrlFile = ctrlFile;
+		%>
+		String gploadCtrlFile = <%=ctrlFile%>;
+		<%
 	} else {
 		%>
+		String gploadCtrlFile = "gp_ctrl_" + "<%=cid%>" + pid + Thread.currentThread().getId() + ".txt";
+
 		String delim_<%=cid%> = <%=fieldSeparator%>;
 		String escape_<%=cid%> = <%=escapeChar%>;
 		String quote_<%=cid%> = <%=quoteChar%>;
 		delim_<%=cid%> = "\t".equals(delim_<%=cid%>) ? "\\t" : delim_<%=cid%>;
 		
-		java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(<%=gploadCtrlFile%>, false), true);
+		java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(gploadCtrlFile, false), true);
 		gpctrl_<%=cid%>.println("---");
 		gpctrl_<%=cid%>.println("VERSION: 1.0.0.1");
 		gpctrl_<%=cid%>.println("DATABASE: " + <%=dbname%>);
@@ -523,8 +524,6 @@ skeleton="../templates/db_output_bulk.skeleton"
 
 	
 	List<String> parametersList = new ArrayList();
-	parametersList.add("\"-f\"");
-	parametersList.add(gploadCtrlFile);
 	parametersList.add("\"-h\"");
 	parametersList.add(dbhost);
 	parametersList.add("\"-p\"");
@@ -574,6 +573,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 							<%=pythonPathForCMD%>,
 						<%}%>
 						<%=gpLoadPathForCMD%>
+						, "-f", gploadCtrlFile
 				<%
 				for (int i=0; i < parametersList.size(); i++) {
 						%>,<%=parametersList.get(i)%><%
