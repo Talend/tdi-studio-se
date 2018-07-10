@@ -68,7 +68,7 @@ if(useExistingConnection) {
     }
 }
 String copySchema = new String();
-if (useSchema && !columnList.isEmpty()) {
+if (useSchema && columnList != null && !columnList.isEmpty()) {
     copySchema = " (";
     for(int i = 0; i < columnList.size() - 1; i++){
         copySchema += columnList.get(i).getOriginalDbColumnName() + ", ";
