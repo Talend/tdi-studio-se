@@ -15,7 +15,10 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.talend.sdk.component.studio.Lookups;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 
@@ -34,8 +37,8 @@ public class Action {
     private final String family;
 
     private final String type;
-
-    protected final ActionParameters parameters = new ActionParameters();
+    
+    private final Map<String, ActionParameter> parameters = new HashMap<>();
     
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
@@ -44,29 +47,45 @@ public class Action {
     }
 
     public void addParameter(final ActionParameter parameter) {
-        parameters.add(parameter);
+        Objects.requireNonNull(parameter, "parameter should not be null");
+        parameters.put(parameter.getName(), parameter);
+    }
+    
+    public void setParameterValue(final String parameterName, final String parameterValue) {
+        if (!parameters.containsKey(parameterName)) {
+            throw new IllegalArgumentException("Non-existent parameter: " + parameterName);
+        }
+        parameters.get(parameterName).setValue(parameterValue);
     }
 
     @SuppressWarnings("unchecked")
     public Map<String, String> callback() {
         final V1Action action = Lookups.client().v1().action();
-        return action.execute(Map.class, family, type, actionName, parameters.payload());
+        return action.execute(Map.class, family, type, actionName, payload());
     }
 
-    public String getActionName() {
+    protected final String getActionName() {
         return this.actionName;
     }
 
-    public String getFamily() {
+    protected final String getFamily() {
         return this.family;
     }
 
-    public String getType() {
+    protected final String getType() {
         return this.type;
     }
-
-    public ActionParameters getParameters() {
-        return this.parameters;
+    
+    protected final boolean areParametersSet() {
+        return parameters.values().stream().allMatch(ActionParameter::isHasDirectValue);
+    }
+    
+    protected final Map<String, String> payload() {
+        final Map<String, String> payload = new HashMap<>();
+        parameters.values().forEach(actionParameter -> {
+            payload.put(actionParameter.getParameter(), actionParameter.getValue());
+        });
+        return payload;
     }
     
     public enum Type {

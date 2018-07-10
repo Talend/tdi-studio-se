@@ -29,6 +29,7 @@
 		<talend.job.context>@JobContext@</talend.job.context>
 		<talend.job.id>@JobId@</talend.job.id>
 		<talend.job.type>@JobType@</talend.job.type>
+		<talend.job.folder>@JobFolder@</talend.job.folder>
 		<talend.job.framework>@Framework@</talend.job.framework>
 		<talend.job.stat>@JobStat@</talend.job.stat>
 		<talend.job.applyContextToChildren>@JobApplyContextToChildren@</talend.job.applyContextToChildren>

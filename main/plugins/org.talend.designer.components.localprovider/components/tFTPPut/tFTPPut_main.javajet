@@ -164,7 +164,7 @@ try{
             }
 
             //do rename
-            if(map<%=cid %>.get(key<%=cid %>) != "" && key<%=cid %> != map<%=cid %>.get(key<%=cid %>)){
+            if (!((map<%=cid %>.get(key<%=cid %>) == null) || map<%=cid %>.get(key<%=cid %>).isEmpty() || key<%=cid %>.equals(map<%=cid %>.get(key<%=cid %>)))){
                 <%
                 if(("overwrite").equals(sftpoverwrite) || ("resume").equals(sftpoverwrite)){
                 %>
@@ -402,7 +402,7 @@ try{
             }
 
             //do rename
-            if(map<%=cid %>.get(key<%=cid %>) != "" && key<%=cid %> != map<%=cid %>.get(key<%=cid %>)){
+            if (!((map<%=cid %>.get(key<%=cid %>) == null) || map<%=cid %>.get(key<%=cid %>).isEmpty() || key<%=cid %>.equals(map<%=cid %>.get(key<%=cid %>)))){
                 try{
                     if(needRename_<%=cid%>){
                         ftp_<%=cid%>.rename(key<%=cid %>, map<%=cid %>.get(key<%=cid %>));

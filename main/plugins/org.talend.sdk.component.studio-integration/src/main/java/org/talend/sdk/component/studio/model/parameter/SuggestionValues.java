@@ -15,13 +15,14 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Response from Suggestions action server request. 
  * This class is used to store deserialized response value from json
  */
-public class SuggestionValues {
+public class SuggestionValues implements Cloneable {
 
     /**
      * Does the client can cache the values after the first request or should
@@ -59,7 +60,20 @@ public class SuggestionValues {
         return "SuggestionValues(cacheable=" + this.isCacheable() + ", items=" + this.getItems() + ")";
     }
     
-    public static class Item {
+    @Override
+    public SuggestionValues clone() {
+        try {
+            final SuggestionValues result = (SuggestionValues) super.clone();
+            final Collection<Item> originalItems = result.items;
+            result.items = new ArrayList<>(originalItems.size());
+            originalItems.forEach(item -> result.items.add(item.clone()));
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+    
+    public static class Item implements Cloneable {
 
         private String id;
 
@@ -88,6 +102,15 @@ public class SuggestionValues {
         @Override
         public String toString() {
             return "Item(id=" + this.getId() + ", label=" + this.getLabel() + ")";
+        }
+        
+        @Override
+        public Item clone() {
+            try {
+                return (Item) super.clone();
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError();
+            }
         }
     }
 }

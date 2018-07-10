@@ -3076,6 +3076,14 @@
               name="AddTypeNameInConnection"
               version="7.0.2">
         </projecttask>
+        <projecttask
+              beforeLogon="false"
+              breaks="7.1.0"
+              class="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
+              id="org.talend.repository.model.migration.AddDbMappingTTeradataFastLoadMigrationTask"
+              name="AddDbMappingTTeradataFastLoadMigrationTask"
+              version="7.1.1">
+        </projecttask>
    </extension>
 
    <extension

@@ -15,9 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.parameter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 import org.talend.core.model.process.IElement;
 import org.talend.sdk.component.studio.model.action.SuggestionsAction;
@@ -29,27 +27,13 @@ public class ValueSelectionParameter extends TaCoKitElementParameter {
     
     private final SuggestionsAction action;
     
-    private List<String> cachedSuggestions;
-
     public ValueSelectionParameter(IElement element, final SuggestionsAction action) {
         super(element);
         this.action = action;
     }
     
-    public List<String> getSuggestionValues() {
-        if (cachedSuggestions == null) {
-            SuggestionValues result = action.callSuggestions();
-            final List<String> suggestions = new ArrayList<>();
-            result.getItems().forEach(item -> {
-                suggestions.add(item.getLabel());
-            });
-            if (result.isCacheable()) {
-                cachedSuggestions = suggestions;
-            }
-            return Collections.unmodifiableList(suggestions);
-        } else {
-            return Collections.unmodifiableList(cachedSuggestions);
-        }
+    public Map<String, String> getSuggestionValues() {
+        return action.callback();
     }
 
 }

@@ -372,6 +372,7 @@ public class MainComposite extends AbstractTabComposite {
             jobFrameworkCCombo.setLayoutData(data);
             jobFrameworkCCombo.setItems(ConvertJobsUtil.getFrameworkItemsByJobType(jobType,
                     (obj.getProperty().getItem() instanceof JobletProcessItem)));
+            framework = ConvertJobsUtil.convertFrameworkByJobType(jobType, framework, true);
             jobFrameworkCCombo.setText(framework != null ? framework : ""); //$NON-NLS-1$
             frameworkValue = jobFrameworkCCombo.getText();
             jobFrameworkCCombo.setEnabled(allowEnableControl);
@@ -588,7 +589,8 @@ public class MainComposite extends AbstractTabComposite {
                         }
                         String originalName = nameText.getText();
                         String originalJobType = jobTypeCCombo.getText();
-                        String originalFramework = jobFrameworkCCombo.getText();
+                        String originalFramework = ConvertJobsUtil.convertFrameworkByJobType(originalJobType,
+                                jobFrameworkCCombo.getText(), false);
                         String originalversion = versionText.getText();
                         String originalPurpose = purposeText.getText();
                         String originalStatus = statusText.getText();

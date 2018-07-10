@@ -128,7 +128,7 @@ if(columnList!=null){
         }
             insertValueSQL.append(":").append(columnName);
         if("id_Date".equals(talendType)){
-            insertValueSQL.append(" (Date, Format '").append(column.getPattern().replace("\"","")).append("')");
+            insertValueSQL.append(" (Format '").append(column.getPattern().replace("\"","")).append("')");
         }
     }
 }

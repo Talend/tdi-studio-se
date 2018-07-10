@@ -16,8 +16,9 @@
 package org.talend.sdk.component.studio.ui.composite.controller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.IBaseLabelProvider;
@@ -42,16 +43,16 @@ public class ValueSelectionDialog extends Dialog {
     
     private ElementsSelectionComposite<String> selectionComposite;
     
-    private final List<String> possibleValues = new ArrayList<>();
+    private final Map<String, String> values = new LinkedHashMap<>();
     
     private LabelledText customValueText;
     
-    private String result;
-
-    public ValueSelectionDialog(final Shell parentShell, final List<String> values) {
+    private String selectedValue;
+    
+    public ValueSelectionDialog(final Shell parentShell, final Map<String, String> possibleValues) {
         super(parentShell);
-        if (values != null) {
-            possibleValues.addAll(values);
+        if (possibleValues != null) {
+            values.putAll(possibleValues);
         }
         setShellStyle(getShellStyle() | SWT.RESIZE | SWT.MIN | SWT.APPLICATION_MODAL);
     }
@@ -88,7 +89,7 @@ public class ValueSelectionDialog extends Dialog {
             };
         }.setMultipleSelection(false).create();
         selectionComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-        selectionComposite.setViewerData(possibleValues);
+        selectionComposite.setViewerData(getLabels());
 
         Composite customValueComposite = new Composite(composite, SWT.NONE);
         customValueComposite.setLayout(new GridLayout());
@@ -107,6 +108,12 @@ public class ValueSelectionDialog extends Dialog {
         return dialogArea;
     }
     
+    private List<String> getLabels() {
+        final List<String> labels = new ArrayList<>(values.size());
+        labels.addAll(values.keySet());
+        return labels;
+    }
+    
     @Override
     protected void initializeBounds() {
         super.initializeBounds();
@@ -117,19 +124,20 @@ public class ValueSelectionDialog extends Dialog {
     
     @Override
     protected void okPressed() {
-        result = getSelectedValue();
+        selectedValue = computedSelectedValue();
         super.okPressed();
     }
     
-    public String getResult() {
-        return this.result;
+    public String getSelectedValue() {
+        return this.selectedValue;
     }
     
-    private String getSelectedValue() {
+    private String computedSelectedValue() {
         if (selectionComposite.isEnabled()) {
             List<String> selectedElements = selectionComposite.getSelectedElements();
             if (selectedElements.size() > 0) {
-                return selectedElements.get(0);
+                final String selectedLabel = selectedElements.get(0);
+                return values.get(selectedLabel);
             } else {
                 return ""; //$NON-NLS-1$
             }
