@@ -67,7 +67,7 @@ if(useExistingConnection) {
         db_version = ElementParameterParser.getValue(con_node,"__DB_VERSION__");
     }
 }
-String copySchema = new String();
+String copySchema = null;
 if (useSchema && columnList != null && !columnList.isEmpty()) {
     copySchema = " (";
     for(int i = 0; i < columnList.size() - 1; i++){
