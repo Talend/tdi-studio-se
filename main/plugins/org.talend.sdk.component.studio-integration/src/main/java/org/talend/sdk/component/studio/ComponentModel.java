@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -366,7 +367,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             synchronized (this) {
                 if (modulesNeeded == null) {
                     final ComponentService.Dependencies dependencies = getDependencies();
-                    modulesNeeded = new HashSet<>(20);
+                    modulesNeeded = new LinkedHashSet<>(20);
                     modulesNeeded.addAll(dependencies
                             .getCommon()
                             .stream()
