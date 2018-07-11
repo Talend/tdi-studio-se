@@ -2816,15 +2816,6 @@ public class Node extends Element implements IGraphicalNode {
                 }
             }
 
-            if (param.isRequired(getElementParameters()) && param.isShow(emptyParamList)) {
-                if ("tRunJob".equalsIgnoreCase(component.getName()) && "CONTEXT_JOB".equals(param.getName())) {
-                    if (param.getValue() == null || "".equals(param.getValue())) { //$NON-NLS-1$
-                        Problems.add(ProblemStatus.ERROR, this,
-                                Messages.getString("Node.parameterEmpty", param.getDisplayName())); //$NON-NLS-1$
-                    }
-                }
-            }
-
             if (param.isRequired() && param.isShow(getElementParameters())) {
                 EParameterFieldType fieldType = param.getFieldType();
                 String value;
