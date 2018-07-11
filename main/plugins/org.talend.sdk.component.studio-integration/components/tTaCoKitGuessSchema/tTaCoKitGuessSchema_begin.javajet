@@ -83,7 +83,7 @@ System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
 <%  } %>
 
     org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema tacokitGuessSchema =
-                            new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(out, globalMap, configuration_<%=guessSchemaCid%>,
+                            new org.talend.sdk.component.runtime.di.schema.TaCoKitGuessSchema(out, configuration_<%=guessSchemaCid%>,
                                                                                     "<%=pluginName%>",
                                                                                     "<%=guessSchemaFamily%>",
                                                                                     "<%=guessSchemaOriginalName%>",
