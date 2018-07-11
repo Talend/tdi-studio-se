@@ -373,158 +373,157 @@ skeleton="../templates/db_output_bulk.skeleton"
 	// and write the GPLOAD YAML configuration file.
 	//---------------------------------------------------------------
 	
-
-	
-	String gploadCtrlFile = "\"gp_ctrl_" + cid + ".txt\"";
 	if (useExistingCtrlFile) {
-		gploadCtrlFile = ctrlFile;
+		%>
+		String gploadCtrlFile = <%=ctrlFile%>;
+		<%
 	} else {
 		%>
+		String gploadCtrlFile = "gp_ctrl_" + "<%=cid%>" + pid + Thread.currentThread().getId() + ".txt";
+
 		String delim_<%=cid%> = <%=fieldSeparator%>;
 		String escape_<%=cid%> = <%=escapeChar%>;
 		String quote_<%=cid%> = <%=quoteChar%>;
 		delim_<%=cid%> = "\t".equals(delim_<%=cid%>) ? "\\t" : delim_<%=cid%>;
 		
-		java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(<%=gploadCtrlFile%>, false), true);
-		gpctrl_<%=cid%>.println("---");
-		gpctrl_<%=cid%>.println("VERSION: 1.0.0.1");
-		gpctrl_<%=cid%>.println("DATABASE: " + <%=dbname%>);
-		gpctrl_<%=cid%>.println("USER: " + <%=dbuser%>);
-		gpctrl_<%=cid%>.println("HOST: " + <%=dbhost%>);
-		gpctrl_<%=cid%>.println("PORT: " + <%=dbport%>);
-		gpctrl_<%=cid%>.println("GPLOAD:");
-		gpctrl_<%=cid%>.println("  INPUT:");
-		gpctrl_<%=cid%>.println("    - SOURCE:");
-		
-		<%
-		for (Map<String, String> option : options) {
-			String key = option.get("KEY");
-			String value = option.get("VALUE");
+		try (java.io.PrintWriter gpctrl_<%=cid%> = new java.io.PrintWriter(new java.io.FileOutputStream(gploadCtrlFile, false), true)){
+			gpctrl_<%=cid%>.println("---");
+			gpctrl_<%=cid%>.println("VERSION: 1.0.0.1");
+			gpctrl_<%=cid%>.println("DATABASE: " + <%=dbname%>);
+			gpctrl_<%=cid%>.println("USER: " + <%=dbuser%>);
+			gpctrl_<%=cid%>.println("HOST: " + <%=dbhost%>);
+			gpctrl_<%=cid%>.println("PORT: " + <%=dbport%>);
+			gpctrl_<%=cid%>.println("GPLOAD:");
+			gpctrl_<%=cid%>.println("  INPUT:");
+			gpctrl_<%=cid%>.println("    - SOURCE:");
 			
-			if(value != null && !("".equals(value))) {
-				if (key.equals("LOCAL_HOSTNAME")){
-					%>
-						gpctrl_<%=cid%>.println("        LOCAL_HOSTNAME:");
-						gpctrl_<%=cid%>.println("          - " + <%=value%>);
-					<%
-				}
-				if (key.equals("PORT")){
-					%>
-						gpctrl_<%=cid%>.println("        PORT: " + <%=value%>);
-					<%
-				}
-				if (key.equals("PORT_RANGE")){
-					%>
-						gpctrl_<%=cid%>.println("        PORT_RANGE: [" + <%=value%> + "]");
-					<%
-				}
-				if (key.equals("SSL")){
-					%>
-						gpctrl_<%=cid%>.println("        SSL: " + <%=value%> );
-					<%
-				}
-				if (key.equals("CERTIFICATES_PATH")){
-					%>
-						gpctrl_<%=cid%>.println("        CERTIFICATES_PATH: " + <%=value%> );
-					<%
-				}
-			}
-		}
-		%>
-		
-		gpctrl_<%=cid%>.println("        FILE:");
-		<% if (useNamedPiped) { %>
-		gpctrl_<%=cid%>.println("          - " + (new com.infobright.io.NamedPipeFactory()).getNativePipeName(<%=namedPipeName%>));
-		<% } else { %>
-		gpctrl_<%=cid%>.println("          - " + <%=dataFile%>);
-		<% } %>
-		gpctrl_<%=cid%>.println("    - DELIMITER: '" + delim_<%=cid%> + "'");
-		gpctrl_<%=cid%>.println("    - ESCAPE: '" + escape_<%=cid%> + "'");
-		
-		<%
-		for (Map<String, String> option : options) {
-			String key = option.get("KEY");
-			String value = option.get("VALUE");
-			
-			if(value != null && !("".equals(value))) {
-				if (key.equals("NULL_AS")){
-					%>
-						gpctrl_<%=cid%>.println("    - NULL_AS: '" + <%=value%> + "'");
-					<%
-				}
-				if (key.equals("FORCE_NOT_NULL")){
-					%>
-						gpctrl_<%=cid%>.println("    - FORCE_NOT_NULL: " + <%=value%>);
-					<%
-				}
-				if (key.equals("ERROR_LIMIT")){
-					%>
-						gpctrl_<%=cid%>.println("    - ERROR_LIMIT: " + <%=value%>);
-					<%
-				}
-				if (key.equals("ERROR_TABLE")){
-					%>
-						gpctrl_<%=cid%>.println("    - ERROR_TABLE: '" + <%=value%> + "'");
-					<%
-				}
-			}
-		}
-		%>
-		
-		<% if (csvOption) { %>
-		gpctrl_<%=cid%>.println("    - FORMAT: csv");
-		gpctrl_<%=cid%>.println("    - QUOTE: '" + quote_<%=cid%> + "'");
-		<%} else { %>
-		gpctrl_<%=cid%>.println("    - FORMAT: text");
-		<% } %>
-		<% if (headerRow) { %>
-		gpctrl_<%=cid%>.println("    - HEADER: true");
-		<% } %>
-		gpctrl_<%=cid%>.println("    - ENCODING: " + <%=encoding%>);
-		gpctrl_<%=cid%>.println("  OUTPUT: ");
-		gpctrl_<%=cid%>.println("    - TABLE: '" + tableName4Load_<%=cid%>+"'");
-		gpctrl_<%=cid%>.println("    - MODE: <%=dataAction.toLowerCase()%>");
-		<%
-		if ("UPDATE".equals(dataAction) || "MERGE".equals(dataAction)) {
-			%>
-			gpctrl_<%=cid%>.println("    - MATCH_COLUMNS:");
 			<%
-			for (Map<String, String> option : updateOptions) {
-				String columnName = option.get("SCHEMA_COLUMN");
-				boolean isMatchKey = option.get("MATCH_KEY").equals("true");
-				if (isMatchKey) {
-					%>
-					gpctrl_<%=cid%>.println("      - <%=columnName%>");
-					<%
+			for (Map<String, String> option : options) {
+				String key = option.get("KEY");
+				String value = option.get("VALUE");
+				
+				if(value != null && !("".equals(value))) {
+					if (key.equals("LOCAL_HOSTNAME")){
+						%>
+							gpctrl_<%=cid%>.println("        LOCAL_HOSTNAME:");
+							gpctrl_<%=cid%>.println("          - " + <%=value%>);
+						<%
+					}
+					if (key.equals("PORT")){
+						%>
+							gpctrl_<%=cid%>.println("        PORT: " + <%=value%>);
+						<%
+					}
+					if (key.equals("PORT_RANGE")){
+						%>
+							gpctrl_<%=cid%>.println("        PORT_RANGE: [" + <%=value%> + "]");
+						<%
+					}
+					if (key.equals("SSL")){
+						%>
+							gpctrl_<%=cid%>.println("        SSL: " + <%=value%> );
+						<%
+					}
+					if (key.equals("CERTIFICATES_PATH")){
+						%>
+							gpctrl_<%=cid%>.println("        CERTIFICATES_PATH: " + <%=value%> );
+						<%
+					}
 				}
 			}
 			%>
-			gpctrl_<%=cid%>.println("    - UPDATE_COLUMNS:");
+			
+			gpctrl_<%=cid%>.println("        FILE:");
+			<% if (useNamedPiped) { %>
+			gpctrl_<%=cid%>.println("          - " + (new com.infobright.io.NamedPipeFactory()).getNativePipeName(<%=namedPipeName%>));
+			<% } else { %>
+			gpctrl_<%=cid%>.println("          - " + <%=dataFile%>);
+			<% } %>
+			gpctrl_<%=cid%>.println("    - DELIMITER: '" + delim_<%=cid%> + "'");
+			gpctrl_<%=cid%>.println("    - ESCAPE: '" + escape_<%=cid%> + "'");
+			
 			<%
-			for (Map<String, String> option : updateOptions) {
-				String columnName = option.get("SCHEMA_COLUMN");
-				boolean isUpdateKey = option.get("UPDATE_KEY").equals("true");
-				if (isUpdateKey) {
-					%>
-					gpctrl_<%=cid%>.println("      - <%=columnName%>");
-					<%
+			for (Map<String, String> option : options) {
+				String key = option.get("KEY");
+				String value = option.get("VALUE");
+				
+				if(value != null && !("".equals(value))) {
+					if (key.equals("NULL_AS")){
+						%>
+							gpctrl_<%=cid%>.println("    - NULL_AS: '" + <%=value%> + "'");
+						<%
+					}
+					if (key.equals("FORCE_NOT_NULL")){
+						%>
+							gpctrl_<%=cid%>.println("    - FORCE_NOT_NULL: " + <%=value%>);
+						<%
+					}
+					if (key.equals("ERROR_LIMIT")){
+						%>
+							gpctrl_<%=cid%>.println("    - ERROR_LIMIT: " + <%=value%>);
+						<%
+					}
+					if (key.equals("ERROR_TABLE")){
+						%>
+							gpctrl_<%=cid%>.println("    - ERROR_TABLE: '" + <%=value%> + "'");
+						<%
+					}
 				}
 			}
-			if (updateCondition != null && !("".equals(updateCondition) || "\"\"".equals(updateCondition))) {
+			%>
+			
+			<% if (csvOption) { %>
+			gpctrl_<%=cid%>.println("    - FORMAT: csv");
+			gpctrl_<%=cid%>.println("    - QUOTE: '" + quote_<%=cid%> + "'");
+			<%} else { %>
+			gpctrl_<%=cid%>.println("    - FORMAT: text");
+			<% } %>
+			<% if (headerRow) { %>
+			gpctrl_<%=cid%>.println("    - HEADER: true");
+			<% } %>
+			gpctrl_<%=cid%>.println("    - ENCODING: " + <%=encoding%>);
+			gpctrl_<%=cid%>.println("  OUTPUT: ");
+			gpctrl_<%=cid%>.println("    - TABLE: '" + tableName4Load_<%=cid%>+"'");
+			gpctrl_<%=cid%>.println("    - MODE: <%=dataAction.toLowerCase()%>");
+			<%
+			if ("UPDATE".equals(dataAction) || "MERGE".equals(dataAction)) {
 				%>
-				gpctrl_<%=cid%>.println("    - UPDATE_CONDITION: " + <%=updateCondition%>);
+				gpctrl_<%=cid%>.println("    - MATCH_COLUMNS:");
 				<%
+				for (Map<String, String> option : updateOptions) {
+					String columnName = option.get("SCHEMA_COLUMN");
+					boolean isMatchKey = option.get("MATCH_KEY").equals("true");
+					if (isMatchKey) {
+						%>
+						gpctrl_<%=cid%>.println("      - <%=columnName%>");
+						<%
+					}
+				}
+				%>
+				gpctrl_<%=cid%>.println("    - UPDATE_COLUMNS:");
+				<%
+				for (Map<String, String> option : updateOptions) {
+					String columnName = option.get("SCHEMA_COLUMN");
+					boolean isUpdateKey = option.get("UPDATE_KEY").equals("true");
+					if (isUpdateKey) {
+						%>
+						gpctrl_<%=cid%>.println("      - <%=columnName%>");
+						<%
+					}
+				}
+				if (updateCondition != null && !("".equals(updateCondition) || "\"\"".equals(updateCondition))) {
+					%>
+					gpctrl_<%=cid%>.println("    - UPDATE_CONDITION: " + <%=updateCondition%>);
+					<%
+				}
 			}
+			%>
 		}
-		%>
-		gpctrl_<%=cid%>.close();
 		<%
 	}
 
 	
 	List<String> parametersList = new ArrayList();
-	parametersList.add("\"-f\"");
-	parametersList.add(gploadCtrlFile);
 	parametersList.add("\"-h\"");
 	parametersList.add(dbhost);
 	parametersList.add("\"-p\"");
@@ -574,6 +573,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 							<%=pythonPathForCMD%>,
 						<%}%>
 						<%=gpLoadPathForCMD%>
+						, "-f", gploadCtrlFile
 				<%
 				for (int i=0; i < parametersList.size(); i++) {
 						%>,<%=parametersList.get(i)%><%

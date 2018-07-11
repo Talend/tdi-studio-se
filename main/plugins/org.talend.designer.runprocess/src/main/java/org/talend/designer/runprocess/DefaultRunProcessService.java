@@ -63,6 +63,8 @@ import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.ProjectReference;
 import org.talend.core.model.properties.Property;
 import org.talend.core.model.properties.RoutineItem;
+import org.talend.core.model.relationship.Relation;
+import org.talend.core.model.relationship.RelationshipItemBuilder;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.repository.IRepositoryViewObject;
 import org.talend.core.model.runprocess.data.PerformanceData;
@@ -283,11 +285,23 @@ public class DefaultRunProcessService implements IRunProcessService {
         } else {
             // If OSGI contains new processor, need to add built type in args map
 
-            if (property != null
-                    && "OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))) {
-                if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
-                    soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
-                    return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+            if (property != null) {
+                boolean servicePart = false;
+                List<Relation> relations = RelationshipItemBuilder.getInstance().getItemsRelatedTo(property.getId(),
+                        property.getVersion(), RelationshipItemBuilder.JOB_RELATION);
+
+                for (Relation relation : relations) {
+                    if (RelationshipItemBuilder.SERVICES_RELATION.equals(relation.getType())) {
+                        servicePart = true;
+                        break;
+                    }
+                }
+                if ("OSGI".equals(property.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE))
+                        || servicePart) {
+                    if (GlobalServiceRegister.getDefault().isServiceRegistered(IESBService.class)) {
+                        soapService = (IESBService) GlobalServiceRegister.getDefault().getService(IESBService.class);
+                        return soapService.createOSGIJavaProcessor(process, property, filenameFromLabel);
+                    }
                 }
 
                 return new MavenJavaProcessor(process, property, filenameFromLabel);

@@ -25,6 +25,7 @@ import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.properties.ImplicitContextSettings;
 import org.talend.core.model.properties.StatAndLogsSettings;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
@@ -109,6 +110,7 @@ public class UnifyPasswordEncryption4ProjectSettingsMigrationTask extends Abstra
 
     private boolean reencryptValueIfNeeded(ElementParameterType param) throws Exception {
         String value = param.getValue();
+        value = ConnectionHelper.getCleanPassword(value);
         int index = value.lastIndexOf(PasswordEncryptUtil.ENCRYPT_KEY);
         if (index != -1) {
             value = new StringBuilder(value).replace(index, index + PasswordEncryptUtil.ENCRYPT_KEY.length(), "").toString(); //$NON-NLS-1$
