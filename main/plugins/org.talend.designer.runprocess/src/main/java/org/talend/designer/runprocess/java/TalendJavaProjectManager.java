@@ -158,20 +158,20 @@ public class TalendJavaProjectManager {
     }
 
     public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type) {
-        return getTalendCodeJavaProject(type, ProjectManager.getInstance().getCurrentProject());
+        return getTalendCodeJavaProject(type, ProjectManager.getInstance().getCurrentProject().getTechnicalLabel());
     }
 
-    public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, Project project) {
-        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, project.getTechnicalLabel());
+    public static ITalendProcessJavaProject getTalendCodeJavaProject(ERepositoryObjectType type, String projectTechName) {
+        String codeProjectId = AggregatorPomsHelper.getCodeProjectId(type, projectTechName);
         ITalendProcessJavaProject talendCodeJavaProject = talendCodeJavaProjects.get(codeProjectId);
         if (talendCodeJavaProject == null || talendCodeJavaProject.getProject() == null
                 || !talendCodeJavaProject.getProject().exists()) {
             try {
                 IProgressMonitor monitor = new NullProgressMonitor();
                 IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-                AggregatorPomsHelper helper = new AggregatorPomsHelper(project.getTechnicalLabel());
+                AggregatorPomsHelper helper = new AggregatorPomsHelper(projectTechName);
                 IFolder codeProjectFolder = helper.getProjectPomsFolder().getFolder(type.getFolder());
-                IProject codeProject = root.getProject((project.getTechnicalLabel() + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
+                IProject codeProject = root.getProject((projectTechName + "_" + type.name()).toUpperCase()); //$NON-NLS-1$
                 if (!codeProject.exists() || TalendCodeProjectUtil.needRecreate(monitor, codeProject)) {
                     // always enable maven nature for code projects.
                     createMavenJavaProject(monitor, codeProject, null, codeProjectFolder, true);

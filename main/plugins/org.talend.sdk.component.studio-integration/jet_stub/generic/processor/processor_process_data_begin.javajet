@@ -26,6 +26,5 @@ while (outputHandler_<%=cid%>.hasMoreData()){
             continue;
         }
 %>
-        <%= connection.getName() %> = outputHandler_<%=cid%>
-                                .getValue("<%= connection.getConnectorName() %>", <%= connection.getName() %>.getClass());
+        <%= connection.getName() %> = outputHandler_<%=cid%>.getValue("<%= connection.getConnectorName() %>");
 <% } %>

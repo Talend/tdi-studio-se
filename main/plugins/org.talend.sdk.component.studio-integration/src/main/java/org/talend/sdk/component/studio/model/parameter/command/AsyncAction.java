@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
@@ -56,9 +56,9 @@ public class AsyncAction extends Job implements TacokitCommand {
         Display.getDefault().asyncExec(() -> {
             final String dialogTitle = Messages.getString("action.result.title");
             if (OK.equals(result.get(STATUS))) {
-                MessageDialog.openInformation(new Shell(), dialogTitle, result.get(MESSAGE));
+                MessageDialog.openInformation(DisplayUtils.getDefaultShell(), dialogTitle, result.get(MESSAGE));
             } else {
-                MessageDialog.openError(new Shell(), dialogTitle, result.get(MESSAGE));
+                MessageDialog.openError(DisplayUtils.getDefaultShell(), dialogTitle, result.get(MESSAGE));
             }
         });
 

@@ -72,7 +72,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     @Override
     public void syncAllRoutinesForLogOn() throws SystemException {
-        syncRoutineItems(getRoutines(needSyncRefProject()), true);
+        syncRoutineItems(getRoutines(true), true);
     }
 
     /*
@@ -87,7 +87,7 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
 
     @Override
     public void syncAllPigudfForLogOn() throws SystemException {
-        syncRoutineItems(getAllPigudf(needSyncRefProject()), true);
+        syncRoutineItems(getAllPigudf(true), true);
     }
 
     private void syncRoutineItems(Collection<RoutineItem> routineObjects, boolean forceUpdate) throws SystemException {
@@ -147,7 +147,8 @@ public class JavaRoutineSynchronizer extends AbstractRoutineSynchronizer {
      */
     private static void syncModule(Project project, File[] modules) throws SystemException {
         IRunProcessService service = CodeGeneratorActivator.getDefault().getRunProcessService();
-        ITalendProcessJavaProject talenCodeJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES, project);
+        ITalendProcessJavaProject talenCodeJavaProject = service.getTalendCodeJavaProject(ERepositoryObjectType.ROUTINES,
+                project.getTechnicalLabel());
         if (talenCodeJavaProject == null) {
             return;
         }

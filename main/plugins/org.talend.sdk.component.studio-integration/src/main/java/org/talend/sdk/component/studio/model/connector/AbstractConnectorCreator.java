@@ -29,10 +29,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.sun.prism.CompositeMode;
+
+import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
 import org.talend.core.model.process.INodeConnector;
+import org.talend.designer.core.model.components.NodeConnector;
 import org.talend.sdk.component.server.front.model.ComponentDetail;
+import org.talend.sdk.component.studio.ComponentModel;
 
 /**
  * Common implementation for {@link ConnectorCreator}
@@ -58,9 +63,8 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
      * It returns {@link EConnectionType#REJECT}. if <code>connectionName</code> is
      * "Reject" It returns {@link EConnectionType#FLOW_MAIN} for any other
      * <code>connectionName</code> including "__default__"
-     * 
-     * @param connectionName
-     * name of this connection
+     *
+     * @param connectionName name of this connection
      * @return {@link EConnectionType} of connection
      */
     protected static EConnectionType getType(final String connectionName) {
@@ -76,9 +80,8 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
     /**
      * Returns "Main", if connectionName is "__default__", else returns input
      * argument unchanged
-     * 
-     * @param connectionName
-     * name of this connection
+     *
+     * @param connectionName name of this connection
      * @return name, which should be used as INodeConnector name
      */
     protected static String getName(final String connectionName) {
@@ -107,51 +110,48 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
      */
     @Override
     public List<INodeConnector> createConnectors() {
-        ArrayList<INodeConnector> connectors = new ArrayList<>();
-
         List<INodeConnector> mainConnectors = createMainConnectors();
-        boolean useMultiSchema = 1 < mainConnectors.stream().filter(c -> {
-            if (TaCoKitNodeConnector.class.isInstance(c)) {
-                return TaCoKitNodeConnector.class.cast(c).hasOutput();
-            }
-            return false;
-        }).count();
+        final boolean useMultiSchema = mainConnectors.stream()
+                .filter(TaCoKitNodeConnector.class::isInstance)
+                .map(TaCoKitNodeConnector.class::cast)
+                .filter(TaCoKitNodeConnector::hasOutput)
+                .count() > 1;
         if (useMultiSchema) {
-            mainConnectors.stream().forEach(c -> c.setMultiSchema(useMultiSchema));
+            mainConnectors.forEach(c -> c.setMultiSchema(true));
         }
-        connectors.addAll(mainConnectors);
-
-        createRejectConnector().ifPresent(c -> connectors.add(c));
+        ArrayList<INodeConnector> connectors = new ArrayList<>(mainConnectors);
+        createRejectConnector().ifPresent(connectors::add);
         connectors.add(createIterateConnector());
         connectors.addAll(createStandardConnectors());
         connectors.addAll(createRestConnectors());
+
         return connectors;
     }
 
     /**
      * Creates connectors of type {@link EConnectionType#FLOW_MAIN}
-     * 
+     *
      * @return Main connectors
      */
     protected abstract List<INodeConnector> createMainConnectors();
 
     /**
      * Creates optional connector of type {@link EConnectionType#REJECT}
-     * 
+     *
      * @return Reject connector
      */
     protected abstract Optional<INodeConnector> createRejectConnector();
 
     /**
      * Create connector of type {@link EConnectionType#ITERATE}
-     * 
+     *
      * @return Iterate connector
      */
     protected abstract INodeConnector createIterateConnector();
 
     /**
      * Creates connectors common for all components
-     * 
+     *
      * @return common connectors
      */
     protected final List<INodeConnector> createStandardConnectors() {
@@ -166,7 +166,7 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
 
     /**
      * Creates all remaining connectors
-     * 
+     *
      * @return remaining connectors
      */
     protected final List<INodeConnector> createRestConnectors() {

@@ -34,7 +34,7 @@ public class ActionParametersUpdater implements PropertyChangeListener {
 
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
-        action.getParameters().setValue(event.getPropertyName(), (String) event.getNewValue());
+        action.setParameterValue(event.getPropertyName(), (String) event.getNewValue());
     }
     
     public Action getAction() {

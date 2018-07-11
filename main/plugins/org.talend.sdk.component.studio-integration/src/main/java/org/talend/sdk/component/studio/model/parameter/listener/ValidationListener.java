@@ -35,8 +35,8 @@ public class ValidationListener extends Action implements PropertyChangeListener
 
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
-        parameters.setValue(event.getPropertyName(), (String) event.getNewValue());
-        if (!parameters.areSet()) {
+        setParameterValue(event.getPropertyName(), (String) event.getNewValue());
+        if (!areParametersSet()) {
             return;
         }
 

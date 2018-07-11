@@ -17,6 +17,7 @@ import java.util.GregorianCalendar;
 
 import org.talend.core.model.migration.AbstractItemMigrationTask;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 
 /**
  * created by ggu on Aug 21, 2014 Detailled comment
@@ -35,6 +36,10 @@ public abstract class UnifyPasswordEncryption4ItemMigrationTask extends Abstract
     public Date getOrder() {
         GregorianCalendar gc = new GregorianCalendar(2014, 9, 1, 12, 0, 0);
         return gc.getTime();
+    }
+
+    protected String cleanPassword(String password) {
+        return ConnectionHelper.getCleanPassword(password);
     }
 
 }

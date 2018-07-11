@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -100,11 +101,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      */
     private final String familyName;
 
-    private volatile List<ModuleNeeded> modulesNeeded;
+    private volatile Set<ModuleNeeded> modulesNeeded;
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     private Boolean useLookup = null;
+
+    private boolean hasConditionalOutput = false;
 
     private ETaCoKitComponentType tacokitComponentType;
 
@@ -353,13 +356,10 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     }
 
     /**
-     * Get the modules needed according component configuration This method should
-     * no have sense for v1 as Job classpath should contain only common API
-     * dependencies All component specific dependencies will be resolved by
-     * ComponentManager class
+     * get component required dependencies
      *
-     * @return the needed dependencies for the framework,
-     * component dependencies are loaded later through ComponentManager.
+     * @param iNode
+     * @return
      */
     @Override
     public List<ModuleNeeded> getModulesNeeded(final INode iNode) {
@@ -367,58 +367,50 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             synchronized (this) {
                 if (modulesNeeded == null) {
                     final ComponentService.Dependencies dependencies = getDependencies();
-
-                    modulesNeeded = new ArrayList<>(20);
+                    modulesNeeded = new LinkedHashSet<>(20);
                     modulesNeeded.addAll(dependencies
                             .getCommon()
                             .stream()
                             .map(s -> new ModuleNeeded(getName(), "", true, s))
                             .collect(toList()));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                            "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                            "mvn:org.talend.sdk.component/component-runtime-design-extension/"
-                                    + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded
-                            .add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.COMPONENT_RUNTIME_VERSION));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
 
                     if (!hasTcomp0Component(iNode)) {
                         if (!PluginChecker.isTIS()) {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                                    "mvn:" + GAV.GROUP_ID + "/slf4j-standard/" + GAV.COMPONENT_RUNTIME_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:" + GAV.GROUP_ID + "/slf4j-standard/" + GAV.COMPONENT_RUNTIME_VERSION));
                         } else {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                                    "mvn:org.slf4j/slf4j-log4j12/" + GAV.SLF4J_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/" + GAV.SLF4J_VERSION));
                         }
                     }
 
-                    final Map<String, ?> transitiveDeps = !Lookups.configuration().isActive() ? null
-                            : Lookups.client().v1().component().dependencies(detail.getId().getId());
-                    if (transitiveDeps != null && transitiveDeps.containsKey("dependencies")) {
+                    final Map<String, ?> componentDependencies = !Lookups.configuration().isActive() ? null : Lookups.client().v1().component().dependencies(detail.getId().getId());
+                    if (componentDependencies != null && componentDependencies.containsKey("dependencies")) {
                         final Collection<String> coordinates = Collection.class.cast(Map.class
-                                .cast(Map.class.cast(transitiveDeps.get("dependencies")).values().iterator().next())
+                                .cast(Map.class.cast(componentDependencies.get("dependencies")).values().iterator().next())
                                 .get("dependencies"));
-                        if (coordinates != null && coordinates.stream().anyMatch(
-                                d -> d.contains("org.talend.sdk.component:component-runtime-beam"))) {
-                            modulesNeeded.addAll(dependencies
-                                    .getBeam()
-                                    .stream()
-                                    .map(s -> new ModuleNeeded(getName(), "", true, s))
-                                    .collect(toList()));
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                                    "mvn:org.talend.sdk.component/component-runtime-standalone/"
-                                            + GAV.COMPONENT_RUNTIME_VERSION));
+                        if (coordinates != null) {
+                            modulesNeeded.addAll(coordinates.stream()
+                                    .map(coordinate -> new ModuleNeeded(getName(), "", true, Mvn.locationToMvn(coordinate).replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")))
+                                    .collect(Collectors.toList()));
+                            if (coordinates.stream().anyMatch(d -> d.contains("org.talend.sdk.component:component-runtime-beam"))) {
+                                modulesNeeded.addAll(dependencies
+                                        .getBeam()
+                                        .stream()
+                                        .map(s -> new ModuleNeeded(getName(), "", true, s))
+                                        .collect(toList()));
+                            }
                         }
                     }
 
                     // We're assuming that pluginLocation has format of groupId:artifactId:version
                     final String location = index.getId().getPluginLocation().trim();
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true,
-                            Mvn.locationToMvn(location).replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, Mvn.locationToMvn(location).replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")));
                 }
             }
         }
-        return modulesNeeded;
+        return new ArrayList<>(modulesNeeded);
     }
 
     protected boolean hasTcomp0Component(final INode iNode) {
@@ -641,6 +633,11 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         for (Map.Entry<String, Object> entry : additionalInfoMap.entrySet()) {
             targetAdditionalInfo.putInfo(entry.getKey(), entry.getValue());
         }
+    }
+
+    @Override
+    public boolean hasConditionalOutputs() {
+        return detail.getOutputFlows().size() > 1;
     }
 
     public List<ActionReference> getDiscoverSchemaActions() {

@@ -125,7 +125,7 @@ public class TaCoKitConfigurationModel {
             ValueModel modelValue = parentModel.getValue(key);
             if (modelValue == null) {
                 if (parentModel.contains(key)) {
-                    return new ValueModel(parentModel, null, getValueType(key));
+                    return new ValueModel(parentModel, null, getValueType(parentModel.getConfigTypeNode(), key));
                 }
             } else {
                 return modelValue;
@@ -133,17 +133,16 @@ public class TaCoKitConfigurationModel {
         }
         String value = getValueOfSelf(key);
         if (value != null || contains(key)) {
-            return new ValueModel(this, value, getValueType(key));
+            return new ValueModel(this, value, getValueType(getConfigTypeNode(), key));
         }
         return null;
     }
     
-    private String getValueType(final String key) throws Exception {
-        return getConfigTypeNode().getProperties().stream()
-            .map(SimplePropertyDefinition::getPath)
-            .filter(key::equals)
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
+    private String getValueType(final ConfigTypeNode typeNode, final String key) throws Exception {
+        return typeNode.getProperties().stream()
+                .filter(propertyDefinition -> TaCoKitUtil.equals(key, propertyDefinition.getPath()))
+                .map(SimplePropertyDefinition::getType).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("wrong key: " + key));
     }
 
     public ConfigTypeNode getFirstConfigTypeNodeContains(final String key) throws Exception {

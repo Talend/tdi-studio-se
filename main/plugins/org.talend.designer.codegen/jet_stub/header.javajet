@@ -210,11 +210,6 @@ protected static void logIgnoredError(String message, Throwable cause) {
 		// fix for TESB-7714
 		talendESBJob.setEndpointRegistry(registry);
 
-		// TESB-15920 tRESTClient and SAM not working
-		<% if (hasSAM4RS) { %>
-		talendESBJob.setEventFeature(eventFeature);
-		<% } %>
-
 		return talendESBJob;
 	}
 <% } %>

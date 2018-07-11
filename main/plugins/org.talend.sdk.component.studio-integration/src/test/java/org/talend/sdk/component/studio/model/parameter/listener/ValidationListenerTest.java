@@ -57,7 +57,7 @@ class ValidationListenerTest {
             @Override
             public Map<String, String> callback() {
 
-                final String url = parameters.payload().get("the.test.param.url");
+                final String url = payload().get("the.test.param.url");
                 try {
                     new URL(url);
                     return singletonMap("status", "OK");
