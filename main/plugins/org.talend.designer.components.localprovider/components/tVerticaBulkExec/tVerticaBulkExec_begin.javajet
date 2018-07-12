@@ -69,12 +69,12 @@ if(useExistingConnection) {
 }
 String copySchema = null;
 if (useSchema && columnList != null && !columnList.isEmpty()) {
-    copySchema = " (";
+    StringBuilder copySchemaBuilder = new StringBuilder(" (");
     for(int i = 0; i < columnList.size() - 1; i++){
-        copySchema += columnList.get(i).getOriginalDbColumnName() + ", ";
+        copySchemaBuilder.append(columnList.get(i).getOriginalDbColumnName()).append(", ");
     }
-    copySchema += columnList.get(columnList.size() - 1).getOriginalDbColumnName();
-    copySchema += ")";
+    copySchemaBuilder.append(columnList.get(columnList.size() - 1).getOriginalDbColumnName()).append(")");
+    copySchema = copySchemaBuilder.toString();
 }
 boolean is_old_version = "vertica_3.0_jdk_5.jar".equals(db_version) || "vertica_3.5_jdk_5.jar".equals(db_version) || "vertica_4.0_jdk_5.jar".equals(db_version) || "vertica_4.1.7_jdk_5.jar".equals(db_version) || "vertica_4.1.14_jdk_5.jar".equals(db_version);
 boolean is_version_ge_6 = "VERTICA_6_0".equals(db_version) || "VERTICA_6_1_X".equals(db_version) || "VERTICA_7_0_X".equals(db_version) || "VERTICA_7_1_X".equals(db_version) || "VERTICA_9_0".equals(db_version);
@@ -196,9 +196,19 @@ if(("INSERT").equals(dataAction) || columnList != null && columnList.size() > 0)
 			escapechar_<%=cid %> = "" + escapechar_<%=cid %>.charAt(0);
 		}
 		<%}%>
+<%
+		if (useSchema) {
+%>
+			String copySchema_<%=cid %> = "<%=copySchema%>";
+			if ("null".equals(copySchema_<%=cid %>)) {
+				throw new RuntimeException("Schema is not defined");
+			}
+<%
+		}
+%>
 		String sql_<%=cid %> = "COPY " + tableName_<%=cid%> 
 		<%if(useSchema) {%>
-			+ "<%=copySchema %>"
+			+ copySchema_<%=cid %>
 		<%}%>		
 		+ " FROM STDIN <%=compression%> <%=stream_name%> DELIMITER '" + OUT_DELIM_<%=cid %> + "'"
 		<%if(is_version_ge_6 && is_trailing_null){%>
