@@ -246,12 +246,10 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
                 }
             }
         }
-
-        viewer.setCheckedElements(checkedObjects.toArray());
         if (nodes != null) {
             viewer.setExpandedElements(nodes);
         }
-
+        viewer.setCheckedElements(checkedObjects.toArray());
     }
 
     private void createStatTree(Composite composite) {
@@ -329,10 +327,10 @@ public class StatLogsAndImplicitcontextTreeViewPage extends ProjectSettingPage {
                 }
             }
         }
-        statViewer.setCheckedElements(statCheckedObjects.toArray());
         if (nodes != null) {
             statViewer.setExpandedElements(nodes);
         }
+        statViewer.setCheckedElements(statCheckedObjects.toArray());
     }
 
     private boolean isUseProjectSetting(RepositoryNode node) {
