@@ -97,7 +97,7 @@
 								}
 
 								// for tRecordMatching
-								if(conn.getTarget().getComponent().getName().equals("tRecordMatching")){
+								if(conn.getTarget().getUniqueName().indexOf("tRecordMatching")>-1){
 									List<Map<String, String>> joinKeys = (List<Map<String,String>>)ElementParameterParser.getObjectValue(conn.getTarget(), "__BLOCKING_DEFINITION__");
 									for(Map<String, String> joinKeyLine : joinKeys){
 										String lookupKey = joinKeyLine.get("LOOKUP_COLUMN");
