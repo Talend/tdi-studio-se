@@ -79,6 +79,8 @@ System.setOut(new java.io.PrintStream(new java.io.OutputStream() {
         <%@include file="../../jet_stub/generic/configuration.javajet"%>
 
 <%  } else { %>
+         // Enforce max batch size to 1 for guess schema
+         globalMap.put("MAX_BATCH_SIZE_<%=guessSchemaCid%>", 1);
         <%@include file="./tTaCoKitGuessSchema_begin_for_processor.javajet"%>
 <%  } %>
 

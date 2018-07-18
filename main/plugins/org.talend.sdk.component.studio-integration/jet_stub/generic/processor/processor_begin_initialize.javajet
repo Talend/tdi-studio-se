@@ -49,14 +49,7 @@
 
     <%@include file="../configuration.javajet"%>
 
-<%
-    final IElementParameter chunkSizeParam = node.getElementParameter("CHUNK_SIZE");
-    final String chunkSizeStr = (chunkSizeParam == null) ? "" : ElementParameterParser.getStringElementParameterValue(chunkSizeParam);
-%>
-
-    final String chunkSizeStr_<%=cid%> = "<%=chunkSizeStr%>";
-
-    int chunkSize_<%=cid%> = chunkSizeStr_<%=cid%> == null || chunkSizeStr_<%=cid%>.trim().isEmpty() ? 100 : Integer.parseInt(chunkSizeStr_<%=cid%>.trim());
+    final int chunkSize_<%=cid%> = globalMap.containsKey("MAX_BATCH_SIZE_<%=cid%>") ? (Integer) globalMap.get("MAX_BATCH_SIZE_<%=cid%>") : 100;
 
     final org.talend.sdk.component.runtime.output.Processor processorImpl_<%=cid%> = mgr_<%=cid%>.findProcessor("<%=family%>", "<%=originalName%>", <%=version%>, configuration_<%=cid%>)
                                                                                  .orElseThrow(() -> new IllegalArgumentException("Can't find <%=family%>#<%=originalName%>"));
