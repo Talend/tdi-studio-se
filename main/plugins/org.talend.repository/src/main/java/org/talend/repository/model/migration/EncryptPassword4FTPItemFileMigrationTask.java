@@ -26,6 +26,7 @@ import org.talend.core.model.properties.FTPConnectionItem;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 
 /**
  * created by hcyi on Jul 8, 2014 Detailled comment
@@ -63,25 +64,26 @@ public class EncryptPassword4FTPItemFileMigrationTask extends AbstractItemMigrat
     public boolean encryptPassword(FTPConnection ftpConn) throws Exception {
         boolean modified = false;
         if (ftpConn.getPassword() != null) {
-            String password = PasswordEncryptUtil.encryptPassword(ftpConn.getPassword());
+            String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(ftpConn.getPassword()));
             ftpConn.setPassword(password + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }
 
         if (ftpConn.getPassphrase() != null) {
-            String password = PasswordEncryptUtil.encryptPassword(ftpConn.getPassphrase());
+            String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(ftpConn.getPassphrase()));
             ftpConn.setPassphrase(password + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }
 
         if (ftpConn.getKeystorePassword() != null) {
-            String password = PasswordEncryptUtil.encryptPassword(ftpConn.getKeystorePassword());
+            String password = PasswordEncryptUtil
+                    .encryptPassword(ConnectionHelper.getCleanPassword(ftpConn.getKeystorePassword()));
             ftpConn.setKeystorePassword(password + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }
 
         if (ftpConn.getProxypassword() != null) {
-            String password = PasswordEncryptUtil.encryptPassword(ftpConn.getProxypassword());
+            String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(ftpConn.getProxypassword()));
             ftpConn.setProxypassword(password + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }

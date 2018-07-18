@@ -24,6 +24,7 @@ import org.talend.core.model.general.Project;
 import org.talend.core.model.properties.ImplicitContextSettings;
 import org.talend.core.model.properties.Item;
 import org.talend.core.model.properties.StatAndLogsSettings;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ElementParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ParametersType;
 import org.talend.designer.core.model.utils.emf.talendfile.impl.ElementParameterTypeImpl;
@@ -144,7 +145,8 @@ public class EncryptPasswordInProjectSettingsMigrationTask extends AbstractMigra
         }
 
         if (!encrypted) {
-            param.setValue(PasswordEncryptUtil.encryptPassword(param.getValue()) + PasswordEncryptUtil.ENCRYPT_KEY);
+            param.setValue(PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(param.getValue()))
+                    + PasswordEncryptUtil.ENCRYPT_KEY);
             modified = true;
         }
         return modified;

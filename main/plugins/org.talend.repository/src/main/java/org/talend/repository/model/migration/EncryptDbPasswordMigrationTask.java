@@ -30,6 +30,7 @@ import org.talend.core.model.properties.JobletProcessItem;
 import org.talend.core.model.properties.ProcessItem;
 import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
+import org.talend.cwm.helper.ConnectionHelper;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextParameterType;
 import org.talend.designer.core.model.utils.emf.talendfile.ContextType;
 
@@ -102,13 +103,13 @@ public class EncryptDbPasswordMigrationTask extends AbstractItemMigrationTask {
     }
 
     private void encryptPassword(DatabaseConnection dbConn) throws Exception {
-        String password = PasswordEncryptUtil.encryptPassword(dbConn.getPassword());
+        String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(dbConn.getPassword()));
         dbConn.setPassword(password);
     }
 
     private void encryptPassword(ContextParameterType param) throws Exception {
         // before migration task, the value should be raw. so keep it.
-        String password = PasswordEncryptUtil.encryptPassword(param.getValue());
+        String password = PasswordEncryptUtil.encryptPassword(ConnectionHelper.getCleanPassword(param.getValue()));
         param.setValue(password);
     }
 
