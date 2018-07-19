@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.dialogs.SelectionDialog;
+import org.talend.core.model.context.JobContext;
 import org.talend.core.model.properties.ConnectionItem;
 import org.talend.core.model.update.EUpdateItemType;
 import org.talend.core.model.update.EUpdateResult;
@@ -74,7 +75,7 @@ public class UpdateDetectionDialog extends SelectionDialog {
     private static final int SIZING_COLUMN_WIDTH = 25;
 
     private List<UpdateResult> inputElement;
-    
+
     private List<UpdateResult> selectedElement;
 
     private CheckboxTreeViewer viewer;
@@ -167,10 +168,14 @@ public class UpdateDetectionDialog extends SelectionDialog {
                     tempItems.add(item);
                 }
             } else if (result.getUpdateType() == EUpdateItemType.CONTEXT_GROUP) {
-                if (contextGroups.contains(result.getJobInfor())) {
+                String key = result.getJobInfor();
+                if (result.getUpdateObject() instanceof JobContext) {
+                    key = key + ((JobContext) result.getUpdateObject()).getName();
+                }
+                if (contextGroups.contains(key)) {
                     duplicatedResult.add(result);
                 } else {
-                    contextGroups.add(result.getJobInfor());
+                    contextGroups.add(key);
                 }
             }
 
@@ -521,23 +526,23 @@ public class UpdateDetectionDialog extends SelectionDialog {
         }
         return false;
     }
-    
-    private List<UpdateResult> getCheckedElements(){
+
+    private List<UpdateResult> getCheckedElements() {
         Object[] objs = getViewer().getCheckedElements();
         List<UpdateResult> results = new ArrayList<UpdateResult>();
-        if(objs != null){
-            for(Object obj:objs){
-                if(obj instanceof UpdateResult){
-                    results.add((UpdateResult)obj);
-                }else if(obj instanceof Item){
-                    results.add(((Item)obj).getResultObject());
+        if (objs != null) {
+            for (Object obj : objs) {
+                if (obj instanceof UpdateResult) {
+                    results.add((UpdateResult) obj);
+                } else if (obj instanceof Item) {
+                    results.add(((Item) obj).getResultObject());
                 }
             }
         }
         return results;
     }
-    
-    public List<UpdateResult> getSelectedElements(){
+
+    public List<UpdateResult> getSelectedElements() {
         return selectedElement;
     }
 }
