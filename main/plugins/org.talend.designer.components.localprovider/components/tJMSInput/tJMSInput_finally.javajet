@@ -14,7 +14,7 @@ log = new LogUtil(node);
 String timeout=ElementParameterParser.getValue(node, "__TIMEOUT__");
 String maxMsg=ElementParameterParser.getValue(node, "__MAX_MSG__");
 
-final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
+final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
 if(resourceMap.containsKey("consumer_<%=cid %>")) try {
 	((javax.jms.MessageConsumer)resourceMap.get("consumer_<%=cid %>")).close();
