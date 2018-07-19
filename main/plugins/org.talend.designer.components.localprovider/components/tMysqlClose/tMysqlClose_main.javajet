@@ -15,8 +15,9 @@ imports="
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 
     String conn = "conn_" + connection;
-    /* for tAmazonAurora* */
-    if(connection.matches("^.*?tAmazonAuroraConnection_\\d+$")){
+    
+    boolean isAmazonAurora = node.isVirtualGenerateNode();
+    if(isAmazonAurora){
     	  conn += "_in";
     }
 %>

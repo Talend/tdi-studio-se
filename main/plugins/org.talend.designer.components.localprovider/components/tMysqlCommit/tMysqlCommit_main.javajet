@@ -17,7 +17,9 @@ imports="
     boolean close = ("true").equals(ElementParameterParser.getValue(node,"__CLOSE__"));
 
     String conn = "conn_" + connection;
-    if(connection.matches("^.*?tAmazonAuroraConnection_\\d+$")){
+    
+    boolean isAmazonAurora = node.isVirtualGenerateNode();
+    if(isAmazonAurora){
     	  conn += "_in";
     }
 %>
