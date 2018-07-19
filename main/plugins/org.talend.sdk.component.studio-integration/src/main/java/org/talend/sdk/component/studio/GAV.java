@@ -21,7 +21,7 @@ public interface GAV {
 
     String ARTIFACT_ID = "org.talend.sdk.component.studio-integration";
 
-    String COMPONENT_RUNTIME_VERSION = "1.0.2-SNAPSHOT";
+    String COMPONENT_RUNTIME_VERSION = "1.0.3";
 
     String CLI_VERSION = "1.4";
 
