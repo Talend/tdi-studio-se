@@ -4,11 +4,12 @@
    <extension
          point="org.talend.core.runtime.librariesNeeded">
          <!-- MAPR 50X libraries-->
+        <!-- NAME/ID/URI of winutils MUST equals to value returned by Distribution.getWinUtilsName() -->
         <libraryNeeded
             context="plugin:org.talend.hadoop.distribution.mapr.6.0.0"
             id="winutils-hadoop-2.7.0.exe"
             name="winutils-hadoop-2.7.0.exe"
-            mvn_uri="mvn:org.talend.libraries/winutils-hadoop-2.7.0/6.0.0/exe"/>
+            mvn_uri="mvn:org.talend.libraries/winutils-hadoop-2.7.0/6.0.0"/>
 
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.5.0.0"
