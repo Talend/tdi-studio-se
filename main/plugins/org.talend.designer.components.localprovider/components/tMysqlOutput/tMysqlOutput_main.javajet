@@ -614,7 +614,9 @@ if(columnList != null && columnList.size() > 0) {
     if (isParallelize) { // bug0014422
         String tAsyncIn_cid = "";
         if(conns!=null && conns.size() > 0) {
-            isAmazonAurora = conns.get(0).getSource().isVirtualGenerateNode();
+        		INode source_node = conns.get(0).getSource();
+            isAmazonAurora = source_node.isVirtualGenerateNode();
+            tAsyncIn_cid = source_node.getUniqueName();
             if(isAmazonAurora){
                  tAsyncIn_cid = "tAsyncIn_" + tAsyncIn_cid.substring(0,tAsyncIn_cid.length()-3);
             }
