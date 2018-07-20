@@ -16,7 +16,9 @@ imports="
 
     String conn = "conn_" + connection;
     
-    boolean isAmazonAurora = node.isVirtualGenerateNode();
+    //sometimes, studio will reuse mysql components in runtime model level, which is also virtual component
+    //so add more condition to check if it's amazon aurora components
+    boolean isAmazonAurora = node.isVirtualGenerateNode() && (connection.matches("^.*?tAmazonAuroraConnection_\\d+$") || connection.matches("^.*?tDBConnection_\\d+$"));
     if(isAmazonAurora){
     	  conn += "_in";
     }

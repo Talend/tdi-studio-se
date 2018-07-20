@@ -22,7 +22,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
 	
-	boolean isAmazonAurora = node.isVirtualGenerateNode();
+	boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
 
     if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);// 4 ==> "_out".length();

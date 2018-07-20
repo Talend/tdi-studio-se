@@ -27,7 +27,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
     
     String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
     
-    boolean isAmazonAurora = "mysql_id".equalsIgnoreCase(dbmsId) && node.isVirtualGenerateNode();
+    boolean isAmazonAurora = "mysql_id".equalsIgnoreCase(dbmsId) && node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
     
     if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);

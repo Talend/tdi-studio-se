@@ -33,7 +33,7 @@ imports="
 }
 
 <%
-	boolean isAmazonAurora = node.isVirtualGenerateNode();
+	boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraInput_\\d+_in$") || cid.matches("^.*?tDBInput_\\d+_in$"));
 	if(isAmazonAurora){
 		// why 3: ==> "_in".length()
 		%>

@@ -12,7 +12,7 @@ class BasicLogUtil{
     public BasicLogUtil(org.talend.core.model.process.INode node){
         this.node = node;
         String cidx = this.node.getUniqueName();
-        if(cidx.endsWith("_out")){
+        if(cidx.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cidx.matches("^.*?tDBOutput_\\d+_out$")){
              cidx = cidx.substring(0,cidx.length()-4);// 4 ==> "_out".length();
         }
         this.cid = cidx;
