@@ -26,8 +26,8 @@ import org.talend.core.model.repository.RepositoryManager;
 import org.talend.core.repository.model.ProxyRepositoryFactory;
 import org.talend.repository.model.IProxyRepositoryFactory;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationItemModel;
 import org.talend.sdk.component.studio.metadata.model.TaCoKitConfigurationModel;
 import org.talend.sdk.component.studio.metadata.node.ITaCoKitRepositoryNode;
 import org.talend.sdk.component.studio.util.TaCoKitConst;
@@ -67,7 +67,7 @@ public class TaCoKitCreateWizard extends TaCoKitConfigurationWizard {
                 try {
                     createConfigurationItem();
                 } catch (Exception e) {
-                    throw new CoreException(new Status(IStatus.ERROR, TaCoKitConst.BUNDLE_ID, e.getMessage(), e));
+                    throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
                 }
             }
         };

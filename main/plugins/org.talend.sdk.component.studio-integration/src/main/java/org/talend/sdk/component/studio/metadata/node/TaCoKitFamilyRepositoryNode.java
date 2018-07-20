@@ -27,8 +27,8 @@ import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.repository.model.RepositoryNode;
 import org.talend.repository.model.StableRepositoryNode;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
 // TODO it is very similar to AbsTaCoKitRepositoryNode but reuse it
@@ -65,7 +65,7 @@ public class TaCoKitFamilyRepositoryNode extends StableRepositoryNode implements
         try {
             ImageRegistry imageRegistry = JFaceResources.getImageRegistry();
             String id = configTypeNode.getId();
-            String imageKey = TaCoKitConst.BUNDLE_ID + "/TaCoKit/Family/Metadata" + id; //$NON-NLS-1$
+            String imageKey = GAV.INSTANCE.getArtifactId() + "/TaCoKit/Family/Metadata" + id; //$NON-NLS-1$
             Image image = imageRegistry.get(imageKey);
             if (image == null) {
                 try {

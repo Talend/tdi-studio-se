@@ -18,7 +18,7 @@ package org.talend.sdk.component.studio.i18n;
 import java.util.ResourceBundle;
 
 import org.talend.commons.i18n.MessagesCore;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
+import org.talend.sdk.component.studio.GAV;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -37,7 +37,7 @@ public class Messages extends MessagesCore {
      * @see MessagesCore#getString(String, ResourceBundle)
      */
     public static String getString(final String key) {
-        return getString(key, TaCoKitConst.BUNDLE_ID, resourceBundle);
+        return getString(key, GAV.INSTANCE.getArtifactId(), resourceBundle);
     }
 
     /**
@@ -49,6 +49,6 @@ public class Messages extends MessagesCore {
      * @see MessagesCore#getString(String, ResourceBundle, Object[])
      */
     public static String getString(final String key, final Object... args) {
-        return MessagesCore.getString(key, TaCoKitConst.BUNDLE_ID, resourceBundle, args);
+        return MessagesCore.getString(key, GAV.INSTANCE.getArtifactId(), resourceBundle, args);
     }
 }

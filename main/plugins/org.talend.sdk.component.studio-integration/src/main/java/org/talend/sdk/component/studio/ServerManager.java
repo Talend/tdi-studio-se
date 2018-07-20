@@ -15,8 +15,6 @@
  */
 package org.talend.sdk.component.studio;
 
-import static org.talend.sdk.component.studio.GAV.GROUP_ID;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,7 +86,7 @@ public class ServerManager extends AbstractUIPlugin {
                         e);
             }
         };
-        manager = new ProcessManager(GROUP_ID, mvnResolverImpl);
+        manager = new ProcessManager(GAV.INSTANCE.getGroupId(), mvnResolverImpl);
         manager.start();
 
         client = new WebSocketClient("ws://localhost:" + manager.getPort() + "/websocket/v1",

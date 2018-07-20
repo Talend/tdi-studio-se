@@ -42,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Function;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Stream;
@@ -253,7 +252,7 @@ public class ProcessManager implements AutoCloseable {
             }
         };
         final Lock lock = new LocalLock(ofNullable(System.getProperty("component.lock.location")).map(File::new)
-                .orElseGet(() -> new File(System.getProperty("user.home"), ".talend/locks/" + GAV.ARTIFACT_ID + ".lock")), null);
+                .orElseGet(() -> new File(System.getProperty("user.home"), ".talend/locks/" + GAV.INSTANCE.getArtifactId() + ".lock")), null);
         lock.lock();
         port = newPort();
         if (!arguments.contains("--http")) {
@@ -460,14 +459,14 @@ public class ProcessManager implements AutoCloseable {
     }
 
     private Collection<URL> createClasspath() throws IOException {
-        final File serverJar = mvnResolver.apply(groupId + ":component-server:jar:" + GAV.COMPONENT_RUNTIME_VERSION);
+        final File serverJar = mvnResolver.apply(groupId + ":component-server:jar:" + GAV.INSTANCE.getComponentRuntimeVersion());
         if (!serverJar.exists()) {
             throw new IllegalArgumentException(serverJar + " doesn\'t exist");
         }
         final Collection<URL> paths = new HashSet<>(32);
         // we use the Cli as main so we need it
-        paths.add(mvnResolver.apply("commons-cli:commons-cli:jar:" + GAV.CLI_VERSION).toURI().toURL());
-        paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.SLF4J_VERSION).toURI().toURL());
+        paths.add(mvnResolver.apply("commons-cli:commons-cli:jar:" + GAV.INSTANCE.getCliVersion()).toURI().toURL());
+        paths.add(mvnResolver.apply("org.slf4j:slf4j-jdk14:jar:" + GAV.INSTANCE.getSlf4jVersion()).toURI().toURL());
         // server
         paths.add(serverJar.toURI().toURL());
         Mvn.withDependencies(serverJar, "TALEND-INF/dependencies.txt", false, deps -> {
@@ -476,7 +475,7 @@ public class ProcessManager implements AutoCloseable {
         });
         // beam if needed
         if (Boolean.getBoolean("components.server.beam.active")) {
-            final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.COMPONENT_RUNTIME_VERSION);
+            final File beamModule = mvnResolver.apply(groupId + ":component-runtime-beam:" + GAV.INSTANCE.getComponentRuntimeVersion());
             paths.add(beamModule.toURI().toURL());
             Mvn.withDependencies(beamModule, "TALEND-INF/beam.dependencies", true, deps -> {
                 aggregateDeps(paths, deps);

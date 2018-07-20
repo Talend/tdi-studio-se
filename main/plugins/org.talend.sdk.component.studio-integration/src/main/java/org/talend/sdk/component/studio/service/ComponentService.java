@@ -114,7 +114,7 @@ public class ComponentService {
     }
 
     private Set<String> readDependencies(final String name, final boolean acceptProvided, final String companionStack) {
-        final String gav = GAV.GROUP_ID + ":component-runtime-" + name + ":" + GAV.COMPONENT_RUNTIME_VERSION;
+        final String gav = GAV.INSTANCE.getGroupId() + ":component-runtime-" + name + ":" + GAV.INSTANCE.getComponentRuntimeVersion();
         final File module;
         try {
             module = mvnResolver.apply(gav);

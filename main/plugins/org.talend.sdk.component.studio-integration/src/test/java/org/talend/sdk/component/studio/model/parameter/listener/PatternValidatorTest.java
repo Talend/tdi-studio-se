@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collection;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+
 
 class PatternValidatorTest {
 

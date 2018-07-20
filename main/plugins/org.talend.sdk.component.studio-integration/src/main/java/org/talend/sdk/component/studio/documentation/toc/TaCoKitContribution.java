@@ -38,7 +38,7 @@ public class TaCoKitContribution implements ITocContribution {
 
     @Override
     public String getContributorId() {
-        return GAV.ARTIFACT_ID;
+        return GAV.INSTANCE.getArtifactId();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TaCoKitContribution implements ITocContribution {
 
     @Override
     public String getId() {
-        return GAV.ARTIFACT_ID + "." + contributionName;
+        return GAV.INSTANCE.getArtifactId() + "." + contributionName;
     }
 
     @Override

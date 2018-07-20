@@ -373,15 +373,15 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                             .stream()
                             .map(s -> new ModuleNeeded(getName(), "", true, s))
                             .collect(toList()));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.INSTANCE.getComponentRuntimeVersion()));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.INSTANCE.getComponentRuntimeVersion()));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.INSTANCE.getSlf4jVersion()));
 
                     if (!hasTcomp0Component(iNode)) {
                         if (!PluginChecker.isTIS()) {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:" + GAV.GROUP_ID + "/slf4j-standard/" + GAV.COMPONENT_RUNTIME_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:" + GAV.INSTANCE.getGroupId() + "/slf4j-standard/" + GAV.INSTANCE.getComponentRuntimeVersion()));
                         } else {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/" + GAV.SLF4J_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/" + GAV.INSTANCE.getSlf4jVersion()));
                         }
                     }
 
