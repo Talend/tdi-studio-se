@@ -68,7 +68,7 @@ public class SuggestionsResolver extends AbstractParameterResolver {
 
         for (int i = 0; i < relativePaths.size(); i++) {
             final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePaths.get(i));
-            final List<TaCoKitElementParameter> parameters = resolveParameters2(absolutePath, settings);
+            final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
             final PropertyDefinitionDecorator parameterRoot = rootParameters.get(i);
             parameters.forEach(parameter -> {
                 parameter.registerListener(parameter.getName(), updater);

@@ -41,32 +41,6 @@ abstract class AbstractParameterResolver implements ParameterResolver {
     }
     
     /**
-     * Finds and returns all ElementParameters stored under {@code relativePath}. {@code relativePath} may point at "leaf" Configuration option and 
-     * on Configuration type as well.
-     * 
-     * @param relativePath option path relative to action owner option
-     * @param settings all "leaf" options stored by their path
-     * @return
-     */
-    //TODO remove it if unused
-    protected final List<TaCoKitElementParameter> resolveParameters(final String relativePath, final Map<String, IElementParameter> settings) {
-        final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
-        final TaCoKitElementParameter parameter = (TaCoKitElementParameter) settings.get(absolutePath);
-        if (parameter != null) {
-            // absolute path points at "leaf" Configuration option, which doesn't have children
-            return Collections.singletonList(parameter);
-        } else {
-            // absolute path points at Configuration type, which has no corresponding ElementParameter, however there are ElementParameters
-            // for its children
-            return settings.entrySet().stream()
-                    .filter(e -> isChildParameter(e.getKey(), absolutePath))
-                    .map(Map.Entry::getValue)
-                    .map(e -> (TaCoKitElementParameter) e)
-                    .collect(Collectors.toList());
-        }
-    }
-    
-    /**
      * Finds and returns all child ElementParameters of node with {@code absolutePath}. {@code absolutePath} may point at "leaf" Configuration option and 
      * on Configuration type as well.
      * 
@@ -74,7 +48,7 @@ abstract class AbstractParameterResolver implements ParameterResolver {
      * @param settings all "leaf" options stored by their path
      * @return resolved ElementParameters
      */
-    protected final List<TaCoKitElementParameter> resolveParameters2(final String absolutePath, final Map<String, IElementParameter> settings) {
+    protected final List<TaCoKitElementParameter> resolveParameters(final String absolutePath, final Map<String, IElementParameter> settings) {
         final TaCoKitElementParameter parameter = (TaCoKitElementParameter) settings.get(absolutePath);
         if (parameter != null) {
             // absolute path points at "leaf" Configuration option, which doesn't have children
