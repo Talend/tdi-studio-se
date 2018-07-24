@@ -61,7 +61,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Denotes that some property has no parent property
      */
-    private static final String NO_PARENT_ID = "";
+    static final String NO_PARENT_ID = "";
 
     /**
      * Suffix used in id ({@link SimplePropertyDefinition#getPath()}), which denotes Array typed property

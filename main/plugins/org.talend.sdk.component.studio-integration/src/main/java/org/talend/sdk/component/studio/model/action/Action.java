@@ -15,7 +15,9 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,7 +40,10 @@ public class Action {
 
     private final String type;
     
-    private final Map<String, ActionParameter> parameters = new HashMap<>();
+    /**
+     * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter 
+     */
+    private final Map<String, List<ActionParameter>> parameters = new HashMap<>();
     
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
@@ -46,16 +51,33 @@ public class Action {
         this.type = type.toString();
     }
 
+    /**
+     * Adds specified {@code parameter} to this Action.
+     * ActionParameter passed should be unique action parameter.
+     * 
+     * @param parameter ActionParameter to be added
+     */
     public void addParameter(final ActionParameter parameter) {
         Objects.requireNonNull(parameter, "parameter should not be null");
-        parameters.put(parameter.getName(), parameter);
+        final String elementParameter = parameter.getName();
+        List<ActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
+        if (list.contains(parameter)) {
+            throw new IllegalArgumentException("action already contains parameter " + parameter); 
+        }
+        list.add(parameter);
     }
     
-    public void setParameterValue(final String parameterName, final String parameterValue) {
+    /**
+     * Sets {@code newValue} for all action parameters associated with ElementParameter's {@code parameterName}
+     * 
+     * @param parameterName ElementParameter name
+     * @param newValue new value to be set for action parameters
+     */
+    public void setParameterValue(final String parameterName, final String newValue) {
         if (!parameters.containsKey(parameterName)) {
             throw new IllegalArgumentException("Non-existent parameter: " + parameterName);
         }
-        parameters.get(parameterName).setValue(parameterValue);
+        parameters.get(parameterName).forEach(p -> p.setValue(newValue));
     }
 
     @SuppressWarnings("unchecked")
@@ -77,12 +99,12 @@ public class Action {
     }
     
     protected final boolean areParametersSet() {
-        return parameters.values().stream().allMatch(ActionParameter::isHasDirectValue);
+        return parameters.values().stream().flatMap(List::stream).allMatch(ActionParameter::isHasDirectValue);
     }
     
     protected final Map<String, String> payload() {
         final Map<String, String> payload = new HashMap<>();
-        parameters.values().forEach(actionParameter -> {
+        parameters.values().stream().flatMap(List::stream).forEach(actionParameter -> {
             payload.put(actionParameter.getParameter(), actionParameter.getValue());
         });
         return payload;

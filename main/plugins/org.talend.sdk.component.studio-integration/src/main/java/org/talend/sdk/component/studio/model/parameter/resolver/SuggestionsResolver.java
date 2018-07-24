@@ -22,42 +22,60 @@ import java.util.Map;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
-import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
 
 public class SuggestionsResolver extends AbstractParameterResolver {
     
-    private final ActionReference action;
-    
+    /**
+     * Updates action parameters whenever corresponding ElementParameters are changed
+     */
     private final ActionParametersUpdater updater;
 
     public SuggestionsResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions, final ActionParametersUpdater updater) {
-        super(actionOwner);
+        super(actionOwner, getActionRef(actionOwner, actions));
+        this.updater = updater;
+    }
+    
+    private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
         final String actionName = actionOwner.getProperty().getSuggestions().getName();
-        this.action = actions
+        return actions
                 .stream()
                 .filter(a -> Action.Type.SUGGESTIONS.toString().equals(a.getType()))
                 .filter(a -> a.getName().equals(actionName))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
-        this.updater = updater;
     }
     
+    /**
+     * Finds ElementParameters needed for action call by their relative path.
+     * Registers ActionParameterUpdater to each ElementParameter needed for action call
+     * Creates ActionParameter for each ElementParameter
+     * 
+     * @param settings all "leaf" Component options
+     */
     public void resolveParameters(final Map<String, IElementParameter> settings) {
-        final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(action.getProperties());
+        final List<PropertyDefinitionDecorator> callbackParameters = new ArrayList<>(PropertyDefinitionDecorator.wrap(actionRef.getProperties()));
+        final List<PropertyDefinitionDecorator> rootParameters = treeCreator.findRoots(callbackParameters);
         final List<String> relativePaths = actionOwner.getProperty().getSuggestions().getParameters();
+        if (rootParameters.size() != relativePaths.size()) {
+            throw new IllegalStateException("Number of callback parameter roots should be the same as number of relative paths");
+        }
 
         for (int i = 0; i < relativePaths.size(); i++) {
-            final TaCoKitElementParameter parameter = resolveParameter(relativePaths.get(i), settings);
-            parameter.registerListener(parameter.getName(), updater);
-            final String callbackParameter = callbackParameters.get(i).getName();
-            final String initialValue = callbackParameters.get(i).getDefaultValue();
-            final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackParameter, initialValue);
-            updater.getAction().addParameter(actionParameter);
+            final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePaths.get(i));
+            final List<TaCoKitElementParameter> parameters = resolveParameters2(absolutePath, settings);
+            final PropertyDefinitionDecorator parameterRoot = rootParameters.get(i);
+            parameters.forEach(parameter -> {
+                parameter.registerListener(parameter.getName(), updater);
+                final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
+                final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, null);
+                updater.getAction().addParameter(actionParameter);
+            });
         }
 
     }

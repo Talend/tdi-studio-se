@@ -32,22 +32,24 @@ import org.talend.sdk.component.studio.model.parameter.listener.ValidationListen
 
 public class ValidationResolver extends AbstractParameterResolver {
 
-    private final ActionReference action;
-
     private final ValidationListener listener;
 
     private final ElementParameter redrawParameter;
 
     public ValidationResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions,
             final ValidationListener listener, final ElementParameter redrawParameter) {
-        super(actionOwner);
+        super(actionOwner, getActionRef(actionOwner, actions));
         if (!actionOwner.getProperty().hasValidation()) {
             throw new IllegalArgumentException("property has no validation");
         }
         this.listener = listener;
         this.redrawParameter = redrawParameter;
+        
+    }
+    
+    private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
         final String actionName = actionOwner.getProperty().getValidationName();
-        this.action = actions
+        return actions
                 .stream()
                 .filter(a -> Action.Type.VALIDATION.toString().equals(a.getType()))
                 .filter(a -> a.getName().equals(actionName))
@@ -56,7 +58,7 @@ public class ValidationResolver extends AbstractParameterResolver {
     }
 
     public void resolveParameters(final Map<String, IElementParameter> settings) {
-        final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(action.getProperties());
+        final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(actionRef.getProperties());
         final List<String> relativePaths = actionOwner.getProperty().getValidationParameters();
 
         for (int i = 0; i < relativePaths.size(); i++) {
