@@ -71,13 +71,7 @@ import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
-// TODO: finish the impl
 public class ComponentModel extends AbstractBasicComponent implements IAdditionalInfo {
-
-    /**
-     * Separator between family and component name
-     */
-    private static final String COMPONENT_SEPARATOR = "";
 
     private final ComponentIndex index;
 
@@ -106,8 +100,6 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     private Boolean useLookup = null;
-
-    private boolean hasConditionalOutput = false;
 
     private ETaCoKitComponentType tacokitComponentType;
 
