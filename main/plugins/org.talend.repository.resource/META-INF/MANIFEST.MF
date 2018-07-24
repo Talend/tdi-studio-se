@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Resource
+Bundle-SymbolicName: org.talend.repository.resource;singleton:=true
+Bundle-Version: 7.1.1.qualifier
+Bundle-Activator: org.talend.repository.resource.RouteResourceActivator
+Bundle-Vendor: .Talend SA.
+Require-Bundle: org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.talend.commons.ui;bundle-version="7.1.1",
+ org.talend.core;bundle-version="7.1.1",
+ org.talend.core.repository;bundle-version="7.1.1",
+ org.talend.camel.model;bundle-version="7.1.1",
+ org.talend.metadata.managment.ui;bundle-version="7.1.1",
+ org.talend.repository;bundle-version="7.1.1",
+ org.talend.designer.core;bundle-version="7.1.1",
+ org.talend.designer.camel.resource.core;bundle-version="7.1.1",
+ org.talend.repository.items.importexport;bundle-version="7.1.1",
+ org.talend.core.ui;bundle-version="7.1.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
+Import-Package: org.apache.commons.io
