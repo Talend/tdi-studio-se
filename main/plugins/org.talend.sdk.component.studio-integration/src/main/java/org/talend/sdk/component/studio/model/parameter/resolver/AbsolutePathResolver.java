@@ -29,7 +29,7 @@ public class AbsolutePathResolver {
      * Validable annotation.
      * 
      * @param nodePath
-     *            given node path (ex: root.part2.part3)
+     *            given node absolute path (ex: root.part2.part3)
      * @param parameterReference
      *            relative path which should be resolved using nodePath (ex:
      *            ../part1/part2)
@@ -65,6 +65,13 @@ public class AbsolutePathResolver {
         return (parameterReference.startsWith(".") ? "" : "../") + parameterReference;
     }
 
+    /**
+     * Resolves absolute path from relative parameterReference path
+     * 
+     * @param nodePath node absolute path
+     * @param parameterReference relative parameter reference path
+     * @return resolved path
+     */
     private String doResolvePath(final String nodePath, final String parameterReference) {
         if (".".equals(parameterReference)) {
             return nodePath;
