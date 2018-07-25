@@ -18,7 +18,7 @@ package org.talend.sdk.component.studio.model.parameter;
 import java.util.Map;
 
 import org.talend.core.model.process.IElement;
-import org.talend.sdk.component.studio.model.action.SuggestionsAction;
+import org.talend.sdk.component.studio.model.parameter.suggestion.SuggestionsAction;
 
 /**
  * TacokitElementParameter which provides possible values list

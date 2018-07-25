@@ -47,10 +47,16 @@ public class SyncAction extends Command implements TacokitCommand {
             MessageDialog.openError(new Shell(), dialogTitle, result.get(MESSAGE));
         }
     }
-
+    
+    /**
+     * Adds Action method {@code parameter}. It should have unique name/path
+     * 
+     * @param elementParameterName name of ElementParameter, which provides values for ActionParameter
+     * @param parameter ActionParameter to be added
+     */
     @Override
-    public void addParameter(final ActionParameter parameter) {
-        action.addParameter(parameter);
+    public void addParameter(final String elementParameterName, final ActionParameter parameter) {
+        action.addParameter(elementParameterName, parameter);
     }
 
     @Override

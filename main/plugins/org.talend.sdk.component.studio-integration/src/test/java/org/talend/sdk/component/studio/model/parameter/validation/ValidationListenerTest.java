@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter.listener;
+package org.talend.sdk.component.studio.model.parameter.validation;
 
 import static java.util.Collections.singletonMap;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -29,7 +29,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.Test;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 class ValidationListenerTest {
 
@@ -37,7 +36,7 @@ class ValidationListenerTest {
     void simple() throws InterruptedException {
 
         final CountDownLatch latch = new CountDownLatch(1);
-        final ActionParameter param = new ActionParameter("test", "the.test.param.url", null);
+        final ValidationActionParameter param = new ValidationActionParameter("the.test.param.url");
         final ValidationLabel validationLabel = new ValidationLabel(null) {
 
             @Override
@@ -72,7 +71,7 @@ class ValidationListenerTest {
                 }
             }
         };
-        listener.addParameter(param);
+        listener.addParameter("test", param);
 
         listener.propertyChange(new PropertyChangeEvent(new Object(), "test", null, "htt://gateway/api"));
         latch.await(1, MINUTES);

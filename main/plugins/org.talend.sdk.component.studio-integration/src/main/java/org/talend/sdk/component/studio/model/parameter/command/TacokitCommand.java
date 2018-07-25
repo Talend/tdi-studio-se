@@ -23,7 +23,7 @@ public interface TacokitCommand {
      * Execute command
      */
     void exec();
-
-    void addParameter(final ActionParameter parameter);
+    
+    void addParameter(final String elementParameter, final ActionParameter parameter);
 
 }

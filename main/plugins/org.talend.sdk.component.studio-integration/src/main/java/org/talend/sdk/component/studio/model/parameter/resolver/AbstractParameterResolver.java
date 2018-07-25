@@ -17,7 +17,7 @@ import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
 /**
  * Common super class for ParameterResolvers. It contains common state and functionality
  */
-abstract class AbstractParameterResolver implements ParameterResolver {
+public abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
     
@@ -30,7 +30,7 @@ abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final ActionReference actionRef;
     
-    AbstractParameterResolver(final PropertyNode actionOwner, final ActionReference actionRef) {
+    protected AbstractParameterResolver(final PropertyNode actionOwner, final ActionReference actionRef) {
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
     }

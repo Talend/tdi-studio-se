@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter.resolver;
+package org.talend.sdk.component.studio.model.parameter.suggestion;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +28,7 @@ import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorat
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
+import org.talend.sdk.component.studio.model.parameter.resolver.AbstractParameterResolver;
 
 public class SuggestionsResolver extends AbstractParameterResolver {
     
@@ -70,11 +71,11 @@ public class SuggestionsResolver extends AbstractParameterResolver {
             final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePaths.get(i));
             final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
             final PropertyDefinitionDecorator parameterRoot = rootParameters.get(i);
-            parameters.forEach(parameter -> {
-                parameter.registerListener(parameter.getName(), updater);
-                final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
-                final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, null);
-                updater.getAction().addParameter(actionParameter);
+            parameters.forEach(ep -> {
+                ep.registerListener(ep.getName(), updater);
+                final String callbackParameter = ep.getName().replaceFirst(absolutePath, parameterRoot.getPath());
+                final ActionParameter actionParameter = new ActionParameter(callbackParameter);
+                updater.getAction().addParameter(ep.getName(), actionParameter);
             });
         }
 

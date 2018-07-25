@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.action;
+package org.talend.sdk.component.studio.model.parameter.suggestion;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.model.parameter.SuggestionValues;
+import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.ui.composite.controller.TaCoKitValueSelectionController;
 import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 

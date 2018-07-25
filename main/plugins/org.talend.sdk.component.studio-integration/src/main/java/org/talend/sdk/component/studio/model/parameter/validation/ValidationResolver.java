@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter.resolver;
+package org.talend.sdk.component.studio.model.parameter.validation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,10 +25,9 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
+import org.talend.sdk.component.studio.model.parameter.resolver.AbstractParameterResolver;
 
 public class ValidationResolver extends AbstractParameterResolver {
 
@@ -57,17 +56,18 @@ public class ValidationResolver extends AbstractParameterResolver {
                 .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
     }
 
+    @Override
     public void resolveParameters(final Map<String, IElementParameter> settings) {
         final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(actionRef.getProperties());
         final List<String> relativePaths = actionOwner.getProperty().getValidationParameters();
 
         for (int i = 0; i < relativePaths.size(); i++) {
-            final TaCoKitElementParameter parameter = resolveParameter(relativePaths.get(i), settings);
-            parameter.registerListener(parameter.getName(), listener);
-            parameter.setRedrawParameter(redrawParameter);
+            final TaCoKitElementParameter ep = resolveParameter(relativePaths.get(i), settings);
+            ep.registerListener(ep.getName(), listener);
+            ep.setRedrawParameter(redrawParameter);
             final String callbackParameter = callbackParameters.get(i).getName();
             final String initialValue = callbackParameters.get(i).getDefaultValue();
-            listener.addParameter(new ActionParameter(parameter.getName(), callbackParameter, initialValue));
+            listener.addParameter(ep.getName(), new ValidationActionParameter(callbackParameter, initialValue));
         }
 
     }

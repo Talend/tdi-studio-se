@@ -25,7 +25,7 @@ public class SettingsActionParameter extends ActionParameter {
     private final TaCoKitElementParameter setting;
 
     public SettingsActionParameter(final TaCoKitElementParameter setting, final String parameter) {
-        super(setting.getName(), parameter, "");
+        super(parameter);
         this.setting = setting;
     }
 

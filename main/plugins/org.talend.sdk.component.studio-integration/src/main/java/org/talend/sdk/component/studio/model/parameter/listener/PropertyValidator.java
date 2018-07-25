@@ -20,7 +20,7 @@ import java.beans.PropertyChangeListener;
 import java.util.regex.Pattern;
 
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+import org.talend.sdk.component.studio.model.parameter.validation.ValidationLabel;
 
 /**
  * Base class for Property Validators. It validates new value. If validation is not passed, then

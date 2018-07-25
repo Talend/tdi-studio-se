@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+import org.talend.sdk.component.studio.model.parameter.validation.ValidationLabel;
 
 /**
  * Creates Validators

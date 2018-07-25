@@ -24,7 +24,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+import org.talend.sdk.component.studio.model.parameter.validation.ValidationLabel;
 
 /**
  * Checks whether new value corresponds specified {@code regex}.

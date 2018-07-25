@@ -43,24 +43,29 @@ public class Action {
     /**
      * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter 
      */
-    private final Map<String, List<ActionParameter>> parameters = new HashMap<>();
+    protected final Map<String, List<ActionParameter>> parameters = new HashMap<>();
     
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
         this.family = family;
         this.type = type.toString();
     }
-
+    
     /**
-     * Adds specified {@code parameter} to this Action.
-     * ActionParameter passed should be unique action parameter.
+     * Adds specified ActionParameter {@code parameter} to this Action.
+     * Specified ActionParameter should be unique, i.e. it should have unique parameter name/path 
+     * (e.g. "p1.datastore.url")
      * 
+     * @param elementParameterName name of ElementParameter which provides value for ActionParameter to be added
      * @param parameter ActionParameter to be added
      */
-    public void addParameter(final ActionParameter parameter) {
+    public void addParameter(final String elementParameterName, final ActionParameter parameter) {
+        Objects.requireNonNull(elementParameterName, "elementParameterName should not be null");
         Objects.requireNonNull(parameter, "parameter should not be null");
-        final String elementParameter = parameter.getName();
-        List<ActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
+        if (elementParameterName.isEmpty()) {
+            throw new IllegalArgumentException("elementParameterName should not be empty");
+        }
+        List<ActionParameter> list = parameters.computeIfAbsent(elementParameterName, k -> new ArrayList<>());
         if (list.contains(parameter)) {
             throw new IllegalArgumentException("action already contains parameter " + parameter); 
         }
@@ -96,10 +101,6 @@ public class Action {
 
     protected final String getType() {
         return this.type;
-    }
-    
-    protected final boolean areParametersSet() {
-        return parameters.values().stream().flatMap(List::stream).allMatch(ActionParameter::isHasDirectValue);
     }
     
     protected final Map<String, String> payload() {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.talend.sdk.component.studio.model.parameter;
+package org.talend.sdk.component.studio.model.parameter.validation;
 
 import static java.util.stream.Stream.of;
 
@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.eclipse.swt.graphics.RGB;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElement;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
 /**
  * Synthetic Element Parameter which shows validation message
@@ -57,13 +58,13 @@ public class ValidationLabel extends TaCoKitElementParameter {
         setValue("");
     }
 
-    public void showValidation(final String message) {
+    void showValidation(final String message) {
         validationMessage = message;
         setShow(true);
         setValue(buildValue());
     }
 
-    public void hideValidation() {
+    void hideValidation() {
         validationMessage = null;
         setShow(false);
         setValue("");

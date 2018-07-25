@@ -16,7 +16,7 @@
 package org.talend.sdk.component.studio.model.parameter.listener;
 
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+import org.talend.sdk.component.studio.model.parameter.validation.ValidationLabel;
 
 /**
  * Checks whether new value is less than specified {@code max} value

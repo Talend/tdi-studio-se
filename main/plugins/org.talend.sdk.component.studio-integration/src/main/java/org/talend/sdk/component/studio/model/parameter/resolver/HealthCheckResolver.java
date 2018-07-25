@@ -75,10 +75,10 @@ public class HealthCheckResolver {
         node.accept(collector);
         final AsyncAction command = new AsyncAction(new Action(node.getProperty().getHealthCheckName(), family, Action.Type.HEALTHCHECK));
         collector.getPaths().stream().map(settings::get).filter(Objects::nonNull).map(p -> (TaCoKitElementParameter) p)
-                .forEach(p -> {
-                    final String parameter = p.getName().replace(basePath, alias);
-                    final SettingsActionParameter actionParameter = new SettingsActionParameter(p, parameter);
-                    command.addParameter(actionParameter);
+                .forEach(ep -> {
+                    final String parameter = ep.getName().replace(basePath, alias);
+                    final SettingsActionParameter actionParameter = new SettingsActionParameter(ep, parameter);
+                    command.addParameter(ep.getName(), actionParameter);
                 });
         button.setCommand(command);
         settings.put(button.getName(), button);

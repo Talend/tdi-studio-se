@@ -24,8 +24,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.EParameterFieldType;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
-
+import org.talend.sdk.component.studio.model.parameter.validation.ValidationLabel;
 
 class PatternValidatorTest {
 

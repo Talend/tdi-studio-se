@@ -15,67 +15,77 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
-import org.talend.core.model.utils.ContextParameterUtils;
 
 public class ActionParameter {
 
     private static final Pattern QUOTES_PATTERN = Pattern.compile("^\"|\"$");
 
     /**
-     * ElementParameter name (which also denotes its path)
-     */
-    private final String name;
-
-    /**
-     * Action parameter alias, which used to make callback
+     * Action parameter name/path. It is used as a key in a Map, which used as action method payload
      */
     private final String parameter;
-
-    /**
-     * Denotes whether associated ElementParameter is set and usable. Once set it can't be
-     * unset
-     */
-    private boolean hasDirectValue = false;
 
     /**
      * Parameter value
      */
     private String value;
-
+    
     /**
      * Creates ActionParameter
      * 
-     * @param name ElementParameter name
-     * @param parameter Action parameter name
-     * @param value initial value, can be null. If it's not null, then it switches ActionParameter to set state
+     * @param parameter action method parameter name/path
      */
-    public ActionParameter(final String name, final String parameter, final String value) {
-        this.name = name;
-        this.parameter = parameter;
-        setValue(value);
+    public ActionParameter(final String parameter) {
+        this(parameter, null);
     }
-
-    void setValue(final String newValue) {
-        if (newValue != null) {
-            this.value = removeQuotes(newValue);
-            // todo: if context -> evaluate
-            this.hasDirectValue = !this.value.equals(newValue) || !ContextParameterUtils.containContextVariables(newValue);
-        } else {
-            this.value = null;
-            this.hasDirectValue = false;
+    
+    /**
+     * Creates ActionParameter
+     * 
+     * @param parameter action method parameter name/path
+     * @param value action method parameter initial value
+     */
+    public ActionParameter(final String parameter, final String value) {
+        Objects.requireNonNull(parameter, "parameter should not be null");
+        if (parameter.isEmpty()) {
+            throw new IllegalArgumentException("parameter should not be empty");
         }
+        this.parameter = parameter;
+        setValue0(value);
     }
-
-    protected String removeQuotes(final String quotedString) {
-        return QUOTES_PATTERN.matcher(quotedString).replaceAll("");
+    
+    /**
+     * Parameter value
+     */
+    protected String getValue() {
+        return this.value;
     }
 
     /**
-     * ElementParameter name (which also denotes its path)
+     * Sets ActionParameter new value.
+     * 
+     * @param newValue new value of ActionParameter to be set
      */
-    String getName() {
-        return this.name;
+    protected void setValue(final String newValue) {
+        setValue0(newValue);
+    }
+    
+    /*
+     * a part of Constructor
+     * setValue() method is designed for inheritance, thus it can't be called in Constructor
+     */
+    private void setValue0(final String newValue) {
+        if (newValue != null) {
+            this.value = removeQuotes(newValue);
+        } else {
+            this.value = null;
+        }
+    }
+
+    protected final String removeQuotes(final String quotedString) {
+        return QUOTES_PATTERN.matcher(quotedString).replaceAll("");
     }
 
     /**
@@ -85,17 +95,4 @@ public class ActionParameter {
         return this.parameter;
     }
 
-    /**
-     * Denotes whether associated ElementParameter is set and usable. Once set it can't be unset
-     */
-    boolean isHasDirectValue() {
-        return this.hasDirectValue;
-    }
-
-    /**
-     * Parameter value
-     */
-    String getValue() {
-        return this.value;
-    }
 }
