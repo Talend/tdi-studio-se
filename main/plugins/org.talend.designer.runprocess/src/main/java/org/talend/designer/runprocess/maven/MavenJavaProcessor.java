@@ -33,6 +33,7 @@ import org.talend.core.model.process.IProcess;
 import org.talend.core.model.process.JobInfo;
 import org.talend.core.model.process.ProcessUtils;
 import org.talend.core.model.properties.Property;
+import org.talend.core.model.repository.ERepositoryObjectType;
 import org.talend.core.model.utils.JavaResourcesHelper;
 import org.talend.core.repository.utils.ItemResourceUtil;
 import org.talend.core.runtime.process.ITalendProcessJavaProject;
@@ -288,7 +289,7 @@ public class MavenJavaProcessor extends JavaProcessor {
 
         Object exportType = getArguments() == null ? null : getArguments().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
 
-        if (exportType == null) {
+        if (exportType == null && !ERepositoryObjectType.getType(itemProperty).equals(ERepositoryObjectType.PROCESS) ) {
             exportType = itemProperty.getAdditionalProperties().get(TalendProcessArgumentConstant.ARG_BUILD_TYPE);
         }
 
