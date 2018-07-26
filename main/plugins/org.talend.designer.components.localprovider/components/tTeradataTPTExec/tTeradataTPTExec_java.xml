@@ -329,8 +329,7 @@
         NAME="DEFINE_CHARSET"
         FIELD="CHECK"
         NUM_ROW="50"
-        REQUIRED="true"
-		SHOW_IF="CUSTOM_SCRIPT=='false'">
+        REQUIRED="true">
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
     
