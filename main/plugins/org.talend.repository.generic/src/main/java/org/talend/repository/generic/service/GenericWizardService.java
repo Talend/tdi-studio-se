@@ -146,8 +146,8 @@ public class GenericWizardService implements IGenericWizardService {
 
     @Override
     public boolean isGenericItem(Item item) {
-        if(item !=null && item instanceof ConnectionItem){
-            return ((ConnectionItem)item).getConnection().getCompProperties() != null;
+        if (item != null && item instanceof ConnectionItem) {
+            return ((ConnectionItem) item).getConnection().getCompProperties() != null;
         }
         return false;
     }
@@ -164,7 +164,7 @@ public class GenericWizardService implements IGenericWizardService {
         if (imageStream == null) {
             return null;
         }
-        // node image   ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_ICON)
+        // node image ImageProvider.getImageDesc(ECoreImage.METADATA_TABLE_ICON)
         ImageData id = new ImageData(imageStream);
         Image image = new Image(null, id);
         return image;
@@ -231,12 +231,13 @@ public class GenericWizardService implements IGenericWizardService {
     }
 
     @Override
-    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel) {
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel, boolean withEvaluator) {
         List<ComponentProperties> componentProperties = new ArrayList<>();
         Set<ComponentProperties> componentPropertiesSet = new HashSet<>();
         if (isGenericConnection(connection)) {
             String compProperties = connection.getCompProperties();
-            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection, false);
+            ComponentProperties cp = ComponentsUtils.getComponentPropertiesFromSerialized(compProperties, connection,
+                    withEvaluator);
             if (cp != null) {
                 componentProperties.add(cp);
             }
@@ -253,7 +254,7 @@ public class GenericWizardService implements IGenericWizardService {
                 for (TaggedValue taggedValue : metadataTable.getTaggedValue()) {
                     if (IComponentConstants.COMPONENT_PROPERTIES_TAG.equals(taggedValue.getTag())) {
                         ComponentProperties compPros = ComponentsUtils
-                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, false);
+                                .getComponentPropertiesFromSerialized(taggedValue.getValue(), connection, withEvaluator);
                         if (compPros != null && !componentPropertiesSet.contains(compPros)) {
                             compPros.updateNestedProperties(cp);
                             componentProperties.add(compPros);
@@ -264,6 +265,18 @@ public class GenericWizardService implements IGenericWizardService {
             }
         }
         return componentProperties;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.talend.core.runtime.services.IGenericWizardService#getAllComponentProperties(org.talend.core.model.metadata.
+     * builder.connection.Connection, java.lang.String, boolean)
+     */
+    @Override
+    public List<ComponentProperties> getAllComponentProperties(Connection connection, String tableLabel) {
+        return getAllComponentProperties(connection, tableLabel, false);
     }
 
     @Override

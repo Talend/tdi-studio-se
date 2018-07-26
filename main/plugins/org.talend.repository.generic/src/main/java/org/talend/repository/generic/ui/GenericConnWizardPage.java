@@ -91,10 +91,9 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         baseElement = new FakeElement(form.getName());
         baseElement.setReadOnly(!isRepositoryObjectEditable);
         dynamicComposite = new DynamicComposite(container, SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_FOCUS, EComponentCategory.BASIC,
-                baseElement, true, container.getBackground(), form, false);
+                baseElement, connectionItem, true, container.getBackground(), form, false);
         dynamicComposite.setLayoutData(createMainFormData(addContextFields));
         dynamicComposite.setWizardPropertyChangeListener(this);
-        dynamicComposite.setConnectionItem(connectionItem);
         addCheckListener(dynamicComposite.getChecker());
 
         if (addContextFields) {
@@ -145,8 +144,8 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
                         try {
                             listExistingObjects = loadRepositoryViewObjectList();
                         } catch (PersistenceException e) {
-                            return new org.eclipse.core.runtime.Status(IStatus.ERROR,
-                                    "org.talend.metadata.management.ui", 1, "", e); //$NON-NLS-1$ //$NON-NLS-2$
+                            return new org.eclipse.core.runtime.Status(IStatus.ERROR, "org.talend.metadata.management.ui", 1, "", //$NON-NLS-1$ //$NON-NLS-2$
+                                    e);
                         }
                         retrieveNameFinished = true;
                         // force the refresh of the text field, no matter successfull retrieve of not.
@@ -201,8 +200,8 @@ public class GenericConnWizardPage extends GenericWizardPage implements Property
         List<IRepositoryViewObject> list = new ArrayList<IRepositoryViewObject>();
         ERepositoryObjectType type = ERepositoryObjectType.getType(connectionItem.getTypeName());
         if (GlobalServiceRegister.getDefault().isServiceRegistered(IProxyRepositoryService.class)) {
-            IProxyRepositoryService service = (IProxyRepositoryService) GlobalServiceRegister.getDefault().getService(
-                    IProxyRepositoryService.class);
+            IProxyRepositoryService service = (IProxyRepositoryService) GlobalServiceRegister.getDefault()
+                    .getService(IProxyRepositoryService.class);
 
             list = service.getProxyRepositoryFactory().getAll(type, true, false);
         }
