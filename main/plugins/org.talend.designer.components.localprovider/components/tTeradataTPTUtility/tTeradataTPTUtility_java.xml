@@ -41,7 +41,7 @@
       NUM_ROW="3" 
       REPOSITORY_VALUE="DELIMITED" 
       GROUP="DATA_FILE"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
     </PARAMETER>
 
     <PARAMETER 
@@ -51,7 +51,7 @@
       REQUIRED="true" 
       REPOSITORY_VALUE="FILE_PATH" 
       GROUP="DATA_FILE"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/out.csv"</DEFAULT>
     </PARAMETER>
 
@@ -62,7 +62,7 @@
       NUM_ROW="7" 
       REPOSITORY_VALUE="APPEND" 
       GROUP="DATA_FILE"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
@@ -72,7 +72,7 @@
       SHOW="true"
       NUM_ROW="10"
       REPOSITORY_VALUE="DATABASE:TERADATA"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
     </PARAMETER>
     
     <PARAMETER
@@ -93,7 +93,7 @@
       REPOSITORY_VALUE="SERVER_NAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"localtd"</DEFAULT>
     </PARAMETER>
 
@@ -104,7 +104,7 @@
       REPOSITORY_VALUE="SID"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -115,7 +115,7 @@
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -126,7 +126,7 @@
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -134,7 +134,7 @@
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="17"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -142,7 +142,7 @@
       NAME="NOTE"
       FIELD="LABEL"
       NUM_ROW="17"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>*Note:You must specify one or more columns as primary key for updating or deleting</DEFAULT>
     </PARAMETER>
 
@@ -152,7 +152,7 @@
       NUM_ROW="18"
       REQUIRED="true"
       GROUP="CONSUMER"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="LOAD">
         <ITEM NAME="LOAD" VALUE="Load" />
         <ITEM NAME="INSERTER" VALUE="Inserter" />
@@ -182,7 +182,7 @@
       NUM_ROW="20"
       REQUIRED="true"
       GROUP="PRODUCER"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="DATA_CONNECTOR">
         <ITEM NAME="DATA_CONNECTOR" VALUE="DataConnector" />
         <!--
@@ -200,7 +200,7 @@
       NUM_ROW="1"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>Teradata</DEFAULT>
     </PARAMETER>
 
@@ -209,7 +209,7 @@
       FIELD="DBTABLE"
       NUM_ROW="22"
       REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"mytable"</DEFAULT>
     </PARAMETER>
 
@@ -217,7 +217,7 @@
       NAME="SCRIPT_PATH"
       FIELD="DIRECTORY"
       NUM_ROW="23"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/"</DEFAULT>
     </PARAMETER>
 
@@ -248,7 +248,7 @@
       SHOW_IF="CUSTOM_SCRIPT=='true'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-	
+    
     <PARAMETER 
       NAME="ROWSEPARATOR" 
       FIELD="TEXT" 
@@ -322,7 +322,7 @@
     >
       <DEFAULT>"OPERATOR_DATA_CONNECTOR"</DEFAULT>
     </PARAMETER>
-	
+    
     <PARAMETER
       NAME="JOB_NAME"
       FIELD="TEXT"
@@ -628,8 +628,8 @@
       <TEMPLATE_PARAM SOURCE="self.RETURN_CODE" TARGET="tTPTInput.RETURN_CODE" />
       <TEMPLATE_PARAM SOURCE="self.DEFINE_CHARSET" TARGET="tTPTInput.DEFINE_CHARSET" />
       <TEMPLATE_PARAM SOURCE="self.CHARSET" TARGET="tTPTInput.CHARSET" />
-	  <TEMPLATE_PARAM SOURCE="self.CUSTOM_SCRIPT" TARGET="tTPTInput.CUSTOM_SCRIPT" />
-	  <TEMPLATE_PARAM SOURCE="self.CUSTOM_SCRIPT_FILE" TARGET="tTPTInput.CUSTOM_SCRIPT_FILE" />
+      <TEMPLATE_PARAM SOURCE="self.CUSTOM_SCRIPT" TARGET="tTPTInput.CUSTOM_SCRIPT" />
+      <TEMPLATE_PARAM SOURCE="self.CUSTOM_SCRIPT_FILE" TARGET="tTPTInput.CUSTOM_SCRIPT_FILE" />
       <TEMPLATE_PARAM SOURCE="self.FIELDSEPARATOR" TARGET="tTPTInput.FIELD_SEPARATOR" />
 
       <TEMPLATE_PARAM SOURCE="self.SCHEMA" TARGET="tTPTInput.SCHEMA" />

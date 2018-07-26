@@ -40,7 +40,7 @@
       NUM_ROW="6"
       REQUIRED="true"
       GROUP="CONSUMER"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="LOAD">
             <ITEM NAME="LOAD" VALUE="Load" />
         <ITEM NAME="INSERTER" VALUE="Inserter" />
@@ -71,7 +71,7 @@
       SHOW="true"
       NUM_ROW="1"
       REPOSITORY_VALUE="DATABASE:TERADATA"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
     </PARAMETER>
     
     <PARAMETER
@@ -93,7 +93,7 @@
       REPOSITORY_VALUE="SERVER_NAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"localtd"</DEFAULT>
     </PARAMETER>
 
@@ -104,7 +104,7 @@
       REPOSITORY_VALUE="SID"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -115,7 +115,7 @@
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -126,7 +126,7 @@
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
       GROUP="CONNECTION"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -134,7 +134,7 @@
       NAME="SCHEMA"
       FIELD="SCHEMA_TYPE"
       NUM_ROW="5"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -142,7 +142,7 @@
     NAME="NOTE"
     FIELD="LABEL"
     NUM_ROW="5"
-	SHOW_IF="CUSTOM_SCRIPT=='false'">
+    SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>*Note:You must specify one or more columns as primary key for updating or deleting</DEFAULT>
     </PARAMETER>
 
@@ -152,7 +152,7 @@
       NUM_ROW="9"
       REQUIRED="true"
       GROUP="PRODUCER"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="DATA_CONNECTOR">
         <ITEM NAME="DATA_CONNECTOR" VALUE="DataConnector" />
         <!--
@@ -170,7 +170,7 @@
       NUM_ROW="3"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>Teradata</DEFAULT>
     </PARAMETER>
 
@@ -179,7 +179,7 @@
       FIELD="DBTABLE"
       NUM_ROW="12"
       REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"mytable"</DEFAULT>
     </PARAMETER>
 
@@ -187,7 +187,7 @@
       NAME="SCRIPT_PATH"
       FIELD="DIRECTORY"
       NUM_ROW="13"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/"</DEFAULT>
     </PARAMETER>
 
@@ -196,7 +196,7 @@
       FIELD="FILE"
       NUM_ROW="15"
       REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/test.csv"</DEFAULT>
     </PARAMETER>
 
@@ -227,13 +227,13 @@
       SHOW_IF="CUSTOM_SCRIPT=='true'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
-	
+    
     <PARAMETER
       NAME="FIELD_SEPARATOR"
       FIELD="TEXT"
       NUM_ROW="10"
       REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>";"</DEFAULT>
     </PARAMETER>
     
@@ -260,7 +260,7 @@
       FIELD="CHECK"
       NUM_ROW="25"
       REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
@@ -348,7 +348,7 @@
       FIELD="CHECK" 
       NUM_ROW="55" 
       GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>false</DEFAULT>
     </PARAMETER>
 
