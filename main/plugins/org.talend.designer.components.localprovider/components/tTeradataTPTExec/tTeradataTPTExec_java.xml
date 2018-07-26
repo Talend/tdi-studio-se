@@ -42,7 +42,7 @@
       GROUP="CONSUMER"
       SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="LOAD">
-            <ITEM NAME="LOAD" VALUE="Load" />
+        <ITEM NAME="LOAD" VALUE="Load" />
         <ITEM NAME="INSERTER" VALUE="Inserter" />
         <ITEM NAME="UPDATE" VALUE="Update" />
         <ITEM NAME="STREAM" VALUE="Stream" />
@@ -55,8 +55,7 @@
       NUM_ROW="6"
       REQUIRED="true"
       GROUP="CONSUMER"
-      SHOW_IF="((ACTION=='UPDATE') or (ACTION=='STREAM')) AND (CUSTOM_SCRIPT=='false')"
-    >
+      SHOW_IF="((ACTION=='UPDATE') or (ACTION=='STREAM')) AND (CUSTOM_SCRIPT=='false')">
       <ITEMS DEFAULT="UPSERT">
         <ITEM NAME="INSERT" VALUE="Insert" />
         <ITEM NAME="UPDATE" VALUE="Update" />
@@ -78,8 +77,7 @@
       NAME="EXECUTION"
       FIELD="CLOSED_LIST"
       NUM_ROW="2"
-      REQUIRED="true"
-    >
+      REQUIRED="true">
       <ITEMS DEFAULT="WINDOWS">
         <ITEM NAME="WINDOWS" VALUE="Windows" />
         <ITEM NAME="UNIX" VALUE="Unix" />
@@ -139,10 +137,10 @@
     </PARAMETER>
 
     <PARAMETER
-    NAME="NOTE"
-    FIELD="LABEL"
-    NUM_ROW="5"
-    SHOW_IF="CUSTOM_SCRIPT=='false'">
+      NAME="NOTE"
+      FIELD="LABEL"
+      NUM_ROW="5"
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>*Note:You must specify one or more columns as primary key for updating or deleting</DEFAULT>
     </PARAMETER>
 
@@ -247,12 +245,12 @@
     </PARAMETER>
     
     <PARAMETER
-        NAME="LOG_TABLE_TABLE"
-        FIELD="TEXT"
-        NUM_ROW="20"
-        REQUIRED="true"
-        SHOW_IF="SPECIFY_LOG_TABLE=='true'">
-        <DEFAULT>""</DEFAULT>
+      NAME="LOG_TABLE_TABLE"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REQUIRED="true"
+      SHOW_IF="SPECIFY_LOG_TABLE=='true'">
+      <DEFAULT>""</DEFAULT>
     </PARAMETER>
     
      <PARAMETER
@@ -326,11 +324,11 @@
     </PARAMETER>
     
     <PARAMETER
-        NAME="DEFINE_CHARSET"
-        FIELD="CHECK"
-        NUM_ROW="50"
-        REQUIRED="true">
-        <DEFAULT>false</DEFAULT>
+      NAME="DEFINE_CHARSET"
+      FIELD="CHECK"
+      NUM_ROW="50"
+      REQUIRED="true">
+      <DEFAULT>false</DEFAULT>
     </PARAMETER>
     
     <PARAMETER
