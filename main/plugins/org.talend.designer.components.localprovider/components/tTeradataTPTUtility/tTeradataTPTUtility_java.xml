@@ -33,25 +33,7 @@
     <CONNECTOR CTYPE="RUN_IF"/>
   </CONNECTORS>
 
-  <PARAMETERS>
-    <PARAMETER
-      NAME="CUSTOM_SCRIPT"
-      FIELD="CHECK"
-      NUM_ROW="1"
-      REQUIRED="true">
-      <DEFAULT>false</DEFAULT>
-    </PARAMETER>
-    
-    <PARAMETER 
-      NAME="CUSTOM_SCRIPT_FILE" 
-      FIELD="FILE" 
-      NUM_ROW="2" 
-      REQUIRED="true" 
-      REPOSITORY_VALUE="FILE_PATH"
-      SHOW_IF="CUSTOM_SCRIPT=='true'">
-      <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-  
+  <PARAMETERS>  
     <PARAMETER 
       NAME="PROPERTY_DATA" 
       FIELD="PROPERTY_TYPE" 
@@ -97,8 +79,7 @@
       NAME="EXECUTION"
       FIELD="CLOSED_LIST"
       NUM_ROW="12"
-      REQUIRED="true"
-	  SHOW_IF="CUSTOM_SCRIPT=='false'">
+      REQUIRED="true">
       <ITEMS DEFAULT="WINDOWS">
         <ITEM NAME="WINDOWS" VALUE="Windows" />
         <ITEM NAME="UNIX" VALUE="Unix" />
@@ -250,6 +231,24 @@
   </PARAMETERS>
   
   <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="CUSTOM_SCRIPT"
+      FIELD="CHECK"
+      NUM_ROW="4"
+      REQUIRED="true">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER 
+      NAME="CUSTOM_SCRIPT_FILE" 
+      FIELD="FILE" 
+      NUM_ROW="7" 
+      REQUIRED="true" 
+      REPOSITORY_VALUE="FILE_PATH"
+      SHOW_IF="CUSTOM_SCRIPT=='true'">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	
     <PARAMETER 
       NAME="ROWSEPARATOR" 
       FIELD="TEXT" 
