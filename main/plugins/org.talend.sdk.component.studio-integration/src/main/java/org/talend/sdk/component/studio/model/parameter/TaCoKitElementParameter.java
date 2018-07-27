@@ -85,7 +85,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
         pcs.firePropertyChange(name, oldValue, newValue);
     }
 
-    public void fireValueChange(final Object oldValue, final Object newValue) {
+    void fireValueChange(final Object oldValue, final Object newValue) {
         for (final IValueChangedListener listener : valueChangeListeners) {
             listener.onValueChanged(this, oldValue, newValue);
         }
@@ -186,7 +186,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void setValue(final Object newValue) {
         final Object oldValue = super.getValue();
         super.setValue(newValue);
-        firePropertyChange(getName(), oldValue, newValue);
+        firePropertyChange("value", oldValue, newValue);
         fireValueChange(oldValue, newValue);
         redraw();
     }
@@ -194,14 +194,14 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void updateValueOnly(final Object newValue) {
         super.setValue(newValue);
     }
-    
+
     /**
      * Denotes whether parameter should be persisted in the repository.
      * Default (this) implementation returns {@code true}, however it can be overridden
-     * 
+     *
      * @return true
      */
     public boolean isPersisted() {
-       return true; 
+        return true;
     }
 }

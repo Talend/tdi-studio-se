@@ -391,7 +391,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                             modulesNeeded.addAll(coordinates.stream()
                                     .map(coordinate -> new ModuleNeeded(getName(), "", true, Mvn.locationToMvn(coordinate).replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")))
                                     .collect(Collectors.toList()));
-                            if (coordinates.stream().anyMatch(d -> d.contains("org.talend.sdk.component:component-runtime-beam"))) {
+                            if (coordinates.contains("org.apache.beam") || coordinates.contains(":beam-sdks-java-io")) {
                                 modulesNeeded.addAll(dependencies
                                         .getBeam()
                                         .stream()

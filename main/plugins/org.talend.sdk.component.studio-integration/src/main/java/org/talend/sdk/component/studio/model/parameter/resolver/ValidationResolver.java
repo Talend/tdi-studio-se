@@ -63,7 +63,7 @@ public class ValidationResolver extends AbstractParameterResolver {
 
         for (int i = 0; i < relativePaths.size(); i++) {
             final TaCoKitElementParameter parameter = resolveParameter(relativePaths.get(i), settings);
-            parameter.registerListener(parameter.getName(), listener);
+            parameter.registerListener("value", listener);
             parameter.setRedrawParameter(redrawParameter);
             final String callbackParameter = callbackParameters.get(i).getName();
             final String initialValue = callbackParameters.get(i).getDefaultValue();

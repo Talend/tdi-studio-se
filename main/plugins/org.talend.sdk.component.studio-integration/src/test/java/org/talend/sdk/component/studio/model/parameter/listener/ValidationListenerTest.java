@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.Test;
+import org.talend.designer.core.model.FakeElement;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 class ValidationListenerTest {
@@ -38,7 +40,7 @@ class ValidationListenerTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final ActionParameter param = new ActionParameter("test", "the.test.param.url", null);
-        final ValidationLabel validationLabel = new ValidationLabel(null) {
+        final ValidationLabel validationLabel = new ValidationLabel((new FakeElement("validation"))) {
 
             @Override
             public void showValidation(final String message) {
@@ -74,7 +76,9 @@ class ValidationListenerTest {
         };
         listener.addParameter(param);
 
-        listener.propertyChange(new PropertyChangeEvent(new Object(), "test", null, "htt://gateway/api"));
+        final TaCoKitElementParameter testParam = new TaCoKitElementParameter(new FakeElement("test"));
+        testParam.setName("test");
+        listener.propertyChange(new PropertyChangeEvent(testParam, "value", null, "htt://gateway/api"));
         latch.await(1, MINUTES);
         assertEquals("invalid url", String.valueOf(validationLabel.getValue()));
     }

@@ -37,7 +37,7 @@ public class DebouncedParameter extends TaCoKitElementParameter {
         final Object oldValue = getValue();
         super.updateValueOnly(newValue);
         debounced.debounce(() -> {
-            firePropertyChange(getName(), oldValue, newValue);
+            firePropertyChange("value", oldValue, newValue);
             fireValueChange(oldValue, newValue);
             redraw();
         }, TIMEOUT);

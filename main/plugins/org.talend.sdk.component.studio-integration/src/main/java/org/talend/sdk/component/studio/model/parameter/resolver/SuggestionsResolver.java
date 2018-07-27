@@ -71,7 +71,7 @@ public class SuggestionsResolver extends AbstractParameterResolver {
             final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
             final PropertyDefinitionDecorator parameterRoot = rootParameters.get(i);
             parameters.forEach(parameter -> {
-                parameter.registerListener(parameter.getName(), updater);
+                parameter.registerListener("value", updater);
                 final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
                 final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, null);
                 updater.getAction().addParameter(actionParameter);

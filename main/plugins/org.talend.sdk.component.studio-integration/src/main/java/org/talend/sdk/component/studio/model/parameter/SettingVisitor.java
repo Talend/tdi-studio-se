@@ -164,10 +164,10 @@ public class SettingVisitor implements PropertyVisitor {
 
                         targetParams.forEach((name, p) -> {
                             p.setRedrawParameter(redrawParameter);
-                            p.registerListener(name, activationListener);
+                            p.registerListener("value", activationListener);
                             //Sends initial event to listener to set initial visibility
                             activationListener.propertyChange(
-                                    new PropertyChangeEvent(p, name, p.getValue(), p.getValue()));
+                                    new PropertyChangeEvent(p, "value", p.getValue(), p.getValue()));
                         });
                     });
         });
@@ -333,9 +333,6 @@ public class SettingVisitor implements PropertyVisitor {
         parameter.setListItemsDisplayName(displayNames.toArray(new String[0]));
         parameter.setListItemsDisplayCodeName(codeNames.toArray(new String[0]));
         parameter.setListItemsValue(tableParameters.toArray(new ElementParameter[0]));
-        parameter.setListItemsShowIf(new String[tableParameters.size()]);
-        parameter.setListItemsNotShowIf(new String[tableParameters.size()]);
-
         parameter.updateValueOnly(new ArrayList<Map<String, Object>>());
         // TODO change to real value
         parameter.setBasedOnSchema(false);
@@ -567,7 +564,7 @@ public class SettingVisitor implements PropertyVisitor {
             final List<PropertyChangeListener> validators = new ValidatorFactory().createValidators(validation, label);
             if (!validators.isEmpty()) {
                 target.setRedrawParameter(redrawParameter);
-                validators.forEach(v -> target.registerListener(target.getName(), v));
+                validators.forEach(v -> target.registerListener("value", v));
             }
         }
     }
