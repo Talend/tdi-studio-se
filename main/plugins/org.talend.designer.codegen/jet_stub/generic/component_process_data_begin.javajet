@@ -66,25 +66,27 @@ if(hasInput){
             	if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback) {
 					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackMain_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
 					writerWithFeedbackMain_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackMain_<%=cid%>, container_<%=cid%>);
-					java.lang.Iterable<?> outgoingRecs = writerWithFeedbackMain_<%=cid%>.getSuccessfulWrites();
-                    java.util.Iterator outgoingMainRecords_<%=cid%> = outgoingRecs.iterator();
+					java.lang.Iterable<?> outgoingRecs_<%=cid%> = writerWithFeedbackMain_<%=cid%>.getSuccessfulWrites();
+                    java.util.Iterator outgoingMainRecords_<%=cid%> = outgoingRecs_<%=cid%>.iterator();
                     Object outgoingMain_<%=cid%> = null;
                     if (outgoingMainRecords_<%=cid%>.hasNext()) {
-                    	outgoingMainRecordsList_<%=cid%> = outgoingRecs;
+                    	outgoingMainRecordsList_<%=cid%> = outgoingRecs_<%=cid%>;
                     }
               	}
             <%
             }
             if (rejectIrToRow != null) {
             %>
-            		java.lang.Iterable<?> outgoingRejectRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
-					org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackReject_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
-					writerWithFeedbackReject_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackReject_<%=cid%>, container_<%=cid%>);
-					java.lang.Iterable<?> outgoingRejectRecs = writerWithFeedbackReject_<%=cid%>.getRejectedWrites();
-                    java.util.Iterator outgoingRejectRecords_<%=cid%> = outgoingRejectRecs.iterator();
+                java.lang.Iterable<?> outgoingRejectRecordsList_<%=cid%> = new java.util.ArrayList<Object>();
+                if (writer_<%=cid%> instanceof org.talend.components.api.component.runtime.WriterWithFeedback) {
+					     org.talend.components.api.component.runtime.WriterWithFeedback writerWithFeedbackReject_<%=cid%> = (org.talend.components.api.component.runtime.WriterWithFeedback) writer_<%=cid%>;
+					     writerWithFeedbackReject_<%=cid%> = new org.talend.codegen.flowvariables.runtime.FlowVariablesWriter(writerWithFeedbackReject_<%=cid%>, container_<%=cid%>);
+					     java.lang.Iterable<?> outgoingRejectRecs_<%=cid%> = writerWithFeedbackReject_<%=cid%>.getRejectedWrites();
+                    java.util.Iterator outgoingRejectRecords_<%=cid%> = outgoingRejectRecs_<%=cid%>.iterator();
                     if (outgoingRejectRecords_<%=cid%>.hasNext()) {
-                    	outgoingRejectRecordsList_<%=cid%> = outgoingRejectRecs;
+                        outgoingRejectRecordsList_<%=cid%> = outgoingRejectRecs_<%=cid%>;
                     }
+                }
             <%
             }
             if(mainIrToRow != null) {
