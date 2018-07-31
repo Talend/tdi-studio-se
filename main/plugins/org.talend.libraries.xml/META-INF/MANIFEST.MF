@@ -5,3 +5,8 @@ Bundle-SymbolicName: org.talend.libraries.xml
 Bundle-Version: 6.5.2.qualifier
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
+Bundle-ClassPath: .,
+ lib/xstream-1.4.10.jar
+Export-Package: com.thoughtworks.xstream,
+ com.thoughtworks.xstream.io,
+ com.thoughtworks.xstream.io.xml
