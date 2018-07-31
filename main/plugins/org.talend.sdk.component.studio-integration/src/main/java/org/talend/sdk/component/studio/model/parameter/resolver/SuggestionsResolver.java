@@ -73,7 +73,8 @@ public class SuggestionsResolver extends AbstractParameterResolver {
             parameters.forEach(parameter -> {
                 parameter.registerListener("value", updater);
                 final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
-                final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, null);
+                final String defaultValue = parameter.getStringValue();
+                final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, defaultValue);
                 updater.getAction().addParameter(actionParameter);
             });
         }
