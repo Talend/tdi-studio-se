@@ -177,6 +177,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     /**
      * Sets parameter value and fires parameter change event, which is handled by registered listeners.
+     * Note, parameter change event is fired with value converted to String by calling {@link #getStringValue()} method
      * Subclasses should extend (override and call super.setValue()) this method to provide correct conversion, when
      * they use other value type than String.
      *
@@ -186,7 +187,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void setValue(final Object newValue) {
         final Object oldValue = super.getValue();
         super.setValue(newValue);
-        firePropertyChange("value", oldValue, newValue);
+        firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
         redraw();
     }
