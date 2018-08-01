@@ -565,9 +565,9 @@ try{
 	<%if("true".equals(defineCharset)) {
 		if(!("".equals(charset))) {
 			if("Windows".equals(execution)){%>
-				String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+ pathToExecScript_<%=cid%> + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
+				String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+ pathToExecScript_<%=cid%> + "\"" + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
 			<%}else{%>
-				String[] sb_<%=cid%>= {"sh","-c","tbuild -f \"" + pathToExecScript_<%=cid%> + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
+				String[] sb_<%=cid%>= {"sh","-c","tbuild -f \"" + pathToExecScript_<%=cid%> + "\"" + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
 			<%}
 		}
 	} else {
