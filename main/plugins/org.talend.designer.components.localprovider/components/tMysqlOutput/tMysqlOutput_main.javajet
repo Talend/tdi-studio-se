@@ -23,8 +23,9 @@ skeleton="../templates/db_output_bulk.skeleton"
     INode node = (INode)codeGenArgument.getArgument();
     IProcess process = node.getProcess();
     String cid = node.getUniqueName();
-
-    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+    
+		boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
+    if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);
     }
     
@@ -453,7 +454,7 @@ if(columnList != null && columnList.size() > 0) {
 
     String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
     if(("true").equals(useExistingConn)) {
-        if(connection.matches("^.*?tAmazonAuroraConnection_\\d+$")){
+        if(isAmazonAurora){
                   dbVersion = "MYSQL_5";
             }else{
                 List<? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");
@@ -613,8 +614,10 @@ if(columnList != null && columnList.size() > 0) {
     if (isParallelize) { // bug0014422
         String tAsyncIn_cid = "";
         if(conns!=null && conns.size() > 0) {
-            tAsyncIn_cid = conns.get(0).getSource().getUniqueName();
-            if(tAsyncIn_cid !=null && tAsyncIn_cid.matches("^.*?tAmazonAuroraOutput_\\d+_in$")){
+        		INode source_node = conns.get(0).getSource();
+        		tAsyncIn_cid = source_node.getUniqueName();
+            isAmazonAurora = source_node.isVirtualGenerateNode() && (tAsyncIn_cid.matches("^.*?tAmazonAuroraOutput_\\d+_in$") || tAsyncIn_cid.matches("^.*?tDBOutput_\\d+_in$"));
+            if(isAmazonAurora){
                  tAsyncIn_cid = "tAsyncIn_" + tAsyncIn_cid.substring(0,tAsyncIn_cid.length()-3);
             }
         }

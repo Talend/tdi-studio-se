@@ -35,7 +35,7 @@ import org.talend.core.runtime.maven.MavenConstants;
 public final class Mvn {
 
     private Mvn() {
-        new AssertionError();
+        throw new AssertionError();
     }
 
     public static String locationToMvn(final String location) {

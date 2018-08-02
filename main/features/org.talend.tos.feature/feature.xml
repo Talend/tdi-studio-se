@@ -17,12 +17,8 @@
       [Enter License Description here.]
    </license>
 
-   <url>
-      <update label="TOS Talend update site for milestones" url="http://talendforge.org/core/updatesite/testing/"/>
-   </url>
-
    <includes
-         id="org.talend.commons.feature"
+         id="org.talend.tos.core.feature"
          version="0.0.0"
          search-location="self"/>
 
@@ -32,27 +28,7 @@
          search-location="self"/>
 
    <includes
-         id="org.talend.core.feature"
-         version="0.0.0"
-         search-location="self"/>
-
-   <includes
-         id="org.talend.repository.feature"
-         version="0.0.0"
-         search-location="self"/>
-
-   <includes
-         id="org.talend.designer.feature"
-         version="0.0.0"
-         search-location="self"/>
-
-   <includes
          id="org.talend.designer.business.feature"
-         version="0.0.0"
-         search-location="self"/>
-
-   <includes
-         id="org.talend.rcp.feature"
          version="0.0.0"
          search-location="self"/>
 
@@ -66,91 +42,8 @@
          version="0.0.0"
          search-location="self"/>
 
-   <includes
-         id="org.talend.tos.components.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.talend.hadoop.distribution.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.talend.updates.feature"
-         version="0.0.0"/>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.talend.commons.ui"/>
-      <import plugin="org.talend.designer.core"/>
-      <import plugin="org.eclipse.xsd"/>
-      <import plugin="org.apache.log4j"/>
-      <import plugin="org.talend.repository"/>
-      <import plugin="org.talend.core"/>
-      <import plugin="org.apache.axis"/>
-      <import plugin="javax.xml.rpc"/>
-   </requires>
-
    <plugin
-         id="org.talend.repository.mdm"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.xsd"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.ftp"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.ftp.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.mdm.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.libraries.json"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.talend.repository.json"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.repository.json.nl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.maven.job"
+         id="org.talend.designer.tutorials"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -162,21 +55,6 @@
          install-size="0"
          version="0.0.0"
          fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="javax.transaction"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"
-         unpack="false"/>
-
-   <plugin
-         id="org.talend.designer.tutorials"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
          unpack="false"/>
          
 </feature>

@@ -100,7 +100,7 @@ public class TaCoKitNodeConnector extends NodeConnector implements IAdditionalIn
     static TaCoKitNodeConnector newFlow(final INode node, final String name) {
         Objects.requireNonNull(name);
         Strings.requireNonEmpty(name);
-        TaCoKitNodeConnector tacokitConnector = null;
+        TaCoKitNodeConnector tacokitConnector;
         if (DEFAULT.equals(name)) {
             tacokitConnector = new TaCoKitNodeConnector(node, FLOW_MAIN.getName(), FLOW_MAIN.getDefaultLinkName(),
                     FLOW_MAIN.getDefaultMenuName(), FLOW_MAIN, FLOW_MAIN);

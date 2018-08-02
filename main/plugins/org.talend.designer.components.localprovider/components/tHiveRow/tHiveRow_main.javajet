@@ -53,6 +53,9 @@ if("true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION
 	if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_ENDPOINT__")) {
 		quboleEndpoint = ElementParameterParser.getValue(node, "__QUBOLE_ENDPOINT_URL__");
 	}
+	if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_CLUSTER__")) {
+		quboleClusterLabel = ElementParameterParser.getValue(node, "__QUBOLE_CLUSTER_LABEL__");
+	}
 }
 
 org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;
@@ -272,7 +275,7 @@ if(hiveDistrib.isExecutedThroughWebHCat()) {
 			}
 		}
 		%>
-		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier + "]");
+		log.info("Query sent to HiveServer2 to be executed with [Application Name(MapReduce)/DAG Name(Tez): " + queryIdentifier_<%=cid %> + "]");
 	    } catch (java.lang.Exception e) {
 	        whetherReject_<%=cid%> = true;
 	        <%

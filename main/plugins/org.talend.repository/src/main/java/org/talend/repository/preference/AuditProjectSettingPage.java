@@ -204,7 +204,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                             if (checkConnection(false)) {
                                                 service.populateAudit(urlText.getText(), driverText.getText(),
                                                         usernameText.getText(), passwordText.getText());
-                                                boolean result = service.generateAuditReport(generatePath);
+                                                Map<String, String> result = service.generateAuditReport(generatePath);
                                                 showGenerationInformation(result);
                                             }
                                         } else {
@@ -222,7 +222,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                                 service.populateAudit(
                                                         "jdbc:h2:" + path + "/database/audit;AUTO_SERVER=TRUE;lock_timeout=15000", //$NON-NLS-1$ //$NON-NLS-2$
                                                         "org.h2.Driver", "tisadmin", "tisadmin"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                                                boolean result = service.generateAuditReport(generatePath);
+                                                Map<String, String> result = service.generateAuditReport(generatePath);
                                                 showGenerationInformation(result);
                                             } catch (IOException e) {
                                                 // nothing
@@ -338,7 +338,7 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
                                     if (service != null && savedInDBButton.getSelection() && checkConnection(false)) {
                                         service.populateHistoryAudit(selectedAuditId, urlText.getText(), driverText.getText(),
                                                 usernameText.getText(), passwordText.getText());
-                                        boolean result = service.generateAuditReport(generatePath);
+                                        Map<String, String> result = service.generateAuditReport(generatePath);
                                         showGenerationInformation(result);
                                     }
                                 }
@@ -418,7 +418,9 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
         String directory = dial.open();
         if (StringUtils.isNotEmpty(directory)) {
             generatePath = Path.fromOSString(directory).toPortableString();
-            generatePath += "/"; //$NON-NLS-1$
+            if (!generatePath.endsWith("/")) { //$NON-NLS-1$
+                generatePath += "/"; //$NON-NLS-1$
+            }
             return true;
         } else {
             MessageDialog.openError(getShell(), "Error", //$NON-NLS-1$
@@ -466,17 +468,20 @@ public class AuditProjectSettingPage extends ProjectSettingPage {
     }
 
     private String getCurrentDBVersion() {
-        SupportDBUrlType urlType = SupportDBUrlStore.getInstance().getDBUrlType(dbTypeCombo.getText());
+        String dbType = SupportDBUrlStore.getInstance().getDBType(dbTypeCombo.getText());
+        SupportDBUrlType urlType = SupportDBUrlStore.getInstance().getDBUrlType(dbType);
         if (urlType != null) {
             return SupportDBVersions.getVersionValue(urlType, dbVersionCombo.getText());
         }
         return null;
     }
 
-    private void showGenerationInformation(boolean result) {
-        if (result) {
+    private void showGenerationInformation(Map<String, String> result) {
+        boolean status = Boolean.parseBoolean(result.get(AuditManager.AUDIT_GENERATE_REPORT_STATUS));
+        if (status) {
             MessageDialog.openInformation(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
-                    Messages.getString("AuditProjectSettingPage.generate.successful", generatePath)); //$NON-NLS-1$
+                    Messages.getString("AuditProjectSettingPage.generate.successful", //$NON-NLS-1$
+                            result.get(AuditManager.AUDIT_GENERATE_REPORT_PATH)));
         } else {
             MessageDialog.openWarning(getShell(), Messages.getString("AuditProjectSettingPage.generate.title"), //$NON-NLS-1$
                     Messages.getString("AuditProjectSettingPage.generate.failed")); //$NON-NLS-1$

@@ -67,7 +67,7 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
 
         TaCoKitTopic topic = new TaCoKitTopic();
         topic.setHref(
-                "/" + GAV.ARTIFACT_ID + "/" + firstIndex.getId().getId() + ".html#_" + firstIndex.getDisplayName().toLowerCase());
+                "/" + GAV.INSTANCE.getArtifactId() + "/" + firstIndex.getId().getId() + ".html#_" + firstIndex.getDisplayName().toLowerCase());
         topic.setLabel(firstIndex.getDisplayName());
         context.addRelatedTopic(topic);
 
@@ -120,7 +120,7 @@ public class TaCoKitContextProvider extends AbstractContextProvider {
     }
 
     @Override public String[] getPlugins() {
-        return new String[] { GAV.ARTIFACT_ID, "org.talend.help" };
+        return new String[] { GAV.INSTANCE.getArtifactId(), "org.talend.help" };
     }
 
     public static class TaCoKitHelpContext implements IContext {

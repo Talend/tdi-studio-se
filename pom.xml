@@ -66,6 +66,7 @@
 		<module>main/features/org.talend.repository.feature</module>
 		<module>main/features/org.talend.sbi.feature</module>
 		<module>main/features/org.talend.spagic.feature</module>
+		<module>main/features/org.talend.tos.core.feature</module>
 		<module>main/features/org.talend.tos.feature</module>
 		<module>main/features/org.talend.tos.components.feature</module>
 		<module>main/features/org.talend.tos.libraries.feature</module>

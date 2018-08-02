@@ -243,7 +243,7 @@ skeleton="../templates/db_output_bulk.skeleton"
         if (!"".equals(dbname_<%=cid%>)) {
         url_<%=cid%> += ";database=" + <%=dbname%>; 
         }
-        url_<%=cid%> += ";appName=" + projectName + ";" + <%=dbproperties%>;
+        url_<%=cid%> += ";applicationName=Talend;" + <%=dbproperties%>;
         dbUser_<%=cid %> = <%=dbuser%>;
 
 <%

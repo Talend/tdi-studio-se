@@ -1892,6 +1892,96 @@ class RedshiftManager extends Manager {
     }    
 }
 
+class SnowflaketManager extends Manager {
+    private String account;
+    private String warehouse;
+    private String role;
+    private String dbSchema;
+    private boolean useExistingConnection;
+    private String connection;
+    boolean enforceDelimitedIdentifiers;
+    public SnowflaketManager(String account,String dbName,String dbSchema, String userName,String role,String tableName, String connection, boolean useExistingConnection, String cid, boolean enforceDelimitedIdentifiers) {
+        super(dbName, tableName, userName , cid);
+        this.account=account;
+        this.role=role;
+        this.dbSchema=dbSchema;
+        this.connection=connection;
+        this.useExistingConnection=useExistingConnection;
+        this.enforceDelimitedIdentifiers=enforceDelimitedIdentifiers;
+    }
+    protected String getDriver() {
+        return "net.snowflake.client.jdbc.SnowflakeDriver";
+    }
+    public String getConnectionURL() {
+        StringBuilder stringBuilder = new StringBuilder("\"jdbc:snowflake://\"");
+
+        if (isPropertyValueEmpty(account)) {
+            throw new IllegalArgumentException("Missing account");
+        }else{
+        		stringBuilder.append("+"+account+"+");
+        }
+        stringBuilder.append("\".snowflakecomputing.com/?\"+");
+        if(!isPropertyValueEmpty(warehouse) && !("\"\"").equals(warehouse)){
+            stringBuilder.append("\"warehouse=\"");
+            stringBuilder.append("+"+warehouse+"+");
+            stringBuilder.append("\"&\"+");
+        }
+        if (isPropertyValueEmpty(dbName)) {
+            throw new IllegalArgumentException("Missing database");
+        }else{
+        		stringBuilder.append("\"db=\"");
+            stringBuilder.append("+"+dbName+"+");
+            stringBuilder.append("\"&\"+");
+        }
+        if (isPropertyValueEmpty(dbSchema)) {
+            throw new IllegalArgumentException("Missing dbSchema");
+        }else{
+        		stringBuilder.append("\"schema=\"");
+            stringBuilder.append("+"+dbSchema);
+        }
+        if(!isPropertyValueEmpty(role) && !("\"\"").equals(role)){
+            stringBuilder.append("+\"&\"+");
+            stringBuilder.append("\"role=\"");
+            stringBuilder.append("+"+role);
+        }
+
+        return stringBuilder.toString();
+    }
+    private boolean isPropertyValueEmpty(String propertyValue) {
+        if (propertyValue != null && !propertyValue.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+    public String getConnection() {
+        StringBuilder javaCode = new StringBuilder();
+        if(useExistingConnection) {
+            javaCode.append(retrieveTable());
+            javaCode.append("java.sql.Connection conn_" + cid + " = (java.sql.Connection)globalMap.get(\"" + connection + "_Connection\");");
+        } else {
+            javaCode.append(super.getConnection());
+        }
+        return javaCode.toString();
+    }        
+    protected String getDBMSId() {
+        return "snowflake_id";
+    }
+    protected String getLProtectedChar() {
+        return enforceDelimitedIdentifiers ? "\\\"" : "";
+    }
+    protected String getRProtectedChar() {
+        return enforceDelimitedIdentifiers ? "\\\""  :"";
+    }
+    public String closeConnection() {
+        StringBuilder javaCode = new StringBuilder();
+        if(useExistingConnection) {
+            javaCode.append("");
+        } else {
+            javaCode.append(super.closeConnection());            
+        }
+        return javaCode.toString();
+    } 
+}
 
 class StringUtil {
     public String getString(String source) {
@@ -2120,6 +2210,18 @@ class ManagerFactory {
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
             manager = new RedshiftManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);
+        } else if(("SNOWFLAKE").equals(dbType)) {
+            String host = ElementParameterParser.getValue(node, "__HOST__");
+            String port = ElementParameterParser.getValue(node, "__PORT__");
+            String dbSchema = ElementParameterParser.getValue(node, "__SCHEMA_DB__");
+            String account = ElementParameterParser.getValue(node, "__ACCOUNT__");
+            String dbName = ElementParameterParser.getValue(node, "__DBNAME__");
+            String userName = ElementParameterParser.getValue(node, "__USER__");
+            String role = ElementParameterParser.getValue(node, "__ROLE__");
+            boolean enforceDelimitedIdentifiers = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DELIMITED_IDENTIFIERS__"));
+            boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
+            String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_"+dbType+"__"));
+            manager = new SnowflaketManager(account,dbName,dbSchema, userName,role,tableName, connection, useExistingConnection, cid, enforceDelimitedIdentifiers);
         }
         return manager;
     }
@@ -2290,6 +2392,15 @@ if(columnList != null && columnList.size() > 0) {
 					}
 
 <%
+				} else if ("SNOWFLAKE".equalsIgnoreCase(dbType)) {
+				    boolean enforceDelimitedIdentifiers = ("true").equals(ElementParameterParser.getValue(node, "__ENFORCE_DELIMITED_IDENTIFIERS__"));
+%>
+	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();
+	            java.sql.ResultSet rsTable_<%=cid%> = dbMetaData_<%=cid%>.getTables(conn_<%=cid%>.getCatalog(), conn_<%=cid%>.getSchema(),(<%=tableName%>)<%=enforceDelimitedIdentifiers?"":".toUpperCase()"%>, new String[] { "TABLE" });
+	            if(rsTable_<%=cid%>.next()) {
+	                whetherExist_<%=cid%> = true;
+	            }     
+            <%
             } else {
 %>
 	            java.sql.DatabaseMetaData dbMetaData_<%=cid%> = conn_<%=cid%>.getMetaData();

@@ -13,11 +13,8 @@
 package org.talend.sdk.component.studio.util;
 
 import org.talend.core.model.repository.ERepositoryObjectType;
-import org.talend.sdk.component.studio.GAV;
 
 public class TaCoKitConst {
-
-    public static final String BUNDLE_ID = GAV.ARTIFACT_ID;
 
     public static final ERepositoryObjectType METADATA_TACOKIT = ERepositoryObjectType.valueOf("TACOKIT"); //$NON-NLS-1$
 

@@ -47,14 +47,28 @@ public class CheckElementParameter extends TaCoKitElementParameter {
      */
     @Override
     public void setValue(final Object newValue) {
-        if (newValue == null) {
-            super.setValue(false);
-        } else if (newValue instanceof String) {
-            super.setValue(Boolean.parseBoolean((String) newValue));
-        } else if (newValue instanceof Boolean) {
-            super.setValue(newValue);
+    	super.setValue(convertValue(newValue));
+    }
+    
+    @Override
+    public void updateValueOnly(final Object newValue) {
+    	super.updateValueOnly(convertValue(newValue));
+    }
+    
+    /**
+     * Convert Object to Boolean value depending on the value instance class.
+     * @param value to convert
+     * @return Boolean value
+     */
+    private Boolean convertValue(final Object value) {
+    	if (value == null) {
+            return false;
+        } else if (value instanceof String) {
+            return Boolean.parseBoolean((String) value);
+        } else if (value instanceof Boolean) {
+            return (Boolean) value;
         } else {
-            throw new IllegalArgumentException("wrong type on new value: " + newValue.getClass().getName());
+            throw new IllegalArgumentException("wrong type on new value: " + value.getClass().getName());
         }
     }
 

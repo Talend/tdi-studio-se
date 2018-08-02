@@ -18,7 +18,6 @@ package org.talend.sdk.component.studio.ui.composite;
 import static java.util.stream.Stream.of;
 import static org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter.guessButtonName;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Objects;
@@ -42,12 +41,10 @@ import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.FakeElement;
 import org.talend.designer.core.ui.editor.properties.controllers.AbstractElementPropertySectionController;
 import org.talend.designer.core.ui.views.properties.composites.MissingSettingsMultiThreadDynamicComposite;
-import org.talend.sdk.component.studio.model.parameter.DebouncedParameter;
 import org.talend.sdk.component.studio.model.parameter.Layout;
 import org.talend.sdk.component.studio.model.parameter.LayoutParameter;
 import org.talend.sdk.component.studio.model.parameter.Level;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 /**
  * Registers PropertyChangeListener for each IElementParameter during instantiation
@@ -57,12 +54,11 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
 
     private List<? extends IElementParameter> parameters;
 
-    private PropertyChangeListener paramChangedListener = new PropertyChangeListener() {
-
-        @Override
-        public void propertyChange(final PropertyChangeEvent evt) {
-            refresh();
+    private PropertyChangeListener redrawListener = evt -> {
+        if (!"show".equals(evt.getPropertyName())) {
+            return;
         }
+        refresh();
     };
 
     public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
@@ -71,7 +67,7 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         postInit();
     }
 
-    public TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
+    TaCoKitComposite(final Composite parentComposite, final int styles, final EComponentCategory section,
             final Element element, final boolean isCompactView, final Color backgroundColor) {
         super(parentComposite, styles, section, element, isCompactView, backgroundColor);
         postInit();
@@ -80,19 +76,19 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
     protected void postInit() {
         elem.getElementParameters().stream()
                 .filter(Objects::nonNull)
-                .filter(ValidationLabel.class::isInstance)
+                .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.registerListener(p.getName(), paramChangedListener));
+                .forEach(p -> p.registerListener("show", redrawListener));
     }
 
     protected void preDispose() {
         elem.getElementParameters().stream()
                 .filter(Objects::nonNull)
-                .filter(ValidationLabel.class::isInstance)
+                .filter(TaCoKitElementParameter.class::isInstance)
                 .map(TaCoKitElementParameter.class::cast)
                 .filter(TaCoKitElementParameter::isRedrawable)
-                .forEach(p -> p.unregisterListener(p.getName(), paramChangedListener));
+                .forEach(p -> p.unregisterListener("show", redrawListener));
     }
 
     @Override
@@ -110,8 +106,8 @@ public class TaCoKitComposite extends MissingSettingsMultiThreadDynamicComposite
         }
     }
 
-    public PropertyChangeListener getParamChangedListener() {
-        return paramChangedListener;
+    public PropertyChangeListener getRedrawListener() {
+        return redrawListener;
     }
 
     /**

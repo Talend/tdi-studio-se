@@ -54,6 +54,9 @@ imports="
 		if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_ENDPOINT__")) {
 			quboleEndpoint = ElementParameterParser.getValue(node, "__QUBOLE_ENDPOINT_URL__");
 		}
+		if (ElementParameterParser.getBooleanValue(node, "__QUBOLE_CLUSTER__")) {
+			quboleClusterLabel = ElementParameterParser.getValue(node, "__QUBOLE_CLUSTER_LABEL__");
+		}
 	}
 
     org.talend.hadoop.distribution.component.HiveComponent hiveDistrib = null;

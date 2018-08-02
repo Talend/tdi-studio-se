@@ -88,5 +88,35 @@
             "connection.db":"SID"
         }
      }
+},
+{
+    "component_delegate":"tDBOutputBulk",
+    "component" : "tSnowflakeOutputBulk",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
+},
+{
+    "component_delegate":"tDBBulkExec",
+    "component" : "tSnowflakeBulkExec",
+    "category":"DI",
+    "family":"",
+    "parameter":{
+        "mapping":{
+            "connection.account":"SERVER_NAME",
+            "connection.userPassword.userId":"USERNAME",
+            "connection.userPassword.password":"PASSWORD",
+            "connection.schemaName":"SCHEMA",
+            "connection.db":"SID"
+        }
+     }
 }
 ]

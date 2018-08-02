@@ -21,8 +21,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
-
-    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+	
+	boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
+	
+    if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);
     }
 
@@ -98,7 +100,7 @@ skeleton="../templates/db_output_bulk.skeleton"
    	String dbVersion = "" ;
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	if(("true").equals(useExistingConn)) {
-		if(connection.matches("^.*?tAmazonAuroraConnection_\\d+$")){
+		if(isAmazonAurora){
 			  dbVersion = "MYSQL_5";
 		}else{
 			List<? extends INode> nodes =  process.getNodesOfType("tMysqlConnection");

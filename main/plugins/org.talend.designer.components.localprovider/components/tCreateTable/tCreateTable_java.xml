@@ -48,7 +48,7 @@
     			or (DBTYPE=='TERADATA' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='NETEZZA' and USE_EXISTING_CONNECTION == 'true')
     			or (DBTYPE=='POSTGREPLUS' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true')
     			or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
-    			or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')"
+    			or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SNOWFLAKE' and USE_EXISTING_CONNECTION == 'true')"
   />
 
   <PARAMETER
@@ -77,6 +77,7 @@
         <ITEM NAME="POSTGREPLUS"   VALUE="POSTGREPLUS"/>
         <ITEM NAME="POSTGRE"      VALUE="POSTGRE"/>
         <ITEM NAME="REDSHIFT"   VALUE="REDSHIFT"/>
+        <ITEM NAME="SNOWFLAKE"      VALUE="SNOWFLAKE"/>
         <ITEM NAME="SQLITE"      VALUE="SQLITE"/>
         <ITEM NAME="SYBASE"      VALUE="SYBASE"/>
         <ITEM NAME="TERADATA"      VALUE="TERADATA"/>
@@ -111,7 +112,7 @@
 				or (DBTYPE=='POSTGREPLUS') or (DBTYPE=='TERADATA') or (DBTYPE=='NETEZZA') or (DBTYPE=='AS400')
 				or (DBTYPE=='DB2') or (DBTYPE=='FIREBIRD') or (DBTYPE=='INFORMIX') or (DBTYPE=='INGRES') or (DBTYPE=='INTERBASE')
 				or (DBTYPE=='SQLITE') or (DBTYPE=='SYBASE') or (DBTYPE=='ACCESS') or (DBTYPE=='GREENPLUM') or (DBTYPE=='VERTICA') 
-				or (DBTYPE=='EXASOL') or (DBTYPE=='REDSHIFT')">
+				or (DBTYPE=='EXASOL') or (DBTYPE=='REDSHIFT') or (DBTYPE=='SNOWFLAKE')">
 		<DEFAULT>false</DEFAULT>
 	</PARAMETER>
 
@@ -128,7 +129,7 @@
 					or (DBTYPE=='SYBASE' and USE_EXISTING_CONNECTION == 'true') or  (CONNECTION_TYPE == 'ORACLE_OCI')
 				    or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC') or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')
 				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
-				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
+				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='SNOWFLAKE')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
@@ -145,7 +146,8 @@
 				    or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC') or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true')
 				    or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
 				    or (DBTYPE=='EXASOL')
-				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
+				    or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')
+				    or (DBTYPE=='SNOWFLAKE' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	
@@ -180,7 +182,8 @@
 					or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true') or (CONNECTION_TYPE == 'ORACLE_WALLET')
 					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
-					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='SNOWFLAKE' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 	<PARAMETER NAME="PASS" FIELD="PASSWORD" NUM_ROW="80"
@@ -195,7 +198,8 @@
 					or (DBTYPE=='ACCESS' and USE_EXISTING_CONNECTION == 'true') or (CONNECTION_TYPE == 'ORACLE_WALLET')
 					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
-					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='SNOWFLAKE' and USE_EXISTING_CONNECTION == 'true')">
 		<DEFAULT>""</DEFAULT>
 	</PARAMETER>
 
@@ -215,7 +219,8 @@
 					or  (CONNECTION_TYPE == 'ORACLE_OCI') or (CONNECTION_TYPE == 'ORACLE_WALLET') or (CONNECTION_TYPE == 'ORACLE_RAC')
 					or (DBTYPE=='GREENPLUM' and USE_EXISTING_CONNECTION == 'true') or (DBTYPE=='VERTICA' and USE_EXISTING_CONNECTION == 'true')
 					or (DBTYPE=='EXASOL' and USE_EXISTING_CONNECTION == 'true')
-					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')">
+					or (DBTYPE=='REDSHIFT' and USE_EXISTING_CONNECTION == 'true')
+					or (DBTYPE=='SNOWFLAKE')">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
@@ -225,7 +230,7 @@
       NUM_ROW="70"
       REPOSITORY_VALUE="SCHEMA"
       SHOW_IF="(DBTYPE=='DBORACLE' or DBTYPE=='POSTGRE' or DBTYPE=='POSTGREPLUS' or DBTYPE=='INFORMIX' or DBTYPE=='DB2' or DBTYPE=='GREENPLUM' or DBTYPE=='VERTICA' or DBTYPE=='MSSQL' or DBTYPE=='SYBASE' 
-      				or DBTYPE=='EXASOL' or DBTYPE=='REDSHIFT') 
+      				or DBTYPE=='EXASOL' or DBTYPE=='REDSHIFT' or DBTYPE=='SNOWFLAKE') 
       			and (USE_EXISTING_CONNECTION == 'false')"
     >
       <DEFAULT>""</DEFAULT>
@@ -684,6 +689,36 @@
       SHOW_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'true')"
     />
 	<!-- Redshift configuration end -->
+	
+	<!-- Snowflake configuration start -->
+    <PARAMETER
+      NAME="CONNECTION_SNOWFLAKE"
+      FIELD="COMPONENT_LIST"
+      FILTER="tSnowflakeConnection"
+      REQUIRED="true"
+      NUM_ROW="30"
+      SHOW_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'true')"
+    />
+    <PARAMETER
+      NAME="ACCOUNT"
+      FIELD="TEXT"
+      REQUIRED="true"
+      NUM_ROW="60"
+      SHOW_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')"
+    >
+       <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    <PARAMETER
+      NAME="ROLE"
+      FIELD="TEXT"
+      REQUIRED="false"
+      NUM_ROW="84"
+      SHOW_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')"
+    >
+       <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
+    <!-- Snowflake configuration end -->
 
     <PARAMETER
       NAME="TABLE"
@@ -731,6 +766,7 @@
       <DEFAULT IF="DBTYPE=='VERTICA'">vertica_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='EXASOL'">Exasol_id</DEFAULT>
       <DEFAULT IF="DBTYPE=='REDSHIFT'">redshift_id</DEFAULT>
+      <DEFAULT IF="DBTYPE=='SNOWFLAKE'">snowflake_id</DEFAULT>
       <DEFAULT>mysql_id</DEFAULT>
     </PARAMETER>
 
@@ -748,6 +784,17 @@
 
   </PARAMETERS>
   <ADVANCED_PARAMETERS>
+  
+    <PARAMETER
+      NAME="ENFORCE_DELIMITED_IDENTIFIERS"
+      FIELD="CHECK"
+      REQUIRED="true"
+      NUM_ROW="30"
+      SHOW_IF="(DBTYPE=='SNOWFLAKE')"
+    >
+       <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+  
   	<PARAMETER NAME="PROPERTIES" FIELD="TEXT" NUM_ROW="40" REPOSITORY_VALUE="PROPERTIES_STRING"
   		SHOW_IF="((DBTYPE=='AS400')OR (DBTYPE=='MSSQL')) and (USE_EXISTING_CONNECTION == 'false')">
 		<DEFAULT>"prompt=false"</DEFAULT>
@@ -823,6 +870,8 @@
   		<IMPORT NAME="Driver-EXASolution" MODULE="exajdbc-6.0.9302.jar" MVN="mvn:org.talend.libraries/exajdbc-6.0.9302/6.3.0"  REQUIRED_IF="(DBTYPE=='EXASOL') and (USE_EXISTING_CONNECTION == 'false')" />
      
         <IMPORT NAME="Driver-Redshift" MODULE="RedshiftJDBC41-1.2.10.1009.jar" MVN="mvn:org.talend.libraries/RedshiftJDBC41-1.2.10.1009/6.0.0"  REQUIRED_IF="(DBTYPE=='REDSHIFT') and (USE_EXISTING_CONNECTION == 'false')" />
+        
+        <IMPORT NAME="Driver-Snowflake" MODULE="snowflake-jdbc-3.5.3.jar" MVN="mvn:net.snowflake/snowflake-jdbc/3.5.3"  REQUIRED_IF="(DBTYPE=='SNOWFLAKE') and (USE_EXISTING_CONNECTION == 'false')" />
      </IMPORTS>
    </CODEGENERATION>
 

@@ -4,6 +4,13 @@
    <extension
          point="org.talend.core.runtime.librariesNeeded">
          <!-- MAPR 50X libraries-->
+        <!-- NAME/ID/URI of winutils MUST equals to value returned by Distribution.getWinUtilsName() -->
+        <libraryNeeded
+            context="plugin:org.talend.hadoop.distribution.mapr.5.0.0"
+            id="winutils-hadoop-2.7.0.exe"
+            name="winutils-hadoop-2.7.0.exe"
+            mvn_uri="mvn:org.talend.libraries/winutils-hadoop-2.7.0/6.0.0"/>
+
         <libraryNeeded
             context="plugin:org.talend.libraries.hadoop.mapr.5.0.0"
             id="maprfs-5.0.X-lastest"       
@@ -482,6 +489,7 @@
               description="The lastest Spark libraries of MAPR50X"
               id="SPARK-LIB-MAPR50X_LASTEST"
               name="SPARK-LIB-MAPR50X_LASTEST">
+            <library id="winutils-hadoop-2.7.0.exe" />
            <library
                  id="talend-spark-assembly-1.3.1-hadoop2.5.1-mapr-1501.jar">
            </library>

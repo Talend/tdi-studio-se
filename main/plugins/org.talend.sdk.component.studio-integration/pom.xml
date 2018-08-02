@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="           http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="           http://maven.apache.org/POM/4.0.0           http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.talend.studio</groupId>
@@ -14,15 +15,13 @@
   <description>Studio integration of the Talend Component Kit framework.</description>
 
   <properties>
-    <!--
-    deps: don't forget GAV.java, .classpath and MANIFEST.MF if you update it
-    -->
-    <component-runtime.version>1.0.2-SNAPSHOT</component-runtime.version>
-    <tomcat.version>9.0.6</tomcat.version>
-    <jsonb-api.version>1.0</jsonb-api.version>
-    <jsonp-api.version>1.0</jsonp-api.version>
-    <johnzon.version>1.1.7</johnzon.version>
-    <ziplock.version>7.0.4</ziplock.version>
+    <component-runtime.version>1.0.4-SNAPSHOT</component-runtime.version>
+    <commons-lang3.version>3.6</commons-lang3.version>
+    <oro.version>2.0.8</oro.version>
+    <log4j.version>1.2.17</log4j.version>
+    <system-rules.version>1.16.0</system-rules.version>
+    <common-io.version>2.5</common-io.version>
+    <commons-lang.version>2.6</commons-lang.version>
     <commons-cli.version>1.4</commons-cli.version>
     <slf4j.version>1.7.25</slf4j.version>
     <junit5.version>5.1.0-RC1</junit5.version>
@@ -30,6 +29,18 @@
     <!-- plugins -->
     <junit-platform-surefire-provider.version>1.1.0-RC1</junit-platform-surefire-provider.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.talend.sdk.component</groupId>
+        <artifactId>component-studio</artifactId>
+        <version>${component-runtime.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <repositories>
     <repository>
@@ -46,121 +57,49 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.talend.sdk.component</groupId>
+      <artifactId>component-server-model</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.6</version>
+      <version>${commons-lang3.version}</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
-      <version>2.0.8</version>
+      <version>${oro.version}</version>
       <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.talend.sdk.component</groupId>
-      <artifactId>component-server-model</artifactId>
-      <version>${component-runtime.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-cli</groupId>
-          <artifactId>commons-cli</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.zipkin.brave</groupId>
-          <artifactId>brave-instrumentation-jaxrs2</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>io.zipkin.reporter2</groupId>
-          <artifactId>zipkin-sender-kafka11</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.webjars</groupId>
-          <artifactId>swagger-ui</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.commons</groupId>
-          <artifactId>commons-text</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.johnzon</groupId>
-          <artifactId>johnzon-jsonb</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.meecrowave</groupId>
-          <artifactId>meecrowave-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.deltaspike.core</groupId>
-          <artifactId>deltaspike-core-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-slf4j-impl</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-web</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.talend.sdk.component</groupId>
-          <artifactId>component-runtime-manager</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.talend.sdk.component</groupId>
-          <artifactId>component-runtime-design-extension</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.talend.ui</groupId>
-          <artifactId>talend-icon</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.xmlgraphics</groupId>
-          <artifactId>batik-codec</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.apache.tomcat</groupId>
-          <artifactId>tomcat-websocket</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency> <!-- needed by tomcat-websocket -->
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-api</artifactId>
-      <version>${tomcat.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-websocket</artifactId>
-      <version>${tomcat.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-json_1.1_spec</artifactId>
-      <version>${jsonp-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jsonb_1.0_spec</artifactId>
-      <version>${jsonb-api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.johnzon</groupId>
       <artifactId>johnzon-jsonb</artifactId>
-      <version>${johnzon.version}</version>
     </dependency>
 
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
+      <version>${log4j.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -173,19 +112,18 @@
     <dependency>
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-rules</artifactId>
-      <version>1.16.0</version>
+      <version>${system-rules.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.5</version>
+      <version>${common-io.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomee</groupId>
       <artifactId>ziplock</artifactId>
-      <version>${ziplock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -214,78 +152,25 @@
     <dependency>
       <groupId>org.talend.sdk.component</groupId>
       <artifactId>component-runtime-junit-base</artifactId>
-      <version>${component-runtime.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>2.6</version>
+      <version>${commons-lang.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <plugins>
-      <!-- better solution would be to use that to generate the MANIFEST.MF and handle deps automatically
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>bundle-manifest</id>
-            <goals>
-              <goal>manifest</goal>
-            </goals>
-            <configuration>
-              <manifestLocation>${project.basedir}/META-INF</manifestLocation>
-              <instructions>
-                <Comment>This MANIFEST.MF is generated, see pom.xml</Comment>
-                <Require-Bundle>
-                  org.eclipse.core.runtime,
-                  org.eclipse.core.resources,
-                  org.eclipse.emf.common,
-                  org.eclipse.gef,
-                  org.eclipse.ui.views.properties.tabbed;visibility:=reexport,
-                  org.eclipse.m2e.core,
-                  org.eclipse.m2e.maven.runtime,
-                  org.eclipse.ui.views.properties.tabbed,
-                  org.talend.core,
-                  org.talend.core.ui,
-                  org.talend.core.runtime;visibility:=reexport,
-                  org.talend.core.repository,
-                  org.talend.designer.core,
-                  org.talend.designer.core.generic,
-                  org.talend.librariesmanager,
-                  org.talend.model,
-                  org.talend.commons.ui,
-                  org.talend.repository,
-                  org.talend.repository.metadata,
-                  org.talend.repository.view,
-                  org.talend.repository.items.importexport,
-                  org.talend.metadata.managment.ui,
-                  org.talend.repository.view.di,
-                  org.apache.commons.collections,
-                  org.talend.cwm.mip,
-                  org.talend.utils,
-                  org.apache.log4j
-                </Require-Bundle>
-                <Include-Resource>{maven-resources}</Include-Resource>
-                <Import-Package/>
-                <Bundle-SymbolicName>${project.artifactId};singleton=true</Bundle-SymbolicName>
-                <Bundle-Vendor>.Talend SA.</Bundle-Vendor>
-                <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
-                <Bundle-Activator>org.talend.sdk.component.studio.ServerManager</Bundle-Activator>
-                <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-                <Embed-Transitive>true</Embed-Transitive>
-              </instructions>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      -->
+    <resources>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
 
+    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

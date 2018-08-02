@@ -71,13 +71,7 @@ import org.talend.sdk.component.studio.mvn.Mvn;
 import org.talend.sdk.component.studio.service.ComponentService;
 import org.talend.sdk.component.studio.util.TaCoKitUtil;
 
-// TODO: finish the impl
 public class ComponentModel extends AbstractBasicComponent implements IAdditionalInfo {
-
-    /**
-     * Separator between family and component name
-     */
-    private static final String COMPONENT_SEPARATOR = "";
 
     private final ComponentIndex index;
 
@@ -99,15 +93,13 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
      * "Business/Salesforce|Cloud/Salesforce", where "Business", "Cloud" are
      * categories, "Salesforce" - is familyName
      */
-    private final String familyName;
+    private final String paletteValue;
 
     private volatile Set<ModuleNeeded> modulesNeeded;
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
     private Boolean useLookup = null;
-
-    private boolean hasConditionalOutput = false;
 
     private ETaCoKitComponentType tacokitComponentType;
 
@@ -117,7 +109,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         this.index = component;
         this.detail = detail;
         this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
-        this.familyName = computeFamilyName();
+        this.paletteValue = computePaletteValue();
         this.codePartListX = createCodePartList();
         this.reportPath = reportPath;
         this.isCatcherAvailable = isCatcherAvailable;
@@ -132,7 +124,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         this.index = component;
         this.detail = detail;
         this.tacokitComponentType = ETaCoKitComponentType.valueOf(this.detail.getType().toLowerCase());
-        this.familyName = computeFamilyName();
+        this.paletteValue = computePaletteValue();
         this.codePartListX = createCodePartList();
         this.image = null;
         this.image24 = null;
@@ -148,12 +140,16 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     }
 
     /**
-     * TODO change to StringBuilder impl? Seems, here StringBuilder instance is
-     * created per category
+     * Computes palette value, which is used to define component location in Studio palette
+     * Palette value has following format: "Category1/Family|Category2/Family"
+     * Component may have several entries in palette (each entry is in different category)
+     * Entries in palette value are separated with "|"
+     * "/" separates categories, subcategories and family
+     * 
+     * @return palette value
      */
-    private String computeFamilyName() {
-        return index.getCategories().stream().map(category -> category + "/" + index.getId().getFamily()).collect(
-                Collectors.joining("|"));
+    private String computePaletteValue() {
+        return index.getCategories().stream().collect(Collectors.joining("|"));
     }
 
     /**
@@ -210,15 +206,16 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
     }
 
     /**
-     * Returns string which is concatenation of all component palette entries
-     * Component palette entry is computed as category + "/" + familyName E.g.
-     * "Business/Salesforce|Cloud/Salesforce"
+     * Returns string which is concatenation of all component palette entries.
+     * This string has following format: "Category1/Family|Category2/SubCategory2/Family"
+     * Different entries are separated with "|".
+     * "/" separates categories, subcategories and family inside one entry
      *
      * @return all palette entries for this component
      */
     @Override
     public String getOriginalFamilyName() {
-        return familyName;
+        return paletteValue;
     }
 
     /**
@@ -373,15 +370,15 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                             .stream()
                             .map(s -> new ModuleNeeded(getName(), "", true, s))
                             .collect(toList()));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.COMPONENT_RUNTIME_VERSION));
-                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.SLF4J_VERSION));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-di/" + GAV.INSTANCE.getComponentRuntimeVersion()));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.talend.sdk.component/component-runtime-design-extension/" + GAV.INSTANCE.getComponentRuntimeVersion()));
+                    modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-api/" + GAV.INSTANCE.getSlf4jVersion()));
 
                     if (!hasTcomp0Component(iNode)) {
                         if (!PluginChecker.isTIS()) {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:" + GAV.GROUP_ID + "/slf4j-standard/" + GAV.COMPONENT_RUNTIME_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:" + GAV.INSTANCE.getGroupId() + "/slf4j-standard/" + GAV.INSTANCE.getComponentRuntimeVersion()));
                         } else {
-                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/" + GAV.SLF4J_VERSION));
+                            modulesNeeded.add(new ModuleNeeded(getName(), "", true, "mvn:org.slf4j/slf4j-log4j12/" + GAV.INSTANCE.getSlf4jVersion()));
                         }
                     }
 
@@ -394,7 +391,7 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                             modulesNeeded.addAll(coordinates.stream()
                                     .map(coordinate -> new ModuleNeeded(getName(), "", true, Mvn.locationToMvn(coordinate).replace(MavenConstants.LOCAL_RESOLUTION_URL + '!', "")))
                                     .collect(Collectors.toList()));
-                            if (coordinates.stream().anyMatch(d -> d.contains("org.talend.sdk.component:component-runtime-beam"))) {
+                            if (coordinates.contains("org.apache.beam") || coordinates.contains(":beam-sdks-java-io")) {
                                 modulesNeeded.addAll(dependencies
                                         .getBeam()
                                         .stream()

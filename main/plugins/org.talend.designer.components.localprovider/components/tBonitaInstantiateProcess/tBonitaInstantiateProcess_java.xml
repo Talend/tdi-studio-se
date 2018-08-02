@@ -214,7 +214,7 @@
 
    	<CODEGENERATION>
 	   <IMPORTS>
-	   		<IMPORT NAME="xstream_122" MODULE="xstream-1.2.2.jar" MVN="mvn:org.talend.libraries/xstream-1.2.2/6.0.0" REQUIRED_IF="(DB_VERSION!='BONITA_652') AND (DB_VERSION!='BONITA_724')" />
+	   		<IMPORT NAME="xstream-1.4.10.jar" MODULE="xstream-1.4.10.jar" MVN="mvn:com.thoughtworks.xstream/xstream/1.4.10" REQUIRED_IF="(CLIENT_MODE=='JAVA_CLIENT')" />
 			<!-- Bonita 5.2.3 -->
 			<IMPORT NAME="bonita_client_523" MODULE="bonita-client-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-client-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-client-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
 			<IMPORT NAME="bonita_server_523" MODULE="bonita-server-5.2.3.jar" MVN="mvn:org.talend.libraries/bonita-server-5.2.3/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.bonita/lib/bonita-server-5.2.3.jar" REQUIRED_IF="DB_VERSION=='BONITA_523'" />
@@ -284,7 +284,6 @@
 			<IMPORT NAME="bonita-client-6.5.2.jar" MODULE="bonita-client-6.5.2.jar" MVN="mvn:org.talend.libraries/bonita-client-6.5.2/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="bonita-common-6.5.2.jar" MODULE="bonita-common-6.5.2.jar" MVN="mvn:org.talend.libraries/bonita-common-6.5.2/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="bonita-server-6.5.2.jar" MODULE="bonita-server-6.5.2.jar" MVN="mvn:org.talend.libraries/bonita-server-6.5.2/6.0.0" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
-			<IMPORT NAME="xstream-1.4.7.jar" MODULE="xstream-1.4.7.jar" MVN="mvn:org.talend.libraries/xstream-1.4.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xstream-1.4.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="xpp3-1.1.6.jar" MODULE="xpp3-1.1.6.jar" MVN="mvn:org.talend.libraries/xpp3-1.1.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xpp3-1.1.6.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<IMPORT NAME="httpmime-4.2.5.jar" MODULE="httpmime-4.2.5.jar" MVN="mvn:org.talend.libraries/httpmime-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_652') AND (CLIENT_MODE=='JAVA_CLIENT')" />
@@ -309,7 +308,6 @@
 			<IMPORT NAME="bonita-client-7.2.4.jar" MODULE="bonita-client-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-client-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="bonita-common-7.2.4.jar" MODULE="bonita-common-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-common-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="bonita-server-7.2.4.jar" MODULE="bonita-server-7.2.4.jar" MVN="mvn:org.talend.libraries/bonita-server-7.2.4/6.3.0" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
-			<IMPORT NAME="xstream-1.4.7.jar" MODULE="xstream-1.4.7.jar" MVN="mvn:org.talend.libraries/xstream-1.4.7/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xstream-1.4.7.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			<IMPORT NAME="xpp3-1.1.6.jar" MODULE="xpp3-1.1.6.jar" MVN="mvn:org.talend.libraries/xpp3-1.1.6/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.xml/lib/xpp3-1.1.6.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />
 			
 			<IMPORT NAME="httpmime-4.2.5.jar" MODULE="httpmime-4.2.5.jar" MVN="mvn:org.talend.libraries/httpmime-4.2.5/6.0.0" UrlPath="platform:/plugin/org.talend.libraries.apache.http/lib/httpmime-4.2.5.jar" REQUIRED_IF="(DB_VERSION=='BONITA_724') AND (CLIENT_MODE=='JAVA_CLIENT')" />

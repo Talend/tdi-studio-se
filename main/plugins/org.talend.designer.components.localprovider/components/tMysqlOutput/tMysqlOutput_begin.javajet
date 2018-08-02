@@ -21,8 +21,10 @@ skeleton="../templates/db_output_bulk.skeleton"
 	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 	INode node = (INode)codeGenArgument.getArgument();
 	String cid = node.getUniqueName();
+	
+	boolean isAmazonAurora = node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
 
-    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+    if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);// 4 ==> "_out".length();
     }
 
@@ -166,7 +168,7 @@ boolean useExistingConnection = "true".equalsIgnoreCase(ElementParameterParser.g
 if(useExistingConnection) {
 	String connection = ElementParameterParser.getValue(node,"__CONNECTION__");
 	String conn = "conn_" + connection;
-	if(connection.matches("^.*?tAmazonAuroraConnection_\\d+$")){
+	if(isAmazonAurora){
 		  conn += "_in";
 		  dbVersion = "MYSQL_5";
 	}else{

@@ -747,8 +747,13 @@ public class DataProcess implements IGeneratingProcess {
         List<IConnection> incomingConnections, outgoingConnections;
         int inputID = 0;
         for (IMultipleComponentItem curItem : multipleComponentManager.getItemList()) {
+        	AbstractNode nodeSource = itemsMap.get(curItem);
+        	if (nodeSource == null) {
+        		// This happens in case of virtual tHMap_Out component in first position (see prepareAllMultipleComponentNodes)
+        		continue;
+        	}
             for (IMultipleComponentConnection curConnec : curItem.getOutputConnections()) {
-                AbstractNode nodeSource = itemsMap.get(curItem);
+                
                 AbstractNode nodeTarget;
 
                 nodeTarget = itemsMap.get(curConnec.getTarget());

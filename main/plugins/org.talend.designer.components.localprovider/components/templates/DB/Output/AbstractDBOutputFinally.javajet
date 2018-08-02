@@ -24,12 +24,15 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
     dbLog = new DBLogUtil(node);
     String cid = node.getUniqueName();
     String dataAction = ElementParameterParser.getValue(node,"__DATA_ACTION__");
-    if(cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$")){
+    
+    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
+    
+    boolean isAmazonAurora = "mysql_id".equalsIgnoreCase(dbmsId) && node.isVirtualGenerateNode() && (cid.matches("^.*?tAmazonAuroraOutput_\\d+_out$") || cid.matches("^.*?tDBOutput_\\d+_out$"));
+    
+    if(isAmazonAurora){
          cid = cid.substring(0,cid.length()-4);
     }
-
-    String dbmsId = ElementParameterParser.getValue(node,"__MAPPING__");
-
+    
     boolean useExistingConnection = "true".equals(ElementParameterParser.getValue(node,"__USE_EXISTING_CONNECTION__"));
 
 if(!useExistingConnection) {

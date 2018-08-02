@@ -24,6 +24,8 @@ import java.util.Map;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
+import org.talend.sdk.component.studio.model.parameter.TextElementParameter;
 
 /**
  * {@link PropertyChangeListener}, which activates/deactivates {@link IElementParameter} according target
@@ -42,22 +44,51 @@ public class ActiveIfListener implements PropertyChangeListener {
 
     public ActiveIfListener(
             final Map<Integer, List<PropertyDefinitionDecorator.Condition>> conditions,
-            final TaCoKitElementParameter parameter,
+            final TaCoKitElementParameter sourceParam,
             final Map<String, TaCoKitElementParameter> targetParams) {
         this.conditions = conditions;
-        this.sourceParameter = parameter;
+        this.sourceParameter = sourceParam;
         this.targetParams = targetParams;
     }
 
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
+        if(!"value".equals(event.getPropertyName())){
+            return;
+        }
         final boolean show = conditions.entrySet().stream()
                 .flatMap(e -> e.getValue().stream())
-                .allMatch(condition -> Arrays.stream(condition.getValues())
-                        .anyMatch(conditionValue -> condition.getTargetPath().equals(event.getPropertyName()) ?
-                                conditionValue.equals(String.valueOf(event.getNewValue())) :
-                                conditionValue.equals(String.valueOf(targetParams.get(condition.getTargetPath()).getValue()))));
+                .allMatch(condition -> {
+                    final boolean negate = condition.isNegation();
+                    return negate != Arrays.stream(condition.getValues())
+                            .anyMatch(conditionValue -> evaluate(condition, conditionValue));
+
+                });
         sourceParameter.setShow(show);
         sourceParameter.redraw();//request source parameter redraw
+        sourceParameter.firePropertyChange("show", null, show);
+    }
+
+    private boolean evaluate(final PropertyDefinitionDecorator.Condition condition, final String value) {
+        final String evaluationStrategy = condition.getEvaluationStrategy();
+        String targetValue = null;
+        switch (evaluationStrategy) {
+        case "DEFAULT":
+            targetValue = String.valueOf(targetParams.get(condition.getTargetPath()).getValue());
+        case "LENGTH":
+            final TaCoKitElementParameter targetParam = targetParams.get(condition.getTargetPath());
+            if (targetParam.getValue() == null) {
+                return "0".equals(value);
+            }
+            if (TextElementParameter.class.isInstance(targetParam)) {
+                targetValue = String.valueOf(String.valueOf(targetParam.getValue()).length());
+            } else if (TableElementParameter.class.isInstance(targetParam)) {
+                targetValue = String.valueOf(((List) (targetParam.getValue())).size());
+            }
+            break;
+        default:
+            throw new IllegalArgumentException("Not supported operation '" + evaluationStrategy + "'");
+        }
+        return value.equals(targetValue);
     }
 }

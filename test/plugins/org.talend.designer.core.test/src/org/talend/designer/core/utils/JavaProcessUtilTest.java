@@ -34,6 +34,7 @@ import org.talend.core.model.process.EComponentCategory;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.core.model.process.INode;
+import org.talend.core.model.process.IProcess2;
 import org.talend.core.runtime.process.TalendProcessOptionConstants;
 import org.talend.designer.core.model.components.DummyComponent;
 import org.talend.designer.core.model.components.EParameterName;
@@ -142,6 +143,16 @@ public class JavaProcessUtilTest {
         assertTrue(JavaProcessUtil.isUseExistingConnection(simpleInputNode));
     }
 
+    @Test
+    public void testEvaluateOsgiDependency() {
+    	ModuleNeeded module = moduleWithEvalOsgiDependency("tester-1.1.1.jar", null);
+    	assertEquals("true", module.getExtraAttributes().get("IS_OSGI_EXCLUDED"));
+    	module = moduleWithEvalOsgiDependency("tester-1.1.1.jar", "tester-2.2.2.jar,tester-1.1.1.jar");
+    	assertNull(module.getExtraAttributes().get("IS_OSGI_EXCLUDED"));
+    	module = moduleWithEvalOsgiDependency("tester-1.1.1.jar", "tester-3.3.3.jar,tester-2.2.2.jar");
+    	assertEquals("true", module.getExtraAttributes().get("IS_OSGI_EXCLUDED"));
+    }
+
     private IElementParameter createUECParameter(INode node) {
         ElementParameter param = new ElementParameter(node);
         param.setName(EParameterName.USE_EXISTING_CONNECTION.getName());
@@ -151,4 +162,29 @@ public class JavaProcessUtilTest {
         return param;
     }
 
+    private ModuleNeeded moduleWithEvalOsgiDependency(String libName, String bundleClassPath) {
+    	DataNode node = new DataNode();
+    	List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
+    	IProcess2 process = mock(IProcess2.class);
+    	when(process.getComponentsType()).thenReturn("CAMEL");
+    	if (bundleClassPath != null && bundleClassPath.length() > 0) {
+	    	Map<Object, Object> additionalProperties = new HashMap<Object, Object>();
+	    	additionalProperties.put("Bundle-ClassPath", bundleClassPath);
+	    	when(process.getAdditionalProperties()).thenReturn(additionalProperties);
+    	}
+    	node.setProcess(process);
+    	node.setActivate(true);
+    	List<IElementParameter> elementParameters = new ArrayList<IElementParameter>();
+    	IElementParameter param = mock(IElementParameter.class);
+    	elementParameters.add(param);
+    	when(param.getFieldType()).thenReturn(EParameterFieldType.MODULE_LIST);
+    	when(param.isShow(elementParameters)).thenReturn(Boolean.TRUE);
+    	when(param.getValue()).thenReturn(libName);
+    	when(param.getName()).thenReturn("LIBRARY");
+    	node.setElementParameters(elementParameters);
+    	node.setUniqueName("cMessagingEndpoint_1");
+    	JavaProcessUtil.addNodeRelatedModules(process, modulesNeeded, node, 0);
+    	assertEquals(1, modulesNeeded.size());
+    	return modulesNeeded.get(0);
+    }
 }

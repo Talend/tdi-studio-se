@@ -22,6 +22,8 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_S
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_NAME;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_VALIDATION_PARAMETERS;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_EVALUTIONSTRATEGY;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_NEGATE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_TARGET;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONDITION_IF_VALUE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_NAME;
@@ -61,7 +63,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
     /**
      * Denotes that some property has no parent property
      */
-    private static final String NO_PARENT_ID = "";
+    static final String NO_PARENT_ID = "";
 
     /**
      * Suffix used in id ({@link SimplePropertyDefinition#getPath()}), which denotes Array typed property
@@ -358,11 +360,15 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 .filter(meta -> meta.getKey().startsWith(CONDITION_IF_TARGET))
                 .map(meta -> {
                     final String[] split = meta.getKey().split("::");
-                    final String valueKey =
-                            CONDITION_IF_VALUE + (split.length == 4 ? "::" + split[split.length - 1] : "");
+                    final String index = split.length == 4 ? "::" + split[split.length - 1] : "";
+                    final String valueKey = CONDITION_IF_VALUE + index;
+                    final String negateKey = CONDITION_IF_NEGATE + index;
+                    final String evaluationStrategyKey = CONDITION_IF_EVALUTIONSTRATEGY + index;
                     return new Condition(meta.getValue(),
                             delegate.getMetadata().getOrDefault(valueKey, "true").split(VALUE_SEPARATOR),
-                            delegate.getPath());
+                            delegate.getPath(),
+                            Boolean.parseBoolean(delegate.getMetadata().getOrDefault(negateKey, "false")),
+                            delegate.getMetadata().getOrDefault(evaluationStrategyKey, "DEFAULT"));
                 }).collect(toList());
     }
 
@@ -423,19 +429,19 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @return true, it it has action::validation metadata; false otherwise
      */
-    boolean hasValidation() {
+    public boolean hasValidation() {
         return delegate.getMetadata().containsKey(ACTION_VALIDATION_NAME)
                 && delegate.getMetadata().containsKey(ACTION_VALIDATION_PARAMETERS);
     }
 
-    String getValidationName() {
+    public String getValidationName() {
         if (!hasValidation()) {
             throw new IllegalStateException("Property has no validation");
         }
         return delegate.getMetadata().get(ACTION_VALIDATION_NAME);
     }
 
-    List<String> getValidationParameters() {
+    public List<String> getValidationParameters() {
         if (!hasValidation()) {
             throw new IllegalStateException("Property has no validation");
         }
@@ -447,7 +453,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         return delegate.getMetadata().containsKey(ACTION_HEALTHCHECK);
     }
 
-    String getHealthCheckName() {
+    public String getHealthCheckName() {
         if (!isCheckable()) {
             throw new IllegalArgumentException("It is not checkable");
         }
@@ -558,7 +564,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                 && delegate.getMetadata().containsKey(ACTION_SUGGESTIONS_PARAMETERS);
     }
     
-    Suggestions getSuggestions() {
+    public Suggestions getSuggestions() {
         if (!hasSuggestions()) {
             throw new IllegalStateException("Property has no suggestions");
         }
@@ -582,16 +588,22 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         private final String target;
 
-        private final String[] values;
-
         private String targetPath;
 
         private String sourcePath;
 
-        public Condition(final String target, final String[] values, final String sourcePath) {
+        private boolean negation;
+
+        private String evaluationStrategy;
+
+        private final String[] values;
+
+        public Condition(final String target, final String[] values, final String sourcePath, final boolean negation, final String evaluationStrategy) {
             this.target = target;
             this.sourcePath = sourcePath;
             this.values = values;
+            this.negation = negation;
+            this.evaluationStrategy = evaluationStrategy == null || evaluationStrategy.isEmpty() ? "DEFAULT" : evaluationStrategy;
         }
 
         public String getTarget() {
@@ -614,8 +626,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return sourcePath;
         }
 
-        public void setSourcePath(final String sourcePath) {
-            this.sourcePath = sourcePath;
+        public boolean isNegation() {
+            return negation;
+        }
+
+        public String getEvaluationStrategy() {
+            return evaluationStrategy;
         }
 
         @Override
@@ -624,7 +640,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     + Arrays.deepToString(this.getValues()) + ")";
         }
 
-        @Override public boolean equals(final Object o) {
+        @Override
+        public boolean equals(final Object o) {
             if (this == o)
                 return true;
             if (o == null || getClass() != o.getClass())
@@ -636,9 +653,9 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
                     Objects.equals(sourcePath, condition.sourcePath);
         }
 
-        @Override public int hashCode() {
-
-            int result = Objects.hash(target, targetPath, sourcePath);
+        @Override
+        public int hashCode() {
+            int result = Objects.hash(target, targetPath, sourcePath, negation, evaluationStrategy);
             result = 31 * result + Arrays.hashCode(values);
             return result;
         }
@@ -650,7 +667,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
 
         private final String value;
 
-        public static enum Type {
+        public enum Type {
             IN,
             OUT;
         }
@@ -708,13 +725,13 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
             return "PropertyDefinitionDecorator.Connection(type=" + this.getType() + ", value=" + this.getValue() + ")";
         }
     }
-    
+
     public static class Suggestions {
-        
+
         private final String name;
-        
+
         private final List<String> parameters;
-        
+
         Suggestions(final String name, final List<String> parameters) {
             this.name = name;
             this.parameters = parameters;
@@ -727,7 +744,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         public List<String> getParameters() {
             return parameters;
         }
-        
+
         @Override
         public String toString() {
             return "Suggestions(name=" + this.getName() + ", parameters=" + this.getParameters() + ")";

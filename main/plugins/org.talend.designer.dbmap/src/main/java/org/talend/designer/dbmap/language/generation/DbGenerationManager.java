@@ -84,6 +84,8 @@ public abstract class DbGenerationManager {
 
     private Boolean useDelimitedIdentifiers;
 
+    protected Set<String> subQueryTable = new HashSet<String>();
+
     /**
      * DOC amaumont GenerationManager constructor comment.
      *
@@ -268,6 +270,7 @@ public abstract class DbGenerationManager {
         aliasAlreadyDeclared.clear();
         queryColumnsSegments.clear();
         querySegments.clear();
+        subQueryTable.clear();
 
         this.tabSpaceString = tabString;
         DbMapComponent component = getDbMapComponent(dbMapComponent);
@@ -366,16 +369,6 @@ public abstract class DbGenerationManager {
                 if (!language.unuseWithExplicitJoin().contains(joinType) && i > 0) {
                     explicitJoin = true;
                 }
-
-            }
-
-            StringBuilder sbWhere = new StringBuilder();
-            boolean isFirstClause = true;
-            for (int i = 0; i < lstSizeInputTables; i++) {
-                ExternalDbMapTable inputTable = inputTables.get(i);
-                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause)) {
-                    isFirstClause = false;
-                }
             }
 
             appendSqlQuery(sb, DbMapSqlConstants.NEW_LINE);
@@ -441,6 +434,16 @@ public abstract class DbGenerationManager {
 
                 }
             }
+
+            StringBuilder sbWhere = new StringBuilder();
+            boolean isFirstClause = true;
+            for (int i = 0; i < lstSizeInputTables; i++) {
+                ExternalDbMapTable inputTable = inputTables.get(i);
+                if (buildConditions(component, sbWhere, inputTable, false, isFirstClause)) {
+                    isFirstClause = false;
+                }
+            }
+
             /*
              * for addition conditions
              */
@@ -766,14 +769,16 @@ public abstract class DbGenerationManager {
                 appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             }
             String entryName = dbMapEntry.getName();
-            entryName = getOriginalColumnName(entryName, component, table);
             String tableName = table.getName();
             if (table.getAlias() == null) {
                 tableName = getHandledTableName(component, table.getName(), table.getAlias());
             } else {
                 tableName = getHandledField(table.getAlias());
             }
-            entryName = getColumnName(null, entryName);
+            if (!subQueryTable.contains(tableName)) {
+                entryName = getOriginalColumnName(entryName, component, table);
+                entryName = getColumnName(null, entryName);
+            }
             String locationInputEntry = language.getLocation(tableName, getHandledField(entryName));
             appendSqlQuery(sbWhere, DbMapSqlConstants.SPACE);
             appendSqlQuery(sbWhere, locationInputEntry);
@@ -918,7 +923,7 @@ public abstract class DbGenerationManager {
 
                 /* the new tabSpaceString in subquery must not be same with the parent!!! */
                 String deliveredTable = genManager.buildSqlSelect(externalNode, tableName, tabSpaceString + "  "); //$NON-NLS-1$
-
+                subQueryTable.add(inputTableName);
                 int begin = 1;
                 int end = deliveredTable.length() - 1;
                 if (begin <= end) {

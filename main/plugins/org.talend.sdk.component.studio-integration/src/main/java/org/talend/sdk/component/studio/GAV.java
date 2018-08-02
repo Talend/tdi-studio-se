@@ -15,15 +15,38 @@
  */
 package org.talend.sdk.component.studio;
 
-public interface GAV {
+import java.io.IOException;
+import java.util.Properties;
 
-    String GROUP_ID = "org.talend.sdk.component";
+public enum GAV {
 
-    String ARTIFACT_ID = "org.talend.sdk.component.studio-integration";
+    INSTANCE;
 
-    String COMPONENT_RUNTIME_VERSION = "1.0.2-SNAPSHOT";
+    private final Properties props = new Properties() {{
+        try {
+            load(this.getClass().getClassLoader().getResourceAsStream("org.talend.sdk.studio.runtime-metadata.properties"));
+        } catch (IOException e) {
+            throw new IllegalStateException("can't find runtime metadata of dependencies for talend component kit");
+        }
+    }};
 
-    String CLI_VERSION = "1.4";
+    public String getGroupId() {
+        return props.getProperty("GROUP_ID", "org.talend.sdk.component");
+    }
 
-    String SLF4J_VERSION = "1.7.25";
+    public String getArtifactId() {
+        return props.getProperty("ARTIFACT_ID", "org.talend.sdk.component.studio-integration");
+    }
+
+    public String getComponentRuntimeVersion() {
+        return props.getProperty("COMPONENT_RUNTIME_VERSION");
+    }
+
+    public String getCliVersion() {
+        return props.getProperty("CLI_VERSION");
+    }
+
+    public String getSlf4jVersion() {
+        return props.getProperty("SLF4J_VERSION");
+    }
 }

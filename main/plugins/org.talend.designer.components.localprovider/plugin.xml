@@ -23,10 +23,6 @@
    <extension
          point="org.talend.designer.codegen.additional_jetfile">
       <jetProvider
-            class="org.talend.designer.components.localprovider.MDMTriggerJetFileProvider"
-            id="org.talend.designer.components.localprovider.MDMTriggerJetFileProvider">
-      </jetProvider>
-      <jetProvider
             class="org.talend.designer.components.localprovider.BoxJetFileProvider"
             id="org.talend.designer.components.localprovider.BoxJetFileProvider">
       </jetProvider>

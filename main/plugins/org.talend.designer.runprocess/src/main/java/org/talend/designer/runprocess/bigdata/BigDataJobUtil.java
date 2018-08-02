@@ -150,7 +150,7 @@ public class BigDataJobUtil {
 
     /** Find the distribution where the generated jar rquired to have the context files inside **/
     public boolean needsToHaveContextInsideJar() {
-        if (processItem.getProcess() != null) {
+        if (processItem.getProcess() != null && processItem.getProcess().getParameters() != null) {
             EList<ElementParameterType> parameters = processItem.getProcess().getParameters().getElementParameter();
             for (ElementParameterType pt : parameters) {
                 if (pt.getName().equals("DISTRIBUTION")) { //$NON-NLS-1$

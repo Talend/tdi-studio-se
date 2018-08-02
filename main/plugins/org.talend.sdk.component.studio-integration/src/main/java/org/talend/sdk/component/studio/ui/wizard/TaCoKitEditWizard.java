@@ -23,8 +23,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IWorkbench;
 import org.talend.core.model.update.RepositoryUpdateManager;
 import org.talend.sdk.component.server.front.model.ConfigTypeNode;
+import org.talend.sdk.component.studio.GAV;
 import org.talend.sdk.component.studio.i18n.Messages;
-import org.talend.sdk.component.studio.util.TaCoKitConst;
 
 /**
  * Wizard which is called on Edit action
@@ -62,7 +62,7 @@ public class TaCoKitEditWizard extends TaCoKitConfigurationWizard {
                 try {
                     updateConfigurationItem();
                 } catch (Exception e) {
-                    throw new CoreException(new Status(IStatus.ERROR, TaCoKitConst.BUNDLE_ID, e.getMessage(), e));
+                    throw new CoreException(new Status(IStatus.ERROR, GAV.INSTANCE.getArtifactId(), e.getMessage(), e));
                 }
             }
         };

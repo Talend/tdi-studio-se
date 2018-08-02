@@ -89,13 +89,28 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     for(int i = 0; i < columns.size(); i++) {
                         IMetadataColumn column = columns.get(i);
                     %>
-                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]",
-                                "<%=column.getLabel()%>");
+                        configuration_<%=cid%>.put("<%=parameterName%>[<%=i%>]", "<%=column.getLabel()%>");
                     <%
                     }
                 }
             } else {
-                final String key = p.getName().replace('$', '.');
+                final String key;
+                if(!p.getName().contains("$")){
+                    key = p.getName();
+                }else{
+                    final StringBuilder keyBuilder = new StringBuilder();
+                    for (String part : p.getName().split("\\.")) {
+                        if (keyBuilder.length() != 0) {
+                            keyBuilder.append(".");
+                        }
+                        if (part.contains("$") && !part.startsWith("$")) {
+                            keyBuilder.append(part.replace("$", "."));
+                        } else {
+                            keyBuilder.append(part);
+                        }
+                    }
+                    key = keyBuilder.toString();
+                }
                 String value = null;
                 if(p.getFieldType() == EParameterFieldType.PASSWORD) {
                     value = ElementParameterParser.getPasswordValue(node, p.getVariableName());
@@ -110,6 +125,11 @@ final java.util.Map<String, String> configuration_<%=cid%> = new java.util.HashM
                     }
                 }
                 if (value != null) {
+                 if(key.endsWith("$maxBatchSize")){
+                  %>
+                    globalMap.putIfAbsent("MAX_BATCH_SIZE_<%=cid%>", Integer.parseInt(<%=value%>));
+                  <%
+                 }
 %>
                     configuration_<%=cid%>.put("<%=key%>", <%=value%>);
 <%

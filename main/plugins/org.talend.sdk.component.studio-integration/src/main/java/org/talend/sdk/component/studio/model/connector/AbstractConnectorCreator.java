@@ -29,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.sun.prism.CompositeMode;
-
 import org.talend.core.model.process.AbstractNode;
 import org.talend.core.model.process.EConnectionType;
 import org.talend.core.model.process.INode;
@@ -111,14 +109,14 @@ abstract class AbstractConnectorCreator implements ConnectorCreator {
     @Override
     public List<INodeConnector> createConnectors() {
         List<INodeConnector> mainConnectors = createMainConnectors();
-        final boolean useMultiSchema = mainConnectors.stream()
+        // is connector a multi schema
+        mainConnectors.stream()
                 .filter(TaCoKitNodeConnector.class::isInstance)
                 .map(TaCoKitNodeConnector.class::cast)
                 .filter(TaCoKitNodeConnector::hasOutput)
-                .count() > 1;
-        if (useMultiSchema) {
-            mainConnectors.forEach(c -> c.setMultiSchema(true));
-        }
+                .filter(c -> c.getMaxLinkOutput() > 1)
+                .forEach(c -> c.setMultiSchema(true));
+
         ArrayList<INodeConnector> connectors = new ArrayList<>(mainConnectors);
         createRejectConnector().ifPresent(connectors::add);
         connectors.add(createIterateConnector());
