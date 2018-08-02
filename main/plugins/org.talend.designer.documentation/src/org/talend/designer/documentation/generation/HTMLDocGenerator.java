@@ -1427,7 +1427,7 @@ public class HTMLDocGenerator implements IDocumentationGenerator {
         element.addAttribute("i18n.job.nullable", Messages.HTMLDocGenerator_Nullable); //$NON-NLS-1$
         element.addAttribute("i18n.job.comment", Messages.HTMLDocGenerator_Comment); //$NON-NLS-1$
         element.addAttribute("i18n.job.original.function.parameters", Messages.HTMLDocGenerator_Original_Function_Parameters); //$NON-NLS-1$
-        element.addAttribute("i18n.job.ended", Messages.HTMLDocGenerator_ended); //$NON-NLS-1$
+        element.addAttribute("i18n.job.ended", "ended"); //$NON-NLS-1$
         element.addAttribute("i18n.job.content", Messages.HTMLDocGenerator_content); //$NON-NLS-1$
 
         // special for Route
