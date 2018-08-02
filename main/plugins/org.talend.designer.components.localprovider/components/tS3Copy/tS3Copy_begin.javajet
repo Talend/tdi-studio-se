@@ -65,7 +65,7 @@ imports="
     com.amazonaws.services.s3.model.ObjectMetadata metadataResult_<%=cid%> = conn_<%=cid%>.getObjectMetadata(metadataRequest_<%=cid%>);
     long objectSize_<%=cid%> = metadataResult_<%=cid%>.getContentLength();
     
-    booelan multiUpload_<%=cid%> = objectSize_<%=cid%> > partSizeInBytes_<%=cid%>;
+    boolean multiUpload_<%=cid%> = objectSize_<%=cid%> > partSizeInBytes_<%=cid%>;
     
     if(!multiUpload_<%=cid%>) {
     		com.amazonaws.services.s3.model.CopyObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(from_bucket_<%=cid%>, from_key_<%=cid%>, to_bucket_<%=cid%>, to_key_<%=cid%>);
@@ -73,11 +73,10 @@ imports="
     				putRequest_<%=cid%>.setNewObjectMetadata(objectMetadata_<%=cid%>);
     		}
     		
-    		<%@ include file="./set_kms.javajet"%>
+    		<%@ include file="../tS3Put/set_kms.javajet"%>
     		
     		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
 		} else {
-    		try {
     				com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
     				if(objectMetadata_<%=cid%> != null) {
     						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, objectMetadata_<%=cid%>);
@@ -85,7 +84,7 @@ imports="
     						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>);
     				}
     				
-    				<%@ include file="./set_kms.javajet"%>
+    				<%@ include file="../tS3Put/set_kms.javajet"%>
     				
             com.amazonaws.services.s3.model.InitiateMultipartUploadResult initResult_<%=cid%> = conn_<%=cid%>.initiateMultipartUpload(putRequest_<%=cid%>);
             
@@ -93,10 +92,12 @@ imports="
             int partNum_<%=cid%> = 1;
             
             java.util.List<com.amazonaws.services.s3.model.PartETag> partTags_<%=cid%> = new java.util.ArrayList<com.amazonaws.services.s3.model.PartETag>();
+            
+      	try {
             while (bytePosition_<%=cid%> < objectSize_<%=cid%>) {
                 long lastByte_<%=cid%> = java.lang.Math.min(bytePosition_<%=cid%> + partSizeInBytes_<%=cid%> - 1, objectSize_<%=cid%> - 1);
                 
-                com.amazonaws.services.s3.model.CopyPartResult copyPartRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyPartResult()
+                com.amazonaws.services.s3.model.CopyPartRequest copyPartRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyPartRequest()
                         .withSourceBucketName(from_bucket_<%=cid%>)
                         .withSourceKey(from_key_<%=cid%>)
                         .withDestinationBucketName(to_bucket_<%=cid%>)
@@ -118,7 +119,7 @@ imports="
     		} catch (java.lang.Exception uploadException_<%=cid%>) {
     				conn_<%=cid%>.abortMultipartUpload(new com.amazonaws.services.s3.model.AbortMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, initResult_<%=cid%>.getUploadId()));
     				throw uploadException_<%=cid%>;
-        }
+    		}
     }
     
 		<%
