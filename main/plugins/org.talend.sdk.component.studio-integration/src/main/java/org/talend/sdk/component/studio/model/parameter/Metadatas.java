@@ -47,6 +47,8 @@ public final class Metadatas {
     public static final String CONFIG_TYPE = "configurationtype::type";
 
     public static final String CONFIG_NAME = "configurationtype::name";
+    
+    public static final String PARAMETER_INDEX = "definition::parameter::index";
 
     public static final String UI_CODE = "ui::code::value";
 

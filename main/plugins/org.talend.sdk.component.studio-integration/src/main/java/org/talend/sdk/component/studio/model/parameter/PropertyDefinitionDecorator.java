@@ -16,6 +16,7 @@
 package org.talend.sdk.component.studio.model.parameter;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_HEALTHCHECK;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
@@ -30,6 +31,7 @@ import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_N
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.CONFIG_TYPE;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.MAIN_FORM;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.ORDER_SEPARATOR;
+import static org.talend.sdk.component.studio.model.parameter.Metadatas.PARAMETER_INDEX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_PREFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_GRIDLAYOUT_SUFFIX;
 import static org.talend.sdk.component.studio.model.parameter.Metadatas.UI_OPTIONS_ORDER;
@@ -43,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -573,6 +576,12 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         final List<String> parameters = Arrays.asList(parametersValue.split(VALUE_SEPARATOR));
         return new Suggestions(name, parameters);
     }
+    
+    public Parameter getParameter() {
+        return ofNullable(delegate.getMetadata().get(PARAMETER_INDEX))
+                .map(s -> new Parameter(Integer.parseInt(s)))
+                .orElse(new Parameter());
+    }
 
     @Override
     public int hashCode() {
@@ -748,6 +757,29 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
         @Override
         public String toString() {
             return "Suggestions(name=" + this.getName() + ", parameters=" + this.getParameters() + ")";
+        }
+    }
+    
+    public static class Parameter {
+        
+        private static int UNDEFINED = -1;
+        
+        private int index = UNDEFINED;
+        
+        Parameter() {
+            // no-op
+        }
+        
+        Parameter(final int index) {
+            this.index = index;
+        }
+        
+        public int getIndex() {
+            return index;
+        }
+        
+        public boolean isRoot() {
+            return index != UNDEFINED;
         }
     }
 }

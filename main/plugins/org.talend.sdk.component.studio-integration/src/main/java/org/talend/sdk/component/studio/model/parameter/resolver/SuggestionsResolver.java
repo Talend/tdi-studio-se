@@ -15,13 +15,16 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import java.util.ArrayList;
+import static java.util.Comparator.comparing;
+
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
@@ -59,25 +62,27 @@ public class SuggestionsResolver extends AbstractParameterResolver {
      * @param settings all "leaf" Component options
      */
     public void resolveParameters(final Map<String, IElementParameter> settings) {
-        final List<PropertyDefinitionDecorator> callbackParameters = new ArrayList<>(PropertyDefinitionDecorator.wrap(actionRef.getProperties()));
-        final List<PropertyDefinitionDecorator> rootParameters = treeCreator.findRoots(callbackParameters);
+        final Iterator<PropertyDefinitionDecorator> expectedParameters = PropertyDefinitionDecorator.wrap(actionRef.getProperties())
+                .stream()
+                .filter(p -> p.getParameter().isRoot())
+                .sorted(comparing(p -> p.getParameter().getIndex()))
+                .iterator();
         final List<String> relativePaths = actionOwner.getProperty().getSuggestions().getParameters();
-        if (rootParameters.size() != relativePaths.size()) {
-            throw new IllegalStateException("Number of callback parameter roots should be the same as number of relative paths");
-        }
-
-        for (int i = 0; i < relativePaths.size(); i++) {
-            final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePaths.get(i));
-            final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
-            final PropertyDefinitionDecorator parameterRoot = rootParameters.get(i);
-            parameters.forEach(parameter -> {
-                parameter.registerListener("value", updater);
-                final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
-                final String defaultValue = parameter.getStringValue();
-                final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, defaultValue);
-                updater.getAction().addParameter(actionParameter);
-            });
-        }
+        
+        relativePaths.forEach(relativePath -> {
+            if (expectedParameters.hasNext()) {
+                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
+                final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
+                final SimplePropertyDefinition parameterRoot = expectedParameters.next();
+                parameters.forEach(parameter -> {
+                    parameter.registerListener("value", updater);
+                    final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
+                    final String defaultValue = parameter.getStringValue();
+                    final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, defaultValue);
+                    updater.getAction().addParameter(actionParameter);
+                });
+            }
+        });
 
     }
 
