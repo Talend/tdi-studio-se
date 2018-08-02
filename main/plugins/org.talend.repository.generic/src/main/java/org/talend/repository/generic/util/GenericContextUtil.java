@@ -225,8 +225,9 @@ public class GenericContextUtil {
                 Property property = (Property) nameThing;
                 Object paramValue = property.getStoredValue();
                 if(GenericTypeUtils.isListStringType(property) && paramValue != null){
-                    String propertyValue = ContextParameterUtils.getNewScriptCode(prefixName + ConnectionContextHelper.LINE
-                            + ContextParameterUtils.getValidParameterName(property.getName()), LanguageManager.getCurrentLanguage());
+//                    String propertyValue = ContextParameterUtils.getNewScriptCode(prefixName + ConnectionContextHelper.LINE
+//                            + ContextParameterUtils.getValidParameterName(property.getName()), LanguageManager.getCurrentLanguage());
+                	String propertyValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);//for driver's param: fixdb_old_ ==> context.fixdb_old_
                     property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, true);
                     List<String> driverList = new ArrayList<String>();
                     driverList.add(propertyValue);
