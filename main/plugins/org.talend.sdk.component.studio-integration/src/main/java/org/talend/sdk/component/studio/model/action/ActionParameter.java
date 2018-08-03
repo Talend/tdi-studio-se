@@ -74,7 +74,7 @@ public class ActionParameter {
     /**
      * ElementParameter name (which also denotes its path)
      */
-    String getName() {
+    public String getName() {
         return this.name;
     }
 

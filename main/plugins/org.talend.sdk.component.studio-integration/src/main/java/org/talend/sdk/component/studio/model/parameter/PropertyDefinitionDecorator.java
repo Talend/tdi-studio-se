@@ -90,7 +90,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @param property {@link SimplePropertyDefinition} to wrap
      */
-    PropertyDefinitionDecorator(final SimplePropertyDefinition property) {
+    public PropertyDefinitionDecorator(final SimplePropertyDefinition property) {
         this.delegate = property;
     }
 
