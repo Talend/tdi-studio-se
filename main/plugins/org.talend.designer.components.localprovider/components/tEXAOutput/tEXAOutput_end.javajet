@@ -79,7 +79,7 @@ imports="
                 if (pstmt_<%=cid %> != null && batchSizeCounter_<%=cid%> > 0) {
                         <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                     for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                        countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
+                        countSum_<%=cid%> += (countEach_<%=cid%> != java.sql.Statement.EXECUTE_FAILED ? 1 : 0);
                     }
                         <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                 }
