@@ -1021,7 +1021,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                         int countSum_<%=cid%> = 0;
                             <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                         for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
+                            countSum_<%=cid%> += (countEach_<%=cid%> != java.sql.Statement.EXECUTE_FAILED ? 1 : 0);
                         }
                             <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         <%if (("INSERT").equals(dataAction)) {
@@ -1097,7 +1097,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                         int countSum_<%=cid%> = 0;
                             <%dbLog.batch().executeTry(dbLog.str(dataAction));%>
                         for(int countEach_<%=cid%>: pstmt_<%=cid %>.executeBatch()) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
+                            countSum_<%=cid%> += (countEach_<%=cid%> != java.sql.Statement.EXECUTE_FAILED ? 1 : 0);
                         }
                             <%dbLog.batch().executeDone(dbLog.str(dataAction));%>
                         <%if (("INSERT").equals(dataAction)) {
@@ -1136,7 +1136,7 @@ skeleton="@{org.talend.designer.components.localprovider}/components/templates/d
                     %>
                         int countSum_<%=cid%> = 0;
                         for(int countEach_<%=cid%>: e_<%=cid%>.getUpdateCounts()) {
-                            countSum_<%=cid%> += (countEach_<%=cid%> < 0 ? 0 : countEach_<%=cid%>);
+                            countSum_<%=cid%> += (countEach_<%=cid%> != java.sql.Statement.EXECUTE_FAILED ? 1 : 0);
                         }
                         <%if (("INSERT").equals(dataAction)) {
                         %>
