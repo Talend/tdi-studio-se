@@ -9,6 +9,7 @@ imports="
 		org.talend.core.model.metadata.MappingTypeRetriever
 		org.talend.core.model.metadata.MetadataTalendType
 	 	org.talend.commons.utils.generation.CodeGenerationUtils
+	 	org.talend.core.model.utils.NodeUtil
 		java.util.List
 		java.util.ArrayList
 		java.util.LinkedList
@@ -87,10 +88,11 @@ skeleton="../templates/db_output_bulk.skeleton"
     <%
     if(useExistingConn) {
         String connection = ElementParameterParser.getValue(previousNode, "__CONNECTION__");
+        INode connNode=NodeUtil.getNodeByUniqueName(previousNode.getProcess(),connection);
         String conn = "conn_" + connection;
         String username = "username_" + connection;
         String connectionKey=null;
-        if(connection.indexOf("tJDBCConnection")<0){
+        if(connNode.getComponent().getName().indexOf("tJDBCConnection")<0){
            connectionKey=connection+"_Connection";
         }else{
         	  connectionKey=conn;

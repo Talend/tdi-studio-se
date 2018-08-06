@@ -79,7 +79,7 @@
 		String public_key = ElementParameterParser.getValue(node,"__PUBLIC_KEY__");
 		String private_key = ElementParameterParser.getValue(node,"__PRIVATE_KEY__");
 		
-		if(encrypt && cid.startsWith("tRedshift")) {
+		if(encrypt && node.getComponent().getName().startsWith("tRedshift")) {
 		%>
 			String masterKey_<%=cid%> = <%=encrypted_key%>; 
 			javax.crypto.spec.SecretKeySpec symmetricKey_<%=cid%> = new javax.crypto.spec.SecretKeySpec(org.apache.commons.codec.binary.Base64.decodeBase64(masterKey_<%=cid%>.getBytes("UTF-8")), "AES");
