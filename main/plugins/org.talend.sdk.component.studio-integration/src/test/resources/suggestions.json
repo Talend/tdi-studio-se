@@ -1,0 +1,67 @@
+{
+  "actions": [
+    {
+      "family": "qa",
+      "name": "basedOnTwoPrimitives",
+      "properties": [
+        {
+          "displayName": "a",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "a",
+          "path": "a",
+          "placeholder": "a",
+          "type": "STRING"
+        },
+        {
+          "displayName": "p",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "p",
+          "path": "p",
+          "placeholder": "p",
+          "type": "STRING"
+        }
+      ],
+      "type": "suggestions"
+    }
+  ],
+  "name": "suggestion",
+  "nodes": [
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+            "displayName": "basedOnTwoPrimitives",
+            "metadata": {
+              "action::suggestions": "basedOnTwoPrimitives",
+              "action::suggestions::parameters": "primitive,another"
+            },
+            "name": "basedOnTwoPrimitives",
+            "path": "conf.basedOnTwoPrimitives",
+            "type": "STRING"
+        }
+      },
+      "root": false
+    }
+  ],
+  "properties": [
+
+  ],
+  "settings": [
+    {
+      "name": "conf.primitive",
+      "value": "primitive value"
+    },
+    {
+      "name": "conf.another",
+      "value": "another value"
+    },
+    {
+      "name": "conf.basedOnTwoPrimitives",
+      "value": ""
+    }
+  ]
+}

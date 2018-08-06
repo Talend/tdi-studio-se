@@ -1,129 +1,86 @@
 package org.talend.sdk.component.studio.test;
 
-import org.talend.core.model.process.EParameterFieldType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.sdk.component.api.configuration.action.meta.ActionRef;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
-import org.talend.sdk.component.studio.model.parameter.Metadatas;
-import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_NAME;
-import static org.talend.sdk.component.studio.model.parameter.Metadatas.ACTION_SUGGESTIONS_PARAMETERS;
 
 public class TestComponent {
 
-    private final Map<String, IElementParameter> settings;
+    public static final Logger LOG = LoggerFactory.getLogger(TestComponent.class);
 
-    private final Map<String, ActionReference> actions;
+    private List<ActionReference> actions;
 
-    private final Map<String, PropertyNode> nodes;
+    private String name;
 
-    public TestComponent() {
-        this.settings = createSettings();
-        this.actions = createActions();
-        this.nodes = createNodes();
+    private List<PropertyNode> nodes;
+
+    private List<SimplePropertyDefinition> properties;
+
+    private List<TaCoKitElementParameter> settings;
+
+    public static TestComponent load(final String resource) throws Exception {
+        try (final Jsonb jsonb = JsonbBuilder.create();
+             final InputStream stream =
+                     Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
+            return jsonb.fromJson(stream, TestComponent.class);
+        }
     }
 
-    public PropertyNode getNode(final String path) {
-        return nodes.get(path);
+    @JsonbCreator
+    public TestComponent(@JsonbProperty("actions") final List<ActionReference> actions,
+                         @JsonbProperty("name") final String name,
+                         @JsonbProperty("properties") final List<SimplePropertyDefinition> properties,
+                         @JsonbProperty("nodes") final List<PropertyNode> nodes,
+                         @JsonbProperty("settings") final List<TaCoKitElementParameter> settings) {
+        this.actions = actions;
+        this.name = name;
+        this.properties = properties;
+        this.nodes = nodes;
+        this.settings = settings;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ActionReference getAction(final String name) {
+        return actions.stream()
+                .filter(a -> name.equals(a.getName()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("no action with name " + name));
+    }
+
+    public List<ActionReference> getActions() {
+        return new ArrayList<>(this.actions);
+    }
+
+    public PropertyNode getNode(final String name) {
+        return nodes.stream()
+                .filter(p -> name.equals(p.getProperty().getPath()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("no property with name " + name));
     }
 
     public Map<String, IElementParameter> getSettings() {
-        return settings;
-    }
-
-    public ActionReference getAction(final String actionName) {
-        return actions.get(actionName);
-    }
-
-    public Collection<ActionReference> getActions() {
-        return actions.values();
-    }
-
-    /**
-     * Creates leaf options
-     *
-     * @return leaf options
-     */
-    private Map<String, IElementParameter> createSettings() {
-        final Map<String, IElementParameter> settings = new LinkedHashMap<>();
-
-        final TaCoKitElementParameter p1 = mock(TaCoKitElementParameter.class);
-        when(p1.getName()).thenReturn("conf.primitive");
-        when(p1.getStringValue()).thenReturn("primitive value");
-        settings.put("conf.primitive", p1);
-
-        final TaCoKitElementParameter p2 = mock(TaCoKitElementParameter.class);
-        when(p2.getName()).thenReturn("conf.another");
-        when(p2.getStringValue()).thenReturn("another value");
-        settings.put("conf.another", p2);
-
-        final TaCoKitElementParameter p3 = mock(TaCoKitElementParameter.class);
-        when(p3.getName()).thenReturn("conf.basedOnTwoPrimitives");
-        when(p3.getStringValue()).thenReturn("based on two");
-        settings.put("conf.basedOnTwoPrimitives", p3);
-
-        return settings;
-    }
-
-    private Map<String, ActionReference> createActions() {
-        final Map<String, ActionReference> actions = new LinkedHashMap<>();
-
-        final ActionReference a1 = new ActionReference();
-        a1.setName("basedOnTwoPrimitives");
-        a1.setFamily("test");
-        a1.setType("suggestions");
-        a1.setProperties(createBasedOnTwoPrimitivesActionProperties());
-        actions.put("basedOnTwoPrimitives", a1);
-
-        return actions;
-    }
-
-    private Collection<SimplePropertyDefinition> createBasedOnTwoPrimitivesActionProperties() {
-        Collection<SimplePropertyDefinition> properties = new ArrayList<>();
-        final SimplePropertyDefinition p1 = new SimplePropertyDefinition();
-        p1.setPath("a");
-        p1.setName("a");
-        final Map<String, String> metadata1 = new HashMap<>();
-        metadata1.put(Metadatas.PARAMETER_INDEX, "1");
-        p1.setMetadata(metadata1);
-        properties.add(p1);
-
-        final SimplePropertyDefinition p2 = new SimplePropertyDefinition();
-        p2.setPath("p");
-        p2.setName("p");
-        final Map<String, String> metadata2 = new HashMap<>();
-        metadata2.put(Metadatas.PARAMETER_INDEX, "0");
-        p2.setMetadata(metadata2);
-        properties.add(p2);
-
-        return properties;
-    }
-
-    private Map<String, PropertyNode> createNodes() {
-        final Map<String, PropertyNode> nodes = new LinkedHashMap<>();
-
-        final Map<String, String> metadata1 = new HashMap<>();
-        metadata1.put(ACTION_SUGGESTIONS_NAME, "basedOnTwoPrimitives");
-        metadata1.put(ACTION_SUGGESTIONS_PARAMETERS, "primitive,another");
-        final SimplePropertyDefinition def1 = new SimplePropertyDefinition();
-        def1.setName("basedOnTwoPrimitives");
-        def1.setPath("conf.basedOnTwoPrimitives");
-        def1.setMetadata(metadata1);
-        final PropertyDefinitionDecorator p1 = new PropertyDefinitionDecorator(def1);
-        final PropertyNode n1 = new PropertyNode(p1, null, false);
-        nodes.put("conf.basedOnTwoPrimitives", n1);
-
-        return nodes;
+        final Map<String, IElementParameter> result = new HashMap<>();
+        settings.forEach(p -> {
+            result.put(p.getName(), p);
+        });
+        return result;
     }
 }

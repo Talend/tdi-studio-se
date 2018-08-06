@@ -43,6 +43,10 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
 
+    public TaCoKitElementParameter() {
+        this(null);
+    }
+
     /**
      * Sets tagged value "org.talend.sdk.component.source", which is used in code generation to recognize component type
      *

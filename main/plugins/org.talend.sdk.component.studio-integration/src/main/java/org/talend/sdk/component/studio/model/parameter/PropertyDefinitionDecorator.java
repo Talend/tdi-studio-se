@@ -52,6 +52,9 @@ import java.util.stream.Stream;
 import org.talend.sdk.component.server.front.model.PropertyValidation;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 /**
  * Extends functionality of {@link SimplePropertyDefinition}
  * It doesn't allow to change <code>delegate</code> state
@@ -90,7 +93,8 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      *
      * @param property {@link SimplePropertyDefinition} to wrap
      */
-    public PropertyDefinitionDecorator(final SimplePropertyDefinition property) {
+    @JsonbCreator
+    public PropertyDefinitionDecorator(@JsonbProperty("delegate") final SimplePropertyDefinition property) {
         this.delegate = property;
     }
 
