@@ -151,7 +151,7 @@ public class GenericContextUtil {
                 GenericConnParamName genericParam = (GenericConnParamName) param;
                 String paramVarName = genericParam.getContextVar();
                 genericVariableName = originalVariableName + paramVarName;
-                matchContextForAttribues(componentProperties, genericParam, genericVariableName, prefixName);
+                matchContextForAttribues(componentProperties, genericParam, genericVariableName, prefixName,false);
             }
         }
         updateComponentProperties(connection, componentProperties);
@@ -183,7 +183,7 @@ public class GenericContextUtil {
                 }
                 if (genericVariableName != null) {
                     genericVariableName = getCorrectVariableName(currentContext, genericVariableName, genericParam);
-                    matchContextForAttribues(componentProperties, genericParam, genericVariableName, currentContext.getProperty().getLabel());
+                    matchContextForAttribues(componentProperties, genericParam, genericVariableName, currentContext.getProperty().getLabel(),true);
                 }
             }
 
@@ -206,7 +206,7 @@ public class GenericContextUtil {
     }
 
     private static void matchContextForAttribues(ComponentProperties componentProperties, IConnParamName param,
-            String genericVariableName, String prefixName) {
+            String genericVariableName, String prefixName,boolean isReuse) {
         GenericConnParamName genericParam = (GenericConnParamName) param;
         String paramName = genericParam.getName();
         Properties properties = componentProperties.getProperties(paramName);
@@ -214,12 +214,12 @@ public class GenericContextUtil {
             String paramValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);
             setPropertyValue(componentProperties, paramName, paramValue, true);
         }else{
-            matchContextForPrperties(properties, param, genericVariableName, prefixName);
+            matchContextForPrperties(properties, param, genericVariableName, prefixName,isReuse);
         }
     }
     
     private static void matchContextForPrperties(Properties properties,IConnParamName param,
-            String genericVariableName, String prefixName){
+            String genericVariableName, String prefixName,boolean isReuse){
         for(NamedThing nameThing : properties.getProperties()){
             if(nameThing != null && nameThing instanceof Property){
                 Property property = (Property) nameThing;
@@ -227,7 +227,13 @@ public class GenericContextUtil {
                 if(GenericTypeUtils.isListStringType(property) && paramValue != null){
 //                    String propertyValue = ContextParameterUtils.getNewScriptCode(prefixName + ConnectionContextHelper.LINE
 //                            + ContextParameterUtils.getValidParameterName(property.getName()), LanguageManager.getCurrentLanguage());
-                	String propertyValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);//for driver's param: fixdb_old_ ==> context.fixdb_old_
+                	String propertyValue = "";//for driver's param: fixdb_old_ ==> context.fixdb_old_
+                	if(isReuse) {
+                		 propertyValue = ContextParameterUtils.getNewScriptCode(genericVariableName, ECodeLanguage.JAVA);
+                	}else {
+                		propertyValue = ContextParameterUtils.getNewScriptCode(prefixName + ConnectionContextHelper.LINE
+                              + ContextParameterUtils.getValidParameterName(property.getName()), LanguageManager.getCurrentLanguage());
+                	}
                     property.setTaggedValue(IGenericConstants.IS_CONTEXT_MODE, true);
                     List<String> driverList = new ArrayList<String>();
                     driverList.add(propertyValue);
