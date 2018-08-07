@@ -44,6 +44,26 @@ class SuggestionsResolverTest {
         assertEquals(expectedPayload, action.checkPayload());
     }
 
+    @Test
+    public void testResolveParametersOrderComplex() {
+        Map<String, String> expectedPayload = new HashMap<>();
+        expectedPayload.put("c.complexString", "complex string");
+        expectedPayload.put("c.complexInt", "-1");
+        expectedPayload.put("ds.url", "http://initial.url");
+
+        final PropertyNode actionOwner = component.getNode("conf.basedOnComplex");
+        final Collection<ActionReference> actions = component.getActions();
+        final ActionParametersUpdater listener = createActionParametersUpdater();
+        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+
+        final Map<String, IElementParameter> settings = component.getSettings();
+        resolver.resolveParameters(settings);
+
+        final ActionMock action = (ActionMock) listener.getAction();
+
+        assertEquals(expectedPayload, action.checkPayload());
+    }
+
     private SuggestionsResolver createResolver(final PropertyNode actionOwner, final ActionParametersUpdater listener) {
         return new SuggestionsResolver(actionOwner, component.getActions(), listener);
     }

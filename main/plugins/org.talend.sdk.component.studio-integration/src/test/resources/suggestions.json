@@ -26,6 +26,57 @@
         }
       ],
       "type": "suggestions"
+    },
+    {
+      "family": "qa",
+      "name": "basedOnComplex",
+      "properties": [
+        {
+          "displayName": "ds",
+          "metadata": {
+            "definition::parameter::index": "0"
+          },
+          "name": "ds",
+          "path": "ds",
+          "placeholder": "ds",
+          "type": "OBJECT"
+        },
+        {
+          "displayName": "url",
+          "metadata": {},
+          "name": "url",
+          "path": "ds.url",
+          "placeholder": "url",
+          "type": "STRING"
+        },
+        {
+          "displayName": "c",
+          "metadata": {
+            "definition::parameter::index": "1"
+          },
+          "name": "c",
+          "path": "c",
+          "placeholder": "c",
+          "type": "OBJECT"
+        },
+        {
+          "displayName": "complexString",
+          "metadata": {},
+          "name": "complexString",
+          "path": "c.complexString",
+          "placeholder": "complexString",
+          "type": "STRING"
+        },
+        {
+          "displayName": "complexInt",
+          "metadata": {},
+          "name": "complexInt",
+          "path": "c.complexInt",
+          "placeholder": "complexInt",
+          "type": "NUMBER"
+        }
+      ],
+      "type": "suggestions"
     }
   ],
   "name": "suggestion",
@@ -42,6 +93,22 @@
             "name": "basedOnTwoPrimitives",
             "path": "conf.basedOnTwoPrimitives",
             "type": "STRING"
+        }
+      },
+      "root": false
+    },
+    {
+      "fieldType": "TEXT",
+      "property": {
+        "delegate": {
+          "displayName": "basedOnComplex",
+          "metadata": {
+            "action::suggestions": "basedOnComplex",
+            "action::suggestions::parameters": "datastore,complex"
+          },
+          "name": "basedOnComplex",
+          "path": "conf.basedOnComplex",
+          "type": "STRING"
         }
       },
       "root": false
@@ -62,6 +129,22 @@
     {
       "name": "conf.basedOnTwoPrimitives",
       "value": ""
+    },
+    {
+      "name": "conf.basedOnComplex",
+      "value": ""
+    },
+    {
+      "name": "conf.complex.complexString",
+      "value": "complex string"
+    },
+    {
+      "name": "conf.complex.complexInt",
+      "value": "-1"
+    },
+    {
+      "name": "conf.datastore.url",
+      "value": "http://initial.url"
     }
   ]
 }
