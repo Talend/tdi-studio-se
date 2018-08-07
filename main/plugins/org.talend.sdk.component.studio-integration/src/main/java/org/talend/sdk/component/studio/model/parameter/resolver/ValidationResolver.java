@@ -15,39 +15,26 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import java.util.*;
-
-import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
-import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
-import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
-import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 
-import static java.util.Comparator.comparing;
+import java.util.Collection;
+import java.util.List;
 
 public class ValidationResolver extends AbstractParameterResolver {
 
-    private final ValidationListener listener;
-
-    private final ElementParameter redrawParameter;
-
     public ValidationResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions,
             final ValidationListener listener, final ElementParameter redrawParameter) {
-        super(actionOwner, getActionRef(actionOwner, actions));
-        if (!actionOwner.getProperty().hasValidation()) {
-            throw new IllegalArgumentException("property has no validation");
-        }
-        this.listener = listener;
-        this.redrawParameter = redrawParameter;
-        
+        super(listener, actionOwner, getActionRef(actionOwner, actions), listener, redrawParameter);
     }
     
     private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
+        if (!actionOwner.getProperty().hasValidation()) {
+            throw new IllegalArgumentException("property has no validation");
+        }
         final String actionName = actionOwner.getProperty().getValidationName();
         return actions
                 .stream()
@@ -57,27 +44,7 @@ public class ValidationResolver extends AbstractParameterResolver {
                 .orElseThrow(() -> new IllegalArgumentException("Action with name " + actionName + " wasn't found"));
     }
 
-    public void resolveParameters(final Map<String, IElementParameter> settings) {
-        final Iterator<PropertyDefinitionDecorator> expectedParameters = PropertyDefinitionDecorator.wrap(actionRef.getProperties())
-                .stream()
-                .filter(p -> p.getParameter().isRoot())
-                .sorted(comparing(p -> p.getParameter().getIndex()))
-                .iterator();
-        final List<String> relativePaths = actionOwner.getProperty().getValidationParameters();
-
-        relativePaths.forEach(relativePath -> {
-            if (expectedParameters.hasNext()) {
-                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
-                final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
-                final SimplePropertyDefinition parameterRoot = expectedParameters.next();
-                parameters.forEach(parameter -> {
-                    parameter.registerListener("value", listener);
-                    final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
-                    final String defaultValue = parameter.getStringValue();
-                    final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, defaultValue);
-                    listener.addParameter(actionParameter);
-                });
-            }
-        });
+    protected final List<String> getRelativePaths() {
+        return actionOwner.getProperty().getValidationParameters();
     }
 }
