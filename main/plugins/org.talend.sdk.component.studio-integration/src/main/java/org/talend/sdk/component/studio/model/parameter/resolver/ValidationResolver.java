@@ -15,10 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
@@ -26,9 +23,12 @@ import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
+
+import static java.util.Comparator.comparing;
 
 public class ValidationResolver extends AbstractParameterResolver {
 
@@ -58,17 +58,26 @@ public class ValidationResolver extends AbstractParameterResolver {
     }
 
     public void resolveParameters(final Map<String, IElementParameter> settings) {
-        final List<SimplePropertyDefinition> callbackParameters = new ArrayList<>(actionRef.getProperties());
+        final Iterator<PropertyDefinitionDecorator> expectedParameters = PropertyDefinitionDecorator.wrap(actionRef.getProperties())
+                .stream()
+                .filter(p -> p.getParameter().isRoot())
+                .sorted(comparing(p -> p.getParameter().getIndex()))
+                .iterator();
         final List<String> relativePaths = actionOwner.getProperty().getValidationParameters();
 
-        for (int i = 0; i < relativePaths.size(); i++) {
-            final TaCoKitElementParameter parameter = resolveParameter(relativePaths.get(i), settings);
-            parameter.registerListener("value", listener);
-            parameter.setRedrawParameter(redrawParameter);
-            final String callbackParameter = callbackParameters.get(i).getName();
-            final String initialValue = callbackParameters.get(i).getDefaultValue();
-            listener.addParameter(new ActionParameter(parameter.getName(), callbackParameter, initialValue));
-        }
-
+        relativePaths.forEach(relativePath -> {
+            if (expectedParameters.hasNext()) {
+                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
+                final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
+                final SimplePropertyDefinition parameterRoot = expectedParameters.next();
+                parameters.forEach(parameter -> {
+                    parameter.registerListener("value", listener);
+                    final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
+                    final String defaultValue = parameter.getStringValue();
+                    final ActionParameter actionParameter = new ActionParameter(parameter.getName(), callbackProperty, defaultValue);
+                    listener.addParameter(actionParameter);
+                });
+            }
+        });
     }
 }
