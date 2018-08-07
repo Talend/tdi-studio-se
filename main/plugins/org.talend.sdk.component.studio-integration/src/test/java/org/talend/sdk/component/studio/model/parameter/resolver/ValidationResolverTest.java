@@ -3,20 +3,21 @@ package org.talend.sdk.component.studio.model.parameter.resolver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
+import org.talend.sdk.component.studio.model.parameter.listener.ValidationListener;
 import org.talend.sdk.component.studio.test.TestComponent;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SuggestionsResolverTest {
+public class ValidationResolverTest {
 
     private static TestComponent component;
 
@@ -26,60 +27,55 @@ class SuggestionsResolverTest {
     }
 
     @Test
-    public void testResolveParametersOrder() {
+    public void testResolveParametersOrderPrimitives() {
         Map<String, String> expectedPayload = new HashMap<>();
-        expectedPayload.put("p", "primitive value");
-        expectedPayload.put("a", "another value");
+        expectedPayload.put("xPort", "8080");
+        expectedPayload.put("yUrl", "http://initial.url");
+        expectedPayload.put("z", "based on 2 primitives");
 
         final PropertyNode actionOwner = component.getNode("conf.basedOnTwoPrimitives");
         final Collection<ActionReference> actions = component.getActions();
-        final ActionParametersUpdater listener = createActionParametersUpdater();
-        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+        final ValidationListenerMock listener = createValidationListener(component.getAction("checkSeveral"));
+        final ValidationResolver resolver = new ValidationResolver(actionOwner, component.getActions(), listener, new ElementParameter(null));
 
         final Map<String, IElementParameter> settings = component.getSettings();
         resolver.resolveParameters(settings);
 
-        final ActionMock action = (ActionMock) listener.getAction();
+        assertEquals(expectedPayload, listener.checkPayload());
 
-        assertEquals(expectedPayload, action.checkPayload());
     }
 
     @Test
     public void testResolveParametersOrderComplex() {
         Map<String, String> expectedPayload = new HashMap<>();
-        expectedPayload.put("c.complexString", "complex string");
-        expectedPayload.put("c.complexInt", "-1");
-        expectedPayload.put("ds.url", "http://initial.url");
-        expectedPayload.put("ds.port", "8080");
+        expectedPayload.put("s", "based on complex");
+        expectedPayload.put("d.url", "http://initial.url");
+        expectedPayload.put("d.port", "8080");
 
         final PropertyNode actionOwner = component.getNode("conf.basedOnComplex");
         final Collection<ActionReference> actions = component.getActions();
-        final ActionParametersUpdater listener = createActionParametersUpdater();
-        final SuggestionsResolver resolver = new SuggestionsResolver(actionOwner, actions, listener);
+        final ValidationListenerMock listener = createValidationListener(component.getAction("checkComplex"));
+        final ValidationResolver resolver = new ValidationResolver(actionOwner, component.getActions(), listener, new ElementParameter(null));
 
         final Map<String, IElementParameter> settings = component.getSettings();
         resolver.resolveParameters(settings);
 
-        final ActionMock action = (ActionMock) listener.getAction();
-
-        assertEquals(expectedPayload, action.checkPayload());
+        assertEquals(expectedPayload, listener.checkPayload());
     }
 
-    private ActionParametersUpdater createActionParametersUpdater() {
-        final ActionReference action = component.getAction("basedOnTwoPrimitives");
-        final Action actionMock = new ActionMock(action.getName(), action.getFamily(), Action.Type.SUGGESTIONS);
-        return new ActionParametersUpdater(actionMock);
+    private ValidationListenerMock createValidationListener(final ActionReference action) {
+        return new ValidationListenerMock(action.getFamily(), action.getName());
     }
 
-    private static class ActionMock extends Action {
+    private static class ValidationListenerMock extends ValidationListener {
 
-        public ActionMock(final String actionName, final String family, final Type type) {
-            super(actionName, family, type);
+        public ValidationListenerMock(final String family, final String actionName) {
+            super(null, family, actionName);
         }
 
         public Map<String, String> checkPayload() {
             return super.payload();
         }
-
     }
+
 }
