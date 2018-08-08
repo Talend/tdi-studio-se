@@ -1,20 +1,19 @@
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import java.beans.PropertyChangeListener;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.talend.core.model.process.IElementParameter;
 import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
 import org.talend.sdk.component.studio.model.action.ActionParameter;
-import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
-import org.talend.sdk.component.studio.model.parameter.PropertyNode;
-import org.talend.sdk.component.studio.model.parameter.PropertyTreeCreator;
-import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.WidgetTypeMapper;
+import org.talend.sdk.component.studio.model.parameter.*;
+
+import java.beans.PropertyChangeListener;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
 
@@ -24,8 +23,6 @@ import static java.util.Comparator.comparing;
 abstract class AbstractParameterResolver implements ParameterResolver {
     
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
-    
-    protected final PropertyTreeCreator treeCreator = new PropertyTreeCreator(new WidgetTypeMapper());
     
     /**
      * PropertyNode, which represents Configuration class Option annotated with action annotation
@@ -71,7 +68,7 @@ abstract class AbstractParameterResolver implements ParameterResolver {
         relativePaths.forEach(relativePath -> {
             if (expectedParameters.hasNext()) {
                 final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
-                final List<TaCoKitElementParameter> parameters = resolveParameters(absolutePath, settings);
+                final List<TaCoKitElementParameter> parameters = findParameters(absolutePath, settings);
                 final SimplePropertyDefinition parameterRoot = expectedParameters.next();
                 parameters.forEach(parameter -> {
                     parameter.registerListener("value", listener);
@@ -89,11 +86,6 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
     protected abstract List<String> getRelativePaths();
     
-    protected final TaCoKitElementParameter resolveParameter(final String relativePath, final Map<String, IElementParameter> settings) {
-        String path = pathResolver.resolvePath(getOwnerPath(), relativePath);
-        return (TaCoKitElementParameter) settings.get(path);
-    }
-    
     /**
      * Finds and returns all child ElementParameters of node with {@code absolutePath}. {@code absolutePath} may point at "leaf" Configuration option and 
      * on Configuration type as well.
@@ -102,7 +94,7 @@ abstract class AbstractParameterResolver implements ParameterResolver {
      * @param settings all "leaf" options stored by their path
      * @return resolved ElementParameters
      */
-    protected final List<TaCoKitElementParameter> resolveParameters(final String absolutePath, final Map<String, IElementParameter> settings) {
+    private List<TaCoKitElementParameter> findParameters(final String absolutePath, final Map<String, IElementParameter> settings) {
         final TaCoKitElementParameter parameter = (TaCoKitElementParameter) settings.get(absolutePath);
         if (parameter != null) {
             // absolute path points at "leaf" Configuration option, which doesn't have children
@@ -123,20 +115,8 @@ abstract class AbstractParameterResolver implements ParameterResolver {
      * 
      * @return option path
      */
-    protected final String getOwnerPath() {
+    private String getOwnerPath() {
         return actionOwner.getProperty().getPath();
-    }
-    
-    /**
-     * Finds action method parameter alias (Option annotation value)
-     * This method builds property tree and assumes that root node path is a required alias
-     * 
-     * @return parameter alias
-     */
-    protected final String getParameterAlias() {
-        final Collection<PropertyDefinitionDecorator> properties = PropertyDefinitionDecorator.wrap(actionRef.getProperties());
-        final PropertyNode root = new PropertyTreeCreator(new WidgetTypeMapper()).createPropertyTree(properties);
-        return root.getProperty().getPath();
     }
     
     /**
