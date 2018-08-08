@@ -23,7 +23,7 @@ imports="
 	String partSizeMb = ElementParameterParser.getValue(node, "__PART_SIZE__");
 	
 	if((partSizeMb == null) || "".equals(partSizeMb) || "\"\"".equals(partSizeMb)) {
-			partSizeMb = "5";
+			partSizeMb = "100";
 	}
 	
 	%>
@@ -38,6 +38,7 @@ imports="
 		%>
 		
 		long partSizeInBytes_<%=cid%> = <%=partSizeMb%> * 1024 * 1024;
+		long maxBytes4SingleCopyCall_<%=cid%> = 5 * 1024 * 1024 * 1024;//5GB
 		com.amazonaws.services.s3.model.ObjectMetadata objectMetadata_<%=cid%> = null;
 		<%
 		if(!enableKMS && enableServerSideEncryption){
@@ -65,7 +66,7 @@ imports="
     com.amazonaws.services.s3.model.ObjectMetadata metadataResult_<%=cid%> = conn_<%=cid%>.getObjectMetadata(metadataRequest_<%=cid%>);
     long objectSize_<%=cid%> = metadataResult_<%=cid%>.getContentLength();
     
-    boolean multiUpload_<%=cid%> = objectSize_<%=cid%> > partSizeInBytes_<%=cid%>;
+    boolean multiUpload_<%=cid%> = objectSize_<%=cid%> > maxBytes4SingleCopyCall_<%=cid%>;
     
     if(!multiUpload_<%=cid%>) {
     		com.amazonaws.services.s3.model.CopyObjectRequest putRequest_<%=cid%> = new com.amazonaws.services.s3.model.CopyObjectRequest(from_bucket_<%=cid%>, from_key_<%=cid%>, to_bucket_<%=cid%>, to_key_<%=cid%>);
