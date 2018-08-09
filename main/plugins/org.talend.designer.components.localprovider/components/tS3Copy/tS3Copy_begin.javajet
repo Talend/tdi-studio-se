@@ -78,11 +78,21 @@ imports="
     		
     		conn_<%=cid%>.copyObject(putRequest_<%=cid%>);
 		} else {
+						<%
+						//as the s3 service limit, the multi upload copy may lose s3 object metadata information or changed, but some object metadata information is important like the "x-amz-iv" key for client encrypt with kms
+						//which will make the decrypt not work with different key like expected, so fail asap here and there is very rare risk which use a large file than 5GB and also with client encrypt, so ignore it now.
+						%>
+						java.util.Map<String,String> userMetadata_<%=cid%> = metadataResult_<%=cid%>.getUserMetadata();
+						if((userMetadata_<%=cid%>!=null) && userMetadata_<%=cid%>.get("x-amz-iv")!=null) {
+								throw new RuntimeException("the metadata key : \"x-amz-iv\" exists in the current object metadata, its value is important for client encrypt with kms, can't copy it now as s3 service limit with multi part copy");
+						}
+						
     				com.amazonaws.services.s3.model.InitiateMultipartUploadRequest putRequest_<%=cid%> = null;
     				if(objectMetadata_<%=cid%> != null) {
     						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, objectMetadata_<%=cid%>);
     				} else {
-    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>);
+    						//even pass the source object metadata, some metadata will change too like "x-amz-iv"
+    						putRequest_<%=cid%> = new com.amazonaws.services.s3.model.InitiateMultipartUploadRequest(to_bucket_<%=cid%>, to_key_<%=cid%>, metadataResult_<%=cid%>);
     				}
     				
     				<%@ include file="../tS3Put/set_kms.javajet"%>
