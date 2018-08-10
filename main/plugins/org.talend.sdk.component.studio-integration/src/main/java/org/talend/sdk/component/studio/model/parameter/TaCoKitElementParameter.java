@@ -22,6 +22,8 @@ import java.util.Map;
 import org.talend.core.model.process.IElement;
 import org.talend.core.runtime.IAdditionalInfo;
 import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
 
 /**
  * DOC cmeng class global comment. Detailled comment
@@ -42,6 +44,10 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     private ElementParameter redrawParameter;
 
     private Map<String, Object> additionalInfoMap = new HashMap<>();
+
+    public TaCoKitElementParameter() {
+        this(null);
+    }
 
     /**
      * Sets tagged value "org.talend.sdk.component.source", which is used in code generation to recognize component type
@@ -177,6 +183,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
 
     /**
      * Sets parameter value and fires parameter change event, which is handled by registered listeners.
+     * Note, parameter change event is fired with value converted to String by calling {@link #getStringValue()} method
      * Subclasses should extend (override and call super.setValue()) this method to provide correct conversion, when
      * they use other value type than String.
      *
@@ -186,7 +193,7 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
     public void setValue(final Object newValue) {
         final Object oldValue = super.getValue();
         super.setValue(newValue);
-        firePropertyChange("value", oldValue, newValue);
+        firePropertyChange("value", oldValue, getStringValue());
         fireValueChange(oldValue, newValue);
         redraw();
     }
@@ -203,5 +210,16 @@ public class TaCoKitElementParameter extends ElementParameter implements IAdditi
      */
     public boolean isPersisted() {
         return true;
+    }
+
+    /**
+     * Creates ActionParameter
+     *
+     * @param actionParameter action parameter name
+     * @return ActionParameter
+     */
+    public IActionParameter createActionParameter(final String actionParameter) {
+        final IActionParameter parameter = new ActionParameter(getName(), actionParameter, getStringValue());
+        return parameter;
     }
 }

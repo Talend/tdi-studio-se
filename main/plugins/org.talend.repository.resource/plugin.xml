@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.talend.core.repository.repository_node_provider">
+      <repositoryNode
+            folder="route_resources"
+            isAllowMultiName="true"
+            isAllowPlainFolder="true"
+            isResouce="true"
+            key="Resource"
+            label="Resources"
+            name_pattern="\w+([\.-]\w+)*"
+            ordinal="45"
+            products="DI"
+            type="ROUTE_RESOURCES">
+      </repositoryNode>
+   </extension>
+   <extension
+         point="org.talend.core.repositoryContextualsActions">
+      <Action
+            class="org.talend.repository.resource.ui.action.CreateRouteResourceAction"
+            id="org.talend.repository.resource.CreateRouteResource"
+            isEditAction="true"
+            level="1"
+            name="Create Route Resource">
+      </Action>
+      <Action
+            class="org.talend.repository.resource.ui.action.EditRouteResourceAction"
+            id="org.talend.repository.resource.EditRouteResourceAction"
+            isEditAction="true"
+            level="3"
+            name="Edit Route Resource">
+      </Action>
+      <Action
+            class="org.talend.repository.resource.ui.action.OpenDefaultEditorAction"
+            id="org.talend.repository.resource.OpenDefaultEditorAction"
+            isEditAction="true"
+            level="4"
+            name="Open Text Editor ">
+      </Action>
+      <Action
+            class="org.talend.repository.resource.ui.action.EditRouteResourcePropertiesAction"
+            id="org.talend.repository.resource.EditRouteResourcePropertiesAction"
+            isPropertiesAction="true"
+            level="4"
+            name="Edit Properties">
+      </Action>
+      <Action
+            class="org.talend.repository.resource.ui.action.OpenAnotherVersionResourceAction"
+            id="org.talend.repository.resource.OpenAnotherVersionResource"
+            level="4"
+            name="Open Another Version">
+      </Action>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Route Resource Editor"
+            icon="icons/route-resource.png"
+            class="org.talend.repository.resource.editors.RouteResourceEditor"
+            id="org.talend.repository.resource.editors.RouteResourceEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.talend.repository.items.importexport.handler">
+      <importItemsProvider
+            id="org.talend.repository.resource.handler.RouteResourceImportHandler"
+            name="Resources importer"
+            priority="NORMAL">
+         <importItemsHandler
+               class="org.talend.repository.resource.handler.RouteResourceImportHandler">
+            <parameter
+                  name="type"
+                  value="ROUTE_RESOURCES">
+            </parameter>
+         </importItemsHandler>
+      </importItemsProvider>
+   </extension>
+
+</plugin>

@@ -14,8 +14,26 @@ java.util.List
 CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
 INode node = (INode)codeGenArgument.getArgument();
 String cid = node.getUniqueName();
+boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
 %>
 }// responce loop
+     try{
+        String error_<%=cid%> = ((org.json.JSONObject)<%=cid%>_json.get("error")).getString("message");
+        String detail_<%=cid%> = ((org.json.JSONObject)<%=cid%>_json.get("error")).getString("detail");
+        
+        <%
+if(isLog4jEnabled){
+  %>
+  log.error(error_<%=cid%>+" --Detail: "+detail_<%=cid%>);
+  <%
+}else{%>
+    System.err.println(error_<%=cid%>+" --Detail: "+detail_<%=cid%>);
+<%
+}
+%>
+    }catch(org.json.JSONException je_<%=cid%>){
+    //ignore
+    }
 } else {
 	String error_<%=cid%> = <%=cid%>_json.getJSONObject("error").getString("message");
 	boolean no_record_<%=cid%> = (<%=cid%>_response.getStatusLine().getStatusCode() == 404) && ("No Record found".equals(error_<%=cid%>));

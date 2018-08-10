@@ -43,7 +43,7 @@ public class Action {
     /**
      * Action parameters map. Key is an ElementParameter path. Value is a list of action parameters associated with the ElementParameter 
      */
-    private final Map<String, List<ActionParameter>> parameters = new HashMap<>();
+    private final Map<String, List<IActionParameter>> parameters = new HashMap<>();
     
     public Action(final String actionName, final String family, final Type type) {
         this.actionName = actionName;
@@ -57,10 +57,10 @@ public class Action {
      * 
      * @param parameter ActionParameter to be added
      */
-    public void addParameter(final ActionParameter parameter) {
+    public void addParameter(final IActionParameter parameter) {
         Objects.requireNonNull(parameter, "parameter should not be null");
         final String elementParameter = parameter.getName();
-        List<ActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
+        List<IActionParameter> list = parameters.computeIfAbsent(elementParameter, k -> new ArrayList<>());
         if (list.contains(parameter)) {
             throw new IllegalArgumentException("action already contains parameter " + parameter); 
         }
@@ -99,14 +99,17 @@ public class Action {
     }
     
     protected final boolean areParametersSet() {
-        return parameters.values().stream().flatMap(List::stream).allMatch(ActionParameter::isHasDirectValue);
+        return parameters.values().stream().flatMap(List::stream).allMatch(IActionParameter::isHasDirectValue);
     }
     
     protected final Map<String, String> payload() {
         final Map<String, String> payload = new HashMap<>();
-        parameters.values().stream().flatMap(List::stream).forEach(actionParameter -> {
-            payload.put(actionParameter.getParameter(), actionParameter.getValue());
-        });
+        parameters.values().stream()
+                .flatMap(List::stream)
+                .flatMap(actionParam -> actionParam.parameters().stream())
+                .forEach(param -> {
+                    payload.put(param.getFirst(), param.getSecond());
+                 });
         return payload;
     }
     

@@ -15,13 +15,33 @@ imports="
 %>
 		
 		//initial the command
-		StringBuilder command_<%=cid %> = new StringBuilder();
-        command_<%=cid %>.append("ls \"").append(<%=remoteDir %>).append("/").append(<%=fileExists %>).append("\"");
+		StringBuilder command_<%=cid%> = new StringBuilder();
+		
+		final String dir_<%=cid%> = String.valueOf(<%=remoteDir %>);
+		final String file_<%=cid%> = String.valueOf(<%=fileExists %>);
+		
+		command_<%=cid%>.append("ls ");
+		
+		if(dir_<%=cid%>.contains("*") || dir_<%=cid%>.contains("?") || dir_<%=cid%>.contains("[") || dir_<%=cid%>.contains("]")) {
+				command_<%=cid%>.append(dir_<%=cid%>);
+        } else {
+        		command_<%=cid%>.append("\"").append(dir_<%=cid%>).append("\"");
+        }
+        
+        command_<%=cid%>.append("/");
+        
+      	if(file_<%=cid%>.contains("*") || file_<%=cid%>.contains("?") || file_<%=cid%>.contains("[") || file_<%=cid%>.contains("]")) {
+				command_<%=cid%>.append(file_<%=cid%>);
+        } else {
+        		command_<%=cid%>.append("\"").append(file_<%=cid%>).append("\"");
+        }
+    
 		globalMap.put("<%=cid %>_FILENAME", <%=fileExists %>);
 		/* Create a session */
 		ch.ethz.ssh2.Session sess_<%=cid%> = conn_<%=cid%>.openSession();
 		//execute the command
-		sess_<%=cid%>.execCommand((command_<%=cid %>).toString());		
+		sess_<%=cid%>.execCommand((command_<%=cid%>).toString());
+		
 		//get the return info
 		java.io.InputStream stdout_<%=cid%> = sess_<%=cid%>.getStdout();
 		java.io.BufferedReader brout_<%=cid%>= new java.io.BufferedReader(new java.io.InputStreamReader(stdout_<%=cid%>));

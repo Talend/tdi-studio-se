@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.IPath;
@@ -360,7 +361,7 @@ public class JavaProcessUtil {
                 if (curParamValue != null) {
                     if (curParamValue instanceof String) {
                         if (StringUtils.isNotEmpty((String) curParamValue)) {
-                            modulesNeeded.add(getModuleValue(process, (String) curParamValue));
+                            modulesNeeded.add(evaluateOsgiDependency(getModuleValue(process, (String) curParamValue), node));
                         }
                     } else if (curParamValue instanceof List) {
                         getModulesInTable(process, curParam, modulesNeeded);
@@ -701,4 +702,40 @@ public class JavaProcessUtil {
         return value;
     }
 
+    private static ModuleNeeded evaluateOsgiDependency(ModuleNeeded module, INode node) {
+    	if (node == null) {
+    		return module;
+    	}
+    	IProcess rawProcess = node.getProcess();
+    	if (!(rawProcess instanceof IProcess2)) {
+    		return module;
+    	}
+    	IProcess2 process = (IProcess2) rawProcess;
+    	if (!"CAMEL".equals(process.getComponentsType())) {
+    		return module;
+    	}
+    	String uniqueName = node.getUniqueName();
+    	if (uniqueName == null || !uniqueName.startsWith("cMessagingEndpoint")) {
+    		return module;
+    	}
+    	String moduleName = module.getModuleName();
+    	if (moduleName == null) {
+    		return module;
+    	}
+    	Map<Object, Object> additionalProperties = process.getAdditionalProperties();
+    	if (additionalProperties != null) {
+    		Object bundleClassPath = additionalProperties.get("Bundle-ClassPath");
+    		if (bundleClassPath instanceof String) {
+    			StringTokenizer bcp = new StringTokenizer((String) bundleClassPath, ",", false);
+    			while (bcp.hasMoreTokens()) {
+    				String token = bcp.nextToken();
+    				if (token.startsWith(moduleName)) {
+    					return module;
+    				}
+    			}
+    		}
+    	}
+    	module.getExtraAttributes().put("IS_OSGI_EXCLUDED", "true");
+    	return module;
+    }
 }

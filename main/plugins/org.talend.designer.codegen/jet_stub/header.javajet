@@ -138,8 +138,8 @@ for (INode node : process.getNodesOfType("tRESTClient")) {
     }
 }
 
-boolean talendEsbJob = ProcessorUtilities.isEsbJob(process.getId(), process.getVersion());
 boolean talendEsbJobFactory = actAsProvider || !process.getNodesOfType("tRouteInput").isEmpty();
+boolean talendEsbJob = talendEsbJobFactory || actAsConsumer || ProcessorUtilities.isEsbJob(process.getId(), process.getVersion());
 
 boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(process, "__LOG4J_ACTIVATE__"));
 

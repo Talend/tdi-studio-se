@@ -15,6 +15,7 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
+import org.talend.sdk.component.studio.lang.Strings;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
 /**
@@ -35,7 +36,7 @@ public class SettingsActionParameter extends ActionParameter {
         if (value == null) {
             return "";
         } else {
-            return removeQuotes(setting.getStringValue());
+            return Strings.removeQuotes(setting.getStringValue());
         }
     }
 }

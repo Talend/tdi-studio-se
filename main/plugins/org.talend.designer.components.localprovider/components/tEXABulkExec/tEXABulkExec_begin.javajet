@@ -191,44 +191,44 @@ org.talend.database.exasol.imp.EXABulkUtil <%=cid%> = new org.talend.database.ex
 <%     } %>
 // add column configurations
 <%     if (columnList != null && columnList.size() > 0) {
-           int index = 0;
-           for (IMetadataColumn column : columnList) {
-       	      String name = column.getOriginalDbColumnName();
-       	      String pattern = column.getPattern();
-	            if (pattern == null || pattern.trim().isEmpty()) {
-      	          pattern = "null";
-   	         }
-       	      Map<String, String> config = columnConfigList.get(index);
-       	      boolean hasGroupSep = "true".equals(config.get("HAS_GROUP_DELIMITERS"));
-       	      String format = config.get("FORMAT");
-       	      if (format == null || format.trim().isEmpty()) {
-       	  	       format = "null";
-       	      }
-       	      String lengthStr = "null";
-       	      String precisionStr = "null";
-       	      Integer length = column.getLength();
-       	      if (length != null && hasGroupSep) {
-       	  	       lengthStr = String.valueOf(length);
-       	      }
-       	      Integer precision = column.getPrecision();
-       	      if (precision != null && hasGroupSep) {
-       	          precisionStr = String.valueOf(precision);
-       	      }
-       	      String talendType = column.getTalendType();
-       	      if ("id_Date".equals(talendType) 
-       	          || "id_Timestamp".equals(talendType) 
-       	          || "id_Time".equals(talendType)) { %>
+            int index = 0;
+            for (IMetadataColumn column : columnList) {
+                String name = column.getOriginalDbColumnName();
+                String pattern = column.getPattern();
+                if (pattern == null || pattern.trim().isEmpty()) {
+                    pattern = "null";
+                }
+                Map<String, String> config = columnConfigList.get(index);
+                boolean hasGroupSep = "true".equals(config.get("HAS_GROUP_DELIMITERS"));
+                String format = config.get("FORMAT");
+                if (format == null || format.trim().isEmpty()) {
+                    format = "null";
+                }
+                String lengthStr = "null";
+                String precisionStr = "null";
+                Integer length = column.getLength();
+                if (length != null) {
+                    lengthStr = String.valueOf(length);
+                }
+                Integer precision = column.getPrecision();
+                if (precision != null) {
+                    precisionStr = String.valueOf(precision);
+                }
+                String talendType = column.getTalendType();
+                if ("id_Date".equals(talendType)
+                    || "id_Timestamp".equals(talendType)
+                    || "id_Time".equals(talendType)) { %>
 <%=cid%>.addCSVDateColumn("<%=name%>", null, <%=pattern%>);
-<%      	      } else if ("id_BigDecimal".equals(talendType)
+<%                 } else if ("id_BigDecimal".equals(talendType)
                    || "id_Long".equals(talendType)
                    || "id_Integer".equals(talendType)
                    || "id_Short".equals(talendType)
                    || "id_Float".equals(talendType)
                    || "id_Double".equals(talendType)) { %>
-<%=cid%>.addCSVNumberColumn("<%=name%>", null, <%=lengthStr%>, <%=precisionStr%>, <%=format%>);
-<%     	      } else { %>
+<%=cid%>.addCSVNumberColumn("<%=name%>", null, <%=lengthStr%>, <%=precisionStr%>, <%=format%>, <%=hasGroupSep%>);
+<%              } else { %>
 <%=cid%>.addCSVColumn("<%=name%>", null);
-<%     	      } 
+<%              }
                index++;
            } // for
        } // if (columnList != null  %>

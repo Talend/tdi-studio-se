@@ -69,7 +69,7 @@ public final class TaCoKitNode {
         EList parameters = node.getElementParameter();
         for (final Object elem : parameters) {
             ElementParameterTypeImpl parameter = (ElementParameterTypeImpl) elem;
-            if (!TECHNICAL_PARAMETERS.contains(parameter.getName())) {
+            if (!TECHNICAL_PARAMETERS.contains(parameter.getName()) || !EParameterFieldType.TECHNICAL.name().equals(parameter.getField())) {
                 properties.put(parameter.getName(), parameter.getValue());
             }
         }

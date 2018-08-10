@@ -40,22 +40,22 @@
       NUM_ROW="6"
       REQUIRED="true"
       GROUP="CONSUMER"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="LOAD">
-    		<ITEM NAME="LOAD" VALUE="Load" />
+        <ITEM NAME="LOAD" VALUE="Load" />
         <ITEM NAME="INSERTER" VALUE="Inserter" />
         <ITEM NAME="UPDATE" VALUE="Update" />
         <ITEM NAME="STREAM" VALUE="Stream" />
-    	</ITEMS>
+        </ITEMS>
     </PARAMETER>
+    
     <PARAMETER
       NAME="DML_TYPE"
       FIELD="CLOSED_LIST"
       NUM_ROW="6"
       REQUIRED="true"
       GROUP="CONSUMER"
-      SHOW_IF="(ACTION=='UPDATE') or (ACTION=='STREAM')"
-    >
+      SHOW_IF="((ACTION=='UPDATE') or (ACTION=='STREAM')) AND (CUSTOM_SCRIPT=='false')">
       <ITEMS DEFAULT="UPSERT">
         <ITEM NAME="INSERT" VALUE="Insert" />
         <ITEM NAME="UPDATE" VALUE="Update" />
@@ -63,83 +63,85 @@
         <ITEM NAME="DELETE" VALUE="Delete" />
       </ITEMS>
     </PARAMETER>
+    
     <PARAMETER
       NAME="PROPERTY"
       FIELD="PROPERTY_TYPE"
       SHOW="true"
       NUM_ROW="1"
       REPOSITORY_VALUE="DATABASE:TERADATA"
-    />
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
+    </PARAMETER>
+    
     <PARAMETER
       NAME="EXECUTION"
       FIELD="CLOSED_LIST"
       NUM_ROW="2"
-      REQUIRED="true"
-    >
+      REQUIRED="true">
       <ITEMS DEFAULT="WINDOWS">
-    		<ITEM NAME="WINDOWS" VALUE="Windows" />
-    		<ITEM NAME="UNIX" VALUE="Unix" />
-    	</ITEMS>
+        <ITEM NAME="WINDOWS" VALUE="Windows" />
+        <ITEM NAME="UNIX" VALUE="Unix" />
+      </ITEMS>
     </PARAMETER>
 
-	<PARAMETER
+    <PARAMETER
       NAME="TDPID"
       FIELD="TDPID"
       NUM_ROW="3"
       REPOSITORY_VALUE="SERVER_NAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"localtd"</DEFAULT>
     </PARAMETER>
 
-  <PARAMETER
+    <PARAMETER
       NAME="DBNAME"
       FIELD="TEXT"
       NUM_ROW="3"
       REPOSITORY_VALUE="SID"
       REQUIRED="true"
       GROUP="CONNECTION"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
-  <PARAMETER
+    <PARAMETER
       NAME="USER"
       FIELD="TEXT"
       NUM_ROW="4"
       REPOSITORY_VALUE="USERNAME"
       REQUIRED="true"
       GROUP="CONNECTION"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
-   <PARAMETER
+    <PARAMETER
       NAME="PASS"
       FIELD="PASSWORD"
       NUM_ROW="4"
       REPOSITORY_VALUE="PASSWORD"
       REQUIRED="true"
       GROUP="CONNECTION"
-    >
-      <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-
-	<PARAMETER
-      NAME="SCHEMA"
-      FIELD="SCHEMA_TYPE"
-      NUM_ROW="5"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
-    NAME="NOTE"
-    FIELD="LABEL"
-    NUM_ROW="5"
-    >
-    <DEFAULT>*Note:You must specify one or more columns as primary key for updating or deleting</DEFAULT>
+      NAME="SCHEMA"
+      FIELD="SCHEMA_TYPE"
+      NUM_ROW="5"
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER
+      NAME="NOTE"
+      FIELD="LABEL"
+      NUM_ROW="5"
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
+      <DEFAULT>*Note:You must specify one or more columns as primary key for updating or deleting</DEFAULT>
     </PARAMETER>
 
    <PARAMETER
@@ -148,7 +150,7 @@
       NUM_ROW="9"
       REQUIRED="true"
       GROUP="PRODUCER"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <ITEMS DEFAULT="DATA_CONNECTOR">
         <ITEM NAME="DATA_CONNECTOR" VALUE="DataConnector" />
         <!--
@@ -166,7 +168,7 @@
       NUM_ROW="3"
       SHOW="false"
       REPOSITORY_VALUE="TYPE"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>Teradata</DEFAULT>
     </PARAMETER>
 
@@ -175,7 +177,7 @@
       FIELD="DBTABLE"
       NUM_ROW="12"
       REQUIRED="true"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"mytable"</DEFAULT>
     </PARAMETER>
 
@@ -183,95 +185,113 @@
       NAME="SCRIPT_PATH"
       FIELD="DIRECTORY"
       NUM_ROW="13"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/"</DEFAULT>
     </PARAMETER>
 
-	<PARAMETER
+    <PARAMETER
       NAME="LOAD_FILE"
       FIELD="FILE"
       NUM_ROW="15"
       REQUIRED="true"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/test.csv"</DEFAULT>
     </PARAMETER>
 
- 	<PARAMETER
+     <PARAMETER
       NAME="ERROR_FILE"
       FIELD="FILE"
       NUM_ROW="16"
-      REQUIRED="true"
-    >
+      REQUIRED="true">
       <DEFAULT>"__COMP_DEFAULT_FILE_DIR__/error.log"</DEFAULT>
     </PARAMETER>
   </PARAMETERS>
+  
   <ADVANCED_PARAMETERS>
+    <PARAMETER
+      NAME="CUSTOM_SCRIPT"
+      FIELD="CHECK"
+      NUM_ROW="3"
+      REQUIRED="true">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER 
+      NAME="CUSTOM_SCRIPT_FILE" 
+      FIELD="FILE" 
+      NUM_ROW="6" 
+      REQUIRED="true" 
+      REPOSITORY_VALUE="FILE_PATH"
+      SHOW_IF="CUSTOM_SCRIPT=='true'">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
     <PARAMETER
       NAME="FIELD_SEPARATOR"
       FIELD="TEXT"
       NUM_ROW="10"
       REQUIRED="true"
-    >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>";"</DEFAULT>
     </PARAMETER>
-	<PARAMETER
-	    NAME="SPECIFY_LOG_TABLE"
-	    FIELD="CHECK"
-	    NUM_ROW="20"
-	    REQUIRED="true"
-      SHOW_IF="ACTION != 'INSERTER'"
-	>
-	    <DEFAULT>false</DEFAULT>
-	</PARAMETER>
-	<PARAMETER
-	    NAME="LOG_TABLE_TABLE"
-	    FIELD="TEXT"
-	    NUM_ROW="20"
-	    REQUIRED="true"
-		SHOW_IF="SPECIFY_LOG_TABLE=='true'"
-	>
-	    <DEFAULT>""</DEFAULT>
-	</PARAMETER>
+    
+    <PARAMETER
+      NAME="SPECIFY_LOG_TABLE"
+      FIELD="CHECK"
+      NUM_ROW="20"
+      REQUIRED="true"
+      SHOW_IF="ACTION != 'INSERTER' AND CUSTOM_SCRIPT=='false'">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="LOG_TABLE_TABLE"
+      FIELD="TEXT"
+      NUM_ROW="20"
+      REQUIRED="true"
+      SHOW_IF="SPECIFY_LOG_TABLE=='true'">
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+    
      <PARAMETER
       NAME="SCRIPT_PARAMETER"
       FIELD="CHECK"
       NUM_ROW="25"
       REQUIRED="true"
-  >
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
       <DEFAULT>false</DEFAULT>
-  </PARAMETER>
+    </PARAMETER>
 
-  <PARAMETER
+    <PARAMETER
       NAME="OPERATOR_LOAD"
       FIELD="TEXT"
       NUM_ROW="28"
       REPOSITORY_VALUE="OPERATOR_LOAD"
       GROUP="SCRIPT_PARAMETERS"
       REQUIRED="true"
-      SHOW_IF="SCRIPT_PARAMETER=='true'"
-    >
+      SHOW_IF="SCRIPT_PARAMETER=='true'">
       <DEFAULT>"OPERATOR_LOAD"</DEFAULT>
     </PARAMETER>
-  <PARAMETER
+    
+    <PARAMETER
       NAME="OPERATOR_DATA_CONNECTOR"
       FIELD="TEXT"
       NUM_ROW="28"
       REPOSITORY_VALUE="OPERATOR_DATA_CONNECTOR"
       GROUP="SCRIPT_PARAMETERS"
       REQUIRED="true"
-      SHOW_IF="SCRIPT_PARAMETER=='true'"
-    >
+      SHOW_IF="SCRIPT_PARAMETER=='true'">
       <DEFAULT>"OPERATOR_DATA_CONNECTOR"</DEFAULT>
     </PARAMETER>
-  <PARAMETER
+    
+    <PARAMETER
       NAME="JOB_NAME"
       FIELD="TEXT"
       NUM_ROW="29"
       REPOSITORY_VALUE="JOB_NAME"
       GROUP="SCRIPT_PARAMETERS"
       REQUIRED="true"
-      SHOW_IF="SCRIPT_PARAMETER=='true'"
-    >
+      SHOW_IF="SCRIPT_PARAMETER=='true'">
       <DEFAULT>"JOB_NAME"</DEFAULT>
     </PARAMETER>
 
@@ -282,61 +302,72 @@
       REPOSITORY_VALUE="LAYOUT_NAME"
       GROUP="SCRIPT_PARAMETERS"
       REQUIRED="true"
-      SHOW_IF="SCRIPT_PARAMETER=='true'"
-    >
+      SHOW_IF="SCRIPT_PARAMETER=='true'">
       <DEFAULT>"LAYOUT_NAME"</DEFAULT>
     </PARAMETER>
 
-	<PARAMETER
-	    NAME="RETURN_CODE_DIE"
-	    FIELD="CHECK"
-	    NUM_ROW="40"
-	    REQUIRED="true"
-	>
-	    <DEFAULT>false</DEFAULT>
-	</PARAMETER>
-	<PARAMETER
-	    NAME="RETURN_CODE"
-	    FIELD="TEXT"
-	    NUM_ROW="40"
-	    REQUIRED="true"
-		SHOW_IF="RETURN_CODE_DIE=='true'"
-	>
-	    <DEFAULT>8</DEFAULT>
-	</PARAMETER>
-	<PARAMETER
-	    NAME="DEFINE_CHARSET"
-	    FIELD="CHECK"
-	    NUM_ROW="50"
-	    REQUIRED="true"
-	>
-	    <DEFAULT>false</DEFAULT>
-	</PARAMETER>
-	<PARAMETER
-	    NAME="CHARSET"
-	    FIELD="TEXT"
-	    NUM_ROW="50"
-	    REQUIRED="true"
-		SHOW_IF="DEFINE_CHARSET=='true'"
-	>
-   	    <DEFAULT>"ASCII"</DEFAULT>
- 	</PARAMETER>
-
-  <!-- TPT Consumer Operator Optional Attributes -->
-  <PARAMETER NAME="APPLY_OPTIONAL_ATTRIBUTES" FIELD="CHECK" NUM_ROW="55" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES">
+    <PARAMETER
+      NAME="RETURN_CODE_DIE"
+      FIELD="CHECK"
+      NUM_ROW="40"
+      REQUIRED="true">
       <DEFAULT>false</DEFAULT>
-  </PARAMETER>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="RETURN_CODE"
+      FIELD="TEXT"
+      NUM_ROW="40"
+      REQUIRED="true"
+      SHOW_IF="RETURN_CODE_DIE=='true'">
+      <DEFAULT>8</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="DEFINE_CHARSET"
+      FIELD="CHECK"
+      NUM_ROW="50"
+      REQUIRED="true">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+    
+    <PARAMETER
+      NAME="CHARSET"
+      FIELD="TEXT"
+      NUM_ROW="50"
+      REQUIRED="true"
+      SHOW_IF="DEFINE_CHARSET=='true'">
+      <DEFAULT>"ASCII"</DEFAULT>
+    </PARAMETER>
 
-  <PARAMETER NAME="NOTE_FOR_TPT_ATTRIS" FIELD="LABEL" NUM_ROW="60" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-             SHOW_IF="APPLY_OPTIONAL_ATTRIBUTES == 'true'">
-  <DEFAULT>Note: Separate values with comma for array type.</DEFAULT>
-  </PARAMETER>
+    <!-- TPT Consumer Operator Optional Attributes -->
+    <PARAMETER 
+      NAME="APPLY_OPTIONAL_ATTRIBUTES" 
+      FIELD="CHECK" 
+      NUM_ROW="55" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="CUSTOM_SCRIPT=='false'">
+      <DEFAULT>false</DEFAULT>
+    </PARAMETER>
+
+    <PARAMETER 
+      NAME="NOTE_FOR_TPT_ATTRIS" 
+      FIELD="LABEL" 
+      NUM_ROW="60" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="APPLY_OPTIONAL_ATTRIBUTES == 'true'">
+      <DEFAULT>Note: Separate values with comma for array type.</DEFAULT>
+    </PARAMETER>
   
-  <!-- For LOAD -->
-  <PARAMETER NAME="TPT_CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES" FIELD="TABLE"
-  NUM_ROW="75" NB_LINES="10" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-  SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='LOAD') ">
-      <ITEMS >
+    <!-- For LOAD -->
+    <PARAMETER 
+      NAME="TPT_CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES" 
+      FIELD="TABLE"
+      NUM_ROW="75" 
+      NB_LINES="10" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='LOAD') ">
+      <ITEMS>
         <ITEM NAME="OPTIONAL_ATTRIBUTES_NAME" FIELD="CLOSED_LIST">
         <ITEMS DEFAULT="ERRORLIMIT">
           <ITEM NAME="BUFFERSIZE" VALUE="BUFFERSIZE"/>
@@ -368,12 +399,16 @@
         </ITEM>
         <ITEM NAME="OPTIONAL_ATTRIBUTES_VALUE" FIELD="TEXT" />
       </ITEMS>
-  </PARAMETER>
+    </PARAMETER>
 
-  <!-- For INSERTER -->
-   <PARAMETER NAME="TPT_COOA_FOR_INSERTER" FIELD="TABLE"
-    NUM_ROW="75" NB_LINES="10" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-    SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='INSERTER') ">
+    <!-- For INSERTER -->
+    <PARAMETER 
+      NAME="TPT_COOA_FOR_INSERTER" 
+      FIELD="TABLE"
+      NUM_ROW="75" 
+      NB_LINES="10" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='INSERTER') ">
       <ITEMS >
         <ITEM NAME="OPTIONAL_ATTRIBUTES_NAME" FIELD="CLOSED_LIST">
         <ITEMS DEFAULT="ACCOUNTID">
@@ -392,12 +427,16 @@
         </ITEM>
         <ITEM NAME="OPTIONAL_ATTRIBUTES_VALUE" FIELD="TEXT" />
       </ITEMS>
-  </PARAMETER>
+    </PARAMETER>
 
-  <!-- For UPDATE -->
-   <PARAMETER NAME="TPT_COOA_FOR_UPDATE" FIELD="TABLE"
-    NUM_ROW="75" NB_LINES="10" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-    SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='UPDATE') ">
+    <!-- For UPDATE -->
+    <PARAMETER 
+      NAME="TPT_COOA_FOR_UPDATE" 
+      FIELD="TABLE"
+      NUM_ROW="75" 
+      NB_LINES="10" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='UPDATE') ">
       <ITEMS >
         <ITEM NAME="OPTIONAL_ATTRIBUTES_NAME" FIELD="CLOSED_LIST">
         <ITEMS DEFAULT="ERRORLIMIT">
@@ -436,12 +475,16 @@
         </ITEM>
         <ITEM NAME="OPTIONAL_ATTRIBUTES_VALUE" FIELD="TEXT" />
       </ITEMS>
-  </PARAMETER>
+    </PARAMETER>
   
-  <!-- For Stream -->
-  <PARAMETER NAME="TPT_COOA_FOR_STREAM" FIELD="TABLE"
-    NUM_ROW="75" NB_LINES="10" GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
-    SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='STREAM') ">
+    <!-- For Stream -->
+    <PARAMETER 
+      NAME="TPT_COOA_FOR_STREAM" 
+      FIELD="TABLE"
+      NUM_ROW="75" 
+      NB_LINES="10" 
+      GROUP="CONSUMER_OPERATOR_OPTIONAL_ATTRIBUTES"
+      SHOW_IF="(APPLY_OPTIONAL_ATTRIBUTES == 'true') and (ACTION=='STREAM')">
       <ITEMS >
         <ITEM NAME="OPTIONAL_ATTRIBUTES_NAME" FIELD="CLOSED_LIST">
         <ITEMS DEFAULT="ERRORLIMIT">
@@ -484,14 +527,13 @@
         </ITEM>
         <ITEM NAME="OPTIONAL_ATTRIBUTES_VALUE" FIELD="TEXT"/>
       </ITEMS>
-  </PARAMETER>
-
+    </PARAMETER>
   </ADVANCED_PARAMETERS>
 
   <CODEGENERATION>
   </CODEGENERATION>
 
   <RETURNS>
-	<RETURN NAME="EXIT_VALUE" TYPE="id_Integer" AVAILABILITY="AFTER"/>
+    <RETURN NAME="EXIT_VALUE" TYPE="id_Integer" AVAILABILITY="AFTER"/>
   </RETURNS>
 </COMPONENT>

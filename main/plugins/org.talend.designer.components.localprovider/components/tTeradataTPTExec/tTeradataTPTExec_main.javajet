@@ -49,6 +49,9 @@ boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.ge
 boolean checkedScriptParameter = ("true").equals(ElementParameterParser.getValue(node, "__SCRIPT_PARAMETER__"));
 boolean applyOptionalAttributes = "true".equals(ElementParameterParser.getValue(node, "__APPLY_OPTIONAL_ATTRIBUTES__"));
 
+boolean customScript = ("true").equals(ElementParameterParser.getValue(node, "__CUSTOM_SCRIPT__"));
+String customScriptPath = ElementParameterParser.getValue(node, "__CUSTOM_SCRIPT_FILE__");
+
 String passwordFieldName="__PASS__";
 
 //New Feature TDI-29325 begin
@@ -82,13 +85,13 @@ if(applyOptionalAttributes){
 	}
 
 	intAttrisList = Arrays.asList(
-										"BUFFERSIZE","ERRORLIMIT","MAXSESSIONS",
-										"MINSESSIONS","TENACITYHOURS","TENACITYSLEEP",
-										"BUFFERS","PACK","RATE",
-										"PERIODICITY","IOBUFFERSIZE","ROWSPERINSTANCE",
-										"SKIPROWS","TIMEOUT","VIGILELAPSEDTIME",
-										"VIGILMAXFILES","VIGILWAITTIME"
-								  );
+		"BUFFERSIZE","ERRORLIMIT","MAXSESSIONS",
+		"MINSESSIONS","TENACITYHOURS","TENACITYSLEEP",
+		"BUFFERS","PACK","RATE",
+		"PERIODICITY","IOBUFFERSIZE","ROWSPERINSTANCE",
+		"SKIPROWS","TIMEOUT","VIGILELAPSEDTIME",
+		"VIGILMAXFILES","VIGILWAITTIME"
+		);
     arrayAttrisList = Arrays.asList("TRACELEVEL");
     tableNameAttrisList = Arrays.asList("TARGETTABLE","ERRORTABLE1","ERRORTABLE2","WORKTABLE");
 }
@@ -126,490 +129,519 @@ if(columnList!=null){
 	}
 }
 %>
-String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
+
 java.io.File file_<%=cid %> = new java.io.File(<%=scriptPath%>+<%=table%>+ <%if("Windows".equals(execution)){%>".script"<%}else{%>".scr"<%}%>);
 
-<% if(specifyLogTable){ %>
-	   String logTable_<%= cid %> = <%=dbname%> + "." +<%= logTable %>;
-<% } %>
-<%//build script---------------------------------------------------------%>
 try{
-				<% if(!checkedScriptParameter){%>
-					<%
-						operatorLoad = "\"Operator_" + cid+"\"";
-						operatorDataConnector = "\"Connector_" + cid+"\"";
-						jobName = "\"Job_" + cid+"\"";
-						layoutName = "\"Schema_" +cid+"\"";
-					%>
-			    <% }%>
 
-				java.io.FileWriter fw_<%=cid %> = new java.io.FileWriter(file_<%=cid%>);
-				fw_<%=cid %>.write("DEFINE JOB "+<%=jobName %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  ("+"<%=lineSeparator%>");
+	<%if(!customScript){%>
 
-				<% if("Load".equals(operatorType)){ %>
-				fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	TYPE LOAD<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR TargetTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ErrorTable1, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ErrorTable2, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PauseAcq, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrivateLogName,<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo,<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR TdpId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WildcardInsert, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WorkingDatabase<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
+		String tableFullName_<%=cid%> = <%=dbname%> + "." + <%=table%>;
 
-				<%}else if("Inserter".equals(operatorType)){ %>
-				fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	TYPE INSERTER<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR Tdpid, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ReplicationOverride, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WorkingDatabase <%=lineSeparator%>");
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
-				<%}else if("Update".equals(operatorType)){ %>
+		<% if(specifyLogTable){ %>
+			   String logTable_<%= cid %> = <%=dbname%> + "." +<%= logTable %>;
+		<% } %>
+		<%//build script---------------------------------------------------------%>
 
-				fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	TYPE UPDATE<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR Tdpid, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AmpCheck, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DeleteTask, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DropErrorTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DropLogTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DropWorkTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PauseAcq, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueueErrorTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WorkTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WorkingDatabase, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR TargetTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ErrorTable1, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ErrorTable2 <%=lineSeparator%>");
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
-				<%}else if("Stream".equals(operatorType)){%>
-
-				fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	TYPE STREAM<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR TdpId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ErrorTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AppendErrorTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER Buffers, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER Pack, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER Rate, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER Periodicity, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ArraySupport, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DropMacro, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR MacroDatabase, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR OperatorCommandID, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PackMaximum, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR QueueErrorTable, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ReplicationOverrride, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR Robust, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR WorkingDatabase, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DropErrorTable<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
-			    <%}else{}%>
-
-				fw_<%=cid %>.write("  	DEFINE SCHEMA "+<%=layoutName %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-
+			<% if(!checkedScriptParameter){%>
 				<%
-				if(columnList!=null){
-					int counter = 1;
-					for(IMetadataColumn column:columnList){
-						if( columnList.size() != counter){	%>
-						fw_<%=cid %>.write("               <%=column.getOriginalDbColumnName()%>"+" VARCHAR(<%=column.getLength() == null ? 0 : column.getLength()%>),<%=lineSeparator%>");
-					<%
-						} else {
-					%>
-						fw_<%=cid %>.write("               <%=column.getOriginalDbColumnName()%>"+" VARCHAR(<%=column.getLength() == null ? 0 : column.getLength()%>)<%=lineSeparator%>");
-					<% 	}
-						counter++;
-					}
-				}
+					operatorLoad = "\"Operator_" + cid+"\"";
+					operatorDataConnector = "\"Connector_" + cid+"\"";
+					jobName = "\"Job_" + cid+"\"";
+					layoutName = "\"Schema_" +cid+"\"";
 				%>
+			<%}%>
 
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
-				fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorDataConnector %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	TYPE DATACONNECTOR PRODUCER<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	SCHEMA "+<%=layoutName %>+"<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	(<%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR FileName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR Format, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR OpenMode, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER BlockSize, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER RetentionPeriod, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER RowsPerInstance, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER SecondarySpace, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER UnitCount, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER VigilElapsedTime, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER VigilWaitTime, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		INTEGER VolumeCount, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccessModuleName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR AccessModuleInitStr, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR DirectoryPath, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR ExpirationDate, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR IndicatorMode, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrimarySpace, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR RecordFormat, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR RecordLength, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR SpaceUnit, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR TextDelimiter, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR VigilNoticeFileName, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR VigilStartTime, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR VigilStopTime, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR VolSerNumber, <%=lineSeparator%>");
-				fw_<%=cid %>.write("  		VARCHAR UnitType<%=lineSeparator%>");
-				fw_<%=cid %>.write("  	);<%=lineSeparator%>");
-				fw_<%=cid %>.write("  <%=lineSeparator%>");
+			java.io.FileWriter fw_<%=cid %> = new java.io.FileWriter(file_<%=cid%>);
+			fw_<%=cid %>.write("DEFINE JOB "+<%=jobName %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  ("+"<%=lineSeparator%>");
 
-				fw_<%=cid %>.write("    APPLY<%=lineSeparator%>");
-                fw_<%=cid %>.write("        (<%=lineSeparator%>");
+			<% if("Load".equals(operatorType)){ %>
+			fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	TYPE LOAD<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR TargetTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ErrorTable1, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ErrorTable2, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PauseAcq, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrivateLogName,<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo,<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR TdpId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WildcardInsert, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WorkingDatabase<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
 
-                //builder4insert begin
-                <%
-                StringBuilder inserterColsStrBuilder = new StringBuilder();
-                StringBuilder inserterValueSqlStrBuilder = new StringBuilder();
-                if(columnList!=null){
-                    String columnName = "";
-                    for(IMetadataColumn column:columnList){
-                        columnName= column.getOriginalDbColumnName();
-                        if(inserterColsStrBuilder.length()>0){
-                            inserterColsStrBuilder.append(",");
-                        }
-                        inserterColsStrBuilder.append(columnName);
+			<%}else if("Inserter".equals(operatorType)){ %>
+			fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	TYPE INSERTER<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR Tdpid, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ReplicationOverride, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WorkingDatabase <%=lineSeparator%>");
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			<%}else if("Update".equals(operatorType)){ %>
 
-                        if(inserterValueSqlStrBuilder.length()>0){
-                            inserterValueSqlStrBuilder.append(",");
-                        }
-                        inserterValueSqlStrBuilder.append(":").append(columnName);
-                    }
-                }
-                %>
-                //builder4insert end
+			fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	TYPE UPDATE<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR Tdpid, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AmpCheck, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DeleteTask, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DropErrorTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DropLogTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DropWorkTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PauseAcq, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueueErrorTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WorkTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WorkingDatabase, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR TargetTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ErrorTable1, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ErrorTable2 <%=lineSeparator%>");
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			<%}else if("Stream".equals(operatorType)){%>
 
-                //builder4update begin
-                <%
-                StringBuilder setStrBuilder = new StringBuilder();
-                if(columnList!=null){
-                    String columnName = "";
-                    int lgth = columnList.size();
-                    for(IMetadataColumn column:columnList){
-                    	if(!column.isKey()){
-	                        columnName= column.getOriginalDbColumnName();
-	                        if(lgth>1){
-	                            setStrBuilder.append(columnName).append("=:").append(columnName).append(",");
-	                        }else{
-	                            setStrBuilder.append(columnName).append("=:").append(columnName);
-	                        }
-                    	}
-                    	lgth--;
-                    }
-                }
-                %>
+			fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorLoad %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	TYPE STREAM<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	SCHEMA *<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UserPassword, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR TdpId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ErrorTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AppendErrorTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER Buffers, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER ErrorLimit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MaxSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER MinSessions, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER Pack, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER Rate, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER Periodicity, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacityHours, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER TenacitySleep, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccountId, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ArraySupport, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DataEncryption, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DateForm, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DropMacro, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMech, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogonMechData, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR MacroDatabase, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR OperatorCommandID, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyExitIsDLL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyMethod, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR LogSQL, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR NotifyString, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PackMaximum, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueryBandSessInfo, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR QueueErrorTable, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ReplicationOverrride, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR Robust, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR WorkingDatabase, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ARRAY TraceLevel, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DropErrorTable<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			<%}else{}%>
 
-               <%
-                StringBuilder whereStrBuilder = new StringBuilder();
-                if(primaryKeyList.size()>0){
-                    //get primary key from talend schema
-                    int lgthx = primaryKeyList.size();
-                    for(String primaryKey:primaryKeyList){
-                        if(lgthx>1){
-                            whereStrBuilder.append(primaryKey).append("=:").append(primaryKey).append(" and ");
-                        }else{
-                            whereStrBuilder.append(primaryKey).append("=:").append(primaryKey);
-                        }
-                        lgthx--;
-                    }
-                }else{
-                     whereStrBuilder.append("1=0");
-                }%>
-                //builder4update end
+			fw_<%=cid %>.write("  	DEFINE SCHEMA "+<%=layoutName %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
 
-                <% if("Load".equals(operatorType) || "Inserter".equals(operatorType)){%>
+			<%
+			if(columnList!=null){
+				int counter = 1;
+				for(IMetadataColumn column:columnList){
+					if( columnList.size() != counter){	%>
+					fw_<%=cid %>.write("               <%=column.getOriginalDbColumnName()%>"+" VARCHAR(<%=column.getLength() == null ? 0 : column.getLength()%>),<%=lineSeparator%>");
+				<%
+					} else {
+				%>
+					fw_<%=cid %>.write("               <%=column.getOriginalDbColumnName()%>"+" VARCHAR(<%=column.getLength() == null ? 0 : column.getLength()%>)<%=lineSeparator%>");
+				<% 	}
+					counter++;
+				}
+			}
+			%>
+
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			fw_<%=cid %>.write("  	DEFINE OPERATOR "+<%=operatorDataConnector %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	TYPE DATACONNECTOR PRODUCER<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	SCHEMA "+<%=layoutName %>+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	(<%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR FileName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR Format, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR OpenMode, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER BlockSize, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER BufferSize, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER RetentionPeriod, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER RowsPerInstance, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER SecondarySpace, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER UnitCount, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER VigilElapsedTime, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER VigilWaitTime, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		INTEGER VolumeCount, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccessModuleName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR AccessModuleInitStr, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR DirectoryPath, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR ExpirationDate, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR IndicatorMode, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrimarySpace, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR PrivateLogName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR RecordFormat, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR RecordLength, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR SpaceUnit, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR TextDelimiter, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR VigilNoticeFileName, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR VigilStartTime, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR VigilStopTime, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR VolSerNumber, <%=lineSeparator%>");
+			fw_<%=cid %>.write("  		VARCHAR UnitType<%=lineSeparator%>");
+			fw_<%=cid %>.write("  	);<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+
+			fw_<%=cid %>.write("    APPLY<%=lineSeparator%>");
+			fw_<%=cid %>.write("        (<%=lineSeparator%>");
+
+			//builder4insert begin
+			<%
+			StringBuilder inserterColsStrBuilder = new StringBuilder();
+			StringBuilder inserterValueSqlStrBuilder = new StringBuilder();
+			if(columnList!=null){
+				String columnName = "";
+				for(IMetadataColumn column:columnList){
+					columnName= column.getOriginalDbColumnName();
+					if(inserterColsStrBuilder.length()>0){
+						inserterColsStrBuilder.append(",");
+					}
+					inserterColsStrBuilder.append(columnName);
+
+					if(inserterValueSqlStrBuilder.length()>0){
+						inserterValueSqlStrBuilder.append(",");
+					}
+					inserterValueSqlStrBuilder.append(":").append(columnName);
+				}
+			}
+			%>
+			//builder4insert end
+
+			//builder4update begin
+			<%
+			StringBuilder setStrBuilder = new StringBuilder();
+			if(columnList!=null){
+				String columnName = "";
+				int lgth = columnList.size();
+				for(IMetadataColumn column:columnList){
+					if(!column.isKey()){
+						columnName= column.getOriginalDbColumnName();
+						if(lgth>1){
+							setStrBuilder.append(columnName).append("=:").append(columnName).append(",");
+						}else{
+							setStrBuilder.append(columnName).append("=:").append(columnName);
+						}
+					}
+					lgth--;
+				}
+			}
+			%>
+
+		   <%
+			StringBuilder whereStrBuilder = new StringBuilder();
+			if(primaryKeyList.size()>0){
+				//get primary key from talend schema
+				int lgthx = primaryKeyList.size();
+				for(String primaryKey:primaryKeyList){
+					if(lgthx>1){
+						whereStrBuilder.append(primaryKey).append("=:").append(primaryKey).append(" and ");
+					}else{
+						whereStrBuilder.append(primaryKey).append("=:").append(primaryKey);
+					}
+					lgthx--;
+				}
+			}else{
+				 whereStrBuilder.append("1=0");
+			}%>
+			//builder4update end
+
+			<% if("Load".equals(operatorType) || "Inserter".equals(operatorType)){%>
+					fw_<%=cid %>.write("            'INSERT INTO "+ <%=dbname%> + "." + <%=table%>+" (<%=inserterColsStrBuilder.toString()%>) VALUES (<%=inserterValueSqlStrBuilder.toString()%>);'<%=lineSeparator%>");
+			 <%}else if("Update".equals(operatorType) || "Stream".equals(operatorType)){%>
+					<% if("Insert".equals(dmlType)){ %>
 						fw_<%=cid %>.write("            'INSERT INTO "+ <%=dbname%> + "." + <%=table%>+" (<%=inserterColsStrBuilder.toString()%>) VALUES (<%=inserterValueSqlStrBuilder.toString()%>);'<%=lineSeparator%>");
-				 <%}else if("Update".equals(operatorType) || "Stream".equals(operatorType)){%>
-		                <% if("Insert".equals(dmlType)){ %>
-		                    fw_<%=cid %>.write("            'INSERT INTO "+ <%=dbname%> + "." + <%=table%>+" (<%=inserterColsStrBuilder.toString()%>) VALUES (<%=inserterValueSqlStrBuilder.toString()%>);'<%=lineSeparator%>");
-		                <% } else if("Update".equals(dmlType)){ %>
-		                    fw_<%=cid %>.write("            'UPDATE " + <%=dbname%> + "." + <%=table%> + " SET <%= setStrBuilder.toString() %> WHERE <%= whereStrBuilder.toString() %>;'<%=lineSeparator%>" );
-		                <% }else if("Delete".equals(dmlType)){%>
-		                    fw_<%=cid %>.write("            'DELETE  FROM " + <%=dbname%> + "." + <%=table%> + " WHERE <%= whereStrBuilder.toString() %>;'<%=lineSeparator%>");
-		                <%}else if("InsertOrUpdate".equals(dmlType)){%>
-		                    fw_<%=cid %>.write("            'UPDATE " + <%=dbname%> + "." + <%=table%> + " SET <%= setStrBuilder.toString() %> WHERE <%= whereStrBuilder.toString() %>;',<%=lineSeparator%>");
-		                    fw_<%=cid %>.write("            'INSERT INTO "+ <%=dbname%> + "." + <%=table%>+" (<%=inserterColsStrBuilder.toString()%>) VALUES (<%=inserterValueSqlStrBuilder.toString()%>);'<%=lineSeparator%>");
-		                <%}else{
-		                    %>
-		                      System.err.println("Unexcepted DML type.");
-		                    <%
-		                } %>
-                <%}else{
-                	%>
-                	  	System.err.println("Unknow customer operator.");
-                	<%
-	            } %>
+					<% } else if("Update".equals(dmlType)){ %>
+						fw_<%=cid %>.write("            'UPDATE " + <%=dbname%> + "." + <%=table%> + " SET <%= setStrBuilder.toString() %> WHERE <%= whereStrBuilder.toString() %>;'<%=lineSeparator%>" );
+					<% }else if("Delete".equals(dmlType)){%>
+						fw_<%=cid %>.write("            'DELETE  FROM " + <%=dbname%> + "." + <%=table%> + " WHERE <%= whereStrBuilder.toString() %>;'<%=lineSeparator%>");
+					<%}else if("InsertOrUpdate".equals(dmlType)){%>
+						fw_<%=cid %>.write("            'UPDATE " + <%=dbname%> + "." + <%=table%> + " SET <%= setStrBuilder.toString() %> WHERE <%= whereStrBuilder.toString() %>;',<%=lineSeparator%>");
+						fw_<%=cid %>.write("            'INSERT INTO "+ <%=dbname%> + "." + <%=table%>+" (<%=inserterColsStrBuilder.toString()%>) VALUES (<%=inserterValueSqlStrBuilder.toString()%>);'<%=lineSeparator%>");
+					<%}else{
+						%>
+						  System.err.println("Unexcepted DML type.");
+						<%
+					} %>
+			<%}else{
+				%>
+					System.err.println("Unknow customer operator.");
+				<%
+			} %>
 
-                fw_<%=cid %>.write("        )<%=lineSeparator%>");
-                <%  if(("Update".equals(operatorType) || "Stream".equals(operatorType)) && "InsertOrUpdate".equals(dmlType)){%>
-                fw_<%=cid %>.write("    INSERT FOR MISSING UPDATE ROWS<%=lineSeparator%>");
-                <%} %>
+			fw_<%=cid %>.write("        )<%=lineSeparator%>");
+			<%  if(("Update".equals(operatorType) || "Stream".equals(operatorType)) && "InsertOrUpdate".equals(dmlType)){%>
+			fw_<%=cid %>.write("    INSERT FOR MISSING UPDATE ROWS<%=lineSeparator%>");
+			<%} %>
 
-             	fw_<%=cid %>.write("    TO OPERATOR<%=lineSeparator%>");
-                fw_<%=cid %>.write("    (<%=lineSeparator%>");
-                fw_<%=cid %>.write("        "+<%=operatorLoad %>+"[1]"+"<%=lineSeparator%>");
-                fw_<%=cid %>.write("  <%=lineSeparator%>");
-                fw_<%=cid %>.write("        ATTRIBUTES<%=lineSeparator%>");
-                fw_<%=cid %>.write("        (<%=lineSeparator%>");
-                fw_<%=cid %>.write("            UserName = '" + <%=dbuser%> + "', <%=lineSeparator%>");
+			fw_<%=cid %>.write("    TO OPERATOR<%=lineSeparator%>");
+			fw_<%=cid %>.write("    (<%=lineSeparator%>");
+			fw_<%=cid %>.write("        "+<%=operatorLoad %>+"[1]"+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			fw_<%=cid %>.write("        ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("        (<%=lineSeparator%>");
+			fw_<%=cid %>.write("            UserName = '" + <%=dbuser%> + "', <%=lineSeparator%>");
 
-				<%@ include file="../templates/password.javajet"%>
+			<%@ include file="../templates/password.javajet"%>
 
-                fw_<%=cid %>.write("            UserPassword = '" + decryptedPassword_<%=cid%> + "',<%=lineSeparator%>");
-                fw_<%=cid %>.write("            TdpId = '" + <%=tdpid%> + "'<%=lineSeparator%>");                
+			fw_<%=cid %>.write("            UserPassword = '" + decryptedPassword_<%=cid%> + "',<%=lineSeparator%>");
+			fw_<%=cid %>.write("            TdpId = '" + <%=tdpid%> + "'<%=lineSeparator%>");                
 
-                <% if("Load".equals(operatorType) || "Update".equals(operatorType)){%>
-                	    fw_<%=cid %>.write("            ,TargetTable = '" + tableFullName_<%=cid%> + "'<%=lineSeparator%>");
-                	<% if(specifyLogTable){ %>                	    
-                	    fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");
-                	<% } %>
-                <%} if("Stream".equals(operatorType)){%>
-                	<% if(specifyLogTable){ %>
-                	    fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");
-                	<% }
-                }
-					//New Feature TDI-29325
-					if(applyOptionalAttributes){
-						Set<String> attrisKeySet = attrisMap.keySet();
-						for(String key : attrisKeySet){
-							String value = attrisMap.get(key);
-							boolean isIntType = intAttrisList.contains(key);
-							boolean isArrType;
-							if(isIntType){//Integer
+			<% if("Load".equals(operatorType) || "Update".equals(operatorType)){%>
+					fw_<%=cid %>.write("            ,TargetTable = '" + tableFullName_<%=cid%> + "'<%=lineSeparator%>");
+				<% if(specifyLogTable){ %>                	    
+					fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");
+				<% } %>
+			<%} if("Stream".equals(operatorType)){%>
+				<% if(specifyLogTable){ %>
+					fw_<%=cid %>.write("            ,LogTable = '" + logTable_<%= cid %> + "'<%=lineSeparator%>");
+				<% }
+			}
+				//New Feature TDI-29325
+				if(applyOptionalAttributes){
+					Set<String> attrisKeySet = attrisMap.keySet();
+					for(String key : attrisKeySet){
+						String value = attrisMap.get(key);
+						boolean isIntType = intAttrisList.contains(key);
+						boolean isArrType;
+						if(isIntType){//Integer
+							%>
+							   fw_<%=cid %>.write("            ,<%= key %> = "+<%= value %>+"<%=lineSeparator%>");
+							<%
+						}else{
+							isArrType = arrayAttrisList.contains(key);
+							if(!isArrType){//Varchar or table name
+								boolean isTableType = tableNameAttrisList.contains(key);
+								if("ERRORTABLE".equalsIgnoreCase(key) || (isTableType && operatorType.equalsIgnoreCase("LOAD"))){
 								%>
-								   fw_<%=cid %>.write("            ,<%= key %> = "+<%= value %>+"<%=lineSeparator%>");
+								   fw_<%=cid %>.write("            ,<%= key %> = '"+<%= dbname %>+"."+<%= value %>+"'<%=lineSeparator%>");
 								<%
-							}else{
-								isArrType = arrayAttrisList.contains(key);
-								if(!isArrType){//Varchar or table name
-									boolean isTableType = tableNameAttrisList.contains(key);
-									if("ERRORTABLE".equalsIgnoreCase(key) || (isTableType && operatorType.equalsIgnoreCase("LOAD"))){
+								}else{
+								%>
+								   fw_<%=cid %>.write("            ,<%= key %> = '"+<%= value %>+"'<%=lineSeparator%>");
+								<%
+								}
+							}else{//Array
 									%>
-									   fw_<%=cid %>.write("            ,<%= key %> = '"+<%= dbname %>+"."+<%= value %>+"'<%=lineSeparator%>");
+									   fw_<%=cid %>.write("            ,<%= key %> = "+<%= value %>+"<%=lineSeparator%>");
 									<%
-									}else{
-									%>
-									   fw_<%=cid %>.write("            ,<%= key %> = '"+<%= value %>+"'<%=lineSeparator%>");
-									<%
-									}
-								}else{//Array
-										%>
-										   fw_<%=cid %>.write("            ,<%= key %> = "+<%= value %>+"<%=lineSeparator%>");
-										<%
-									}
 								}
 							}
 						}
-				%>
+					}
+			%>
 
-                fw_<%=cid %>.write("        )<%=lineSeparator%>");
-                fw_<%=cid %>.write("    )<%=lineSeparator%>");
-                fw_<%=cid %>.write("    SELECT * FROM OPERATOR<%=lineSeparator%>");
-                fw_<%=cid %>.write("    (<%=lineSeparator%>");
-                fw_<%=cid %>.write("        "+<%=operatorDataConnector %>+"[1]"+"<%=lineSeparator%>");
-                fw_<%=cid %>.write("  <%=lineSeparator%>");
-                fw_<%=cid %>.write("        ATTRIBUTES<%=lineSeparator%>");
-                fw_<%=cid %>.write("        (<%=lineSeparator%>");
-                fw_<%=cid %>.write("            FileName = '" + <%=loadFile%> + "', <%=lineSeparator%>");
-                fw_<%=cid %>.write("            Format = 'DELIMITED', <%=lineSeparator%>");
-                fw_<%=cid %>.write("            OpenMode = 'Read', <%=lineSeparator%>");
-                fw_<%=cid %>.write("            DirectoryPath = '', <%=lineSeparator%>");
-                fw_<%=cid %>.write("            IndicatorMode = 'N', <%=lineSeparator%>");
-                fw_<%=cid %>.write("            TextDelimiter = '" + <%=separator%> + "'<%=lineSeparator%>");
-                fw_<%=cid %>.write("        )<%=lineSeparator%>");
-                fw_<%=cid %>.write("    );<%=lineSeparator%>");
-                fw_<%=cid %>.write("  );<%=lineSeparator%>");
+			fw_<%=cid %>.write("        )<%=lineSeparator%>");
+			fw_<%=cid %>.write("    )<%=lineSeparator%>");
+			fw_<%=cid %>.write("    SELECT * FROM OPERATOR<%=lineSeparator%>");
+			fw_<%=cid %>.write("    (<%=lineSeparator%>");
+			fw_<%=cid %>.write("        "+<%=operatorDataConnector %>+"[1]"+"<%=lineSeparator%>");
+			fw_<%=cid %>.write("  <%=lineSeparator%>");
+			fw_<%=cid %>.write("        ATTRIBUTES<%=lineSeparator%>");
+			fw_<%=cid %>.write("        (<%=lineSeparator%>");
+			fw_<%=cid %>.write("            FileName = '" + <%=loadFile%> + "', <%=lineSeparator%>");
+			fw_<%=cid %>.write("            Format = 'DELIMITED', <%=lineSeparator%>");
+			fw_<%=cid %>.write("            OpenMode = 'Read', <%=lineSeparator%>");
+			fw_<%=cid %>.write("            DirectoryPath = '', <%=lineSeparator%>");
+			fw_<%=cid %>.write("            IndicatorMode = 'N', <%=lineSeparator%>");
+			fw_<%=cid %>.write("            TextDelimiter = '" + <%=separator%> + "'<%=lineSeparator%>");
+			fw_<%=cid %>.write("        )<%=lineSeparator%>");
+			fw_<%=cid %>.write("    );<%=lineSeparator%>");
+			fw_<%=cid %>.write("  );<%=lineSeparator%>");
 
-                //write script to file
-                fw_<%=cid %>.close();
+			//write script to file
+			fw_<%=cid %>.close();
+		
+	<%}%>
+		
+		
+		
+		
+	String pathToExecScript_<%=cid%> = "";
+	<%
+	if(customScript){
+	%>
+		pathToExecScript_<%=cid%> = <%=customScriptPath%>;
+	<%
+	} else {
+	%>
+		pathToExecScript_<%=cid%> = <%=scriptPath%>+<%=table%>
+			+ <%if("Windows".equals(execution)){%> 
+					".script"; 
+			<%} else {%> 
+			".scr";
+			<%}%>;
+	<%
+	}
+	%>
 
-                //run tbuild (TPT) command
-                <%if("true".equals(defineCharset)) {
-                    if(!("".equals(charset))) {
-                        if("Windows".equals(execution)){%>
-                            String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".script\" -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
-                        <%}else{%>
-                            String[] sb_<%=cid%>= {"sh","-c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".scr\" -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
-                        <%}
-                    }
-                } else {
-                    if("Windows".equals(execution)){%>
-                        String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".script\" > \""+<%=errorFile%>+"\" 2>&1"};
-                    <%}else{%>
-                        String[] sb_<%=cid%>= {"sh","-c","tbuild -f \""+<%=scriptPath%>+<%=table%>+".scr\" > \""+<%=errorFile%>+"\" 2>&1"};
-                    <%}
-                }%>
-                <%if(isLog4jEnabled){%>
-                	String cmdStr_<%= cid %> = java.util.Arrays.toString(sb_<%=cid%>);
-                    log.info("<%=cid%> - Executing command: '" + cmdStr_<%= cid %> + "'.");
-                <%}%>
-                final Process process_<%=cid %> = Runtime.getRuntime().exec(sb_<%=cid%>);
-                Thread normal_<%=cid %> = new Thread() {
-                    public void run() {
-                        try {
-                            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getInputStream()));
-                            String line = "";
-                            try {
-                                while((line = reader.readLine()) != null) {
-                                   System.out.println(line);
-                                }
-                            } finally {
-                                 reader.close();
-                            }
-                        }catch(java.io.IOException ioe) {
-                            <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
-                            ioe.printStackTrace();
-                        }
-                    }
-                };
-                normal_<%=cid %>.start();
+	//run tbuild (TPT) command
+	<%if("true".equals(defineCharset)) {
+		if(!("".equals(charset))) {
+			if("Windows".equals(execution)){%>
+				String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \""+ pathToExecScript_<%=cid%> + "\"" + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
+			<%}else{%>
+				String[] sb_<%=cid%>= {"sh","-c","tbuild -f \"" + pathToExecScript_<%=cid%> + "\"" + " -e "+<%=charset%>+" > \""+<%=errorFile%>+"\" 2>&1"};
+			<%}
+		}
+	} else {
+		if("Windows".equals(execution)){%>
+			String[] sb_<%=cid%>= {"cmd","/c","tbuild -f \"" + pathToExecScript_<%=cid%> + "\" > \""+<%=errorFile%>+"\" 2>&1"};
+		<%}else{%>
+			String[] sb_<%=cid%>= {"sh","-c","tbuild -f \"" + pathToExecScript_<%=cid%> + "\" > \""+<%=errorFile%>+"\" 2>&1"};
+		<%}
+	}%>
+	<%if(isLog4jEnabled){%>
+		String cmdStr_<%= cid %> = java.util.Arrays.toString(sb_<%=cid%>);
+		log.info("<%=cid%> - Executing command: '" + cmdStr_<%= cid %> + "'.");
+	<%}%>
+	final Process process_<%=cid %> = Runtime.getRuntime().exec(sb_<%=cid%>);
+	Thread normal_<%=cid %> = new Thread() {
+		public void run() {
+			try {
+				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getInputStream()));
+				String line = "";
+				try {
+					while((line = reader.readLine()) != null) {
+					   System.out.println(line);
+					}
+				} finally {
+					 reader.close();
+				}
+			}catch(java.io.IOException ioe) {
+				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
+				ioe.printStackTrace();
+			}
+		}
+	};
+	normal_<%=cid %>.start();
 
-                Thread error_<%=cid %> = new Thread() {
-                    public void run() {
-                        try {
-                            java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getErrorStream()));
-                            String line = "";
-                            try {
-                                while((line = reader.readLine()) != null) {
-                                    System.err.println(line);
-                                }
-                            } finally {
-                                reader.close();
-                            }
-                        } catch(java.io.IOException ioe) {
-                            <%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
-                           ioe.printStackTrace();
-                        }
-                    }
-                };
-                error_<%=cid %>.start();
+	Thread error_<%=cid %> = new Thread() {
+		public void run() {
+			try {
+				java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process_<%=cid %>.getErrorStream()));
+				String line = "";
+				try {
+					while((line = reader.readLine()) != null) {
+						System.err.println(line);
+					}
+				} finally {
+					reader.close();
+				}
+			} catch(java.io.IOException ioe) {
+				<%log4jCodeGenerateUtil.logError(node,"error","ioe");%>
+			   ioe.printStackTrace();
+			}
+		}
+	};
+	error_<%=cid %>.start();
 
-                process_<%=cid %>.waitFor();
+	process_<%=cid %>.waitFor();
 
-                normal_<%=cid %>.interrupt();
+	normal_<%=cid %>.interrupt();
 
-                error_<%=cid %>.interrupt();
+	error_<%=cid %>.interrupt();
 
-                globalMap.put("<%=cid %>_EXIT_VALUE", process_<%=cid %>.exitValue());
+	globalMap.put("<%=cid %>_EXIT_VALUE", process_<%=cid %>.exitValue());
 
-                <%
-                if(returnCodeDie) {
-                %>
-                    if(process_<%=cid %>.exitValue()>=<%=returnCode%>) {
-                        throw new RuntimeException("TPT returned exit code "+process_<%=cid %>.exitValue());
-                    }
-                <%
-                }
-                %>
-                <%if(isLog4jEnabled){%>
-                    log.info("<%=cid%> - Excute command:'" + cmdStr_<%= cid %> + "' has finished.");
-                <%}%>
+	<%
+	if(returnCodeDie) {
+	%>
+		if(process_<%=cid %>.exitValue()>=<%=returnCode%>) {
+			throw new RuntimeException("TPT returned exit code "+process_<%=cid %>.exitValue());
+		}
+	<%
+	}
+	%>
+	<%if(isLog4jEnabled){%>
+		log.info("<%=cid%> - Excute command:'" + cmdStr_<%= cid %> + "' has finished.");
+	<%}%>
 }finally{
 	try{
 		file_<%=cid %>.delete();

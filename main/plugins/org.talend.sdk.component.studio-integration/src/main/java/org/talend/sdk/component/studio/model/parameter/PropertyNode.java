@@ -29,6 +29,9 @@ import java.util.stream.Collectors;
 
 import org.talend.core.model.process.EParameterFieldType;
 
+import javax.json.bind.annotation.JsonbCreator;
+import javax.json.bind.annotation.JsonbProperty;
+
 public class PropertyNode {
 	
     static final String CONNECTION_BUTTON = ".testConnection";
@@ -50,7 +53,10 @@ public class PropertyNode {
      */
     private final boolean root;
 
-    public PropertyNode(final PropertyDefinitionDecorator property, final EParameterFieldType fieldType, final boolean root) {
+    @JsonbCreator
+    public PropertyNode(@JsonbProperty("property") final PropertyDefinitionDecorator property,
+                        @JsonbProperty("fieldType") final EParameterFieldType fieldType,
+                        @JsonbProperty("root") final boolean root) {
         this.property = property;
         this.fieldType = fieldType;
         this.root = root;
