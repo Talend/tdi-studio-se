@@ -66,6 +66,9 @@
 		
 		boolean encrypt = "true".equals(ElementParameterParser.getValue(node,"__ENCRYPT__"));
 		
+		//work for tRedshiftOutputBulk
+		String encrypted_key = ElementParameterParser.getValue(node,"__ENCRYPTED_KEY__");
+		
 		//work for s3 components
 		String key_type = ElementParameterParser.getValue(node,"__KEY_TYPE__");
 		String algorithm_symmetric_master_key = ElementParameterParser.getValue(node,"__ALGORITHM_SYMMETRIC_MASTER_KEY__");

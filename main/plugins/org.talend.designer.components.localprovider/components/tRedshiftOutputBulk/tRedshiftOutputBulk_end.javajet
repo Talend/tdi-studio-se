@@ -37,11 +37,6 @@
 				String masterKey_<%=cid%> = <%=ElementParameterParser.getValue(node, encryptionKeyPropertyName) %>; 
 <%
 			}
-%>
-			javax.crypto.spec.SecretKeySpec symmetricKey_<%=cid%> = new javax.crypto.spec.SecretKeySpec(org.apache.commons.codec.binary.Base64.decodeBase64(masterKey_<%=cid%>.getBytes("UTF-8")), "AES");
-			com.amazonaws.services.s3.model.EncryptionMaterials encryptionMaterials_<%=cid%> = new com.amazonaws.services.s3.model.EncryptionMaterials(symmetricKey_<%=cid%>);
-			com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider encryptionMaterialsProvider_<%=cid%> = new com.amazonaws.services.s3.model.StaticEncryptionMaterialsProvider(encryptionMaterials_<%=cid%>);
-<%
 		}
 %>
 		<%@ include file="../tS3Connection/S3Client.javajet" %>
