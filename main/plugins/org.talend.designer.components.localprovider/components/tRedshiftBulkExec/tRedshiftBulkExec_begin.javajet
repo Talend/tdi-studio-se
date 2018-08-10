@@ -286,7 +286,7 @@ skeleton="../templates/db_output_bulk.skeleton"
 <%
 		} else {
 %>
-			.append(ElementParameterParser.getValue(node, encryptionKeyPropertyName))
+			.append(<%=ElementParameterParser.getValue(node, encryptionKeyPropertyName)%>)
 <%
 		}
 	}
