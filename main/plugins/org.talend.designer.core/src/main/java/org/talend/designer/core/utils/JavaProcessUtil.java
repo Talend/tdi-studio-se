@@ -31,6 +31,7 @@ import org.talend.core.ILibraryManagerService;
 import org.talend.core.hadoop.IHadoopClusterService;
 import org.talend.core.hadoop.repository.HadoopRepositoryUtil;
 import org.talend.core.model.general.ModuleNeeded;
+import org.talend.core.model.general.ModuleNeeded.ELibraryInstallStatus;
 import org.talend.core.model.process.EParameterFieldType;
 import org.talend.core.model.process.IContext;
 import org.talend.core.model.process.IContextParameter;
@@ -93,7 +94,8 @@ public class JavaProcessUtil {
             if (!module.getModuleName().contains(".")) { //$NON-NLS-1$
                 it.remove();
             } else if (dedupModulesList.contains(module.getModuleName())) {
-                if (module.isMrRequired() && previousModule != null && previousModule.getModuleName().equals(module.getModuleName())) {
+                if (module.isMrRequired() && previousModule != null
+                        && previousModule.getModuleName().equals(module.getModuleName())) {
                     previousModule.setMrRequired(Boolean.TRUE);
                 }
                 it.remove();
@@ -168,7 +170,7 @@ public class JavaProcessUtil {
 
         String hadoopItemId = null;
         List<INode> nodeList = (List<INode>) process.getGeneratingNodes();
-        
+
         for (INode node : nodeList) {
             if (hadoopItemId == null) {
                 String itemId = getHadoopClusterItemId(node);
@@ -194,8 +196,8 @@ public class JavaProcessUtil {
         if (hadoopItemId == null) { // Incase it is a bigdata process.
             IElementParameter propertyParam = process.getElementParameter("MR_PROPERTY"); //$NON-NLS-1$
             if (propertyParam != null) {
-                IElementParameter repositoryParam = propertyParam.getChildParameters()
-                        .get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
+                IElementParameter repositoryParam =
+                        propertyParam.getChildParameters().get(EParameterName.REPOSITORY_PROPERTY_TYPE.getName());
                 if (repositoryParam != null) {
                     hadoopItemId = String.valueOf(repositoryParam.getValue());
                 }
@@ -215,7 +217,8 @@ public class JavaProcessUtil {
         if (isUseExistingConnection(node)) {
             return null;
         }
-        IElementParameter propertyElementParameter = node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
+        IElementParameter propertyElementParameter =
+                node.getElementParameterFromField(EParameterFieldType.PROPERTY_TYPE);
         if (propertyElementParameter == null) {
             return null;
         }
@@ -270,7 +273,8 @@ public class JavaProcessUtil {
         List<ModuleNeeded> modulesNeeded = new ArrayList<ModuleNeeded>();
         if (node.getComponent().getName().equals("tRunJob")) { //$NON-NLS-1$
             IElementParameter processIdparam = node.getElementParameter("PROCESS_TYPE_PROCESS"); //$NON-NLS-1$
-            IElementParameter processVersionParam = node.getElementParameter(EParameterName.PROCESS_TYPE_VERSION.getName());
+            IElementParameter processVersionParam =
+                    node.getElementParameter(EParameterName.PROCESS_TYPE_VERSION.getName());
 
             ProcessItem processItem = null;
             if (processVersionParam != null) {
@@ -284,14 +288,16 @@ public class JavaProcessUtil {
             if (processItem != null && !searchItems.contains(processItem)) {
                 boolean seperated = getBooleanParamValue(node, "USE_INDEPENDENT_PROCESS") //$NON-NLS-1$
                         || getBooleanParamValue(node, "USE_DYNAMIC_JOB"); //$NON-NLS-1$
-                if (!seperated || BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_INDEPENDENT)) {
+                if (!seperated || BitwiseOptionUtils.containOption(options,
+                        TalendProcessOptionConstants.MODULES_WITH_INDEPENDENT)) {
                     // avoid dead loop of method call
                     searchItems.add(processItem);
                     JobInfo subJobInfo = new JobInfo(processItem, context);
                     IDesignerCoreService service = CorePlugin.getDefault().getDesignerCoreService();
                     IProcess child = service.getProcessFromItem(subJobInfo.getProcessItem());
-                    
-                    if (!BitwiseOptionUtils.containOption(options, TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
+
+                    if (!BitwiseOptionUtils.containOption(options,
+                            TalendProcessOptionConstants.MODULES_WITH_CHILDREN)) {
                         options |= TalendProcessOptionConstants.MODULES_WITH_CHILDREN;
                     }
                     getNeededModules(child, searchItems, modulesNeeded, options);
@@ -380,13 +386,15 @@ public class JavaProcessUtil {
         }
     }
 
-    private static void getModulesInTable(final IProcess process, IElementParameter curParam, List<ModuleNeeded> modulesNeeded) {
+    private static void getModulesInTable(final IProcess process, IElementParameter curParam,
+            List<ModuleNeeded> modulesNeeded) {
 
         if (!(curParam.getValue() instanceof List)) {
             return;
         }
         List<Map<String, Object>> values = (List<Map<String, Object>>) curParam.getValue();
         if (values != null && !values.isEmpty()) {
+            boolean updateCustomMavenUri = false;
             Object[] listItemsValue = curParam.getListItemsValue();
             if (listItemsValue != null && listItemsValue.length > 0 && listItemsValue[0] instanceof IElementParameter) {
                 for (Object o : listItemsValue) {
@@ -400,11 +408,13 @@ public class JavaProcessUtil {
                                 if (isContextMode) {
                                     List<IContext> listContext = process.getContextManager().getListContext();
                                     for (IContext context : listContext) {
-                                        List<IContextParameter> contextParameterList = context.getContextParameterList();
+                                        List<IContextParameter> contextParameterList =
+                                                context.getContextParameterList();
                                         for (IContextParameter contextPara : contextParameterList) {
                                             String var = ContextParameterUtils.getVariableFromCode(moduleName);
                                             if (var.equals(contextPara.getName())) {
-                                                String value = context.getContextParameter(contextPara.getName()).getValue();
+                                                String value =
+                                                        context.getContextParameter(contextPara.getName()).getValue();
 
                                                 if (curParam.getName().equals(EParameterName.DRIVER_JAR.getName())
                                                         && value.contains(";")) { //$NON-NLS-1$
@@ -428,8 +438,9 @@ public class JavaProcessUtil {
                                                     }
                                                 } else {
                                                     value = value.substring(value.lastIndexOf("\\") + 1); //$NON-NLS-1$
-                                                    
-                                                    ModuleNeeded module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(value), null, true);
+
+                                                    ModuleNeeded module = new ModuleNeeded(null,
+                                                            TalendTextUtils.removeQuotes(value), null, true);
                                                     modulesNeeded.add(module);
                                                 }
                                             }
@@ -441,13 +452,14 @@ public class JavaProcessUtil {
 
                                     if (line.get("JAR_NEXUS_VERSION") != null) {
                                         String a = moduleName.replaceFirst("[.][^.]+$", "");
-                                        mn.setMavenUri(
-                                                "mvn:org.talend.libraries/" + a + "/" + line.get("JAR_NEXUS_VERSION") + "/jar");
 
-                                        mn.setCustomMavenUri(mn.getMavenUri());
-                                        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister
-                                                .getDefault().getService(ILibraryManagerService.class);
-                                        libManagerService.saveCustomMavenURIMap();
+                                        mn.setMavenUri("mvn:org.talend.libraries/" + a + "/"
+                                                + line.get("JAR_NEXUS_VERSION") + "/jar");
+
+                                        if (mn.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
+                                            mn.setCustomMavenUri(mn.getMavenUri());
+                                            updateCustomMavenUri = true;
+                                        }
                                     }
                                     modulesNeeded.add(mn);
                                 }
@@ -455,6 +467,12 @@ public class JavaProcessUtil {
                         }
                     }
                 }
+            }
+            if (updateCustomMavenUri) {
+                ILibraryManagerService libManagerService =
+                        (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+                                ILibraryManagerService.class);
+                libManagerService.saveCustomMavenURIMap();
             }
         }
 
@@ -485,25 +503,27 @@ public class JavaProcessUtil {
      * @param neededLibraries
      * @param curParam
      */
-    public static void findMoreLibraries(final IProcess process, List<ModuleNeeded> modulesNeeded, IElementParameter curParam) {
+    public static void findMoreLibraries(final IProcess process, List<ModuleNeeded> modulesNeeded,
+            IElementParameter curParam) {
         Object value = curParam.getValue();
         String name = curParam.getName();
         if (name.equals("DRIVER_JAR") || name.equals("connection.driverTable")) { //$NON-NLS-1$
             // added for bug 13592. new parameter DRIVER_JAR was used for jdbc connection
             if (value != null && value instanceof List) {
                 List list = (List) value;
+                boolean updateCustomMavenUri = false;
                 for (int i = 0; i < list.size(); i++) {
                     if (list.get(i) instanceof HashMap) {
                         HashMap map = (HashMap) list.get(i); // JAR_NAME
                         Object object = null;
-                        if(name.equals("DRIVER_JAR")){ //$NON-NLS-1$
+                        if (name.equals("DRIVER_JAR")) { //$NON-NLS-1$
                             object = map.get("JAR_NAME"); //$NON-NLS-1$
-                        }else{
+                        } else {
                             object = map.get("drivers");//$NON-NLS-1$
                         }
                         if (object != null && object instanceof String) {
                             String driverName = (String) object;
-                            if (driverName != null && !"".equals(driverName)) { //$NON-NLS-1$
+                            if (!"".equals(driverName)) { //$NON-NLS-1$
                                 boolean isContextMode = ContextParameterUtils.containContextVariables(driverName);
                                 if (isContextMode) {
                                     getModulesInTable(process, curParam, modulesNeeded);
@@ -513,21 +533,29 @@ public class JavaProcessUtil {
                                     if (StringUtils.isNotBlank((String) map.get("JAR_NEXUS_VERSION"))) {
                                         module = new ModuleNeeded(null, null, true,
                                                 "mvn:org.talend.libraries/"
-                                                        + TalendTextUtils.removeQuotes(driverName).replaceFirst("[.][^.]+$", "")
+                                                        + TalendTextUtils.removeQuotes(driverName).replaceFirst(
+                                                                "[.][^.]+$", "")
                                                         + "/" + (String) map.get("JAR_NEXUS_VERSION") + "/jar");
-                                        module.setCustomMavenUri(module.getMavenUri());
-                                        ILibraryManagerService libManagerService = (ILibraryManagerService) GlobalServiceRegister
-                                                .getDefault().getService(ILibraryManagerService.class);
-                                        libManagerService.saveCustomMavenURIMap();
+                                        if (module.getStatus() == ELibraryInstallStatus.NOT_INSTALLED) {
+                                            module.setCustomMavenUri(module.getMavenUri());
+                                            updateCustomMavenUri = true;
+                                        }
 
                                     } else {
-                                        module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(driverName), null, true);
+                                        module = new ModuleNeeded(null, TalendTextUtils.removeQuotes(driverName), null,
+                                                true);
                                     }
                                     modulesNeeded.add(module);
                                 }
                             }
                         }
                     }
+                }
+                if (updateCustomMavenUri) {
+                    ILibraryManagerService libManagerService =
+                            (ILibraryManagerService) GlobalServiceRegister.getDefault().getService(
+                                    ILibraryManagerService.class);
+                    libManagerService.saveCustomMavenURIMap();
                 }
             }
         } else if (name.equals("DB_VERSION")) { //$NON-NLS-1$
