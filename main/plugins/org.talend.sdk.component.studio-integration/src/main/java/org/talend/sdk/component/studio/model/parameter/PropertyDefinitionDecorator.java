@@ -107,7 +107,7 @@ public class PropertyDefinitionDecorator extends SimplePropertyDefinition {
      */
     public static Collection<PropertyDefinitionDecorator> wrap(final Collection<SimplePropertyDefinition> properties) {
         return properties.stream()
-                .map(property -> new PropertyDefinitionDecorator(property))
+                .map(PropertyDefinitionDecorator::new)
                 .collect(toList());
     }
     
