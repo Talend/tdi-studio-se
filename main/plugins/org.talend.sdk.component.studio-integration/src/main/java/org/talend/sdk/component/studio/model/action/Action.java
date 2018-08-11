@@ -98,10 +98,6 @@ public class Action {
         return this.type;
     }
     
-    protected final boolean areParametersSet() {
-        return parameters.values().stream().flatMap(List::stream).allMatch(IActionParameter::isHasDirectValue);
-    }
-    
     protected final Map<String, String> payload() {
         final Map<String, String> payload = new HashMap<>();
         parameters.values().stream()

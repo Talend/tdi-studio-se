@@ -62,7 +62,6 @@ public class ActionParameter extends AbstractActionParameter {
     /**
      * Denotes whether associated ElementParameter is set and usable. Once set it can't be unset
      */
-    @Override
     public boolean isHasDirectValue() {
         return this.hasDirectValue;
     }

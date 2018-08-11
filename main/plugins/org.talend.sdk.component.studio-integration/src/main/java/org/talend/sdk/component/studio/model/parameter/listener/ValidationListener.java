@@ -15,15 +15,14 @@
  */
 package org.talend.sdk.component.studio.model.parameter.listener;
 
+import org.talend.sdk.component.studio.Lookups;
+import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
-import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
 
 public class ValidationListener extends Action implements PropertyChangeListener {
 
@@ -39,11 +38,6 @@ public class ValidationListener extends Action implements PropertyChangeListener
         if(!"value".equals(event.getPropertyName())){
             return;
         }
-        setParameterValue(TaCoKitElementParameter.class.cast(event.getSource()).getName(), (String) event.getNewValue());
-        if (!areParametersSet()) {
-            return;
-        }
-
         CompletableFuture.supplyAsync(this::validate, Lookups.uiActionsThreadPool().getExecutor()).thenAccept(
                 this::notify);
     }

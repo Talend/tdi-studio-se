@@ -26,8 +26,5 @@ public interface IActionParameter {
     String getName();
 
     //TODO remove it
-    boolean isHasDirectValue();
-
-    //TODO remove it
     void setValue(String newValue);
 }
