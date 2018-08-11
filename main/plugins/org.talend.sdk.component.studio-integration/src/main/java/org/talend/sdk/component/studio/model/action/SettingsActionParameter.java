@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * {@link ActionParameter} which is binded with ElementParameter.
+ * {@link IActionParameter} which is binded with ElementParameter.
  * It may be used to bind to TaCoKitElementParameter (String), DebouncedParameter (String)
  * and CheckElementParameter (boolean)
  */
@@ -50,7 +50,7 @@ public class SettingsActionParameter extends AbstractActionParameter {
      * and returns single parameter, which key is action parameter name and
      * values is TaCoKitElementParameter's value
      *
-     * @return Collection with single ActionParameter
+     * @return Collection with single action parameter
      */
     @Override
     public Collection<Pair<String, String>> parameters() {

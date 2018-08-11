@@ -5,7 +5,6 @@ import org.talend.designer.core.model.components.ElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;

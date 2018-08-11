@@ -15,7 +15,6 @@ package org.talend.sdk.component.studio.model.parameter;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.lang.Strings;
 import org.talend.sdk.component.studio.model.action.AbstractActionParameter;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
 
 import java.util.ArrayList;
 import java.util.Collection;

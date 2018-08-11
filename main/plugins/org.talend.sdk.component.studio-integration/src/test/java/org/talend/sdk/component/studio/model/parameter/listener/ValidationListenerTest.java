@@ -29,7 +29,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.jupiter.api.Test;
 import org.talend.designer.core.model.FakeElement;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
 import org.talend.sdk.component.studio.model.action.IActionParameter;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 import org.talend.sdk.component.studio.model.parameter.ValidationLabel;
