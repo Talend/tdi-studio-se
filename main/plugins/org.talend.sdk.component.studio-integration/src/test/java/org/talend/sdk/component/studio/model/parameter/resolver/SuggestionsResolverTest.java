@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.talend.core.model.process.IElementParameter;
 import org.talend.sdk.component.server.front.model.ActionReference;
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.PropertyNode;
 import org.talend.sdk.component.studio.model.parameter.TableElementParameter;
 import org.talend.sdk.component.studio.model.parameter.listener.ActionParametersUpdater;
@@ -131,14 +132,14 @@ class SuggestionsResolverTest {
     }
 
     private ActionParametersUpdater createActionParametersUpdater(final ActionReference action) {
-        final Action actionMock = new ActionMock(action.getName(), action.getFamily(), Action.Type.SUGGESTIONS);
+        final SuggestionsAction actionMock = new ActionMock(action.getName(), action.getFamily());
         return new ActionParametersUpdater(actionMock);
     }
 
-    private static class ActionMock extends Action {
+    private static class ActionMock extends SuggestionsAction {
 
-        public ActionMock(final String actionName, final String family, final Type type) {
-            super(actionName, family, type);
+        public ActionMock(final String actionName, final String family) {
+            super(actionName, family);
         }
 
         public Map<String, String> checkPayload() {

@@ -24,7 +24,4 @@ public interface IActionParameter {
      * @return IElementParameter name
      */
     String getName();
-
-    //TODO remove it
-    void setValue(String newValue);
 }

@@ -47,7 +47,6 @@ public class ActionParameter extends AbstractActionParameter {
         setValue(value);
     }
 
-    @Override
     public void setValue(final String newValue) {
         if (newValue != null) {
             this.value = Strings.removeQuotes(newValue);

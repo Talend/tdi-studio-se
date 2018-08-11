@@ -66,19 +66,6 @@ public class Action {
         }
         list.add(parameter);
     }
-    
-    /**
-     * Sets {@code newValue} for all action parameters associated with ElementParameter's {@code parameterName}
-     * 
-     * @param parameterName ElementParameter name
-     * @param newValue new value to be set for action parameters
-     */
-    public void setParameterValue(final String parameterName, final String newValue) {
-        if (!parameters.containsKey(parameterName)) {
-            throw new IllegalArgumentException("Non-existent parameter: " + parameterName);
-        }
-        parameters.get(parameterName).forEach(p -> p.setValue(newValue));
-    }
 
     @SuppressWarnings("unchecked")
     public Map<String, String> callback() {

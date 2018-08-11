@@ -19,6 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.SuggestionsAction;
 import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
 /**
@@ -26,9 +27,9 @@ import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
  */
 public class ActionParametersUpdater implements PropertyChangeListener {
     
-    private final Action action;
+    private final SuggestionsAction action;
     
-    public ActionParametersUpdater(final Action action) {
+    public ActionParametersUpdater(final SuggestionsAction action) {
         this.action = action;
     }
 

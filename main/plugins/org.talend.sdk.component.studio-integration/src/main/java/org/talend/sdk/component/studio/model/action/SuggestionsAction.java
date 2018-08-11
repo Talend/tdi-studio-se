@@ -26,7 +26,7 @@ import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
 /**
  * It should be Thread-safe as it is used in a Job launched by {@link TaCoKitValueSelectionController}
  */
-public final class SuggestionsAction extends Action {
+public class SuggestionsAction extends Action {
     
     private final V1Action actionService = Lookups.client().v1().action();
     
@@ -73,11 +73,11 @@ public final class SuggestionsAction extends Action {
     }
     
     /**
-     * Extends {@link Action#setParameterValue(String, String)} to set {@link #parametersChanged} flag to true
+     * Sets {@link #parametersChanged} flag to true
      */
-    @Override
+    //FIXME
     public synchronized void setParameterValue(final String parameterName, final String parameterValue) {
-        super.setParameterValue(parameterName, parameterValue);
+//        super.setParameterValue(parameterName, parameterValue);
         parametersChanged = true;
     }
 
