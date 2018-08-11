@@ -34,6 +34,8 @@ public class Action {
 
     public static final String MESSAGE = "comment";
 
+    private V1Action actionClient;
+
     private final String actionName;
 
     private final String family;
@@ -69,8 +71,7 @@ public class Action {
 
     @SuppressWarnings("unchecked")
     public Map<String, String> callback() {
-        final V1Action action = Lookups.client().v1().action();
-        return action.execute(Map.class, family, type, actionName, payload());
+        return actionClient().execute(Map.class, family, type, actionName, payload());
     }
 
     protected final String getActionName() {
@@ -105,6 +106,13 @@ public class Action {
         public String toString() {
             return super.toString().toLowerCase();
         }
+    }
+
+    protected V1Action actionClient() {
+        if (actionClient == null) {
+            actionClient = Lookups.client().v1().action();
+        }
+        return actionClient;
     }
 
 }

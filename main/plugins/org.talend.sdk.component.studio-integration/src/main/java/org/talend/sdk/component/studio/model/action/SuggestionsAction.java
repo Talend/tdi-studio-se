@@ -28,8 +28,6 @@ import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
  */
 public class SuggestionsAction extends Action {
     
-    private final V1Action actionService = Lookups.client().v1().action();
-    
     /**
      * Denotes whetere parameters were changed since last callback
      */
@@ -47,7 +45,7 @@ public class SuggestionsAction extends Action {
     private synchronized SuggestionValues callSuggestions() {
         SuggestionValues result;
         if (cachedValue == null || parametersChanged) {
-            final SuggestionValues values = actionService.execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
+            final SuggestionValues values = actionClient().execute(SuggestionValues.class, getFamily(), getType(), getActionName(), payload());
             if (values.isCacheable()) {
                 cachedValue = values.clone();
             }
