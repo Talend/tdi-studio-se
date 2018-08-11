@@ -28,7 +28,7 @@ public class ValidationResolver extends AbstractParameterResolver {
 
     public ValidationResolver(final PropertyNode actionOwner, final Collection<ActionReference> actions,
             final ValidationListener listener, final ElementParameter redrawParameter) {
-        super(listener, actionOwner, getActionRef(actionOwner, actions), listener, redrawParameter);
+        super(listener, actionOwner, getActionRef(actionOwner, actions), redrawParameter);
     }
     
     private static ActionReference getActionRef(final PropertyNode actionOwner, final Collection<ActionReference> actions) {
