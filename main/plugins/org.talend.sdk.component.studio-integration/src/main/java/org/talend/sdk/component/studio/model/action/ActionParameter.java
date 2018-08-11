@@ -15,26 +15,14 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Pattern;
 import org.talend.core.model.utils.ContextParameterUtils;
 import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.lang.Strings;
 
-public class ActionParameter implements IActionParameter {
+import java.util.Collection;
+import java.util.Collections;
 
-    private static final Pattern QUOTES_PATTERN = Pattern.compile("^\"|\"$");
-
-    /**
-     * ElementParameter name (which also denotes its path)
-     */
-    private final String name;
-
-    /**
-     * Action parameter alias, which used to make callback
-     */
-    private final String parameter;
+public class ActionParameter extends AbstractActionParameter {
 
     /**
      * Denotes whether associated ElementParameter is set and usable. Once set it can't be
@@ -55,8 +43,7 @@ public class ActionParameter implements IActionParameter {
      * @param value initial value, can be null. If it's not null, then it switches ActionParameter to set state
      */
     public ActionParameter(final String name, final String parameter, final String value) {
-        this.name = name;
-        this.parameter = parameter;
+        super(name, parameter);
         setValue(value);
     }
 
@@ -70,20 +57,6 @@ public class ActionParameter implements IActionParameter {
             this.value = null;
             this.hasDirectValue = false;
         }
-    }
-
-    /**
-     * ElementParameter name (which also denotes its path)
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Action parameter alias, which used to make callback
-     */
-    protected String getParameter() {
-        return this.parameter;
     }
 
     /**
@@ -103,7 +76,7 @@ public class ActionParameter implements IActionParameter {
 
     @Override
     public Collection<Pair<String, String>> parameters() {
-        final Pair parameter = new Pair(getParameter(), getValue());
+        final Pair<String, String> parameter = new Pair<>(getParameter(), getValue());
         return Collections.singletonList(parameter);
     }
 }
