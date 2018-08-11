@@ -15,16 +15,18 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
-import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
-import static org.talend.sdk.component.studio.model.action.Action.OK;
-import static org.talend.sdk.component.studio.model.action.Action.STATUS;
-import java.util.Map;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
+
+import java.util.Map;
+
+import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
+import static org.talend.sdk.component.studio.model.action.Action.OK;
+import static org.talend.sdk.component.studio.model.action.Action.STATUS;
 
 /**
  * Synchronous action
@@ -49,7 +51,7 @@ public class SyncAction extends Command implements TacokitCommand {
     }
 
     @Override
-    public void addParameter(final ActionParameter parameter) {
+    public void addParameter(final IActionParameter parameter) {
         action.addParameter(parameter);
     }
 

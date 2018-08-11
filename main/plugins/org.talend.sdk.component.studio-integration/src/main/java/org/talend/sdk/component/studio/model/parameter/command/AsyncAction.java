@@ -15,12 +15,6 @@
  */
 package org.talend.sdk.component.studio.model.parameter.command;
 
-import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
-import static org.talend.sdk.component.studio.model.action.Action.OK;
-import static org.talend.sdk.component.studio.model.action.Action.STATUS;
-
-import java.util.Map;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -30,7 +24,13 @@ import org.eclipse.swt.widgets.Display;
 import org.talend.commons.ui.gmf.util.DisplayUtils;
 import org.talend.sdk.component.studio.i18n.Messages;
 import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
+
+import java.util.Map;
+
+import static org.talend.sdk.component.studio.model.action.Action.MESSAGE;
+import static org.talend.sdk.component.studio.model.action.Action.OK;
+import static org.talend.sdk.component.studio.model.action.Action.STATUS;
 
 /**
  * Asynchronous Action
@@ -70,7 +70,7 @@ public class AsyncAction extends Job implements TacokitCommand {
     }
 
     @Override
-    public void addParameter(final ActionParameter parameter) {
+    public void addParameter(final IActionParameter parameter) {
         action.addParameter(parameter);
     }
 }

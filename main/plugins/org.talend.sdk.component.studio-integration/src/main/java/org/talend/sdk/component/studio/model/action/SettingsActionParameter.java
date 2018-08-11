@@ -27,18 +27,16 @@ import java.util.Collections;
  * It may be used to bind to TaCoKitElementParameter (String), DebouncedParameter (String)
  * and CheckElementParameter (boolean)
  */
-public class SettingsActionParameter extends ActionParameter {
+public class SettingsActionParameter extends AbstractActionParameter {
 
     private final TaCoKitElementParameter setting;
 
     public SettingsActionParameter(final TaCoKitElementParameter setting, final String parameter) {
-        super(setting.getName(), parameter, "");
+        super(setting.getName(), parameter);
         this.setting = setting;
     }
 
-    @Override
-    // TODO make it private
-    public String getValue() {
+    private String getValue() {
         final String value = setting.getStringValue();
         if (value == null) {
             return "";
