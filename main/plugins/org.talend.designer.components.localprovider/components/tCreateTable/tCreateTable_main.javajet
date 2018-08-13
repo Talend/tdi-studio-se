@@ -13,13 +13,14 @@ imports="
 %>
 <%@ include file="../templates/Log4j/Log4jDBConnUtil.javajet"%>
 <%	
-abstract class  Manager {
+abstract class Manager {
     protected String dbName;
     protected String tableName;
     protected String userName;
     protected String cid;
     protected INode node;
     protected boolean temporary;
+    protected boolean unlogged;
     protected DefaultLog4jCodeGenerateUtil log4jCodeGenerateUtil;
     protected abstract String getDriver();
     public abstract String getConnectionURL();
@@ -82,7 +83,11 @@ abstract class  Manager {
         if(temporary) {
             temp = "TEMPORARY "; 
         }
-        createTableSQL.append("CREATE " + temp + "TABLE " + getLProtectedChar( "\" + tableName_" + cid + " + \"" ) + "\" + tableName_" + cid + " + \"" + getRProtectedChar("\" + tableName_" + cid + " + \"") + "(");
+        String unlog = "";
+        if (unlogged && !temporary) {
+            unlog = "UNLOGGED ";
+        }
+        createTableSQL.append("CREATE ").append(temp).append(unlog).append("TABLE " + getLProtectedChar( "\" + tableName_" + cid + " + \"" ) + "\" + tableName_" + cid + " + \"" + getRProtectedChar("\" + tableName_" + cid + " + \"") + "(");
         List<String> pkList = new ArrayList<String>();
         int count = 0;
         String ending = ",";
@@ -1179,14 +1184,17 @@ class PostgreManager extends Manager {
     private String port;
     private String dbSchema;
     private boolean useExistingConnection;
-    private String connection;        
-    public PostgreManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid) {
+    private String connection;
+    public PostgreManager(String host, String port, String dbName, String tableName, String dbSchema, String userName, boolean useExistingConnection, String connection, String cid,
+            boolean temporary, boolean unlogged) {
         super(dbName, tableName, userName ,cid);
         this.host = host;
         this.port = port;
         this.dbSchema = dbSchema;
         this.useExistingConnection = useExistingConnection;
         this.connection = connection;
+        this.temporary = temporary;
+        this.unlogged = unlogged;
     }
     protected String getDriver() {
         return "org.postgresql.Driver";
@@ -2135,7 +2143,9 @@ class ManagerFactory {
             String userName = ElementParameterParser.getValue(node, "__USER__");
             boolean useExistingConnection = ("true").equals(ElementParameterParser.getValue(node, "__USE_EXISTING_CONNECTION__"));
             String connection = stringUtil.getString(ElementParameterParser.getValue(node, "__CONNECTION_POSTGRE__"));
-            manager = new PostgreManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid);
+            boolean tempTable = ("true").equals(ElementParameterParser.getValue(node, "__TEMPTABLE__"));
+            boolean unloggedTable = ("true").equals(ElementParameterParser.getValue(node, "__UNLOGGED__"));
+            manager = new PostgreManager(host, port, dbName, tableName, dbSchema, userName, useExistingConnection, connection, cid, tempTable, unloggedTable);
         } else if(("POSTGREPLUS").equals(dbType)) {
             String host = ElementParameterParser.getValue(node, "__HOST__");
             String port = ElementParameterParser.getValue(node, "__PORT__");
