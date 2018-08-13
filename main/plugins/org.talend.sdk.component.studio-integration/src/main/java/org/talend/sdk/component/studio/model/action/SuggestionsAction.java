@@ -15,14 +15,11 @@
  */
 package org.talend.sdk.component.studio.model.action;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.talend.sdk.component.studio.Lookups;
-import org.talend.sdk.component.studio.lang.Pair;
 import org.talend.sdk.component.studio.model.parameter.SuggestionValues;
 import org.talend.sdk.component.studio.ui.composite.controller.TaCoKitValueSelectionController;
-import org.talend.sdk.component.studio.websocket.WebSocketClient.V1Action;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * It should be Thread-safe as it is used in a Job launched by {@link TaCoKitValueSelectionController}
@@ -72,15 +69,8 @@ public class SuggestionsAction extends Action {
     public Map<String, String> callback() {
         final SuggestionValues response = callSuggestions();
         final Map<String, String> result = new LinkedHashMap<>();
-        response.getItems().forEach(item -> {
-            result.put(item.getLabel(), item.getId());
-        });
+        response.getItems().forEach(item -> result.put(item.getLabel(), item.getId()));
         return result;
-    }
-    
-    //TODO remove it
-    public synchronized void setParameterValue(final String parameterName, final String parameterValue) {
-//        super.setParameterValue(parameterName, parameterValue);
     }
 
     private static class Cache {
