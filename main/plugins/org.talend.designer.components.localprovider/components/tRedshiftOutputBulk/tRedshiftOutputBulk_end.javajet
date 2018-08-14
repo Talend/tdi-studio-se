@@ -24,21 +24,6 @@
     String file = ElementParameterParser.getValue(node,"__FILE__");
 	%>
 	if(file_<%=cid%>.exists() && (file_<%=cid%>.length() > 0)) {
-<%
-		boolean needEncrypt = "true".equals(ElementParameterParser.getValue(node,"__ENCRYPT__"));
-		if(needEncrypt) {
-			String encryptionKeyPropertyName = "__ENCRYPTED_KEY__";
-			if (ElementParameterParser.canEncrypt(node, encryptionKeyPropertyName)) {
-%>
-				String masterKey_<%=cid%> = routines.system.PasswordEncryptUtil.decryptPassword(<%=ElementParameterParser.getEncryptedValue(node, encryptionKeyPropertyName)%>);
-<%
-			} else {
-%>
-				String masterKey_<%=cid%> = <%=ElementParameterParser.getValue(node, encryptionKeyPropertyName) %>; 
-<%
-			}
-		}
-%>
 		<%@ include file="../tS3Connection/S3Client.javajet" %>
 		try{
 			<%
