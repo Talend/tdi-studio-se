@@ -16,6 +16,7 @@
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Resolves PropertyNode path from given PropertyNode and relative path This is
@@ -27,15 +28,13 @@ public class AbsolutePathResolver {
      * Resolves absolute path of parameter from given {@code nodePath} and parameter
      * relative path. Resolution is done according rules described in component-api
      * Validable annotation.
-     * 
-     * @param nodePath
-     *            given node absolute path (ex: root.part2.part3)
-     * @param parameterReference
-     *            relative path which should be resolved using nodePath (ex:
-     *            ../part1/part2)
+     *
+     * @param nodePath           given node absolute path (ex: root.part2.part3)
+     * @param parameterReference relative path which should be resolved using nodePath (ex:
+     *                           ../part1/part2)
      * @return parameter/node absolute path
      */
-    public String resolvePath(final String nodePath, final String parameterReference) {
+    public Optional<String> resolvePath(final String nodePath, final String parameterReference) {
         check(nodePath, parameterReference);
         return doResolvePath(nodePath, normalizePath(parameterReference));
     }
@@ -55,10 +54,9 @@ public class AbsolutePathResolver {
      * If relative path starts with path part, but not with "." or "../", then "../"
      * is added in the beggining. According resolution rules {@code sibling/child}
      * path is equavalent to {@code ../sibling/child}
-     * 
-     * @param parameterReference
-     *            relative path which should be resolved using nodePath (ex:
-     *            ../part1/part2)
+     *
+     * @param parameterReference relative path which should be resolved using nodePath (ex:
+     *                           ../part1/part2)
      * @return normalized path which starts with either "." or "../"
      */
     private String normalizePath(final String parameterReference) {
@@ -67,14 +65,14 @@ public class AbsolutePathResolver {
 
     /**
      * Resolves absolute path from relative parameterReference path
-     * 
-     * @param nodePath node absolute path
+     *
+     * @param nodePath           node absolute path
      * @param parameterReference relative parameter reference path
      * @return resolved path
      */
-    private String doResolvePath(final String nodePath, final String parameterReference) {
+    private Optional<String> doResolvePath(final String nodePath, final String parameterReference) {
         if (".".equals(parameterReference)) {
-            return nodePath;
+            return Optional.of(nodePath);
         }
         if (parameterReference.startsWith("..")) {
             String current = nodePath;
@@ -82,20 +80,19 @@ public class AbsolutePathResolver {
             while (ref.startsWith("..")) {
                 final int lastDot = current.lastIndexOf('.');
                 if (lastDot < 0) {
-                    ref = "";
-                    break;
+                    return Optional.empty(); // property not found
                 }
                 current = current.substring(0, lastDot);
-                ref = ref.substring("..".length(), ref.length());
+                ref = ref.substring(2 /*"..".length()*/);
                 if (ref.startsWith("/")) {
                     ref = ref.substring(1);
                 }
             }
-            return current + (!ref.isEmpty() ? "." : "") + ref.replace('/', '.');
+            return Optional.of(current + (!ref.isEmpty() ? "." : "") + ref.replace('/', '.'));
         }
         if (parameterReference.startsWith(".") || parameterReference.startsWith("./")) {
-            return nodePath + '.' + parameterReference.replaceFirst("\\./?", "").replace('/', '.');
+            return Optional.of(nodePath + '.' + parameterReference.replaceFirst("\\./?", "").replace('/', '.'));
         }
-        return parameterReference;
+        return Optional.of(parameterReference);
     }
 }

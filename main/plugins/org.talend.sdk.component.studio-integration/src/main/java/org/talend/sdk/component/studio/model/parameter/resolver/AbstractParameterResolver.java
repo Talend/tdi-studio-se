@@ -1,39 +1,39 @@
 package org.talend.sdk.component.studio.model.parameter.resolver;
 
-import org.talend.core.model.process.IElementParameter;
-import org.talend.designer.core.model.components.ElementParameter;
-import org.talend.sdk.component.server.front.model.ActionReference;
-import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
-import org.talend.sdk.component.studio.model.action.Action;
-import org.talend.sdk.component.studio.model.action.ActionParameter;
-import org.talend.sdk.component.studio.model.action.IActionParameter;
-import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
-import org.talend.sdk.component.studio.model.parameter.PropertyNode;
-import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
+import static java.util.Comparator.comparing;
 
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
+import org.talend.core.model.process.IElementParameter;
+import org.talend.designer.core.model.components.ElementParameter;
+import org.talend.sdk.component.server.front.model.ActionReference;
+import org.talend.sdk.component.server.front.model.SimplePropertyDefinition;
+import org.talend.sdk.component.studio.model.action.Action;
+import org.talend.sdk.component.studio.model.action.IActionParameter;
+import org.talend.sdk.component.studio.model.parameter.PropertyDefinitionDecorator;
+import org.talend.sdk.component.studio.model.parameter.PropertyNode;
+import org.talend.sdk.component.studio.model.parameter.TaCoKitElementParameter;
 
 /**
  * Common super class for ParameterResolvers. It contains common state and functionality
  */
 abstract class AbstractParameterResolver implements ParameterResolver {
-    
+
     protected final AbsolutePathResolver pathResolver = new AbsolutePathResolver();
-    
+
     /**
      * PropertyNode, which represents Configuration class Option annotated with action annotation
      */
     private final Action action;
 
     protected final PropertyNode actionOwner;
-    
+
     protected final ActionReference actionRef;
 
     private final PropertyChangeListener listener;
@@ -43,9 +43,9 @@ abstract class AbstractParameterResolver implements ParameterResolver {
     AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final PropertyChangeListener listener) {
         this(action, actionOwner, actionRef, listener, null);
     }
-    
+
     AbstractParameterResolver(final Action action, final PropertyNode actionOwner, final ActionReference actionRef, final PropertyChangeListener listener,
-                              final ElementParameter redrawParameter) {
+            final ElementParameter redrawParameter) {
         this.action = action;
         this.actionOwner = actionOwner;
         this.actionRef = actionRef;
@@ -70,30 +70,32 @@ abstract class AbstractParameterResolver implements ParameterResolver {
 
         relativePaths.forEach(relativePath -> {
             if (expectedParameters.hasNext()) {
-                final String absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
-                final List<TaCoKitElementParameter> parameters = findParameters(absolutePath, settings);
-                final SimplePropertyDefinition parameterRoot = expectedParameters.next();
-                parameters.forEach(parameter -> {
-                    parameter.registerListener("value", listener);
-                    if (redrawParameter != null) {
-                        parameter.setRedrawParameter(redrawParameter);
-                    }
-                    final String callbackProperty = parameter.getName().replaceFirst(absolutePath, parameterRoot.getPath());
-                    final IActionParameter actionParameter = parameter.createActionParameter(callbackProperty);
-                    action.addParameter(actionParameter);
-                });
+                final Optional<String> absolutePath = pathResolver.resolvePath(getOwnerPath(), relativePath);
+                if (absolutePath.isPresent()) {
+                    final List<TaCoKitElementParameter> parameters = findParameters(absolutePath.get(), settings);
+                    final SimplePropertyDefinition parameterRoot = expectedParameters.next();
+                    parameters.forEach(parameter -> {
+                        parameter.registerListener("value", listener);
+                        if (redrawParameter != null) {
+                            parameter.setRedrawParameter(redrawParameter);
+                        }
+                        final String callbackProperty = parameter.getName().replaceFirst(absolutePath.get(), parameterRoot.getPath());
+                        final IActionParameter actionParameter = parameter.createActionParameter(callbackProperty);
+                        action.addParameter(actionParameter);
+                    });
+                }
             }
         });
     }
 
     protected abstract List<String> getRelativePaths();
-    
+
     /**
-     * Finds and returns all child ElementParameters of node with {@code absolutePath}. {@code absolutePath} may point at "leaf" Configuration option and 
+     * Finds and returns all child ElementParameters of node with {@code absolutePath}. {@code absolutePath} may point at "leaf" Configuration option and
      * on Configuration type as well.
-     * 
+     *
      * @param absolutePath option path
-     * @param settings all "leaf" options stored by their path
+     * @param settings     all "leaf" options stored by their path
      * @return resolved ElementParameters
      */
     private List<TaCoKitElementParameter> findParameters(final String absolutePath, final Map<String, IElementParameter> settings) {
@@ -111,20 +113,20 @@ abstract class AbstractParameterResolver implements ParameterResolver {
                     .collect(Collectors.toList());
         }
     }
-    
+
     /**
      * Returns action owner option path in Configuration tree
-     * 
+     *
      * @return option path
      */
     private String getOwnerPath() {
         return actionOwner.getProperty().getPath();
     }
-    
+
     /**
      * Checks whether specified {@code path} is a child path of {@code parentPath}
-     * 
-     * @param path path to be checked
+     *
+     * @param path       path to be checked
      * @param parentPath parent path
      * @return true, if path is child; false - otherwise
      */
