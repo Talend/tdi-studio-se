@@ -236,21 +236,22 @@
 		}
 			if(encrypt) {
 			%>
-				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3EncryptionClientBuilder.standard()
-                    .withCredentials(credentialsProvider_<%=cid%>)
-                    .withClientConfiguration(cc_<%=cid%>)
-                    .withEncryptionMaterials(encryptionMaterialsProvider_<%=cid%>)
-                    <%if("KMS_CMK".equals(key_type) && set_region) {%>
-                    .withCryptoConfiguration(new com.amazonaws.services.s3.model.CryptoConfiguration().withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>)))
-					<%}%>
-                    .build();
+				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3EncryptionClient(
+					credentialsProvider_<%=cid%>,
+					encryptionMaterialsProvider_<%=cid%>, 
+					cc_<%=cid%>,
+					new com.amazonaws.services.s3.model.CryptoConfiguration()
+						<%if("KMS_CMK".equals(key_type) && set_region) {%>
+						.withAwsKmsRegion(com.amazonaws.regions.RegionUtils.getRegion(<%=region%>))
+						<%}%>
+				);
 			<%
 			} else {
 			%>
-				com.amazonaws.services.s3.AmazonS3 conn_<%=cid%> = com.amazonaws.services.s3.AmazonS3ClientBuilder.standard()
-                    .withCredentials(credentialsProvider_<%=cid%>)
-                    .withClientConfiguration(cc_<%=cid%>)
-                    .build();
+				com.amazonaws.services.s3.AmazonS3Client conn_<%=cid%> = new com.amazonaws.services.s3.AmazonS3Client(
+					credentialsProvider_<%=cid%>,
+					cc_<%=cid%>
+				);
 			<%
 			}
 		if(set_region){
