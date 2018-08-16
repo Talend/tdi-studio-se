@@ -35,12 +35,33 @@
     	REQUIRED="true"
     	NUM_ROW="1"
     />
+    
+    <PARAMETER NAME="AUTH_MODE" FIELD="CLOSED_LIST" NUM_ROW="3" REQUIRED="true" GROUP="AUTHENTICATION" REPOSITORY_VALUE="AUTH_MODE">
+			<ITEMS DEFAULT="SERVICEACCOUNT">
+				<ITEM NAME="SERVICEACCOUNT" VALUE="Service account" />
+				<ITEM NAME="OAUTH" VALUE="OAuth 2.0" />
+			</ITEMS>
+	</PARAMETER>
+	
+	<PARAMETER 
+			NAME="SERVICE_ACCOUNT_CREDENTIALS_FILE" 
+			REPOSITORY_VALUE="SERVICE_ACCOUNT_CREDENTIALS_FILE"
+			GROUP="AUTHENTICATION"
+			FIELD="FILE" 
+			NUM_ROW="10" 
+			REQUIRED="true" 
+			SHOW_IF="AUTH_MODE == 'SERVICEACCOUNT'"
+			>
+			<DEFAULT>""</DEFAULT>
+	</PARAMETER>
 
     <PARAMETER
       NAME="CLIENT_ID"
       FIELD="TEXT"
       NUM_ROW="10"
       REQUIRED="true"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+      GROUP="AUTHENTICATION" REPOSITORY_VALUE="CLIENT_ID"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -50,6 +71,8 @@
       FIELD="PASSWORD"
       NUM_ROW="20"
       REQUIRED="true"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+      GROUP="AUTHENTICATION" REPOSITORY_VALUE="CLIENT_SECRET"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -57,7 +80,7 @@
 	<PARAMETER
       NAME="PROJECT_ID"
       FIELD="TEXT"
-      NUM_ROW="30"
+      NUM_ROW="40"
       REQUIRED="true"
     >
       <DEFAULT>""</DEFAULT>
@@ -66,8 +89,10 @@
 	<PARAMETER
       NAME="AUTHORIZATION_CODE"
       FIELD="TEXT"
-      NUM_ROW="40"
+      NUM_ROW="30"
       REQUIRED="true"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+      GROUP="AUTHENTICATION" REPOSITORY_VALUE="AUTHORIZATION_CODE"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -133,6 +158,7 @@
 		<IMPORT NAME="google-http-client-jackson2-1.19.0.jar" MODULE="google-http-client-jackson2-1.19.0.jar" MVN="mvn:org.talend.libraries/google-http-client-jackson2-1.19.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.google/lib/google-http-client-jackson2-1.19.0.jar" REQUIRED="true" />
 		<IMPORT NAME="guava-jdk5-13.0.jar" MODULE="guava-jdk5-13.0.jar" MVN="mvn:org.talend.libraries/guava-jdk5-13.0/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.guava/lib/guava-jdk5-13.0.jar" REQUIRED="true" />
 		<IMPORT NAME="jackson-core-2.9.4.jar" MODULE="jackson-core-2.9.4.jar" MVN="mvn:com.fasterxml.jackson.core/jackson-core/2.9.4"  UrlPath="platform:/plugin/org.talend.libraries.jackson/lib/jackson-core-2.9.4.jar" REQUIRED="true" />
+		<IMPORT NAME="google-cloud-bigquery-1.39.0.jar" MODULE="google-cloud-bigquery-1.39.0.jar" MVN="mvn:com.google.cloud/google-cloud-bigquery/1.39.0" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    <RETURNS>

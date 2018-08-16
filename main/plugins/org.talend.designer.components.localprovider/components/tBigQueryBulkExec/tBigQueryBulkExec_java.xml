@@ -34,12 +34,33 @@
     	REQUIRED="true"
     	NUM_ROW="1"
     />
+
+    <PARAMETER NAME="AUTH_MODE" FIELD="CLOSED_LIST" NUM_ROW="3" REQUIRED="true" GROUP="AUTHENTICATION" REPOSITORY_VALUE="AUTH_MODE">
+			<ITEMS DEFAULT="SERVICEACCOUNT">
+				<ITEM NAME="SERVICEACCOUNT" VALUE="Service account" />
+				<ITEM NAME="OAUTH" VALUE="OAuth 2.0" />
+			</ITEMS>
+	</PARAMETER>
+	
+	<PARAMETER 
+			NAME="SERVICE_ACCOUNT_CREDENTIALS_FILE" 
+			REPOSITORY_VALUE="SERVICE_ACCOUNT_CREDENTIALS_FILE"
+			FIELD="FILE" 
+			NUM_ROW="10" 
+			REQUIRED="true" 
+			SHOW_IF="AUTH_MODE == 'SERVICEACCOUNT'"
+			GROUP="AUTHENTICATION"
+			>
+			<DEFAULT>""</DEFAULT>
+	</PARAMETER>
+
     <PARAMETER
       NAME="CLIENT_ID"
       FIELD="TEXT"
       NUM_ROW="10"
       REQUIRED="true"
-      GROUP="CONNECTION"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+	  GROUP="AUTHENTICATION"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -48,25 +69,26 @@
       FIELD="PASSWORD"
       NUM_ROW="20"
       REQUIRED="true"
-      GROUP="CONNECTION"
-    >
-      <DEFAULT>""</DEFAULT>
-    </PARAMETER>
-	<PARAMETER
-      NAME="PROJECT_ID"
-      FIELD="TEXT"
-      NUM_ROW="30"
-      REQUIRED="true"
-      GROUP="CONNECTION"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+	  GROUP="AUTHENTICATION"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
 	<PARAMETER
       NAME="AUTHORIZATION_CODE"
       FIELD="TEXT"
+      NUM_ROW="30"
+      REQUIRED="true"
+      SHOW_IF="AUTH_MODE == 'OAUTH'"
+	  GROUP="AUTHENTICATION"
+    >
+      <DEFAULT>""</DEFAULT>
+    </PARAMETER>
+	<PARAMETER
+      NAME="PROJECT_ID"
+      FIELD="TEXT"
       NUM_ROW="40"
       REQUIRED="true"
-      GROUP="CONNECTION"
     >
       <DEFAULT>""</DEFAULT>
     </PARAMETER>
@@ -171,6 +193,7 @@
 		<IMPORT NAME="httpclient-4.5.5" MODULE="httpclient-4.5.5.jar" MVN="mvn:org.apache.httpcomponents/httpclient/4.5.5" REQUIRED="true" />
 		<IMPORT NAME="httpcore-4.4.9" MODULE="httpcore-4.4.9.jar" MVN="mvn:org.apache.httpcomponents/httpcore/4.4.9" REQUIRED="true" />
 		<IMPORT NAME="commons-codec-1.4" MODULE="commons-codec-1.4.jar" MVN="mvn:org.talend.libraries/commons-codec-1.4/6.0.0"  UrlPath="platform:/plugin/org.talend.libraries.apache.common/lib/commons-codec-1.4.jar" REQUIRED="true" />
+		<IMPORT NAME="google-cloud-bigquery-1.39.0.jar" MODULE="google-cloud-bigquery-1.39.0.jar" MVN="mvn:com.google.cloud/google-cloud-bigquery/1.39.0" REQUIRED="true" />
      </IMPORTS>
    </CODEGENERATION>
    <RETURNS>
