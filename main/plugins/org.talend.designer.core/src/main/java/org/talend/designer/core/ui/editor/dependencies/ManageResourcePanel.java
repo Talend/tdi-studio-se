@@ -393,6 +393,8 @@ public class ManageResourcePanel extends Composite {
                                 cellEditorWindow.getShell(), process, commandStack);
                         if (Dialog.OK == dialog.open()) {
                             result = dialog.getResult();
+                        } else {
+                            result = null;
                         }
                         return result == null ? null : result.getName();
                     }
@@ -414,7 +416,7 @@ public class ManageResourcePanel extends Composite {
         @Override
         protected void setValue(Object element, Object value) {
             JobResourceDependencyModel model = (JobResourceDependencyModel) element;
-            if (result != null) {
+            if (result != null && value.equals(result.getName())) {
                 if (result.getParent() == null) {
                     model.setContextSource(((ContextTableTabParentModel) result.getTreeData()).getSourceId());
                 } else {
