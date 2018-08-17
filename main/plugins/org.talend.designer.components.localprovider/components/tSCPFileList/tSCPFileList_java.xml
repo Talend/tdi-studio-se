@@ -124,7 +124,7 @@
       FIELD="TEXT"
       NUM_ROW="90"
     >
-      <DEFAULT>":"</DEFAULT>
+      <DEFAULT>";"</DEFAULT>
     </PARAMETER>
 
     <PARAMETER
