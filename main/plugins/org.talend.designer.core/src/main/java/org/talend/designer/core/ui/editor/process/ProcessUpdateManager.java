@@ -1894,6 +1894,9 @@ public class ProcessUpdateManager extends AbstractUpdateManager {
                                 if (!node.getMetadataList().isEmpty()) {
                                     table = node.getMetadataList().get(0);
                                 }
+                                
+                                contextData.put("NODE", node);
+                                
                                 Object objectValue = RepositoryToComponentProperty.getValue(repositoryConnection, repositoryValue,
                                         table, relatedComponent, contextData);
                                 if (objectValue == null || "".equals(objectValue)) {
